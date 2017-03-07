@@ -1,0 +1,47 @@
+﻿using System;
+using System.Text;
+using System.Web.UI;
+
+
+namespace PocExample
+{
+    //Exploitable by /?name=admin&key=validkey1&parm=PHNjcmlwdD5hbGVydCgvWFNTLyk8L3NjcmlwdD4%3D
+    public partial class Default : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            var name = this.Request.Params["name"];
+            var key1 = this.Request.Params["key1"];
+            var parm = this.Request.Params["parm"];
+
+            byte[] data;
+            if (string.IsNullOrEmpty(parm))
+            {
+                data = new byte[0];
+            }
+            else
+            {
+                data = Convert.FromBase64String(parm);
+            }
+
+            string str1;
+            if (name == "admin")
+            {
+                if (key1 == "validkey")
+                {
+                    str1 = Encoding.UTF8.GetString(data);
+                }
+                else
+                {
+                    str1 = "Wrong key!";
+                }
+            }
+            else
+            {
+                str1 = "Wrong role!";
+            }
+
+            Response.Write(str1);
+        }
+    }
+}

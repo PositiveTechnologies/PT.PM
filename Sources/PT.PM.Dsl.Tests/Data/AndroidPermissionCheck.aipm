@@ -1,0 +1,1 @@
+<[expr]>.<[^(checkCallingOrSelfPermission|checkCallingOrSelfUriPermission)$]>(<[args]>)

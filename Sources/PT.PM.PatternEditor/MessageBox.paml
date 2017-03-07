@@ -1,0 +1,10 @@
+﻿<Window xmlns="https://github.com/avaloniaui" SizeToContent="WidthAndHeight" Title="{Binding Title}" >
+  <Grid Width="450" RowDefinitions="*,40" Margin="10">
+    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" MaxHeight="300" Text="{Binding MessageBoxText}" />
+    <Button Grid.Row="1" Width="80" Margin="0,10,0,0" Command="{Binding OkCommand}" IsVisible="{Binding OkButtonVisible}">OK</Button>
+    <Grid Grid.Row="1" ColumnDefinitions="*,5,*" Width="220" IsVisible="{Binding YesNoButtonVisible}">
+      <Button Width="80" Margin="0,10,0,0" Command="{Binding YesCommand}" >Yes</Button>
+      <Button Grid.Column="2"  Width="80" Margin="0,10,0,0" Command="{Binding NoCommand}" >No</Button>
+    </Grid>
+  </Grid>
+</Window>

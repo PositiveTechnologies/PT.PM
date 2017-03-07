@@ -1,0 +1,1 @@
+Configure.write("debug", <[1..9]>)

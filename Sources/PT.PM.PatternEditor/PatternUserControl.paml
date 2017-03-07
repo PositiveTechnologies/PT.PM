@@ -1,0 +1,70 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui" >
+  <UserControl.Styles>
+    <Style Selector="TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+  </UserControl.Styles>
+  
+  <StackPanel Grid.Column="0" Gap="7">
+    <Grid ColumnDefinitions="100,100,*" Height="30">
+      <TextBlock Grid.Column="0" FontWeight="Medium" FontSize="20" Text="PATTERNS" />
+      <Button Grid.Column="1" Content="Open" HorizontalAlignment="Left" Width="100" Command="{Binding OpenPatterns}"/>
+      <TextBlock Text="{Binding PatternsShortFileName}" Grid.Column="2" Margin="10,0,0,0">
+        <ToolTip.Tip>
+          <TextBlock Text="{Binding PatternsFileName}" />
+        </ToolTip.Tip>
+      </TextBlock>
+    </Grid>
+    
+    <ListBox Name="PatternsListBox" MinHeight="150" MaxHeight="150" Items="{Binding Patterns}" SelectedItem="{Binding SelectedPattern, Mode=OneWay}" AutoScrollToSelectedItem="true" />
+    <Grid ColumnDefinitions="*,*,*,*">
+      <Button Grid.Column="0" Content="Create" Command="{Binding CreatePattern}" Margin="0,0,7,0" />
+      <Button Grid.Column="1" Content="Remove" Command="{Binding RemovePattern}" Margin="0,0,7,0" />
+      <Button Grid.Column="2" Content="Open" Command="{Binding OpenPattern}" Margin="0,0,7,0" />
+      <Button Grid.Column="3" Content="Save" Command="{Binding SavePattern}" />
+    </Grid>
+
+    <TextBlock Margin="0,20,0,0" FontWeight="Medium" FontSize="20" Text="SELECTED PATTERN" />
+    <Grid ColumnDefinitions="100,*">
+      <TextBlock Text="Name" />
+      <TextBox Grid.Column="1" Text="{Binding Name}"/>
+    </Grid>
+    <Grid ColumnDefinitions="100,*" IsVisible="false">
+      <TextBlock Text="Key" />
+      <TextBox Grid.Column="1" Text="{Binding Key}" />
+    </Grid>
+    <Grid ColumnDefinitions="100,*">
+      <TextBlock Text="CweId" />
+      <TextBox Grid.Column="1" Text="{Binding CweId}" />
+    </Grid>
+    <Grid ColumnDefinitions="100,*">
+      <TextBlock Text="Languages" />
+      <Grid Grid.Column="1" RowDefinitions="25,25,25"  ColumnDefinitions="70,70,85" Height="50">
+        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsCSharpLanguage}">C#</CheckBox>
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsJavaLanguage}" >Java</CheckBox>
+        <CheckBox Grid.Row="0" Grid.Column="2" IsChecked="{Binding IsPhpLanguage}">PHP</CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsPlSqlLanguage}">PL/SQL</CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsTSqlLanguage}">T-SQL</CheckBox>
+        <CheckBox Grid.Row="1" Grid.Column="2" IsChecked="{Binding IsJavaScriptLanguage}">JavaScript</CheckBox>
+      </Grid>
+    </Grid>
+    <TextBlock Text="Description" />
+    <TextBox AcceptsReturn="true" Text="{Binding Description}" Height="100" TextWrapping="Wrap" />
+    <Grid ColumnDefinitions="100,*">
+      <TextBlock Text="Value"/>
+      <TextBlock Grid.Column="1" Text="{Binding TextBoxPosition}"/>
+    </Grid>
+    <TextBox Name="PatternData" TextWrapping="Wrap" AcceptsReturn="true" MinHeight="100"/>
+    <Expander IsExpanded="{Binding IsPatternErrorsExpanded, Mode=TwoWay}" IsVisible="{Binding PatternErrorsIsVisible}" Header="{Binding PatternErrorsText}" FontSize="18" FontWeight="Medium" >
+      <ListBox Name="PatternErrors" Items="{Binding PatternErrors}" MinHeight="100" />
+    </Expander>
+    <Expander Header=" Json" IsExpanded="{Binding IsPatternJsonExpanded, Mode=TwoWay}" IsVisible="{Binding DeveloperMode}">
+      <TextBox AcceptsReturn="true" IsReadOnly="true" Text="{Binding PatternJson, Mode=OneWay}" MaxHeight="200" />
+    </Expander>
+    <Expander Header=" Log" IsExpanded="false" IsVisible="{Binding DeveloperMode}">
+      <Grid RowDefinitions="250" >
+        <TextBox Name="Logger" Text="{Binding Log, Mode=OneWay}" AcceptsReturn="true" IsReadOnly="true" MinHeight="250" />
+      </Grid>
+    </Expander>
+  </StackPanel>
+</UserControl>

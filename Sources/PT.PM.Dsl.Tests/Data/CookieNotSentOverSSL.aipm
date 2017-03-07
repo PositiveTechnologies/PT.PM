@@ -1,0 +1,3 @@
+Cookie <[@cookie]> = new Cookie(...);
+<[~]><[@cookie]>.setSecure(true);
+<[expr]>.addCookie(<[@cookie]>);

@@ -1,0 +1,4 @@
+[submodule "Sources/AspxParser"]
+	path = Sources/AspxParser
+	url = https://github.com/PositiveTechnologies/AspxParser.git
+	branch = master

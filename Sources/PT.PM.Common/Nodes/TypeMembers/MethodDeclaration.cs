@@ -1,0 +1,52 @@
+﻿using System.Collections.Generic;
+using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Statements;
+using System;
+using System.Linq;
+
+namespace PT.PM.Common.Nodes.TypeMembers
+{
+    public class MethodDeclaration : EntityDeclaration
+    {
+        public override NodeType NodeType => NodeType.MethodDeclaration;
+
+        public TypeToken ReturnType { get; set; }
+
+        public IEnumerable<ParameterDeclaration> Parameters { get; set; }
+
+        public BlockStatement Body { get; set; }
+
+        public string Signature
+        {
+            get
+            {
+                var paramsString = string.Join(",", Parameters.Select(p => p.Type?.TypeText ?? ""));
+                return $"{Name.TextValue}({paramsString})";
+            }
+        }
+
+        public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan, FileNode fileNode)
+            : base(name, textSpan, fileNode)
+        {
+            Parameters = parameters ?? ArrayUtils<ParameterDeclaration>.EmptyArray;
+            Body = body;
+        }
+
+        public MethodDeclaration()
+        {
+        }
+
+        public override UstNode[] GetChildren()
+        {
+            var result = new List<UstNode>(base.GetChildren());
+            result.Add(Body);
+            return result.ToArray();
+        }
+
+        public override string ToString()
+        {
+            var nl = Environment.NewLine;
+            return $"{ReturnType} {Name}({(string.Join(", ", Parameters))}) {{{nl}    {Body}{nl}}}";
+        }
+    }
+}

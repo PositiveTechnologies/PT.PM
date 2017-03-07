@@ -1,0 +1,8 @@
+#.<[^on]> = function {
+<{
+document.<[^(URL|referrer|cookie)$]> <|>
+document.location.<[^(pathname|href|search|hash)$]> <|>
+window.name <|>
+window.<[^(top|frames)$]>.document.<[\w+]>.<[\w+]>
+}>
+}

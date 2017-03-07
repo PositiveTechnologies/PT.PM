@@ -1,0 +1,94 @@
+﻿using PT.PM.AstConversion;
+using PT.PM.AstParsing;
+using PT.PM.Common;
+using PT.PM.Common.Ust;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Tests;
+using NUnit.Framework;
+using System.IO;
+using System.Linq;
+
+namespace PT.PM.PhpAstConversion.Tests
+{
+    [TestFixture]
+    public class PhpParserTests
+    {
+        [TestCase("priorityTest.php")]
+        [TestCase("alternativeSyntax.php")]
+        [TestCase("heredoc.php")]
+        [TestCase("scriptInHtml.php")]
+        [TestCase("styleInHtml.php")]
+        [TestCase("shebang.php")]
+        [TestCase("aspTags.php")]
+        [TestCase("deepConcatanation.php")]
+        [TestCase("strings.php")]
+        public void Parse_PhpSyntax_WithoutErrors(string fileName)
+        {
+            TestHelper.CheckFile(fileName, Language.Php, Stage.Parse);
+        }
+
+        [TestCase("WebGoatPHP-6f48c9")]
+        [TestCase("phpBB-3.1.6")]
+        [TestCase("ZendFramework-2.4.8")]
+        public void Parse_PhpProject_WithoutErrors(string projectKey)
+        {
+            if (!TestHelper.AllTests)
+            {
+                Assert.Ignore(TestHelper.TooLongTestDurationMessage);
+            }
+
+            TestHelper.CheckProject(TestProjects.PhpProjects
+                .Single(p => p.Key == projectKey), Language.Php, Stage.Parse);
+        }
+
+        // TODO: Add Yii Framework, Kohana, phpMyAdmin, MediaWiki
+
+        [Test]
+        public void Parse_NewLine_CorrectLineColumn()
+        {
+            string fileText = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "newLine -r-n.php"));
+            var lineEnds = new string[] { "\r", "\n", "\r\n" };
+
+            foreach (var lineEnd in lineEnds)
+            {
+                var phpParser = new PhpAntlrParser();
+                string code = fileText.Replace("\r\n", lineEnd);
+                var sourceCodeFile = new SourceCodeFile
+                {
+                    Name = "newLine.php",
+                    Code = code
+                };
+                var ast = (PhpAntlrParseTree)phpParser.Parse(sourceCodeFile);
+                var converter = new PhpAntlrParseTreeConverter();
+                Ust unifiedAst = converter.Convert(ast);
+                
+                UstNode intNode = unifiedAst.Root.GetAllDescendants(
+                    node => node.NodeType == NodeType.IntLiteral &&
+                    ((IntLiteral)node).Value == 42).First();
+
+                int beginLine, beginColumn, endLine, endColumn;
+                TextHelper.TextSpanToLineColumn(intNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                Assert.AreEqual(1, beginLine);
+                Assert.AreEqual(12, beginColumn);
+                Assert.AreEqual(14, endColumn);
+
+                UstNode heredocNode = unifiedAst.Root.GetAllDescendants(
+                    node => node.NodeType == NodeType.StringLiteral &&
+                    ((StringLiteral)node).Text.StartsWith("Heredoc text")).First();
+
+                TextHelper.TextSpanToLineColumn(heredocNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                Assert.AreEqual(3, beginLine);
+                Assert.AreEqual(6, endLine);
+
+                UstNode serverAddressNode = unifiedAst.Root.GetAllDescendants(
+                    node => node.NodeType == NodeType.StringLiteral &&
+                    ((StringLiteral)node).Text.Contains("http://127.0.0.1")).First();
+
+                TextHelper.TextSpanToLineColumn(serverAddressNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                Assert.AreEqual(8, beginLine);
+                Assert.AreEqual(15, beginColumn);
+            }
+        }
+    }
+}

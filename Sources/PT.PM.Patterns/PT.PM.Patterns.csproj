@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2A6F7AC9-92AA-48B8-A53B-50770424C9B6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PT.PM.Patterns</RootNamespace>
+    <AssemblyName>PT.PM.Patterns</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PatternIdGenerator.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\JavaScriptPatterns.cs" />
+    <Compile Include="UstNodeCloner.cs" />
+    <Compile Include="Pattern.cs" />
+    <Compile Include="CommonPatternConverter.cs" />
+    <Compile Include="DslPatternRepository.cs" />
+    <Compile Include="Nodes\DslNode.cs" />
+    <Compile Include="Nodes\LangCodeNode.cs" />
+    <Compile Include="Nodes\PatternExpressionInsideExpression.cs" />
+    <Compile Include="Nodes\PatternExpressionInsideStatement.cs" />
+    <Compile Include="Nodes\PatternExpressions.cs" />
+    <Compile Include="Nodes\PatternBooleanLiteral.cs" />
+    <Compile Include="Nodes\PatternComment.cs" />
+    <Compile Include="Nodes\PatternExpression.cs" />
+    <Compile Include="Nodes\PatternIdToken.cs" />
+    <Compile Include="Nodes\PatternIfElseStatement.cs" />
+    <Compile Include="Nodes\PatternIntLiteral.cs" />
+    <Compile Include="Nodes\PatternMultipleExpressions.cs" />
+    <Compile Include="Nodes\PatternStatement.cs" />
+    <Compile Include="Nodes\PatternStatements.cs" />
+    <Compile Include="Nodes\PatternMultipleStatements.cs" />
+    <Compile Include="Nodes\PatternStringLiteral.cs" />
+    <Compile Include="Nodes\PatternTryCatchStatement.cs" />
+    <Compile Include="Nodes\PatternNode.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\CSharpPatterns.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\DefaultPatternRepository.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\JavaPatterns.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\PhpPatterns.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\PlSqlPatterns.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\TSqlPatterns.cs" />
+    <Compile Include="PatternsRepository\FilesPatternsRepository.cs" />
+    <Compile Include="IPatternConverter.cs" />
+    <Compile Include="PatternsRepository\IPatternsRepository.cs" />
+    <Compile Include="PatternsRepository\MemoryPatternsRepository.cs" />
+    <Compile Include="Nodes\PatternVarRef.cs" />
+    <Compile Include="PatternDto.cs" />
+    <Compile Include="CommonPatternsDataStructure.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\AssemblyInfoCommon.cs">
+      <Link>Properties\AssemblyInfoCommon.cs</Link>
+    </Compile>
+    <Compile Include="Nodes\PatternVarDef.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
+      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
+      <Name>PT.PM.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

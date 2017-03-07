@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0B10DBAE-C18D-4007-B799-0B3B1E00376E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PT.PM.Common</RootNamespace>
+    <AssemblyName>PT.PM.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ArrayUtils.cs" />
+    <Compile Include="DummyLogger.cs" />
+    <Compile Include="Hash.cs" />
+    <Compile Include="ILoggable.cs" />
+    <Compile Include="LineColumnTextSpan.cs" />
+    <Compile Include="Nodes\NodeHelpers.cs" />
+    <Compile Include="TextHelper.cs" />
+    <Compile Include="UstDotRenderer.cs" />
+    <Compile Include="CodeRepository\MemoryCodeRepository.cs" />
+    <Compile Include="ConverterHelper.cs" />
+    <Compile Include="DotFormatHelper.cs" />
+    <Compile Include="Exceptions\PreprocessingException.cs" />
+    <Compile Include="INodeRenderer.cs" />
+    <Compile Include="ISemanticsCollector.cs" />
+    <Compile Include="Json\UstJsonConverter.cs" />
+    <Compile Include="UstNodeSerializationFormat.cs" />
+    <Compile Include="Ust\Ust.cs" />
+    <Compile Include="Ust\UstType.cs" />
+    <Compile Include="Ust\MostCommonUst.cs" />
+    <Compile Include="Ust\MostDetailUst.cs" />
+    <Compile Include="CodeRepository\FileCodeRepository.cs" />
+    <Compile Include="CodeRepository\FilesAggregatorCodeRepository.cs" />
+    <Compile Include="Exceptions\ConversionException.cs" />
+    <Compile Include="Exceptions\MatchingException.cs" />
+    <Compile Include="Exceptions\ShouldNotBeVisitedException.cs" />
+    <Compile Include="IParseTreeToUstConverter.cs" />
+    <Compile Include="IAstNodeSerializer.cs" />
+    <Compile Include="ILanguageParser.cs" />
+    <Compile Include="CodeRepository\ISourceCodeRepository.cs" />
+    <Compile Include="Json\JsonUstNodeSerializer.cs" />
+    <Compile Include="ParseTree.cs" />
+    <Compile Include="LanguageExt.cs" />
+    <Compile Include="LanguageInfo.cs" />
+    <Compile Include="LoggerMessageCounter.cs" />
+    <Compile Include="Nodes\Collections\ArgsNode.cs" />
+    <Compile Include="Nodes\Collections\CollectionNode.cs" />
+    <Compile Include="Nodes\Collections\EntitiesNode.cs" />
+    <Compile Include="Nodes\Expressions\AnonymousMethodExpression.cs" />
+    <Compile Include="Nodes\Expressions\ArrayCreationExpression.cs" />
+    <Compile Include="Nodes\Expressions\AssignmentExpression.cs" />
+    <Compile Include="Nodes\Expressions\BaseReferenceExpression.cs" />
+    <Compile Include="Nodes\Expressions\BinaryOperatorExpression.cs" />
+    <Compile Include="Nodes\Expressions\CastExpression.cs" />
+    <Compile Include="Nodes\Expressions\ConditionalExpression.cs" />
+    <Compile Include="Nodes\Expressions\Expression.cs" />
+    <Compile Include="Nodes\Expressions\WrapperExpression.cs" />
+    <Compile Include="Nodes\Expressions\IndexerExpression.cs" />
+    <Compile Include="Nodes\Expressions\InvocationExpression.cs" />
+    <Compile Include="Nodes\Expressions\MemberReferenceExpression.cs" />
+    <Compile Include="Nodes\Expressions\MultichildExpression.cs" />
+    <Compile Include="Nodes\Expressions\ObjectCreateExpression.cs" />
+    <Compile Include="Nodes\Tokens\CommentLiteral.cs" />
+    <Compile Include="Nodes\Tokens\ThisReferenceToken.cs" />
+    <Compile Include="Nodes\Expressions\UnaryOperatorExpression.cs" />
+    <Compile Include="Nodes\Tokens\BinaryOperatorLiteral.cs" />
+    <Compile Include="Nodes\Tokens\BooleanLiteral.cs" />
+    <Compile Include="Nodes\Tokens\NullLiteral.cs" />
+    <Compile Include="Nodes\Tokens\ParameterModifier.cs" />
+    <Compile Include="Nodes\Tokens\ParameterModifierLiteral.cs" />
+    <Compile Include="Nodes\Tokens\TypeToken.cs" />
+    <Compile Include="Nodes\Tokens\TypeTypeLiteral.cs" />
+    <Compile Include="Nodes\Tokens\FloatLiteral.cs" />
+    <Compile Include="Nodes\Tokens\ModifierLiteral.cs" />
+    <Compile Include="Nodes\Tokens\Modifier.cs" />
+    <Compile Include="Nodes\Tokens\UnaryOperatorLiteral.cs" />
+    <Compile Include="Nodes\Node.cs" />
+    <Compile Include="Nodes\NotImplementedNode.cs" />
+    <Compile Include="Nodes\Specific\AsExpression.cs" />
+    <Compile Include="Nodes\Specific\CheckedExpression.cs" />
+    <Compile Include="Nodes\Specific\CheckedStatement.cs" />
+    <Compile Include="Nodes\Specific\CSharpParameterDeclaration.cs" />
+    <Compile Include="Nodes\Specific\FixedStatement.cs" />
+    <Compile Include="Nodes\Specific\LockStatement.cs" />
+    <Compile Include="Nodes\Specific\SpecificExpression.cs" />
+    <Compile Include="Nodes\Specific\SpecificStatement.cs" />
+    <Compile Include="Nodes\Specific\UnsafeStatement.cs" />
+    <Compile Include="Nodes\Statements\BlockStatement.cs" />
+    <Compile Include="Nodes\Statements\BreakStatement.cs" />
+    <Compile Include="Nodes\Statements\GotoStatement.cs" />
+    <Compile Include="Nodes\Statements\TryCatchFinally\CatchClause.cs" />
+    <Compile Include="Nodes\Statements\ContinueStatement.cs" />
+    <Compile Include="Nodes\Statements\DoWhileStatement.cs" />
+    <Compile Include="Nodes\Statements\EmptyStatement.cs" />
+    <Compile Include="Nodes\Statements\ExpressionStatement.cs" />
+    <Compile Include="Nodes\Statements\ForeachStatement.cs" />
+    <Compile Include="Nodes\Statements\ForStatement.cs" />
+    <Compile Include="Nodes\Statements\IfElseStatement.cs" />
+    <Compile Include="Nodes\Statements\ReturnStatement.cs" />
+    <Compile Include="Nodes\Statements\Switch\SwitchSection.cs" />
+    <Compile Include="Nodes\Statements\Switch\SwitchStatement.cs" />
+    <Compile Include="Nodes\Statements\ThrowStatement.cs" />
+    <Compile Include="Nodes\Statements\TryCatchFinally\TryCatchStatement.cs" />
+    <Compile Include="Nodes\Statements\TypeDeclarationStatement.cs" />
+    <Compile Include="Nodes\Expressions\VariableDeclarationExpression.cs" />
+    <Compile Include="Nodes\Statements\WhileStatement.cs" />
+    <Compile Include="Nodes\Statements\WithStatement.cs" />
+    <Compile Include="Nodes\Statements\WrapperStatement.cs" />
+    <Compile Include="Nodes\TypeMembers\ConstructorDeclaration.cs" />
+    <Compile Include="Nodes\TypeMembers\StatementDeclaration.cs" />
+    <Compile Include="Nodes\TypeMembers\ParameterDeclaration.cs" />
+    <Compile Include="Exceptions\ParsingException.cs" />
+    <Compile Include="Json\ShouldNotSerializeTextSpanResolver.cs" />
+    <Compile Include="ReflectionCache.cs" />
+    <Compile Include="Symbols\ISymbol.cs" />
+    <Compile Include="SemanticsInfo.cs" />
+    <Compile Include="Symbols\MethodSymbol.cs" />
+    <Compile Include="Symbols\TypeSymbol.cs" />
+    <Compile Include="TextSpan.cs" />
+    <Compile Include="Nodes\Tokens\Token.cs" />
+    <Compile Include="Nodes\Tokens\BinaryOperator.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="Language.cs" />
+    <Compile Include="LanguageFlags.cs" />
+    <Compile Include="Nodes\FileNode.cs" />
+    <Compile Include="Nodes\Tokens\TypeType.cs" />
+    <Compile Include="Nodes\GeneralScope\TypeDeclaration.cs" />
+    <Compile Include="Nodes\Tokens\IdToken.cs" />
+    <Compile Include="Nodes\Tokens\IntLiteral.cs" />
+    <Compile Include="Nodes\Statements\Statement.cs" />
+    <Compile Include="Nodes\Tokens\StringLiteral.cs" />
+    <Compile Include="Nodes\TypeMembers\EntityDeclaration.cs" />
+    <Compile Include="Nodes\TypeMembers\FieldDeclaration.cs" />
+    <Compile Include="Nodes\TypeMembers\MethodDeclaration.cs" />
+    <Compile Include="Nodes\GeneralScope\NamespaceDeclaration.cs" />
+    <Compile Include="Nodes\GeneralScope\UsingDeclaration.cs" />
+    <Compile Include="Nodes\UstNode.cs" />
+    <Compile Include="Nodes\Tokens\UnaryOperator.cs" />
+    <Compile Include="Nodes\NodeType.cs" />
+    <Compile Include="ProgressEventArgs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\AssemblyInfoCommon.cs">
+      <Link>Properties\AssemblyInfoCommon.cs</Link>
+    </Compile>
+    <Compile Include="SourceCodeFile.cs" />
+    <Compile Include="PmUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj">
+      <Project>{0292ce45-bba4-46b8-ade4-3c39162c1f46}</Project>
+      <Name>PT.PM.Prebuild</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

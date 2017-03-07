@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F9D784D4-36E4-49F8-BEA4-38BDBB6910D8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PT.PM.Matching.Tests</RootNamespace>
+    <AssemblyName>PT.PM.Matching.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Tests\Unit\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Tests\Unit\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq, Version=4.5.16.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.5.16\lib\net45\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CSharpMatchingTests.cs" />
+    <Compile Include="JavaMatchingTests.cs" />
+    <Compile Include="JavaScriptMatchingTests.cs" />
+    <Compile Include="PatternMatchingTests.cs" />
+    <Compile Include="PatternMatchingUtils.cs" />
+    <Compile Include="PhpMatchingTests.cs" />
+    <Compile Include="SqlMatchingTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\AssemblyInfoCommon.cs">
+      <Link>Properties\AssemblyInfoCommon.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
+      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
+      <Name>PT.PM.UstPreprocessing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Common.Tests\PT.PM.Common.Tests.csproj">
+      <Project>{bcb2fd80-7873-4dba-b911-6b9c80095c21}</Project>
+      <Name>PT.PM.Common.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
+      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
+      <Name>PT.PM.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.CSharpAstConversion.Tests\PT.PM.CSharpAstConversion.Tests.csproj">
+      <Project>{e3db8014-0bfb-4399-9b49-a8be446c5049}</Project>
+      <Name>PT.PM.CSharpAstConversion.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
+      <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
+      <Name>PT.PM.Dsl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.JavaAstConversion.Tests\PT.PM.JavaAstConversion.Tests.csproj">
+      <Project>{47f5b401-e788-494e-89c8-a8ca0b6917c4}</Project>
+      <Name>PT.PM.JavaAstConversion.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
+      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
+      <Name>PT.PM.Matching</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
+      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
+      <Name>PT.PM.Patterns</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.PhpAstConversion.Tests\PT.PM.PhpAstConversion.Tests.csproj">
+      <Project>{933dcca3-b5d1-45ae-acab-1672d71bc349}</Project>
+      <Name>PT.PM.PhpAstConversion.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM\PT.PM.csproj">
+      <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>
+      <Name>PT.PM</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
