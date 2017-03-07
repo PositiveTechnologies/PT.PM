@@ -85,7 +85,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe --lexer "$(ProjectDir)DslLexer.g4" --parser "$(ProjectDir)DslParser.g4" --package "PT.PM.Dsl"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --lexer "$(ProjectDir)DslLexer.g4" --parser "$(ProjectDir)DslParser.g4" --package "PT.PM.Dsl"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
