@@ -6,14 +6,14 @@ namespace PT.PM.UstPreprocessing
 {
     public class UstSemanticsCollector
     {
-        public UstSemantics Collect(IEnumerable<Ust> asts)
+        public UstSemantics Collect(IEnumerable<Ust> usts)
         {
             Dictionary<string, TypeSymbol> typeSymbols = new Dictionary<string, TypeSymbol>();
 
-            foreach (var ast in asts)
+            foreach (var ust in usts)
             {
                 var walker = new UstSemanticsCollectorWalker();
-                walker.Walk(ast.Root);
+                walker.Walk(ust.Root);
                 
                 foreach (var typeSymbol in walker.TypeSymbols)
                 {
