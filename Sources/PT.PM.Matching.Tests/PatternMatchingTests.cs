@@ -29,7 +29,7 @@ namespace PT.PM.Matching.Tests
         public void Init()
         {
             patternsConverter = new CommonPatternConverter(
-                new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
+                new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
             patternsRep = new MemoryPatternsRepository();
             sourceCodeRep = new MemoryCodeRepository(
                 "<?php \n" +

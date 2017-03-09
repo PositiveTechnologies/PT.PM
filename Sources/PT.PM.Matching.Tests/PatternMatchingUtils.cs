@@ -35,7 +35,7 @@ namespace PT.PM.Matching.Tests
                 DebugInfo = pattern
             };
             var patternsConverter = new CommonPatternConverter(
-                new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
+                new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
             var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { p });
             patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
             var matchingResults = workflow.Process().ToArray();

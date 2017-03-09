@@ -36,11 +36,11 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public override UstNode[] GetChildren()
         {
-            var astNodes = Members as UstNode[] ?? Members.ToArray();
-            var result = new UstNode[astNodes.Length + 1];
+            var ustNodes = Members as UstNode[] ?? Members.ToArray();
+            var result = new UstNode[ustNodes.Length + 1];
             int index = 0;
             result[index++] = Name;
-            foreach (var member in astNodes)
+            foreach (var member in ustNodes)
                 result[index++] = member;
             return result;
         }

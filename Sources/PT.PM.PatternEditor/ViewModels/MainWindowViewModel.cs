@@ -24,7 +24,7 @@ namespace PT.PM.PatternEditor
 {
     public class MainWindowViewModel: ReactiveObject
     {
-        private JsonAstNodeSerializer jsonSerializer = new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
+        private JsonUstNodeSerializer jsonSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
         {
             IncludeTextSpans = false,
             Indented = true,
@@ -506,12 +506,12 @@ namespace PT.PM.PatternEditor
 
             if (IsDeveloperMode)
             {
-                AntlrParseTree antlrAst = workflow.LastParseTree as AntlrParseTree;
-                if (antlrAst != null && antlrAst.SyntaxTree != null)
+                AntlrParseTree antlrParseTree = workflow.LastParseTree as AntlrParseTree;
+                if (antlrParseTree != null && antlrParseTree.SyntaxTree != null)
                 {
-                    Antlr4.Runtime.Parser antlrParser = (workflow.ParserConverterSets[antlrAst.SourceLanguage].Parser as AntlrParser).Parser;
-                    var tokensString = AntlrHelper.GetTokensString(antlrAst.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
-                    string treeString = antlrAst.SyntaxTree.ToStringTreeIndented(antlrParser);
+                    Antlr4.Runtime.Parser antlrParser = (workflow.ParserConverterSets[antlrParseTree.SourceLanguage].Parser as AntlrParser).Parser;
+                    var tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
+                    string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
 
                     Tokens = tokensString;
                     ParseTree = treeString;

@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.JavaAstConversion.Parser;
+using PT.PM.JavaUstConversion.Parser;
 using PT.PM.AntlrUtils;
 using Antlr4.Runtime.Tree;
 using System;
@@ -12,11 +12,11 @@ using System.Linq;
 using System.Text;
 using Antlr4.Runtime.Misc;
 
-namespace PT.PM.JavaAstConversion.Converter
+namespace PT.PM.JavaUstConversion.Converter
 {
-    public partial class JavaAntlrAstConverterVisitor : AntlrDefaultVisitor, IJavaVisitor<UstNode>
+    public partial class JavaAntlrUstConverterVisitor : AntlrDefaultVisitor, IJavaVisitor<UstNode>
     {
-        public JavaAntlrAstConverterVisitor(string fileName, string fileData)
+        public JavaAntlrUstConverterVisitor(string fileName, string fileData)
             : base(fileName, fileData)
         {
             FileNode = new FileNode(fileName, fileData);

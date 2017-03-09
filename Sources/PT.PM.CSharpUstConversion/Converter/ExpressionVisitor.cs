@@ -12,9 +12,9 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 //using Microsoft.CodeAnalysis.FindSymbols;
 
-namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
+namespace PT.PM.CSharpUstConversion.RoslynUstVisitor
 {
-    public partial class RoslynAstCommonConverterVisitor
+    public partial class RoslynUstCommonConverterVisitor
     {
         #region Anonymous
 
@@ -258,11 +258,11 @@ namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
 
         public override UstNode VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax node)
         {
-            UstNode astNode = base.Visit(node.Expression);
-            Expression expression = astNode as Expression;
+            UstNode ustNode = base.Visit(node.Expression);
+            Expression expression = ustNode as Expression;
             if (expression == null)
             {
-                expression = new MultichildExpression(((ArgsNode)astNode).Collection, astNode.TextSpan, FileNode);
+                expression = new MultichildExpression(((ArgsNode)ustNode).Collection, ustNode.TextSpan, FileNode);
             }
             Expression whenNotNullExpression;
             if (node.WhenNotNull is ElementBindingExpressionSyntax)

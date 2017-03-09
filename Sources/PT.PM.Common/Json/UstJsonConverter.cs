@@ -17,10 +17,10 @@ namespace PT.PM.Common
         private static readonly object assemblyLock = new object();
         private FileNode currentFileNode;
 
-        public UstJsonConverter(params Type[] astNodeAssemblyTypes)
+        public UstJsonConverter(params Type[] ustNodeAssemblyTypes)
         {
-            var types = astNodeAssemblyTypes == null || astNodeAssemblyTypes.Length == 0
-                ? new[] { typeof(UstNode) } : astNodeAssemblyTypes;
+            var types = ustNodeAssemblyTypes == null || ustNodeAssemblyTypes.Length == 0
+                ? new[] { typeof(UstNode) } : ustNodeAssemblyTypes;
 
             IEnumerable<KeyValuePair<NodeType, Type>> keyValuePairs = types.SelectMany(type =>
             {

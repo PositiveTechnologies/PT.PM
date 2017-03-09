@@ -11,7 +11,7 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrConverter : IParseTreeToUstConverter
     {
-        public UstType AstType { get; set; }
+        public UstType UstType { get; set; }
 
         public abstract Language MainLanguage { get; }
 
@@ -28,10 +28,10 @@ namespace PT.PM.AntlrUtils
 
         protected abstract FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger);
 
-        public Ust Convert(ParseTree langAst)
+        public Ust Convert(ParseTree langParseTree)
         {
-            var antlrAst = (AntlrParseTree)langAst;
-            ParserRuleContext tree = antlrAst.SyntaxTree;
+            var antlrParseTree = (AntlrParseTree)langParseTree;
+            ParserRuleContext tree = antlrParseTree.SyntaxTree;
             ICharStream inputStream = tree.start.InputStream ?? tree.stop?.InputStream;
             string filePath = inputStream != null ? inputStream.SourceName : "";
             Ust result = null;
@@ -40,7 +40,7 @@ namespace PT.PM.AntlrUtils
             {
                 try
                 {
-                    fileNode = CreateVisitorAndVisit(tree, filePath, langAst.FileData, Logger);
+                    fileNode = CreateVisitorAndVisit(tree, filePath, langParseTree.FileData, Logger);
                     result = new MostCommonUst(fileNode, ConvertedLanguages);
                 }
                 catch (Exception ex)
@@ -56,12 +56,12 @@ namespace PT.PM.AntlrUtils
             }
             else
             {
-                fileNode = new FileNode(filePath, langAst.FileData);
+                fileNode = new FileNode(filePath, langParseTree.FileData);
                 result = new MostCommonUst() { Root = fileNode };
                 result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
             }
-            result.FileName = langAst.FileName;
-            result.Comments = antlrAst.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan(), fileNode)).ToArray();
+            result.FileName = langParseTree.FileName;
+            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan(), fileNode)).ToArray();
             return result;
         }
     }

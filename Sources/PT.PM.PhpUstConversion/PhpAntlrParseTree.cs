@@ -1,8 +1,8 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.PhpAstConversion;
+using PT.PM.PhpUstConversion;
 
-namespace PT.PM.AstParsing
+namespace PT.PM.UstParsing
 {
     public class PhpAntlrParseTree : AntlrParseTree
     {

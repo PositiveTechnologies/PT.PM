@@ -1,9 +1,9 @@
 ﻿using PT.PM.AntlrUtils;
 using Antlr4.Runtime;
-using PT.PM.SqlAstConversion.Parser;
+using PT.PM.SqlUstConversion.Parser;
 using PT.PM.Common;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public class PlSqlAntlrParser : AntlrParser
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{08FBC341-AC44-4CAE-AE71-9462F7885E3E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.PhpAstConversion</RootNamespace>
-    <AssemblyName>PT.PM.PhpAstConversion</AssemblyName>
+    <RootNamespace>PT.PM.PhpUstConversion</RootNamespace>
+    <AssemblyName>PT.PM.PhpUstConversion</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -74,9 +74,9 @@
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaScriptAstConversion\PT.PM.JavaScriptAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.JavaScriptUstConversion\PT.PM.JavaScriptUstConversion.csproj">
       <Project>{98727837-f9fa-476c-b0b5-88845b53fddf}</Project>
-      <Name>PT.PM.JavaScriptAstConversion</Name>
+      <Name>PT.PM.JavaScriptUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj">
       <Project>{0292ce45-bba4-46b8-ade4-3c39162c1f46}</Project>
@@ -89,7 +89,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --lexer "$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PHPLexer.g4" --parser "$(ProjectDir)..\antlr-grammars-v4\php\PHPParser.g4" --package "PT.PM.PhpAstConversion" --output "$(ProjectDir)Generated"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --lexer "$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PHPLexer.g4" --parser "$(ProjectDir)..\antlr-grammars-v4\php\PHPParser.g4" --package "PT.PM.PhpUstConversion" --output "$(ProjectDir)Generated"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

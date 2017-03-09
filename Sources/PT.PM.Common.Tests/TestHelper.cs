@@ -100,7 +100,7 @@ namespace PT.PM.Common.Tests
 
             var workflow = new Workflow(codeRepository, language, stage: endStage)
             {
-                AstPreprocessor = astPreprocessor
+                UstPreprocessor = astPreprocessor
             };
             workflow.Logger = logger;
             workflow.ThreadCount = 1;

@@ -3,16 +3,16 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.JavaAstConversion.Parser;
+using PT.PM.JavaUstConversion.Parser;
 using PT.PM.AntlrUtils;
 using Antlr4.Runtime.Tree;
 using System;
 using System.Linq;
 using System.Text;
 
-namespace PT.PM.JavaAstConversion.Converter
+namespace PT.PM.JavaUstConversion.Converter
 {
-    public partial class JavaAntlrAstConverterVisitor
+    public partial class JavaAntlrUstConverterVisitor
     {
         #region Expression base
 

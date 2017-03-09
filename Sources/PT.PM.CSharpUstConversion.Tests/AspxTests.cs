@@ -5,7 +5,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Linq;
 
-namespace PT.PM.CSharpAstConversion.Tests
+namespace PT.PM.CSharpUstConversion.Tests
 {
     [TestFixture]
     public class AspxTests

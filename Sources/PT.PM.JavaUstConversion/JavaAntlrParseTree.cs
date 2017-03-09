@@ -1,9 +1,9 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.JavaAstConversion.Parser;
+using PT.PM.JavaUstConversion.Parser;
 using System.Collections.Generic;
 
-namespace PT.PM.JavaAstConversion
+namespace PT.PM.JavaUstConversion
 {
     public class JavaAntlrParseTree : AntlrParseTree
     {

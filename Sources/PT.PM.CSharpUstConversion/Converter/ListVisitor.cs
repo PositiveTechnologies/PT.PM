@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 
-namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
+namespace PT.PM.CSharpUstConversion.RoslynUstVisitor
 {
-    public partial class RoslynAstCommonConverterVisitor
+    public partial class RoslynUstCommonConverterVisitor
     {
         public override UstNode VisitAccessorList(AccessorListSyntax node)
         {

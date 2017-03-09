@@ -21,7 +21,7 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        private JsonAstNodeSerializer astNodeJsonSerializer = new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
+        private JsonUstNodeSerializer ustNodeJsonSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
         {
             IncludeTextSpans = false,
             Indented = true,
@@ -447,7 +447,7 @@ namespace PT.PM.PatternEditor
                     PatternErrorsText = "";
                     if (IsDeveloperMode && patternNode != null)
                     {
-                        PatternJson = astNodeJsonSerializer.Serialize(patternNode);
+                        PatternJson = ustNodeJsonSerializer.Serialize(patternNode);
                         File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Pattern UAST.json"), PatternJson);
                     }
                 }

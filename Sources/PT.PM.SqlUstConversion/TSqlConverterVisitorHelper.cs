@@ -5,7 +5,7 @@ using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.TSqlAstConversion.Parser;
+using PT.PM.TSqlUstConversion.Parser;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System;
@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public partial class TSqlConverterVisitor
     {

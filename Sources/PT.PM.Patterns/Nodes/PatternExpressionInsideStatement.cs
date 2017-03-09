@@ -47,7 +47,7 @@ namespace PT.PM.Patterns.Nodes
 
         protected override int Compare(UstNode other)
         {
-            return other.DoesAnyDescendantMatchPredicate(astNode => Expression.Equals(astNode)) ? 0 : 1;
+            return other.DoesAnyDescendantMatchPredicate(ustNode => Expression.Equals(ustNode)) ? 0 : 1;
         }
 
         public override UstNode[] GetChildren()

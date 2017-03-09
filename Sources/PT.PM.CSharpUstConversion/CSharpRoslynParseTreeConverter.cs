@@ -3,15 +3,15 @@ using System.Linq;
 using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
-using PT.PM.CSharpAstConversion.RoslynAstVisitor;
+using PT.PM.CSharpUstConversion.RoslynUstVisitor;
 using Microsoft.CodeAnalysis;
 using PT.PM.Common.Nodes.Tokens;
 
-namespace PT.PM.CSharpAstConversion
+namespace PT.PM.CSharpUstConversion
 {
     public class CSharpRoslynParseTreeConverter : IParseTreeToUstConverter
     {
-        public UstType AstType { get; set; }
+        public UstType UstType { get; set; }
 
         public Language MainLanguage => Language.CSharp;
 
@@ -26,17 +26,17 @@ namespace PT.PM.CSharpAstConversion
             ConvertedLanguages = MainLanguage.GetLanguageWithDependentLanguages();
         }
 
-        public Ust Convert(ParseTree langAst)
+        public Ust Convert(ParseTree langParseTree)
         {
-            var roslynAst = (CSharpRoslynParseTree)langAst;
-            SyntaxTree syntaxTree = roslynAst.SyntaxTree;
+            var roslynParseTree = (CSharpRoslynParseTree)langParseTree;
+            SyntaxTree syntaxTree = roslynParseTree.SyntaxTree;
             Ust result;
             if (syntaxTree != null)
             {
                 string filePath = syntaxTree.FilePath;
                 try
                 {
-                    var visitor = new RoslynAstCommonConverterVisitor(syntaxTree, filePath);
+                    var visitor = new RoslynUstCommonConverterVisitor(syntaxTree, filePath);
                     if (SemanticsInfo != null)
                     {
                         visitor.SemanticsInfo = (CSharpRoslynSemanticsInfo)SemanticsInfo;
@@ -45,7 +45,7 @@ namespace PT.PM.CSharpAstConversion
                     FileNode fileNode = visitor.Walk();
                     
                     result = new MostCommonUst(fileNode, ConvertedLanguages);
-                    result.Comments = roslynAst.Comments.Select(c =>
+                    result.Comments = roslynParseTree.Comments.Select(c =>
                         new CommentLiteral(c.ToString(), c.GetTextSpan(), fileNode)).ToArray();
                 }
                 catch (Exception ex)
@@ -58,7 +58,7 @@ namespace PT.PM.CSharpAstConversion
             {
                 result = new MostCommonUst();
             }
-            result.FileName = langAst.FileName;
+            result.FileName = langParseTree.FileName;
 
             return result;
         }

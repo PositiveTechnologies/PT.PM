@@ -9,7 +9,7 @@ using PT.PM.Common.Symbols;
 
 namespace PT.PM.UstPreprocessing
 {
-    public class UstSematicsResolverWalker : AstListener
+    public class UstSematicsResolverWalker : UstListener
     {
         private IDictionary<string, TypeSymbol> typeSymbols = new Dictionary<string, TypeSymbol>();
 

@@ -7,7 +7,7 @@ using PT.PM.UstPreprocessing;
 
 namespace PT.PM.Dsl
 {
-    public class DslProcessor : IAstNodeSerializer
+    public class DslProcessor : IUstNodeSerializer
     {
         private ILogger logger = DummyLogger.Instance;
 
@@ -21,25 +21,25 @@ namespace PT.PM.Dsl
             {
                 logger = value;
                 Parser.Logger = logger;
-                AstConverter.Logger = logger;
+                UstConverter.Logger = logger;
             }
         }
 
         protected DslAntlrParser Parser { get; set; }
 
-        protected DslAstConverter AstConverter { get; set; }
+        protected DslUstConverter UstConverter { get; set; }
 
         public bool PatternExpressionInsideStatement
         {
             get
             {
-                return AstConverter?.PatternExpressionInsideStatement ?? false;
+                return UstConverter?.PatternExpressionInsideStatement ?? false;
             }
             set
             {
-                if (AstConverter != null)
+                if (UstConverter != null)
                 {
-                    AstConverter.PatternExpressionInsideStatement = value;
+                    UstConverter.PatternExpressionInsideStatement = value;
                 }
             }
         }
@@ -50,7 +50,7 @@ namespace PT.PM.Dsl
         public DslProcessor()
         {
             Parser = new DslAntlrParser();
-            AstConverter = new DslAstConverter();
+            UstConverter = new DslUstConverter();
         }
 
         public UstNode Deserialize(string data, LanguageFlags sourceLanguage)
@@ -61,11 +61,11 @@ namespace PT.PM.Dsl
             }
 
             Parser.Logger = Logger;
-            AstConverter.Logger = Logger;
+            UstConverter.Logger = Logger;
             DslParser.PatternContext patternContext = Parser.Parse(data);
-            AstConverter.SourceLanguage = sourceLanguage;
-            AstConverter.Data = data;
-            DslNode dslNode = AstConverter.Convert(patternContext);
+            UstConverter.SourceLanguage = sourceLanguage;
+            UstConverter.Data = data;
+            DslNode dslNode = UstConverter.Convert(patternContext);
             UstNode result = dslNode.Collection.First();
             ResultPatternVars = dslNode.PatternVarDefs;
             var preprocessor = new UstPreprocessor();

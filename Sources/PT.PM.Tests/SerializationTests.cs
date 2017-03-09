@@ -56,7 +56,7 @@ namespace PT.PM.Tests
                 )
             };
 
-            var jsonSerializer = new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
+            var jsonSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
             jsonSerializer.Indented = true;
             jsonSerializer.IncludeTextSpans = false;
 

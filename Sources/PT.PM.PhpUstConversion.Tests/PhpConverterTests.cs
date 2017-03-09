@@ -3,7 +3,7 @@ using PT.PM.Common.Tests;
 using NUnit.Framework;
 using System.Linq;
 
-namespace PT.PM.PhpAstConversion.Tests
+namespace PT.PM.PhpUstConversion.Tests
 {
     [TestFixture]
     public class PhpConverterTests

@@ -58,9 +58,9 @@ namespace PT.PM
 
         public IPatternConverter<CommonPatternsDataStructure> PatternConverter { get; set; }
 
-        public IAstPatternMatcher<CommonPatternsDataStructure> AstPatternMatcher { get; set; }
+        public IUstPatternMatcher<CommonPatternsDataStructure> UstPatternMatcher { get; set; }
 
-        public IUstPreprocessor AstPreprocessor { get; set; } = new UstPreprocessor();
+        public IUstPreprocessor UstPreprocessor { get; set; } = new UstPreprocessor();
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
@@ -93,13 +93,13 @@ namespace PT.PM
                 {
                     PatternConverter.Logger = logger;
                 }
-                if (AstPreprocessor != null)
+                if (UstPreprocessor != null)
                 {
-                    AstPreprocessor.Logger = Logger;
+                    UstPreprocessor.Logger = Logger;
                 }
-                if (AstPatternMatcher != null)
+                if (UstPatternMatcher != null)
                 {
-                    AstPatternMatcher.Logger = logger;
+                    UstPatternMatcher.Logger = logger;
                 }
                 if (LanguageDetector != null)
                 {
@@ -195,11 +195,11 @@ namespace PT.PM
                     Logger.LogInfo("File {0} has been parsed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
                 }
 
-                var antlrAst = result as AntlrParseTree;
-                if (antlrAst != null)
+                var antlrParseTree = result as AntlrParseTree;
+                if (antlrParseTree != null)
                 {
-                    Interlocked.Add(ref totalLexerTicks, antlrAst.LexerTimeSpan.Ticks);
-                    Interlocked.Add(ref totalParserTicks, antlrAst.ParserTimeSpan.Ticks);
+                    Interlocked.Add(ref totalLexerTicks, antlrParseTree.LexerTimeSpan.Ticks);
+                    Interlocked.Add(ref totalParserTicks, antlrParseTree.ParserTimeSpan.Ticks);
                 }
             }
             return result;

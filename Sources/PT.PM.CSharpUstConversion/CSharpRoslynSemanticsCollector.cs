@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.CSharpAstConversion;
+using PT.PM.CSharpUstConversion;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 //using Microsoft.CodeAnalysis.FindSymbols;
@@ -9,27 +9,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PT.PM.CSharpAstConversion
+namespace PT.PM.CSharpUstConversion
 {
     public class CSharpRoslynSemanticsCollector : ISemanticsCollector
     {
         private CSharpCompilation compilation;
-        private IEnumerable<CSharpRoslynParseTree> csharpRoslynAsts;
+        private IEnumerable<CSharpRoslynParseTree> csharpRoslynParseTrees;
 
         public CSharpRoslynSemanticsCollector()
         {
         }
 
-        public SemanticsInfo Collect(IEnumerable<ParseTree> asts)
+        public SemanticsInfo Collect(IEnumerable<ParseTree> parseTrees)
         {
-            csharpRoslynAsts = asts.Select(ast => (CSharpRoslynParseTree)ast);
+            csharpRoslynParseTrees = parseTrees.Select(parseTree => (CSharpRoslynParseTree)parseTree);
             // TODO: assembly name
             
             var references = new[] {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)
             };
-            compilation = CSharpCompilation.Create("tempAssembly", csharpRoslynAsts.Select(ast => ast.SyntaxTree),
+            compilation = CSharpCompilation.Create("tempAssembly", csharpRoslynParseTrees.Select(ust => ust.SyntaxTree),
                 references);
 
             var result = new CSharpRoslynSemanticsInfo(compilation);

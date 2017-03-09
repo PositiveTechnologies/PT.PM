@@ -11,9 +11,9 @@ using PT.PM.Common.Nodes.TypeMembers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PT.PM.Common;
 
-namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
+namespace PT.PM.CSharpUstConversion.RoslynUstVisitor
 {
-    public partial class RoslynAstCommonConverterVisitor
+    public partial class RoslynUstCommonConverterVisitor
     {
         public override UstNode VisitBlock(BlockSyntax node)
         {

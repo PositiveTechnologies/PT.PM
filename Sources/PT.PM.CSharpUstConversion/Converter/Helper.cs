@@ -8,9 +8,9 @@ using PT.PM.Common.Nodes.Expressions;
 //using Microsoft.CodeAnalysis.FindSymbols;
 using PT.PM.Common.Symbols;
 
-namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
+namespace PT.PM.CSharpUstConversion.RoslynUstVisitor
 {
-    public partial class RoslynAstCommonConverterVisitor
+    public partial class RoslynUstCommonConverterVisitor
     {
         protected IdToken ConvertId(SyntaxToken node)
         {

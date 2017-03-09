@@ -11,17 +11,17 @@ namespace PT.PM.Common
 {
     public static class ReflectionCache
     {
-        private static ConcurrentDictionary<Type, PropertyInfo[]> astNodeProperties
+        private static ConcurrentDictionary<Type, PropertyInfo[]> ustNodeProperties
             = new ConcurrentDictionary<Type, PropertyInfo[]>();
         
         public static PropertyInfo[] GetClassProperties(Type objectType)
         {
             PropertyInfo[] result = null;
-            if (!astNodeProperties.TryGetValue(objectType, out result))
+            if (!ustNodeProperties.TryGetValue(objectType, out result))
             {
                 result = objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(prop => prop.CanWrite && prop.CanRead).ToArray();
-                astNodeProperties[objectType] = result;
+                ustNodeProperties[objectType] = result;
             }
             return result;
         }

@@ -6,7 +6,7 @@ using PT.PM.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace PT.PM.CSharpAstConversion
+namespace PT.PM.CSharpUstConversion
 {
     public class CSharpRoslynParser : ILanguageParser
     {

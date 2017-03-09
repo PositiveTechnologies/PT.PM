@@ -17,7 +17,7 @@ namespace PT.PM.UstPreprocessing
     {
         #region Abstract
 
-        T Visit(UstNode astNode);
+        T Visit(UstNode ustNode);
         T Visit(EntityDeclaration entityDeclaration);
         T Visit(Statement statement);
         T Visit(Expression expression);

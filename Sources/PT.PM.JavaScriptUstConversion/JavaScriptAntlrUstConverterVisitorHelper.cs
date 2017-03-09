@@ -1,8 +1,8 @@
 ﻿using PT.PM.Common.Nodes.Tokens;
 
-namespace PT.PM.JavaScriptAstConversion
+namespace PT.PM.JavaScriptUstConversion
 {
-    public partial class JavaScriptAntlrAstConverterVisitor
+    public partial class JavaScriptAntlrUstConverterVisitor
     {
         protected override BinaryOperator CreateBinaryOperator(string binaryOperatorText)
         {

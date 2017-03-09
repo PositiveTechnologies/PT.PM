@@ -8,7 +8,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 
-namespace PT.PM.CSharpAstConversion.Tests
+namespace PT.PM.CSharpUstConversion.Tests
 {
     [TestFixture]
     public class CSharpParserTests

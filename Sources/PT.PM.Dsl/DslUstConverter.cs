@@ -17,7 +17,7 @@ using PT.PM.Common.Nodes.TypeMembers;
 
 namespace PT.PM.Dsl
 {
-    public class DslAstConverter : IDslParserVisitor<UstNode>
+    public class DslUstConverter : IDslParserVisitor<UstNode>
     {
         public LanguageFlags SourceLanguage { get; set; }
 

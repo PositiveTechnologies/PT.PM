@@ -8,9 +8,9 @@ using PT.PM.Common.Nodes.TypeMembers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 
-namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
+namespace PT.PM.CSharpUstConversion.RoslynUstVisitor
 {
-    public partial class RoslynAstCommonConverterVisitor
+    public partial class RoslynUstCommonConverterVisitor
     {
         #region Never invoked overrides (Implementation error if invoked)
 

@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes;
 using Antlr4.Runtime;
 using System;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public class TSqlAntlrConverter : AntlrConverter
     {
@@ -13,7 +13,7 @@ namespace PT.PM.SqlAstConversion
         protected override FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
         {
             TSqlConverterVisitor visitor;
-            if (AstType == Common.Ust.UstType.Common)
+            if (UstType == Common.Ust.UstType.Common)
             {
                 visitor = new TSqlConverterVisitor(filePath, fileData);
             }

@@ -102,17 +102,17 @@
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.CSharpAstConversion\PT.PM.CSharpAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.CSharpUstConversion\PT.PM.CSharpUstConversion.csproj">
       <Project>{3b09e6ec-8069-4ed3-aad8-145953fd7dca}</Project>
-      <Name>PT.PM.CSharpAstConversion</Name>
+      <Name>PT.PM.CSharpUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
       <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
       <Name>PT.PM.Dsl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaAstConversion\PT.PM.JavaAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.JavaUstConversion\PT.PM.JavaUstConversion.csproj">
       <Project>{f5e3ce00-6854-4fa8-add2-0248df6d85db}</Project>
-      <Name>PT.PM.JavaAstConversion</Name>
+      <Name>PT.PM.JavaUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
       <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
@@ -122,13 +122,13 @@
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
       <Name>PT.PM.Patterns</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpAstConversion\PT.PM.PhpAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.PhpUstConversion\PT.PM.PhpUstConversion.csproj">
       <Project>{08fbc341-ac44-4cae-ae71-9462f7885e3e}</Project>
-      <Name>PT.PM.PhpAstConversion</Name>
+      <Name>PT.PM.PhpUstConversion</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.SqlAstConversion\PT.PM.SqlAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.SqlUstConversion\PT.PM.SqlUstConversion.csproj">
       <Project>{8f34670a-b91d-460b-9d67-7a03f7194673}</Project>
-      <Name>PT.PM.SqlAstConversion</Name>
+      <Name>PT.PM.SqlUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj">
       <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>

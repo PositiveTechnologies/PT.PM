@@ -12,7 +12,7 @@ using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {
-    public class BruteForcePatternMatcher : IAstPatternMatcher<CommonPatternsDataStructure>
+    public class BruteForcePatternMatcher : IUstPatternMatcher<CommonPatternsDataStructure>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -27,24 +27,24 @@ namespace PT.PM.Matching
         {
         }
 
-        public IEnumerable<MatchingResult> Match(Ust ast)
+        public IEnumerable<MatchingResult> Match(Ust ust)
         {
-            if (ast.Root != null)
+            if (ust.Root != null)
             {
                 try
                 {
                     var matchingResult = new List<MatchingResult>();
                     PatternVarRefEnumerator[] patternEnumerators = PatternsData.Patterns
-                        .Where(pattern => (pattern.Languages & ast.SourceLanguages) != LanguageFlags.None)
+                        .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None)
                         .Select(pattern => new PatternVarRefEnumerator(pattern)).ToArray();
-                    Traverse(ast.Root, patternEnumerators, matchingResult);
-                    MatchComments(ast, matchingResult, patternEnumerators);
+                    Traverse(ust.Root, patternEnumerators, matchingResult);
+                    MatchComments(ust, matchingResult, patternEnumerators);
 
                     return matchingResult;
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new MatchingException(ast.Root.FileName.Text, ex));
+                    Logger.LogError(new MatchingException(ust.Root.FileName.Text, ex));
                     return Enumerable.Empty<MatchingResult>();
                 }
             }
@@ -80,12 +80,12 @@ namespace PT.PM.Matching
             }
         }
 
-        private void MatchComments(Ust ast, List<MatchingResult> matchingResult, PatternVarRefEnumerator[] patternEnumerators)
+        private void MatchComments(Ust ust, List<MatchingResult> matchingResult, PatternVarRefEnumerator[] patternEnumerators)
         {
             PatternVarRefEnumerator[] commentPatterns = patternEnumerators.Where(p =>
                 p.Pattern.Data.Node.NodeType == NodeType.PatternComment ||
                 (p.Pattern.Data.Node.NodeType == NodeType.PatternVarDef && ((PatternVarDef)p.Pattern.Data.Node).Values.Any(v => v.NodeType == NodeType.PatternComment))).ToArray();
-            foreach (var commentNode in ast.Comments)
+            foreach (var commentNode in ust.Comments)
             {
                 foreach (var commentPattern in commentPatterns)
                 {

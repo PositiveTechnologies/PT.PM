@@ -31,11 +31,11 @@ namespace PT.PM.Common.Exceptions
         {
             if (!string.IsNullOrEmpty(FileName))
             {
-                return string.Format("Ast preprocessing error in \"{0}\": {1}.", FileName, InnerException != null ? InnerException.ToString() : Message);
+                return string.Format("Ust preprocessing error in \"{0}\": {1}.", FileName, InnerException != null ? InnerException.ToString() : Message);
             }
             else
             {
-                return string.Format("Ast preprocessing error: {0}", InnerException != null ? InnerException.ToString() : Message);
+                return string.Format("Ust preprocessing error: {0}", InnerException != null ? InnerException.ToString() : Message);
             }
         }
     }

@@ -1,10 +1,10 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.PhpAstConversion;
+using PT.PM.PhpUstConversion;
 using Antlr4.Runtime;
 using System.IO;
 
-namespace PT.PM.AstParsing
+namespace PT.PM.UstParsing
 {
     public class PhpAntlrParser : AntlrParser
     {

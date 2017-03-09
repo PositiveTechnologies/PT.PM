@@ -36,7 +36,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.AddRange(javaScriptPatterns);
 
             var patternsDataStructure = new CommonPatternsDataStructure(patterns);
-            var patternsConverter = new CommonPatternConverter(new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
+            var patternsConverter = new CommonPatternConverter(new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
 
             List<PatternDto> result = patternsConverter.ConvertBack(patternsDataStructure).ToList();
             return result;

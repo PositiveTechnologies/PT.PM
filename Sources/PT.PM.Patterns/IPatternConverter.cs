@@ -6,7 +6,7 @@ namespace PT.PM.Patterns
     public interface IPatternConverter<out TPatternDataStructure> : ILoggable
         where TPatternDataStructure : CommonPatternsDataStructure
     {
-        Dictionary<UstNodeSerializationFormat, IAstNodeSerializer> AstNodeSerializers { get; set; }
+        Dictionary<UstNodeSerializationFormat, IUstNodeSerializer> UstNodeSerializers { get; set; }
 
         UstNodeSerializationFormat ConvertBackFormat { get; set; }
 

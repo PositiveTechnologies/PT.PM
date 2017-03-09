@@ -3,7 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.TSqlAstConversion.Parser;
+using PT.PM.TSqlUstConversion.Parser;
 using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ using Antlr4.Runtime;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.TypeMembers;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public partial class TSqlConverterVisitor : AntlrDefaultVisitor, ItsqlVisitor<UstNode>
     {

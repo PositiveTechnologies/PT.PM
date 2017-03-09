@@ -7,8 +7,8 @@
     <ProjectGuid>{47F5B401-E788-494E-89C8-A8CA0B6917C4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.JavaAstConversion.Tests</RootNamespace>
-    <AssemblyName>PT.PM.JavaAstConversion.Tests</AssemblyName>
+    <RootNamespace>PT.PM.JavaUstConversion.Tests</RootNamespace>
+    <AssemblyName>PT.PM.JavaUstConversion.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -74,9 +74,9 @@
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaAstConversion\PT.PM.JavaAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.JavaUstConversion\PT.PM.JavaUstConversion.csproj">
       <Project>{f5e3ce00-6854-4fa8-add2-0248df6d85db}</Project>
-      <Name>PT.PM.JavaAstConversion</Name>
+      <Name>PT.PM.JavaUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Tests\PT.PM.Tests.csproj">
       <Project>{104f9633-f7a6-4840-a3ad-8d9fd96b39bf}</Project>

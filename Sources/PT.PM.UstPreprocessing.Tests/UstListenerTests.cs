@@ -48,8 +48,8 @@ namespace PT.PM.UstPreprocessing.Tests
         public void Check_IUstListener_AllEnterExitMethodsExists()
         {
             MethodInfo[] listenerMethods = typeof(IUstListener).GetMethods();
-            IEnumerable<Type> allAstNodeTypes = ListenerVisitorUtils.GetAssemblyAstNodeTypes(typeof(UstNode), typeof(PatternVarDef));
-            foreach (Type type in allAstNodeTypes)
+            IEnumerable<Type> allUstNodeTypes = ListenerVisitorUtils.GetAssemblyUstNodeTypes(typeof(UstNode), typeof(PatternVarDef));
+            foreach (Type type in allUstNodeTypes)
             {
                 Assert.IsTrue(listenerMethods
                     .FirstOrDefault(methodInfo =>

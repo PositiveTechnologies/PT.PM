@@ -7,8 +7,8 @@
     <ProjectGuid>{EEBBE595-2478-40B1-A147-7F44E40A2686}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.SqlAstConversion.Tests</RootNamespace>
-    <AssemblyName>PT.PM.SqlAstConversion.Tests</AssemblyName>
+    <RootNamespace>PT.PM.SqlUstConversion.Tests</RootNamespace>
+    <AssemblyName>PT.PM.SqlUstConversion.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -69,9 +69,9 @@
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
       <Name>PT.PM.Patterns</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.SqlAstConversion\PT.PM.SqlAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.SqlUstConversion\PT.PM.SqlUstConversion.csproj">
       <Project>{8f34670a-b91d-460b-9d67-7a03f7194673}</Project>
-      <Name>PT.PM.SqlAstConversion</Name>
+      <Name>PT.PM.SqlUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj">
       <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>

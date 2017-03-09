@@ -5,13 +5,13 @@ namespace PT.PM.Common
 {
     public interface IParseTreeToUstConverter : ILoggable
     {
-        UstType AstType { get; set; }
+        UstType UstType { get; set; }
 
         Language MainLanguage { get; }
 
         LanguageFlags ConvertedLanguages { get; set; }
 
-        Ust.Ust Convert(ParseTree langAst);
+        Ust.Ust Convert(ParseTree langParseTree);
 
         SemanticsInfo SemanticsInfo { get; set; }
     }

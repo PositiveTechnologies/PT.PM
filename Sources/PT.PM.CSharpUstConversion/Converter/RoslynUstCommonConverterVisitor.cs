@@ -12,9 +12,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common;
 
-namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
+namespace PT.PM.CSharpUstConversion.RoslynUstVisitor
 {
-    public partial class RoslynAstCommonConverterVisitor : CSharpSyntaxVisitor<UstNode>
+    public partial class RoslynUstCommonConverterVisitor : CSharpSyntaxVisitor<UstNode>
     {
         private CSharpRoslynSemanticsInfo semanticsInfo;
 
@@ -36,19 +36,19 @@ namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
             }
         }
 
-        public RoslynAstCommonConverterVisitor(SyntaxTree syntaxTree, string filePath)
+        public RoslynUstCommonConverterVisitor(SyntaxTree syntaxTree, string filePath)
         {
             Root = syntaxTree.GetRoot();
             FileNode = new FileNode(filePath, syntaxTree.GetText().ToString());
         }
 
-        public RoslynAstCommonConverterVisitor(SyntaxTree syntaxTree, FileNode fileNode)
+        public RoslynUstCommonConverterVisitor(SyntaxTree syntaxTree, FileNode fileNode)
         {
             Root = syntaxTree.GetRoot();
             FileNode = fileNode;
         }
 
-        public RoslynAstCommonConverterVisitor(SyntaxNode root, FileNode fileNode)
+        public RoslynUstCommonConverterVisitor(SyntaxNode root, FileNode fileNode)
         {
             Root = root;
             FileNode = fileNode;

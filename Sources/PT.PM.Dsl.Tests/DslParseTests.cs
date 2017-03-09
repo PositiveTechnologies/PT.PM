@@ -25,7 +25,7 @@ namespace PT.PM.Dsl.Tests
         public void Init()
         {
             patternsRepository = new DefaultPatternRepository();
-            var patternsConverter = new CommonPatternConverter(new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
+            var patternsConverter = new CommonPatternConverter(new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
             patterns = patternsConverter.Convert(patternsRepository.GetAll()).Patterns;
         }
 

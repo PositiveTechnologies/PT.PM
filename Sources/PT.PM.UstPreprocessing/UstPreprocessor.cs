@@ -16,21 +16,21 @@ namespace PT.PM.UstPreprocessing
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Ust Preprocess(Ust ast)
+        public Ust Preprocess(Ust ust)
         {
             Ust result;
             fileNode = null;
-            result = ast.Type == UstType.Common ? (Ust)new MostCommonUst() : (Ust)new MostDetailUst();
-            result.FileName = ast.FileName;
-            result.SourceLanguages = ast.SourceLanguages;
-            result.Root = (FileNode)Visit(ast.Root);
-            result.Comments = ast.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
+            result = ust.Type == UstType.Common ? (Ust)new MostCommonUst() : (Ust)new MostDetailUst();
+            result.FileName = ust.FileName;
+            result.SourceLanguages = ust.SourceLanguages;
+            result.Root = (FileNode)Visit(ust.Root);
+            result.Comments = ust.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
             return result;
         }
 
-        public UstNode Preprocess(UstNode astNode)
+        public UstNode Preprocess(UstNode ustNode)
         {
-            return Visit(astNode);
+            return Visit(ustNode);
         }
 
         public override UstNode Visit(BinaryOperatorExpression binaryOperatorExpression)
@@ -222,15 +222,15 @@ namespace PT.PM.UstPreprocessing
             return new PatternVarDef(patternVarDef.Id, vars, patternVarDef.TextSpan);
         }
 
-        protected override UstNode VisitChildren(UstNode astNode)
+        protected override UstNode VisitChildren(UstNode ustNode)
         {
             try
             {
-                return base.VisitChildren(astNode);
+                return base.VisitChildren(ustNode);
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(astNode.FileNode?.FileName?.Text ?? "", ex) { TextSpan = astNode.TextSpan });
+                Logger.LogError(new ConversionException(ustNode.FileNode?.FileName?.Text ?? "", ex) { TextSpan = ustNode.TextSpan });
                 return null;
             }
         }

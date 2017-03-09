@@ -8,7 +8,7 @@ using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PT.PM.PhpAstConversion
+namespace PT.PM.PhpUstConversion
 {
     public partial class PhpAntlrParseTreeConverterVisitor
     {

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PT.PM.SqlAstConversion.Tests
+namespace PT.PM.SqlUstConversion.Tests
 {
     [TestFixture]
     public class SqlConverterTests

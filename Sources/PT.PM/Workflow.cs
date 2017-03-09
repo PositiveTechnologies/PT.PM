@@ -82,10 +82,10 @@ namespace PT.PM
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
             ParserConverterSets = ParserConverterBuilder.GetParserConverterSets(languages);
-            AstPatternMatcher = new BruteForcePatternMatcher();
-            IAstNodeSerializer jsonNodeSerializer = new JsonAstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
-            IAstNodeSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new CommonPatternConverter(new IAstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            UstPatternMatcher = new BruteForcePatternMatcher();
+            IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
+            IUstNodeSerializer dslNodeSerializer = new DslProcessor();
+            PatternConverter = new CommonPatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
             Stage = stage;
             ThreadCount = 1;
         }
@@ -108,7 +108,7 @@ namespace PT.PM
                     {
                         var stopwatch = Stopwatch.StartNew();
                         IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                        AstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
+                        UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
                         stopwatch.Stop();
                         totalPatternsTicks = stopwatch.ElapsedTicks;
                     }
@@ -192,7 +192,7 @@ namespace PT.PM
                             LogStageTime(Stage.Convert);
                             if (Stage >= Stage.Preprocess)
                             {
-                                if (AstPreprocessor != null)
+                                if (UstPreprocessor != null)
                                 {
                                     LogStageTime(Stage.Preprocess);
                                 }
@@ -215,28 +215,28 @@ namespace PT.PM
         {
             try
             {
-                var langAst = ReadAndParse(fileName);
-                if (langAst == null)
+                var langParseTree = ReadAndParse(fileName);
+                if (langParseTree == null)
                     return;
                 if (Stage >= Stage.Convert)
                 {
                     var stopwatch = Stopwatch.StartNew();
-                    IParseTreeToUstConverter converter = ParserConverterSets[langAst.SourceLanguage].Converter;
-                    Ust ast = converter.Convert(langAst);
+                    IParseTreeToUstConverter converter = ParserConverterSets[langParseTree.SourceLanguage].Converter;
+                    Ust ust = converter.Convert(langParseTree);
                     stopwatch.Stop();
-                    LastUst = ast;
+                    LastUst = ust;
                     Interlocked.Add(ref totalConvertTicks, stopwatch.ElapsedTicks);
                     Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
 
                     if (Stage >= Stage.Preprocess)
                     {
-                        if (AstPreprocessor != null)
+                        if (UstPreprocessor != null)
                         {
                             stopwatch.Restart();
-                            ast = AstPreprocessor.Preprocess(ast);
+                            ust = UstPreprocessor.Preprocess(ust);
                             stopwatch.Stop();
                             Interlocked.Add(ref totalPreprocessTicks, stopwatch.ElapsedTicks);
-                            Logger.LogInfo("Ast of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                            Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
                         }
 
                         if (Stage >= Stage.Match)
@@ -247,7 +247,7 @@ namespace PT.PM
                             }
 
                             stopwatch.Restart();
-                            IEnumerable<MatchingResultDto> matchingResult = AstPatternMatcher.Match(ast)
+                            IEnumerable<MatchingResultDto> matchingResult = UstPatternMatcher.Match(ust)
                                 .Select(m => MatchingResultDto.CreateFromMatchingResult(m, SourceCodeRepository))
                                 .Where(m => m != null);
                             stopwatch.Stop();

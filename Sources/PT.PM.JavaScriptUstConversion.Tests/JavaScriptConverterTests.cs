@@ -2,7 +2,7 @@
 using PT.PM.Common.Tests;
 using NUnit.Framework;
 
-namespace PT.PM.JavaScriptAstConversion.Tests
+namespace PT.PM.JavaScriptUstConversion.Tests
 {
     [TestFixture]
     public class JavaScriptConverterTests

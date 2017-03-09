@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace PT.PM.Common
 {
-    public class JsonAstNodeSerializer : IAstNodeSerializer
+    public class JsonUstNodeSerializer : IUstNodeSerializer
     {
         private readonly UstJsonConverter astJsonConverter;
         private readonly JsonConverter stringEnumConverter;
@@ -21,9 +21,9 @@ namespace PT.PM.Common
 
         public bool ExcludeNulls { get; set; }
 
-        public JsonAstNodeSerializer(params Type[] astNodeAssemblyTypes)
+        public JsonUstNodeSerializer(params Type[] ustNodeAssemblyTypes)
         {
-            astJsonConverter = new UstJsonConverter(astNodeAssemblyTypes);
+            astJsonConverter = new UstJsonConverter(ustNodeAssemblyTypes);
             stringEnumConverter = new StringEnumConverter();
         }
 

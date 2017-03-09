@@ -2,7 +2,7 @@
 
 namespace PT.PM.Common
 {
-    public interface IAstNodeSerializer
+    public interface IUstNodeSerializer
     {
         ILogger Logger { get; set; }
         UstNodeSerializationFormat DataFormat { get; }

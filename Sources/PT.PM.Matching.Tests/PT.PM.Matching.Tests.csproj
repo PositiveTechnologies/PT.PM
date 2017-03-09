@@ -74,17 +74,17 @@
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.CSharpAstConversion.Tests\PT.PM.CSharpAstConversion.Tests.csproj">
+    <ProjectReference Include="..\PT.PM.CSharpUstConversion.Tests\PT.PM.CSharpUstConversion.Tests.csproj">
       <Project>{e3db8014-0bfb-4399-9b49-a8be446c5049}</Project>
-      <Name>PT.PM.CSharpAstConversion.Tests</Name>
+      <Name>PT.PM.CSharpUstConversion.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
       <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
       <Name>PT.PM.Dsl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaAstConversion.Tests\PT.PM.JavaAstConversion.Tests.csproj">
+    <ProjectReference Include="..\PT.PM.JavaUstConversion.Tests\PT.PM.JavaUstConversion.Tests.csproj">
       <Project>{47f5b401-e788-494e-89c8-a8ca0b6917c4}</Project>
-      <Name>PT.PM.JavaAstConversion.Tests</Name>
+      <Name>PT.PM.JavaUstConversion.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
       <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
@@ -94,9 +94,9 @@
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
       <Name>PT.PM.Patterns</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpAstConversion.Tests\PT.PM.PhpAstConversion.Tests.csproj">
+    <ProjectReference Include="..\PT.PM.PhpUstConversion.Tests\PT.PM.PhpUstConversion.Tests.csproj">
       <Project>{933dcca3-b5d1-45ae-acab-1672d71bc349}</Project>
-      <Name>PT.PM.PhpAstConversion.Tests</Name>
+      <Name>PT.PM.PhpUstConversion.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj">
       <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>

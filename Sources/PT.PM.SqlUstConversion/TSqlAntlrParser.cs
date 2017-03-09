@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.SqlAstConversion.Parser;
-using PT.PM.TSqlAstConversion.Parser;
+using PT.PM.SqlUstConversion.Parser;
+using PT.PM.TSqlUstConversion.Parser;
 using Antlr4.Runtime;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public class TSqlAntlrParser : AntlrParser
     {

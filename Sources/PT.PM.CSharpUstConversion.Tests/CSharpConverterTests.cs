@@ -6,7 +6,7 @@ using NUnit.Framework;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Ust;
 
-namespace PT.PM.CSharpAstConversion.Tests
+namespace PT.PM.CSharpUstConversion.Tests
 {
     [TestFixture]
     public class CSharpConverterTests

@@ -65,7 +65,7 @@
     <Compile Include="Exceptions\MatchingException.cs" />
     <Compile Include="Exceptions\ShouldNotBeVisitedException.cs" />
     <Compile Include="IParseTreeToUstConverter.cs" />
-    <Compile Include="IAstNodeSerializer.cs" />
+    <Compile Include="IUstNodeSerializer.cs" />
     <Compile Include="ILanguageParser.cs" />
     <Compile Include="CodeRepository\ISourceCodeRepository.cs" />
     <Compile Include="Json\JsonUstNodeSerializer.cs" />

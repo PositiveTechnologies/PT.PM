@@ -2,9 +2,9 @@
 using PT.PM.Common.Nodes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PT.PM.CSharpAstConversion.RoslynAstVisitor
+namespace PT.PM.CSharpUstConversion.RoslynUstVisitor
 {
-    public partial class RoslynAstCommonConverterVisitor
+    public partial class RoslynUstCommonConverterVisitor
     {
         public override UstNode VisitBadDirectiveTrivia(BadDirectiveTriviaSyntax node)
         {

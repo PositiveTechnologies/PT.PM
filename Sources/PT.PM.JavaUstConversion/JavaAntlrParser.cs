@@ -1,10 +1,10 @@
 ﻿using System;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.JavaAstConversion.Parser;
+using PT.PM.JavaUstConversion.Parser;
 using Antlr4.Runtime;
 
-namespace PT.PM.JavaAstConversion
+namespace PT.PM.JavaUstConversion
 {
     public class JavaAntlrParser : AntlrParser
     {

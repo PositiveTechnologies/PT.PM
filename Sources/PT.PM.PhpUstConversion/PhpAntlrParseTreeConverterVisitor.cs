@@ -15,9 +15,9 @@ using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.TypeMembers;
 using Antlr4.Runtime.Misc;
-using PT.PM.JavaScriptAstConversion;
+using PT.PM.JavaScriptUstConversion;
 
-namespace PT.PM.PhpAstConversion
+namespace PT.PM.PhpUstConversion
 {
     public partial class PhpAntlrParseTreeConverterVisitor : AntlrDefaultVisitor, IPHPParserVisitor<UstNode>
     {
@@ -93,7 +93,7 @@ namespace PT.PM.PhpAstConversion
                 };
                 var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
 
-                var javaScriptConverter = new JavaScriptAntlrAstConverterVisitor(FileNode.FileName.Text, FileNode.FileData);
+                var javaScriptConverter = new JavaScriptAntlrUstConverterVisitor(FileNode.FileName.Text, FileNode.FileData);
                 javaScriptConverter.Logger = Logger;
                 result = javaScriptConverter.Visit(parseTree.SyntaxTree);
                 var resultFileNode = result as FileNode;
@@ -102,7 +102,7 @@ namespace PT.PM.PhpAstConversion
                     result = resultFileNode.Root.CreateLanguageNamespace(Language.JavaScript, FileNode);
                 }
                 TextSpan contextTextSpan = context.GetTextSpan();
-                result.ApplyActionToDescendants(uAstNode => uAstNode.TextSpan = uAstNode.TextSpan.AddOffset(contextTextSpan.Start));
+                result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(contextTextSpan.Start));
             }
             else
             {
@@ -180,9 +180,9 @@ namespace PT.PM.PhpAstConversion
 
         public UstNode VisitUseDeclarationContent(PHPParser.UseDeclarationContentContext context)
         {
-            var namespaceNameListAstNode = (StringLiteral)Visit(context.namespaceNameList());
+            var namespaceNameListUstNode = (StringLiteral)Visit(context.namespaceNameList());
 
-            var result = new UsingDeclaration(namespaceNameListAstNode, context.GetTextSpan(), FileNode);
+            var result = new UsingDeclaration(namespaceNameListUstNode, context.GetTextSpan(), FileNode);
             return result;
         }
 
@@ -330,12 +330,12 @@ namespace PT.PM.PhpAstConversion
 
         public UstNode VisitInnerStatementList(PHPParser.InnerStatementListContext context)
         {
-            Statement[] innerStatementAstNodes = context.innerStatement()
+            Statement[] innerStatementUstNodes = context.innerStatement()
                 .Select(c => (Statement)Visit(c))
                 .Where(c => c != null)
                 .ToArray();
 
-            var result = new BlockStatement(innerStatementAstNodes, 
+            var result = new BlockStatement(innerStatementUstNodes, 
                 context.innerStatement().Length > 0 ? context.GetTextSpan() : default(TextSpan), FileNode);
             return result;
         }
@@ -400,9 +400,9 @@ namespace PT.PM.PhpAstConversion
 
         public UstNode VisitBlockStatement(PHPParser.BlockStatementContext context)
         {
-            var innerStatementListAstNode = (BlockStatement)Visit(context.innerStatementList());
+            var innerStatementListUstNode = (BlockStatement)Visit(context.innerStatementList());
 
-            var result = new BlockStatement(innerStatementListAstNode.Statements, context.GetTextSpan(), FileNode);
+            var result = new BlockStatement(innerStatementListUstNode.Statements, context.GetTextSpan(), FileNode);
             return result;
         }
 

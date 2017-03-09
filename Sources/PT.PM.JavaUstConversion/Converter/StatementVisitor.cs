@@ -5,16 +5,16 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
-using PT.PM.JavaAstConversion.Parser;
+using PT.PM.JavaUstConversion.Parser;
 using PT.PM.AntlrUtils;
 using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PT.PM.JavaAstConversion.Converter
+namespace PT.PM.JavaUstConversion.Converter
 {
-    public partial class JavaAntlrAstConverterVisitor
+    public partial class JavaAntlrUstConverterVisitor
     {
         public UstNode VisitBlock(JavaParser.BlockContext context)
         {

@@ -2,10 +2,10 @@
 using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
-using PT.PM.PhpAstConversion;
+using PT.PM.PhpUstConversion;
 using PT.PM.AntlrUtils;
 
-namespace PT.PM.AstConversion
+namespace PT.PM.UstConversion
 {
     public class PhpAntlrParseTreeConverter : AntlrConverter
     {
@@ -14,7 +14,7 @@ namespace PT.PM.AstConversion
         protected override FileNode CreateVisitorAndVisit(Antlr4.Runtime.ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
         {
             PhpAntlrParseTreeConverterVisitor visitor;
-            if (AstType == UstType.Common)
+            if (UstType == UstType.Common)
             {
                 visitor = new PhpAntlrParseTreeConverterVisitor(filePath, fileData);
                 visitor.ConvertedLanguages = ConvertedLanguages;

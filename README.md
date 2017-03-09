@@ -16,11 +16,11 @@ domain-specific language (DSL).
 
 * Creating an AST from the source code and converting this parse tree to UST 
 (C\#, Java, PHP, PL/SQL, T-SQL, and JavaScript are implemented).
-* PT.PM.CSharpAstConversion for C\#- and ASP.NET files (.aspx, .ascx, etc.).
-	* PT.PM.JavaAstConversion
-	* PT.PM.PhpAstConversion
-	* PT.PM.SqlAstConversion (for PL/SQL и T-SQL)
-	* PT.PM.JavaScriptAstConversion
+* PT.PM.CSharpUstConversion for C\#- and ASP.NET files (.aspx, .ascx, etc.).
+	* PT.PM.JavaUstConversion
+	* PT.PM.PhpUstConversion
+	* PT.PM.SqlUstConversion (for PL/SQL и T-SQL)
+	* PT.PM.JavaScriptUstConversion
 * DSL processing:
 	* PT.PM.Patterns
 	* PT.PM.Dsl
@@ -48,12 +48,12 @@ Unit tests for projects are located in the projects with similar names
 containing the **.Tests** suffix:
 
 * PT.PM.Common.Tests
-* PT.PM.CSharpAstConversion.Tests
-* PT.PM.CSharpAntlrAstConversion.Tests
-* PT.PM.JavaAstConversion.Tests
-* PT.PM.PhpAstConversion.Tests
-* PT.PM.SqlAstConversion.Tests
-* PT.PM.JavaScriptAstConversion.Tests
+* PT.PM.CSharpUstConversion.Tests
+* PT.PM.CSharpAntlrUstConversion.Tests
+* PT.PM.JavaUstConversion.Tests
+* PT.PM.PhpUstConversion.Tests
+* PT.PM.SqlUstConversion.Tests
+* PT.PM.JavaScriptUstConversion.Tests
 * PT.PM.Dsl.Tests
 * PT.PM.UstPreprocessing.Tests
 * PT.PM.Matching.Tests
@@ -68,9 +68,6 @@ downloaded from GitHub and cached in a local folder:
 * [WebGoat.NET](https://github.com/jerryhoff/WebGoat.NET)
 * [WebGoat](https://github.com/WebGoat/WebGoat)
 * [WebGoatPHP](https://github.com/shivamdixit/WebGoatPHP)
-* [phpBB](https://github.com/phpbb/)
-* [Zend Framework](https://github.com/zendframework/zf2)
-
 
 ## Dependencies
 * [FluentCommandLineParser](https://github.com/fclp/fluent-command-line-parser)

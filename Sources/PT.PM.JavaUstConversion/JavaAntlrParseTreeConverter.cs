@@ -2,10 +2,10 @@
 using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
-using PT.PM.JavaAstConversion.Converter;
+using PT.PM.JavaUstConversion.Converter;
 using PT.PM.AntlrUtils;
 
-namespace PT.PM.JavaAstConversion
+namespace PT.PM.JavaUstConversion
 {
     public class JavaAntlrParseTreeConverter : AntlrConverter
     {
@@ -18,10 +18,10 @@ namespace PT.PM.JavaAstConversion
 
         protected override FileNode CreateVisitorAndVisit(Antlr4.Runtime.ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
         {
-            JavaAntlrAstConverterVisitor visitor;
-            if (AstType == UstType.Common)
+            JavaAntlrUstConverterVisitor visitor;
+            if (UstType == UstType.Common)
             {
-                visitor = new JavaAntlrAstConverterVisitor(filePath, fileData);
+                visitor = new JavaAntlrUstConverterVisitor(filePath, fileData);
             }
             else
             {

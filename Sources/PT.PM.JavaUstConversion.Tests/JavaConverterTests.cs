@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PT.PM.JavaAstConversion.Tests
+namespace PT.PM.JavaUstConversion.Tests
 {
     [TestFixture]
     public class JavaConverterTests

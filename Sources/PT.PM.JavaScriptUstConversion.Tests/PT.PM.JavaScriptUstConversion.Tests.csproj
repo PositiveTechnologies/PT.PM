@@ -7,8 +7,8 @@
     <ProjectGuid>{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.JavaScriptAstConversion.Tests</RootNamespace>
-    <AssemblyName>PT.PM.JavaScriptAstConversion.Tests</AssemblyName>
+    <RootNamespace>PT.PM.JavaScriptUstConversion.Tests</RootNamespace>
+    <AssemblyName>PT.PM.JavaScriptUstConversion.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

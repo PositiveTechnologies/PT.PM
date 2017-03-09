@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="DslAntlrParser.cs" />
     <Compile Include="DslProcessor.cs" />
-    <Compile Include="DslAstConverter.cs" />
+    <Compile Include="DslUstConverter.cs" />
     <Compile Include="Generated\DslLexer.cs" />
     <Compile Include="Generated\DslParser.cs" />
     <Compile Include="Generated\DslParserVisitor.cs" />

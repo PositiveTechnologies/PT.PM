@@ -6,11 +6,11 @@ using PT.PM.Patterns;
 
 namespace PT.PM.Matching
 {
-    public interface IAstPatternMatcher<TPatternsDataStructure> : ILoggable
+    public interface IUstPatternMatcher<TPatternsDataStructure> : ILoggable
         where TPatternsDataStructure : CommonPatternsDataStructure
     {
         TPatternsDataStructure PatternsData { get; set; }
 
-        IEnumerable<MatchingResult> Match(Ust ast);
+        IEnumerable<MatchingResult> Match(Ust ust);
     }
 }

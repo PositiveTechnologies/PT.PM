@@ -7,8 +7,8 @@
     <ProjectGuid>{933DCCA3-B5D1-45AE-ACAB-1672D71BC349}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.PhpAstConversion.Tests</RootNamespace>
-    <AssemblyName>PT.PM.PhpAstConversion.Tests</AssemblyName>
+    <RootNamespace>PT.PM.PhpUstConversion.Tests</RootNamespace>
+    <AssemblyName>PT.PM.PhpUstConversion.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -78,9 +78,9 @@
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
       <Name>PT.PM.Patterns</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpAstConversion\PT.PM.PhpAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.PhpUstConversion\PT.PM.PhpUstConversion.csproj">
       <Project>{08fbc341-ac44-4cae-ae71-9462f7885e3e}</Project>
-      <Name>PT.PM.PhpAstConversion</Name>
+      <Name>PT.PM.PhpUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj">
       <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>

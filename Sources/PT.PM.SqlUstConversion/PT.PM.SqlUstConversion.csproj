@@ -7,8 +7,8 @@
     <ProjectGuid>{8F34670A-B91D-460B-9D67-7A03F7194673}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.SqlAstConversion</RootNamespace>
-    <AssemblyName>PT.PM.SqlAstConversion</AssemblyName>
+    <RootNamespace>PT.PM.SqlUstConversion</RootNamespace>
+    <AssemblyName>PT.PM.SqlUstConversion</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -94,8 +94,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\plsql\plsql.g4" --package "PT.PM.SqlAstConversion.Parser" --output "$(ProjectDir)Generated"
-"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\tsql\tsql.g4" --package "PT.PM.TSqlAstConversion.Parser" --output "$(ProjectDir)Generated"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\plsql\plsql.g4" --package "PT.PM.SqlUstConversion.Parser" --output "$(ProjectDir)Generated"
+"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\tsql\tsql.g4" --package "PT.PM.TSqlUstConversion.Parser" --output "$(ProjectDir)Generated"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

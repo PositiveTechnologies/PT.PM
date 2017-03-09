@@ -3,18 +3,18 @@ using System.Linq;
 
 namespace PT.PM.Common.Nodes.Collections
 {
-    public abstract class CollectionNode<TAstNode> : UstNode
-        where TAstNode : UstNode
+    public abstract class CollectionNode<TUstNode> : UstNode
+        where TUstNode : UstNode
     {
-        public IList<TAstNode> Collection { get; set; }
+        public IList<TUstNode> Collection { get; set; }
 
-        protected CollectionNode(IList<TAstNode> collection, TextSpan textSpan, FileNode fileNode)
+        protected CollectionNode(IList<TUstNode> collection, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
             Collection = collection;
         }
 
-        protected CollectionNode(IList<TAstNode> collection)
+        protected CollectionNode(IList<TUstNode> collection)
             : base()
         {
             Collection = collection;
@@ -23,7 +23,7 @@ namespace PT.PM.Common.Nodes.Collections
         protected CollectionNode()
             : base()
         {
-            Collection = new List<TAstNode>();
+            Collection = new List<TUstNode>();
         }
 
         public override UstNode[] GetChildren()

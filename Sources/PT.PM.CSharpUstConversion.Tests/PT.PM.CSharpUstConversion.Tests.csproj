@@ -7,8 +7,8 @@
     <ProjectGuid>{E3DB8014-0BFB-4399-9B49-A8BE446C5049}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.CSharpAstConversion.Tests</RootNamespace>
-    <AssemblyName>PT.PM.CSharpAstConversion.Tests</AssemblyName>
+    <RootNamespace>PT.PM.CSharpUstConversion.Tests</RootNamespace>
+    <AssemblyName>PT.PM.CSharpUstConversion.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -112,9 +112,9 @@
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.CSharpAstConversion\PT.PM.CSharpAstConversion.csproj">
+    <ProjectReference Include="..\PT.PM.CSharpUstConversion\PT.PM.CSharpUstConversion.csproj">
       <Project>{3b09e6ec-8069-4ed3-aad8-145953fd7dca}</Project>
-      <Name>PT.PM.CSharpAstConversion</Name>
+      <Name>PT.PM.CSharpUstConversion</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj">
       <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>

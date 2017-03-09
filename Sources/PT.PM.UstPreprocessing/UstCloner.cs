@@ -10,22 +10,22 @@ namespace PT.PM.UstPreprocessing
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Ust Preprocess(Ust ast)
+        public Ust Preprocess(Ust ust)
         {
             Ust result;
-            result = ast.Type == UstType.Common ? (Ust)new MostCommonUst() : (Ust)new MostDetailUst();
-            result.FileName = ast.FileName;
-            result.SourceLanguages = ast.SourceLanguages;
-            result.Root = (FileNode)Visit(ast.Root);
-            result.Comments = ast.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
+            result = ust.Type == UstType.Common ? (Ust)new MostCommonUst() : (Ust)new MostDetailUst();
+            result.FileName = ust.FileName;
+            result.SourceLanguages = ust.SourceLanguages;
+            result.Root = (FileNode)Visit(ust.Root);
+            result.Comments = ust.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
             return result;
         }
 
-        protected override UstNode VisitChildren(UstNode astNode)
+        protected override UstNode VisitChildren(UstNode ustNode)
         {
             try
             {
-                return base.VisitChildren(astNode);
+                return base.VisitChildren(ustNode);
             }
             catch
             {

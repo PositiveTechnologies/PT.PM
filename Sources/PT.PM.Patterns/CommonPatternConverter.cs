@@ -18,27 +18,27 @@ namespace PT.PM.Patterns
             set
             {
                 logger = value;
-                foreach (var serializer in AstNodeSerializers)
+                foreach (var serializer in UstNodeSerializers)
                 {
                     serializer.Value.Logger = logger;
                 }
             }
         }
-        public Dictionary<UstNodeSerializationFormat, IAstNodeSerializer> AstNodeSerializers { get; set; }
+        public Dictionary<UstNodeSerializationFormat, IUstNodeSerializer> UstNodeSerializers { get; set; }
 
         public UstNodeSerializationFormat ConvertBackFormat { get; set; }
 
-        public CommonPatternConverter(IAstNodeSerializer serializer, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
+        public CommonPatternConverter(IUstNodeSerializer serializer, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
             : this(new[] { serializer }, format)
         {
         }
 
-        public CommonPatternConverter(IEnumerable<IAstNodeSerializer> serializers, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
+        public CommonPatternConverter(IEnumerable<IUstNodeSerializer> serializers, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
         {
-            AstNodeSerializers = new Dictionary<UstNodeSerializationFormat, IAstNodeSerializer>();
+            UstNodeSerializers = new Dictionary<UstNodeSerializationFormat, IUstNodeSerializer>();
             foreach (var serializer in serializers)
             {
-                AstNodeSerializers[serializer.DataFormat] = serializer;
+                UstNodeSerializers[serializer.DataFormat] = serializer;
             }
             ConvertBackFormat = format;
         }
@@ -48,7 +48,7 @@ namespace PT.PM.Patterns
             var result = new List<Pattern>();
             foreach (var patternDto in patternsDto)
             {
-                var serializer = AstNodeSerializers[patternDto.DataFormat];
+                var serializer = UstNodeSerializers[patternDto.DataFormat];
                 try
                 {
                     PatternNode data = (PatternNode)serializer.Deserialize(patternDto.Value, patternDto.Languages);
@@ -68,7 +68,7 @@ namespace PT.PM.Patterns
             var result = new List<PatternDto>();
             foreach (var pattern in dataStructure.Patterns)
             {
-                var serializer = AstNodeSerializers[ConvertBackFormat];
+                var serializer = UstNodeSerializers[ConvertBackFormat];
                 try
                 {
                     var serializedData = serializer.Serialize(pattern.Data);

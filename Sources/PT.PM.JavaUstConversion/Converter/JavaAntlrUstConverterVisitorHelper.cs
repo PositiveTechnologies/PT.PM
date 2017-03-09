@@ -3,14 +3,14 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.JavaAstConversion.Parser;
+using PT.PM.JavaUstConversion.Parser;
 using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PT.PM.JavaAstConversion.Converter
+namespace PT.PM.JavaUstConversion.Converter
 {
-    public partial class JavaAntlrAstConverterVisitor
+    public partial class JavaAntlrUstConverterVisitor
     {
         private MethodDeclaration ConvertMethodDeclaration(JavaParser.TypeTypeContext type, ITerminalNode child0Terminal,
             ITerminalNode identifier, JavaParser.FormalParametersContext formalParameters,

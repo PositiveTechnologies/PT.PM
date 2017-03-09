@@ -25,13 +25,13 @@ namespace PT.PM.UstPreprocessing
     {
         protected FileNode fileNode;
 
-        public virtual UstNode Visit(UstNode astNode)
+        public virtual UstNode Visit(UstNode ustNode)
         {
-            if (astNode == null)
+            if (ustNode == null)
             {
                 return null;
             }
-            return Visit((dynamic)astNode);
+            return Visit((dynamic)ustNode);
         }
 
         public virtual UstNode Visit(EntityDeclaration entityDeclaration)
@@ -510,14 +510,14 @@ namespace PT.PM.UstPreprocessing
             return VisitChildren(patternComment);
         }
 
-        protected virtual UstNode VisitChildren(UstNode astNode)
+        protected virtual UstNode VisitChildren(UstNode ustNode)
         {
-            if (astNode == null)
+            if (ustNode == null)
             {
                 return null;
             }
 
-            Type type = astNode.GetType();
+            Type type = ustNode.GetType();
             PropertyInfo[] properties = ReflectionCache.GetClassProperties(type);
 
             var result = (UstNode)Activator.CreateInstance(type);
@@ -526,38 +526,38 @@ namespace PT.PM.UstPreprocessing
                 Type propType = prop.PropertyType;
                 if (propType.IsValueType)
                 {
-                    prop.SetValue(result, prop.GetValue(astNode));
+                    prop.SetValue(result, prop.GetValue(ustNode));
                 }
                 else if (propType == typeof(string))
                 {
-                    string stringValue = (string)prop.GetValue(astNode);
-                    prop.SetValue(result, stringValue != null ? String.Copy((string)prop.GetValue(astNode)) : null);
+                    string stringValue = (string)prop.GetValue(ustNode);
+                    prop.SetValue(result, stringValue != null ? String.Copy((string)prop.GetValue(ustNode)) : null);
                 }
                 else if (propType.IsSubclassOf(typeof(UstNode)) || propType == typeof(UstNode))
                 {
-                    UstNode getValue = (UstNode)prop.GetValue(astNode);
+                    UstNode getValue = (UstNode)prop.GetValue(ustNode);
                     UstNode setValue = VisitNodeOrIgnoreFileNode(getValue);
                     prop.SetValue(result, setValue);
                 }
                 else if (propType == typeof(TextSpan))
                 {
-                    var val = prop.GetValue(astNode);
+                    var val = prop.GetValue(ustNode);
                     prop.SetValue(result, val != null ? new TextSpan((TextSpan)val) : default(TextSpan));
                 }
                 else if (propType.GetInterfaces().Contains(typeof(IEnumerable)))
                 {
                     Type itemType = propType.GetGenericArguments()[0];
-                    var sourceCollection = (IEnumerable<object>)prop.GetValue(astNode);
+                    var sourceCollection = (IEnumerable<object>)prop.GetValue(ustNode);
                     IList destCollection = null;
                     if (sourceCollection != null)
                     {
                         destCollection = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
                         foreach (var item in sourceCollection)
                         {
-                            var astNodeItem = item as UstNode;
-                            if (astNodeItem != null)
+                            var ustNodeItem = item as UstNode;
+                            if (ustNodeItem != null)
                             {
-                                destCollection.Add(VisitNodeOrIgnoreFileNode(astNodeItem));
+                                destCollection.Add(VisitNodeOrIgnoreFileNode(ustNodeItem));
                             }
                             else
                             {

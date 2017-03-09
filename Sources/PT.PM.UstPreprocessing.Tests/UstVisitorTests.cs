@@ -27,13 +27,13 @@ namespace PT.PM.UstPreprocessing.Tests
         }
 
         [Test]
-        public void Check_IAstVisitor_AllVisitMethodsExists()
+        public void Check_IUstVisitor_AllVisitMethodsExists()
         {
-            MethodInfo[] iAstVisitorMethods = typeof(IUstVisitor<>).GetMethods();
-            IEnumerable<Type> allAstNodeTypes = ListenerVisitorUtils.GetAssemblyAstNodeTypes(typeof(UstNode), typeof(PatternVarDef));
-            foreach (Type type in allAstNodeTypes)
+            MethodInfo[] iUstVisitorMethods = typeof(IUstVisitor<>).GetMethods();
+            IEnumerable<Type> allUstNodeTypes = ListenerVisitorUtils.GetAssemblyUstNodeTypes(typeof(UstNode), typeof(PatternVarDef));
+            foreach (Type type in allUstNodeTypes)
             {
-                Assert.IsTrue(iAstVisitorMethods
+                Assert.IsTrue(iUstVisitorMethods
                     .FirstOrDefault(methodInfo =>
                     {
                         var parameters = methodInfo.GetParameters();

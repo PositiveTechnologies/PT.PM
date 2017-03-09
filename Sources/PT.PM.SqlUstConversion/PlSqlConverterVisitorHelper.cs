@@ -7,7 +7,7 @@ using PT.PM.Common.Nodes.Statements;
 using Antlr4.Runtime.Tree;
 using System.Linq;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public partial class PlSqlConverterVisitor
     {

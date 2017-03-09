@@ -7,13 +7,13 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.SqlAstConversion.Parser;
+using PT.PM.SqlUstConversion.Parser;
 using Antlr4.Runtime.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public partial class PlSqlConverterVisitor : AntlrDefaultVisitor, IplsqlVisitor<UstNode>
     {

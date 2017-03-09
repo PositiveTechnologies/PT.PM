@@ -25,7 +25,7 @@ namespace PT.PM.Matching
             Pattern = pattern;
             current = pattern.Data.Node.Clone();
 
-            UstNode[] children = current.GetAllDescendants(astNode => astNode != null && astNode.NodeType == NodeType.PatternVarRef);
+            UstNode[] children = current.GetAllDescendants(ustNode => ustNode != null && ustNode.NodeType == NodeType.PatternVarRef);
             varRefs = new List<PatternVarRef>();
             varLiteralInds = new int[pattern.Data.Vars?.Count ?? 0];
 

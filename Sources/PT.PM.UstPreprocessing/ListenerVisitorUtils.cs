@@ -8,7 +8,7 @@ namespace PT.PM.UstPreprocessing
 {
     public static class ListenerVisitorUtils
     {
-        public static IEnumerable<Type> GetAssemblyAstNodeTypes(params Type[] types)
+        public static IEnumerable<Type> GetAssemblyUstNodeTypes(params Type[] types)
         {
             return types.SelectMany(type => Assembly.GetAssembly(type).GetTypes())
                 .Where(t => t.IsSubclassOf(typeof(UstNode)) && !t.IsAbstract);

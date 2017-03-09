@@ -1,5 +1,5 @@
-﻿using PT.PM.AstConversion;
-using PT.PM.AstParsing;
+﻿using PT.PM.UstConversion;
+using PT.PM.UstParsing;
 using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
@@ -9,7 +9,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Linq;
 
-namespace PT.PM.PhpAstConversion.Tests
+namespace PT.PM.PhpUstConversion.Tests
 {
     [TestFixture]
     public class PhpParserTests
@@ -43,11 +43,11 @@ namespace PT.PM.PhpAstConversion.Tests
                     Name = "newLine.php",
                     Code = code
                 };
-                var ast = (PhpAntlrParseTree)phpParser.Parse(sourceCodeFile);
+                var parseTree = (PhpAntlrParseTree)phpParser.Parse(sourceCodeFile);
                 var converter = new PhpAntlrParseTreeConverter();
-                Ust unifiedAst = converter.Convert(ast);
+                Ust ust = converter.Convert(parseTree);
                 
-                UstNode intNode = unifiedAst.Root.GetAllDescendants(
+                UstNode intNode = ust.Root.GetAllDescendants(
                     node => node.NodeType == NodeType.IntLiteral &&
                     ((IntLiteral)node).Value == 42).First();
 
@@ -57,7 +57,7 @@ namespace PT.PM.PhpAstConversion.Tests
                 Assert.AreEqual(12, beginColumn);
                 Assert.AreEqual(14, endColumn);
 
-                UstNode heredocNode = unifiedAst.Root.GetAllDescendants(
+                UstNode heredocNode = ust.Root.GetAllDescendants(
                     node => node.NodeType == NodeType.StringLiteral &&
                     ((StringLiteral)node).Text.StartsWith("Heredoc text")).First();
 
@@ -65,7 +65,7 @@ namespace PT.PM.PhpAstConversion.Tests
                 Assert.AreEqual(3, beginLine);
                 Assert.AreEqual(6, endLine);
 
-                UstNode serverAddressNode = unifiedAst.Root.GetAllDescendants(
+                UstNode serverAddressNode = ust.Root.GetAllDescendants(
                     node => node.NodeType == NodeType.StringLiteral &&
                     ((StringLiteral)node).Text.Contains("http://127.0.0.1")).First();
 

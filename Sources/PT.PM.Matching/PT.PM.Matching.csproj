@@ -35,7 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BruteForcePatternMatcher.cs" />
-    <Compile Include="IAstPatternMatcher.cs" />
+    <Compile Include="IUstPatternMatcher.cs" />
     <Compile Include="MatchingResult.cs" />
     <Compile Include="PatternVarRefEnumerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

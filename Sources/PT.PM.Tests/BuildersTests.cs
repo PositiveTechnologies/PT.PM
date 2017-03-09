@@ -1,12 +1,12 @@
-﻿using PT.PM.AstConversion;
-using PT.PM.AstParsing;
+﻿using PT.PM.UstConversion;
+using PT.PM.UstParsing;
 using PT.PM.Common;
-using PT.PM.CSharpAstConversion;
+using PT.PM.CSharpUstConversion;
 using PT.PM.Dsl;
-using PT.PM.JavaAstConversion;
+using PT.PM.JavaUstConversion;
 using PT.PM.Matching;
 using PT.PM.Patterns;
-using PT.PM.SqlAstConversion;
+using PT.PM.SqlUstConversion;
 using NUnit.Framework;
 
 namespace PT.PM.Tests

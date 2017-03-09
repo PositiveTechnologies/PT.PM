@@ -7,8 +7,8 @@
     <ProjectGuid>{98727837-F9FA-476C-B0B5-88845B53FDDF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.JavaScriptAstConversion</RootNamespace>
-    <AssemblyName>PT.PM.JavaScriptAstConversion</AssemblyName>
+    <RootNamespace>PT.PM.JavaScriptUstConversion</RootNamespace>
+    <AssemblyName>PT.PM.JavaScriptUstConversion</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -48,10 +48,10 @@
     <Compile Include="Generated\ECMAScriptLexer.cs" />
     <Compile Include="Generated\ECMAScriptParser.cs" />
     <Compile Include="Generated\ECMAScriptVisitor.cs" />
-    <Compile Include="JavaScriptAntlrAstConverterVisitorHelper.cs" />
+    <Compile Include="JavaScriptAntlrUstConverterVisitorHelper.cs" />
     <Compile Include="JavaScriptAntlrParseTree.cs" />
     <Compile Include="JavaScriptAntlrParser.cs" />
-    <Compile Include="JavaScriptAntlrAstConverterVisitor.cs" />
+    <Compile Include="JavaScriptAntlrUstConverterVisitor.cs" />
     <Compile Include="JavaScriptParseTreeConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">
@@ -81,7 +81,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4" --package "PT.PM.JavaScriptAstConversion.Parser"  --output "$(ProjectDir)Generated"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4" --package "PT.PM.JavaScriptUstConversion.Parser"  --output "$(ProjectDir)Generated"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

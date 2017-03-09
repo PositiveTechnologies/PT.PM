@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.TSqlAstConversion.Parser;
+using PT.PM.TSqlUstConversion.Parser;
 
-namespace PT.PM.SqlAstConversion
+namespace PT.PM.SqlUstConversion
 {
     public class TSqlAntlrParseTree : AntlrParseTree
     {

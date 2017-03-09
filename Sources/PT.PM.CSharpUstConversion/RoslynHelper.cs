@@ -1,7 +1,7 @@
 ﻿using PT.PM.Common;
 using Microsoft.CodeAnalysis;
 
-namespace PT.PM.CSharpAstConversion
+namespace PT.PM.CSharpUstConversion
 {
     public static class RoslynHelper
     {

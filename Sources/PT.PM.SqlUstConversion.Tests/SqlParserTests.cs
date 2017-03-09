@@ -4,7 +4,7 @@ using PT.PM.Common.Tests;
 using NUnit.Framework;
 using System.IO;
 
-namespace PT.PM.SqlAstConversion.Tests
+namespace PT.PM.SqlUstConversion.Tests
 {
     [TestFixture]
     public class SqlParserTests

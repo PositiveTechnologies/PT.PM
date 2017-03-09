@@ -3,15 +3,15 @@ using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.JavaAstConversion.Parser;
+using PT.PM.JavaUstConversion.Parser;
 using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 using System.Linq;
 using PT.PM.AntlrUtils;
 
-namespace PT.PM.JavaAstConversion.Converter
+namespace PT.PM.JavaUstConversion.Converter
 {
-    public partial class JavaAntlrAstConverterVisitor
+    public partial class JavaAntlrUstConverterVisitor
     {
         public UstNode VisitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext context)
         { 

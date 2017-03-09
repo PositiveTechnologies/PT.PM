@@ -7,18 +7,18 @@ using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.JavaScriptAstConversion.Parser;
+using PT.PM.JavaScriptUstConversion.Parser;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace PT.PM.JavaScriptAstConversion
+namespace PT.PM.JavaScriptUstConversion
 {
-    public partial class JavaScriptAntlrAstConverterVisitor : AntlrDefaultVisitor, IECMAScriptVisitor<UstNode>
+    public partial class JavaScriptAntlrUstConverterVisitor : AntlrDefaultVisitor, IECMAScriptVisitor<UstNode>
     {
-        public JavaScriptAntlrAstConverterVisitor(string fileName, string fileData)
+        public JavaScriptAntlrUstConverterVisitor(string fileName, string fileData)
             : base(fileName, fileData)
         {
         }

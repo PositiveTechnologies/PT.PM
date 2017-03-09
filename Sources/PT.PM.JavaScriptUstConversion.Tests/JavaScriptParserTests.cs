@@ -3,7 +3,7 @@ using PT.PM.Common.Tests;
 using NUnit.Framework;
 using System.Linq;
 
-namespace PT.PM.JavaScriptAstConversion.Tests
+namespace PT.PM.JavaScriptUstConversion.Tests
 {
     [TestFixture]
     public class JavaScriptParserTests

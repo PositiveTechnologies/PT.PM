@@ -3,7 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using Antlr4.Runtime;
 
-namespace PT.PM.JavaScriptAstConversion
+namespace PT.PM.JavaScriptUstConversion
 {
     public class JavaScriptParseTreeConverter: AntlrConverter
     {
@@ -16,7 +16,7 @@ namespace PT.PM.JavaScriptAstConversion
 
         protected override FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
         {
-            JavaScriptAntlrAstConverterVisitor visitor = new JavaScriptAntlrAstConverterVisitor(filePath, fileData);
+            JavaScriptAntlrUstConverterVisitor visitor = new JavaScriptAntlrUstConverterVisitor(filePath, fileData);
             visitor.Logger = logger;
             FileNode fileNode = (FileNode)visitor.Visit(ruleContext);
             return fileNode;

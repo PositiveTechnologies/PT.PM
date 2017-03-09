@@ -1,9 +1,9 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using Antlr4.Runtime;
-using PT.PM.JavaScriptAstConversion.Parser;
+using PT.PM.JavaScriptUstConversion.Parser;
 
-namespace PT.PM.JavaScriptAstConversion
+namespace PT.PM.JavaScriptUstConversion
 {
     public class JavaScriptAntlrParser: AntlrParser
     {

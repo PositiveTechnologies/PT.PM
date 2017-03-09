@@ -2,7 +2,7 @@
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.CSharpAstConversion.RoslynAstVisitor;
+using PT.PM.CSharpUstConversion.RoslynUstVisitor;
 using AspxParser;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PT.PM.CSharpAstConversion
+namespace PT.PM.CSharpUstConversion
 {
     public class AspxToCsConverter : DepthFirstAspxWithoutCloseTagVisitor<UstNode>
     {
@@ -115,23 +115,23 @@ namespace PT.PM.CSharpAstConversion
         private UstNode ParseAndConvert(string code, AspxParser.Location location)
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
-            var converter = new RoslynAstCommonConverterVisitor(tree, fileNode);
+            var converter = new RoslynUstCommonConverterVisitor(tree, fileNode);
             FileNode resultFileNode = converter.Walk();
             UstNode result = NodeHelpers.CreateLanguageNamespace(resultFileNode.Root, Language.Aspx, fileNode);
-            result.ApplyActionToDescendants(uAstNode => uAstNode.TextSpan = uAstNode.TextSpan.AddOffset(location.Start));
+            result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(location.Start));
             return result;
         }
 
         private UstNode ParseExpressionAndConvert(string expression, int offset)
         {
             ExpressionSyntax node = SyntaxFactory.ParseExpression(expression);
-            var converter = new RoslynAstCommonConverterVisitor(node, fileNode);
+            var converter = new RoslynUstCommonConverterVisitor(node, fileNode);
             UstNode result = converter.Walk(node);
             if (result is FileNode)
             {
                 result = ((FileNode)result).Root;
             }
-            result.ApplyActionToDescendants(uAstNode => uAstNode.TextSpan = uAstNode.TextSpan.AddOffset(offset));
+            result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(offset));
             return result;
         }
 
