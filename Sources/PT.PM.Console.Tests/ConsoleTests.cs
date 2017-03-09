@@ -21,8 +21,8 @@ namespace PT.PM.Console.Tests
             string patternsStr = PreparePatternsString();
             var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --log-errors");
 
-            Assert.AreEqual("Error: no viable alternative at input '(?' at 1:1", result.Output[1]);
-            Assert.AreEqual("Error: token recognition error at: '>' at 1:18", result.Output[2]);
+            Assert.AreEqual("Error: token recognition error at: '>' at 1:18", result.Output[1]);
+            Assert.AreEqual("Error: no viable alternative at input '(?' at 1:1", result.Output[2]);
         }
 
         [Test]

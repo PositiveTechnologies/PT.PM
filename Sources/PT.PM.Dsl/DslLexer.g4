@@ -62,7 +62,7 @@ CloseArbitraryDepthMark:  '}>';
 CloseParenthesisQuestion: ')?';
 DslEnd:                   '?' '>'   -> skip, popMode;
 
-Id:                   [a-zAA-Z_$][a-zA-Z0-9_$]*;
+Id:                   [a-zA-Z_$][a-zA-Z0-9_$]*;
 String:               '"' (~[\"] | '\\' . )* '"';
 Oct:                  '0'   OctDigit+;
 Int:                  '-'?  Digit+;
@@ -83,7 +83,7 @@ PatternString:        '"' (~[\"] | '\\' . )* '"';
 PatternOct:           '0'   OctDigit+;
 PatternInt:           '-'?  Digit+;
 PatternHex:           '0' X HexDigit+;
-PatternVar:           '@' [a-zAA-Z_][a-zA-Z0-9_]*;
+PatternVar:           '@' [a-zA-Z_][a-zA-Z0-9_]*;
 PatternId:            ~(' ' | '\t' | [\]|.~:*/+-])+;
 ClosePatternMark:     ']>'               -> popMode;
 PatternOr:            '||';

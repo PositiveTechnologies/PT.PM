@@ -79,7 +79,7 @@ namespace PT.PM.Dsl.Tests
             var data = "(?i)password(?-i)]> = <[\"\\w*\" || null]>";
             var processor = new DslProcessor() { Logger = logger };
             UstNode result = processor.Deserialize(data, LanguageExt.AllPatternLanguages);
-            Assert.AreEqual(2, logger.ErrorCount);
+            Assert.AreEqual(5, logger.ErrorCount);
         }
 
         [TestCase("<[@pwd:password]> = #; test_call(<[@pwd:^pass]>);")]

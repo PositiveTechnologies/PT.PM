@@ -33,7 +33,7 @@ namespace PT.PM.Prebuild
         {
             string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             AntlrDefaultPath = Path.Combine(currentPath,
-                @"..\..\Sources\packages\Antlr4.4.5.3\tools\antlr4-csharp-4.5.3-complete.jar");
+                @"..\..\Sources\packages\Antlr4.CodeGenerator.4.6.1-beta002\tools\antlr4-csharp-4.6.1-SNAPSHOT-complete.jar");
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             var cmdParser = new FluentCommandLineParser();
@@ -187,7 +187,7 @@ namespace PT.PM.Prebuild
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.UseShellExecute = false;
                 process.Start();
-                process.WaitForExit();
+                process.WaitForExit(7500);
 
                 string outputText = process.StandardOutput.ReadToEnd();
                 if (!string.IsNullOrWhiteSpace(outputText))
