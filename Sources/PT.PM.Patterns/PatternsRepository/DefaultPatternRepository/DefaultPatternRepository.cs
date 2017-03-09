@@ -142,8 +142,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "PasswordInComment. Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied." +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/password_management_password_in_comment.html",
+                DebugInfo = "PasswordInComment. Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
                 Languages = LanguageExt.AllPatternLanguages,
                 Data = new PatternNode
                 {

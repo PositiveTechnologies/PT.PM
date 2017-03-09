@@ -17,8 +17,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "InadequateRsaPadding. Weak Encryption: Inadequate RSA Padding. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/weak_encryption_inadequate_rsa_padding.html",
+                DebugInfo = "InadequateRsaPadding. Weak Encryption: Inadequate RSA Padding. ",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -73,8 +72,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "OverlyBroadPath. Cookie Security: Overly Broad Path: " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/cookie_security_overly_broad_path.html",
+                DebugInfo = "OverlyBroadPath. Cookie Security: Overly Broad Path.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -93,8 +91,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "OverlyBroadDomain Cookie Security: Overly Broad Domain: " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/cookie_security_overly_broad_domain.html",
+                DebugInfo = "OverlyBroadDomain Cookie Security: Overly Broad Domain.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -113,8 +110,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "PoorSeeding. Poor Seeding: " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/insecure_randomness_poor_seed.html",
+                DebugInfo = "PoorSeeding.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -133,8 +129,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "WeakCryptographicHash. Weak Cryptographic Hash: " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/weak_cryptographic_hash.html",
+                DebugInfo = "WeakCryptographicHash.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -153,8 +148,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "AndroidPermissionCheck. Often Misused: Android Permission Check. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/often_misused_android_permission_check.html",
+                DebugInfo = "AndroidPermissionCheck. Often Misused: Android Permission Check.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -173,8 +167,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "AndroidHostnameVerificationDisabled. Insecure SSL: Android Hostname Verification Disabled. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/insecure_ssl_android_hostname_verification_disabled.html",
+                DebugInfo = "AndroidHostnameVerificationDisabled. Insecure SSL: Android Hostname Verification Disabled.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -258,8 +251,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "StickyBroadcast. Android Bad Practices: Sticky Broadcast. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/android_bad_practices_sticky_broadcast.html",
+                DebugInfo = "StickyBroadcast. Android Bad Practices: Sticky Broadcast.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -281,8 +273,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "SendStickyBroadcastAsUser. Android Bad Practices: Sticky Broadcast. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/android_bad_practices_sticky_broadcast.html",
+                DebugInfo = "SendStickyBroadcastAsUser. Android Bad Practices: Sticky Broadcast.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -305,8 +296,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "InsecureSSL. Insecure SSL: Android Socket. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/insecure_ssl_android_socket.html",
+                DebugInfo = "InsecureSSL. Insecure SSL: Android Socket.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -332,8 +322,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "HardcodedSalt. Weak Cryptographic Hash: Hardcoded Salt. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/weak_cryptographic_hash_hardcoded_salt.html",
+                DebugInfo = "HardcodedSalt. Weak Cryptographic Hash: Hardcoded Salt.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -359,8 +348,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "MissingReceiverPermission. The program sends a broadcast without specifying the receiver permission. " +
-                              "Broadcasts sent without the receiver permission are accessible to any receiver. If these broadcasts contain sensitive data or reach a malicious receiver, the application may be compromised. " +
-                              "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/android_bad_practices_missing_receiver_permission.html",
+                              "Broadcasts sent without the receiver permission are accessible to any receiver. If these broadcasts contain sensitive data or reach a malicious receiver, the application may be compromised.",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
@@ -387,7 +375,6 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "MissingBroadcasterPermission. The program registers a receiver without specifying the broadcaster permission. " +
                     "Receiver registered without the broadcaster permission will receive messages from any broadcaster. " +
                     "If these messages contain malicious data or come from a malicious broadcaster, the application may be compromised. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/android_bad_practices_missing_broadcaster_permission.html " +
                     "Use this form: public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler)",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
@@ -418,8 +405,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new Pattern
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "CookieNotSentOverSSL. Cookie Security: Cookie not Sent Over SSL. " +
-                    "http://www.hpenterprisesecurity.com/vulncat/en/vulncat/java/cookie_security_cookie_not_sent_over_ssl.html",
+                DebugInfo = "CookieNotSentOverSSL. Cookie Security: Cookie not Sent Over SSL. ",
                 Languages = LanguageFlags.Java,
                 Data = new PatternNode
                 {
