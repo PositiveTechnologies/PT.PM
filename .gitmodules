@@ -2,3 +2,7 @@
 	path = Sources/AspxParser
 	url = https://github.com/PositiveTechnologies/AspxParser.git
 	branch = master
+[submodule "Sources/antlr-grammars-v4"]
+	path = Sources/antlr-grammars-v4
+	url = https://github.com/PositiveTechnologies/grammars-v4.git
+	branch = master
