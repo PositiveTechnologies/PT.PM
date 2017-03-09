@@ -20,8 +20,8 @@ namespace PT.PM.SqlUstConversion.Tests
             TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "PlSql"), Language.PlSql, Stage.Convert);
         }
 
-        [TestCase("TSQL Samples")]
-        [Ignore("Add TSQL samples from codebuff repository: https://github.com/antlr/codebuff/tree/master/corpus/sql/training")]
+        //[TestCase("TSQL Samples")]
+        //[Ignore("Add TSQL samples from codebuff repository: https://github.com/antlr/codebuff/tree/master/corpus/sql/training")]
         public void Convert_TSqlFiles_WithoutErrors(string projectKey)
         {
             TestHelper.CheckProject(
