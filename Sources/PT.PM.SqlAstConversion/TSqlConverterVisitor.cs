@@ -494,7 +494,7 @@ namespace PT.PM.SqlAstConversion
         }
 
         /// <returns><see cref="MethodDeclaration"/></returns>
-        public UstNode VisitCreate_procedure([NotNull] tsqlParser.Create_procedureContext context)
+        public UstNode VisitCreate_or_alter_procedure([NotNull] tsqlParser.Create_or_alter_procedureContext context)
         {
             var exprs = new List<Expression>();
             exprs.AddRange(context.procedure_option().Select(opt => (Expression)Visit(opt)).ToArray());
@@ -652,7 +652,7 @@ namespace PT.PM.SqlAstConversion
         {
             var funcName = new IdToken((context.DROP().GetText() + " " + context.PROCEDURE().GetText()).ToLowerInvariant(),
                 context.DROP().GetTextSpan().Union(context.PROCEDURE().GetTextSpan()), FileNode);
-            var procName = (IdToken)Visit(context.func_proc_name());
+            var procName = (IdToken)Visit(context.func_proc_name(0));
             var invocation = new InvocationExpression(funcName, new ArgsNode(procName), context.GetTextSpan(), FileNode);
             return new ExpressionStatement(invocation);
         }
@@ -1545,8 +1545,7 @@ namespace PT.PM.SqlAstConversion
             }
             else
             {
-                exprs.AddRange(context.query_expression().Select(queryExpr =>
-                    (Expression)Visit(queryExpr)));
+                exprs.Add((Expression)Visit(context.query_expression()));
             }
 
             InvocationExpression result = CreateSpecialInvocation(context.GetChild<ITerminalNode>(0), context, exprs);
@@ -1556,28 +1555,7 @@ namespace PT.PM.SqlAstConversion
         /// <returns><see cref="MultichildExpression"/></returns>
         public UstNode VisitQuery_specification([NotNull] tsqlParser.Query_specificationContext context)
         {
-            var exprs = new List<Expression>();
-            if (context.expression() != null)
-            {
-                exprs.Add((Expression)Visit(context.expression()));
-            }
-            if (context.select_list() != null)
-            {
-                exprs.Add((MultichildExpression)Visit(context.select_list()));
-            }
-            if (context.table_name() != null)
-            {
-                exprs.Add((IdToken)Visit(context.table_name()));
-            }
-            if (context.search_condition() != null)
-            {
-                foreach (var cond in context.search_condition())
-                {
-                    exprs.Add((Expression)Visit(cond));
-                }
-            }
-            var result = new MultichildExpression(exprs, context.GetTextSpan(), FileNode);
-            return result;
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
@@ -1912,18 +1890,13 @@ namespace PT.PM.SqlAstConversion
         /// <returns><see cref="MultichildExpression"/></returns>
         public UstNode VisitTable_hint([NotNull] tsqlParser.Table_hintContext context)
         {
-            var exprs = new List<Expression>();
-            for (int i = 0; i < context.ChildCount; i++)
-            {
-                exprs.Add((Expression)Visit(context.GetChild(i)));
-            }
-            return new MultichildExpression(exprs, FileNode);
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="Token"/></returns>
         public UstNode VisitIndex_value([NotNull] tsqlParser.Index_valueContext context)
         {
-            return Visit(context.GetChild<ITerminalNode>(0));
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="MultichildExpression"/></returns>
@@ -2435,6 +2408,66 @@ namespace PT.PM.SqlAstConversion
         }
 
         public UstNode VisitFile_size([NotNull] tsqlParser.File_sizeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitEmpty_statement([NotNull] tsqlParser.Empty_statementContext context)
+        {
+            return new EmptyStatement(context.GetTextSpan(), FileNode);
+        }
+
+        public UstNode VisitCreate_or_alter_function([NotNull] tsqlParser.Create_or_alter_functionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitFunc_body_returns_select([NotNull] tsqlParser.Func_body_returns_selectContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitFunc_body_returns_table([NotNull] tsqlParser.Func_body_returns_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitFunc_body_returns_scalar([NotNull] tsqlParser.Func_body_returns_scalarContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitFunction_option([NotNull] tsqlParser.Function_optionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitDrop_function([NotNull] tsqlParser.Drop_functionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitDbcc_clause([NotNull] tsqlParser.Dbcc_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitDbcc_options([NotNull] tsqlParser.Dbcc_optionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitTop_clause([NotNull] tsqlParser.Top_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitTop_percent([NotNull] tsqlParser.Top_percentContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitTop_count([NotNull] tsqlParser.Top_countContext context)
         {
             return VisitChildren(context);
         }

@@ -12,6 +12,7 @@ using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace PT.PM.JavaScriptAstConversion
 {
@@ -24,25 +25,16 @@ namespace PT.PM.JavaScriptAstConversion
 
         public UstNode VisitTernaryExpression([NotNull] ECMAScriptParser.TernaryExpressionContext context)
         {
-            Expression result;
-            if (context.binaryExpression() != null)
-            {
-                result = (Expression)Visit(context.binaryExpression());
-            }
-            else
-            {
-                var condition = (Expression)Visit(context.ternaryExpression());
-                var trueExpression = (Expression)Visit(context.singleExpression(0));
-                var falseExpression = (Expression)Visit(context.singleExpression(1));
-                result = new ConditionalExpression(condition, trueExpression, falseExpression, context.GetTextSpan(), FileNode);
-            }
-            return result;
+            var condition = (Expression)Visit(context.singleExpression(0));
+            var trueExpression = (Expression)Visit(context.singleExpression(1));
+            var falseExpression = (Expression)Visit(context.singleExpression(2));
+            return new ConditionalExpression(condition, trueExpression, falseExpression, context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitLogicalAndExpression([NotNull] ECMAScriptParser.LogicalAndExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                context.binaryExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitPreIncrementExpression([NotNull] ECMAScriptParser.PreIncrementExpressionContext context) { return VisitChildren(context); }
@@ -54,7 +46,7 @@ namespace PT.PM.JavaScriptAstConversion
         public UstNode VisitLogicalOrExpression([NotNull] ECMAScriptParser.LogicalOrExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                context.binaryExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitNotExpression([NotNull] ECMAScriptParser.NotExpressionContext context) { return VisitChildren(context); }
@@ -63,8 +55,8 @@ namespace PT.PM.JavaScriptAstConversion
 
         public UstNode VisitArgumentsExpression([NotNull] ECMAScriptParser.ArgumentsExpressionContext context)
         {
-            var target = (Expression)Visit(context.notAdditiveExpression());
-            var argsNode = context.argumentList() != null ? (ArgsNode)Visit(context.argumentList()) : new ArgsNode();
+            var target = (Expression)Visit(context.singleExpression());
+            var argsNode = (ArgsNode)Visit(context.arguments());
             var result = new InvocationExpression(target, argsNode, context.GetTextSpan(), FileNode);
             return result;
         }
@@ -104,7 +96,7 @@ namespace PT.PM.JavaScriptAstConversion
         public UstNode VisitEqualityExpression([NotNull] ECMAScriptParser.EqualityExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                context.binaryExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitBitXOrExpression([NotNull] ECMAScriptParser.BitXOrExpressionContext context) { return VisitChildren(context); }
@@ -112,13 +104,13 @@ namespace PT.PM.JavaScriptAstConversion
         public UstNode VisitMultiplicativeExpression([NotNull] ECMAScriptParser.MultiplicativeExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                context.notAdditiveExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitBitShiftExpression([NotNull] ECMAScriptParser.BitShiftExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                context.binaryExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitParenthesizedExpression([NotNull] ECMAScriptParser.ParenthesizedExpressionContext context)
@@ -130,23 +122,15 @@ namespace PT.PM.JavaScriptAstConversion
 
         public UstNode VisitAdditiveExpression([NotNull] ECMAScriptParser.AdditiveExpressionContext context)
         {
-            Expression result;
-            if (context.additiveExpression() == null)
-            {
-                result = (Expression)Visit(context.notAdditiveExpression());
-            }
-            else
-            {
-                result = (Expression)CreateBinaryOperatorExpression(
-                    context.additiveExpression(), context.GetChild<ITerminalNode>(0), context.notAdditiveExpression());
-            }
+            Expression result = (Expression)CreateBinaryOperatorExpression(
+                    context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
             return result;
         }
 
         public UstNode VisitRelationalExpression([NotNull] ECMAScriptParser.RelationalExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                context.binaryExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitBitNotExpression([NotNull] ECMAScriptParser.BitNotExpressionContext context) { return VisitChildren(context); }
@@ -160,7 +144,7 @@ namespace PT.PM.JavaScriptAstConversion
 
         public UstNode VisitMemberDotExpression([NotNull] ECMAScriptParser.MemberDotExpressionContext context)
         {
-            var target = (Expression)Visit(context.notAdditiveExpression());
+            var target = (Expression)Visit(context.singleExpression());
             var name = (Expression)Visit(context.identifierName());
             return new MemberReferenceExpression(target, name, context.GetTextSpan(), FileNode);
         }
@@ -177,13 +161,13 @@ namespace PT.PM.JavaScriptAstConversion
         public UstNode VisitBitAndExpression([NotNull] ECMAScriptParser.BitAndExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                   context.binaryExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                   context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitBitOrExpression([NotNull] ECMAScriptParser.BitOrExpressionContext context)
         {
             return CreateBinaryOperatorExpression(
-                context.binaryExpression(), context.GetChild<ITerminalNode>(0), context.singleExpression());
+                context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
         public UstNode VisitAssignmentOperatorExpression([NotNull] ECMAScriptParser.AssignmentOperatorExpressionContext context)
@@ -380,6 +364,11 @@ namespace PT.PM.JavaScriptAstConversion
 
         public UstNode VisitPropertySetParameterList([NotNull] ECMAScriptParser.PropertySetParameterListContext context) { return VisitChildren(context); }
 
+        public UstNode VisitArguments([NotNull] ECMAScriptParser.ArgumentsContext context)
+        {
+            return context.argumentList() != null ? (ArgsNode)Visit(context.argumentList()) : new ArgsNode();
+        }
+
         public UstNode VisitArgumentList([NotNull] ECMAScriptParser.ArgumentListContext context)
         {
             Expression[] args = context.singleExpression().Select(expr => Visit(expr).ToExpressionIfRequired()).ToArray();
@@ -472,25 +461,5 @@ namespace PT.PM.JavaScriptAstConversion
         }
 
         public UstNode VisitEof([NotNull] ECMAScriptParser.EofContext context) { return VisitChildren(context); }
-
-        public UstNode VisitAdditiveExpressionLabel([NotNull] ECMAScriptParser.AdditiveExpressionLabelContext context)
-        {
-            return Visit(context.additiveExpression());
-        }
-
-        public UstNode VisitNotAdditiveExpression([NotNull] ECMAScriptParser.NotAdditiveExpressionContext context)
-        {
-            return VisitShouldNotBeVisited(context);
-        }
-
-        public UstNode VisitTernaryExpressionLabel([NotNull] ECMAScriptParser.TernaryExpressionLabelContext context)
-        {
-            return Visit(context.ternaryExpression());
-        }
-
-        public UstNode VisitBinaryExpression([NotNull] ECMAScriptParser.BinaryExpressionContext context)
-        {
-            return VisitShouldNotBeVisited(context);
-        }
     }
 }
