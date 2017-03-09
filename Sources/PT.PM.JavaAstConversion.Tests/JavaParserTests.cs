@@ -21,17 +21,6 @@ namespace PT.PM.JavaAstConversion.Tests
             TestHelper.CheckFile("ParseError.java", Language.Java, Stage.Parse, shouldContainsErrors:true);
         }
 
-        [TestCase("InacBaseServiceApiDO.JAVA")]
-        public void Parse_JavaSyntax_WithoutErrors(string fileName)
-        {
-            if (!TestHelper.AllTests)
-            {
-                Assert.Ignore("Insufficiently big stack size.");
-            }
-
-            TestHelper.CheckFile(fileName, Language.Java, Stage.Parse);
-        }
-
         [TestCase("WebGoat.Java-05a1f5")]
         public void Parse_JavaProject_WithoutErrors(string projectKey)
         {

@@ -28,22 +28,6 @@ namespace PT.PM.PhpAstConversion.Tests
             TestHelper.CheckFile(fileName, Language.Php, Stage.Parse);
         }
 
-        [TestCase("WebGoatPHP-6f48c9")]
-        [TestCase("phpBB-3.1.6")]
-        [TestCase("ZendFramework-2.4.8")]
-        public void Parse_PhpProject_WithoutErrors(string projectKey)
-        {
-            if (!TestHelper.AllTests)
-            {
-                Assert.Ignore(TestHelper.TooLongTestDurationMessage);
-            }
-
-            TestHelper.CheckProject(TestProjects.PhpProjects
-                .Single(p => p.Key == projectKey), Language.Php, Stage.Parse);
-        }
-
-        // TODO: Add Yii Framework, Kohana, phpMyAdmin, MediaWiki
-
         [Test]
         public void Parse_NewLine_CorrectLineColumn()
         {

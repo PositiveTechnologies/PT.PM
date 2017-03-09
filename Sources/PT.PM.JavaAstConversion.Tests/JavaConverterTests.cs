@@ -20,11 +20,6 @@ namespace PT.PM.JavaAstConversion.Tests
         [TestCase("AllInOne.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
-            if (fileName == "ManyStringsConcat.java" && !TestHelper.AllTests)
-            {
-                Assert.Ignore("Insufficiently big stack size.");
-            }
-
             TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
         }
 

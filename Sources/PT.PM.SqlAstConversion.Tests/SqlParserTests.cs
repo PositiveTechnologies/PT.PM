@@ -15,14 +15,6 @@ namespace PT.PM.SqlAstConversion.Tests
             TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "PlSql"), Language.PlSql, Stage.Parse);
         }
 
-        [TestCase("TSQL Samples")]
-        [Ignore("Add TSQL samples from codebuff repository: https://github.com/antlr/codebuff/tree/master/corpus/sql/training")]
-        public void Parse_TSqlFiles_WithoutErrors(string projectKey)
-        {
-            TestHelper.CheckProject(
-                TestProjects.TSqlProjects.Single(p => p.Key == projectKey), Language.TSql, Stage.Parse);
-        }
-
         [TestCase(@"TSql/control_flow.sql")]
         [TestCase(@"TSql/cursors.sql")]
         [TestCase(@"TSql/ddl_create_alter_database.sql")]

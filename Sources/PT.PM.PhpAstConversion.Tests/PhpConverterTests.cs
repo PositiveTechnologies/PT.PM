@@ -15,19 +15,12 @@ namespace PT.PM.PhpAstConversion.Tests
         }
 
         [TestCase("WebGoatPHP-6f48c9")]
-        [TestCase("phpBB-3.1.6")]
-        [TestCase("ZendFramework-2.4.8")]
+        // [TestCase("phpBB-3.1.6")] // Too long test duration
+        // [TestCase("ZendFramework-2.4.8")] // Too long test duration
         public void Convert_PhpProject_WithoutErrors(string projectKey)
         {
-            if (projectKey == "WebGoatPHP-6f48c9")
-            {
-                TestHelper.CheckProject(
-                    TestProjects.PhpProjects.Single(p => p.Key == projectKey), Language.Php, Stage.Convert);
-            }
-            else if (!TestHelper.AllTests)
-            {
-                Assert.Ignore(TestHelper.TooLongTestDurationMessage);
-            }
+            TestHelper.CheckProject(
+                TestProjects.PhpProjects.Single(p => p.Key == projectKey), Language.Php, Stage.Convert);
         }
 
         [Test]

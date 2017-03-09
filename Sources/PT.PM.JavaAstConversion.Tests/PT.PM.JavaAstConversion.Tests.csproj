@@ -97,9 +97,6 @@
     <Content Include="Data\AllInOne.java">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\InacBaseServiceApiDO.JAVA">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Data\ManyStringsConcat.java">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
