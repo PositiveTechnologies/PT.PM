@@ -89,7 +89,7 @@ namespace PT.PM.Common.Tests
             }
             if (codeRepository == null)
             {
-                Assert.Ignore($@"Project {testProject.Key} has not been found at " + string.Join(", ", testProject.Urls));
+                Assert.Ignore($@"Project {testProject.Key} has not been found at {(string.Join(", ", testProject.Urls))} or can not be downloaded.");
                 return ArrayUtils<MatchingResultDto>.EmptyArray;
             }
 

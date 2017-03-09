@@ -40,7 +40,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override UstNode[] GetChildren()
         {
-            var result = new List<UstNode>(Children);
+            var result = new List<UstNode>(Expressions);
             return result.ToArray();
         }
 
