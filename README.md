@@ -8,13 +8,11 @@ domain-specific language (DSL).
 
 | Windows Build Status |
 |---|
-|[![Build status](https://ci.appveyor.com/api/projects/status/eh3u6u64rdvim2ef?svg=true)](https://ci.appveyor.com/project/KvanTTT/pt-pm)|
+|[![Build status](https://ci.appveyor.com/api/projects/status/70hsp9pj8is24s4i?svg=true)](https://ci.appveyor.com/project/KvanTTT/pt-pm-xi6ya)|
 
 ## NuGet and Artifacts
 
-The last nightly packages can be found here: [https://ci.appveyor.com/nuget/pt-pm-n2uh2lsiteym](https://ci.appveyor.com/nuget/pt-pm-n2uh2lsiteym). See an article [Using nightly build feed](https://github.com/AvaloniaUI/Avalonia/wiki/Using-nightly-build-feed) for custom package source adding.
-
-Artifacts also available: [https://ci.appveyor.com/project/KvanTTT/pt-pm/build/artifacts](https://ci.appveyor.com/project/KvanTTT/pt-pm/build/artifacts).
+The last nightly packages can be found here: [https://ci.appveyor.com/nuget/pt-pm-8eejhkgvrrha](https://ci.appveyor.com/nuget/pt-pm-8eejhkgvrrha). See an article [Using nightly build feed](https://github.com/AvaloniaUI/Avalonia/wiki/Using-nightly-build-feed) for custom package source adding.
 
 ## Documentation
 
