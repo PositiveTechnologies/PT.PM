@@ -6,11 +6,21 @@ UST). At present time C\#, Java, PHP, PL/SQL, T-SQL, and JavaScript
 are supported. Patterns can be described within the code or using a
 domain-specific language (DSL).
 
-## Use Cases and API (TODO)
+| Windows Build Status |
+|---|
+|[![Build status](https://ci.appveyor.com/api/projects/status/eh3u6u64rdvim2ef?svg=true)](https://ci.appveyor.com/project/KvanTTT/pt-pm)|
 
-## Console API (TODO)
+## NuGet and Artifacts
 
-## DSL Description and Examples of Patterns (TODO)
+The last nightly packages can be found here: [https://ci.appveyor.com/nuget/pt-pm-n2uh2lsiteym](https://ci.appveyor.com/nuget/pt-pm-n2uh2lsiteym). See an article [Using nightly build feed](https://github.com/AvaloniaUI/Avalonia/wiki/Using-nightly-build-feed) for custom package source adding.
+
+Artifacts also available: [https://ci.appveyor.com/project/KvanTTT/pt-pm/build/artifacts](https://ci.appveyor.com/project/KvanTTT/pt-pm/build/artifacts).
+
+## Documentation
+
+* Use Cases and API (TODO)
+* Console API (TODO)
+* DSL Description and Examples of Patterns (TODO)
 
 ## Projects Description
 
@@ -30,7 +40,7 @@ domain-specific language (DSL).
 	* PT.PM.Patterns
 	* PT.PM.Matching
 
-Further projects:
+Other projects:
 
 * PT.PM.Common is an helper shared library.
 * PT.PM.AntlrUtils are the helper methods for working with ANTLR
@@ -63,11 +73,7 @@ containing the **.Tests** suffix:
 ## Tests
 
 Parsing and converting test scenarios are written for projects
-downloaded from GitHub and cached in a local folder:
-
-* [WebGoat.NET](https://github.com/jerryhoff/WebGoat.NET)
-* [WebGoat](https://github.com/WebGoat/WebGoat)
-* [WebGoatPHP](https://github.com/shivamdixit/WebGoatPHP)
+downloaded from GitHub and cached in a local folder.
 
 ## Dependencies
 * [FluentCommandLineParser](https://github.com/fclp/fluent-command-line-parser)
