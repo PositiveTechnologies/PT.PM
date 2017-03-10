@@ -1,13 +1,6 @@
 version: 0.9.{build}
 configuration: Release
 platform: Any CPU
-clone_script:
-- cmd: >-
-    git clone -q --branch=master https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm
-    
-    cd C:\projects\pt-pm
-    
-    git submodule update --init --recursive
 assembly_info:
   patch: true
   file: Sources\AssemblyInfoCommon.cs
