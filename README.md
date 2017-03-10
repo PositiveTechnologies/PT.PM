@@ -14,6 +14,8 @@ domain-specific language (DSL).
 
 The last nightly packages can be found here: [https://ci.appveyor.com/nuget/pt-pm-8eejhkgvrrha](https://ci.appveyor.com/nuget/pt-pm-8eejhkgvrrha). See an article [Using nightly build feed](https://github.com/AvaloniaUI/Avalonia/wiki/Using-nightly-build-feed) for custom package source adding.
 
+Artifacts also available: [https://ci.appveyor.com/project/KvanTTT/pt-pm-xi6ya/build/artifacts](https://ci.appveyor.com/project/KvanTTT/pt-pm-xi6ya/build/artifacts).
+
 ## Documentation
 
 * Use Cases and API (TODO)
