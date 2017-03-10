@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -28,6 +29,8 @@ namespace PT.PM.Prebuild
 
         static void Main(string[] args)
         {
+            var argsWithUsualSlashes = args.Select(arg => arg.Replace('/', '\\')).ToArray(); // TODO: bug in FluentCommandLineParser.
+
             string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             AntlrDefaultPath = Path.Combine(currentPath,
                 @"..\..\Sources\packages\Antlr4.CodeGenerator.4.6.1-beta002\tools\antlr4-csharp-4.6.1-SNAPSHOT-complete.jar");
@@ -46,9 +49,9 @@ namespace PT.PM.Prebuild
             cmdParser.Setup<string>("package").Callback(package => packageName = package);
             cmdParser.Setup<string>("antlrJar").Callback(antlrJar => AntlrJarFileName = NormDirSeparator(antlrJar));
             cmdParser.Setup<bool>("listener").Callback(l => listener = l);
-            cmdParser.Setup<string>("output").Callback(o => output = o);
+            cmdParser.Setup<string>("output").Callback(o => output = NormDirSeparator(o));
 
-            var result = cmdParser.Parse(args);
+            var result = cmdParser.Parse(argsWithUsualSlashes);
             if (!result.HasErrors)
             {
                 GenerateStatus generateStatus = GenerateStatus.NotGenerated;
