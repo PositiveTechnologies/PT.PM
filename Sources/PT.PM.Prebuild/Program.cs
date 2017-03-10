@@ -3,12 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PT.PM.Prebuild
 {
@@ -43,11 +40,11 @@ namespace PT.PM.Prebuild
             string packageName = null;
             bool listener = false;
             string output = null;
-            AntlrJarFileName = Path.GetFullPath(AntlrDefaultPath);
-            cmdParser.Setup<string>("lexer").Callback(lexer => lexerFile = Path.GetFullPath(lexer));
-            cmdParser.Setup<string>("parser").Callback(parser => parserFile = Path.GetFullPath(parser));
+            AntlrJarFileName = NormDirSeparator(AntlrDefaultPath);
+            cmdParser.Setup<string>("lexer").Callback(lexer => lexerFile = NormDirSeparator(lexer));
+            cmdParser.Setup<string>("parser").Callback(parser => parserFile = NormDirSeparator(parser));
             cmdParser.Setup<string>("package").Callback(package => packageName = package);
-            cmdParser.Setup<string>("antlrJar").Callback(antlrJar => AntlrJarFileName = Path.GetFullPath(antlrJar));
+            cmdParser.Setup<string>("antlrJar").Callback(antlrJar => AntlrJarFileName = NormDirSeparator(antlrJar));
             cmdParser.Setup<bool>("listener").Callback(l => listener = l);
             cmdParser.Setup<string>("output").Callback(o => output = o);
 
@@ -218,6 +215,11 @@ namespace PT.PM.Prebuild
                 Console.WriteLine($"{shortGrammarFileName} has not been changed. Parser has not been generated.");
             }
             return result;
+        }
+
+        public static string NormDirSeparator(string path)
+        {
+            return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
         }
     }
 }
