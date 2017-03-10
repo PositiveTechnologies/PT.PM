@@ -1,0 +1,49 @@
+version: 0.9.{build}
+configuration: Release
+platform: Any CPU
+clone_script:
+- cmd: >-
+    git clone -q --branch=dev https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm
+
+    git submodule update --init --recursive
+assembly_info:
+  patch: true
+  file: Sources\AssemblyInfoCommon.cs
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+before_build:
+- cmd: nuget restore Sources\PT.PM.sln
+build:
+  project: Sources\PT.PM.sln
+  verbosity: minimal
+test:
+  assemblies:
+  - Unit\Bin\Release\PT.PM.CSharpParseTreeUst.Tests.dll
+  - Unit\Bin\Release\PT.PM.JavaParseTreeUst.Tests.dll
+  - Unit\Bin\Release\PT.PM.JavaScriptParseTreeUst.Tests.dll
+  - Unit\Bin\Release\PT.PM.PhpParseTreeUst.Tests.dll
+  - Unit\Bin\Release\PT.PM.SqlParseTreeUst.Tests.dll
+  - Unit\Bin\Release\PT.PM.UstPreprocessing.Tests.dll
+  - Unit\Bin\Release\PT.PM.Matching.Tests.dll
+  - Unit\Bin\Release\PT.PM.Tests.dll
+  - Unit\Bin\Release\PT.PM.Dsl.Tests.dll
+  - Unit\Bin\Release\PT.PM.Cli.Tests.dll
+after_test:
+- cmd: >-
+    nuget pack PT.PM.nuspec -version %APPVEYOR_BUILD_VERSION%
+
+    nuget push PT.PM.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/kvanttt-dh1jos2q1cof/api/v2/package
+
+    nuget pack PT.PM.Cli.nuspec -version %APPVEYOR_BUILD_VERSION%
+
+    nuget push PT.PM.Cli.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/kvanttt-dh1jos2q1cof/api/v2/package
+
+    cd bin\%CONFIGURATION%
+
+    7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.Cli.exe *.config
+artifacts:
+- path: bin\$(configuration)\*.zip
+  name: PT.PM.Console
+- path: '*.nupkg'
+  name: PT.PM.NuGet
