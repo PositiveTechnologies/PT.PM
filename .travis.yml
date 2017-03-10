@@ -4,5 +4,5 @@ install:
     - mono Dependencies/nuget.exe restore Sources/PT.PM.sln
 script:
     - xbuild /p:Configuration=Release Sources/PT.PM.sln /p:TargetFrameworkVersion="v4.5"
-    - cd Unit/Bin/Release
-    - mono ../../../Sources/packages/NUnit.ConsoleRunner.3.6.0/tools/nunit3-console.exe PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.UstPreprocessing.Tests.dll PT.PM.Matching.Tests.dll PT.PM.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.Cli.Tests.dll
+    - cd Tests/Unit/bin/Release
+    - mono ../../../../Sources/packages/NUnit.ConsoleRunner.3.6.0/tools/nunit3-console.exe PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.UstPreprocessing.Tests.dll PT.PM.Matching.Tests.dll PT.PM.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.Cli.Tests.dll
