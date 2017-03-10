@@ -19,19 +19,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Common", "PT.PM.Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Common.Tests", "PT.PM.Common.Tests\PT.PM.Common.Tests.csproj", "{BCB2FD80-7873-4DBA-B911-6B9C80095C21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpUstConversion", "PT.PM.CSharpUstConversion\PT.PM.CSharpUstConversion.csproj", "{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpParseTreeUst", "PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj", "{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpUstConversion.Tests", "PT.PM.CSharpUstConversion.Tests\PT.PM.CSharpUstConversion.Tests.csproj", "{E3DB8014-0BFB-4399-9B49-A8BE446C5049}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpParseTreeUst.Tests", "PT.PM.CSharpParseTreeUst.Tests\PT.PM.CSharpParseTreeUst.Tests.csproj", "{E3DB8014-0BFB-4399-9B49-A8BE446C5049}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PhpUstConversion", "PT.PM.PhpUstConversion\PT.PM.PhpUstConversion.csproj", "{08FBC341-AC44-4CAE-AE71-9462F7885E3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PhpParseTreeUst", "PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj", "{08FBC341-AC44-4CAE-AE71-9462F7885E3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PhpUstConversion.Tests", "PT.PM.PhpUstConversion.Tests\PT.PM.PhpUstConversion.Tests.csproj", "{933DCCA3-B5D1-45AE-ACAB-1672D71BC349}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PhpParseTreeUst.Tests", "PT.PM.PhpParseTreeUst.Tests\PT.PM.PhpParseTreeUst.Tests.csproj", "{933DCCA3-B5D1-45AE-ACAB-1672D71BC349}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaUstConversion.Tests", "PT.PM.JavaUstConversion.Tests\PT.PM.JavaUstConversion.Tests.csproj", "{47F5B401-E788-494E-89C8-A8CA0B6917C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaParseTreeUst.Tests", "PT.PM.JavaParseTreeUst.Tests\PT.PM.JavaParseTreeUst.Tests.csproj", "{47F5B401-E788-494E-89C8-A8CA0B6917C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.AntlrUtils", "PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj", "{2B5519C9-4566-4743-A14A-66234299CDB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaUstConversion", "PT.PM.JavaUstConversion\PT.PM.JavaUstConversion.csproj", "{F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaParseTreeUst", "PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj", "{F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Dsl", "PT.PM.Dsl\PT.PM.Dsl.csproj", "{0CC3091C-DB40-49D1-AC8F-3ACCABCAD952}"
 EndProject
@@ -42,9 +42,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		AssemblyInfoCommon.cs = AssemblyInfoCommon.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlUstConversion", "PT.PM.SqlUstConversion\PT.PM.SqlUstConversion.csproj", "{8F34670A-B91D-460B-9D67-7A03F7194673}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst", "PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj", "{8F34670A-B91D-460B-9D67-7A03F7194673}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlUstConversion.Tests", "PT.PM.SqlUstConversion.Tests\PT.PM.SqlUstConversion.Tests.csproj", "{EEBBE595-2478-40B1-A147-7F44E40A2686}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst.Tests", "PT.PM.SqlParseTreeUst.Tests\PT.PM.SqlParseTreeUst.Tests.csproj", "{EEBBE595-2478-40B1-A147-7F44E40A2686}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.UstPreprocessing", "PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj", "{6B3D2A76-9A11-4C40-97E1-18EA210376B2}"
 EndProject
@@ -56,9 +56,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Prebuild", "PT.PM.Pre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspxParser", "AspxParser\AspxParser\AspxParser.csproj", "{88AF3957-A64A-4715-ADE5-3BE099034BDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptUstConversion", "PT.PM.JavaScriptUstConversion\PT.PM.JavaScriptUstConversion.csproj", "{98727837-F9FA-476C-B0B5-88845B53FDDF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst", "PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj", "{98727837-F9FA-476C-B0B5-88845B53FDDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptUstConversion.Tests", "PT.PM.JavaScriptUstConversion.Tests\PT.PM.JavaScriptUstConversion.Tests.csproj", "{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst.Tests", "PT.PM.JavaScriptParseTreeUst.Tests\PT.PM.JavaScriptParseTreeUst.Tests.csproj", "{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

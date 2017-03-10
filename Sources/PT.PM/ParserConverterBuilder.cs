@@ -1,12 +1,12 @@
 ﻿using System;
-using PT.PM.UstConversion;
+using PT.PM.ParseTreeUst;
 using PT.PM.UstParsing;
 using PT.PM.Common;
-using PT.PM.CSharpUstConversion;
-using PT.PM.JavaUstConversion;
-using PT.PM.SqlUstConversion;
+using PT.PM.CSharpParseTreeUst;
+using PT.PM.JavaParseTreeUst;
+using PT.PM.SqlParseTreeUst;
 using System.Collections.Generic;
-using PT.PM.JavaScriptUstConversion;
+using PT.PM.JavaScriptParseTreeUst;
 
 namespace PT.PM
 {

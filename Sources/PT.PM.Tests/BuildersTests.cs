@@ -1,12 +1,12 @@
-﻿using PT.PM.UstConversion;
+﻿using PT.PM.ParseTreeUst;
 using PT.PM.UstParsing;
 using PT.PM.Common;
-using PT.PM.CSharpUstConversion;
+using PT.PM.CSharpParseTreeUst;
 using PT.PM.Dsl;
-using PT.PM.JavaUstConversion;
+using PT.PM.JavaParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Patterns;
-using PT.PM.SqlUstConversion;
+using PT.PM.SqlParseTreeUst;
 using NUnit.Framework;
 
 namespace PT.PM.Tests

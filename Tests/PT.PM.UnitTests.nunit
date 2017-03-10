@@ -1,11 +1,11 @@
 ﻿<NUnitProject>
   <Settings activeconfig="Debug" processModel="Default" domainUsage="Default" />
   <Config name="Debug" binpathtype="Auto" runtimeFramework="net-4.5">
-    <assembly path="Unit\Bin\Debug\PT.PM.CSharpUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Debug\PT.PM.JavaUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Debug\PT.PM.JavaScriptUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Debug\PT.PM.PhpUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Debug\PT.PM.SqlUstConversion.Tests.dll" />
+    <assembly path="Unit\Bin\Debug\PT.PM.CSharpParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Debug\PT.PM.JavaParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Debug\PT.PM.JavaScriptParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Debug\PT.PM.PhpParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Debug\PT.PM.SqlParseTreeUst.Tests.dll" />
     <assembly path="Unit\Bin\Debug\PT.PM.UstPreprocessing.Tests.dll" />
     <assembly path="Unit\Bin\Debug\PT.PM.Matching.Tests.dll" />
     <assembly path="Unit\Bin\Debug\PT.PM.Tests.dll" />
@@ -13,11 +13,11 @@
     <assembly path="Unit\Bin\Debug\PT.PM.Console.Tests.dll" />
   </Config>
   <Config name="Release" binpathtype="Auto" runtimeFramework="net-4.5">
-    <assembly path="Unit\Bin\Release\PT.PM.CSharpUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Release\PT.PM.JavaUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Release\PT.PM.JavaScriptUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Release\PT.PM.PhpUstConversion.Tests.dll" />
-    <assembly path="Unit\Bin\Release\PT.PM.SqlUstConversion.Tests.dll" />
+    <assembly path="Unit\Bin\Release\PT.PM.CSharpParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Release\PT.PM.JavaParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Release\PT.PM.JavaScriptParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Release\PT.PM.PhpParseTreeUst.Tests.dll" />
+    <assembly path="Unit\Bin\Release\PT.PM.SqlParseTreeUst.Tests.dll" />
     <assembly path="Unit\Bin\Release\PT.PM.UstPreprocessing.Tests.dll" />
     <assembly path="Unit\Bin\Release\PT.PM.Matching.Tests.dll" />
     <assembly path="Unit\Bin\Release\PT.PM.Tests.dll" />

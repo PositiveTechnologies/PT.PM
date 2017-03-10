@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{08FBC341-AC44-4CAE-AE71-9462F7885E3E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PT.PM.PhpParseTreeUst</RootNamespace>
+    <AssemblyName>PT.PM.PhpParseTreeUst</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=e9931a4108ef2354, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.4.6.1-beta002\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generated\PHPLexer.cs" />
+    <Compile Include="PhpAntlrParseTreeConverterVisitor.cs" />
+    <Compile Include="Generated\PHPParser.cs" />
+    <Compile Include="Generated\PHPParserVisitor.cs" />
+    <Compile Include="PhpAntlrParseTree.cs" />
+    <Compile Include="PhpAntlrParseTreeConverter.cs" />
+    <Compile Include="PhpAntlrParser.cs" />
+    <Compile Include="PhpAntlrParseTreeConverterVisitorHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\AssemblyInfoCommon.cs">
+      <Link>Properties\AssemblyInfoCommon.cs</Link>
+    </Compile>
+    <None Include="..\antlr-grammars-v4\php\CSharpSharwell\PHPLexer.g4">
+      <Link>PHPLexer.g4</Link>
+    </None>
+    <None Include="..\antlr-grammars-v4\php\PHPParser.g4">
+      <Link>PHPParser.g4</Link>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj">
+      <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
+      <Name>PT.PM.AntlrUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
+      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
+      <Name>PT.PM.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj">
+      <Project>{98727837-f9fa-476c-b0b5-88845b53fddf}</Project>
+      <Name>PT.PM.JavaScriptParseTreeUst</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj">
+      <Project>{0292ce45-bba4-46b8-ade4-3c39162c1f46}</Project>
+      <Name>PT.PM.Prebuild</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --lexer "$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PHPLexer.g4" --parser "$(ProjectDir)..\antlr-grammars-v4\php\PHPParser.g4" --package "PT.PM.PhpParseTreeUst" --output "$(ProjectDir)Generated"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

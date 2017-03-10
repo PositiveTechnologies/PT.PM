@@ -16,11 +16,11 @@ domain-specific language (DSL).
 
 * Creating an AST from the source code and converting this parse tree to UST 
 (C\#, Java, PHP, PL/SQL, T-SQL, and JavaScript are implemented).
-* PT.PM.CSharpUstConversion for C\#- and ASP.NET files (.aspx, .ascx, etc.).
-	* PT.PM.JavaUstConversion
-	* PT.PM.PhpUstConversion
-	* PT.PM.SqlUstConversion (for PL/SQL и T-SQL)
-	* PT.PM.JavaScriptUstConversion
+* PT.PM.CSharpParseTreeUst for C\#- and ASP.NET files (.aspx, .ascx, etc.).
+	* PT.PM.JavaParseTreeUst
+	* PT.PM.PhpParseTreeUst
+	* PT.PM.SqlParseTreeUst (for PL/SQL и T-SQL)
+	* PT.PM.JavaScriptParseTreeUst
 * DSL processing:
 	* PT.PM.Patterns
 	* PT.PM.Dsl
@@ -48,12 +48,12 @@ Unit tests for projects are located in the projects with similar names
 containing the **.Tests** suffix:
 
 * PT.PM.Common.Tests
-* PT.PM.CSharpUstConversion.Tests
-* PT.PM.CSharpAntlrUstConversion.Tests
-* PT.PM.JavaUstConversion.Tests
-* PT.PM.PhpUstConversion.Tests
-* PT.PM.SqlUstConversion.Tests
-* PT.PM.JavaScriptUstConversion.Tests
+* PT.PM.CSharpParseTreeUst.Tests
+* PT.PM.CSharpAntlrParseTreeUst.Tests
+* PT.PM.JavaParseTreeUst.Tests
+* PT.PM.PhpParseTreeUst.Tests
+* PT.PM.SqlParseTreeUst.Tests
+* PT.PM.JavaScriptParseTreeUst.Tests
 * PT.PM.Dsl.Tests
 * PT.PM.UstPreprocessing.Tests
 * PT.PM.Matching.Tests

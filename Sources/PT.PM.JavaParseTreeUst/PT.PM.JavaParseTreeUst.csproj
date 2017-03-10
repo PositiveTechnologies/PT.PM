@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PT.PM.JavaParseTreeUst</RootNamespace>
+    <AssemblyName>PT.PM.JavaParseTreeUst</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=e9931a4108ef2354, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.4.6.1-beta002\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Converter\ExpressionVisitor.cs" />
+    <Compile Include="Converter\JavaAntlrUstConverterVisitor.cs" />
+    <Compile Include="Converter\JavaAntlrUstConverterVisitorHelper.cs" />
+    <Compile Include="Converter\StatementVisitor.cs" />
+    <Compile Include="Converter\TypeMemberVisitor.cs" />
+    <Compile Include="Generated\JavaLexer.cs" />
+    <Compile Include="Generated\JavaParser.cs" />
+    <Compile Include="Generated\JavaVisitor.cs" />
+    <Compile Include="JavaAntlrParseTree.cs" />
+    <Compile Include="JavaAntlrParseTreeConverter.cs" />
+    <Compile Include="JavaAntlrParser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\AssemblyInfoCommon.cs">
+      <Link>Properties\AssemblyInfoCommon.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj">
+      <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
+      <Name>PT.PM.AntlrUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
+      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
+      <Name>PT.PM.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj">
+      <Project>{0292ce45-bba4-46b8-ade4-3c39162c1f46}</Project>
+      <Name>PT.PM.Prebuild</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\antlr-grammars-v4\java\Java.g4">
+      <Link>Java.g4</Link>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\java\Java.g4" --package "PT.PM.JavaParseTreeUst.Parser"  --output "$(ProjectDir)Generated"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

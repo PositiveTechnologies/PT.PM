@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F9D784D4-36E4-49F8-BEA4-38BDBB6910D8}</ProjectGuid>
+    <ProjectGuid>{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.Matching.Tests</RootNamespace>
-    <AssemblyName>PT.PM.Matching.Tests</AssemblyName>
+    <RootNamespace>PT.PM.JavaScriptParseTreeUst.Tests</RootNamespace>
+    <AssemblyName>PT.PM.JavaScriptParseTreeUst.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,16 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=e9931a4108ef2354, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.4.6.1-beta002\lib\net45\Antlr4.Runtime.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Moq, Version=4.5.16.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.5.16\lib\net45\Moq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
@@ -47,67 +41,59 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CSharpMatchingTests.cs" />
-    <Compile Include="JavaMatchingTests.cs" />
-    <Compile Include="JavaScriptMatchingTests.cs" />
-    <Compile Include="PatternMatchingTests.cs" />
-    <Compile Include="PatternMatchingUtils.cs" />
-    <Compile Include="PhpMatchingTests.cs" />
-    <Compile Include="SqlMatchingTests.cs" />
+    <Compile Include="JavaScriptConverterTests.cs" />
+    <Compile Include="JavaScriptParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\JavaScriptTestPatternsInsidePhp.php">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\VeryBig.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
-      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
+      <Project>{6B3D2A76-9A11-4C40-97E1-18EA210376B2}</Project>
       <Name>PT.PM.UstPreprocessing</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common.Tests\PT.PM.Common.Tests.csproj">
-      <Project>{bcb2fd80-7873-4dba-b911-6b9c80095c21}</Project>
+      <Project>{BCB2FD80-7873-4DBA-B911-6B9C80095C21}</Project>
       <Name>PT.PM.Common.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
-      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
+      <Project>{0B10DBAE-C18D-4007-B799-0B3B1E00376E}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.CSharpParseTreeUst.Tests\PT.PM.CSharpParseTreeUst.Tests.csproj">
-      <Project>{e3db8014-0bfb-4399-9b49-a8be446c5049}</Project>
-      <Name>PT.PM.CSharpParseTreeUst.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
-      <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
-      <Name>PT.PM.Dsl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaParseTreeUst.Tests\PT.PM.JavaParseTreeUst.Tests.csproj">
-      <Project>{47f5b401-e788-494e-89c8-a8ca0b6917c4}</Project>
-      <Name>PT.PM.JavaParseTreeUst.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
-      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
-      <Name>PT.PM.Matching</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
-      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
-      <Name>PT.PM.Patterns</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpParseTreeUst.Tests\PT.PM.PhpParseTreeUst.Tests.csproj">
-      <Project>{933dcca3-b5d1-45ae-acab-1672d71bc349}</Project>
-      <Name>PT.PM.PhpParseTreeUst.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj">
-      <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>
+      <Project>{ECB44673-2FB0-49E1-811F-973E3FA4DD22}</Project>
       <Name>PT.PM</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <Content Include="..\antlr-grammars-v4\ecmascript\examples\helloworld.js">
+      <Link>Data\helloworld.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Patterns.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
