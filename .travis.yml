@@ -1,0 +1,10 @@
+language: csharp
+solution: Sources/PT.PM.sln
+before_install:
+    - sudo apt-get install nunit-console
+install:
+    - nuget restore
+script:
+    - xbuild /p:Configuration=Release Sources/PT.PM.sln /p:TargetFrameworkVersion="v4.5"
+    - cd Unit/Bin/Release
+    - nunit-console PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.UstPreprocessing.Tests.dll PT.PM.Matching.Tests.dll PT.PM.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.Cli.Tests.dll
