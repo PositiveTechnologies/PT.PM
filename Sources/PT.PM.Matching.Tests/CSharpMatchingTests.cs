@@ -29,15 +29,15 @@ namespace PT.PM.Matching.Tests
 
             Assert.AreEqual(13, matchingResults.Length);
             Assert.AreEqual(matchingResults.Count(r =>
-                r.BeginLine == 17 && r.SourceFile.EndsWith(@"WebGoat\AddNewUser.aspx.cs")), 1);
+                r.BeginLine == 17 && r.SourceFile.EndsWith(@"WebGoat\AddNewUser.aspx.cs".NormDirSeparator())), 1);
             Assert.AreEqual(matchingResults.Count(r =>
-                r.BeginLine == 1703 && r.SourceFile.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs")), 1);
+                r.BeginLine == 1703 && r.SourceFile.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
             Assert.AreEqual(matchingResults.Count(r =>
-                r.BeginLine == 1705 && r.SourceFile.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs")), 1);
+                r.BeginLine == 1705 && r.SourceFile.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
             Assert.AreEqual(matchingResults.Count(r =>
-                r.BeginLine == 1766 && r.SourceFile.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs")), 1);
+                r.BeginLine == 1766 && r.SourceFile.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
             Assert.AreEqual(matchingResults.Count(r =>
-                r.BeginLine == 28 && r.SourceFile.EndsWith(@"WebGoat\Content\EncryptVSEncode.aspx.cs")), 1);
+                r.BeginLine == 28 && r.SourceFile.EndsWith(@"WebGoat\Content\EncryptVSEncode.aspx.cs".NormDirSeparator())), 1);
         }
 
         [Test]

@@ -1,25 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace PT.PM.Common.Tests
 {
     public class TestProject
     {
+        private string[] ignoredFiles = new string[0];
+
         public string Key { get; set; }
 
         public Language Language { get; set; }
 
-        public IEnumerable<string> Urls { get; set; } = Enumerable.Empty<string>();
+        public string[] Urls { get; set; } = new string[0];
 
-        public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
+        public string[] IgnoredFiles
+        {
+            get
+            {
+                return ignoredFiles;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    ignoredFiles = new string[0];
+                }
+
+                ignoredFiles = value.Select(ignoredFile => ignoredFile.NormDirSeparator()).ToArray();
+            }
+        }
 
         public TestProject(string key, string url)
             : this(key)
         {
-            Urls = new List<string>() { url };
+            Urls = new string[] { url };
         }
 
         public TestProject(string key)

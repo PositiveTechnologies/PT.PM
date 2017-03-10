@@ -43,11 +43,11 @@ namespace PT.PM.Prebuild
             string packageName = null;
             bool listener = false;
             string output = null;
-            AntlrJarFileName = AntlrDefaultPath;
-            cmdParser.Setup<string>("lexer").Callback(lexer => lexerFile = lexer);
-            cmdParser.Setup<string>("parser").Callback(parser => parserFile = parser);
+            AntlrJarFileName = Path.GetFullPath(AntlrDefaultPath);
+            cmdParser.Setup<string>("lexer").Callback(lexer => lexerFile = Path.GetFullPath(lexer));
+            cmdParser.Setup<string>("parser").Callback(parser => parserFile = Path.GetFullPath(parser));
             cmdParser.Setup<string>("package").Callback(package => packageName = package);
-            cmdParser.Setup<string>("antlrJar").Callback(antlrJar => AntlrJarFileName = antlrJar);
+            cmdParser.Setup<string>("antlrJar").Callback(antlrJar => AntlrJarFileName = Path.GetFullPath(antlrJar));
             cmdParser.Setup<bool>("listener").Callback(l => listener = l);
             cmdParser.Setup<string>("output").Callback(o => output = o);
 

@@ -1,21 +1,10 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Ust;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Collections;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Tests;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
 using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Matching.Tests
 {

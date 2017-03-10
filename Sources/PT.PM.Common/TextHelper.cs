@@ -1,6 +1,8 @@
-﻿namespace PT.PM.Common
+﻿using System.IO;
+
+namespace PT.PM.Common
 {
-    public class TextHelper
+    public static class TextHelper
     {
         private const int StartLine = 1;
         private const int StartColumn = 1;
@@ -112,6 +114,11 @@
                 i++;
             }
             return result;
+        }
+
+        public static string NormDirSeparator(this string path)
+        {
+            return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
         }
     }
 }

@@ -133,14 +133,14 @@ namespace PT.PM.Cli
             }
             else
             {
-                System.Console.WriteLine(commandLineArguments);
-                System.Console.WriteLine("Command line arguments processing error: " + parsingResult.ErrorText);
+                Console.WriteLine(commandLineArguments);
+                Console.WriteLine("Command line arguments processing error: " + parsingResult.ErrorText);
             }
 
             if (logger is ConsoleLogger)
             {
-                System.Console.WriteLine("Press Enter to exit...");
-                System.Console.ReadLine();
+                Console.WriteLine("Press Enter to exit...");
+                Console.ReadLine();
             }
         }
     }

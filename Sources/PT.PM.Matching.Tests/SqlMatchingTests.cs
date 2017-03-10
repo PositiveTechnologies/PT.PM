@@ -3,12 +3,8 @@ using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Tests;
 using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Matching.Tests
 {
@@ -36,7 +32,7 @@ namespace PT.PM.Matching.Tests
 
         private void Match_TestPatternsSql_MatchedAllDefault(Language language, string patternsFileName)
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, patternsFileName);
+            var path = Path.Combine(TestHelper.TestsDataPath, patternsFileName.NormDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, language, patternsRepository);

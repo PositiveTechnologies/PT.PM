@@ -40,16 +40,16 @@ namespace PT.PM.Common.Tests
         {
             GetRepositoryDirectory();
 
-            TestsPath = Path.Combine(repositoryDirectory, TestsPath);
-            TestsDataPath = Path.Combine(repositoryDirectory, TestsDataPath);
-            TestsDownloadedPath = Path.Combine(repositoryDirectory, TestsDownloadedPath);
-            GraphvizPath = Path.Combine(repositoryDirectory, GraphvizPath);
-            SevenZipPath = Path.Combine(repositoryDirectory, SevenZipPath);
+            TestsPath = Path.Combine(repositoryDirectory, TestsPath).NormDirSeparator();
+            TestsDataPath = Path.Combine(repositoryDirectory, TestsDataPath).NormDirSeparator();
+            TestsDownloadedPath = Path.Combine(repositoryDirectory, TestsDownloadedPath).NormDirSeparator();
+            GraphvizPath = Path.Combine(repositoryDirectory, GraphvizPath).NormDirSeparator();
+            SevenZipPath = Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
         public static void CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
         {
-            var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName));
+            var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, language, stage: endStage);

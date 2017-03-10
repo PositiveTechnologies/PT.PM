@@ -24,7 +24,7 @@ namespace PT.PM.Tests
             var dotString = astSerializer.Render(lastUst.Root);
 
             TestHelper.RenderGraphvizGraph(dotString, Path.Combine(
-                TestHelper.TestsDataPath.Replace('/', '\\'),
+                TestHelper.TestsDataPath,
                 fileName.Replace(".txt", "") + ".uast.png"));
         }
     }
