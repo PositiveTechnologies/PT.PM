@@ -7,8 +7,8 @@
     <ProjectGuid>{836A5763-216D-4596-94B6-5F60E7F0655C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.Console.Tests</RootNamespace>
-    <AssemblyName>PT.PM.Console.Tests</AssemblyName>
+    <RootNamespace>PT.PM.Cli.Tests</RootNamespace>
+    <AssemblyName>PT.PM.Cli.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleTests.cs" />
+    <Compile Include="CliTests.cs" />
     <Compile Include="ProcessExecutionResult.cs" />
     <Compile Include="ProcessHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,9 +66,9 @@
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Console\PT.PM.Console.csproj">
+    <ProjectReference Include="..\PT.PM.Cli\PT.PM.Cli.csproj">
       <Project>{349b2aef-fa81-401f-a8bd-c53ee7231544}</Project>
-      <Name>PT.PM.Console</Name>
+      <Name>PT.PM.Cli</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>

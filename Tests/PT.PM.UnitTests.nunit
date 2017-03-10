@@ -10,7 +10,7 @@
     <assembly path="Unit\Bin\Debug\PT.PM.Matching.Tests.dll" />
     <assembly path="Unit\Bin\Debug\PT.PM.Tests.dll" />
     <assembly path="Unit\Bin\Debug\PT.PM.Dsl.Tests.dll" />
-    <assembly path="Unit\Bin\Debug\PT.PM.Console.Tests.dll" />
+    <assembly path="Unit\Bin\Debug\PT.PM.Cli.Tests.dll" />
   </Config>
   <Config name="Release" binpathtype="Auto" runtimeFramework="net-4.5">
     <assembly path="Unit\Bin\Release\PT.PM.CSharpParseTreeUst.Tests.dll" />
@@ -22,6 +22,6 @@
     <assembly path="Unit\Bin\Release\PT.PM.Matching.Tests.dll" />
     <assembly path="Unit\Bin\Release\PT.PM.Tests.dll" />
     <assembly path="Unit\Bin\Release\PT.PM.Dsl.Tests.dll" />
-    <assembly path="Unit\Bin\Release\PT.PM.Console.Tests.dll" />
+    <assembly path="Unit\Bin\Release\PT.PM.Cli.Tests.dll" />
   </Config>
 </NUnitProject>

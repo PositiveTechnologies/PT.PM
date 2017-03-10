@@ -4,7 +4,7 @@ using PT.PM.Matching;
 using Newtonsoft.Json;
 using NLog;
 
-namespace PT.PM.Console
+namespace PT.PM.Cli
 {
     public class ConsoleLogger : AbstractLogger
     {

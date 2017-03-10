@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Patterns", "PT.PM.Pat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Matching.Tests", "PT.PM.Matching.Tests\PT.PM.Matching.Tests.csproj", "{F9D784D4-36E4-49F8-BEA4-38BDBB6910D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Console", "PT.PM.Console\PT.PM.Console.csproj", "{349B2AEF-FA81-401F-A8BD-C53EE7231544}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli", "PT.PM.Cli\PT.PM.Cli.csproj", "{349B2AEF-FA81-401F-A8BD-C53EE7231544}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Common", "PT.PM.Common\PT.PM.Common.csproj", "{0B10DBAE-C18D-4007-B799-0B3B1E00376E}"
 EndProject
@@ -50,7 +50,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.UstPreprocessing", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.UstPreprocessing.Tests", "PT.PM.UstPreprocessing.Tests\PT.PM.UstPreprocessing.Tests.csproj", "{43651FD8-2C13-4DE9-B424-5FDB91000625}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Console.Tests", "PT.PM.Console.Tests\PT.PM.Console.Tests.csproj", "{836A5763-216D-4596-94B6-5F60E7F0655C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli.Tests", "PT.PM.Cli.Tests\PT.PM.Cli.Tests.csproj", "{836A5763-216D-4596-94B6-5F60E7F0655C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Prebuild", "PT.PM.Prebuild\PT.PM.Prebuild.csproj", "{0292CE45-BBA4-46B8-ADE4-3C39162C1F46}"
 EndProject

@@ -8,12 +8,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PT.PM.Console.Tests
+namespace PT.PM.Cli.Tests
 {
     [TestFixture]
-    public class ConsoleTests
+    public class CliTests
     {
-        private readonly static string exeName = Path.Combine(TestHelper.TestsPath, "PT.PM.Console.exe");
+        private readonly static string exeName = Path.Combine(TestHelper.TestsPath, "PT.PM.Cli.exe");
 
         [Test]
         public void CheckConsole_Patterns_CorrectErrorMessages()

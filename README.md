@@ -36,7 +36,7 @@ Further projects:
 * PT.PM.AntlrUtils are the helper methods for working with ANTLR
     grammars.
 * PT.PM is a common workflow (combining work steps, their timing).
-* PT.PM.Console is used for interaction with a console. Also it contains
+* PT.PM.Cli is used for interaction with a console. Also it contains
    an implementation of loggers.
 * PT.PM.Prebuild is a utility for creating parsers from ANTLR grammars
     that takes into consideration the changes in the grammars files.
@@ -58,7 +58,7 @@ containing the **.Tests** suffix:
 * PT.PM.UstPreprocessing.Tests
 * PT.PM.Matching.Tests
 * PT.PM.Tests
-* PT.PM.Console.Tests
+* PT.PM.Cli.Tests
 
 ## Tests
 

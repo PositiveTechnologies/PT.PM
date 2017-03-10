@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace PT.PM.Console
+namespace PT.PM.Cli
 {
     class Program
     {

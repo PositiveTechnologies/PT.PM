@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PT.PM.Console.Tests
+namespace PT.PM.Cli.Tests
 {
     public class ProcessExecutionResult
     {

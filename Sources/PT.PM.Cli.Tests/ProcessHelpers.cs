@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace PT.PM.Console.Tests
+namespace PT.PM.Cli.Tests
 {
     public class ProcessHelpers
     {

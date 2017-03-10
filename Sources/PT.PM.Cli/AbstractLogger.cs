@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace PT.PM.Console
+namespace PT.PM.Cli
 {
     public abstract class AbstractLogger : ILogger
     {
