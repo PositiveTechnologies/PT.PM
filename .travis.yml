@@ -2,6 +2,8 @@ language: csharp
 solution: Sources/PT.PM.sln
 install:
     - mono Dependencies/nuget.exe restore Sources/PT.PM.sln
+    - apt-get install graphviz
+    - apt-get install p7zip-full
 script:
     - xbuild /p:Configuration=Release Sources/PT.PM.sln /p:TargetFrameworkVersion="v4.5"
     - cd Tests/Unit/bin/Release
