@@ -19,8 +19,8 @@ namespace PT.PM.Common.Tests
         public static string TestsPath = $@"Tests/Unit/bin/{(Debug ? "Debug" : "Release")}";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsDownloadedPath = $@"{TestsPath}/Downloaded";
-        public static string GraphvizPath = Helper.IsRunningOnLinux ? "dot" : "Sources/packages/Graphviz.2.38.0.2/dot.exe";
-        public static string SevenZipPath = Helper.IsRunningOnLinux ? "7z" : "Sources/packages/7-Zip.x64.16.02.1/tools/7z.exe";
+        public static string GraphvizPath = "Sources/packages/Graphviz.2.38.0.2/dot.exe";
+        public static string SevenZipPath = "Sources/packages/7-Zip.x64.16.02.1/tools/7z.exe";
 
         public static bool AllTests =>
 #if ALL_TESTS
@@ -43,8 +43,8 @@ namespace PT.PM.Common.Tests
             TestsPath = Path.Combine(repositoryDirectory, TestsPath).NormDirSeparator();
             TestsDataPath = Path.Combine(repositoryDirectory, TestsDataPath).NormDirSeparator();
             TestsDownloadedPath = Path.Combine(repositoryDirectory, TestsDownloadedPath).NormDirSeparator();
-            GraphvizPath = Path.Combine(repositoryDirectory, GraphvizPath).NormDirSeparator();
-            SevenZipPath = Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
+            GraphvizPath = Helper.IsRunningOnLinux ? "dot" : Path.Combine(repositoryDirectory, GraphvizPath).NormDirSeparator();
+            SevenZipPath = Helper.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
         public static void CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
