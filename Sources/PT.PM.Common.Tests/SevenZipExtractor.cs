@@ -22,12 +22,14 @@ namespace PT.PM.Common.Tests
                 process.WaitForExit();
                 if (process.ExitCode != 0)
                 {
-                    System.Console.Error.WriteLine("Error while extracting {0}.", extractPath);
+                    string message = $"Error while extracting {extractPath}.";
+                    Console.Error.WriteLine(message);
+                    throw new ParsingException(message);
                 }
             }
             catch (Exception ex)
             {
-                System.Console.Error.WriteLine("Error extracting {0}: {1}", extractPath, ex.Message);
+                Console.Error.WriteLine("Error while extracting {0}: {1}", extractPath, ex.Message);
                 throw;
             }
         }

@@ -171,7 +171,15 @@ namespace PT.PM.Common.Tests
             {
                 Directory.Delete(testDir, true);
             }
-            SevenZipExtractor.Extract(zipFileName, testDir);
+            if (!Helper.IsRunningOnLinux)
+            {
+                // Extract long paths with 7zip, also see here: http://stackoverflow.com/questions/5188527/how-to-deal-with-files-with-a-name-longer-than-259-characters
+                SevenZipExtractor.Extract(zipFileName, testDir);
+            }
+            else
+            {
+                System.IO.Compression.ZipFile.ExtractToDirectory(zipFileName, testDir);
+            }
             File.Delete(zipFileName);
             Logger.LogInfo($"{RepositoryName} has been extracted.");
 
