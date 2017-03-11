@@ -33,7 +33,7 @@ namespace PT.PM.Cli
             bool logErrors = false;
             bool logDebugs = false;
 
-            parser.Setup<string>('f').Callback(f => fileName = f);
+            parser.Setup<string>('f').Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<LanguageFlags>('l').Callback(l => languages = l);
             parser.Setup<string>("patterns").Callback(p => escapedPatterns = p);
             parser.Setup<int>("threads").Callback(t => threadCount = t);
@@ -41,13 +41,15 @@ namespace PT.PM.Cli
             parser.Setup<int>("max-stack-size").Callback(mss => maxStackSize = mss);
             parser.Setup<int>("max-timespan").Callback(mt => maxTimespan = mt);
             parser.Setup<int>('m').Callback(m => memoryConsumptionMb = m);
-            parser.Setup<string>("log-path").Callback(lp => logPath = lp);
+            parser.Setup<string>("log-path").Callback(lp => logPath = lp.NormDirSeparator());
             parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
             parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
 
             AbstractLogger logger = new ConsoleLogger();
             string commandLineArguments = "Command line arguments: " + (args.Length > 0 ? string.Join(" ", args) : "<empty>");
-            var parsingResult = parser.Parse(args);
+
+            var argsWithUsualSlashes = args.Select(arg => arg.Replace('/', '\\')).ToArray(); // TODO: bug in FluentCommandLineParser.
+            var parsingResult = parser.Parse(argsWithUsualSlashes);
 
             if (!parsingResult.HasErrors)
             {
