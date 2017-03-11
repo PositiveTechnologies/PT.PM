@@ -179,6 +179,7 @@ namespace PT.PM.Common.Tests
             else
             {
                 System.IO.Compression.ZipFile.ExtractToDirectory(zipFileName, testDir);
+                Thread.Sleep(300);
             }
             File.Delete(zipFileName);
             Logger.LogInfo($"{RepositoryName} has been extracted.");

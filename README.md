@@ -6,9 +6,9 @@ UST). At present time C\#, Java, PHP, PL/SQL, T-SQL, and JavaScript
 are supported. Patterns can be described within the code or using a
 domain-specific language (DSL).
 
-| Windows Build Status |
-|---|
-|[![Build status](https://ci.appveyor.com/api/projects/status/70hsp9pj8is24s4i?svg=true)](https://ci.appveyor.com/project/KvanTTT/pt-pm-xi6ya)|
+| Windows Build Status | Linux/Mac Build Status |
+|---|---|
+| [![Windows Build Status](https://ci.appveyor.com/api/projects/status/70hsp9pj8is24s4i?svg=true)](https://ci.appveyor.com/project/KvanTTT/pt-pm-xi6ya) | [![Linux/Mac Build Status](https://api.travis-ci.org/PositiveTechnologies/PT.PM.svg?branch=master)](https://travis-ci.org/PositiveTechnologies/PT.PM) |
 
 ## NuGet and Artifacts
 
