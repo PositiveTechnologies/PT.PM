@@ -21,11 +21,11 @@ namespace PT.PM.PhpParseTreeUst
 {
     public partial class PhpAntlrParseTreeConverterVisitor : AntlrDefaultVisitor, IPHPParserVisitor<UstNode>
     {
-        protected const string namespacePrefix = PmUtils.Prefix + "ns";
-        protected const string elementNamespacePrefix = PmUtils.Prefix + "elemNs";
-        protected const string contentNamespacePrefix = PmUtils.Prefix + "contentNs";
-        protected const string attrNamespacePrefix = PmUtils.Prefix + "attrNs";
-        protected const string inlineHtmlNamespacePrefix = PmUtils.Prefix + "inlineHtml";
+        protected const string namespacePrefix = Helper.Prefix + "ns";
+        protected const string elementNamespacePrefix = Helper.Prefix + "elemNs";
+        protected const string contentNamespacePrefix = Helper.Prefix + "contentNs";
+        protected const string attrNamespacePrefix = Helper.Prefix + "attrNs";
+        protected const string inlineHtmlNamespacePrefix = Helper.Prefix + "inlineHtml";
 
         protected int namespaceDepth;
 
@@ -113,7 +113,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public UstNode VisitPhpBlock(PHPParser.PhpBlockContext context)
         {
-            var namespaceName = new StringLiteral(PmUtils.Prefix + "default", context.GetTextSpan(), FileNode);
+            var namespaceName = new StringLiteral(Helper.Prefix + "default", context.GetTextSpan(), FileNode);
             UsingDeclaration[] usingDeclarations = context.importStatement()
                 .Select(importStatement => (UsingDeclaration)Visit(importStatement))
                 .Where(stmt => stmt != null)
@@ -195,7 +195,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                name = new StringLiteral(PmUtils.Prefix + "unnamed", default(TextSpan), FileNode);
+                name = new StringLiteral(Helper.Prefix + "unnamed", default(TextSpan), FileNode);
             }
 
             UstNode[] members = context.namespaceStatement()
@@ -1793,7 +1793,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                result = new IdToken(PmUtils.Prefix + "expressionId", context.GetTextSpan(), FileNode);
+                result = new IdToken(Helper.Prefix + "expressionId", context.GetTextSpan(), FileNode);
                 exprs.Insert(0, (Expression)Visit(context.expression()));
             }
 

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Common
 {
-    public static class PmUtils
+    public static class Helper
     {
         public const string Prefix = "pt.pm_";
 
@@ -41,6 +41,15 @@ namespace PT.PM.Common
             {
                 result = 0;
                 return false;
+            }
+        }
+
+        public static bool IsRunningOnLinux
+        {
+            get
+            {
+                int p = (int)Environment.OSVersion.Platform;
+                return (p == 4) || (p == 6) || (p == 128);
             }
         }
     }

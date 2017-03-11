@@ -130,7 +130,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
         {
-            var type = new TypeToken(PmUtils.Prefix + "object", node.NewKeyword.GetTextSpan(), FileNode);
+            var type = new TypeToken(Helper.Prefix + "object", node.NewKeyword.GetTextSpan(), FileNode);
             var sizes = node.Commas.Select(c => new IntLiteral(0, c.GetTextSpan(), FileNode)).ToList();
             sizes.Add(new IntLiteral(0, node.CloseBracketToken.GetTextSpan(), FileNode));
 
@@ -366,7 +366,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitImplicitElementAccess(ImplicitElementAccessSyntax node)
         {
             var args = (ArgsNode)VisitBracketedArgumentList(node.ArgumentList);
-            var target = new IdToken(PmUtils.Prefix + "index_initializer", default(TextSpan), FileNode);
+            var target = new IdToken(Helper.Prefix + "index_initializer", default(TextSpan), FileNode);
             var result = new IndexerExpression(target, args, node.GetTextSpan(), FileNode);
             return result;
         }

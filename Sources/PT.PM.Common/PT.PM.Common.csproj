@@ -173,7 +173,7 @@
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
     <Compile Include="SourceCodeFile.cs" />
-    <Compile Include="PmUtils.cs" />
+    <Compile Include="Helper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
