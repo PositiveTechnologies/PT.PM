@@ -1,4 +1,4 @@
-version: 0.9.{build}
+version: 0.9.0.{build}
 configuration: Release
 platform: Any CPU
 clone_script:
@@ -8,14 +8,17 @@ clone_script:
     git submodule update --init --recursive
 assembly_info:
   patch: true
-  file: Sources\AssemblyInfoCommon.cs
+  file: Sources\AssemblyInfoCommon.cs;Sources\PT.PM.PatternEditor\Properties\AssemblyInfo.cs
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 before_build:
-- cmd: nuget restore Sources\PT.PM.sln
+- cmd: >-
+    nuget sources add -Name Avalonia -Source https://www.myget.org/F/avalonia-ci/api/v2
+
+    nuget restore Sources\PT.PM.Gui.sln
 build:
-  project: Sources\PT.PM.sln
+  project: Sources\PT.PM.Gui.sln
   verbosity: minimal
 test:
   assemblies:
@@ -42,8 +45,16 @@ after_test:
     cd bin\%CONFIGURATION%
 
     7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.Cli.exe *.config
+
+    cd ..\PatternEditor%CONFIGURATION%
+
+    rm atk-sharp.dll gdk-sharp.dll glib-sharp.dll gtk-sharp.dll pango-sharp.dll
+
+    7z a PT.PM.Gui-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.PatternEditor.exe PT.PM.PatternEditor.exe.config
 artifacts:
 - path: bin\$(configuration)\*.zip
-  name: PT.PM.Console
+  name: PT.PM.Cli
 - path: '*.nupkg'
   name: PT.PM.NuGet
+- path: bin\PatternEditor$(configuration)\*.zip
+  name: PT.PM.Gui
