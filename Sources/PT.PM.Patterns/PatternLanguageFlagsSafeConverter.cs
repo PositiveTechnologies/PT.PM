@@ -45,17 +45,18 @@ namespace PT.PM.Patterns
 
             var result = new PatternDto
             {
-                Name = (string)jObject[nameof(PatternDto.Name)],
-                Key = (string)jObject[nameof(PatternDto.Key)],
+                Name = (string)jObject[nameof(PatternDto.Name)] ?? "",
+                Key = (string)jObject[nameof(PatternDto.Key)] ?? "",
                 Languages = resultLanguages,
-                Value = (string)jObject[nameof(PatternDto.Value)],
-                CweId = (string)jObject[nameof(PatternDto.CweId)],
-                Description = (string)jObject[nameof(PatternDto.Description)],
+                Value = (string)jObject[nameof(PatternDto.Value)] ?? "",
+                CweId = (string)jObject[nameof(PatternDto.CweId)] ?? "",
+                Description = (string)jObject[nameof(PatternDto.Description)] ?? "",
             };
             var dataFormatString = (string)jObject[nameof(PatternDto.DataFormat)];
-            if (dataFormatString != null)
+            UstNodeSerializationFormat format;
+            if (dataFormatString != null && Enum.TryParse(dataFormatString, out format))
             {
-                result.DataFormat = (UstNodeSerializationFormat)Enum.Parse(typeof(UstNodeSerializationFormat), dataFormatString);
+                result.DataFormat = format;
             }
 
             return result;

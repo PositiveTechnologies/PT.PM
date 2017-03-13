@@ -1,6 +1,5 @@
 ﻿using PT.PM.Patterns.PatternsRepository;
 using System.Collections.Generic;
-using PT.PM.Patterns;
 using PT.PM.Common;
 
 namespace PT.PM.Patterns
