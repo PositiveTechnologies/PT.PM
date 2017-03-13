@@ -57,9 +57,9 @@
         </Grid>
       </Expander>
 
-      <Expander Grid.Row="5" Header="UAST Json" IsExpanded="{Binding IsUastExpanded, Mode=TwoWay}" IsVisible="{Binding IsUastJsonVisible}">
+      <Expander Grid.Row="5" Header="UST Json" IsExpanded="{Binding IsUstExpanded, Mode=TwoWay}" IsVisible="{Binding IsUstJsonVisible}">
         <Grid RowDefinitions="100">
-          <TextBox Text="{Binding UastJson}" AcceptsReturn="true" TextWrapping="Wrap" IsReadOnly="true" MinHeight="100"/>
+          <TextBox Text="{Binding UstJson}" AcceptsReturn="true" TextWrapping="Wrap" IsReadOnly="true" MinHeight="100"/>
         </Grid>
       </Expander>
 

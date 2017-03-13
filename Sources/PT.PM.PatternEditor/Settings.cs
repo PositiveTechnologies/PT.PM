@@ -53,7 +53,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsParseTreeExpanded { get; set; } = false;
 
-        public bool IsUastExpanded { get; set; } = false;
+        public bool IsUstExpanded { get; set; } = false;
 
         public bool IsMatchingsExpanded { get; set; } = false;
 

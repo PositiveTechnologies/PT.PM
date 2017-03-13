@@ -160,7 +160,7 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(IsErrorsExpanded));
             this.RaisePropertyChanged(nameof(IsTokensExpanded));
             this.RaisePropertyChanged(nameof(IsParseTreeExpanded));
-            this.RaisePropertyChanged(nameof(IsUastExpanded));
+            this.RaisePropertyChanged(nameof(IsUstExpanded));
             this.RaisePropertyChanged(nameof(IsMatchingsExpanded));
         }
 
@@ -250,7 +250,7 @@ namespace PT.PM.PatternEditor
                     
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
                     this.RaisePropertyChanged(nameof(IsTreeVisible));
-                    this.RaisePropertyChanged(nameof(IsUastJsonVisible));
+                    this.RaisePropertyChanged(nameof(IsUstJsonVisible));
                     this.RaisePropertyChanged();
 
                     ServiceLocator.PatternViewModel.UpdateDeveloperMode();
@@ -277,7 +277,7 @@ namespace PT.PM.PatternEditor
                     Settings.SelectedStage = value;
                     Settings.Save();
                     this.RaisePropertyChanged(nameof(IsMatchingStage));
-                    this.RaisePropertyChanged(nameof(IsUastJsonVisible));
+                    this.RaisePropertyChanged(nameof(IsUstJsonVisible));
                     this.RaisePropertyChanged();
                     CheckSourceCode();
                 }
@@ -369,13 +369,13 @@ namespace PT.PM.PatternEditor
 
         public string ParseTree { get; set; }
 
-        public string UastJson { get; set; }
+        public string UstJson { get; set; }
 
         public bool IsTokensVisible => SelectedLanguageInfo.HaveAntlrParser && IsDeveloperMode;
 
         public bool IsTreeVisible => SelectedLanguageInfo.HaveAntlrParser && IsDeveloperMode;
 
-        public bool IsUastJsonVisible => Stage >= Stage.Convert && IsDeveloperMode;
+        public bool IsUstJsonVisible => Stage >= Stage.Convert && IsDeveloperMode;
 
         public string MatchingResultText { get; set; } = "MATCHINGS";
 
@@ -434,17 +434,17 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public bool IsUastExpanded
+        public bool IsUstExpanded
         {
             get
             {
-                return Settings.IsUastExpanded;
+                return Settings.IsUstExpanded;
             }
             set
             {
-                if (Settings.IsUastExpanded != value)
+                if (Settings.IsUstExpanded != value)
                 {
-                    Settings.IsUastExpanded = value;
+                    Settings.IsUstExpanded = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
                 }
@@ -520,8 +520,8 @@ namespace PT.PM.PatternEditor
                 }
                 if (Stage >= Stage.Convert && workflow.LastUst != null)
                 {
-                    UastJson = jsonSerializer.Serialize(workflow.LastUst.Root);
-                    File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UAST.json"), UastJson);
+                    UstJson = jsonSerializer.Serialize(workflow.LastUst.Root);
+                    File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UST.json"), UstJson);
                 }
             }
 
@@ -551,7 +551,7 @@ namespace PT.PM.PatternEditor
                 }
                 this.RaisePropertyChanged(nameof(Tokens));
                 this.RaisePropertyChanged(nameof(ParseTree));
-                this.RaisePropertyChanged(nameof(UastJson));
+                this.RaisePropertyChanged(nameof(UstJson));
                 this.RaisePropertyChanged(nameof(MatchingResultText));
                 this.RaisePropertyChanged(nameof(SourceCodeErrorsIsVisible));
                 this.RaisePropertyChanged(nameof(SourceCodeErrorsText));

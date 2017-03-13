@@ -448,7 +448,7 @@ namespace PT.PM.PatternEditor
                     if (IsDeveloperMode && patternNode != null)
                     {
                         PatternJson = ustNodeJsonSerializer.Serialize(patternNode);
-                        File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Pattern UAST.json"), PatternJson);
+                        File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Pattern UST.json"), PatternJson);
                     }
                 }
                 else
