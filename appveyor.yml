@@ -23,6 +23,9 @@ build:
 after_build:
 - cmd: >-
     msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform=x86
+test:
+  assemblies:
+  - Unit\Bin\Release\PT.PM.CSharpParseTreeUst.Tests.dll
 
 after_test:
 - cmd: >-
@@ -39,6 +42,8 @@ after_test:
     7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.Cli.exe *.config
 
     cd ..\PatternEditor%CONFIGURATION%
+
+    del atk-sharp.dll gdk-sharp.dll glib-sharp.dll gtk-sharp.dll pango-sharp.dll
 
     7z a PT.PM.Gui-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.PatternEditor.exe PT.PM.PatternEditor.exe.config
 artifacts:
