@@ -1,8 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Diagnostics;
 using Avalonia.Markup.Xaml;
-using System;
+using PT.PM.Common;
 
 namespace PT.PM.PatternEditor
 {
@@ -18,9 +17,9 @@ namespace PT.PM.PatternEditor
 
         static void Main(string[] args)
         {
-            AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .Start<MainWindow>();
+            var appBuilder = AppBuilder.Configure<App>().UseSkia();
+            appBuilder = Helper.IsRunningOnLinux ? appBuilder.UseGtk() : appBuilder.UseWin32();
+            appBuilder.Start<MainWindow>();
         }
 
         public static void AttachDevTools(Window window)

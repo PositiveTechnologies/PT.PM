@@ -1,6 +1,7 @@
 language: csharp
-solution: Sources/PT.PM.sln
+solution: Sources/PT.PM.Gui.sln
 install:
+    - mono Dependencies/nuget.exe sources add -Name Avalonia -Source https://www.myget.org/F/avalonia-ci/api/v2
     - mono Dependencies/nuget.exe restore Sources/PT.PM.sln
     - sudo apt-get install graphviz
     - sudo apt-get install p7zip-full
