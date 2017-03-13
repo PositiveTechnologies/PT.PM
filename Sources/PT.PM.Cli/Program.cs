@@ -33,18 +33,18 @@ namespace PT.PM.Cli
             bool logErrors = false;
             bool logDebugs = false;
 
-            parser.Setup<string>('f').Callback(f => fileName = f.NormDirSeparator());
-            parser.Setup<LanguageFlags>('l').Callback(l => languages = l);
-            parser.Setup<string>("patterns").Callback(p =>
+            parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
+            parser.Setup<LanguageFlags>('l', "languages").Callback(l => languages = l);
+            parser.Setup<string>('p', "patterns").Callback(p =>
                 escapedPatterns = p.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
                     ? p.NormDirSeparator()
                     : p.Replace('\\', '/')
             );
-            parser.Setup<int>("threads").Callback(t => threadCount = t);
-            parser.Setup<Stage>("stage").Callback(s => stage = s);
+            parser.Setup<int>('t', "threads").Callback(t => threadCount = t);
+            parser.Setup<Stage>('s', "stage").Callback(s => stage = s);
             parser.Setup<int>("max-stack-size").Callback(mss => maxStackSize = mss);
             parser.Setup<int>("max-timespan").Callback(mt => maxTimespan = mt);
-            parser.Setup<int>('m').Callback(m => memoryConsumptionMb = m);
+            parser.Setup<int>('m', "memory").Callback(m => memoryConsumptionMb = m);
             parser.Setup<string>("log-path").Callback(lp => logPath = lp.NormDirSeparator());
             parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
             parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
@@ -61,7 +61,7 @@ namespace PT.PM.Cli
                 {
                     if (string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(escapedPatterns))
                     {
-                        throw new ArgumentException("at least -f or --patterns parameter required");
+                        throw new ArgumentException("at least --files or --patterns parameter required");
                     }
 
                     if (string.IsNullOrEmpty(fileName))
