@@ -16,7 +16,7 @@ namespace PT.PM.Cli.Tests
         private readonly static string exeName = Path.Combine(TestHelper.TestsPath, "PT.PM.Cli.exe");
 
         [Test]
-        public void CheckConsole_Patterns_CorrectErrorMessages()
+        public void CheckCli_Patterns_CorrectErrorMessages()
         {
             string patternsStr = PreparePatternsString();
             var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --log-errors");
@@ -26,7 +26,7 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
-        public void CheckConsole_LogPath_FilesInProperDirectory()
+        public void CheckCli_LogPath_FilesInProperDirectory()
         {
             string patternsStr = PreparePatternsString();
 
@@ -51,7 +51,7 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
-        public void CheckConsole_SeveralLanguages_OnlyPassedLanguagesProcessed()
+        public void CheckCli_SeveralLanguages_OnlyPassedLanguagesProcessed()
         {
             ProcessExecutionResult result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestHelper.TestsDataPath}\" " +
@@ -72,7 +72,7 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
-        public void CheckConsole_FakeLanguage_CorrectlyProcessed()
+        public void CheckCli_FakeLanguage_CorrectlyProcessed()
         {
             // Patterns: [{"Name":"","Key":"1","Languages":"Fake","DataFormat":"Dsl","Value":"<[(?i)password(?-i)]> = <[\"\\w*\" || null]>","CweId":"","Description":""}]
             ProcessExecutionResult result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
@@ -85,7 +85,7 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
-        public void CheckConsole_FilePatternsRepository_CorrectlyProcessed()
+        public void CheckCli_FilePatternsRepository_CorrectlyProcessed()
         {
             var patternsFileName = Path.Combine(Path.GetTempPath(), "patterns.json");
             File.WriteAllText(patternsFileName, "[{\"Key\":\"1\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\"}]");
