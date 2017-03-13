@@ -1,11 +1,9 @@
 ﻿using PT.PM.Common;
-using PT.PM.Patterns;
-using PT.PM.Patterns.PatternsRepository;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 
-namespace PT.PM
+namespace PT.PM.Patterns.PatternsRepository
 {
     public class StringPatternsRepository : MemoryPatternsRepository
     {

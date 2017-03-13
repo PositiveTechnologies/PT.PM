@@ -45,7 +45,6 @@
     <Compile Include="CommonWorkflow.cs" />
     <Compile Include="DynamicContractResolver.cs" />
     <Compile Include="LanguageDetector.cs" />
-    <Compile Include="PatternLanguageFlagsSafeConverter.cs" />
     <Compile Include="ParserConverterBuilder.cs" />
     <Compile Include="ParserConverterSet.cs" />
     <Compile Include="ParserLanguageDetector.cs" />
@@ -53,7 +52,6 @@
     <Compile Include="ParserUnit.cs" />
     <Compile Include="Stage.cs" />
     <Compile Include="StringCompressorEscaper.cs" />
-    <Compile Include="StringPatternsRepository.cs" />
     <Compile Include="Workflow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">

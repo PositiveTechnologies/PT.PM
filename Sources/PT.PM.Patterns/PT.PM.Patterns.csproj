@@ -39,7 +39,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PatternIdGenerator.cs" />
+    <Compile Include="PatternLanguageFlagsSafeConverter.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\JavaScriptPatterns.cs" />
+    <Compile Include="PatternsRepository\StringPatternsRepository.cs" />
     <Compile Include="UstNodeCloner.cs" />
     <Compile Include="Pattern.cs" />
     <Compile Include="CommonPatternConverter.cs" />
@@ -68,7 +70,7 @@
     <Compile Include="PatternsRepository\DefaultPatternRepository\PhpPatterns.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\PlSqlPatterns.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\TSqlPatterns.cs" />
-    <Compile Include="PatternsRepository\FilesPatternsRepository.cs" />
+    <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
     <Compile Include="IPatternConverter.cs" />
     <Compile Include="PatternsRepository\IPatternsRepository.cs" />
     <Compile Include="PatternsRepository\MemoryPatternsRepository.cs" />

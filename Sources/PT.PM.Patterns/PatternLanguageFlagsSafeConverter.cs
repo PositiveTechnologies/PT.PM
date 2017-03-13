@@ -1,10 +1,9 @@
 ﻿using PT.PM.Common;
-using PT.PM.Patterns;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace PT.PM
+namespace PT.PM.Patterns
 {
     public class PatternLanguageFlagsSafeConverter: JsonConverter, ILoggable
     {
@@ -64,7 +63,7 @@ namespace PT.PM
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotSupportedException($"Do not use {nameof(PatternLanguageFlagsSafeConverter)} for serialization.");
+            throw new InvalidOperationException($"Do not use {nameof(PatternLanguageFlagsSafeConverter)} for serialization.");
         }
     }
 }

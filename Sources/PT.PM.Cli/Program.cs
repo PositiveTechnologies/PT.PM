@@ -35,7 +35,11 @@ namespace PT.PM.Cli
 
             parser.Setup<string>('f').Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<LanguageFlags>('l').Callback(l => languages = l);
-            parser.Setup<string>("patterns").Callback(p => escapedPatterns = p.Replace('\\', '/'));
+            parser.Setup<string>("patterns").Callback(p =>
+                escapedPatterns = p.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
+                    ? p.NormDirSeparator()
+                    : p.Replace('\\', '/')
+            );
             parser.Setup<int>("threads").Callback(t => threadCount = t);
             parser.Setup<Stage>("stage").Callback(s => stage = s);
             parser.Setup<int>("max-stack-size").Callback(mss => maxStackSize = mss);
@@ -85,6 +89,10 @@ namespace PT.PM.Cli
                     if (string.IsNullOrEmpty(escapedPatterns))
                     {
                         patternsRepository = new DefaultPatternRepository();
+                    }
+                    else if (escapedPatterns.EndsWith(".json"))
+                    {
+                        patternsRepository = new FilePatternsRepository(escapedPatterns);
                     }
                     else
                     {

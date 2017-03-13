@@ -59,8 +59,8 @@ namespace PT.PM.Cli.Tests
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not process php (csharp, java etc.) files.
-            Assert.IsNull(result.Output.FirstOrDefault(line => line.Contains("php")));
-            Assert.IsNotNull(result.Output.FirstOrDefault(line => line.Contains("has been detected")));
+            Assert.IsFalse(result.Output.Any(line => line.Contains("php")));
+            Assert.IsTrue(result.Output.Any(line => line.Contains("has been detected")));
 
             result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestHelper.TestsDataPath}\" " +
@@ -68,7 +68,7 @@ namespace PT.PM.Cli.Tests
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not detect language for only one language.
-            Assert.IsNull(result.Output.FirstOrDefault(line => line.Contains("has been detected")));
+            Assert.IsFalse(result.Output.Any(line => line.Contains("has been detected")));
         }
 
         [Test]
@@ -82,6 +82,25 @@ namespace PT.PM.Cli.Tests
 
             Assert.AreEqual("Error: Language \"Fake\" is not supported or wrong.", result.Output[1]);
             Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[2]);
+        }
+
+        [Test]
+        public void CheckConsole_FilePatternsRepository_CorrectlyProcessed()
+        {
+            var patternsFileName = Path.Combine(Path.GetTempPath(), "patterns.json");
+            File.WriteAllText(patternsFileName, "[{\"Key\":\"1\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\"}]");
+            try
+            {
+                var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
+                    $"-f \"{Path.Combine(TestHelper.TestsDataPath, "Patterns.cs")}\" " +
+                    $"--patterns \"{patternsFileName}\"");
+
+                Assert.IsTrue(result.Output.Any(str => str.Contains("Pattern matched")));
+            }
+            finally
+            {
+                File.Delete(patternsFileName);
+            }
         }
 
         private static string PreparePatternsString()
