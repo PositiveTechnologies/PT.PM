@@ -22,7 +22,7 @@ build:
   verbosity: minimal
 after_build:
 - cmd: >-
-    msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform:"x86"
+    msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform=x86
 test:
   assemblies:
   - Unit\Bin\Release\PT.PM.CSharpParseTreeUst.Tests.dll
