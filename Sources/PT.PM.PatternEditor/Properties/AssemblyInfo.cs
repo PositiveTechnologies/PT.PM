@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyCompany("Positive Technologies")]
 [assembly: AssemblyProduct("PT.PM.PatternEditor")]
-[assembly: AssemblyCopyright("© Positive Technologies 2015-2016")]
+[assembly: AssemblyCopyright("© Positive Technologies 2015-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
