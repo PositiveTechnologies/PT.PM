@@ -17,8 +17,18 @@ namespace PT.PM.PatternEditor
 
         static void Main(string[] args)
         {
-            var appBuilder = AppBuilder.Configure<App>().UseSkia();
-            appBuilder = Helper.IsRunningOnLinux ? appBuilder.UseGtk() : appBuilder.UseWin32();
+            // TODO: use it when Skia will be work on Linux
+            // var appBuilder = AppBuilder.Configure<App>().UseSkia();
+            // appBuilder = Helper.IsRunningOnLinux ? appBuilder.UseGtk() : appBuilder.UseWin32();
+            var appBuilder = AppBuilder.Configure<App>();
+            if (Helper.IsRunningOnLinux)
+            {
+                appBuilder.UsePlatformDetect();
+            }
+            else
+            {
+                appBuilder.UseSkia().UseWin32();
+            }
             appBuilder.Start<MainWindow>();
         }
 
