@@ -29,7 +29,7 @@ Artifacts also available: [https://ci.appveyor.com/project/KvanTTT/pt-pm-xi6ya/b
 * PT.PM.CSharpParseTreeUst for C\#- and ASP.NET files (.aspx, .ascx, etc.).
 	* PT.PM.JavaParseTreeUst
 	* PT.PM.PhpParseTreeUst
-	* PT.PM.SqlParseTreeUst (for PL/SQL и T-SQL)
+	* PT.PM.SqlParseTreeUst (for PL/SQL and T-SQL)
 	* PT.PM.JavaScriptParseTreeUst
 * DSL processing:
 	* PT.PM.Patterns
@@ -70,12 +70,11 @@ containing the **.Tests** suffix:
 * PT.PM.Tests
 * PT.PM.Cli.Tests
 
-## Tests
-
 Parsing and converting test scenarios are written for projects
 downloaded from GitHub and cached in a local folder.
 
 ## Dependencies
+
 * [FluentCommandLineParser](https://github.com/fclp/fluent-command-line-parser)
     is used for parsing command-line arguments.
 * [Microsoft.CodeAnalysis
