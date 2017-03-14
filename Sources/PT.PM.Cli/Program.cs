@@ -32,6 +32,7 @@ namespace PT.PM.Cli
             string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Application Inspector", "Logs", "pm");
             bool logErrors = false;
             bool logDebugs = false;
+            bool showVersion = true;
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<LanguageFlags>('l', "languages").Callback(l => languages = l);
@@ -48,10 +49,14 @@ namespace PT.PM.Cli
             parser.Setup<string>("logs-dir").Callback(lp => logsDir = lp.NormDirSeparator());
             parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
             parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
+            parser.Setup<bool>('v', "version").Callback(v => showVersion = v);
 
             AbstractLogger logger = new ConsoleLogger();
-            string commandLineArguments = "Command line arguments: " + (args.Length > 0 ? string.Join(" ", args) : "<empty>");
+            string commandLineArguments = "Command line arguments" + (args.Length > 0 
+                ? ": " + string.Join(" ", args)
+                : " are not defined");
 
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             var argsWithUsualSlashes = args.Select(arg => arg.Replace('/', '\\')).ToArray(); // TODO: bug in FluentCommandLineParser.
             var parsingResult = parser.Parse(argsWithUsualSlashes);
 
@@ -59,6 +64,16 @@ namespace PT.PM.Cli
             {
                 try
                 {
+                    if (showVersion)
+                    {
+                        logger.LogInfo($"PT.PM version: {version}");
+                    }
+
+                    logger.LogsDir = logsDir;
+                    logger.IsLogErrors = logErrors;
+                    logger.IsLogDebugs = logDebugs;
+                    logger.LogInfo(commandLineArguments);
+
                     if (string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(escapedPatterns))
                     {
                         throw new ArgumentException("at least --files or --patterns parameter required");
@@ -68,11 +83,6 @@ namespace PT.PM.Cli
                     {
                         stage = Stage.Patterns;
                     }
-
-                    logger.LogsDir = logsDir;
-                    logger.IsLogErrors = logErrors;
-                    logger.IsLogDebugs = logDebugs;
-                    logger.LogInfo(commandLineArguments);
 
                     ISourceCodeRepository sourceCodeRepository;
                     if (Directory.Exists(fileName))
@@ -130,7 +140,11 @@ namespace PT.PM.Cli
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogError("Error while processing", ex);
+                    if (logger != null)
+                    {
+                        logger.IsLogErrors = true;
+                        logger.LogError("Error while processing", ex);
+                    }
                 }
                 finally
                 {
@@ -143,6 +157,7 @@ namespace PT.PM.Cli
             }
             else
             {
+                Console.WriteLine($"PT.PM version: {version}");
                 Console.WriteLine(commandLineArguments);
                 Console.WriteLine("Command line arguments processing error: " + parsingResult.ErrorText);
             }

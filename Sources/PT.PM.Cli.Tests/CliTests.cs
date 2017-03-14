@@ -21,8 +21,8 @@ namespace PT.PM.Cli.Tests
             string patternsStr = PreparePatternsString();
             var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --log-errors");
 
-            Assert.AreEqual("Error: token recognition error at: '>' at 1:18", result.Output[1]);
-            Assert.AreEqual("Error: no viable alternative at input '(?' at 1:1", result.Output[2]);
+            Assert.AreEqual("Error: token recognition error at: '>' at 1:18", result.Output[2]);
+            Assert.AreEqual("Error: no viable alternative at input '(?' at 1:1", result.Output[3]);
         }
 
         [Test]
@@ -80,8 +80,8 @@ namespace PT.PM.Cli.Tests
                $"--patterns kAAAAB+LCAAAAAAABAAljb0KwjAURl8l3KkVHVyltoOhUBRHlyTDxYYSTJOSH4JY391b3M534PCJD9xx1nAC2MNVvwmORDd0U8ZJR9o9vjQpjgl7H2ZM5Hi0pB5o85Y2oupMvWCMxYex6g6mVi07s0ZIkLLsJLB1ZS5bq1rKLkUP4/+R6/gMZknGu0181Q+1349CkAAAAA== " +
                $"--log-debugs --log-errors");
 
-            Assert.AreEqual("Error: Language \"Fake\" is not supported or wrong.", result.Output[1]);
-            Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[2]);
+            Assert.AreEqual("Error: Language \"Fake\" is not supported or wrong.", result.Output[2]);
+            Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[3]);
         }
 
         [Test]
