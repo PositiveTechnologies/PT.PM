@@ -54,7 +54,7 @@ namespace PT.PM.Cli
             AbstractLogger logger = new ConsoleLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
                 ? ": " + string.Join(" ", args)
-                : " are not defined");
+                : " are not defined.");
 
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             var argsWithUsualSlashes = args.Select(arg => arg.Replace('/', '\\')).ToArray(); // TODO: bug in FluentCommandLineParser.
