@@ -18,7 +18,7 @@ namespace PT.PM.Cli
 
         protected NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
 
-        public string LogPath
+        public string LogsDir
         {
             get { return logPath; }
             set
@@ -38,9 +38,9 @@ namespace PT.PM.Cli
             }
         }
 
-        public bool LogErrors { get; set; } = false;
+        public bool IsLogErrors { get; set; } = false;
 
-        public bool LogDebugs { get; set; } = false;
+        public bool IsLogDebugs { get; set; } = false;
 
         public ISourceCodeRepository SourceCodeRepository { get; set; }
 
@@ -122,11 +122,11 @@ namespace PT.PM.Cli
 
         public virtual void LogDebug(string message)
         {
-            bool debug = false;
+            bool isDebug = false;
 #if DEBUG
-            debug = true;
+            isDebug = true;
 #endif
-            if (debug || LogDebugs)
+            if (isDebug || IsLogDebugs)
             {
                 FileLogger.Debug(message);
             }

@@ -29,7 +29,7 @@ namespace PT.PM.Cli
             int maxStackSize = 0;
             int maxTimespan = 0;
             int memoryConsumptionMb = 300;
-            string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Application Inspector", "Logs", "pm");
+            string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Application Inspector", "Logs", "pm");
             bool logErrors = false;
             bool logDebugs = false;
 
@@ -45,7 +45,7 @@ namespace PT.PM.Cli
             parser.Setup<int>("max-stack-size").Callback(mss => maxStackSize = mss);
             parser.Setup<int>("max-timespan").Callback(mt => maxTimespan = mt);
             parser.Setup<int>('m', "memory").Callback(m => memoryConsumptionMb = m);
-            parser.Setup<string>("log-path").Callback(lp => logPath = lp.NormDirSeparator());
+            parser.Setup<string>("logs-dir").Callback(lp => logsDir = lp.NormDirSeparator());
             parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
             parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
 
@@ -69,9 +69,9 @@ namespace PT.PM.Cli
                         stage = Stage.Patterns;
                     }
 
-                    logger.LogPath = logPath;
-                    logger.LogErrors = logErrors;
-                    logger.LogDebugs = logDebugs;
+                    logger.LogsDir = logsDir;
+                    logger.IsLogErrors = logErrors;
+                    logger.IsLogDebugs = logDebugs;
                     logger.LogInfo(commandLineArguments);
 
                     ISourceCodeRepository sourceCodeRepository;

@@ -15,7 +15,7 @@ namespace PT.PM.Cli
         public override void LogError(string message)
         {
             base.LogError(message);
-            if (LogErrors)
+            if (IsLogErrors)
             {
                 NLogConsoleLogger.Error("Error: " + PrepareForConsole(message));
             }
@@ -24,7 +24,7 @@ namespace PT.PM.Cli
         public override void LogError(string message, Exception ex)
         {
             base.LogError(message, ex);
-            if (LogErrors)
+            if (IsLogErrors)
             {
                 NLogConsoleLogger.Error("Error: {0}; {1}", PrepareForConsole(message), PrepareForConsole(ex.Message));
             }
@@ -33,7 +33,7 @@ namespace PT.PM.Cli
         public override void LogError(Exception ex)
         {
             base.LogError(ex);
-            if (LogErrors)
+            if (IsLogErrors)
             {
                 NLogConsoleLogger.Error("Error: {0}", PrepareForConsole(ex.Message));
             }
@@ -75,7 +75,7 @@ namespace PT.PM.Cli
 #if DEBUG
             debug = true;
 #endif
-            if (debug || LogDebugs)
+            if (debug || IsLogDebugs)
             {
                 base.LogDebug(message);
                 NLogConsoleLogger.Debug(PrepareForConsole(message));
