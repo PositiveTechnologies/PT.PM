@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -23,12 +22,12 @@ namespace PT.PM
                 memoryStream.Read(compressedData, 4, (int)memoryStream.Length);
             }
             Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, compressedData, 0, 4);
-            return Convert.ToBase64String(compressedData).Replace('/', '@');
+            return Convert.ToBase64String(compressedData);
         }
 
         public static string UnescapeDecompress(string compressedText)
         {
-            byte[] gZipBuffer = Convert.FromBase64String(compressedText.Replace('@', '/'));
+            byte[] gZipBuffer = Convert.FromBase64String(compressedText);
             byte[] buffer = null;
             using (var memoryStream = new MemoryStream())
             {

@@ -16,17 +16,17 @@ namespace PT.PM.Cli.Tests
         private readonly static string exeName = Path.Combine(TestHelper.TestsPath, "PT.PM.Cli.exe");
 
         [Test]
-        public void CheckConsole_Patterns_CorrectErrorMessages()
+        public void CheckCli_Patterns_CorrectErrorMessages()
         {
             string patternsStr = PreparePatternsString();
             var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --log-errors");
 
-            Assert.AreEqual("Error: token recognition error at: '>' at 1:18", result.Output[1]);
-            Assert.AreEqual("Error: no viable alternative at input '(?' at 1:1", result.Output[2]);
+            Assert.AreEqual("Error: token recognition error at: '>' at 1:18", result.Output[2]);
+            Assert.AreEqual("Error: no viable alternative at input '(?' at 1:1", result.Output[3]);
         }
 
         [Test]
-        public void CheckConsole_LogPath_FilesInProperDirectory()
+        public void CheckCli_LogPath_FilesInProperDirectory()
         {
             string patternsStr = PreparePatternsString();
 
@@ -37,7 +37,7 @@ namespace PT.PM.Cli.Tests
                 {
                     Directory.Delete(logPath, true);
                 }
-                var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --log-path \"{logPath}\"");
+                var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --logs-dir \"{logPath}\"");
                 var logFiles = Directory.GetFiles(logPath, "*.*");
                 Assert.Greater(logFiles.Length, 0);
             }
@@ -51,7 +51,7 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
-        public void CheckConsole_SeveralLanguages_OnlyPassedLanguagesProcessed()
+        public void CheckCli_SeveralLanguages_OnlyPassedLanguagesProcessed()
         {
             ProcessExecutionResult result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestHelper.TestsDataPath}\" " +
@@ -59,8 +59,8 @@ namespace PT.PM.Cli.Tests
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not process php (csharp, java etc.) files.
-            Assert.IsNull(result.Output.FirstOrDefault(line => line.Contains("php")));
-            Assert.IsNotNull(result.Output.FirstOrDefault(line => line.Contains("has been detected")));
+            Assert.IsFalse(result.Output.Any(line => line.Contains("php")));
+            Assert.IsTrue(result.Output.Any(line => line.Contains("has been detected")));
 
             result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestHelper.TestsDataPath}\" " +
@@ -68,20 +68,39 @@ namespace PT.PM.Cli.Tests
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not detect language for only one language.
-            Assert.IsNull(result.Output.FirstOrDefault(line => line.Contains("has been detected")));
+            Assert.IsFalse(result.Output.Any(line => line.Contains("has been detected")));
         }
 
         [Test]
-        public void CheckConsole_FakeLanguage_CorrectlyProcessed()
+        public void CheckCli_FakeLanguage_CorrectlyProcessed()
         {
             // Patterns: [{"Name":"","Key":"1","Languages":"Fake","DataFormat":"Dsl","Value":"<[(?i)password(?-i)]> = <[\"\\w*\" || null]>","CweId":"","Description":""}]
             ProcessExecutionResult result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
                $"--stage {Stage.Patterns} " +
-               $"--patterns kAAAAB+LCAAAAAAABAAljb0KwjAURl8l3KkVHVyltoOhUBRHlyTDxYYSTJOSH4JY391b3M534PCJD9xx1nAC2MNVvwmORDd0U8ZJR9o9vjQpjgl7H2ZM5Hi0pB5o85Y2oupMvWCMxYex6g6mVi07s0ZIkLLsJLB1ZS5bq1rKLkUP4@+R6@gMZknGu0181Q+1349CkAAAAA== " +
+               $"--patterns kAAAAB+LCAAAAAAABAAljb0KwjAURl8l3KkVHVyltoOhUBRHlyTDxYYSTJOSH4JY391b3M534PCJD9xx1nAC2MNVvwmORDd0U8ZJR9o9vjQpjgl7H2ZM5Hi0pB5o85Y2oupMvWCMxYex6g6mVi07s0ZIkLLsJLB1ZS5bq1rKLkUP4/+R6/gMZknGu0181Q+1349CkAAAAA== " +
                $"--log-debugs --log-errors");
 
-            Assert.AreEqual("Error: Language \"Fake\" is not supported or wrong.", result.Output[1]);
-            Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[2]);
+            Assert.AreEqual("Error: Language \"Fake\" is not supported or wrong.", result.Output[2]);
+            Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[3]);
+        }
+
+        [Test]
+        public void CheckCli_FilePatternsRepository_CorrectlyProcessed()
+        {
+            var patternsFileName = Path.Combine(Path.GetTempPath(), "patterns.json");
+            File.WriteAllText(patternsFileName, "[{\"Key\":\"1\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\"}]");
+            try
+            {
+                var result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
+                    $"-f \"{Path.Combine(TestHelper.TestsDataPath, "Patterns.cs")}\" " +
+                    $"--patterns \"{patternsFileName}\"");
+
+                Assert.IsTrue(result.Output.Any(str => str.Contains("Pattern matched")));
+            }
+            finally
+            {
+                File.Delete(patternsFileName);
+            }
         }
 
         private static string PreparePatternsString()
