@@ -67,7 +67,8 @@ namespace PT.PM.Matching.Tests
             };
             var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { pattern });
             patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
-            var matchingResults = workflow.Process().ToArray();
+            WorkflowResult workflowResult = workflow.Process();
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
 
             Assert.AreEqual(matchMethodNumbers.Contains(0) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_0")));
@@ -90,7 +91,8 @@ namespace PT.PM.Matching.Tests
             };
             var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { pattern });
             patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
-            var matchingResults = workflow.Process().ToArray();
+            WorkflowResult workflowResult = workflow.Process();
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
 
             int expectedMatchingCount = patternData.Contains("password") ? 1 : 0;
@@ -110,7 +112,8 @@ namespace PT.PM.Matching.Tests
             };
             var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { pattern });
             patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
-            var matchingResults = workflow.Process().ToArray();
+            WorkflowResult workflowResult = workflow.Process();
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
 
             int expectedMatchingCount = patternData.Contains("~<[@pwd]>.Length") ? 0 : 1;

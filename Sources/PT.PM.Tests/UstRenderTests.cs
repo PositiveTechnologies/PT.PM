@@ -17,11 +17,10 @@ namespace PT.PM.Tests
             var language = (Language)LanguageExt.GetLanguageFromFileName(fileName);
             var workflow = new Workflow(codeRepository, language);
             workflow.Stage = Stage.Convert;
-            workflow.Process();
+            WorkflowResult workflowResult = workflow.Process();
 
-            var lastUst = workflow.LastUst;
             var astSerializer = new UstDotRenderer();
-            var dotString = astSerializer.Render(lastUst.Root);
+            var dotString = astSerializer.Render(workflowResult.LastUst.Root);
 
             TestHelper.RenderGraphvizGraph(dotString, Path.Combine(
                 TestHelper.TestsDataPath,

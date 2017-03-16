@@ -47,10 +47,10 @@ namespace PT.PM.UstPreprocessing.Tests
                 var workflow = new Workflow(new MemoryCodeRepository(repository.Value), repository.Key, stage: Stage.Preprocess);
                 workflow.UstPreprocessor = new UstPreprocessor();
                 workflow.Logger = logger;
-                workflow.Process();
+                workflow.Stage = Stage.Convert;
+                WorkflowResult workflowResult = workflow.Process();
 
-                var lastUst = workflow.LastUst;
-                Assert.IsTrue(lastUst.Root.ToString().Contains("a = a + 2"));
+                Assert.IsTrue(workflowResult.LastUst.Root.ToString().Contains("a = a + 2"));
             }
         }
     }

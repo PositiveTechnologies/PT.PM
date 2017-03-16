@@ -90,8 +90,10 @@ namespace PT.PM
             ThreadCount = 1;
         }
 
-        public override IEnumerable<MatchingResultDto> Process()
+        public override WorkflowResult Process()
         {
+            var workflowResult = new WorkflowResult(Stage, IsIncludeIntermediateResult);
+
             totalReadTicks = 0;
             totalParseTicks = 0;
             totalConvertTicks = 0;
@@ -111,6 +113,7 @@ namespace PT.PM
                         UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
                         stopwatch.Stop();
                         totalPatternsTicks = stopwatch.ElapsedTicks;
+                        workflowResult.AddResultEntity(UstPatternMatcher.PatternsData.Patterns);
                     }
                     catch (Exception ex)
                     {
@@ -121,7 +124,6 @@ namespace PT.PM
             }
 
             int processedCount = 0;
-            List<MatchingResultDto> matchingResults = new List<MatchingResultDto>();
             if (Stage == Stage.Patterns)
             {
                 if (!convertPatternsTask.IsCompleted)
@@ -139,7 +141,7 @@ namespace PT.PM
                     Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
                     foreach (var file in fileNames)
                     {
-                        ProcessFile(file, convertPatternsTask, matchingResults);
+                        ProcessFile(file, convertPatternsTask, workflowResult);
                         Logger.LogInfo(new ProgressEventArgs((double)processedCount++ / totalProcessedFileCount, file));
                     }
                 }
@@ -153,7 +155,7 @@ namespace PT.PM
                             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-                            ProcessFile(fileName, convertPatternsTask, matchingResults);
+                            ProcessFile(fileName, convertPatternsTask, workflowResult);
 
                             if (Logger != null)
                             {
@@ -170,7 +172,8 @@ namespace PT.PM
                 }
             }
 
-            return matchingResults;
+            workflowResult.ErrorCount = logger == null ? 0 : logger.ErrorCount;
+            return workflowResult;
         }
 
         public override void LogStatistics()
@@ -211,22 +214,24 @@ namespace PT.PM
             }
         }
 
-        private void ProcessFile(string fileName, Task convertPatternsTask, List<MatchingResultDto> matchingResults)
+        private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult)
         {
             try
             {
-                var langParseTree = ReadAndParse(fileName);
-                if (langParseTree == null)
+                ParseTree parseTree = ReadAndParse(fileName, workflowResult);
+                if (parseTree == null)
                     return;
+                workflowResult.AddResultEntity(parseTree);
+
                 if (Stage >= Stage.Convert)
                 {
                     var stopwatch = Stopwatch.StartNew();
-                    IParseTreeToUstConverter converter = ParserConverterSets[langParseTree.SourceLanguage].Converter;
-                    Ust ust = converter.Convert(langParseTree);
+                    IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
+                    Ust ust = converter.Convert(parseTree);
                     stopwatch.Stop();
-                    LastUst = ust;
                     Interlocked.Add(ref totalConvertTicks, stopwatch.ElapsedTicks);
                     Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                    workflowResult.AddResultEntity(ust, true);
 
                     if (Stage >= Stage.Preprocess)
                     {
@@ -237,6 +242,7 @@ namespace PT.PM
                             stopwatch.Stop();
                             Interlocked.Add(ref totalPreprocessTicks, stopwatch.ElapsedTicks);
                             Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                            workflowResult.AddResultEntity(ust, false);
                         }
 
                         if (Stage >= Stage.Match)
@@ -247,17 +253,11 @@ namespace PT.PM
                             }
 
                             stopwatch.Restart();
-                            IEnumerable<MatchingResultDto> matchingResult = UstPatternMatcher.Match(ust)
-                                .Select(m => MatchingResultDto.CreateFromMatchingResult(m, SourceCodeRepository))
-                                .Where(m => m != null);
+                            IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
                             stopwatch.Stop();
                             Interlocked.Add(ref totalMatchTicks, stopwatch.ElapsedTicks);
                             Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-
-                            lock (matchingResults)
-                            {
-                                matchingResults.AddRange(matchingResult);
-                            }
+                            workflowResult.AddResultEntity(matchingResults);
                         }
                     }
                 }

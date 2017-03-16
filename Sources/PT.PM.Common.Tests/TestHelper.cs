@@ -66,7 +66,7 @@ namespace PT.PM.Common.Tests
             }
         }
 
-        public static MatchingResultDto[] CheckProject(TestProject testProject, Language language, Stage endStage,
+        public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
             IUstPreprocessor astPreprocessor = null, decimal fileSuccessRatio = 1.0m)
         {
             var logger = new LoggerMessageCounter()
@@ -90,7 +90,7 @@ namespace PT.PM.Common.Tests
             if (codeRepository == null)
             {
                 Assert.Ignore($@"Project {testProject.Key} has not been found at {(string.Join(", ", testProject.Urls))} or can not be downloaded.");
-                return ArrayUtils<MatchingResultDto>.EmptyArray;
+                return null;
             }
 
             if (!Directory.Exists(TestsDownloadedPath))
@@ -104,7 +104,7 @@ namespace PT.PM.Common.Tests
             };
             workflow.Logger = logger;
             workflow.ThreadCount = 1;
-            var result = workflow.Process();
+            WorkflowResult workflowResult = workflow.Process();
 
             if (fileSuccessRatio == 1.0m)
             {
@@ -124,11 +124,11 @@ namespace PT.PM.Common.Tests
                     Assert.GreaterOrEqual(actualFileSuccessRatio, fileSuccessRatio, logger.ErrorsString);
                 }
             }
-            
-            return result.ToArray();
+
+            return workflowResult;
         }
 
-        public static MatchingResultDto[] CheckProject(string projectPath, Language language, Stage endStage)
+        public static WorkflowResult CheckProject(string projectPath, Language language, Stage endStage)
         {
             var logger = new LoggerMessageCounter() { LogToConsole = false };
             var repository = new FilesAggregatorCodeRepository(
@@ -136,11 +136,11 @@ namespace PT.PM.Common.Tests
             var workflow = new Workflow(repository, language, stage: endStage);
             workflow.Logger = logger;
             workflow.ThreadCount = 1;
-            var result = workflow.Process();
+            WorkflowResult workflowResult = workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
-            return result.ToArray();
+            return workflowResult;
         }
 
         public static bool FileAtUrlExists(string url)

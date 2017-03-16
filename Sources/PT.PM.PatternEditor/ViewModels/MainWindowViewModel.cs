@@ -11,13 +11,11 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PT.PM.PatternEditor
@@ -502,11 +500,14 @@ namespace PT.PM.PatternEditor
             }
             var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage);
             workflow.Logger = sourceCodeLogger;
-            IEnumerable<MatchingResultDto> matchingResults = workflow.Process() ?? ArrayUtils<MatchingResultDto>.EmptyArray;
+            WorkflowResult workflowResult = workflow.Process();
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults
+                .ToDto(workflow.SourceCodeRepository)
+                .ToArray();
 
             if (IsDeveloperMode)
             {
-                AntlrParseTree antlrParseTree = workflow.LastParseTree as AntlrParseTree;
+                AntlrParseTree antlrParseTree = workflowResult.LastParseTree as AntlrParseTree;
                 if (antlrParseTree != null && antlrParseTree.SyntaxTree != null)
                 {
                     Antlr4.Runtime.Parser antlrParser = (workflow.ParserConverterSets[antlrParseTree.SourceLanguage].Parser as AntlrParser).Parser;
@@ -518,9 +519,9 @@ namespace PT.PM.PatternEditor
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tokens.txt"), Tokens);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tree.txt"), ParseTree);
                 }
-                if (Stage >= Stage.Convert && workflow.LastUst != null)
+                if (Stage >= Stage.Convert && workflowResult.LastUst != null)
                 {
-                    UstJson = jsonSerializer.Serialize(workflow.LastUst.Root);
+                    UstJson = jsonSerializer.Serialize(workflowResult.LastUst.Root);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UST.json"), UstJson);
                 }
             }

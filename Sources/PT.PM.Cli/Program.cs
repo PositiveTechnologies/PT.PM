@@ -119,7 +119,7 @@ namespace PT.PM.Cli
                         MemoryConsumptionMb = memoryConsumptionMb
                     };
                     var stopwatch = Stopwatch.StartNew();
-                    var results = workflow.Process();
+                    WorkflowResult workflowResult = workflow.Process();
                     stopwatch.Stop();
 
                     if (stage != Stage.Patterns)
@@ -127,14 +127,14 @@ namespace PT.PM.Cli
                         logger.LogInfo("Scan completed.");
                         if (stage == Stage.Match)
                         {
-                            logger.LogInfo("{0,-22} {1}", "Matches count:", results.Count().ToString());
+                            logger.LogInfo("{0,-22} {1}", "Matches count:", workflowResult.MatchingResults.Count().ToString());
                         }
                     }
                     else
                     {
                         logger.LogInfo("Patterns checked.");
                     }
-                    logger.LogInfo("{0,-22} {1}", "Errors count:", workflow.ErrorCount.ToString());
+                    logger.LogInfo("{0,-22} {1}", "Errors count:", workflowResult.ErrorCount.ToString());
                     workflow.LogStatistics();
                     logger.LogInfo("{0,-22} {1}", "Time elapsed:", stopwatch.Elapsed.ToString());
                 }

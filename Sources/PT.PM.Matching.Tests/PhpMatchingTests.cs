@@ -5,6 +5,7 @@ using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using PT.PM.Patterns;
 
 namespace PT.PM.Matching.Tests
 {
@@ -26,9 +27,12 @@ namespace PT.PM.Matching.Tests
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, Language.Php, patternsRepository);
-
-            var matchingResults = workflow.Process().OrderBy(r => r.PatternKey).ToArray();
-            var patternDtos = patternsRepository.GetAll()
+            WorkflowResult workflowResult = workflow.Process();
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults
+                .ToDto(workflow.SourceCodeRepository)
+                .OrderBy(r => r.PatternKey)
+                .ToArray();
+            PatternDto[] patternDtos = patternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Is(LanguageFlags.Php)).ToArray();
             foreach (var dto in patternDtos)
             {

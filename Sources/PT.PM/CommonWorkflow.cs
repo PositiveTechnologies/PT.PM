@@ -1,7 +1,6 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.UstPreprocessing;
 using PT.PM.Common;
-using PT.PM.Common.Ust;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Matching;
 using PT.PM.Patterns;
@@ -64,6 +63,8 @@ namespace PT.PM
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
+        public bool IsIncludeIntermediateResult { get; set; }
+
         public ILogger Logger
         {
             get { return logger; }
@@ -115,8 +116,6 @@ namespace PT.PM
 
         public int ThreadCount { get; set; }
 
-        public int ErrorCount => logger == null ? 0 : logger.ErrorCount;
-
         public int MaxStackSize
         {
             get
@@ -137,10 +136,6 @@ namespace PT.PM
             }
         }
 
-        public ParseTree LastParseTree { get; protected set; }
-
-        public Ust LastUst { get; protected set; }
-
         public Language[] Languages
         {
             get
@@ -155,7 +150,7 @@ namespace PT.PM
 
         public abstract void LogStatistics();
 
-        public abstract IEnumerable<MatchingResultDto> Process();
+        public abstract WorkflowResult Process();
 
         protected long GetTotalTimeTicks()
         {
@@ -163,7 +158,7 @@ namespace PT.PM
                    totalPreprocessTicks + totalMatchTicks + totalPatternsTicks;
         }
 
-        protected ParseTree ReadAndParse(string fileName)
+        protected ParseTree ReadAndParse(string fileName, WorkflowResult workflowResult)
         {
             ParseTree result = null;
             var stopwatch = new Stopwatch();
@@ -177,6 +172,7 @@ namespace PT.PM
                 Interlocked.Add(ref totalProcessedCharsCount, sourceCodeFile.Code.Length);
                 Interlocked.Add(ref totalProcessedLinesCount, TextHelper.GetLinesCount(sourceCodeFile.Code));
                 Logger.LogInfo("File {0} has been read (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                workflowResult.AddResultEntity(sourceCodeFile);
 
                 file = sourceCodeFile.RelativePath;
                 if (ContainsParsingStage)
@@ -190,7 +186,7 @@ namespace PT.PM
                     }
                     result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
-                    LastParseTree = result;
+
                     Interlocked.Add(ref totalParseTicks, stopwatch.ElapsedTicks);
                     Logger.LogInfo("File {0} has been parsed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
                 }
