@@ -94,13 +94,6 @@ namespace PT.PM
         {
             var workflowResult = new WorkflowResult(Stage, IsIncludeIntermediateResult);
 
-            totalReadTicks = 0;
-            totalParseTicks = 0;
-            totalConvertTicks = 0;
-            totalPreprocessTicks = 0;
-            totalMatchTicks = 0;
-            totalPatternsTicks = 0;
-
             Task convertPatternsTask = null;
             if (Stage == Stage.Patterns || Stage >= Stage.Match)
             {
@@ -112,7 +105,7 @@ namespace PT.PM
                         IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
                         UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
                         stopwatch.Stop();
-                        totalPatternsTicks = stopwatch.ElapsedTicks;
+                        workflowResult.AddStageTime(Stage.Patterns, stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(UstPatternMatcher.PatternsData.Patterns);
                     }
                     catch (Exception ex)
@@ -134,7 +127,7 @@ namespace PT.PM
             else
             {
                 var fileNames = SourceCodeRepository.GetFileNames();
-                totalProcessedFileCount = fileNames.Count();
+                workflowResult.AddProcessedFilesCount(fileNames.Count());
                 if (ThreadCount == 1)
                 {
                     Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -142,7 +135,7 @@ namespace PT.PM
                     foreach (var file in fileNames)
                     {
                         ProcessFile(file, convertPatternsTask, workflowResult);
-                        Logger.LogInfo(new ProgressEventArgs((double)processedCount++ / totalProcessedFileCount, file));
+                        Logger.LogInfo(new ProgressEventArgs((double)processedCount++ / workflowResult.TotalProcessedFilesCount, file));
                     }
                 }
                 else
@@ -160,7 +153,7 @@ namespace PT.PM
                             if (Logger != null)
                             {
                                 Interlocked.Increment(ref processedCount);
-                                var args = new ProgressEventArgs((double)processedCount / totalProcessedFileCount, fileName);
+                                var args = new ProgressEventArgs((double)processedCount / workflowResult.TotalProcessedFilesCount, fileName);
                                 Logger.LogInfo(args);
                             }
                         });
@@ -174,44 +167,6 @@ namespace PT.PM
 
             workflowResult.ErrorCount = logger == null ? 0 : logger.ErrorCount;
             return workflowResult;
-        }
-
-        public override void LogStatistics()
-        {
-            Logger.LogInfo("{0,-22} {1}", "Files count:", TotalProcessedFileCount.ToString());
-            Logger.LogInfo("{0,-22} {1}", "Chars count:", TotalProcessedCharsCount.ToString());
-            Logger.LogInfo("{0,-22} {1}", "Lines count:", TotalProcessedLinesCount.ToString());
-            long totalTimeTicks = GetTotalTimeTicks();
-            if (totalTimeTicks > 0)
-            {
-                if (Stage >= Stage.Read)
-                {
-                    LogStageTime(Stage.Read);
-                    if (Stage >= Stage.Parse)
-                    {
-                        LogStageTime(Stage.Parse);
-                        if (Stage >= Stage.Convert)
-                        {
-                            LogStageTime(Stage.Convert);
-                            if (Stage >= Stage.Preprocess)
-                            {
-                                if (UstPreprocessor != null)
-                                {
-                                    LogStageTime(Stage.Preprocess);
-                                }
-                                if (Stage >= Stage.Match)
-                                {
-                                    LogStageTime(Stage.Match);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (Stage >= Stage.Match || Stage == Stage.Patterns)
-                {
-                    LogStageTime(Stage.Patterns);
-                }
-            }
         }
 
         private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult)
@@ -229,8 +184,8 @@ namespace PT.PM
                     IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
                     Ust ust = converter.Convert(parseTree);
                     stopwatch.Stop();
-                    Interlocked.Add(ref totalConvertTicks, stopwatch.ElapsedTicks);
                     Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                    workflowResult.AddStageTime(Stage.Convert, stopwatch.ElapsedTicks);
                     workflowResult.AddResultEntity(ust, true);
 
                     if (Stage >= Stage.Preprocess)
@@ -240,8 +195,8 @@ namespace PT.PM
                             stopwatch.Restart();
                             ust = UstPreprocessor.Preprocess(ust);
                             stopwatch.Stop();
-                            Interlocked.Add(ref totalPreprocessTicks, stopwatch.ElapsedTicks);
                             Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                            workflowResult.AddStageTime(Stage.Preprocess, stopwatch.ElapsedTicks);
                             workflowResult.AddResultEntity(ust, false);
                         }
 
@@ -255,8 +210,8 @@ namespace PT.PM
                             stopwatch.Restart();
                             IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
                             stopwatch.Stop();
-                            Interlocked.Add(ref totalMatchTicks, stopwatch.ElapsedTicks);
                             Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                            workflowResult.AddStageTime(Stage.Match, stopwatch.ElapsedTicks);
                             workflowResult.AddResultEntity(matchingResults);
                         }
                     }
@@ -268,61 +223,8 @@ namespace PT.PM
             }
         }
 
-        protected void LogStageTime(Stage stage)
-        {
-            long totalTimeTicks = GetTotalTimeTicks();
-            long ticks = 0;
-            switch (stage)
-            {
-                case Stage.Read:
-                    ticks = totalReadTicks;
-                    break;
-                case Stage.Parse:
-                    ticks = totalParseTicks;
-                    break;
-                case Stage.Convert:
-                    ticks = totalConvertTicks;
-                    break;
-                case Stage.Preprocess:
-                    ticks = totalPreprocessTicks;
-                    break;
-                case Stage.Match:
-                    ticks = totalMatchTicks;
-                    break;
-                case Stage.Patterns:
-                    ticks = totalPatternsTicks;
-                    break;
-            }
-            logger.LogInfo("{0,-22} {1} {2}%",
-                "Total " + stage.ToString().ToLowerInvariant() + " time:",
-                new TimeSpan(ticks).ToString(), CalculatePercent(ticks, totalTimeTicks).ToString("00.00"));
-
-            if (stage == Stage.Parse)
-            {
-                LogAdditionalParserInfo();
-            }
-        }
-
-        protected void LogAdditionalParserInfo()
-        {
-            if (ParserConverterSets.Any(pair => pair.Value.Parser is AntlrParser))
-            {
-                logger.LogInfo("{0,-22} {1} {2}%",
-                    "  ANTLR lexing time:",
-                    new TimeSpan(totalLexerTicks).ToString(), CalculatePercent(totalLexerTicks, totalParseTicks).ToString("00.00"));
-                logger.LogInfo("{0,-22} {1} {2}%",
-                    "  ANTLR parsing time:",
-                    new TimeSpan(totalParserTicks).ToString(), CalculatePercent(totalParserTicks, totalParseTicks).ToString("00.00"));
-            }
-        }
-
         protected override bool ContainsReadingStage => Stage >= Stage.Read;
 
         protected override bool ContainsParsingStage => Stage >= Stage.Parse;
-
-        protected double CalculatePercent(long part, long whole)
-        {
-            return whole == 0 ? 0 : ((double)part / whole * 100.0);
-        }
     }
 }

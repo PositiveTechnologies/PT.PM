@@ -5,11 +5,9 @@ using PT.PM.Common.CodeRepository;
 using PT.PM.Matching;
 using PT.PM.Patterns;
 using PT.PM.Patterns.PatternsRepository;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 
 namespace PT.PM
 {
@@ -20,34 +18,7 @@ namespace PT.PM
         private int maxTimespan;
         private int memoryConsumptionMb;
 
-        protected long totalReadTicks;
-        protected long totalParseTicks;
-        protected long totalConvertTicks;
-        protected long totalPreprocessTicks;
-        protected long totalMatchTicks;
-        protected long totalPatternsTicks;
-
-        protected int totalProcessedFileCount;
-        protected int totalProcessedCharsCount;
-        protected int totalProcessedLinesCount;
-
-        protected long totalLexerTicks;
-        protected long totalParserTicks;
-
         protected Language[] languages;
-
-        public TimeSpan TotalReadTimeSpan => new TimeSpan(totalReadTicks);
-        public TimeSpan TotalParseTimeSpan => new TimeSpan(totalParseTicks);
-        public TimeSpan TotalConvertTimeSpan => new TimeSpan(totalConvertTicks);
-        public TimeSpan TotalPreprocessTimeSpan => new TimeSpan(totalPreprocessTicks);
-        public TimeSpan TotalMatchTimeSpan => new TimeSpan(totalMatchTicks);
-        public TimeSpan TotalPatternsTimeSpan => new TimeSpan(totalPatternsTicks);
-        public TimeSpan TotalLexerTicks => new TimeSpan(totalLexerTicks);
-        public TimeSpan TotalParserTicks => new TimeSpan(totalParserTicks);
-
-        public int TotalProcessedFileCount => totalProcessedFileCount;
-        public int TotalProcessedCharsCount => totalProcessedCharsCount;
-        public int TotalProcessedLinesCount => totalProcessedLinesCount;
 
         public ISourceCodeRepository SourceCodeRepository { get; set; }
 
@@ -148,15 +119,7 @@ namespace PT.PM
             }
         }
 
-        public abstract void LogStatistics();
-
         public abstract WorkflowResult Process();
-
-        protected long GetTotalTimeTicks()
-        {
-            return totalReadTicks + totalParseTicks + totalConvertTicks +
-                   totalPreprocessTicks + totalMatchTicks + totalPatternsTicks;
-        }
 
         protected ParseTree ReadAndParse(string fileName, WorkflowResult workflowResult)
         {
@@ -168,10 +131,12 @@ namespace PT.PM
                 stopwatch.Restart();
                 SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
                 stopwatch.Stop();
-                Interlocked.Add(ref totalReadTicks, stopwatch.ElapsedTicks);
-                Interlocked.Add(ref totalProcessedCharsCount, sourceCodeFile.Code.Length);
-                Interlocked.Add(ref totalProcessedLinesCount, TextHelper.GetLinesCount(sourceCodeFile.Code));
+
                 Logger.LogInfo("File {0} has been read (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+
+                workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
+                workflowResult.AddProcessedLinesCount(TextHelper.GetLinesCount(sourceCodeFile.Code));
+                workflowResult.AddStageTime(Stage.Read, stopwatch.ElapsedTicks);
                 workflowResult.AddResultEntity(sourceCodeFile);
 
                 file = sourceCodeFile.RelativePath;
@@ -186,16 +151,15 @@ namespace PT.PM
                     }
                     result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
-
-                    Interlocked.Add(ref totalParseTicks, stopwatch.ElapsedTicks);
                     Logger.LogInfo("File {0} has been parsed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                    workflowResult.AddStageTime(Stage.Parse, stopwatch.ElapsedTicks);
                 }
 
                 var antlrParseTree = result as AntlrParseTree;
                 if (antlrParseTree != null)
                 {
-                    Interlocked.Add(ref totalLexerTicks, antlrParseTree.LexerTimeSpan.Ticks);
-                    Interlocked.Add(ref totalParserTicks, antlrParseTree.ParserTimeSpan.Ticks);
+                    workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
+                    workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
                 }
             }
             return result;
