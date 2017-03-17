@@ -25,16 +25,7 @@ after_build:
     msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform=x86
 test:
   assemblies:
-  - Unit\Bin\Release\PT.PM.CSharpParseTreeUst.Tests.dll
-  - Unit\Bin\Release\PT.PM.JavaParseTreeUst.Tests.dll
-  - Unit\Bin\Release\PT.PM.JavaScriptParseTreeUst.Tests.dll
-  - Unit\Bin\Release\PT.PM.PhpParseTreeUst.Tests.dll
-  - Unit\Bin\Release\PT.PM.SqlParseTreeUst.Tests.dll
-  - Unit\Bin\Release\PT.PM.UstPreprocessing.Tests.dll
-  - Unit\Bin\Release\PT.PM.Matching.Tests.dll
-  - Unit\Bin\Release\PT.PM.Tests.dll
-  - Unit\Bin\Release\PT.PM.Dsl.Tests.dll
-  - Unit\Bin\Release\PT.PM.Cli.Tests.dll
+  - Unit\Bin\Release\*.Tests.dll
 after_test:
 - cmd: >-
     nuget pack PT.PM.nuspec -version %APPVEYOR_BUILD_VERSION%
