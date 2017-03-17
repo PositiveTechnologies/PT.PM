@@ -1,6 +1,5 @@
-﻿using System.Linq;
-using PT.PM.Common;
-using PT.PM.Common.Tests;
+﻿using PT.PM.Common;
+using PT.PM.TestUtils;
 using NUnit.Framework;
 using System.IO;
 

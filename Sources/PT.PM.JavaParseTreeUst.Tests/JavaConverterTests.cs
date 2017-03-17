@@ -1,15 +1,7 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Tests;
-using Moq;
+using PT.PM.TestUtils;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.JavaParseTreeUst.Tests
 {

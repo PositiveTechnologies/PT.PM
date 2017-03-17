@@ -1,6 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Tests;
+using PT.PM.TestUtils;
 using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
 using System.IO;

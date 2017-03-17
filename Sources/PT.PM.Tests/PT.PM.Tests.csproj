@@ -94,10 +94,6 @@
       <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
       <Name>PT.PM.AntlrUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Common.Tests\PT.PM.Common.Tests.csproj">
-      <Project>{bcb2fd80-7873-4dba-b911-6b9c80095c21}</Project>
-      <Name>PT.PM.Common.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
@@ -129,6 +125,10 @@
     <ProjectReference Include="..\PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj">
       <Project>{8f34670a-b91d-460b-9d67-7a03f7194673}</Project>
       <Name>PT.PM.SqlParseTreeUst</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
+      <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
+      <Name>PT.PM.TestUtils</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj">
       <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>

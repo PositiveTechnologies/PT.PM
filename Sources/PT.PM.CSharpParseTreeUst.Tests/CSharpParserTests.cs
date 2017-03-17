@@ -1,12 +1,7 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Tests;
+using PT.PM.TestUtils;
 using NUnit.Framework;
-using Moq;
-using System;
-using System.Collections.Generic;
 
 namespace PT.PM.CSharpParseTreeUst.Tests
 {

@@ -1,7 +1,7 @@
 ﻿using PT.PM.UstPreprocessing;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Tests;
+using PT.PM.TestUtils;
 using PT.PM.Patterns.Nodes;
 using NUnit.Framework;
 using System;

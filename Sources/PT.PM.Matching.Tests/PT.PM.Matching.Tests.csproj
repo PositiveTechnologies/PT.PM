@@ -62,13 +62,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
+      <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
+      <Name>PT.PM.TestUtils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
       <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
       <Name>PT.PM.UstPreprocessing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Common.Tests\PT.PM.Common.Tests.csproj">
-      <Project>{bcb2fd80-7873-4dba-b911-6b9c80095c21}</Project>
-      <Name>PT.PM.Common.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>

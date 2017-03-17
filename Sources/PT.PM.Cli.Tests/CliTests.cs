@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Tests;
+using PT.PM.TestUtils;
 using PT.PM.Patterns;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

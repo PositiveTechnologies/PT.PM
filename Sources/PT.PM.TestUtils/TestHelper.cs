@@ -1,14 +1,14 @@
 ﻿using PT.PM.UstPreprocessing;
 using PT.PM.Common.CodeRepository;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using PT.PM.Common;
 
-namespace PT.PM.Common.Tests
+namespace PT.PM.TestUtils
 {
     public static class TestHelper
     {

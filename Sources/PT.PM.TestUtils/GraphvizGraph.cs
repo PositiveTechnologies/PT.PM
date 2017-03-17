@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PT.PM.Common.Tests
+namespace PT.PM.TestUtils
 {
     public class GraphvizGraph
     {
