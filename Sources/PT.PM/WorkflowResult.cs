@@ -178,7 +178,7 @@ namespace PT.PM
                     Interlocked.Add(ref totalReadTicks, ticks);
                     break;
                 case Stage.Parse:
-                    Interlocked.Add(ref totalParserTicks, ticks);
+                    Interlocked.Add(ref totalParseTicks, ticks);
                     break;
                 case Stage.Convert:
                     Interlocked.Add(ref totalConvertTicks, ticks);
