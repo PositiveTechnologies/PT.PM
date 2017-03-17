@@ -29,7 +29,7 @@ namespace PT.PM.Cli
             int maxStackSize = 0;
             int maxTimespan = 0;
             int memoryConsumptionMb = 300;
-            string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Application Inspector", "Logs", "pm");
+            string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM", "Logs");
             bool logErrors = false;
             bool logDebugs = false;
             bool showVersion = true;
