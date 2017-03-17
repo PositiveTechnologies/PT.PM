@@ -1,5 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="AI.DotNetAnalyser.FuncTests.WebForms.MasterPages.MasterPagesFormWithBaseMaster" 
-    MasterPageFile="BaseMasterPage.master"%>
+<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="BaseMasterPage.master"%>
 
 <!DOCTYPE html>
 
