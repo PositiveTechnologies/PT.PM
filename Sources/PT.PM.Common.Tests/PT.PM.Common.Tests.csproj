@@ -62,6 +62,10 @@
     <Compile Include="ZipAtUrlCachedCodeRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
+      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
+      <Name>PT.PM.Matching</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
       <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
       <Name>PT.PM.UstPreprocessing</Name>

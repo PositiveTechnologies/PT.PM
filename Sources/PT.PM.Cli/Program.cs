@@ -29,7 +29,7 @@ namespace PT.PM.Cli
             int maxStackSize = 0;
             int maxTimespan = 0;
             int memoryConsumptionMb = 300;
-            string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Application Inspector", "Logs", "pm");
+            string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM", "Logs");
             bool logErrors = false;
             bool logDebugs = false;
             bool showVersion = true;
@@ -119,7 +119,7 @@ namespace PT.PM.Cli
                         MemoryConsumptionMb = memoryConsumptionMb
                     };
                     var stopwatch = Stopwatch.StartNew();
-                    var results = workflow.Process();
+                    WorkflowResult workflowResult = workflow.Process();
                     stopwatch.Stop();
 
                     if (stage != Stage.Patterns)
@@ -127,15 +127,16 @@ namespace PT.PM.Cli
                         logger.LogInfo("Scan completed.");
                         if (stage == Stage.Match)
                         {
-                            logger.LogInfo("{0,-22} {1}", "Matches count:", results.Count().ToString());
+                            logger.LogInfo("{0,-22} {1}", "Matches count:", workflowResult.MatchingResults.Count().ToString());
                         }
                     }
                     else
                     {
                         logger.LogInfo("Patterns checked.");
                     }
-                    logger.LogInfo("{0,-22} {1}", "Errors count:", workflow.ErrorCount.ToString());
-                    workflow.LogStatistics();
+                    logger.LogInfo("{0,-22} {1}", "Errors count:", workflowResult.ErrorCount.ToString());
+                    var workflowLoggerHelper = new WorkflowLoggerHelper(logger, workflow, workflowResult);
+                    workflowLoggerHelper.LogStatistics();
                     logger.LogInfo("{0,-22} {1}", "Time elapsed:", stopwatch.Elapsed.ToString());
                 }
                 catch (Exception ex)

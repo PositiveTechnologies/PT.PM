@@ -42,8 +42,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommonWorkflow.cs" />
     <Compile Include="DynamicContractResolver.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="LanguageDetector.cs" />
     <Compile Include="ParserConverterBuilder.cs" />
     <Compile Include="ParserConverterSet.cs" />
@@ -57,6 +57,8 @@
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
+    <Compile Include="WorkflowBase.cs" />
+    <Compile Include="WorkflowResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj">

@@ -36,7 +36,10 @@ namespace PT.PM.Matching.Tests
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, language, patternsRepository);
-            var matchingResults = workflow.Process().OrderBy(r => r.PatternKey).ToArray();
+            WorkflowResult workflowResult = workflow.Process();
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults
+                .ToDto(workflow.SourceCodeRepository)
+                .OrderBy(r => r.PatternKey).ToArray();
             var patternDtos = patternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Is(language)).ToArray();
 
