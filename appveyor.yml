@@ -25,7 +25,7 @@ after_build:
     msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform=x86
 test:
   assemblies:
-  - Unit\Bin\Release\*.Tests.dll
+  - Tests\Unit\bin\Release\*.Tests.dll
 after_test:
 - cmd: >-
     nuget pack PT.PM.nuspec -version %APPVEYOR_BUILD_VERSION%
