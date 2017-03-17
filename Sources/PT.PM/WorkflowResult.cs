@@ -40,29 +40,9 @@ namespace PT.PM
 
         public bool IsIncludeIntermediateResult { get; private set; }
 
-        public IReadOnlyList<SourceCodeFile> SourceCodeFiles
-        {
-            get
-            {
-                if (Stage != Stage.Parse && !IsIncludeIntermediateResult)
-                {
-                    ThrowInvalidStageException(Stage.Parse);
-                }
-                return sourceCodeFiles;
-            }
-        }
+        public IReadOnlyList<SourceCodeFile> SourceCodeFiles => ValidateStageAndReturn(Stage.Read, sourceCodeFiles);
 
-        public IReadOnlyList<ParseTree> ParseTrees
-        {
-            get
-            {
-                if (Stage != Stage.Parse && !IsIncludeIntermediateResult)
-                {
-                    ThrowInvalidStageException(Stage.Parse);
-                }
-                return parseTrees;
-            }
-        }
+        public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(Stage.Parse, parseTrees);
 
         public ParseTree LastParseTree => ParseTrees?[0];
 
@@ -70,7 +50,7 @@ namespace PT.PM
         {
             get
             {
-                if (Stage != Stage.Convert && !IsIncludeIntermediateResult)
+                if (Stage != Stage.Convert && Stage != Stage.Preprocess && !IsIncludeIntermediateResult)
                 {
                     ThrowInvalidStageException(Stage.Convert);
                 }
@@ -80,17 +60,7 @@ namespace PT.PM
 
         public Ust LastUst => Usts?[0];
 
-        public IReadOnlyList<MatchingResult> MatchingResults
-        {
-            get
-            {
-                if (Stage != Stage.Match && !IsIncludeIntermediateResult)
-                {
-                    ThrowInvalidStageException(Stage.Match);
-                }
-                return matchingResults;
-            }
-        }
+        public IReadOnlyList<MatchingResult> MatchingResults => ValidateStageAndReturn(Stage.Match, matchingResults);
 
         public List<Pattern> Patterns
         {
@@ -224,6 +194,13 @@ namespace PT.PM
         {
             return totalReadTicks + totalParseTicks + totalConvertTicks +
                    totalPreprocessTicks + totalMatchTicks + totalPatternsTicks;
+        }
+
+        private T ValidateStageAndReturn<T>(Stage stage, T result)
+        {
+            if (Stage != stage && !IsIncludeIntermediateResult)
+                ThrowInvalidStageException(stage);
+            return result;
         }
 
         private void ThrowInvalidStageException(Stage stage)
