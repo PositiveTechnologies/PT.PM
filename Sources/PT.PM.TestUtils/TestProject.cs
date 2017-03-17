@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿using PT.PM.Common;
+using System.Linq;
 
-namespace PT.PM.Common.Tests
+namespace PT.PM.TestUtils
 {
     public class TestProject
     {

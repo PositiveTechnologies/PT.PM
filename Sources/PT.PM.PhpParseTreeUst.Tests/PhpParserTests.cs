@@ -4,7 +4,7 @@ using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Tests;
+using PT.PM.TestUtils;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;

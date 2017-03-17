@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli", "PT.PM.Cli\PT.P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Common", "PT.PM.Common\PT.PM.Common.csproj", "{0B10DBAE-C18D-4007-B799-0B3B1E00376E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Common.Tests", "PT.PM.Common.Tests\PT.PM.Common.Tests.csproj", "{BCB2FD80-7873-4DBA-B911-6B9C80095C21}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpParseTreeUst", "PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj", "{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpParseTreeUst.Tests", "PT.PM.CSharpParseTreeUst.Tests\PT.PM.CSharpParseTreeUst.Tests.csproj", "{E3DB8014-0BFB-4399-9B49-A8BE446C5049}"
@@ -61,6 +59,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst", "PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj", "{98727837-F9FA-476C-B0B5-88845B53FDDF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst.Tests", "PT.PM.JavaScriptParseTreeUst.Tests\PT.PM.JavaScriptParseTreeUst.Tests.csproj", "{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.TestUtils", "PT.PM.TestUtils\PT.PM.TestUtils.csproj", "{FEC55A64-1B65-4D39-B5FA-D559D55BB190}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,14 +126,6 @@ Global
 		{0B10DBAE-C18D-4007-B799-0B3B1E00376E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B10DBAE-C18D-4007-B799-0B3B1E00376E}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B10DBAE-C18D-4007-B799-0B3B1E00376E}.Release|x86.Build.0 = Release|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Debug|x86.Build.0 = Debug|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Release|x86.ActiveCfg = Release|Any CPU
-		{BCB2FD80-7873-4DBA-B911-6B9C80095C21}.Release|x86.Build.0 = Release|Any CPU
 		{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -286,6 +278,14 @@ Global
 		{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}.Release|x86.ActiveCfg = Release|Any CPU
 		{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}.Release|x86.Build.0 = Release|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Debug|x86.Build.0 = Debug|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Release|x86.ActiveCfg = Release|Any CPU
+		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

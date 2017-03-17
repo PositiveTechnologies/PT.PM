@@ -1,8 +1,8 @@
-﻿using System;
+﻿using PT.PM.Common;
+using System;
 using System.Diagnostics;
-using System.IO;
 
-namespace PT.PM.Common.Tests
+namespace PT.PM.TestUtils
 {
     public class SevenZipExtractor
     {

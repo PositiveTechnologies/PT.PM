@@ -2,7 +2,7 @@
 using System.Linq;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Tests;
+using PT.PM.TestUtils;
 using PT.PM.Patterns;
 using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;

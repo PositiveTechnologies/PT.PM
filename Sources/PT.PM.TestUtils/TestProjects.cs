@@ -1,4 +1,4 @@
-﻿namespace PT.PM.Common.Tests
+﻿namespace PT.PM.TestUtils
 {
     public static class TestProjects
     {

@@ -1,4 +1,5 @@
-﻿using PT.PM.Common.CodeRepository;
+﻿using PT.PM.Common;
+using PT.PM.Common.CodeRepository;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 
-namespace PT.PM.Common.Tests
+namespace PT.PM.TestUtils
 {
     public class ZipAtUrlCachedCodeRepository : ISourceCodeRepository
     {

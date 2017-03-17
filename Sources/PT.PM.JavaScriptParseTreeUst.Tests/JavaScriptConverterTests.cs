@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Tests;
+using PT.PM.TestUtils;
 using NUnit.Framework;
 
 namespace PT.PM.JavaScriptParseTreeUst.Tests

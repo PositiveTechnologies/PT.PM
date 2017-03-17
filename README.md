@@ -57,7 +57,6 @@ Other projects:
 Unit tests for projects are located in the projects with similar names
 containing the **.Tests** suffix:
 
-* PT.PM.Common.Tests
 * PT.PM.CSharpParseTreeUst.Tests
 * PT.PM.CSharpAntlrParseTreeUst.Tests
 * PT.PM.JavaParseTreeUst.Tests
