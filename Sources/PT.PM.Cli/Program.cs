@@ -135,7 +135,8 @@ namespace PT.PM.Cli
                         logger.LogInfo("Patterns checked.");
                     }
                     logger.LogInfo("{0,-22} {1}", "Errors count:", workflowResult.ErrorCount.ToString());
-                    workflow.LogStatistics();
+                    var workflowLoggerHelper = new WorkflowLoggerHelper(logger, workflow, workflowResult);
+                    workflowLoggerHelper.LogStatistics();
                     logger.LogInfo("{0,-22} {1}", "Time elapsed:", stopwatch.Elapsed.ToString());
                 }
                 catch (Exception ex)
