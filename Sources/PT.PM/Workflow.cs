@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow : CommonWorkflow
+    public class Workflow : WorkflowBase
     {
         private int maxTimespan;
         private int memoryConsumptionMb;

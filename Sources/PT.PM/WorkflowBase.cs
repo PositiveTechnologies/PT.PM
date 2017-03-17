@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace PT.PM
 {
-    public abstract class CommonWorkflow : ILoggable
+    public abstract class WorkflowBase : ILoggable
     {
         protected ILogger logger = DummyLogger.Instance;
         protected int maxStackSize;
