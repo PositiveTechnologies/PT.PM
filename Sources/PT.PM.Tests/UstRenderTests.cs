@@ -22,9 +22,9 @@ namespace PT.PM.Tests
             var astSerializer = new UstDotRenderer();
             var dotString = astSerializer.Render(workflowResult.LastUst.Root);
 
-            TestHelper.RenderGraphvizGraph(dotString, Path.Combine(
-                TestHelper.TestsDataPath,
-                fileName.Replace(".txt", "") + ".uast.png"));
+            fileName = fileName.Replace(".txt", "") + ".ust";
+            File.WriteAllText(TestHelper.CombineWithOutputDir(fileName + ".dot"), dotString);
+            TestHelper.RenderGraphvizGraph(dotString, TestHelper.CombineWithOutputDir(fileName + ".png"));
         }
     }
 }
