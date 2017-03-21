@@ -191,7 +191,7 @@ namespace PT.PM.TestUtils
 
         public static string CombineWithOutputDir(string fileName) => Path.Combine(TestsOutputPath, fileName);
 
-        public static void RenderGraphvizGraph(string dotGraph, string filePath)
+        public static void RenderGraphvizGraph(string filePath, string dotGraph)
         {
             var graph = new GraphvizGraph(dotGraph) { GraphvizPath = GraphvizPath };
             graph.Dump(filePath);

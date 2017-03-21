@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GraphvizGraph.cs" />
+    <Compile Include="GraphvizOutputFormat.cs" />
     <Compile Include="SevenZipExtractor.cs" />
     <Compile Include="FileSystemOrUrlReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
