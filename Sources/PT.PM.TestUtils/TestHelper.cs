@@ -53,14 +53,14 @@ namespace PT.PM.TestUtils
             SevenZipPath = Helper.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
-        public static void CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
+        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
         {
             var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, language, stage: endStage);
             workflow.Logger = log;
-            workflow.Process();
+            WorkflowResult workflowResult = workflow.Process();
 
             if (!shouldContainsErrors)
             {
@@ -70,6 +70,8 @@ namespace PT.PM.TestUtils
             {
                 Assert.Greater(log.ErrorCount, 0);
             }
+
+            return workflowResult;
         }
 
         public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
