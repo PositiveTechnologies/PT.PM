@@ -24,6 +24,9 @@ namespace PT.PM.Common
             EndColumn = endColumn;
         }
 
+        /// <summary>
+        /// TODO: move implementation to SourceCodeFile.
+        /// </summary>
         public LineColumnTextSpan(TextSpan textSpan, string text)
         {
             int beginLine, beginColumn, endLine, endColumn;
