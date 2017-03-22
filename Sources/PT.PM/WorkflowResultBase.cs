@@ -4,7 +4,6 @@ using PT.PM.Matching;
 using PT.PM.Patterns;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace PT.PM
@@ -61,10 +60,6 @@ namespace PT.PM
                 return usts;
             }
         }
-
-        public ParseTree LastParseTree => ParseTrees.Last();
-
-        public Ust LastUst => Usts.Last();
 
         public IReadOnlyList<MatchingResult> MatchingResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchingResults);
 

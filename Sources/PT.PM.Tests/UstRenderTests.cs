@@ -3,6 +3,7 @@ using PT.PM.Common.CodeRepository;
 using PT.PM.TestUtils;
 using NUnit.Framework;
 using System.IO;
+using System.Linq;
 
 namespace PT.PM.Tests
 {
@@ -20,7 +21,7 @@ namespace PT.PM.Tests
             WorkflowResult workflowResult = workflow.Process();
 
             var astSerializer = new UstDotRenderer();
-            var dotString = astSerializer.Render(workflowResult.LastUst.Root);
+            var dotString = astSerializer.Render(workflowResult.Usts.First().Root);
 
             fileName = fileName.Replace(".txt", "") + ".ust";
             TestHelper.RenderGraphvizGraph(TestHelper.CombineWithOutputDir(fileName), dotString);
