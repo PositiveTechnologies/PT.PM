@@ -533,11 +533,16 @@ namespace PT.PM.UstPreprocessing
                     string stringValue = (string)prop.GetValue(ustNode);
                     prop.SetValue(result, stringValue != null ? String.Copy((string)prop.GetValue(ustNode)) : null);
                 }
-                else if (propType.IsSubclassOf(typeof(UstNode)) || propType == typeof(UstNode))
+                else if ((propType.IsSubclassOf(typeof(UstNode)) || propType == typeof(UstNode)) &&
+                         propType.Name != nameof(UstNode.Parent))
                 {
                     UstNode getValue = (UstNode)prop.GetValue(ustNode);
                     UstNode setValue = VisitNodeOrIgnoreFileNode(getValue);
                     prop.SetValue(result, setValue);
+                    if (setValue != null)
+                    {
+                        setValue.Parent = result;
+                    }
                 }
                 else if (propType == typeof(TextSpan))
                 {
@@ -557,7 +562,12 @@ namespace PT.PM.UstPreprocessing
                             var ustNodeItem = item as UstNode;
                             if (ustNodeItem != null)
                             {
-                                destCollection.Add(VisitNodeOrIgnoreFileNode(ustNodeItem));
+                                var destUstNodeItem = VisitNodeOrIgnoreFileNode(ustNodeItem);
+                                destCollection.Add(destUstNodeItem);
+                                if (destUstNodeItem != null)
+                                {
+                                    destUstNodeItem.Parent = result;
+                                }
                             }
                             else
                             {

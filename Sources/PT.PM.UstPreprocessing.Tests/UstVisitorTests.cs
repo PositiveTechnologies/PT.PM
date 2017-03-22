@@ -42,5 +42,29 @@ namespace PT.PM.UstPreprocessing.Tests
                     $"Visitor for Type {type} is not exists");
             }
         }
+
+        [Test]
+        public void Check_AllDescendants_HaveNotParentsAfterConvert()
+        {
+            WorkflowResult result = TestHelper.CheckFile("AllInOne.cs", Language.CSharp, Stage.Convert);
+
+            IEnumerable<UstNode> descendantsExceptFirst = result.Usts.First().Root.GetAllDescendants();
+            foreach (var descendant in descendantsExceptFirst)
+            {
+                Assert.IsNull(descendant.Parent);
+            }
+        }
+
+        [Test]
+        public void Check_AllDescendants_HaveParentsAfterPreprocess()
+        {
+            WorkflowResult result = TestHelper.CheckFile("AllInOne.cs", Language.CSharp, Stage.Preprocess);
+
+            IEnumerable<UstNode> descendantsExceptFirst = result.Usts.First().Root.GetAllDescendants().Skip(1);
+            foreach (var descendant in descendantsExceptFirst)
+            {
+                Assert.IsNotNull(descendant.Parent);
+            }
+        }
     }
 }

@@ -12,6 +12,9 @@ namespace PT.PM.Common.Nodes
         public abstract NodeType NodeType { get; }
 
         [JsonIgnore]
+        public UstNode Parent { get; set; }
+
+        [JsonIgnore]
         public UstNode[] Children => children ?? (children = GetChildren());
 
         [JsonIgnore]
