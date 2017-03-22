@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow : WorkflowBase<Stage, WorkflowResult>
+    public class Workflow: WorkflowBase<Stage, WorkflowResult>
     {
         private int maxTimespan;
         private int memoryConsumptionMb;
@@ -64,13 +64,19 @@ namespace PT.PM
         }
 
         public Workflow()
-            :this(null, LanguageExt.AllLanguages)
+            : this(null, LanguageExt.AllLanguages)
         {
         }
 
         public Workflow(ISourceCodeRepository sourceCodeRepository, Language language,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : this(sourceCodeRepository, language.ToFlags(), patternsRepository, stage)
+        {
+        }
+
+        public Workflow(ISourceCodeRepository sourceCodeRepository,
+            IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
+            :this(sourceCodeRepository,  LanguageExt.AllLanguages, patternsRepository, stage)
         {
         }
 
