@@ -524,17 +524,11 @@ namespace PT.PM.UstPreprocessing
             foreach (PropertyInfo prop in properties)
             {
                 Type propType = prop.PropertyType;
-                if (propType.IsValueType)
+                if (propType.IsValueType || propType == typeof(string))
                 {
                     prop.SetValue(result, prop.GetValue(ustNode));
                 }
-                else if (propType == typeof(string))
-                {
-                    string stringValue = (string)prop.GetValue(ustNode);
-                    prop.SetValue(result, stringValue != null ? String.Copy((string)prop.GetValue(ustNode)) : null);
-                }
-                else if ((propType.IsSubclassOf(typeof(UstNode)) || propType == typeof(UstNode)) &&
-                         propType.Name != nameof(UstNode.Parent))
+                else if (typeof(UstNode).IsAssignableFrom(propType) && propType.Name != nameof(UstNode.Parent))
                 {
                     UstNode getValue = (UstNode)prop.GetValue(ustNode);
                     UstNode setValue = VisitNodeOrIgnoreFileNode(getValue);
@@ -543,11 +537,6 @@ namespace PT.PM.UstPreprocessing
                     {
                         setValue.Parent = result;
                     }
-                }
-                else if (propType == typeof(TextSpan))
-                {
-                    var val = prop.GetValue(ustNode);
-                    prop.SetValue(result, val != null ? new TextSpan((TextSpan)val) : default(TextSpan));
                 }
                 else if (propType.GetInterfaces().Contains(typeof(IEnumerable)))
                 {
