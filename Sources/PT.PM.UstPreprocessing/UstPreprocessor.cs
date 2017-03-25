@@ -120,8 +120,10 @@ namespace PT.PM.UstPreprocessing
             if (result == null)
             {
                 result = new BinaryOperatorExpression(leftExpression, op, rightExpression,
-                    new TextSpan(binaryOperatorExpression.TextSpan),
-                    binaryOperatorExpression.FileNode);
+                    new TextSpan(binaryOperatorExpression.TextSpan), binaryOperatorExpression.FileNode);
+                leftExpression.Parent = result;
+                rightExpression.Parent = result;
+                op.Parent = result;
             }
 
             return result;
@@ -134,6 +136,12 @@ namespace PT.PM.UstPreprocessing
             BlockStatement trueStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.TrueStatement));
             BlockStatement falseStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.FalseStatement));
             var result = new IfElseStatement(condition, trueStatement, ifElseStatement.TextSpan, ifElseStatement.FileNode);
+            result.Condition.Parent = result;
+            result.TrueStatement.Parent = result;
+            if (result.FalseStatement != null)
+            {
+                result.FalseStatement.Parent = result;
+            }
             return result;
         }
 
@@ -151,6 +159,7 @@ namespace PT.PM.UstPreprocessing
             else
             {
                 result = new BlockStatement(new Statement[] { statement }, statement.TextSpan, statement.FileNode);
+                statement.Parent = result;
             }
             return result;
         }

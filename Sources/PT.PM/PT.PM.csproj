@@ -51,6 +51,7 @@
     <Compile Include="MatchingResultDto.cs" />
     <Compile Include="ParserUnit.cs" />
     <Compile Include="Stage.cs" />
+    <Compile Include="StageHelper.cs" />
     <Compile Include="StringCompressorEscaper.cs" />
     <Compile Include="Workflow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -59,6 +60,7 @@
     </Compile>
     <Compile Include="WorkflowBase.cs" />
     <Compile Include="WorkflowResult.cs" />
+    <Compile Include="WorkflowResultBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj">

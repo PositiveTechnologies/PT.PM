@@ -1,9 +1,7 @@
 ﻿using System.Linq;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Statements;
 using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
 using System.Collections.Generic;
 
 namespace PT.PM.Matching

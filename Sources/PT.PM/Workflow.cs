@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow : WorkflowBase
+    public class Workflow: WorkflowBase<Stage, WorkflowResult>
     {
         private int maxTimespan;
         private int memoryConsumptionMb;
@@ -63,10 +63,8 @@ namespace PT.PM
             }
         }
 
-        public Stage Stage { get; set; } = Stage.Match;
-
         public Workflow()
-            :this(null, LanguageExt.AllLanguages)
+            : this(null, LanguageExt.AllLanguages)
         {
         }
 
@@ -76,8 +74,15 @@ namespace PT.PM
         {
         }
 
+        public Workflow(ISourceCodeRepository sourceCodeRepository,
+            IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
+            :this(sourceCodeRepository,  LanguageExt.AllLanguages, patternsRepository, stage)
+        {
+        }
+
         public Workflow(ISourceCodeRepository sourceCodeRepository, LanguageFlags languages,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
+            : base(stage)
         {
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
@@ -105,7 +110,7 @@ namespace PT.PM
                         IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
                         UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
                         stopwatch.Stop();
-                        workflowResult.AddStageTime(Stage.Patterns, stopwatch.ElapsedTicks);
+                        workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(UstPatternMatcher.PatternsData.Patterns);
                     }
                     catch (Exception ex)
@@ -185,7 +190,7 @@ namespace PT.PM
                     Ust ust = converter.Convert(parseTree);
                     stopwatch.Stop();
                     Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                    workflowResult.AddStageTime(Stage.Convert, stopwatch.ElapsedTicks);
+                    workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
                     workflowResult.AddResultEntity(ust, true);
 
                     if (Stage >= Stage.Preprocess)
@@ -196,7 +201,7 @@ namespace PT.PM
                             ust = UstPreprocessor.Preprocess(ust);
                             stopwatch.Stop();
                             Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                            workflowResult.AddStageTime(Stage.Preprocess, stopwatch.ElapsedTicks);
+                            workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
                             workflowResult.AddResultEntity(ust, false);
                         }
 
@@ -211,7 +216,7 @@ namespace PT.PM
                             IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
                             stopwatch.Stop();
                             Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                            workflowResult.AddStageTime(Stage.Match, stopwatch.ElapsedTicks);
+                            workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
                             workflowResult.AddResultEntity(matchingResults);
                         }
                     }
@@ -222,9 +227,5 @@ namespace PT.PM
                 Logger.LogError(ex);
             }
         }
-
-        protected override bool ContainsReadingStage => Stage >= Stage.Read;
-
-        protected override bool ContainsParsingStage => Stage >= Stage.Parse;
     }
 }

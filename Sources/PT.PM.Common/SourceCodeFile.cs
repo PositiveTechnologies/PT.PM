@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace PT.PM.Common
 {
@@ -27,6 +26,16 @@ namespace PT.PM.Common
             Name = sourceCodeFile.Name;
             RelativePath = sourceCodeFile.RelativePath;
             Code = sourceCodeFile.Code;
+        }
+
+        public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)
+        {
+            // TODO: replace with fast binary version.
+            int beginLine, beginColumn;
+            int endLine, endColumn;
+            TextHelper.LinearToLineColumn(textSpan.Start, Code, out beginLine, out beginColumn);
+            TextHelper.LinearToLineColumn(textSpan.End, Code, out endLine, out endColumn);
+            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
         }
     }
 }

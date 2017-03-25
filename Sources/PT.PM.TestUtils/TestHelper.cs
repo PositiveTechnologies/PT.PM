@@ -19,6 +19,7 @@ namespace PT.PM.TestUtils
         public static string TestsPath = $@"Tests/Unit/bin/{(Debug ? "Debug" : "Release")}";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsDownloadedPath = $@"{TestsPath}/Downloaded";
+        public static string TestsOutputPath = $@"{TestsPath}/Output";
         public static string GraphvizPath = "Sources/packages/Graphviz.2.38.0.2/dot.exe";
         public static string SevenZipPath = "Sources/packages/7-Zip.x64.16.02.1/tools/7z.exe";
 
@@ -43,18 +44,23 @@ namespace PT.PM.TestUtils
             TestsPath = Path.Combine(repositoryDirectory, TestsPath).NormDirSeparator();
             TestsDataPath = Path.Combine(repositoryDirectory, TestsDataPath).NormDirSeparator();
             TestsDownloadedPath = Path.Combine(repositoryDirectory, TestsDownloadedPath).NormDirSeparator();
+            TestsOutputPath = Path.Combine(repositoryDirectory, TestsOutputPath).NormDirSeparator();
+            if (!Directory.Exists(TestsOutputPath))
+            {
+                Directory.CreateDirectory(TestsOutputPath);
+            }
             GraphvizPath = Helper.IsRunningOnLinux ? "dot" : Path.Combine(repositoryDirectory, GraphvizPath).NormDirSeparator();
             SevenZipPath = Helper.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
-        public static void CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
+        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
         {
             var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, language, stage: endStage);
             workflow.Logger = log;
-            workflow.Process();
+            WorkflowResult workflowResult = workflow.Process();
 
             if (!shouldContainsErrors)
             {
@@ -64,6 +70,8 @@ namespace PT.PM.TestUtils
             {
                 Assert.Greater(log.ErrorCount, 0);
             }
+
+            return workflowResult;
         }
 
         public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
@@ -183,7 +191,9 @@ namespace PT.PM.TestUtils
 
         public static string ConvertToValidMutexName(string name) => name.Replace('/', ' ').Replace('\\', ' ');
 
-        public static void RenderGraphvizGraph(string dotGraph, string filePath)
+        public static string CombineWithOutputDir(string fileName) => Path.Combine(TestsOutputPath, fileName);
+
+        public static void RenderGraphvizGraph(string filePath, string dotGraph)
         {
             var graph = new GraphvizGraph(dotGraph) { GraphvizPath = GraphvizPath };
             graph.Dump(filePath);

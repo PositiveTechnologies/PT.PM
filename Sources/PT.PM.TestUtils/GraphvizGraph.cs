@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.TestUtils
 {
@@ -14,6 +11,10 @@ namespace PT.PM.TestUtils
 
         public string DotGraph { get; set; }
 
+        public bool SaveDot { get; set; } = true;
+
+        public GraphvizOutputFormat OutputFormat { get; set; }
+
         public GraphvizGraph(string dotGraph)
         {
             DotGraph = dotGraph;
@@ -21,19 +22,58 @@ namespace PT.PM.TestUtils
 
         public void Dump(string filePath)
         {
-            var tempGraphViz = Path.GetTempFileName();
-            File.WriteAllText(tempGraphViz, DotGraph);
+            string ext = Path.GetExtension(filePath);
+            if (ext.Length > 0)
+            {
+                ext = ext.Substring(1);
+            }
+            GraphvizOutputFormat outputFormat = OutputFormat;
+            string imagePath = filePath;
+            bool appendExt = false;
+            if (OutputFormat == GraphvizOutputFormat.None)
+            {
+                if (!Enum.TryParse(ext, true, out outputFormat))
+                {
+                    outputFormat = GraphvizOutputFormat.Png;
+                    imagePath = imagePath + "." + outputFormat.ToString().ToLowerInvariant();
+                    appendExt = true;
+                }
+            }
+            else
+            {
+                string outputFormatString = OutputFormat.ToString().ToLowerInvariant();
+                if (!filePath.EndsWith(outputFormatString))
+                {
+                    imagePath = imagePath + "." + outputFormatString;
+                    appendExt = true;
+                }
+            }
+
+            string dotFilePath;
+            if (SaveDot)
+            {
+                dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
+            }
+            else
+            {
+                dotFilePath = Path.GetTempFileName();
+            }
+            
+            File.WriteAllText(dotFilePath, DotGraph);
             var process = Process.Start(new ProcessStartInfo
             {
                 FileName = GraphvizPath,
-                Arguments = "\"" + tempGraphViz + "\" -Tpng -o \"" + filePath + "\"",
+                Arguments = $"\"{dotFilePath}\" -T{outputFormat.ToString().ToLowerInvariant()} -o \"{imagePath}\"",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             });
             process.WaitForExit();
-            File.Delete(tempGraphViz);
+            if (!SaveDot)
+            {
+                File.Delete(dotFilePath);
+            }
             var errors = process.StandardError.ReadToEnd();
             if (process.ExitCode != 0 || errors != "")
             {

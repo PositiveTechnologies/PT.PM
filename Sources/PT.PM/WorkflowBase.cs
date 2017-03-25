@@ -8,10 +8,13 @@ using PT.PM.Patterns.PatternsRepository;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase : ILoggable
+    public abstract class WorkflowBase<StageType, ResultType> : ILoggable
+        where StageType : struct, IConvertible
+        where ResultType : WorkflowResultBase<StageType>
     {
         protected ILogger logger = DummyLogger.Instance;
         protected int maxStackSize;
@@ -19,6 +22,10 @@ namespace PT.PM
         private int memoryConsumptionMb;
 
         protected Language[] languages;
+
+        protected StageHelper<StageType> stageHelper;
+
+        public StageType Stage { get; set; }
 
         public ISourceCodeRepository SourceCodeRepository { get; set; }
 
@@ -119,14 +126,20 @@ namespace PT.PM
             }
         }
 
-        public abstract WorkflowResult Process();
+        public abstract ResultType Process();
 
-        protected ParseTree ReadAndParse(string fileName, WorkflowResult workflowResult)
+        public WorkflowBase(StageType stage)
+        {
+            Stage = stage;
+            stageHelper = new StageHelper<StageType>(stage);
+        }
+
+        protected ParseTree ReadAndParse(string fileName, ResultType workflowResult)
         {
             ParseTree result = null;
             var stopwatch = new Stopwatch();
             string file = fileName;
-            if (ContainsReadingStage)
+            if (stageHelper.IsContainsRead)
             {
                 stopwatch.Restart();
                 SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
@@ -136,11 +149,11 @@ namespace PT.PM
 
                 workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
                 workflowResult.AddProcessedLinesCount(TextHelper.GetLinesCount(sourceCodeFile.Code));
-                workflowResult.AddStageTime(Stage.Read, stopwatch.ElapsedTicks);
+                workflowResult.AddReadTime(stopwatch.ElapsedTicks);
                 workflowResult.AddResultEntity(sourceCodeFile);
 
                 file = sourceCodeFile.RelativePath;
-                if (ContainsParsingStage)
+                if (stageHelper.IsContainsParse)
                 {
                     stopwatch.Restart();
                     Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, Languages);
@@ -152,7 +165,7 @@ namespace PT.PM
                     result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
                     Logger.LogInfo("File {0} has been parsed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                    workflowResult.AddStageTime(Stage.Parse, stopwatch.ElapsedTicks);
+                    workflowResult.AddParseTime(stopwatch.ElapsedTicks);
                 }
 
                 var antlrParseTree = result as AntlrParseTree;
@@ -164,9 +177,5 @@ namespace PT.PM
             }
             return result;
         }
-
-        protected abstract bool ContainsReadingStage { get; }
-
-        protected abstract bool ContainsParsingStage { get; }
     }
 }
