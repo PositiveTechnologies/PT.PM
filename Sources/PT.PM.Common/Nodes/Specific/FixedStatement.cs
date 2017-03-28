@@ -1,21 +1,18 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Common.Nodes.Expressions;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.Specific
 {
     public class FixedStatement : SpecificStatement
     {
-        public override NodeType NodeType
-        {
-            get { return NodeType.FixedStatement; }
-        }
+        public override NodeType NodeType => NodeType.FixedStatement;
 
         public TypeToken Type { get; set; }
 
-        public IEnumerable<AssignmentExpression> Variables { get; set; }
+        public List<AssignmentExpression> Variables { get; set; }
 
         public Statement Embedded { get; set; }
 
@@ -23,7 +20,7 @@ namespace PT.PM.Common.Nodes.Specific
             : base(textSpan, fileNode)
         {
             Type = type;
-            Variables = vars;
+            Variables = vars as List<AssignmentExpression> ?? vars.ToList();
             Embedded = embedded;
         }
 

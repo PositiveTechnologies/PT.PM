@@ -140,7 +140,7 @@
     <Compile Include="Nodes\TypeMembers\StatementDeclaration.cs" />
     <Compile Include="Nodes\TypeMembers\ParameterDeclaration.cs" />
     <Compile Include="Exceptions\ParsingException.cs" />
-    <Compile Include="Json\ShouldNotSerializeTextSpanResolver.cs" />
+    <Compile Include="Json\TextSpanResolver.cs" />
     <Compile Include="ReflectionCache.cs" />
     <Compile Include="Symbols\ISymbol.cs" />
     <Compile Include="SemanticsInfo.cs" />

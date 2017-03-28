@@ -11,6 +11,18 @@ namespace PT.PM.Patterns.Nodes
 
         public override NodeType NodeType => NodeType.PatternVarRef;
 
+        public override string Id
+        {
+            get
+            {
+                return "@" + VarId;
+            }
+            set
+            {
+                VarId = value;
+            }
+        }
+
         public string VarId { get; set; }
 
         [JsonIgnore]

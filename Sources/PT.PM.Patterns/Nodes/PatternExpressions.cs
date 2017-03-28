@@ -3,11 +3,8 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Patterns.Nodes
 {
@@ -22,7 +19,7 @@ namespace PT.PM.Patterns.Nodes
 
         public PatternExpressions()
         {
-            Collection = new Expression[] { new PatternMultipleExpressions() };
+            Collection = new List<Expression>();
         }
 
         public PatternExpressions(params Expression[] expressions)
@@ -52,7 +49,7 @@ namespace PT.PM.Patterns.Nodes
                 return 0;
             }
 
-            IList<Expression> otherExpressions = ((ArgsNode)other).Collection;
+            List<Expression> otherExpressions = ((ArgsNode)other).Collection;
 
             bool includeNegative = Collection.Count(item =>
                 item.NodeType == NodeType.PatternExpression && ((PatternExpression)item).Not) > 0;
@@ -68,7 +65,7 @@ namespace PT.PM.Patterns.Nodes
             return result;
         }
 
-        private bool Match(IList<Expression> otherExpressions)
+        private bool Match(List<Expression> otherExpressions)
         {
             int nextStateIndex = 0;
             bool matched = false;
@@ -144,7 +141,7 @@ namespace PT.PM.Patterns.Nodes
             return nextStateIndex == Collection.Count && lastMatchIndex == otherExpressions.Count - 1; // if all states has been visited.
         }
 
-        private bool Match(IList<Expression> otherExpressions, int otherExpressionIndex, ref int nextStateIndex)
+        private bool Match(List<Expression> otherExpressions, int otherExpressionIndex, ref int nextStateIndex)
         {
             // Compare with next not PatternMultipleExpressions (start or continue point).
             PatternExpression patternExpression = Collection[nextStateIndex] as PatternExpression;

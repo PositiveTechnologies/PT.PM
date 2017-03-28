@@ -38,7 +38,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 }
                             }
                         },
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });

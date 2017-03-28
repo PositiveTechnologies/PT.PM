@@ -9,7 +9,7 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 
         public BlockStatement TryBlock { get; set; }
 
-        public IEnumerable<CatchClause> CatchClauses { get; set; }
+        public List<CatchClause> CatchClauses { get; set; }
 
         public BlockStatement FinallyBlock { get; set; }
 

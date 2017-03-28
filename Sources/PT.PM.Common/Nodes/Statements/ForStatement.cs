@@ -9,11 +9,11 @@ namespace PT.PM.Common.Nodes.Statements
     {
         public override NodeType NodeType => NodeType.ForStatement;
 
-        public IEnumerable<Statement> Initializers { get; set; } = ArrayUtils<Statement>.EmptyArray;
+        public List<Statement> Initializers { get; set; } = new List<Statement>();
 
         public Expression Condition { get; set; }
 
-        public IEnumerable<Expression> Iterators { get; set; } = ArrayUtils<Expression>.EmptyArray;
+        public List<Expression> Iterators { get; set; } = new List<Expression>();
 
         public Statement Statement { get; set; }
 
@@ -21,9 +21,9 @@ namespace PT.PM.Common.Nodes.Statements
             IEnumerable<Expression> iterators, Statement statement, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
-            Initializers = initializers;
+            Initializers = initializers as List<Statement> ?? initializers.ToList();
             Condition = condition;
-            Iterators = iterators;
+            Iterators = iterators as List<Expression> ?? iterators.ToList();
             Statement = statement;
         }
 

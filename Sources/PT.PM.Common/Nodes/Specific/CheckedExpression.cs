@@ -4,10 +4,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CheckedExpression : SpecificExpression
     {
-        public override NodeType NodeType
-        {
-            get { return NodeType.CheckedExpression; }
-        }
+        public override NodeType NodeType => NodeType.CheckedExpression;
 
         public Expression Expression { get; set; }
 

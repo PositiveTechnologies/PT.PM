@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
@@ -7,12 +8,12 @@ namespace PT.PM.Common.Nodes.TypeMembers
     {
         public override NodeType NodeType => NodeType.FieldDeclaration;
 
-        public IEnumerable<AssignmentExpression> Variables { get; set; }
+        public List<AssignmentExpression> Variables { get; set; }
 
         public FieldDeclaration(IEnumerable<AssignmentExpression> variables, TextSpan textSpan, FileNode fileNode)
             : base(null, textSpan, fileNode)
         {
-            Variables = variables;
+            Variables = variables as List<AssignmentExpression> ?? variables.ToList();
         }
 
         public FieldDeclaration()

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
@@ -8,7 +9,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
     {
         public override NodeType NodeType => NodeType.ConstructorDeclaration;
 
-        public IEnumerable<ParameterDeclaration> Args { get; set; }
+        public List<ParameterDeclaration> Args { get; set; }
 
         public BlockStatement Body { get; set; }
 
@@ -16,7 +17,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
             TextSpan textSpan, FileNode fileNode)
             : base(typeName, textSpan, fileNode)
         {
-            Args = args ?? ArrayUtils<ParameterDeclaration>.EmptyArray;
+            Args = args as List<ParameterDeclaration> ?? args.ToList();
             Body = body;
         }
 

@@ -49,7 +49,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             // TODO: fix with args node
             var args = node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
                 .ToArray();
-            var modifiers = node.Modifiers.Select(ConvertModifier).ToArray();
+            var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
             var body = (BlockStatement)VisitBlock(node.Body);
 
             var result = new ConstructorDeclaration(typeName, args, body, node.GetTextSpan(), FileNode)
@@ -98,7 +98,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var varDelaraions = node.Declaration.Variables.Select(
                 var => (AssignmentExpression)VisitAndReturnNullIfError(var)).ToArray();
-            var modifiers = node.Modifiers.Select(ConvertModifier).ToArray();
+            var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
             var result = new FieldDeclaration(varDelaraions, node.GetTextSpan(), FileNode)
             {
@@ -112,7 +112,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var id = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), FileNode);
             var parameters = node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p)).ToArray();
             var statement = node.Body == null ? null : (BlockStatement)VisitBlock(node.Body); // abstract method if null
-            var modifiers = node.Modifiers.Select(ConvertModifier).ToArray();
+            var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
             var result = new MethodDeclaration(
                 id,

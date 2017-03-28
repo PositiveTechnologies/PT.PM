@@ -23,7 +23,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression()
                     {
                         Target =  new PatternIdToken("xp_cmdshell"),
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });
@@ -76,7 +76,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Vars = new List<PatternVarDef> { cursorVar },
                     Node = new PatternStatements
                     {
-                        Statements = new Statement[]
+                        Statements = new List<Statement>()
                         {
                             new PatternExpressionInsideStatement
                             {

@@ -31,7 +31,7 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         private InvocationExpression CreateSpecialInvocation(ITerminalNode name,
-                    ParserRuleContext context, IList<Expression> expressions)
+                    ParserRuleContext context, List<Expression> expressions)
         {
             return new InvocationExpression(
                 new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), FileNode),

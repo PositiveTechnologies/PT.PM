@@ -63,7 +63,7 @@ namespace PT.PM
 
         public IReadOnlyList<MatchingResult> MatchingResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchingResults);
 
-        public List<Pattern> Patterns
+        public IReadOnlyList<Pattern> Patterns
         {
             get
             {

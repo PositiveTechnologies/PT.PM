@@ -36,7 +36,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 }
                             }
                         },
-                        Arguments = new ArgsNode(new Expression[] { new PatternStringLiteral("^RSA/NONE/NoPadding$") })
+                        Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral("^RSA/NONE/NoPadding$") })
                     }
                 }
             });
@@ -64,7 +64,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 }
                             }
                         },
-                        Arguments = new ArgsNode(new Expression[] { new PatternStringLiteral(@"DES") })
+                        Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral(@"DES") })
                     }
                 }
             });
@@ -83,7 +83,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Name = new IdToken("setPath"),
                             Target = new PatternIdToken(@"[cC]ookie")
                         },
-                        Arguments = new ArgsNode(new Expression[] { new PatternStringLiteral { Text = "^/?$" } })
+                        Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral { Text = "^/?$" } })
                     }
                 }
             });
@@ -102,7 +102,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Name = new IdToken("setDomain"),
                             Target = new PatternIdToken { Id = @"[cC]ookie" }
                         },
-                        Arguments = new ArgsNode(new Expression[] { new PatternStringLiteral(@"^.?[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-]+$") })
+                        Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral(@"^.?[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-]+$") })
                     }
                 }
             });
@@ -121,7 +121,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Name = new IdToken("setSeed"),
                             Target = new PatternExpression()
                         },
-                        Arguments = new ArgsNode(new Expression[] { new PatternIntLiteral() })
+                        Arguments = new ArgsNode(new List<Expression>() { new PatternIntLiteral() })
                     }
                 }
             });
@@ -140,7 +140,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Name = new IdToken("getInstance"),
                             Target = new IdToken("MessageDigest")
                         },
-                        Arguments = new ArgsNode(new Expression[] { new PatternStringLiteral("MD5|SHA-1") })
+                        Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral("MD5|SHA-1") })
                     }
                 }
             });
@@ -159,7 +159,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Name = new PatternIdToken("^(checkCallingOrSelfPermission|checkCallingOrSelfUriPermission)$"),
                             Target = new PatternExpression()
                         },
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });
@@ -173,7 +173,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Node = new PatternVarDef
                     {
-                        Values = new Expression[]
+                        Values = new List<Expression>()
                     {
                         new MemberReferenceExpression
                         {
@@ -183,7 +183,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         new ObjectCreateExpression
                         {
                             Type = new TypeToken { TypeText = "AllowAllHostnameVerifier" },
-                             Arguments = new PatternExpressions()
+                            Arguments = new PatternExpressions(new PatternMultipleExpressions())
                         }
                     }
                     }
@@ -201,7 +201,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                        Collection = new Expression[]
+                        Collection = new List<Expression>()
                         {
                             new PatternExpression(new PatternStringLiteral(), true)
                         }
@@ -230,7 +230,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[]
+                            Collection = new List<Expression>()
                         {
                             new PatternExpression(new PatternStringLiteral(), true)
                         }
@@ -259,7 +259,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[] { new PatternExpression() }
+                            Collection = new List<Expression>() { new PatternExpression() }
                         },
                         Target = new MemberReferenceExpression
                         {
@@ -281,7 +281,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[] { new PatternExpression(), new PatternExpression() }
+                            Collection = new List<Expression>() { new PatternExpression(), new PatternExpression() }
                         },
                         Target = new MemberReferenceExpression
                         {
@@ -304,7 +304,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[]
+                            Collection = new List<Expression>()
                         {
                             new PatternExpression(),
                             new PatternExpression()
@@ -330,7 +330,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[] {
+                            Collection = new List<Expression>() {
                             new PatternExpression(),
                             new PatternStringLiteral()
                         }
@@ -356,7 +356,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[] {
+                            Collection = new List<Expression>() {
                             new PatternExpression()
                         }
                         },
@@ -383,7 +383,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[] {
+                            Collection = new List<Expression>() {
                             new PatternExpression(),
                             new PatternExpression()
                         }
@@ -412,12 +412,12 @@ namespace PT.PM.Patterns.PatternsRepository
                     Vars = new List<PatternVarDef> { cookieVar },
                     Node = new PatternStatements
                     {
-                        Statements = new Statement[]
+                        Statements = new List<Statement>()
                     {
                         new ExpressionStatement(new VariableDeclarationExpression
                         {
                             Type = new TypeToken() { TypeText = "Cookie" },
-                            Variables = new AssignmentExpression[]
+                            Variables = new List<AssignmentExpression>
                             {
                                 new AssignmentExpression
                                 {
@@ -425,7 +425,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                     Right = new ObjectCreateExpression
                                     {
                                         Type = new TypeToken { TypeText = "Cookie" },
-                                        Arguments = new PatternExpressions()
+                                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                                     },
                                 }
                             }
@@ -437,7 +437,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         {
                             Arguments = new ArgsNode
                             {
-                                Collection = new Expression[] { new BooleanLiteral { Value = true } }
+                                Collection = new List<Expression>() { new BooleanLiteral { Value = true } }
                             },
                             Target = new MemberReferenceExpression
                             {
@@ -452,7 +452,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         {
                             Arguments = new ArgsNode
                             {
-                                Collection = new Expression[] { new PatternVarRef(cookieVar) }
+                                Collection = new List<Expression>() { new PatternVarRef(cookieVar) }
                             },
                             Target = new MemberReferenceExpression
                             {

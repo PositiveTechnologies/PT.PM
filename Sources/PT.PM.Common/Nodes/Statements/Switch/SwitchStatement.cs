@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Expressions;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.Statements.Switch
 {
@@ -9,13 +10,13 @@ namespace PT.PM.Common.Nodes.Statements.Switch
 
         public Expression Expression { get; set; }
 
-        public IEnumerable<SwitchSection> Sections { get; set; }
+        public List<SwitchSection> Sections { get; set; }
 
         public SwitchStatement(Expression expression, IEnumerable<SwitchSection> sections, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
             Expression = expression;
-            Sections = sections;
+            Sections = sections as List<SwitchSection> ?? sections.ToList();
         }
 
         public SwitchStatement()

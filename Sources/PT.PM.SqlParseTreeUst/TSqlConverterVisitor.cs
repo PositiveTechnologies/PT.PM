@@ -162,7 +162,7 @@ namespace PT.PM.SqlParseTreeUst
 
             var catchBlock = new BlockStatement(catchClauses,
                 context.catch_clauses?.GetTextSpan() ?? context.CATCH(0).GetTextSpan().Union(context.CATCH(1).GetTextSpan()), FileNode);
-            tryCatchStatement.CatchClauses = new[]
+            tryCatchStatement.CatchClauses = new List<CatchClause>()
             {
                 new CatchClause(null, null, catchBlock, catchBlock.TextSpan, FileNode)
             };
@@ -697,13 +697,13 @@ namespace PT.PM.SqlParseTreeUst
         public UstNode VisitOpenquery([NotNull] tsqlParser.OpenqueryContext context)
         {
             return CreateSpecialInvocation(context.OPENQUERY(), context,
-                new Expression[] { (IdToken)Visit(context.id()), ExtractLiteral(context.query) });
+                new List<Expression> { (IdToken)Visit(context.id()), ExtractLiteral(context.query) });
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
         public UstNode VisitOpendatasource([NotNull] tsqlParser.OpendatasourceContext context)
         {
-            return CreateSpecialInvocation(context.OPENDATASOURCE(), context, new Expression[] {
+            return CreateSpecialInvocation(context.OPENDATASOURCE(), context, new List<Expression> {
                 ExtractLiteral(context.provider), ExtractLiteral(context.init),
                 (IdToken)Visit(context.database), (IdToken)Visit(context.scheme),
                 (IdToken)Visit(context.scheme) });
@@ -939,7 +939,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="ExpressionStatement"/></returns>
         public UstNode VisitGo_statement([NotNull] tsqlParser.Go_statementContext context)
         {
-            return new ExpressionStatement(CreateSpecialInvocation(context.GO(), context, new Expression[] { }));
+            return new ExpressionStatement(CreateSpecialInvocation(context.GO(), context, new List<Expression>()));
         }
 
         /// <returns><see cref="ExpressionStatement"/></returns>
@@ -1322,8 +1322,8 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="InvocationExpression"/></returns>
         public UstNode VisitWith_expression([NotNull] tsqlParser.With_expressionContext context)
         {
-            Expression[] exprs = context.common_table_expression()
-                .Select(expr => (Expression)Visit(expr)).ToArray();
+            List<Expression> exprs = context.common_table_expression()
+                .Select(expr => (Expression)Visit(expr)).ToList();
             var result = CreateSpecialInvocation(context.WITH(), context, exprs);
             return result;
         }
@@ -1603,8 +1603,8 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="InvocationExpression"/></returns>
         public UstNode VisitOption_clause([NotNull] tsqlParser.Option_clauseContext context)
         {
-            Expression[] exprs = context.option()
-                .Select(o => (InvocationExpression)Visit(o)).ToArray();
+            List<Expression> exprs = context.option()
+                .Select(o => (Expression)Visit(o)).ToList();
             var result = CreateSpecialInvocation(context.OPTION(), context, exprs);
             return result;
         }
@@ -1770,7 +1770,7 @@ namespace PT.PM.SqlParseTreeUst
         public UstNode VisitRowset_function([NotNull] tsqlParser.Rowset_functionContext context)
         {
             return CreateSpecialInvocation(context.OPENROWSET(), context,
-                context.bulk_option().Select(opt => (AssignmentExpression)Visit(opt)).ToArray());
+                context.bulk_option().Select(opt => (Expression)Visit(opt)).ToList());
         }
 
         /// <returns><see cref="AssignmentExpression"/></returns>

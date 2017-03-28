@@ -4,10 +4,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CheckedStatement : SpecificStatement
     {
-        public override NodeType NodeType
-        {
-            get { return NodeType.CheckedStatement; }
-        }
+        public override NodeType NodeType => NodeType.CheckedStatement;
 
         public BlockStatement Body { get; set; }
 

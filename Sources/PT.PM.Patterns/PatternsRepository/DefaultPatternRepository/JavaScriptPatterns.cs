@@ -31,7 +31,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         {
                             Body = new PatternStatements
                             {
-                                Statements = new Statement[]
+                                Statements = new List<Statement>
                                 {
                                     new ExpressionStatement
                                     {
@@ -40,7 +40,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                             Expression = new PatternVarDef
                                             {
                                                 Id = "pt.pm_var_2",
-                                                Values = new Expression[]
+                                                Values = new List<Expression>()
                                                 {
                                                     new MemberReferenceExpression
                                                     {
@@ -50,7 +50,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                                     new PatternVarDef
                                                     {
                                                         Id = "pt.pm_var_1",
-                                                        Values = new Expression[]
+                                                        Values = new List<Expression>()
                                                         {
                                                             new MemberReferenceExpression
                                                             {
@@ -64,7 +64,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                                             new PatternVarDef
                                                             {
                                                                 Id = "pt.pm_var_0",
-                                                                Values = new Expression[]
+                                                                Values = new List<Expression>()
                                                                 {
                                                                     new MemberReferenceExpression
                                                                     {

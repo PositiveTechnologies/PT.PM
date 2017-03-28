@@ -4,10 +4,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class UnsafeStatement : SpecificStatement
     {
-        public override NodeType NodeType
-        {
-            get { return NodeType.UnsafeStatement; }
-        }
+        public override NodeType NodeType => NodeType.UnsafeStatement;
 
         public BlockStatement Body { get; set; }
 

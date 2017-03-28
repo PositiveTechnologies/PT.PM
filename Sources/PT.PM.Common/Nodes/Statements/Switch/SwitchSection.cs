@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Expressions;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.Statements.Switch
 {
@@ -7,15 +8,15 @@ namespace PT.PM.Common.Nodes.Statements.Switch
     {
         public override NodeType NodeType => NodeType.SwitchSection;
 
-        public IEnumerable<Expression> CaseLabels { get; set; }
+        public List<Expression> CaseLabels { get; set; }
 
-        public IEnumerable<Statement> Statements { get; set; }
+        public List<Statement> Statements { get; set; }
 
         public SwitchSection(IEnumerable<Expression> caseLabels, IEnumerable<Statement> statements, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
-            CaseLabels = caseLabels;
-            Statements = statements;
+            CaseLabels = caseLabels as List<Expression> ?? caseLabels.ToList();
+            Statements = statements as List<Statement> ?? statements.ToList();
         }
 
         public SwitchSection()

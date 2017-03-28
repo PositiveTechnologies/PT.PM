@@ -55,7 +55,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Node = new PatternVarDef
                     {
-                        Values = new Expression[]
+                        Values = new List<Expression>()
                         {
                             new AssignmentExpression
                             {
@@ -134,7 +134,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new ObjectCreateExpression
                     {
                         Type = new TypeToken { TypeText = "Random" },
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });
@@ -148,7 +148,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Node = new PatternVarDef
                     {
-                        Values = new Expression[]
+                        Values = new List<Expression>
                         {
                             new PatternComment
                             {
@@ -184,7 +184,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new PatternVarDef
                     {
                         Id = "compare_with_null",
-                        Values = new Expression[]
+                        Values = new List<Expression>
                         {
                              new BinaryOperatorExpression
                              {
@@ -213,7 +213,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression
                     {
                         Target = new IdToken("grant_all"),
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });

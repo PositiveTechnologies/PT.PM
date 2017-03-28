@@ -26,7 +26,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new PatternIdToken("(?i)^mysql_connect$"),
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[]
+                            Collection = new List<Expression>()
                             {
                                 new PatternExpression(),
                                 new PatternExpression(),
@@ -99,7 +99,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression
                     {
                         Target = new PatternIdToken("(?i)^(md5|sha1)$"),
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });
@@ -141,7 +141,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Target = new PatternIdToken("(?i)^Configure$"),
                             Name = new PatternIdToken("(?i)^write$")
                         },
-                        Arguments = new ArgsNode(new Expression[]
+                        Arguments = new ArgsNode(new List<Expression>()
                     {
                         new StringLiteral("debug"),
                         new PatternIntLiteral(1, 9)
@@ -175,7 +175,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression
                     {
                         Target = new PatternIdToken("(?i)crypt"),
-                        Arguments = new ArgsNode(new Expression[]
+                        Arguments = new ArgsNode(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternStringLiteral()
@@ -208,7 +208,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Vars = new List<PatternVarDef> { encryptKeyVarName, encryptKeyVarValue },
                     Node = new PatternStatements
                     {
-                        Statements = new Statement[]
+                        Statements = new List<Statement>()
                     {
                         new ExpressionStatement
                         {
@@ -231,7 +231,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                     Type = new TypeToken("Zend_Filter_Encrypt"),
                                     Arguments = new ArgsNode
                                     {
-                                        Collection = new Expression[] { new PatternVarRef(encryptKeyVarName) }
+                                        Collection = new List<Expression>() { new PatternVarRef(encryptKeyVarName) }
                                     }
                                 }
                             }
@@ -254,7 +254,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Type = new TypeToken("Zend_Filter_Encrypt"),
                         Arguments = new ArgsNode
                         {
-                            Collection = new Expression[] { new PatternVarRef(encryptKeyVarValue) }
+                            Collection = new List<Expression>() { new PatternVarRef(encryptKeyVarValue) }
                         }
                     }
                 }
@@ -271,16 +271,16 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression
                     {
                         Target = new PatternIdToken("(?i)setcookie"),
-                        Arguments = new ArgsNode(new Expression[]
-                    {
-                        new PatternExpression(),
-                        new PatternExpression(),
-                        new PatternExpression(),
-                        new StringLiteral("/"),
-                        new PatternExpression(),
-                        new PatternExpression(),
-                        new PatternExpression(),
-                    })
+                        Arguments = new ArgsNode(new List<Expression>()
+                        {
+                            new PatternExpression(),
+                            new PatternExpression(),
+                            new PatternExpression(),
+                            new StringLiteral("/"),
+                            new PatternExpression(),
+                            new PatternExpression(),
+                            new PatternExpression(),
+                        })
                     }
                 }
             });
@@ -295,7 +295,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression
                     {
                         Target = new PatternIdToken("(?i)setcookie"),
-                        Arguments = new ArgsNode(new Expression[]
+                        Arguments = new ArgsNode(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternExpression(),
@@ -319,7 +319,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression
                     {
                         Target = new PatternIdToken("(?i)setcookie"),
-                        Arguments = new ArgsNode(new Expression[]
+                        Arguments = new ArgsNode(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternExpression(),
@@ -342,7 +342,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Node = new InvocationExpression
                     {
                         Target = new PatternIdToken("(?i)setcookie"),
-                        Arguments = new ArgsNode(new Expression[]
+                        Arguments = new ArgsNode(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternExpression(),

@@ -28,7 +28,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Target = new IdToken("DBMS_UTILITY"),
                             Name = new IdToken("EXEC_DDL_STATEMENT")
                         },
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });
@@ -47,7 +47,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Target = new IdToken("DBMS_OBFUSCATION_TOOLKIT"),
                             Name = new PatternIdToken("^(md2|md4|md5)$")
                         },
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });
@@ -81,7 +81,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Target = new IdToken("DBMS_RANDOM"),
                             Name = new PatternIdToken()
                         },
-                        Arguments = new PatternExpressions()
+                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                     }
                 }
             });
@@ -101,7 +101,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Vars = new List<PatternVarDef> { cursorVar },
                     Node = new PatternStatements
                     {
-                        Statements = new Statement[]
+                        Statements = new List<Statement>()
                         {
                             new PatternExpressionInsideStatement
                             {
@@ -149,7 +149,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Vars = new List<PatternVarDef> { fileVar },
                     Node = new PatternStatements
                     {
-                        Statements = new Statement[]
+                        Statements = new List<Statement>()
                         {
                             new PatternExpressionInsideStatement
                             {
@@ -163,7 +163,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                             Target = new PatternIdToken("(?i)UTL_FILE"),
                                             Name = new PatternIdToken("(?i)FOPEN")
                                         },
-                                        Arguments = new PatternExpressions()
+                                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
                                     }
                                 })
                             },

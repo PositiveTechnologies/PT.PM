@@ -1,6 +1,7 @@
 ﻿using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -8,7 +9,7 @@ namespace PT.PM.Common.Nodes.Expressions
     {
         public override NodeType NodeType => NodeType.AnonymousMethodExpression;
 
-        public IEnumerable<ParameterDeclaration> Parameters { get; set; } = ArrayUtils<ParameterDeclaration>.EmptyArray;
+        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
         public BlockStatement Body { get; set; }
 
@@ -16,7 +17,7 @@ namespace PT.PM.Common.Nodes.Expressions
             TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
-            Parameters = parameters;
+            Parameters = parameters as List<ParameterDeclaration> ?? parameters.ToList();
             Body = body;
         }
 

@@ -7,10 +7,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CSharpParameterDeclaration : ParameterDeclaration
     {
-        public override NodeType NodeType
-        {
-            get { return NodeType.CSharpParameterDeclaration; }
-        }
+        public override NodeType NodeType => NodeType.CSharpParameterDeclaration;
 
         public ParameterModifierLiteral Modifier { get; set; }
 

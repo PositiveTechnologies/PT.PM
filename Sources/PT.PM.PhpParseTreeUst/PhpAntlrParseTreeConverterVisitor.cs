@@ -330,10 +330,10 @@ namespace PT.PM.PhpParseTreeUst
 
         public UstNode VisitInnerStatementList(PHPParser.InnerStatementListContext context)
         {
-            Statement[] innerStatementUstNodes = context.innerStatement()
+            List<Statement> innerStatementUstNodes = context.innerStatement()
                 .Select(c => (Statement)Visit(c))
                 .Where(c => c != null)
-                .ToArray();
+                .ToList();
 
             var result = new BlockStatement(innerStatementUstNodes, 
                 context.innerStatement().Length > 0 ? context.GetTextSpan() : default(TextSpan), FileNode);
@@ -638,8 +638,8 @@ namespace PT.PM.PhpParseTreeUst
         {
             var statement = (BlockStatement)Visit(context.blockStatement());
 
-            CatchClause[] catchClauses = context.catchClause()
-                .Select(clause => (CatchClause)Visit(clause)).Where(c => c != null).ToArray();
+            List<CatchClause> catchClauses = context.catchClause()
+                .Select(clause => (CatchClause)Visit(clause)).Where(c => c != null).ToList();
             if (context.catchClause().Length == 0)
                 catchClauses = null;
 
