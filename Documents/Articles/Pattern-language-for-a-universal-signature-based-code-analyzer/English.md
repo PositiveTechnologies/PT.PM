@@ -1,7 +1,7 @@
 # Pattern language for a universal signature-based code analyzer
 
 The process of signature-based code analysis in [PT Application
-Inspector](https://www.ptsecurity.com/products/#ai) is divided into the
+Inspector](https://www.ptsecurity.com/ww-en/products/ai/) is divided into the
 following stages:
 
 1. Parsing into a language dependent representation (abstract syntax
@@ -20,24 +20,24 @@ written in this language.
 Contents
 
 * [Ways of describing patterns](#ways-of-describing-patterns)
-    * [Hardcoded patterns](#Hardcoded-patterns)
-    * [JSON, XML or some other markup language](#JSON--XML-or-some-other-markup-language)
-* [Custom language for pattern description, DSL](#Custom-language-for-pattern-description--DSL)
-    * [Practicability](#Practicability)
-    * [Syntax](#Syntax)
-    * [Examples of patterns](#Examples-of-patterns)
-        * [Hardcoded password (all language)](#Hardcoded-password--all-language-)
-        * [Weak random number generator (C#, Java)](#Weak-random-number-generator--C---Java-)
-        * [Debug information leak (PHP)](#Debug-information-leak--PHP-)
-        * [Insecure SSL connection (Java)](#Insecure-SSL-connection--Java-)
-        * [Password in comments (all languages)](#Password-in-comments--all-languages-)
-        * [SQL Injection (C#, Java, and PHP)](#SQL-Injection--C#--Java--and-PHP-)
-        * [Cookie without the secure attribute](#Cookie-without-the-secure-attribute)
-        * [Empty try catch block (all languages)](#Empty-try-catch-block--all-languages-)
-        * [Insecure cookie (Java)](#Insecure-cookie--Java-)
-        * [Dangling Cursor Snarfing (PL/SQL, T-SQL)](#Dangling-Cursor-Snarfing--PL-SQL--T-SQL-)
-        * [Excessively granted privileges (PL/SQL, T-SQL)](#Excessively-granted-privileges--PL-SQL--T-SQL-)
-* [Summary](#Summary)
+    * [Hardcoded patterns](#hardcoded-patterns)
+    * [JSON, XML or some other markup language](#json-xml-or-some-other-markup-language)
+* [Custom language for pattern description, DSL](#custom-language-for-pattern-description-dsl)
+    * [Practicability](#practicability)
+    * [Syntax](#syntax)
+    * [Examples of patterns](#examples-of-patterns)
+        * [Hardcoded password (all languages)](#hardcoded-password-all-languages)
+        * [Weak random number generator (C#, Java)](#weak-random-number-generator-c-java)
+        * [Debug information leak (PHP)](#debug-information-leak-php)
+        * [Insecure SSL connection (Java)](#insecure-ssl-connection-java)
+        * [Password in comments (all languages)](#password-in-comments-all-languages)
+        * [SQL Injection (C#, Java, and PHP)](#sql-injection-c-java-and-php)
+        * [Cookie without the secure attribute](#cookie-without-the-secure-attribute)
+        * [An empty try catch block (all languages)](#an-empty-try-catch-block-all-languages)
+        * [Insecure cookie (Java)](#insecure-cookie-java)
+        * [Dangling Cursor Snarfing (PL/SQL, T-SQL)](#dangling-cursor-snarfing-plsql-t-sql)
+        * [Excessively granted privileges (PL/SQL, T-SQL)](#excessively-granted-privileges-plsql-t-sql)
+* [Summary](#summary)
 
 ## Ways of describing patterns
 
@@ -233,7 +233,7 @@ references](http://www.regular-expressions.info/backref.html) in
 regex), negation of an expression, and an arbitrary number of
 statements.
 
-#### Cursor Snarfing (PL/SQL, T-SQL)
+#### Dangling Cursor Snarfing (PL/SQL, T-SQL)
 
 ##### PL/SQL
 
