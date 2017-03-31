@@ -40,10 +40,7 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override string TextValue
-        {
-            get { return Regex.ToString(); }
-        }
+        public override string TextValue => Regex.ToString();
 
         public override int CompareTo(UstNode other)
         {
@@ -57,12 +54,15 @@ namespace PT.PM.Patterns.Nodes
                 return Id.CompareTo(((PatternIdToken)other).Id);
             }
 
-            if (other.NodeType != NodeType.PatternIdToken && other.NodeType != NodeType.IdToken)
+            if (other.NodeType != NodeType.PatternIdToken && other.NodeType != NodeType.IdToken &&
+                other.NodeType != NodeType.MemberReferenceExpression)
             {
                 return NodeType - other.NodeType;
             }
 
-            var match = Regex.IsMatch(((IdToken)other).Id);
+            string input = other.NodeType == NodeType.MemberReferenceExpression ? other.ToString() : ((IdToken)other).Id;
+
+            var match = Regex.IsMatch(input);
             return match ? 0 : 1;
         }
     }
