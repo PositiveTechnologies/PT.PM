@@ -1,15 +1,12 @@
 ﻿using System;
 
-namespace PT.PM.Common.Nodes.Tokens
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class StringLiteral : Token
+    public class StringLiteral : Literal
     {
         public override NodeType NodeType => NodeType.StringLiteral;
 
-        public override string TextValue
-        {
-            get { return Text; }
-        }
+        public override string TextValue => Text;
 
         public virtual string Text { get; set; }
 

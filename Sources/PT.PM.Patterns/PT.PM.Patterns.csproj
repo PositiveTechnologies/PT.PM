@@ -55,7 +55,6 @@
     <Compile Include="Nodes\PatternComment.cs" />
     <Compile Include="Nodes\PatternExpression.cs" />
     <Compile Include="Nodes\PatternIdToken.cs" />
-    <Compile Include="Nodes\PatternIfElseStatement.cs" />
     <Compile Include="Nodes\PatternIntLiteral.cs" />
     <Compile Include="Nodes\PatternMultipleExpressions.cs" />
     <Compile Include="Nodes\PatternStatement.cs" />

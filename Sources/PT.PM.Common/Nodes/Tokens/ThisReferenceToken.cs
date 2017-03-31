@@ -14,9 +14,6 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override string TextValue
-        {
-            get { return "this"; }
-        }
+        public override string TextValue => "this";
     }
 }

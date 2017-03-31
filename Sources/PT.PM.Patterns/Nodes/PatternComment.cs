@@ -1,8 +1,8 @@
 ﻿using PT.PM.Common.Nodes;
 using PT.PM.Common;
-using PT.PM.Common.Nodes.Tokens;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Patterns.Nodes
 {

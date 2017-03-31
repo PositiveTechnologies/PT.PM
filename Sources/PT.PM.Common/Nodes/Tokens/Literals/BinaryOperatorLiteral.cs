@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 
-namespace PT.PM.Common.Nodes.Tokens
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class BinaryOperatorLiteral : Token
+    public class BinaryOperatorLiteral : Literal
     {
         public static Dictionary<string, BinaryOperator> TextBinaryOperator = new Dictionary<string, BinaryOperator>
         {
@@ -46,11 +46,7 @@ namespace PT.PM.Common.Nodes.Tokens
 
         public override NodeType NodeType => NodeType.BinaryOperatorLiteral;
 
-        public override string TextValue
-        {
-            get { return BinaryOperator.ToString(); }
-        }
-
+        public override string TextValue => BinaryOperator.ToString();
 
         public BinaryOperator BinaryOperator { get; set; }
 

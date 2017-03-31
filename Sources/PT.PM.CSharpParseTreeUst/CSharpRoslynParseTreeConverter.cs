@@ -46,7 +46,7 @@ namespace PT.PM.CSharpParseTreeUst
                     
                     result = new MostCommonUst(fileNode, ConvertedLanguages);
                     result.Comments = roslynParseTree.Comments.Select(c =>
-                        new CommentLiteral(c.ToString(), c.GetTextSpan(), fileNode)).ToArray();
+                        new Common.Nodes.Tokens.Literals.CommentLiteral(c.ToString(), c.GetTextSpan(), fileNode)).ToArray();
                 }
                 catch (Exception ex)
                 {

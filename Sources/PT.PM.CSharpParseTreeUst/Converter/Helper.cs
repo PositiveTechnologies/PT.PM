@@ -7,6 +7,7 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes.Expressions;
 //using Microsoft.CodeAnalysis.FindSymbols;
 using PT.PM.Common.Symbols;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {

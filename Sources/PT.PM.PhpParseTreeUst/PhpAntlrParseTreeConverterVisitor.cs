@@ -16,6 +16,7 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.TypeMembers;
 using Antlr4.Runtime.Misc;
 using PT.PM.JavaScriptParseTreeUst;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.PhpParseTreeUst
 {

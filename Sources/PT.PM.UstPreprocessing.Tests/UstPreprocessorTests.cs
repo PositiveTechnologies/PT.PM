@@ -9,6 +9,7 @@ using PT.PM.Patterns.Nodes;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.UstPreprocessing.Tests
 {

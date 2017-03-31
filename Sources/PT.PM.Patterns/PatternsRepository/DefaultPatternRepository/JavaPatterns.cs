@@ -5,6 +5,7 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Patterns.Nodes;
 using System.Collections.Generic;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Patterns.PatternsRepository
 {

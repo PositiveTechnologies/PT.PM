@@ -1,4 +1,4 @@
-﻿namespace PT.PM.Common.Nodes.Tokens
+﻿namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class ParameterModifierLiteral : Token
     {
@@ -6,10 +6,7 @@
 
         public ParameterModifier Modifier { get; set; }
 
-        public override string TextValue
-        {
-            get { return Modifier.ToString(); }
-        }
+        public override string TextValue => Modifier.ToString();
 
         public ParameterModifierLiteral(ParameterModifier modifier, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)

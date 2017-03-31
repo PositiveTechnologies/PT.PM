@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 
 namespace PT.PM.Common.Nodes

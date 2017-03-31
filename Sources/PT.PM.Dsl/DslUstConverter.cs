@@ -14,6 +14,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Patterns;
 using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Dsl
 {
