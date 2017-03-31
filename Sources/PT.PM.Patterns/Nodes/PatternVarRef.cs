@@ -7,7 +7,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternVarRef : IdToken
     {
-        private PatternVarDef patternVar;
+        private PatternVarDef patternVar = PatternVarDef.DefaultPatternVarDef;
 
         public override NodeType NodeType => NodeType.PatternVarRef;
 
@@ -31,7 +31,6 @@ namespace PT.PM.Patterns.Nodes
             get
             {
                 return patternVar;
-                
             }
             set
             {
@@ -44,7 +43,7 @@ namespace PT.PM.Patterns.Nodes
         public int PatternVarIndex { get; set; }
 
         [JsonIgnore]
-        public UstNode CurrentValue { get; set; }
+        public UstNode CurrentValue { get; set; } = PatternVarDef.DefaultPatternVarDef.Values[0];
 
         [JsonIgnore]
         internal bool PinValueAssigned { get; private set; }

@@ -12,6 +12,8 @@ namespace PT.PM.Patterns.Nodes
     {
         public override NodeType NodeType => NodeType.PatternVarDef;
 
+        public static PatternVarDef DefaultPatternVarDef => new PatternVarDef("default", new Expression[] { new PatternExpression() });
+
         public string Id { get; set; }
 
         public List<Expression> Values { get; set; } = new List<Expression>();
