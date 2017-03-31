@@ -11,6 +11,6 @@ namespace PT.PM.Matching
     {
         TPatternsDataStructure PatternsData { get; set; }
 
-        IEnumerable<MatchingResult> Match(Ust ust);
+        List<MatchingResult> Match(Ust ust);
     }
 }

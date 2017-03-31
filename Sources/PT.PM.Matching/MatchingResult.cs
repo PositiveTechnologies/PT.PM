@@ -10,7 +10,7 @@ namespace PT.PM.Matching
     {
         public Pattern Pattern { get; set; }
 
-        public IList<UstNode> Nodes { get; set; }
+        public List<UstNode> Nodes { get; set; }
 
         public FileNode FileNode => Nodes.FirstOrDefault()?.FileNode;
 
@@ -29,15 +29,15 @@ namespace PT.PM.Matching
 
         public MatchingResult()
         {
-            Nodes = ArrayUtils<UstNode>.EmptyArray;
+            Nodes = new List<UstNode>();
         }
 
         public MatchingResult(Pattern pattern, UstNode node)
-            : this(pattern, new[] { node })
+            : this(pattern, new List<UstNode> { node })
         {
         }
 
-        public MatchingResult(Pattern pattern, IList<UstNode> nodes)
+        public MatchingResult(Pattern pattern, List<UstNode> nodes)
         {
             Pattern = pattern;
             Nodes = nodes;

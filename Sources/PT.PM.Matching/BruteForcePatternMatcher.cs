@@ -27,7 +27,7 @@ namespace PT.PM.Matching
         {
         }
 
-        public IEnumerable<MatchingResult> Match(Ust ust)
+        public List<MatchingResult> Match(Ust ust)
         {
             if (ust.Root != null)
             {
@@ -45,12 +45,12 @@ namespace PT.PM.Matching
                 catch (Exception ex)
                 {
                     Logger.LogError(new MatchingException(ust.Root.FileName.Text, ex));
-                    return Enumerable.Empty<MatchingResult>();
+                    return new List<MatchingResult>();
                 }
             }
             else
             {
-                return Enumerable.Empty<MatchingResult>();
+                return new List<MatchingResult>();
             }
         }
 
