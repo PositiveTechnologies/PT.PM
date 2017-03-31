@@ -12,9 +12,10 @@ using System;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<StageType, ResultType> : ILoggable
+    public abstract class WorkflowBase<StageType, ResultType, PatternsDataStructure> : ILoggable
         where StageType : struct, IConvertible
         where ResultType : WorkflowResultBase<StageType>
+        where PatternsDataStructure : CommonPatternsDataStructure
     {
         protected ILogger logger = DummyLogger.Instance;
         protected int maxStackSize;
@@ -33,9 +34,9 @@ namespace PT.PM
 
         public Dictionary<Language, ParserConverterSet> ParserConverterSets { get; set; } = new Dictionary<Language, ParserConverterSet>();
 
-        public IPatternConverter<CommonPatternsDataStructure> PatternConverter { get; set; }
+        public IPatternConverter<PatternsDataStructure> PatternConverter { get; set; }
 
-        public IUstPatternMatcher<CommonPatternsDataStructure> UstPatternMatcher { get; set; }
+        public IUstPatternMatcher<PatternsDataStructure> UstPatternMatcher { get; set; }
 
         public IUstPreprocessor UstPreprocessor { get; set; } = new UstPreprocessor();
 
