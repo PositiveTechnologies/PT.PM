@@ -38,6 +38,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PatternBase.cs" />
     <Compile Include="PatternIdGenerator.cs" />
     <Compile Include="PatternLanguageFlagsSafeConverter.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\JavaScriptPatterns.cs" />

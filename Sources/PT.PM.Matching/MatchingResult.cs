@@ -6,12 +6,8 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResult
+    public class MatchingResult : MatchingResultBase<Pattern>
     {
-        public Pattern Pattern { get; set; }
-
-        public List<UstNode> Nodes { get; set; }
-
         public FileNode FileNode => Nodes.FirstOrDefault()?.FileNode;
 
         public TextSpan TextSpan
