@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 
 namespace PT.PM
 {
@@ -177,6 +178,33 @@ namespace PT.PM
                 }
             }
             return result;
+        }
+
+        protected Task GetConvertPatternsTask(ResultType workflowResult)
+        {
+            Task convertPatternsTask = null;
+            if (stageHelper.IsPatterns || stageHelper.IsContainsMatch)
+            {
+                convertPatternsTask = new Task(() =>
+                {
+                    try
+                    {
+                        var stopwatch = Stopwatch.StartNew();
+                        IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
+                        UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
+                        stopwatch.Stop();
+                        workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(UstPatternMatcher.PatternsData.Patterns);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(new ParsingException("Patterns can not be deserialized due to the error: " + ex.Message));
+                    }
+                });
+                convertPatternsTask.Start();
+            }
+
+            return convertPatternsTask;
         }
     }
 }

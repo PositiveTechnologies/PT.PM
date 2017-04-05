@@ -98,28 +98,7 @@ namespace PT.PM
         public override WorkflowResult Process()
         {
             var workflowResult = new WorkflowResult(Stage, IsIncludeIntermediateResult);
-
-            Task convertPatternsTask = null;
-            if (Stage == Stage.Patterns || Stage >= Stage.Match)
-            {
-                convertPatternsTask = new Task(() =>
-                {
-                    try
-                    {
-                        var stopwatch = Stopwatch.StartNew();
-                        IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                        UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
-                        stopwatch.Stop();
-                        workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(UstPatternMatcher.PatternsData.Patterns);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(new ParsingException("Patterns can not be deserialized due to the error: " + ex.Message));
-                    }
-                });
-                convertPatternsTask.Start();
-            }
+            Task convertPatternsTask = GetConvertPatternsTask(workflowResult);
 
             int processedCount = 0;
             if (Stage == Stage.Patterns)
