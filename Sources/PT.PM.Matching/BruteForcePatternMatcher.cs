@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
@@ -12,15 +10,15 @@ using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {
-    public class BruteForcePatternMatcher : IUstPatternMatcher<CommonPatternsDataStructure>
+    public class BruteForcePatternMatcher : IUstPatternMatcher<Pattern, MatchingResult>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public CommonPatternsDataStructure PatternsData { get; set; }
+        public Pattern[] Patterns { get; set; }
 
-        public BruteForcePatternMatcher(CommonPatternsDataStructure patternsData)
+        public BruteForcePatternMatcher(Pattern[] patterns)
         {
-            PatternsData = patternsData;
+            Patterns = patterns;
         }
 
         public BruteForcePatternMatcher()
@@ -34,7 +32,7 @@ namespace PT.PM.Matching
                 try
                 {
                     var matchingResult = new List<MatchingResult>();
-                    PatternVarRefEnumerator[] patternEnumerators = PatternsData.Patterns
+                    PatternVarRefEnumerator[] patternEnumerators = Patterns
                         .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None)
                         .Select(pattern => new PatternVarRefEnumerator(pattern)).ToArray();
                     Traverse(ust.Root, patternEnumerators, matchingResult);

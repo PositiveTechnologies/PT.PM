@@ -36,8 +36,7 @@ namespace PT.PM.Matching.Tests
             };
             var patternsConverter = new CommonPatternConverter(
                 new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
-            var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { p });
-            patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { p }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)
                 .OrderBy(r => r.PatternKey)

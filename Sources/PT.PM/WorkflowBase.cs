@@ -2,7 +2,6 @@
 using PT.PM.UstPreprocessing;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Matching;
 using PT.PM.Patterns;
 using PT.PM.Patterns.PatternsRepository;
 using System.Collections.Generic;
@@ -10,13 +9,15 @@ using System.Diagnostics;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using PT.PM.Matching;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<StageType, ResultType, PatternsDataStructure> : ILoggable
-        where StageType : struct, IConvertible
-        where ResultType : WorkflowResultBase<StageType>
-        where PatternsDataStructure : CommonPatternsDataStructure
+    public abstract class WorkflowBase<TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
+        where TStage : struct, IConvertible
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
+        where TPattern : PatternBase
+        where TMatchingResult : MatchingResultBase<TPattern>
     {
         protected ILogger logger = DummyLogger.Instance;
         protected int maxStackSize;
@@ -25,9 +26,9 @@ namespace PT.PM
 
         protected Language[] languages;
 
-        protected StageHelper<StageType> stageHelper;
+        protected StageHelper<TStage> stageHelper;
 
-        public StageType Stage { get; set; }
+        public TStage Stage { get; set; }
 
         public ISourceCodeRepository SourceCodeRepository { get; set; }
 
@@ -35,9 +36,9 @@ namespace PT.PM
 
         public Dictionary<Language, ParserConverterSet> ParserConverterSets { get; set; } = new Dictionary<Language, ParserConverterSet>();
 
-        public IPatternConverter<PatternsDataStructure> PatternConverter { get; set; }
+        public IPatternConverter<TPattern> PatternConverter { get; set; }
 
-        public IUstPatternMatcher<PatternsDataStructure> UstPatternMatcher { get; set; }
+        public IUstPatternMatcher<TPattern, TMatchingResult> UstPatternMatcher { get; set; }
 
         public IUstPreprocessor UstPreprocessor { get; set; } = new UstPreprocessor();
 
@@ -128,15 +129,15 @@ namespace PT.PM
             }
         }
 
-        public abstract ResultType Process();
+        public abstract TWorkflowResult Process();
 
-        public WorkflowBase(StageType stage)
+        public WorkflowBase(TStage stage)
         {
             Stage = stage;
-            stageHelper = new StageHelper<StageType>(stage);
+            stageHelper = new StageHelper<TStage>(stage);
         }
 
-        protected ParseTree ReadAndParse(string fileName, ResultType workflowResult)
+        protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult)
         {
             ParseTree result = null;
             var stopwatch = new Stopwatch();
@@ -180,7 +181,7 @@ namespace PT.PM
             return result;
         }
 
-        protected Task GetConvertPatternsTask(ResultType workflowResult)
+        protected Task GetConvertPatternsTask(TWorkflowResult workflowResult)
         {
             Task convertPatternsTask = null;
             if (stageHelper.IsPatterns || stageHelper.IsContainsMatch)
@@ -191,10 +192,10 @@ namespace PT.PM
                     {
                         var stopwatch = Stopwatch.StartNew();
                         IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                        UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
+                        UstPatternMatcher.Patterns = PatternConverter.Convert(patternDtos);
                         stopwatch.Stop();
                         workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(UstPatternMatcher.PatternsData.Patterns);
+                        workflowResult.AddResultEntity(UstPatternMatcher.Patterns);
                     }
                     catch (Exception ex)
                     {

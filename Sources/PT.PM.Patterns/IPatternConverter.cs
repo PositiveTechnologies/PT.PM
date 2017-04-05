@@ -3,15 +3,15 @@ using PT.PM.Common;
 
 namespace PT.PM.Patterns
 {
-    public interface IPatternConverter<out TPatternDataStructure> : ILoggable
-        where TPatternDataStructure : CommonPatternsDataStructure
+    public interface IPatternConverter<TPattern> : ILoggable
+        where TPattern : PatternBase
     {
         Dictionary<UstNodeSerializationFormat, IUstNodeSerializer> UstNodeSerializers { get; set; }
 
         UstNodeSerializationFormat ConvertBackFormat { get; set; }
 
-        TPatternDataStructure Convert(IEnumerable<PatternDto> patternsDto);
+        TPattern[] Convert(IEnumerable<PatternDto> patternDtos);
 
-        IEnumerable<PatternDto> ConvertBack(CommonPatternsDataStructure dataStructure);
+        PatternDto[] ConvertBack(IEnumerable<TPattern> patterns);
     }
 }

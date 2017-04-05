@@ -5,7 +5,7 @@ using System;
 
 namespace PT.PM.Patterns
 {
-    public class CommonPatternConverter : IPatternConverter<CommonPatternsDataStructure>
+    public class CommonPatternConverter : IPatternConverter<Pattern>
     {
         private ILogger logger { get; set; } = DummyLogger.Instance;
 
@@ -43,7 +43,7 @@ namespace PT.PM.Patterns
             ConvertBackFormat = format;
         }
 
-        public CommonPatternsDataStructure Convert(IEnumerable<PatternDto> patternsDto)
+        public Pattern[] Convert(IEnumerable<PatternDto> patternsDto)
         {
             var result = new List<Pattern>();
             foreach (var patternDto in patternsDto)
@@ -60,13 +60,13 @@ namespace PT.PM.Patterns
                     Logger.LogError($"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", ex);
                 }
             }
-            return new CommonPatternsDataStructure(result);
+            return result.ToArray();
         }
 
-        public IEnumerable<PatternDto> ConvertBack(CommonPatternsDataStructure dataStructure)
+        public PatternDto[] ConvertBack(IEnumerable<Pattern> patterns)
         {
             var result = new List<PatternDto>();
-            foreach (var pattern in dataStructure.Patterns)
+            foreach (var pattern in patterns)
             {
                 var serializer = UstNodeSerializers[ConvertBackFormat];
                 try
@@ -79,7 +79,7 @@ namespace PT.PM.Patterns
                     Logger.LogError("Error while \"{pattern.Key}\" pattern serialising", ex);
                 }
             }
-            return result;
+            return result.ToArray();
         }
     }
 }

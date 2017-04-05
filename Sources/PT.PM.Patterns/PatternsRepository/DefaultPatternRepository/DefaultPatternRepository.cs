@@ -35,11 +35,10 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.AddRange(tSqlPatterns);
             var javaScriptPatterns = CreateJavaScriptPatterns();
             patterns.AddRange(javaScriptPatterns);
-
-            var patternsDataStructure = new CommonPatternsDataStructure(patterns);
+            
             var patternsConverter = new CommonPatternConverter(new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
 
-            List<PatternDto> result = patternsConverter.ConvertBack(patternsDataStructure).ToList();
+            List<PatternDto> result = patternsConverter.ConvertBack(patterns.ToArray()).ToList();
             return result;
         }
 

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching
 {
-    public abstract class MatchingResultBase<P>
-        where P : PatternBase
+    public abstract class MatchingResultBase<TPattern>
+        where TPattern : PatternBase
     {
-        public P Pattern { get; set; }
+        public TPattern Pattern { get; set; }
 
         public List<UstNode> Nodes { get; set; }
     }

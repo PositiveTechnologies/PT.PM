@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<Stage, WorkflowResult, CommonPatternsDataStructure>
+    public class Workflow: WorkflowBase<Stage, WorkflowResult, Pattern, MatchingResult>
     {
         private int maxTimespan;
         private int memoryConsumptionMb;

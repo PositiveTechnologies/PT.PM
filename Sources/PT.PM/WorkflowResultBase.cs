@@ -8,13 +8,16 @@ using System.Threading;
 
 namespace PT.PM
 {
-    public abstract class WorkflowResultBase<T> where T : struct, IConvertible
+    public abstract class WorkflowResultBase<TStage, TPattern, TMatchingResult> 
+        where TStage : struct, IConvertible
+        where TPattern : PatternBase
+        where TMatchingResult : MatchingResultBase<TPattern>
     {
         private List<SourceCodeFile> sourceCodeFiles = new List<SourceCodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
         private List<Ust> usts = new List<Ust>();
-        private List<MatchingResult> matchingResults = new List<MatchingResult>();
-        private List<Pattern> patterns = new List<Pattern>();
+        private List<TPattern> patterns = new List<TPattern>();
+        private List<TMatchingResult> matchingResults = new List<TMatchingResult>();
 
         private long totalReadTicks;
         private long totalParseTicks;
@@ -30,16 +33,16 @@ namespace PT.PM
         private int totalProcessedCharsCount;
         private int totalProcessedLinesCount;
 
-        protected StageHelper<T> stageExt;
+        protected StageHelper<TStage> stageExt;
 
-        public WorkflowResultBase(T stage, bool isIncludeIntermediateResult)
+        public WorkflowResultBase(TStage stage, bool isIncludeIntermediateResult)
         {
             Stage = stage;
-            stageExt = new StageHelper<T>(stage);
+            stageExt = new StageHelper<TStage>(stage);
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
-        public T Stage { get; private set; }
+        public TStage Stage { get; private set; }
 
         public bool IsIncludeIntermediateResult { get; private set; }
 
@@ -61,9 +64,9 @@ namespace PT.PM
             }
         }
 
-        public IReadOnlyList<MatchingResult> MatchingResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchingResults);
+        public IReadOnlyList<TMatchingResult> MatchingResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchingResults);
 
-        public IReadOnlyList<Pattern> Patterns
+        public IReadOnlyList<TPattern> Patterns
         {
             get
             {
@@ -124,7 +127,7 @@ namespace PT.PM
             }
         }
 
-        public void AddResultEntity(IEnumerable<MatchingResult> matchingResults)
+        public void AddResultEntity(IEnumerable<TMatchingResult> matchingResults)
         {
             lock (this.matchingResults)
             {
@@ -132,7 +135,7 @@ namespace PT.PM
             }
         }
 
-        public void AddResultEntity(IEnumerable<Pattern> patterns)
+        public void AddResultEntity(TPattern[] patterns)
         {
             lock (this.patterns)
             {

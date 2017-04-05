@@ -22,7 +22,7 @@ namespace PT.PM.Dsl.Tests
         {
             patternsRepository = new DefaultPatternRepository();
             var patternsConverter = new CommonPatternConverter(new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
-            patterns = patternsConverter.Convert(patternsRepository.GetAll()).Patterns;
+            patterns = patternsConverter.Convert(patternsRepository.GetAll());
         }
 
         [TestCase(@"HardcodedPassword.aipm")]

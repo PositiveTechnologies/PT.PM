@@ -65,8 +65,7 @@ namespace PT.PM.Matching.Tests
                 Data = patternNode,
                 DebugInfo = patternData
             };
-            var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { pattern });
-            patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { pattern }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
@@ -89,8 +88,7 @@ namespace PT.PM.Matching.Tests
                 Data = patternNode,
                 DebugInfo = patternData
             };
-            var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { pattern });
-            patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { pattern }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
@@ -110,8 +108,7 @@ namespace PT.PM.Matching.Tests
                 Data = patternNode,
                 DebugInfo = patternData
             };
-            var patternsDataStructure = new CommonPatternsDataStructure(new List<Pattern>() { pattern });
-            patternsRep.Add(patternsConverter.ConvertBack(patternsDataStructure));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { pattern }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
