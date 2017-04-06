@@ -22,6 +22,12 @@ Artifacts also available: [https://ci.appveyor.com/project/KvanTTT/pt-pm/build/a
 * [Command Line Interface (CLI) parameters](Documents/CLI.md)
 * [DSL Description and Examples of Patterns](Documents/DSL.md)
 
+### Additional articles
+
+* [Theory and Practice of Source Code Parsing with ANTLR and Roslyn](Documents/Articles/Theory-and-Practice-of-source-code-parsing-with-ANTLR-and-Roslyn/English.md)
+* [Tree structures processing and unified AST](Documents/Articles/Tree-structures-processing-and-unified-AST/English.md)
+* [Pattern language for a universal signature-based code analyzer](Documents/Articles/Pattern-language-for-a-universal-signature-based-code-analyzer/English.md)
+
 ## Projects Description
 
 * Creating an AST from the source code and converting this parse tree to UST 
