@@ -34,7 +34,7 @@ namespace PT.PM.Matching.Tests
                 Data = patternNode,
                 DebugInfo = pattern
             };
-            var patternsConverter = new CommonPatternConverter(
+            var patternsConverter = new PatternConverter(
                 new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
             patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { p }));
             WorkflowResult workflowResult = workflow.Process();

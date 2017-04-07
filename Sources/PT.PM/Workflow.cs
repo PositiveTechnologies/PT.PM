@@ -90,7 +90,7 @@ namespace PT.PM
             UstPatternMatcher = new BruteForcePatternMatcher();
             IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
             IUstNodeSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new CommonPatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            PatternConverter = new PatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
             Stage = stage;
             ThreadCount = 1;
         }
@@ -181,7 +181,7 @@ namespace PT.PM
                             stopwatch.Stop();
                             Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
                             workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
-                            workflowResult.AddResultEntity(ust, false);
+                            //workflowResult.AddResultEntity(ust, false);
                         }
 
                         if (Stage >= Stage.Match)

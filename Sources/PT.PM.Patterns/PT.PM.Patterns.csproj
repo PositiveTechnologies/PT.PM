@@ -45,7 +45,7 @@
     <Compile Include="PatternsRepository\StringPatternsRepository.cs" />
     <Compile Include="UstNodeCloner.cs" />
     <Compile Include="Pattern.cs" />
-    <Compile Include="CommonPatternConverter.cs" />
+    <Compile Include="PatternConverter.cs" />
     <Compile Include="DslPatternRepository.cs" />
     <Compile Include="Nodes\DslNode.cs" />
     <Compile Include="Nodes\LangCodeNode.cs" />

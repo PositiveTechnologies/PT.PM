@@ -5,7 +5,7 @@ using System;
 
 namespace PT.PM.Patterns
 {
-    public class CommonPatternConverter : IPatternConverter<Pattern>
+    public class PatternConverter : IPatternConverter<Pattern>
     {
         private ILogger logger { get; set; } = DummyLogger.Instance;
 
@@ -28,12 +28,12 @@ namespace PT.PM.Patterns
 
         public UstNodeSerializationFormat ConvertBackFormat { get; set; }
 
-        public CommonPatternConverter(IUstNodeSerializer serializer, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
+        public PatternConverter(IUstNodeSerializer serializer, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
             : this(new[] { serializer }, format)
         {
         }
 
-        public CommonPatternConverter(IEnumerable<IUstNodeSerializer> serializers, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
+        public PatternConverter(IEnumerable<IUstNodeSerializer> serializers, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
         {
             UstNodeSerializers = new Dictionary<UstNodeSerializationFormat, IUstNodeSerializer>();
             foreach (var serializer in serializers)

@@ -17,7 +17,7 @@ namespace PT.PM.Matching.Tests
     [TestFixture]
     public class PatternMatchingTests
     {
-        private CommonPatternConverter patternsConverter;
+        private PatternConverter patternsConverter;
         private MemoryPatternsRepository patternsRep;
         private MemoryCodeRepository sourceCodeRep;
         private Workflow workflow;
@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Tests
         [SetUp]
         public void Init()
         {
-            patternsConverter = new CommonPatternConverter(
+            patternsConverter = new PatternConverter(
                 new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
             patternsRep = new MemoryPatternsRepository();
             sourceCodeRep = new MemoryCodeRepository(
