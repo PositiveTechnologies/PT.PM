@@ -25,16 +25,16 @@ after_build:
     msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform=x86
 test:
   assemblies:
-  - Tests\Unit\bin\Release\*.Tests.dll
+  - Tests\Unit\bin\$(configuration)\*.Tests.dll
 after_test:
 - cmd: >-
     nuget pack PT.PM.nuspec -version %APPVEYOR_BUILD_VERSION%
 
-    nuget push PT.PM.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/kvanttt-dh1jos2q1cof/api/v2/package
+    nuget push PT.PM.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/PositiveTechnologies/api/v2/package
 
     nuget pack PT.PM.Cli.nuspec -version %APPVEYOR_BUILD_VERSION%
 
-    nuget push PT.PM.Cli.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/kvanttt-dh1jos2q1cof/api/v2/package
+    nuget push PT.PM.Cli.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/PositiveTechnologies/api/v2/package
 
     cd bin\%CONFIGURATION%
 
