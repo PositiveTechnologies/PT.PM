@@ -3,6 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using Newtonsoft.Json;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Patterns.Nodes
 {
@@ -54,15 +55,12 @@ namespace PT.PM.Patterns.Nodes
                 return Id.CompareTo(((PatternIdToken)other).Id);
             }
 
-            if (other.NodeType != NodeType.PatternIdToken && other.NodeType != NodeType.IdToken &&
-                other.NodeType != NodeType.MemberReferenceExpression)
+            if (other.NodeType != NodeType.PatternIdToken && other.NodeType != NodeType.IdToken)
             {
                 return NodeType - other.NodeType;
             }
 
-            string input = other.NodeType == NodeType.MemberReferenceExpression ? other.ToString() : ((IdToken)other).Id;
-
-            var match = Regex.IsMatch(input);
+            bool match = Regex.IsMatch(((IdToken)other).Id);
             return match ? 0 : 1;
         }
     }
