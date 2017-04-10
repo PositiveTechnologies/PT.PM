@@ -2,7 +2,7 @@ version: 0.9.1.{build}
 configuration: Release
 platform: Any CPU
 nuget:
-  disable_publish_on_pr: false
+  disable_publish_on_pr: true
 clone_script:
 - cmd: >-
     git clone -q --branch=master https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm
