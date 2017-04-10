@@ -31,6 +31,10 @@ test:
   - Tests\Unit\bin\$(configuration)\*.Tests.dll
 after_test:
 - cmd: >-
+    nuget pack PT.PM.nuspec -version %APPVEYOR_BUILD_VERSION%
+    
+    nuget pack PT.PM.Cli.nuspec -version %APPVEYOR_BUILD_VERSION%
+
     cd bin\%CONFIGURATION%
 
     7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.Cli.exe *.config
