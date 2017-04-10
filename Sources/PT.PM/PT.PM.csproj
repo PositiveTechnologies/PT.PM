@@ -42,7 +42,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamicContractResolver.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="LanguageDetector.cs" />
     <Compile Include="ParserConverterBuilder.cs" />

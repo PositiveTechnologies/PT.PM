@@ -5,10 +5,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class LockStatement : SpecificStatement
     {
-        public override NodeType NodeType
-        {
-            get { return NodeType.LockStatement; }
-        }
+        public override NodeType NodeType => NodeType.LockStatement;
 
         public Expression Lock { get; set; }
 

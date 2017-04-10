@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
-namespace PT.PM.Common.Nodes.Tokens
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class UnaryOperatorLiteral : Token
+    public class UnaryOperatorLiteral : Literal
     {
         public static Dictionary<string, UnaryOperator> PrefixTextUnaryOperator = new Dictionary<string, UnaryOperator>
         {
@@ -26,10 +26,7 @@ namespace PT.PM.Common.Nodes.Tokens
 
         public override NodeType NodeType => NodeType.UnaryOperatorLiteral;
 
-        public override string TextValue
-        {
-            get { return UnaryOperator.ToString(); }
-        }
+        public override string TextValue => UnaryOperator.ToString();
 
         public UnaryOperator UnaryOperator { get; set; }
 

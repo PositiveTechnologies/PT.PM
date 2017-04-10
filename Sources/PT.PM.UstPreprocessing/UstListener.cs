@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
@@ -19,6 +16,7 @@ using System.Reflection;
 using PT.PM.Common;
 using System.Collections;
 using PT.PM.Common.Symbols;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.UstPreprocessing
 {
@@ -516,9 +514,6 @@ namespace PT.PM.UstPreprocessing
         public virtual void Enter(PatternIdToken patternIdToken)
         {
         }
-        public virtual void Enter(PatternIfElseStatement patternIfElseStatement)
-        {
-        }
         public virtual void Enter(PatternIntLiteral patternIntLiteral)
         {
         }
@@ -570,9 +565,7 @@ namespace PT.PM.UstPreprocessing
         public virtual void Exit(PatternIdToken patternIdToken)
         {
         }
-        public virtual void Exit(PatternIfElseStatement patternIfElseStatement)
-        {
-        }
+
         public virtual void Exit(PatternIntLiteral patternIntLiteral)
         {
         }

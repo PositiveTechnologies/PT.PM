@@ -12,7 +12,7 @@ namespace PT.PM.Patterns
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
         /// <summary>
-        /// TODO: possible replace with binary serializaion or protobuf.net for performance reason.
+        /// TODO: possible replace with binary serialization or protobuf.net for performance reason.
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>

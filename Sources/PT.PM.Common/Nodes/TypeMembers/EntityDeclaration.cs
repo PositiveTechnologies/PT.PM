@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
     public abstract class EntityDeclaration : UstNode
     {
-        public IEnumerable<ModifierLiteral> Modifiers { get; set; }
+        public List<ModifierLiteral> Modifiers { get; set; }
 
         public IdToken Name { get; set; }
 

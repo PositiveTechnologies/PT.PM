@@ -16,7 +16,7 @@ namespace PT.PM.Dsl
 
         public Language? Language { get; set; }
 
-        public PatternVarDef[] PatternVarDefs { get; set; }
+        public List<PatternVarDef> PatternVarDefs { get; set; }
 
         public DslNode(IList<UstNode> collection, TextSpan textSpan, FileNode fileNode)
             : base(collection, textSpan, fileNode)

@@ -10,6 +10,8 @@ using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using System.Collections.Generic;
+using PT.PM.Common.Nodes.Tokens.Literals;
 //using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
@@ -93,10 +95,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
         {
             var type = ConvertType(base.Visit(node.Type.ElementType));
-            var sizes = node.Type.RankSpecifiers
-                .SelectMany(rank => rank.Sizes.Select(s => (Expression)base.Visit(s))).ToArray();
-            var inits = node.Initializer != null
-                ? node.Initializer.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e)).ToArray()
+            List<Expression> sizes = node.Type.RankSpecifiers
+                .SelectMany(rank => rank.Sizes.Select(s => (Expression)VisitAndReturnNullIfError(s))).ToList();
+            List<Expression> inits = node.Initializer != null
+                ? node.Initializer.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e)).ToList()
                 : null;
 
             var result = new ArrayCreationExpression(type, sizes, inits, node.GetTextSpan(), FileNode);
@@ -460,7 +462,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             var initializers = node.Initializer == null ? null : 
                 node.Initializer.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e))
-                .ToArray();
+                .ToList();
 
             var result = new ObjectCreateExpression(
                 type,

@@ -28,10 +28,10 @@ namespace PT.PM.Tests
         [Test]
         public void JsonSerialize_PatternWithVar_JsonEqualsToDsl()
         {
-            var pwdVar = new PatternVarDef { Id = "pwd", Values = new[] { new PatternIdToken("password") } };
+            var pwdVar = new PatternVarDef { Id = "pwd", Values = new List<Expression>() { new PatternIdToken("password") } };
             var patternNode = new PatternNode
             {
-                Vars = new[] { pwdVar },
+                Vars = new List<PatternVarDef>() { pwdVar },
                 Node = new PatternStatements(
                      new ExpressionStatement
                      {

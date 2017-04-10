@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -242,7 +243,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
                     var method = new MethodDeclaration(id, parameters, body, operatorSyntax.GetTextSpan(), FileNode)
                     {
-                        Modifiers = operatorSyntax.Modifiers.Select(ConvertModifier)
+                        Modifiers = operatorSyntax.Modifiers.Select(ConvertModifier).ToList()
                     };
                     typeMembers.Add(method);
                 }
@@ -278,7 +279,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
                     var method = new MethodDeclaration(id, parameters, body, conversionOperatorSyntax.GetTextSpan(), FileNode)
                     {
-                        Modifiers = conversionOperatorSyntax.Modifiers.Select(ConvertModifier)
+                        Modifiers = conversionOperatorSyntax.Modifiers.Select(ConvertModifier).ToList()
                     };
                     typeMembers.Add(method);
                 }
@@ -324,13 +325,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
         {
-            AssignmentExpression[] declarations = node.Declaration.Variables
+            List<AssignmentExpression> declarations = node.Declaration.Variables
                 .Select(var => (AssignmentExpression)VisitAndReturnNullIfError(var))
-                .ToArray();
+                .ToList();
 
             var result = new FieldDeclaration(declarations, node.GetTextSpan(), FileNode)
             {
-                Modifiers = node.Modifiers.Select(ConvertModifier)
+                Modifiers = node.Modifiers.Select(ConvertModifier).ToList()
             };
             return result;
         }
@@ -341,7 +342,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             IEnumerable<EntityDeclaration> typeMembers)
         {
             var nameLiteral = ConvertId(node.Identifier);
-            var modifiers = node.Modifiers.Select(ConvertModifier).ToArray();
+            var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
             var result = new TypeDeclaration(
                 typeTypeToken,
@@ -386,7 +387,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 node.GetTextSpan(),
                 FileNode)
             {
-                Modifiers = node.Modifiers.Select(ConvertModifier)
+                Modifiers = node.Modifiers.Select(ConvertModifier).ToList()
             };
             return method;
         }

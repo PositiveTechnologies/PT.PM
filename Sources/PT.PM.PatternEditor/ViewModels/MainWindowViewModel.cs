@@ -499,6 +499,7 @@ namespace PT.PM.PatternEditor
                 patternRepository = new MemoryPatternsRepository();
             }
             var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage);
+            workflow.IsIncludeIntermediateResult = true;
             workflow.Logger = sourceCodeLogger;
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults

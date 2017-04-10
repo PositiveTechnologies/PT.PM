@@ -6,18 +6,18 @@ namespace PT.PM.Common.Nodes.Collections
     public abstract class CollectionNode<TUstNode> : UstNode
         where TUstNode : UstNode
     {
-        public IList<TUstNode> Collection { get; set; }
+        public List<TUstNode> Collection { get; set; }
 
-        protected CollectionNode(IList<TUstNode> collection, TextSpan textSpan, FileNode fileNode)
+        protected CollectionNode(IEnumerable<TUstNode> collection, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
-            Collection = collection;
+            Collection = collection as List<TUstNode> ?? collection.ToList();
         }
 
-        protected CollectionNode(IList<TUstNode> collection)
+        protected CollectionNode(IEnumerable<TUstNode> collection)
             : base()
         {
-            Collection = collection;
+            Collection = collection as List<TUstNode> ?? collection.ToList();
         }
 
         protected CollectionNode()

@@ -30,6 +30,8 @@ namespace PT.PM
 
         public bool IsContainsConvert => stageInt >= (int)PM.Stage.Convert;
 
+        public bool IsContainsMatch => stageInt >= (int)PM.Stage.Match;
+
         public bool IsLessThanMatch => stageInt < (int)PM.Stage.Match;
     }
 }

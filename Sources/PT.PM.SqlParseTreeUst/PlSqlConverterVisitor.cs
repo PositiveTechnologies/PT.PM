@@ -12,6 +12,7 @@ using Antlr4.Runtime.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -500,7 +501,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 var tryCatch = new TryCatchStatement(block, context.GetTextSpan(), FileNode);
                 tryCatch.CatchClauses = context.exception_handler().Select(handler =>
-                    (CatchClause)Visit(handler)).ToArray();
+                    (CatchClause)Visit(handler)).ToList();
                 result = new BlockStatement(new Statement[] { tryCatch }, context.GetTextSpan(), FileNode);
             }
             else

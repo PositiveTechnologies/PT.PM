@@ -62,6 +62,14 @@
       <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
       <Name>PT.PM.AntlrUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
+      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
+      <Name>PT.PM.Matching</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
+      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
+      <Name>PT.PM.Patterns</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>

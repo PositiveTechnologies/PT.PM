@@ -1,6 +1,6 @@
-﻿namespace PT.PM.Common.Nodes.Tokens
+﻿namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class BooleanLiteral : Token
+    public class BooleanLiteral : Literal
     {
         public override NodeType NodeType => NodeType.BooleanLiteral;
 
@@ -21,10 +21,7 @@
         {
         }
 
-        public override string TextValue
-        {
-            get { return Value.ToString(); }
-        }
+        public override string TextValue => Value.ToString();
 
         public override int CompareTo(UstNode other)
         {

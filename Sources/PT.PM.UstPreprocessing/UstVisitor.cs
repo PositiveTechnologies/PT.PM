@@ -8,6 +8,7 @@ using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Common.Symbols;
 using PT.PM.Dsl;
@@ -443,11 +444,6 @@ namespace PT.PM.UstPreprocessing
         public virtual UstNode Visit(PatternExpressionInsideStatement patternExpressionInsideStatement)
         {
             return VisitChildren(patternExpressionInsideStatement);
-        }
-
-        public virtual UstNode Visit(PatternIfElseStatement patternIfElseStatement)
-        {
-            return VisitChildren(patternIfElseStatement);
         }
 
         public virtual UstNode Visit(PatternIdToken patternIdToken)

@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.Collections
 {
@@ -7,17 +8,17 @@ namespace PT.PM.Common.Nodes.Collections
     {
         public override NodeType NodeType => NodeType.ArgsNode;
 
-        public ArgsNode(IList<Expression> args, TextSpan textSpan, FileNode fileNode)
+        public ArgsNode(IEnumerable<Expression> args, TextSpan textSpan, FileNode fileNode)
             : base(args, textSpan, fileNode)
         {
         }
 
         public ArgsNode(params Expression[] args)
-            : base(args)
+            : base(args.ToList())
         {
         }
 
-        public ArgsNode(IList<Expression> args)
+        public ArgsNode(List<Expression> args)
             : base(args)
         {
         }

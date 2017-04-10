@@ -8,26 +8,26 @@ namespace PT.PM.Common.Nodes.Statements
     {
         public override NodeType NodeType => NodeType.BlockStatement;
 
-        public IList<Statement> Statements { get; set; } = ArrayUtils<Statement>.EmptyArray;
+        public List<Statement> Statements { get; set; } = new List<Statement>();
 
-        public BlockStatement(IList<Statement> statements, FileNode fileNode)
+        public BlockStatement(IEnumerable<Statement> statements, FileNode fileNode)
         {
-            if (statements.Count > 0)
+            Statements = statements as List<Statement> ?? statements.ToList();
+            if (Statements.Count > 0)
             {
-                TextSpan = statements.First().TextSpan.Union(statements.Last().TextSpan);
+                TextSpan = Statements.First().TextSpan.Union(Statements.Last().TextSpan);
             }
             else
             {
                 TextSpan = default(TextSpan);
             }
-            Statements = statements;
             FileNode = fileNode;
         }
 
-        public BlockStatement(IList<Statement> statements, TextSpan textSpan, FileNode fileNode)
+        public BlockStatement(IEnumerable<Statement> statements, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
-            Statements = statements;
+            Statements = statements as List<Statement> ?? statements.ToList();
         }
 
         public BlockStatement()

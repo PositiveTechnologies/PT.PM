@@ -10,6 +10,7 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Dsl;
 using PT.PM.Patterns.Nodes;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.UstPreprocessing
 {
@@ -143,7 +144,6 @@ namespace PT.PM.UstPreprocessing
         T Visit(PatternExpressionInsideStatement patternExpressionInsideStatement);
         T Visit(PatternExpressions patternExpressions);
         T Visit(PatternIdToken patternIdToken);
-        T Visit(PatternIfElseStatement patternIfElseStatement);
         T Visit(PatternIntLiteral patternIntLiteral);
         T Visit(PatternMultipleExpressions patternMultiExpressions);
         T Visit(PatternMultipleStatements patternMultiStatements);

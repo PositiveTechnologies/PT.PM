@@ -14,6 +14,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Patterns;
 using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Dsl
 {
@@ -38,7 +39,7 @@ namespace PT.PM.Dsl
                 unnamedVarNumber = 0;
                 patternVarDefs = new Dictionary<string, PatternVarDef>();
                 var result = (DslNode)VisitPattern(pattern);
-                result.PatternVarDefs = patternVarDefs.Select(keyValue => keyValue.Value).ToArray();
+                result.PatternVarDefs = patternVarDefs.Select(keyValue => keyValue.Value).ToList();
                 return result;
             }
             catch (Exception ex)
@@ -281,8 +282,8 @@ namespace PT.PM.Dsl
 
         public UstNode VisitArgs([NotNull] DslParser.ArgsContext context)
         {
-            Expression[] expressions = context.arg().Select(arg =>
-                (Expression)VisitArg(arg)).ToArray();
+            List<Expression> expressions = context.arg().Select(arg =>
+                (Expression)VisitArg(arg)).ToList();
 
             var span = context.GetTextSpan();
             ArgsNode result;

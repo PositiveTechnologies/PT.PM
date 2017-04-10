@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PT.PM.Common.Nodes.Tokens;
 using System;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
@@ -11,7 +11,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public StringLiteral Name { get; set; }
 
-        public IEnumerable<UstNode> Members { get; set; }
+        public List<UstNode> Members { get; set; }
 
         public Language Language { get; set; }
 
@@ -26,7 +26,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
             : base(textSpan, fileNode)
         {
             Name = name;
-            Members = members;
+            Members = members as List<UstNode> ?? members.ToList();
             Language = language;
         }
 
@@ -36,11 +36,10 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public override UstNode[] GetChildren()
         {
-            var ustNodes = Members as UstNode[] ?? Members.ToArray();
-            var result = new UstNode[ustNodes.Length + 1];
+            var result = new UstNode[Members.Count + 1];
             int index = 0;
             result[index++] = Name;
-            foreach (var member in ustNodes)
+            foreach (var member in Members)
                 result[index++] = member;
             return result;
         }

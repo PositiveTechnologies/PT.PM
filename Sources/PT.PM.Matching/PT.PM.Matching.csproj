@@ -37,6 +37,7 @@
     <Compile Include="BruteForcePatternMatcher.cs" />
     <Compile Include="IUstPatternMatcher.cs" />
     <Compile Include="MatchingResult.cs" />
+    <Compile Include="MatchingResultBase.cs" />
     <Compile Include="PatternVarRefEnumerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">

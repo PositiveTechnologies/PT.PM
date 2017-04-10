@@ -1,6 +1,6 @@
-﻿namespace PT.PM.Common.Nodes.Tokens
+﻿namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class NullLiteral : Token
+    public class NullLiteral : Literal
     {
         public override NodeType NodeType => NodeType.NullLiteral;
 
@@ -13,9 +13,6 @@
         {
         }
 
-        public override string TextValue
-        {
-            get { return "null"; }
-        }
+        public override string TextValue => "null";
     }
 }

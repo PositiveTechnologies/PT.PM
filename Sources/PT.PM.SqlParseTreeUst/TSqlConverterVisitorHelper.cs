@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -31,7 +32,7 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         private InvocationExpression CreateSpecialInvocation(ITerminalNode name,
-                    ParserRuleContext context, IList<Expression> expressions)
+                    ParserRuleContext context, List<Expression> expressions)
         {
             return new InvocationExpression(
                 new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), FileNode),

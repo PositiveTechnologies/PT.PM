@@ -7,9 +7,7 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
-using PT.PM.Common.Nodes.TypeMembers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using PT.PM.Common;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -18,7 +16,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitBlock(BlockSyntax node)
         {
             var statements = node.Statements.Select(s => (Statement)VisitAndReturnNullIfError(s))
-                .ToArray();
+                .ToList();
             var result = new BlockStatement(statements, node.GetTextSpan(), FileNode);
             return result;
         }
@@ -236,7 +234,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var tryBlock = (BlockStatement)VisitBlock(node.Block);
             var catchClauses = node.Catches.Select(c => (CatchClause)VisitAndReturnNullIfError(c))
-                .ToArray();
+                .ToList();
             BlockStatement finallyStatement = null;
             if (node.Finally != null)
                 finallyStatement = (BlockStatement)VisitFinallyClause(node.Finally);

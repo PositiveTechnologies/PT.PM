@@ -12,9 +12,11 @@ namespace PT.PM.Patterns.Nodes
     {
         public override NodeType NodeType => NodeType.PatternVarDef;
 
+        public static PatternVarDef DefaultPatternVarDef => new PatternVarDef("default", new Expression[] { new PatternExpression() });
+
         public string Id { get; set; }
 
-        public IList<Expression> Values { get; set; } = ArrayUtils<Expression>.EmptyArray;
+        public List<Expression> Values { get; set; } = new List<Expression>();
 
         [JsonIgnore]
         public Token PinValue { get; set; }
@@ -36,7 +38,7 @@ namespace PT.PM.Patterns.Nodes
             : base(textSpan)
         {
             Id = id;
-            Values = values.ToList();
+            Values = values as List<Expression> ?? values.ToList();
         }
 
         public override int CompareTo(UstNode other)

@@ -2,6 +2,8 @@
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
+using System.Linq;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
@@ -11,16 +13,16 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public TypeTypeLiteral Type { get; set; }
 
-        public IEnumerable<StringLiteral> BaseTypes { get; set; }
+        public List<StringLiteral> BaseTypes { get; set; }
 
-        public IEnumerable<EntityDeclaration> TypeMembers { get;set; }
+        public List<EntityDeclaration> TypeMembers { get;set; }
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<EntityDeclaration> typeMembers, TextSpan textSpan, FileNode fileNode)
             : base(name, textSpan, fileNode)
         {
             Type = type;
             BaseTypes = new List<StringLiteral>();
-            TypeMembers = typeMembers ?? ArrayUtils<EntityDeclaration>.EmptyArray;
+            TypeMembers = typeMembers as List<EntityDeclaration> ?? typeMembers.ToList();
         }
 
         public TypeDeclaration()

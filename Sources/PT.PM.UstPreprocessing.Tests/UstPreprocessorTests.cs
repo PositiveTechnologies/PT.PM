@@ -9,6 +9,7 @@ using PT.PM.Patterns.Nodes;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.UstPreprocessing.Tests
 {
@@ -48,7 +49,7 @@ namespace PT.PM.UstPreprocessing.Tests
                             Target = new IdToken("test_call"),
                             Arguments = new PatternExpressions
                             {
-                                Collection = new Expression[]
+                                Collection = new List<Expression>
                                 {
                                     new IdToken("a"),
                                     new IdToken("b"),
@@ -66,7 +67,7 @@ namespace PT.PM.UstPreprocessing.Tests
                         new VariableDeclarationExpression
                         {
                             Type = new TypeToken("int"),
-                            Variables = new AssignmentExpression[]
+                            Variables = new List<AssignmentExpression>()
                             {
                                 new AssignmentExpression
                                 {
@@ -90,7 +91,7 @@ namespace PT.PM.UstPreprocessing.Tests
         [Ignore("TODO: fix it. Actually I does not know why it failed in TeamCity.")]
         public void Sort_PatternVars()
         {
-            var unsortedExpressions = new Expression[]
+            var unsortedExpressions = new List<Expression>()
             {
                 new IntLiteral { Value = 100 },
                 new IntLiteral { Value = 42 },
@@ -101,7 +102,7 @@ namespace PT.PM.UstPreprocessing.Tests
                 new IdToken { Id = "42" },
                 new PatternExpression(new StringLiteral { Text = "42" }, true),
             };
-            var expectedSortedExpressions = new Expression[]
+            var expectedSortedExpressions = new List<Expression>
             {
                 new StringLiteral { Text = "42" },
                 new PatternExpression(new StringLiteral { Text = "42" }, true),
@@ -119,7 +120,7 @@ namespace PT.PM.UstPreprocessing.Tests
             };
             var patternVars = new PatternNode
             {
-                Vars = new PatternVarDef[] { patternVarDef },
+                Vars = new List<PatternVarDef>() { patternVarDef },
                 Node = new PatternVarRef(patternVarDef)
             };
 
@@ -129,8 +130,8 @@ namespace PT.PM.UstPreprocessing.Tests
             Expression[] resultSortedExpressions = ((PatternNode)preprocessor.Preprocess(patternVars))
                 .Vars.First().Values.ToArray();
 
-            Assert.AreEqual(expectedSortedExpressions.Length, resultSortedExpressions.Length);
-            for (int i = 0; i < expectedSortedExpressions.Length; i++)
+            Assert.AreEqual(expectedSortedExpressions.Count, resultSortedExpressions.Length);
+            for (int i = 0; i < expectedSortedExpressions.Count; i++)
             {
                 Assert.IsTrue(expectedSortedExpressions[i].Equals(resultSortedExpressions[i]),
                     $"Not equal at {i} index: expected {expectedSortedExpressions[i]} not equals to {resultSortedExpressions[i]}");

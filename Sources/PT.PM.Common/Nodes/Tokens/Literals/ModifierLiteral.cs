@@ -1,15 +1,12 @@
-﻿namespace PT.PM.Common.Nodes.Tokens
+﻿namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class ModifierLiteral : Token
+    public class ModifierLiteral : Literal
     {
         public override NodeType NodeType => NodeType.ModifierLiteral;
 
         public Modifier Modifier { get; set; }
 
-        public override string TextValue
-        {
-            get { return Modifier.ToString(); }
-        }
+        public override string TextValue => Modifier.ToString();
 
         public ModifierLiteral(Modifier modifier, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)

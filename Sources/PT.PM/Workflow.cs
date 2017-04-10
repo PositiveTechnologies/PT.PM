@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<Stage, WorkflowResult>
+    public class Workflow: WorkflowBase<Stage, WorkflowResult, Pattern, MatchingResult>
     {
         private int maxTimespan;
         private int memoryConsumptionMb;
@@ -90,7 +90,7 @@ namespace PT.PM
             UstPatternMatcher = new BruteForcePatternMatcher();
             IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
             IUstNodeSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new CommonPatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            PatternConverter = new PatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
             Stage = stage;
             ThreadCount = 1;
         }
@@ -98,28 +98,7 @@ namespace PT.PM
         public override WorkflowResult Process()
         {
             var workflowResult = new WorkflowResult(Stage, IsIncludeIntermediateResult);
-
-            Task convertPatternsTask = null;
-            if (Stage == Stage.Patterns || Stage >= Stage.Match)
-            {
-                convertPatternsTask = new Task(() =>
-                {
-                    try
-                    {
-                        var stopwatch = Stopwatch.StartNew();
-                        IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                        UstPatternMatcher.PatternsData = PatternConverter.Convert(patternDtos);
-                        stopwatch.Stop();
-                        workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(UstPatternMatcher.PatternsData.Patterns);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(new ParsingException("Patterns can not be deserialized due to the error: " + ex.Message));
-                    }
-                });
-                convertPatternsTask.Start();
-            }
+            Task convertPatternsTask = GetConvertPatternsTask(workflowResult);
 
             int processedCount = 0;
             if (Stage == Stage.Patterns)
@@ -202,7 +181,7 @@ namespace PT.PM
                             stopwatch.Stop();
                             Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
                             workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
-                            workflowResult.AddResultEntity(ust, false);
+                            //workflowResult.AddResultEntity(ust, false);
                         }
 
                         if (Stage >= Stage.Match)

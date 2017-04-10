@@ -1,4 +1,4 @@
-﻿namespace PT.PM.Common.Nodes.Tokens
+﻿namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class TypeTypeLiteral : Token
     {
@@ -6,10 +6,7 @@
 
         public TypeType TypeType { get; set; }
 
-        public override string TextValue
-        {
-            get { return TypeType.ToString(); }
-        }
+        public override string TextValue => TypeType.ToString();
 
         public TypeTypeLiteral(TypeType typeType, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)

@@ -1,12 +1,12 @@
-﻿namespace PT.PM.Common.Nodes.Tokens
+﻿namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class IntLiteral : Token
+    public class IntLiteral : Literal
     {
         public override NodeType NodeType => NodeType.IntLiteral;
 
         public long Value { get; set; }
 
-        public override string TextValue { get { return Value.ToString(); } }
+        public override string TextValue => Value.ToString();
 
         public IntLiteral(long value)
             : this(value, default(TextSpan), null)

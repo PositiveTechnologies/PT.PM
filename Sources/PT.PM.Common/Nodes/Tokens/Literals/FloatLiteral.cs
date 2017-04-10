@@ -1,17 +1,14 @@
 ﻿using System.Globalization;
 
-namespace PT.PM.Common.Nodes.Tokens
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
-    public class FloatLiteral : Token
+    public class FloatLiteral : Literal
     {
         public override NodeType NodeType => NodeType.FloatLiteral;
 
         public double Value { get; set; }
 
-        public override string TextValue
-        {
-            get { return Value.ToString(CultureInfo.InvariantCulture); }
-        }
+        public override string TextValue => Value.ToString(CultureInfo.InvariantCulture);
 
         public FloatLiteral(double value)
             : this(value, default(TextSpan), null)

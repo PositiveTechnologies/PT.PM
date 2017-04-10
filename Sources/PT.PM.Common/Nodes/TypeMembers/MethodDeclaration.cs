@@ -12,7 +12,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public TypeToken ReturnType { get; set; }
 
-        public IEnumerable<ParameterDeclaration> Parameters { get; set; }
+        public List<ParameterDeclaration> Parameters { get; set; }
 
         public BlockStatement Body { get; set; }
 
@@ -28,7 +28,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan, FileNode fileNode)
             : base(name, textSpan, fileNode)
         {
-            Parameters = parameters ?? ArrayUtils<ParameterDeclaration>.EmptyArray;
+            Parameters = parameters as List<ParameterDeclaration> ?? new List<ParameterDeclaration>();
             Body = body;
         }
 

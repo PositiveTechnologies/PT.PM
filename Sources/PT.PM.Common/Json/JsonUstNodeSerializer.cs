@@ -17,9 +17,9 @@ namespace PT.PM.Common
 
         public UstNodeSerializationFormat DataFormat => UstNodeSerializationFormat.Json;
 
-        public bool Indented { get; set; }
+        public bool Indented { get; set; } = false;
 
-        public bool ExcludeNulls { get; set; }
+        public bool ExcludeNulls { get; set; } = true;
 
         public JsonUstNodeSerializer(params Type[] ustNodeAssemblyTypes)
         {
@@ -38,16 +38,14 @@ namespace PT.PM.Common
             var converters = new List<JsonConverter>() { stringEnumConverter };
             var jsonSettings = new JsonSerializerSettings()
             {
-                Converters = converters
+                Converters = converters,
+                DefaultValueHandling = DefaultValueHandling.Ignore
             };
             if (ExcludeNulls)
             {
                 jsonSettings.NullValueHandling = NullValueHandling.Ignore;
             }
-            if (!IncludeTextSpans)
-            {
-                jsonSettings.ContractResolver = new ShouldNotSerializeTextSpanResolver();
-            }
+            jsonSettings.ContractResolver = new TextSpanResolver() { Ignore = !IncludeTextSpans };
             return JsonConvert.SerializeObject(node, indent, jsonSettings);
         }
     }

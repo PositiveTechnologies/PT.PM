@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using PT.PM.Patterns.Nodes;
 using PT.PM.UstPreprocessing;
+using System.Collections.Generic;
 
 namespace PT.PM.Dsl
 {
@@ -76,7 +77,7 @@ namespace PT.PM.Dsl
             return result;
         }
 
-        public PatternVarDef[] ResultPatternVars { get; private set; }
+        public List<PatternVarDef> ResultPatternVars { get; private set; }
 
         public string Serialize(UstNode node)
         {

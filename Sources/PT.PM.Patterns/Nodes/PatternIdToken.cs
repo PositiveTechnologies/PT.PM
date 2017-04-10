@@ -3,6 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using Newtonsoft.Json;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Patterns.Nodes
 {
@@ -40,10 +41,7 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override string TextValue
-        {
-            get { return Regex.ToString(); }
-        }
+        public override string TextValue => Regex.ToString();
 
         public override int CompareTo(UstNode other)
         {
@@ -62,7 +60,7 @@ namespace PT.PM.Patterns.Nodes
                 return NodeType - other.NodeType;
             }
 
-            var match = Regex.IsMatch(((IdToken)other).Id);
+            bool match = Regex.IsMatch(((IdToken)other).Id);
             return match ? 0 : 1;
         }
     }

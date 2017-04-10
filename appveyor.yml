@@ -1,9 +1,12 @@
 version: 0.9.1.{build}
 configuration: Release
 platform: Any CPU
+skip_branch_with_pr: true
+nuget:
+  disable_publish_on_pr: true
 clone_script:
 - cmd: >-
-    git clone -q --branch=master https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm-xi6ya
+    git clone -q --branch=master https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm
 
     git submodule update --init --recursive
 assembly_info:
@@ -20,21 +23,18 @@ before_build:
 build:
   project: Sources\PT.PM.sln
   verbosity: minimal
+  publish_nuget: true
 after_build:
 - cmd: >-
     msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform=x86
 test:
   assemblies:
-  - Tests\Unit\bin\Release\*.Tests.dll
+  - Tests\Unit\bin\$(configuration)\*.Tests.dll
 after_test:
 - cmd: >-
     nuget pack PT.PM.nuspec -version %APPVEYOR_BUILD_VERSION%
-
-    nuget push PT.PM.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/kvanttt-dh1jos2q1cof/api/v2/package
-
+    
     nuget pack PT.PM.Cli.nuspec -version %APPVEYOR_BUILD_VERSION%
-
-    nuget push PT.PM.Cli.%APPVEYOR_BUILD_VERSION%.nupkg -ApiKey yjovi47t5m0h50jy0plx7wga -Source https://ci.appveyor.com/nuget/kvanttt-dh1jos2q1cof/api/v2/package
 
     cd bin\%CONFIGURATION%
 

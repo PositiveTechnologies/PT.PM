@@ -1,11 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Statements;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Patterns.Nodes
 {

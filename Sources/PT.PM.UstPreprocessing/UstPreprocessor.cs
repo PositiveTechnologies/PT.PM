@@ -9,6 +9,7 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Patterns.Nodes;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Ust;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.UstPreprocessing
 {

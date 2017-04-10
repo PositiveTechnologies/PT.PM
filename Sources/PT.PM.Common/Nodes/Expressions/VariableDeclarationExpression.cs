@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.Common.Nodes.Expressions;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -11,14 +10,14 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public TypeToken Type { get; set; }
 
-        public IEnumerable<AssignmentExpression> Variables { get; set; }
+        public List<AssignmentExpression> Variables { get; set; }
 
         public VariableDeclarationExpression(TypeToken type, IEnumerable<AssignmentExpression> variables,
             TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
             Type = type;
-            Variables = variables;
+            Variables = variables as List<AssignmentExpression> ?? variables.ToList();
         }
 
         public VariableDeclarationExpression()

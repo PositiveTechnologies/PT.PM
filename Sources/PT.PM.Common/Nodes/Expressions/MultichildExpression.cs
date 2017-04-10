@@ -7,31 +7,31 @@ namespace PT.PM.Common.Nodes.Expressions
     {
         public override NodeType NodeType => NodeType.MultichildExpression;
 
-        public IList<Expression> Expressions { get; set; }
+        public List<Expression> Expressions { get; set; }
 
-        public MultichildExpression(IList<Expression> children, TextSpan textSpan, FileNode fileNode)
+        public MultichildExpression(IEnumerable<Expression> children, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
-            Expressions = children;
+            Expressions = children as List<Expression> ?? children.ToList();
         }
 
-        public MultichildExpression(IList<Expression> children, FileNode fileNode)
+        public MultichildExpression(IEnumerable<Expression> children, FileNode fileNode)
         {
-            if (children.Count > 0)
+            Expressions = children as List<Expression> ?? children.ToList();
+            if (Expressions.Count > 0)
             {
-                TextSpan = children.First().TextSpan.Union(children.Last().TextSpan);
+                TextSpan = Expressions.First().TextSpan.Union(Expressions.Last().TextSpan);
             }
             else
             {
                 TextSpan = default(TextSpan);
             }
-            Expressions = children;
         }
 
         public MultichildExpression(TextSpan textSpan, FileNode fileNode, params Expression[] children)
             : base(textSpan, fileNode)
         {
-            Expressions = children;
+            Expressions = children.ToList();
         }
 
         public MultichildExpression()

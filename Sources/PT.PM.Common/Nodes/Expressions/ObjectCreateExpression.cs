@@ -12,7 +12,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public ArgsNode Arguments { get; set; }
 
-        public IEnumerable<Expression> Initializers { get; set; }
+        public List<Expression> Initializers { get; set; }
 
         public ObjectCreateExpression(Token type, ArgsNode args, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
