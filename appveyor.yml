@@ -1,6 +1,7 @@
 version: 0.9.1.{build}
 configuration: Release
 platform: Any CPU
+skip_branch_with_pr: true
 nuget:
   disable_publish_on_pr: true
 clone_script:
