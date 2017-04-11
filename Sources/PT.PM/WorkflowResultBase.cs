@@ -117,12 +117,23 @@ namespace PT.PM
 
         public void AddResultEntity(Ust ust, bool convert)
         {
-            if ((convert && (stageExt.IsConvert || IsIncludeIntermediateResult)) ||
-                (!convert && (stageExt.IsPreprocess || IsIncludeIntermediateResult)))
+            if (IsIncludeIntermediateResult ||
+                (convert && stageExt.IsConvert) ||
+                (!convert && stageExt.IsPreprocess))
             {
+                
                 lock (usts)
                 {
-                    usts.Add(ust);
+                    int ustIndex = usts.FindIndex(tree => tree.FileName == ust.FileName);
+                    if (ustIndex == -1)
+                    {
+                        usts.Add(ust);
+                    }
+                    else
+                    {
+                        usts.RemoveAt(ustIndex);
+                        usts.Insert(ustIndex, ust);
+                    }
                 }
             }
         }

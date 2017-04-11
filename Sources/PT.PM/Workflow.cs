@@ -181,7 +181,7 @@ namespace PT.PM
                             stopwatch.Stop();
                             Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
                             workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
-                            //workflowResult.AddResultEntity(ust, false);
+                            workflowResult.AddResultEntity(ust, false);
                         }
 
                         if (Stage >= Stage.Match)

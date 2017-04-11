@@ -4,11 +4,8 @@ platform: Any CPU
 skip_branch_with_pr: true
 nuget:
   disable_publish_on_pr: true
-clone_script:
-- cmd: >-
-    git clone -q --branch=master https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm
-
-    git submodule update --init --recursive
+install:
+- cmd: git submodule update --init --recursive
 assembly_info:
   patch: true
   file: Sources\AssemblyInfoCommon.cs;Sources\PT.PM.PatternEditor\Properties\AssemblyInfo.cs
