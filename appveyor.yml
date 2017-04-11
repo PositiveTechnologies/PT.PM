@@ -6,11 +6,13 @@ nuget:
   disable_publish_on_pr: true
 clone_script:
 - cmd: >-
+    echo %APPVEYOR_REPO_BRANCH%
+
+    echo %APPVEYOR_REPO_COMMIT%
+
     git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm
 
     git submodule update --init --recursive
-
-    git checkout -qf %APPVEYOR_REPO_COMMIT%
 assembly_info:
   patch: true
   file: Sources\AssemblyInfoCommon.cs;Sources\PT.PM.PatternEditor\Properties\AssemblyInfo.cs
