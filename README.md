@@ -19,8 +19,8 @@ Artifacts also available: [https://ci.appveyor.com/project/KvanTTT/pt-pm/build/a
 ## Documentation
 
 * Use Cases and API (TODO)
-* Console API (TODO)
-* DSL Description and Examples of Patterns (TODO)
+* [Command Line Interface (CLI) parameters](Documents/CLI.md)
+* [DSL Description and Examples of Patterns](Documents/DSL.md)
 
 ## Projects Description
 

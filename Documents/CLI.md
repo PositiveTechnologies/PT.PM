@@ -1,74 +1,117 @@
 # PT.PM CLI
 
-**PT.PM** можно использовать в консольном режиме (Command Line Interface). В этом случае параметры могут бысть следующими:
+**PT.PM** can be used in CLI (Command Line Interface) mode. In this
+case, the following parameters can be specified:
 
 ## -f, -files
 
-Путь к файлу с исходником или к папке с исходниками. PT.PM сам определяет, является ли путь папкой или файлом. Один из параметров **-f** или **--patterns** должен быть указан.
+The path to the source code file or directory. PT.PM determines whether
+the path is a file or directory. One of the parameters, **-f** or
+**--p**, must be specified.
 
 ## -l, --languages
 
-Языки, которые будут обрабатываться. Поддерживаются **CSharp**, **Java**, **Php**, **PlSql**, **TSql**, **Aspx**, **JavaScript** (регистр не учитывается). Разделителем является пробел. Если параметр не задан, то язык определяется автоматически в зависимости от расширения. Если же расширение не задано или возникает неоднозначность, например расширению .sql соответствуют T-SQL и PL/SQL, то используется алгоритм определения языка по содержимому (файл парсится и выбирается тот язык, у которого меньше всего ошибок парсинга). Если язык для файла по какой-то причине не может определиться, то файл игнорируется. При этом, например, если указан язык JavaScript, то вставки JavaScript кода будут также обрабатываться внутри PHP кода.
-
-## -m, --memory
-
-Приблизительное потребление памяти в мегабайтах при работе парсеров ANTLR. По-умолчанию **500**. ANTLR в результате работы кэширует информацию о парсинге, поэтому потребление памяти может увеличиваться вплоть до нескольких гигабайт. Поэтому время от времени необходимо очищать кэш.
+Languages to be processed. **CSharp**, **Java**, **Php**, **PlSql**,
+**TSql**, **Aspx**, and **JavaScript** are supported (case-insensitive).
+Whitespace used as a separating character. If the parameter is not
+set, the language is determined automatically depending on the
+extension. If the extension is not set, or there is an ambiguity (the
+.sql extension can be both defined as T-SQL and PL/SQL), the algorithm
+try to determine language by file content (a file is parsed and the
+language with less parsing errors is chosen). If the language could not
+be determined for some reason after parsing a file, this file is
+ignored. If JavaScript is specified, JavaScript insertions will be
+processed inside PHP code.
 
 ## -p, --patterns
 
-Если значение параметра оканчивается на **.json**, то шаблоны загружаются из переданного файла, в противном случае они загружаются из строки. Файл и строка имеют одинаковый формат шаблонов за исключением того, что для получения строки используется сжатие и конвертация.
+If the parameter value ends with **.json**, patterns are loaded from the
+passed file name. Otherwise, patterns are loaded from the string. The file
+and string patterns have the same format except that a line is achieved by
+compression and conversion.
 
-Каждый шаблон представлен следующим образом:
-  * **Key** - Идентификатор шаблона (string или long).
-  * ***Name*** - [Опционально] Имя шаблона.
-  * ***Languages*** - [Опционально] Целевые языки шаблона (**CSharp**, **Java**, **PHP**, **PLSQL**, **TSQL**, **JavaScript** или их комбинации, например, "**CSharp, Java**"). По-умолчанию: все поддерживаемые.
-  * ***DataFormat*** - [Опционально] Формат описания шаблона (**JSON**, **DSL**). По-умолчанию **DSL**.
-  * **Value** - Значение шаблона в формате DataFormat.
-  * ***CweId*** - [Опционально] Common Weakness Enumeration Id.
-  * ***Description*** - [Опционально] Описание шаблона.
+Each pattern is represented as follows:
+* **Key** — pattern ID (`string` or `long`)
+* ***Name*** — \[optionally\] pattern name
+* ***Languages*** — \[optionally\] target pattern languages (**CSharp**,
+**Java**, **PHP**, **PLSQL**, **TSQL**, **JavaScript** a combination
+thereof, for example, **CSharp, Java**). All languages are supported
+by default.
+* ***DataFormat*** — \[optionally\] format for describing a 
+pattern (**JSON**, **DSL**). Default format: **DSL**.
+DSL description is located in document: [DSL.md](DSL.md).
+* **Value**—pattern value in DataFormat.
+* ***CweId*** — \[optionally\] Common Weakness Enumeration Id.
+* ***Description*** — \[optionally\] pattern description.
 
-Пример шаблона **Hardcoded Password Pattern**:
-```JSON
-{
-  "Key": "96",
-  "Languages": "CSharp, Java, PHP, PLSQL, TSQL",
-  "DataFormat": "Dsl",
-  "Value": "<[(?i)password]> = <[ \"\\w*\" || null ]>" 
-}
-```
-  
-Стоит отметить, что JSON символы "обратный слеш" (**\\**) и "кавычка" (**"**) необходимо экранировать с помощью обратного слеша **\\**. На самом деле Value выглядит попроще: `<[(?i)password(?-i)]> = <[ "\w*" || null ]>`.
-  
-Сжатие осуществляется с помощью стандартного .NET класса `GZipStream`. При преобразовании в base64 исходная строка конвертируется в массив байт с помощью `Encoding.UTF8`, после чего получившийся массив сжимается. В результирующий массив в первые четыре байта записывается длина несжатого массива, а затем сам сжатый массив (эта длина используется при распаковке).
+An example of **Hardcoded Password Pattern**:
 
-Если шаблоны не заданы, то для сопоставления используются стандартные встроенные шаблоны.
-  
-Если задан параметр **--patterns** и не задан **-f**, то активируется режим проверки шаблонов.
-  
+    {
+      "Key": "96",
+      "Languages": "CSharp, Java, PHP, PLSQL, TSQL",
+      "DataFormat": "Dsl",
+      "Value": "<[(?i)password]> = <[ \"\\w*\" || null ]>" 
+    }
+
+JSON backslash (**\\**) and double-quote mark (**"**) characters should be
+escaped with a backslash **\\**. Actually, Value looks more simple:
+`<[(?i)password(?-i)]> = <[ "\w*" || null ]>`.
+
+Compression is performed using the standard `GZipStream.NET` class. When
+converting to base64, the source string is converted into an array of
+bytes using `Encoding.UTF8`; then, the resulting array is compressed.
+Before writing an array to the first four bytes of the resulting array,
+the length of this array is written (this length is used when
+unpacking).
+
+If patterns are not set, the default built-in patterns are used for
+matching.
+
+If **--p** parameter is set and **-f** parameter is not set,
+pattern validation mode will be activated.
+
 ## -t, --threads
 
-Максимальное количество используемых потоков. **0** - на усмотрение ОС. По-умолчанию: **1**. 
+The maximum number of threads in use. **0** — at the discretion of the OS.
+Default value: **1**.
 
-* **-s**, **--stage** - Фаза, на которой процесс обработки останавливается. По-умолчанию: **match**.
-  * **read** - Чтение файла
-  * **parse** - Парсинг
-  * **convert** - Конвертация в универсальное AST.
-  * **preprocess** - Препроцессинг дерева (расчет арифметических выражений, соединение строк, упрощение шаблонов).
-  * **match** - Сопоставление с шаблонами.
-  * **patterns** - Режим проверки парсинга шаблонов.
+## -s, --stage
+
+Phase at which the parsing is stopped Default value: **match**.
+
+* **read** — file reading
+* **parse** — parsing
+* **convert** — converting to UST
+* **preprocess** — tree preprocessing (calculating arithmetic
+    expressions, joining lines, simplifying patterns)
+* **match** — matching with patterns
+* **patterns** — mode for checking the patterns
+
+## -m, --memory
+
+Approximate memory consumption (MB) of ANTLR parsers. Default value:
+**500 MB**. ANTLR сaches information on parsing; thus, memory
+consumption may increase significantly up to several gigabytes.
+Therefore, it's necessary to clear the cache from time to time.
 
 ## --max-stack-size
 
-Максимальный размер стэка для потока в байтах. Используется в том случае, если в процессе парсинга ANTLR возникло исключение StackOverflow. При этом, для одного и того же файла можно сначала запустить парсинг без этого параметра, а если исключение возникло и процесс экстренно прервался, то можно использовать этот параметр (например, указать размер `int.MaxValue / 8`).
+The maximum stack size for the thread (in bytes). Used if the StackOverflow
+exception occurred during ANTLR parsing. You can first start parsing of
+a file without this parameter; then, if an exception occurred and the
+process is abruptly interrupted, you can use this parameter (For
+example, specify the size of `int.MaxValue / 8`).
 
 ## --logs-dir
 
-Путь к директории, в которую будут записываться логи info, errors и matching_result в процессе работы ядра. По-умолчанию запись производится в папку с исполняемым файлом.
+The path to the directory to which the info, errors, and
+matching\_result logs will be written while the engine is running. By
+default, the parameter is set to `%LOCALAPPDATA%\PT.PM\Logs` directory.
 
 ## --log-errors
 
-Логгировать ли ошибки. По-умолчанию: **false**.
+Is error logging required? Default value: **false**.
 
 ## -v, --version
 
-Выводить ли версию движка. По-умолчанию: **true**.
+Is it necessary to output the engine's version? Default value: **true**.
