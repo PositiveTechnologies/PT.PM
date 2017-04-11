@@ -6,11 +6,17 @@ nuget:
   disable_publish_on_pr: true
 clone_script:
 - cmd: >-
-    echo %APPVEYOR_REPO_BRANCH%
+    echo %APPVEYOR_REPO_NAME%
+
+    echo %APPVEYOR_BUILD_FOLDER%
 
     echo %APPVEYOR_REPO_COMMIT%
 
-    git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/PositiveTechnologies/PT.PM.git C:\projects\pt-pm
+    git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+    
+    cd %APPVEYOR_BUILD_FOLDER%
+
+    git checkout -qf %APPVEYOR_REPO_COMMIT%
 
     git submodule update --init --recursive
 assembly_info:
