@@ -32,6 +32,11 @@ namespace PT.PM.Common
             return LanguageInfos[language].CaseInsensitive;
         }
 
+        public static bool HaveAntlrParser(this Language language)
+        {
+            return LanguageInfos[language].HaveAntlrParser;
+        }
+
         public static bool IsCaseInsensitive(this LanguageFlags languageFlags)
         {
             int flags = (int)languageFlags;
