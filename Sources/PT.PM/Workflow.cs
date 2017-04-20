@@ -20,49 +20,6 @@ namespace PT.PM
 {
     public class Workflow: WorkflowBase<Stage, WorkflowResult, Pattern, MatchingResult>
     {
-        private int maxTimespan;
-        private int memoryConsumptionMb;
-
-        public int MaxTimespan
-        {
-            get
-            {
-                return maxTimespan;
-            }
-            set
-            {
-                maxTimespan = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MaxTimespan = maxTimespan;
-                    }
-                }
-            }
-        }
-
-        public int MemoryConsumptionMb
-        {
-            get
-            {
-                return memoryConsumptionMb;
-            }
-            set
-            {
-                memoryConsumptionMb = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MemoryConsumptionMb = memoryConsumptionMb;
-                    }
-                }
-            }
-        }
-
         public Workflow()
             : this(null, LanguageExt.AllLanguages)
         {
@@ -97,8 +54,9 @@ namespace PT.PM
 
         public override WorkflowResult Process()
         {
-            var workflowResult = new WorkflowResult(Stage, IsIncludeIntermediateResult);
-            Task convertPatternsTask = GetConvertPatternsTask(workflowResult);
+            var result = new WorkflowResult(Stage, IsIncludeIntermediateResult);
+            result.Languages = Languages;
+            Task convertPatternsTask = GetConvertPatternsTask(result);
 
             int processedCount = 0;
             if (Stage == Stage.Patterns)
@@ -111,15 +69,15 @@ namespace PT.PM
             else
             {
                 var fileNames = SourceCodeRepository.GetFileNames();
-                workflowResult.AddProcessedFilesCount(fileNames.Count());
+                result.AddProcessedFilesCount(fileNames.Count());
                 if (ThreadCount == 1)
                 {
                     Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                     Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
                     foreach (var file in fileNames)
                     {
-                        ProcessFile(file, convertPatternsTask, workflowResult);
-                        Logger.LogInfo(new ProgressEventArgs((double)processedCount++ / workflowResult.TotalProcessedFilesCount, file));
+                        ProcessFile(file, convertPatternsTask, result);
+                        Logger.LogInfo(new ProgressEventArgs((double)processedCount++ / result.TotalProcessedFilesCount, file));
                     }
                 }
                 else
@@ -132,12 +90,12 @@ namespace PT.PM
                             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-                            ProcessFile(fileName, convertPatternsTask, workflowResult);
+                            ProcessFile(fileName, convertPatternsTask, result);
 
                             if (Logger != null)
                             {
                                 Interlocked.Increment(ref processedCount);
-                                var args = new ProgressEventArgs((double)processedCount / workflowResult.TotalProcessedFilesCount, fileName);
+                                var args = new ProgressEventArgs((double)processedCount / result.TotalProcessedFilesCount, fileName);
                                 Logger.LogInfo(args);
                             }
                         });
@@ -149,8 +107,8 @@ namespace PT.PM
                 }
             }
 
-            workflowResult.ErrorCount = logger == null ? 0 : logger.ErrorCount;
-            return workflowResult;
+            result.ErrorCount = logger == null ? 0 : logger.ErrorCount;
+            return result;
         }
 
         private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult)

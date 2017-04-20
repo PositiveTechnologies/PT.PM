@@ -44,6 +44,8 @@ namespace PT.PM
 
         public TStage Stage { get; private set; }
 
+        public Language[] Languages { get; set; } = new Language[0];
+
         public bool IsIncludeIntermediateResult { get; private set; }
 
         public int ErrorCount { get; set; }

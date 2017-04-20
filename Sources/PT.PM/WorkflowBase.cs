@@ -87,7 +87,6 @@ namespace PT.PM
                 {
                     LanguageDetector.Logger = logger;
                 }
-
                 if (logger != null)
                 {
                     logger.SourceCodeRepository = SourceCodeRepository;
@@ -126,6 +125,46 @@ namespace PT.PM
                     languages = ParserConverterSets.Keys.Select(key => key).ToArray();
                 }
                 return languages;
+            }
+        }
+
+        public int MaxTimespan
+        {
+            get
+            {
+                return maxTimespan;
+            }
+            set
+            {
+                maxTimespan = value;
+                foreach (var pair in ParserConverterSets)
+                {
+                    var antlrParser = pair.Value?.Parser as AntlrParser;
+                    if (antlrParser != null)
+                    {
+                        antlrParser.MaxTimespan = maxTimespan;
+                    }
+                }
+            }
+        }
+
+        public int MemoryConsumptionMb
+        {
+            get
+            {
+                return memoryConsumptionMb;
+            }
+            set
+            {
+                memoryConsumptionMb = value;
+                foreach (var pair in ParserConverterSets)
+                {
+                    var antlrParser = pair.Value?.Parser as AntlrParser;
+                    if (antlrParser != null)
+                    {
+                        antlrParser.MemoryConsumptionMb = memoryConsumptionMb;
+                    }
+                }
             }
         }
 
