@@ -191,7 +191,8 @@ namespace PT.PM
                     ? 1
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
                 Logger.LogInfo(new ProgressEventArgs(progress, fileName));
-                
+                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
+
                 if (parseTree == null)
                 {
                     Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
