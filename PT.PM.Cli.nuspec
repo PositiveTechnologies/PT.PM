@@ -40,6 +40,7 @@
   <files>
     <file src="bin\Release\PT.PM*.dll" target="lib\net45\" />
     <file src="bin\Release\PT.PM.Cli.exe" target="lib\net45\" />
+    <file src="Sources\AspxParser\AspxParser\System.Web.RegularExpressions.dll" target="lib\net45\" />
     <file src="bin\Release\AspxParser.dll" target="lib\net45\" />
     <file src="bin\Release\Antlr4.Runtime.dll" target="lib\net45\" />
   </files>
