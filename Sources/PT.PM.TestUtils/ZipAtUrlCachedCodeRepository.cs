@@ -27,7 +27,7 @@ namespace PT.PM.TestUtils
 
         public string DownloadPath { get; set; } = TestHelper.TestsDownloadedPath;
 
-        public IEnumerable<string> Extenstions { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> Extensions { get; set; } = LanguageExt.Extensions;
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
@@ -117,6 +117,11 @@ namespace PT.PM.TestUtils
                 Logger.LogError("File read error: " + file, ex);
             }
             return result;
+        }
+
+        public bool IsFileIgnored(string fileName)
+        {
+            return IgnoredFiles.Any(fileName.EndsWith) || !Extensions.Any(fileName.EndsWith);
         }
 
         private bool IsDirectoryNotExistsOrEmpty(string directoryName)
@@ -217,11 +222,7 @@ namespace PT.PM.TestUtils
 
         private IEnumerable<string> GetFileNamesFromDownloadedAndUnpacked()
         {
-            IEnumerable<string> filesCollection = Directory
-                .GetFiles(CachedSourceDir, "*.*", SearchOption.AllDirectories)
-                .Where(s => Extenstions.Any(s.EndsWith));
-            filesCollection = filesCollection.Where(fileName => IgnoredFiles.All(ignoreFile => !fileName.Contains(ignoreFile)));
-            return filesCollection.ToArray();
+            return Directory.GetFiles(CachedSourceDir, "*.*", SearchOption.AllDirectories);
         }
     }
 }

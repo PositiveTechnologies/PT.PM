@@ -88,7 +88,7 @@ namespace PT.PM.TestUtils
                 {
                     codeRepository = new ZipAtUrlCachedCodeRepository(url, testProject.Key)
                     {
-                        Extenstions = LanguageExt.GetExtensions(language),
+                        Extensions = LanguageExt.GetExtensions(language),
                         IgnoredFiles = testProject.IgnoredFiles,
                         Logger = logger
                     };

@@ -37,5 +37,7 @@ namespace PT.PM.Common.CodeRepository
         {
             return System.IO.Path.GetFullPath(relativePath);
         }
+
+        public bool IsFileIgnored(string fileName) => false;
     }
 }
