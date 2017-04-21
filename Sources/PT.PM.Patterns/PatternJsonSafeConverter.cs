@@ -5,10 +5,8 @@ using System;
 
 namespace PT.PM.Patterns
 {
-    public class PatternLanguageFlagsSafeConverter: JsonConverter, ILoggable
+    public class PatternJsonSafeConverter: JsonConverter, ILoggable
     {
-        private static char[] languageFlagSeparators = new char[] { ',', ' ', '\t' };
-
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public override bool CanConvert(Type objectType)
@@ -20,28 +18,7 @@ namespace PT.PM.Patterns
         {
             JObject jObject = JObject.Load(reader);
             var languageFlagsString = (string)jObject[nameof(PatternDto.Languages)];
-            LanguageFlags resultLanguages;
-            if (languageFlagsString != null)
-            {
-                resultLanguages = LanguageFlags.None;
-                string[] languageStrings = languageFlagsString.Split(languageFlagSeparators, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string languageString in languageStrings)
-                {
-                    Language language;
-                    if (Enum.TryParse(languageString, true, out language))
-                    {
-                        resultLanguages |= language.ToFlags();
-                    }
-                    else
-                    {
-                        Logger.LogError($"Language \"{languageString}\" is not supported or wrong.");
-                    }
-                }
-            }
-            else
-            {
-                resultLanguages = LanguageExt.AllPatternLanguages;
-            }
+            LanguageFlags resultLanguages = LanguageExt.ParseLanguages(languageFlagsString);
 
             var result = new PatternDto
             {
@@ -64,7 +41,7 @@ namespace PT.PM.Patterns
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new InvalidOperationException($"Do not use {nameof(PatternLanguageFlagsSafeConverter)} for serialization.");
+            throw new InvalidOperationException($"Do not use {nameof(PatternJsonSafeConverter)} for serialization.");
         }
     }
 }
