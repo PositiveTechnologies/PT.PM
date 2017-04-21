@@ -121,59 +121,58 @@ namespace PT.PM
 
         private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
+            ParseTree parseTree = null;
             try
             {
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
-                ParseTree parseTree = ReadAndParse(fileName, workflowResult);
-                if (parseTree == null)
+                parseTree = ReadAndParse(fileName, workflowResult);
+                if (parseTree != null)
                 {
-                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
-                    return;
-                }
-                workflowResult.AddResultEntity(parseTree);
+                    workflowResult.AddResultEntity(parseTree);
 
-                if (Stage >= Stage.Convert)
-                {
-                    var stopwatch = Stopwatch.StartNew();
-                    IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
-                    Ust ust = converter.Convert(parseTree);
-                    stopwatch.Stop();
-                    Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                    workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
-                    workflowResult.AddResultEntity(ust, true);
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (Stage >= Stage.Preprocess)
+                    if (Stage >= Stage.Convert)
                     {
-                        if (UstPreprocessor != null)
-                        {
-                            stopwatch.Restart();
-                            ust = UstPreprocessor.Preprocess(ust);
-                            stopwatch.Stop();
-                            Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                            workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
-                            workflowResult.AddResultEntity(ust, false);
+                        var stopwatch = Stopwatch.StartNew();
+                        IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
+                        Ust ust = converter.Convert(parseTree);
+                        stopwatch.Stop();
+                        Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(ust, true);
 
-                            cancellationToken.ThrowIfCancellationRequested();
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
 
-                        if (Stage >= Stage.Match)
+                        if (Stage >= Stage.Preprocess)
                         {
-                            if (!convertPatternsTask.IsCompleted)
+                            if (UstPreprocessor != null)
                             {
-                                convertPatternsTask.Wait();
+                                stopwatch.Restart();
+                                ust = UstPreprocessor.Preprocess(ust);
+                                stopwatch.Stop();
+                                Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                                workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
+                                workflowResult.AddResultEntity(ust, false);
+
+                                cancellationToken.ThrowIfCancellationRequested();
                             }
 
-                            stopwatch.Restart();
-                            IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
-                            stopwatch.Stop();
-                            Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                            workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
-                            workflowResult.AddResultEntity(matchingResults);
+                            if (Stage >= Stage.Match)
+                            {
+                                if (!convertPatternsTask.IsCompleted)
+                                {
+                                    convertPatternsTask.Wait();
+                                }
 
-                            cancellationToken.ThrowIfCancellationRequested();
+                                stopwatch.Restart();
+                                IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
+                                stopwatch.Stop();
+                                Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                                workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
+                                workflowResult.AddResultEntity(matchingResults);
+
+                                cancellationToken.ThrowIfCancellationRequested();
+                            }
                         }
                     }
                 }
@@ -192,8 +191,11 @@ namespace PT.PM
                     ? 1
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
                 Logger.LogInfo(new ProgressEventArgs(progress, fileName));
-
-                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
+                
+                if (parseTree == null)
+                {
+                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
             }
