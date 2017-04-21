@@ -169,7 +169,7 @@ namespace PT.PM
             }
         }
 
-        public abstract TWorkflowResult Process(CancellationToken cancellationToken = default(CancellationToken));
+        public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
         public WorkflowBase(TStage stage)
         {

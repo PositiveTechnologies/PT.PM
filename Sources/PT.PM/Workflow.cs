@@ -51,9 +51,10 @@ namespace PT.PM
             ThreadCount = 1;
         }
 
-        public override WorkflowResult Process(CancellationToken cancellationToken = default(CancellationToken))
+        public override WorkflowResult Process(WorkflowResult workflowResult = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var result = new WorkflowResult(Stage, IsIncludeIntermediateResult);
+            var result = workflowResult ?? new WorkflowResult(Stage, IsIncludeIntermediateResult);
             result.Languages = Languages;
             Task convertPatternsTask = GetConvertPatternsTask(result);
 
