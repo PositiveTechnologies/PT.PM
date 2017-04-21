@@ -120,11 +120,16 @@ namespace PT.PM
 
         private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
+            Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
+
             try
             {
                 ParseTree parseTree = ReadAndParse(fileName, workflowResult);
                 if (parseTree == null)
+                {
+                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
                     return;
+                }
                 workflowResult.AddResultEntity(parseTree);
 
                 if (Stage >= Stage.Convert)
@@ -186,8 +191,11 @@ namespace PT.PM
                     ? 1
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
                 Logger.LogInfo(new ProgressEventArgs(progress, fileName));
+
                 cancellationToken.ThrowIfCancellationRequested();
             }
+
+            Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
         }
     }
 }

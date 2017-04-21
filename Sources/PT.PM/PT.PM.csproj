@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="LanguageDetector.cs" />
+    <Compile Include="MessageEventArgs.cs" />
+    <Compile Include="MessageType.cs" />
     <Compile Include="ParserConverterBuilder.cs" />
     <Compile Include="ParserConverterSet.cs" />
     <Compile Include="ParserLanguageDetector.cs" />

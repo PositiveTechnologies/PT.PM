@@ -184,6 +184,12 @@ namespace PT.PM
             string file = fileName;
             if (stageHelper.IsContainsRead)
             {
+                if (SourceCodeRepository.IsFileIgnored(fileName))
+                {
+                    Logger.LogInfo($"File {fileName} has not been read.");
+                    return null;
+                }
+
                 stopwatch.Restart();
                 SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
                 stopwatch.Stop();
@@ -204,8 +210,8 @@ namespace PT.PM
                     Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, Languages);
                     if (detectedLanguage == null)
                     {
-                        Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected");
-                        return result;
+                        Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");
+                        return null;
                     }
                     result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
