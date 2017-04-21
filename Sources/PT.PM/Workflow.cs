@@ -58,7 +58,6 @@ namespace PT.PM
             result.Languages = Languages;
             Task convertPatternsTask = GetConvertPatternsTask(result);
 
-            int processedCount = 0;
             if (Stage == Stage.Patterns)
             {
                 if (!convertPatternsTask.IsCompleted)
@@ -111,8 +110,6 @@ namespace PT.PM
                 {
                     pair.Value?.Parser.ClearCache();
                 }
-
-                result.AddProcessedFilesCount(processedCount);
             }
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
