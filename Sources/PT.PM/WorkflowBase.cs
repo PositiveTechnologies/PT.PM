@@ -10,6 +10,7 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using PT.PM.Matching;
+using System.Threading;
 
 namespace PT.PM
 {
@@ -168,7 +169,7 @@ namespace PT.PM
             }
         }
 
-        public abstract TWorkflowResult Process();
+        public abstract TWorkflowResult Process(CancellationToken cancellationToken = default(CancellationToken));
 
         public WorkflowBase(TStage stage)
         {
@@ -176,7 +177,7 @@ namespace PT.PM
             stageHelper = new StageHelper<TStage>(stage);
         }
 
-        protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult)
+        protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
             ParseTree result = null;
             var stopwatch = new Stopwatch();
@@ -194,6 +195,8 @@ namespace PT.PM
                 workflowResult.AddReadTime(stopwatch.ElapsedTicks);
                 workflowResult.AddResultEntity(sourceCodeFile);
 
+                cancellationToken.ThrowIfCancellationRequested();
+
                 file = sourceCodeFile.RelativePath;
                 if (stageHelper.IsContainsParse)
                 {
@@ -208,13 +211,15 @@ namespace PT.PM
                     stopwatch.Stop();
                     Logger.LogInfo("File {0} has been parsed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
-                }
 
-                var antlrParseTree = result as AntlrParseTree;
-                if (antlrParseTree != null)
-                {
-                    workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
-                    workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
+                    var antlrParseTree = result as AntlrParseTree;
+                    if (antlrParseTree != null)
+                    {
+                        workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
+                        workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
             }
             return result;

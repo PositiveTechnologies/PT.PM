@@ -29,7 +29,7 @@ namespace PT.PM
         private long totalLexerTicks;
         private long totalParserTicks;
 
-        private int totalProcessedFileCount;
+        private int totalProcessedFilesCount;
         private int totalProcessedCharsCount;
         private int totalProcessedLinesCount;
 
@@ -91,9 +91,11 @@ namespace PT.PM
         public long TotalLexerTicks => totalLexerTicks;
         public long TotalParserTicks => totalParserTicks;
 
-        public int TotalProcessedFilesCount => totalProcessedFileCount;
+        public int TotalProcessedFilesCount => totalProcessedFilesCount;
         public int TotalProcessedCharsCount => totalProcessedCharsCount;
         public int TotalProcessedLinesCount => totalProcessedLinesCount;
+
+        public int TotalFilesCount { get; set; }
 
         public void AddResultEntity(SourceCodeFile sourceCodeFile)
         {
@@ -158,7 +160,7 @@ namespace PT.PM
 
         public void AddProcessedFilesCount(int filesCount)
         {
-            Interlocked.Add(ref totalProcessedFileCount, filesCount);
+            Interlocked.Add(ref totalProcessedFilesCount, filesCount);
         }
 
         public void AddProcessedCharsCount(int charsCount)
