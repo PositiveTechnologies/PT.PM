@@ -133,7 +133,7 @@ namespace PT.PM.Cli
                         logger.LogInfo("Patterns checked.");
                     }
                     logger.LogInfo("{0,-22} {1}", "Errors count:", workflowResult.ErrorCount.ToString());
-                    var workflowLoggerHelper = new WorkflowLoggerHelper(logger, workflow, workflowResult);
+                    var workflowLoggerHelper = new WorkflowLoggerHelper(logger, workflowResult);
                     workflowLoggerHelper.LogStatistics();
                     logger.LogInfo("{0,-22} {1}", "Time elapsed:", stopwatch.Elapsed.ToString());
                 }

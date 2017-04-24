@@ -11,5 +11,7 @@ namespace PT.PM.Common.CodeRepository
         SourceCodeFile ReadFile(string fileName);
 
         string GetFullPath(string relativePath);
+
+        bool IsFileIgnored(string fileName);
     }
 }

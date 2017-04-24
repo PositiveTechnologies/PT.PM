@@ -59,7 +59,7 @@ namespace PT.PM.Cli.Tests
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not process php (csharp, java etc.) files.
-            Assert.IsFalse(result.Output.Any(line => line.Contains("php")));
+            Assert.IsTrue(result.Output.Any(line => line.Contains(".php has not been read")));
             Assert.IsTrue(result.Output.Any(line => line.Contains("has been detected")));
 
             result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
@@ -80,8 +80,7 @@ namespace PT.PM.Cli.Tests
                $"--patterns kAAAAB+LCAAAAAAABAAljb0KwjAURl8l3KkVHVyltoOhUBRHlyTDxYYSTJOSH4JY391b3M534PCJD9xx1nAC2MNVvwmORDd0U8ZJR9o9vjQpjgl7H2ZM5Hi0pB5o85Y2oupMvWCMxYex6g6mVi07s0ZIkLLsJLB1ZS5bq1rKLkUP4/+R6/gMZknGu0181Q+1349CkAAAAA== " +
                $"--log-debugs --log-errors");
 
-            Assert.AreEqual("Error: Language \"Fake\" is not supported or wrong.", result.Output[2]);
-            Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[3]);
+            Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[2]);
         }
 
         [Test]

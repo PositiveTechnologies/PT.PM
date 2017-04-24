@@ -1,4 +1,10 @@
-﻿using PT.PM.AntlrUtils;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.CodeRepository;
@@ -8,61 +14,11 @@ using PT.PM.Matching;
 using PT.PM.Patterns;
 using PT.PM.Patterns.Nodes;
 using PT.PM.Patterns.PatternsRepository;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PT.PM
 {
     public class Workflow: WorkflowBase<Stage, WorkflowResult, Pattern, MatchingResult>
     {
-        private int maxTimespan;
-        private int memoryConsumptionMb;
-
-        public int MaxTimespan
-        {
-            get
-            {
-                return maxTimespan;
-            }
-            set
-            {
-                maxTimespan = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MaxTimespan = maxTimespan;
-                    }
-                }
-            }
-        }
-
-        public int MemoryConsumptionMb
-        {
-            get
-            {
-                return memoryConsumptionMb;
-            }
-            set
-            {
-                memoryConsumptionMb = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MemoryConsumptionMb = memoryConsumptionMb;
-                    }
-                }
-            }
-        }
-
         public Workflow()
             : this(null, LanguageExt.AllLanguages)
         {
@@ -95,12 +51,12 @@ namespace PT.PM
             ThreadCount = 1;
         }
 
-        public override WorkflowResult Process()
+        public override WorkflowResult Process(WorkflowResult workflowResult = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var workflowResult = new WorkflowResult(Stage, IsIncludeIntermediateResult);
-            Task convertPatternsTask = GetConvertPatternsTask(workflowResult);
+            var result = workflowResult ?? new WorkflowResult(Languages, ThreadCount, Stage, IsIncludeIntermediateResult);
+            Task convertPatternsTask = GetConvertPatternsTask(result);
 
-            int processedCount = 0;
             if (Stage == Stage.Patterns)
             {
                 if (!convertPatternsTask.IsCompleted)
@@ -110,37 +66,43 @@ namespace PT.PM
             }
             else
             {
-                var fileNames = SourceCodeRepository.GetFileNames();
-                workflowResult.AddProcessedFilesCount(fileNames.Count());
-                if (ThreadCount == 1)
+                IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
+                result.TotalFilesCount = fileNames.Count();
+
+                try
                 {
-                    Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                    Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-                    foreach (var file in fileNames)
+                    if (ThreadCount == 1 || result.TotalFilesCount == 1)
                     {
-                        ProcessFile(file, convertPatternsTask, workflowResult);
-                        Logger.LogInfo(new ProgressEventArgs((double)processedCount++ / workflowResult.TotalProcessedFilesCount, file));
+                        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                        Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+                        foreach (string fileName in fileNames)
+                        {
+                            ProcessFile(fileName, convertPatternsTask, result, cancellationToken);
+                        }
+                    }
+                    else
+                    {
+                        var parallelOptions = new ParallelOptions
+                        {
+                            MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
+                            CancellationToken = cancellationToken
+                        };
+
+                        Parallel.ForEach(
+                            fileNames,
+                            parallelOptions,
+                            fileName =>
+                            {
+                                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                                Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+                                ProcessFile(fileName, convertPatternsTask, result, parallelOptions.CancellationToken);
+                            });
                     }
                 }
-                else
+                catch (OperationCanceledException)
                 {
-                    Parallel.ForEach(
-                        fileNames,
-                        new ParallelOptions { MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount },
-                        fileName =>
-                        {
-                            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-
-                            ProcessFile(fileName, convertPatternsTask, workflowResult);
-
-                            if (Logger != null)
-                            {
-                                Interlocked.Increment(ref processedCount);
-                                var args = new ProgressEventArgs((double)processedCount / workflowResult.TotalProcessedFilesCount, fileName);
-                                Logger.LogInfo(args);
-                            }
-                        });
+                    Logger.LogInfo("Scan has been cancelled by user");
                 }
 
                 foreach (var pair in ParserConverterSets)
@@ -149,61 +111,90 @@ namespace PT.PM
                 }
             }
 
-            workflowResult.ErrorCount = logger == null ? 0 : logger.ErrorCount;
-            return workflowResult;
+            result.ErrorCount = logger?.ErrorCount ?? 0;
+            return result;
         }
 
-        private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult)
+        private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
+            ParseTree parseTree = null;
             try
             {
-                ParseTree parseTree = ReadAndParse(fileName, workflowResult);
-                if (parseTree == null)
-                    return;
-                workflowResult.AddResultEntity(parseTree);
+                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
-                if (Stage >= Stage.Convert)
+                parseTree = ReadAndParse(fileName, workflowResult);
+                if (parseTree != null)
                 {
-                    var stopwatch = Stopwatch.StartNew();
-                    IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
-                    Ust ust = converter.Convert(parseTree);
-                    stopwatch.Stop();
-                    Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                    workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
-                    workflowResult.AddResultEntity(ust, true);
+                    workflowResult.AddResultEntity(parseTree);
 
-                    if (Stage >= Stage.Preprocess)
+                    if (Stage >= Stage.Convert)
                     {
-                        if (UstPreprocessor != null)
-                        {
-                            stopwatch.Restart();
-                            ust = UstPreprocessor.Preprocess(ust);
-                            stopwatch.Stop();
-                            Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                            workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
-                            workflowResult.AddResultEntity(ust, false);
-                        }
+                        var stopwatch = Stopwatch.StartNew();
+                        IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
+                        Ust ust = converter.Convert(parseTree);
+                        stopwatch.Stop();
+                        Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(ust, true);
 
-                        if (Stage >= Stage.Match)
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (Stage >= Stage.Preprocess)
                         {
-                            if (!convertPatternsTask.IsCompleted)
+                            if (UstPreprocessor != null)
                             {
-                                convertPatternsTask.Wait();
+                                stopwatch.Restart();
+                                ust = UstPreprocessor.Preprocess(ust);
+                                stopwatch.Stop();
+                                Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                                workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
+                                workflowResult.AddResultEntity(ust, false);
+
+                                cancellationToken.ThrowIfCancellationRequested();
                             }
 
-                            stopwatch.Restart();
-                            IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
-                            stopwatch.Stop();
-                            Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
-                            workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
-                            workflowResult.AddResultEntity(matchingResults);
+                            if (Stage >= Stage.Match)
+                            {
+                                if (!convertPatternsTask.IsCompleted)
+                                {
+                                    convertPatternsTask.Wait();
+                                }
+
+                                stopwatch.Restart();
+                                IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
+                                stopwatch.Stop();
+                                Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                                workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
+                                workflowResult.AddResultEntity(matchingResults);
+
+                                cancellationToken.ThrowIfCancellationRequested();
+                            }
                         }
                     }
                 }
             }
+            catch (OperationCanceledException)
+            {
+            }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
+            }
+            finally
+            {
+                workflowResult.AddProcessedFilesCount(1);
+                double progress = workflowResult.TotalFilesCount == 0
+                    ? 1
+                    : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
+                Logger.LogInfo(new ProgressEventArgs(progress, fileName));
+                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
+
+                if (parseTree == null)
+                {
+                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
             }
         }
     }

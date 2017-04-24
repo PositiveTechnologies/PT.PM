@@ -18,7 +18,7 @@ namespace PT.PM.Patterns.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            var languageFlagsConverter = new PatternLanguageFlagsSafeConverter
+            var languageFlagsConverter = new PatternJsonSafeConverter
             {
                 Logger = Logger
             };

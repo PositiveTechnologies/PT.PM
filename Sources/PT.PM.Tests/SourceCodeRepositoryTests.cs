@@ -15,7 +15,7 @@ namespace PT.PM.Tests
             var repository = new FilesAggregatorCodeRepository(Path.Combine(TestHelper.TestsDataPath, "Test Project"), ".cs");
             var fileNames = repository.GetFileNames().Select(fileName => repository.ReadFile(fileName)).ToArray();
 
-            Assert.AreEqual(5, fileNames.Length);
+            Assert.AreEqual(7, fileNames.Length);
             Assert.IsNotNull(fileNames.SingleOrDefault(f => f.Name == "1.cs" && f.RelativePath == ""));
             Assert.IsNotNull(fileNames.SingleOrDefault(f => f.Name == "1.cs" && f.RelativePath == "Folder"));
         }

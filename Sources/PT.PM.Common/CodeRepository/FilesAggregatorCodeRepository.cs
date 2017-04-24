@@ -11,11 +11,7 @@ namespace PT.PM.Common.CodeRepository
 
         public string Path { get; set; }
 
-        public IEnumerable<string> Extenstions { get; set; }
-
-        public string FileSkipUpTo { get; set; }
-
-        public string FileSkipAfter { get; set; }
+        public IEnumerable<string> Extenstions { get; set; } = LanguageExt.Extensions;
 
         public FilesAggregatorCodeRepository(string directoryPath, string extension)
             : this(directoryPath, new[] { extension })
@@ -30,18 +26,7 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> GetFileNames()
         {
-            var filesCollection = Directory.GetFiles(Path, "*.*", SearchOption.AllDirectories)
-                .Where(s => Extenstions.Any(s.EndsWith));
-            if (!string.IsNullOrEmpty(FileSkipUpTo))
-            {
-                filesCollection = filesCollection.SkipWhile(file => System.IO.Path.GetFileName(file) != FileSkipUpTo);
-            }
-            if (!string.IsNullOrEmpty(FileSkipAfter))
-            {
-                filesCollection = filesCollection.TakeWhile(file => System.IO.Path.GetFileName(file) != FileSkipAfter);
-            }
-            string[] files = filesCollection.ToArray();
-            return files;
+            return Directory.EnumerateFiles(Path, "*.*", SearchOption.AllDirectories);
         }
 
         public SourceCodeFile ReadFile(string file)
@@ -68,6 +53,11 @@ namespace PT.PM.Common.CodeRepository
         {
             var result = System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
             return result;
+        }
+
+        public bool IsFileIgnored(string fileName)
+        {
+            return !Extenstions.Any(fileName.EndsWith);
         }
     }
 }

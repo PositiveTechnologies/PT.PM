@@ -6,6 +6,8 @@ namespace PT.PM.Common
 {
     public static class LanguageExt
     {
+        private static char[] languageFlagSeparators = new char[] { ',', ' ', '\t' };
+
         public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>()
         {
             [Language.CSharp] = new LanguageInfo(Language.CSharp, new string[] { ".cs" }, false, "C#", haveAntlrParser: false),
@@ -30,6 +32,11 @@ namespace PT.PM.Common
         public static bool IsCaseInsensitive(this Language language)
         {
             return LanguageInfos[language].CaseInsensitive;
+        }
+
+        public static bool HaveAntlrParser(this Language language)
+        {
+            return LanguageInfos[language].HaveAntlrParser;
         }
 
         public static bool IsCaseInsensitive(this LanguageFlags languageFlags)
@@ -122,6 +129,30 @@ namespace PT.PM.Common
         public static LanguageFlags ToFlags(this Language language)
         {
             return (LanguageFlags)(1 << (int)language);
+        }
+
+        public static LanguageFlags ParseLanguages(string languageFlagsString)
+        {
+            LanguageFlags resultLanguages;
+            if (languageFlagsString != null)
+            {
+                resultLanguages = LanguageFlags.None;
+                string[] languageStrings = languageFlagsString.Split(languageFlagSeparators, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string languageString in languageStrings)
+                {
+                    Language language;
+                    if (Enum.TryParse(languageString, true, out language))
+                    {
+                        resultLanguages |= language.ToFlags();
+                    }
+                }
+            }
+            else
+            {
+                resultLanguages = LanguageExt.AllPatternLanguages;
+            }
+
+            return resultLanguages;
         }
     }
 }

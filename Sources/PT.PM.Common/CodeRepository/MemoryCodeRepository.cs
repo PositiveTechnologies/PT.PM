@@ -33,5 +33,7 @@ namespace PT.PM.Common.CodeRepository
                 RelativePath = Path
             };
         }
+
+        public bool IsFileIgnored(string fileName) => false;
     }
 }
