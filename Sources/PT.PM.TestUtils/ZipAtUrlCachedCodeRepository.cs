@@ -222,7 +222,7 @@ namespace PT.PM.TestUtils
 
         private IEnumerable<string> GetFileNamesFromDownloadedAndUnpacked()
         {
-            return Directory.GetFiles(CachedSourceDir, "*.*", SearchOption.AllDirectories);
+            return Directory.EnumerateFiles(CachedSourceDir, "*.*", SearchOption.AllDirectories);
         }
     }
 }
