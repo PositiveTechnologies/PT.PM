@@ -54,8 +54,7 @@ namespace PT.PM
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var result = workflowResult ?? new WorkflowResult(Stage, IsIncludeIntermediateResult);
-            result.Languages = Languages;
+            var result = workflowResult ?? new WorkflowResult(Languages, ThreadCount, Stage, IsIncludeIntermediateResult);
             Task convertPatternsTask = GetConvertPatternsTask(result);
 
             if (Stage == Stage.Patterns)
