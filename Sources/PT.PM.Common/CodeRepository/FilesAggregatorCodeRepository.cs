@@ -26,8 +26,7 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> GetFileNames()
         {
-            string[] files = Directory.GetFiles(Path, "*.*", SearchOption.AllDirectories);
-            return files;
+            return Directory.EnumerateFiles(Path, "*.*", SearchOption.AllDirectories);
         }
 
         public SourceCodeFile ReadFile(string file)

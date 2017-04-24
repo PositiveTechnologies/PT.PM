@@ -192,18 +192,18 @@ namespace PT.PM.TestUtils
             File.Delete(zipFileName);
             Logger.LogInfo($"{RepositoryName} has been extracted.");
 
-            var fileSystemEntries = Directory.GetFileSystemEntries(testDir);
+            string[] fileSystemEntries = Directory.GetFileSystemEntries(testDir);
             if (fileSystemEntries.Length == 1)
             {
                 if (Directory.GetFiles(testDir).Length == 1)
                 {
                     Directory.CreateDirectory(CachedSourceDir);
-                    File.Move(fileSystemEntries.First(), System.IO.Path.Combine(CachedSourceDir,
-                        System.IO.Path.GetFileName(fileSystemEntries.First())));
+                    File.Move(fileSystemEntries[0], System.IO.Path.Combine(CachedSourceDir,
+                        System.IO.Path.GetFileName(fileSystemEntries[0])));
                 }
                 else
                 {
-                    Directory.Move(fileSystemEntries.First(), CachedSourceDir);
+                    Directory.Move(fileSystemEntries[0], CachedSourceDir);
                 }
                 try
                 {
