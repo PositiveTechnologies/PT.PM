@@ -52,6 +52,7 @@
     <Compile Include="CSharpMatchingTests.cs" />
     <Compile Include="JavaMatchingTests.cs" />
     <Compile Include="JavaScriptMatchingTests.cs" />
+    <Compile Include="FileNameMatchingTests.cs" />
     <Compile Include="PatternMatchingTests.cs" />
     <Compile Include="PatternMatchingUtils.cs" />
     <Compile Include="PhpMatchingTests.cs" />
