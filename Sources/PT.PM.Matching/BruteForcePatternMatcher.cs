@@ -33,7 +33,8 @@ namespace PT.PM.Matching
                 {
                     var matchingResult = new List<MatchingResult>();
                     PatternVarRefEnumerator[] patternEnumerators = Patterns
-                        .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None)
+                        .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None &&
+                        (pattern?.FileNameWildcardRegex.IsMatch(ust.FileName) ?? true))
                         .Select(pattern => new PatternVarRefEnumerator(pattern)).ToArray();
                     Traverse(ust.Root, patternEnumerators, matchingResult);
                     MatchComments(ust, matchingResult, patternEnumerators);
