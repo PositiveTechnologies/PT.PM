@@ -40,17 +40,18 @@ namespace PT.PM.Patterns
             {
                 if (!string.IsNullOrEmpty(FileNameWildcard) && pathWildcardRegex == null)
                 {
-                    pathWildcardRegex = new Regex(FileNameWildcard, RegexOptions.Compiled);
+                    pathWildcardRegex = new WildcardConverter().Convert(FileNameWildcard);
                 }
                 return pathWildcardRegex;
             }
         }
 
-        public PatternBase(string key, string debugInfo, LanguageFlags languages)
+        public PatternBase(string key, string debugInfo, LanguageFlags languages, string fileNameWildcard)
         {
             Key = key;
             DebugInfo = debugInfo;
             Languages = languages;
+            FileNameWildcard = fileNameWildcard;
         }
 
         public PatternBase()

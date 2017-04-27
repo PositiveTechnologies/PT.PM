@@ -7,7 +7,7 @@ namespace PT.PM.Patterns
         public PatternNode Data { get; set; }
 
         public Pattern(PatternDto patternDto, PatternNode data)
-            : base(patternDto.Key, patternDto.Description, patternDto.Languages)
+            : base(patternDto.Key, patternDto.Description, patternDto.Languages, patternDto.FileNameWildcard)
         {
             Data = data;
         }

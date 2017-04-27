@@ -10,6 +10,8 @@ namespace PT.PM.Matching
         where TPattern : PatternBase
         where TMatchingResult : MatchingResultBase<TPattern>
     {
+        bool IsIgnoreFileNameWildcards { get; set; }
+
         TPattern[] Patterns { get; set; }
 
         List<TMatchingResult> Match(Ust ust);
