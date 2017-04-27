@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CSharpMatchingTests.cs" />
+    <Compile Include="HtmlTests.cs" />
     <Compile Include="JavaMatchingTests.cs" />
     <Compile Include="JavaScriptMatchingTests.cs" />
     <Compile Include="FileNameMatchingTests.cs" />

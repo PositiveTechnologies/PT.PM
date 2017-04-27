@@ -35,6 +35,8 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.AddRange(tSqlPatterns);
             var javaScriptPatterns = CreateJavaScriptPatterns();
             patterns.AddRange(javaScriptPatterns);
+            var htmpPatterns = CreateHtmlPatterns();
+            patterns.AddRange(htmpPatterns);
             
             var patternsConverter = new PatternConverter(new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
 
