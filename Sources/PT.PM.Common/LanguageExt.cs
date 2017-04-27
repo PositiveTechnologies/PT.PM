@@ -12,18 +12,19 @@ namespace PT.PM.Common
         {
             [Language.CSharp] = new LanguageInfo(Language.CSharp, new string[] { ".cs" }, false, "C#", haveAntlrParser: false),
             [Language.Java] = new LanguageInfo(Language.Java, new string[] { ".java" }, false, "Java"),
-            [Language.Php] = new LanguageInfo(Language.Php, new string[] { ".php", ".html" }, true, "PHP", LanguageFlags.JavaScript),
+            [Language.Php] = new LanguageInfo(Language.Php, new string[] { ".php", ".html" }, true, "PHP", LanguageFlags.JavaScript | LanguageFlags.Html),
             [Language.PlSql] = new LanguageInfo(Language.PlSql, new string[] { ".sql" }, true, "PL/SQL"),
             [Language.TSql] = new LanguageInfo(Language.TSql, new string[] { ".sql" }, true, "T-SQL"),
             [Language.Aspx] = new LanguageInfo(Language.Aspx, new string[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", LanguageFlags.CSharp),
             [Language.JavaScript] = new LanguageInfo(Language.JavaScript, new string[] { ".js" }, false, "JavaScript"),
+            [Language.Html] = new LanguageInfo(Language.Html, new string[] { ".html" }, true, "HTML")
         };
 
-        public static readonly LanguageFlags AllLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.PlSql | LanguageFlags.TSql | LanguageFlags.Aspx | LanguageFlags.JavaScript;
+        public static readonly LanguageFlags AllLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.PlSql | LanguageFlags.TSql | LanguageFlags.Aspx | LanguageFlags.JavaScript | LanguageFlags.Html;
 
         public static readonly LanguageFlags AllGplPatternLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.Java | LanguageFlags.JavaScript;
         public static readonly LanguageFlags AllSqlPatternLanguages = LanguageFlags.PlSql | LanguageFlags.TSql;
-        public static readonly LanguageFlags AllPatternLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.PlSql | LanguageFlags.TSql | LanguageFlags.JavaScript;
+        public static readonly LanguageFlags AllPatternLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.PlSql | LanguageFlags.TSql | LanguageFlags.JavaScript | LanguageFlags.Html;
 
         public static IEnumerable<Language> Languages => LanguageInfos.Keys;
 
