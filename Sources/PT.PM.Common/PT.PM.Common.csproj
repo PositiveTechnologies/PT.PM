@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="DummyLogger.cs" />
+    <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />
     <Compile Include="LineColumnTextSpan.cs" />
