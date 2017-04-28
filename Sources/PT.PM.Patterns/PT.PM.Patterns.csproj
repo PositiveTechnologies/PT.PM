@@ -38,7 +38,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Nodes\IAbsoluteLocationMatching.cs" />
+    <Compile Include="Nodes\IRelativeLocationMatching.cs" />
     <Compile Include="PatternBase.cs" />
+    <Compile Include="PatternHelper.cs" />
     <Compile Include="PatternIdGenerator.cs" />
     <Compile Include="PatternJsonSafeConverter.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\HtmlPatternRepository.cs" />

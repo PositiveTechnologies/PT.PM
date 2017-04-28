@@ -6,17 +6,14 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Patterns.Nodes
 {
-    public class PatternComment : CommentLiteral
+    public class PatternComment : CommentLiteral, IRelativeLocationMatching
     {
         public override NodeType NodeType => NodeType.PatternComment;
 
         [JsonIgnore]
-        public int Offset { get; private set; }
-
-        [JsonIgnore]
-        public int Length { get; private set; }
-
         public Regex Regex { get; set; }
+
+        public TextSpan MatchedLocation { get; set; }
 
         public override string Comment
         {
@@ -60,18 +57,9 @@ namespace PT.PM.Patterns.Nodes
             {
                 return NodeType - other.NodeType;
             }
-            
-            var match = Regex.Match(((CommentLiteral)other).Comment);
-            if (match.Success)
-            {
-                Offset = match.Index;
-                Length = match.Length;
-                return 0;
-            }
-            else
-            {
-                return 1;
-            }
+
+            MatchedLocation = PatternHelper.MatchRegex(Regex, ((CommentLiteral)other).Comment);
+            return MatchedLocation.IsEmpty ? 1 : 0;
         }
 
         public override string ToString() => $"Comment: \"{Comment}\"";

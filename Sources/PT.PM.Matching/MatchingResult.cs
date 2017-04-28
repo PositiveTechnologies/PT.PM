@@ -3,6 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Patterns;
 using System.Collections.Generic;
+using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {
@@ -10,27 +11,17 @@ namespace PT.PM.Matching
     {
         public FileNode FileNode => Nodes.FirstOrDefault()?.FileNode;
 
-        public TextSpan TextSpan
-        {
-            get
-            {
-                return Nodes.LastOrDefault()?.TextSpan ?? default(TextSpan);
-            }
-            set
-            {
-                // TODO: fix
-                Nodes = new List<UstNode>() { new Common.Nodes.Tokens.IdToken("temp") { TextSpan = value, FileNode = FileNode } };
-            }
-        }
+        public TextSpan TextSpan { get; private set; }
 
         public MatchingResult()
         {
             Nodes = new List<UstNode>();
         }
 
-        public MatchingResult(Pattern pattern, UstNode node)
+        public MatchingResult(Pattern pattern, UstNode node, TextSpan textSpan)
             : this(pattern, new List<UstNode> { node })
         {
+            TextSpan = textSpan;
         }
 
         public MatchingResult(Pattern pattern, List<UstNode> nodes)
@@ -41,7 +32,8 @@ namespace PT.PM.Matching
 
         public override string ToString()
         {
-            return $"Pattern {Pattern} mathched at {(string.Join(";", Nodes.Select(node => node.TextSpan)))}";
+            string textSpan = Nodes.Count == 1 ? TextSpan.ToString() : string.Join("; ", Nodes.Select(node => node.TextSpan));
+            return $"Pattern {Pattern} mathched at {textSpan}";
         }
     }
 }

@@ -64,16 +64,12 @@ namespace PT.PM.Matching
             if (node == null)
                 return;
 
-            foreach (var pattern in patternsVarRef)
+            foreach (PatternVarRefEnumerator pattern in patternsVarRef)
             {
                 if (Match(pattern, node))
                 {
-                    var matching = new MatchingResult(pattern.Pattern, node);
-                    var patternStatements = pattern.Current as PatternStatements;
-                    if (patternStatements != null)
-                    {
-                        matching.TextSpan = patternStatements.MatchedTextSpan;
-                    }
+                    TextSpan matchedLocation = GetMatchedLocation(pattern.Current, node);
+                    var matching = new MatchingResult(pattern.Pattern, node, matchedLocation);
                     Logger.LogInfo(matching);
                     matchingResult.Add(matching);
                 }
@@ -105,10 +101,8 @@ namespace PT.PM.Matching
                         {
                             patternComment = (PatternComment)((PatternVarDef)commentPattern.Current).Value;
                         }
-                        var matching = new MatchingResult(commentPattern.Pattern, commentNode)
-                        {
-                            TextSpan = new TextSpan(commentNode.TextSpan.Start + patternComment.Offset, patternComment.Length)
-                        };
+                        TextSpan matchedLocation = GetMatchedLocation(commentPattern.Current, commentNode);
+                        var matching = new MatchingResult(commentPattern.Pattern, commentNode, matchedLocation);
                         Logger.LogInfo(matching);
                         matchingResult.Add(matching);
                     }
@@ -136,6 +130,29 @@ namespace PT.PM.Matching
                 Logger.LogError(new MatchingException(node.FileNode.FileName.Text, ex) { TextSpan = node.TextSpan });
             }
             return false;
+        }
+
+        private TextSpan GetMatchedLocation(UstNode patternNode, UstNode codeNode)
+        {
+            TextSpan result = default(TextSpan);
+            var absoluteLocationPattern = patternNode as IAbsoluteLocationMatching;
+            if (absoluteLocationPattern != null)
+            {
+                result = absoluteLocationPattern.MatchedLocation;
+            }
+            else if (codeNode != null)
+            {
+                var relativeLocationPattern = patternNode as IRelativeLocationMatching;
+                if (relativeLocationPattern != null)
+                {
+                    result = new TextSpan(codeNode.TextSpan.Start + relativeLocationPattern.MatchedLocation.Start, relativeLocationPattern.MatchedLocation.Length);
+                }
+                else
+                {
+                    result = codeNode.TextSpan;
+                }
+            }
+            return result;
         }
     }
 }
