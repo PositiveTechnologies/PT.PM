@@ -72,7 +72,8 @@ namespace PT.PM.PhpParseTreeUst
 
         public UstNode VisitHtmlElements(PHPParser.HtmlElementsContext context)
         {
-            return new StringLiteral(context.GetText(), context.GetTextSpan(), FileNode);
+            string text = TokenStream?.GetText(context.SourceInterval) ?? context.GetText();
+            return new StringLiteral(text, context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitHtmlElement(PHPParser.HtmlElementContext context)

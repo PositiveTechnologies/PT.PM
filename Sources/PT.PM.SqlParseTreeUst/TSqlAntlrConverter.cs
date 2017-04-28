@@ -10,12 +10,14 @@ namespace PT.PM.SqlParseTreeUst
     {
         public override Language MainLanguage => Language.TSql;
 
-        protected override FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
+        protected override FileNode CreateVisitorAndVisit(ITokenStream tokenStream, ParserRuleContext ruleContext,
+            string filePath, string fileData, ILogger logger)
         {
             TSqlConverterVisitor visitor;
             if (UstType == Common.Ust.UstType.Common)
             {
                 visitor = new TSqlConverterVisitor(filePath, fileData);
+                visitor.TokenStream = tokenStream;
             }
             else
             {

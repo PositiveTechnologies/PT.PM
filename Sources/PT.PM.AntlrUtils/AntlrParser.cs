@@ -97,15 +97,15 @@ namespace PT.PM.AntlrUtils
                 errorListener.Logger = Logger;
                 try
                 {
-                    var codeWithFixedNewlines = PreprocessText(sourceCodeFile);
+                    var preprocessedText = PreprocessText(sourceCodeFile);
                     AntlrInputStream inputStream;
                     if (Language.IsCaseInsensitive())
                     {
-                        inputStream = new AntlrCaseInsensitiveInputStream(codeWithFixedNewlines);
+                        inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText);
                     }
                     else
                     {
-                        inputStream = new AntlrInputStream(codeWithFixedNewlines);
+                        inputStream = new AntlrInputStream(preprocessedText);
                     }
                     inputStream.name = filePath;
 
@@ -113,13 +113,16 @@ namespace PT.PM.AntlrUtils
                     lexer.RemoveErrorListeners();
                     lexer.AddErrorListener(errorListener);
                     var commentTokens = new List<IToken>();
-                    var codeTokens = new List<IToken>();
 
                     var stopwatch = Stopwatch.StartNew();
                     IList<IToken> tokens = GetAllTokens(lexer);
                     tokens = PreprocessTokens(tokens);
                     stopwatch.Stop();
                     long lexerTimeSpanTicks = stopwatch.ElapsedTicks;
+
+#if DEBUG
+                    var codeTokensStr = AntlrHelper.GetTokensString(tokens, Vocabulary, onlyDefaultChannel: false);
+#endif
 
                     ClearLexerCacheIfRequired(lexer);
 
@@ -129,23 +132,21 @@ namespace PT.PM.AntlrUtils
                         {
                             commentTokens.Add(token);
                         }
-                        else if (token.Channel != Lexer.Hidden)
-                        {
-                            codeTokens.Add(token);
-                        }
                     }
 
                     stopwatch.Restart();
-                    ParserRuleContext syntaxTree = ParseTokens(sourceCodeFile, errorListener, tokens);
+                    var codeTokenSource = new ListTokenSource(tokens);
+                    var codeTokenStream = new CommonTokenStream(codeTokenSource);
+                    ParserRuleContext syntaxTree = ParseTokens(sourceCodeFile, errorListener, codeTokenStream);
                     stopwatch.Stop();
                     long parserTimeSpanTicks = stopwatch.ElapsedTicks;
 
                     IncrementProcessedFilesCount();
 
                     result = Create(syntaxTree);
+                    result.TokenStream = codeTokenStream;
                     result.LexerTimeSpan = new TimeSpan(lexerTimeSpanTicks);
                     result.ParserTimeSpan = new TimeSpan(parserTimeSpanTicks);
-                    result.Tokens = tokens;
                     result.Comments = commentTokens;
                 }
                 catch (Exception ex)
@@ -169,19 +170,14 @@ namespace PT.PM.AntlrUtils
         }
 
         protected ParserRuleContext ParseTokens(SourceCodeFile sourceCodeFile,
-            AntlrMemoryErrorListener errorListener, IList<IToken> tokens, IVocabulary vocabulary = null,
+            AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
-            var codeTokenSource = new ListTokenSource(tokens);
-            var codeTokenStream = new CommonTokenStream(codeTokenSource);
-
             Parser parser = initParserFunc != null ? initParserFunc(codeTokenStream) : InitParser(codeTokenStream);
             parser.RemoveErrorListeners();
             Parser = parser;
             ParserRuleContext syntaxTree;
-#if DEBUG
-            var codeTokensStr = AntlrHelper.GetTokensString(tokens, vocabulary ?? Vocabulary, onlyDefaultChannel: false);
-#endif
+
             if (UseFastParseStrategyAtFirst)
             {
                 parser.Interpreter.PredictionMode = PredictionMode.Sll;

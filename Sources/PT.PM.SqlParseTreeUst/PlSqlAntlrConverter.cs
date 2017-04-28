@@ -11,12 +11,14 @@ namespace PT.PM.SqlParseTreeUst
     {
         public override Language MainLanguage => Language.PlSql;
 
-        protected override FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
+        protected override FileNode CreateVisitorAndVisit(ITokenStream tokenStream, ParserRuleContext ruleContext,
+            string filePath, string fileData, ILogger logger)
         {
             PlSqlConverterVisitor visitor;
             if (UstType == Common.Ust.UstType.Common)
             {
                 visitor = new PlSqlConverterVisitor(filePath, fileData);
+                visitor.TokenStream = tokenStream;
             }
             else
             {

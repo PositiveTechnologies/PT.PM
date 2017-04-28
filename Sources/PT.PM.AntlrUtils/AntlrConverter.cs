@@ -27,7 +27,7 @@ namespace PT.PM.AntlrUtils
             ConvertedLanguages = MainLanguage.GetLanguageWithDependentLanguages();
         }
 
-        protected abstract FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger);
+        protected abstract FileNode CreateVisitorAndVisit(ITokenStream tokenStream, ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger);
 
         public Ust Convert(ParseTree langParseTree)
         {
@@ -41,7 +41,7 @@ namespace PT.PM.AntlrUtils
             {
                 try
                 {
-                    fileNode = CreateVisitorAndVisit(tree, filePath, langParseTree.FileData, Logger);
+                    fileNode = CreateVisitorAndVisit(antlrParseTree.TokenStream, tree, filePath, langParseTree.FileData, Logger);
                     result = new MostCommonUst(fileNode, ConvertedLanguages);
                 }
                 catch (Exception ex)

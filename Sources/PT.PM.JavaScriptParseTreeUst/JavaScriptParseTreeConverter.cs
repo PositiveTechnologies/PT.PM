@@ -14,9 +14,11 @@ namespace PT.PM.JavaScriptParseTreeUst
             ConvertedLanguages = Language.JavaScript.GetLanguageWithDependentLanguages();
         }
 
-        protected override FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
+        protected override FileNode CreateVisitorAndVisit(ITokenStream tokenStream, ParserRuleContext ruleContext,
+            string filePath, string fileData, ILogger logger)
         {
             JavaScriptAntlrUstConverterVisitor visitor = new JavaScriptAntlrUstConverterVisitor(filePath, fileData);
+            visitor.TokenStream = tokenStream;
             visitor.Logger = logger;
             FileNode fileNode = (FileNode)visitor.Visit(ruleContext);
             return fileNode;
