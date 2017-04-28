@@ -38,14 +38,11 @@ namespace PT.PM.Patterns.Nodes
         }
 
         public PatternStringLiteral()
-            : base(@"\w*", default(TextSpan), null)
+            : base(@".*", default(TextSpan), null)
         {
         }
 
-        public override string TextValue
-        {
-            get { return Regex.ToString(); }
-        }
+        public override string TextValue => Regex.ToString();
 
         public override int CompareTo(UstNode other)
         {
