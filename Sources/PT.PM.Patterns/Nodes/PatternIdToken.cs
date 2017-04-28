@@ -13,7 +13,7 @@ namespace PT.PM.Patterns.Nodes
         [JsonIgnore]
         public Regex Regex { get; set; }
 
-        public TextSpan MatchedLocation { get; set; }
+        public TextSpan[] MatchedLocations { get; set; }
 
         public override string Id
         {
@@ -61,8 +61,8 @@ namespace PT.PM.Patterns.Nodes
                 return NodeType - other.NodeType;
             }
 
-            MatchedLocation = PatternHelper.MatchRegex(Regex, ((IdToken)other).Id);
-            return MatchedLocation.IsEmpty ? 1 : 0;
+            MatchedLocations = PatternHelper.MatchRegex(Regex, ((IdToken)other).Id, true);
+            return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }
 }

@@ -3,7 +3,6 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Patterns;
 using System.Collections.Generic;
-using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {

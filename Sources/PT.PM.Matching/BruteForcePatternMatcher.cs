@@ -68,10 +68,7 @@ namespace PT.PM.Matching
             {
                 if (Match(pattern, node))
                 {
-                    TextSpan matchedLocation = GetMatchedLocation(pattern.Current, node);
-                    var matching = new MatchingResult(pattern.Pattern, node, matchedLocation);
-                    Logger.LogInfo(matching);
-                    matchingResult.Add(matching);
+                    AddMatchingResults(matchingResult, pattern.Pattern, pattern.Current, node);
                 }
             }
 
@@ -81,7 +78,7 @@ namespace PT.PM.Matching
             }
         }
 
-        private void MatchComments(Ust ust, List<MatchingResult> matchingResult, PatternVarRefEnumerator[] patternEnumerators)
+        private void MatchComments(Ust ust, List<MatchingResult> matchingResults, PatternVarRefEnumerator[] patternEnumerators)
         {
             PatternVarRefEnumerator[] commentPatterns = patternEnumerators.Where(p =>
                 p.Pattern.Data.Node.NodeType == NodeType.PatternComment ||
@@ -101,10 +98,7 @@ namespace PT.PM.Matching
                         {
                             patternComment = (PatternComment)((PatternVarDef)commentPattern.Current).Value;
                         }
-                        TextSpan matchedLocation = GetMatchedLocation(commentPattern.Current, commentNode);
-                        var matching = new MatchingResult(commentPattern.Pattern, commentNode, matchedLocation);
-                        Logger.LogInfo(matching);
-                        matchingResult.Add(matching);
+                        AddMatchingResults(matchingResults, commentPattern.Pattern, commentPattern.Current, commentNode);
                     }
                 }
             }
@@ -132,27 +126,36 @@ namespace PT.PM.Matching
             return false;
         }
 
-        private TextSpan GetMatchedLocation(UstNode patternNode, UstNode codeNode)
+        private void AddMatchingResults(List<MatchingResult> matchingResults, Pattern pattern, UstNode patternNode, UstNode codeNode)
         {
-            TextSpan result = default(TextSpan);
             var absoluteLocationPattern = patternNode as IAbsoluteLocationMatching;
             if (absoluteLocationPattern != null)
             {
-                result = absoluteLocationPattern.MatchedLocation;
+                AddMathingResult(matchingResults, pattern, codeNode, absoluteLocationPattern.MatchedLocation);
             }
             else if (codeNode != null)
             {
                 var relativeLocationPattern = patternNode as IRelativeLocationMatching;
                 if (relativeLocationPattern != null)
                 {
-                    result = new TextSpan(codeNode.TextSpan.Start + relativeLocationPattern.MatchedLocation.Start, relativeLocationPattern.MatchedLocation.Length);
+                    foreach (TextSpan location in relativeLocationPattern.MatchedLocations)
+                    {
+                        AddMathingResult(matchingResults, pattern, codeNode,
+                            new TextSpan(codeNode.TextSpan.Start + location.Start, location.Length));
+                    }
                 }
                 else
                 {
-                    result = codeNode.TextSpan;
+                    AddMathingResult(matchingResults, pattern, codeNode, codeNode.TextSpan);
                 }
             }
-            return result;
+        }
+
+        private void AddMathingResult(List<MatchingResult> matchingResults, Pattern pattern, UstNode codeNode, TextSpan textSpan)
+        {
+            var matching = new MatchingResult(pattern, codeNode, textSpan);
+            Logger.LogInfo(matching);
+            matchingResults.Add(matching);
         }
     }
 }

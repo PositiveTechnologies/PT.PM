@@ -13,7 +13,7 @@ namespace PT.PM.Patterns.Nodes
         [JsonIgnore]
         public Regex Regex { get; set; }
 
-        public TextSpan MatchedLocation { get; set; }
+        public TextSpan[] MatchedLocations { get; set; }
 
         public override string Comment
         {
@@ -58,8 +58,8 @@ namespace PT.PM.Patterns.Nodes
                 return NodeType - other.NodeType;
             }
 
-            MatchedLocation = PatternHelper.MatchRegex(Regex, ((CommentLiteral)other).Comment);
-            return MatchedLocation.IsEmpty ? 1 : 0;
+            MatchedLocations = PatternHelper.MatchRegex(Regex, ((CommentLiteral)other).Comment);
+            return MatchedLocations.Length == 0 ? 1 : 0;
         }
 
         public override string ToString() => $"Comment: \"{Comment}\"";
