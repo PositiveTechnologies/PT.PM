@@ -19,6 +19,8 @@ namespace PT.PM.AntlrUtils
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
+        public Lexer Lexer { get; private set; }
+
         public Parser Parser { get; private set; }
 
         public abstract Language Language { get; }
@@ -46,6 +48,12 @@ namespace PT.PM.AntlrUtils
         protected abstract IVocabulary Vocabulary { get; }
 
         protected abstract int CommentsChannel { get; }
+
+        public AntlrParser()
+        {
+            Lexer = InitLexer(null);
+            Parser = InitParser(null);
+        }
 
         public ParseTree Parse(SourceCodeFile sourceCodeFile)
         {
@@ -110,6 +118,7 @@ namespace PT.PM.AntlrUtils
                     inputStream.name = filePath;
 
                     Lexer lexer = InitLexer(inputStream);
+                    Lexer = lexer;
                     lexer.RemoveErrorListeners();
                     lexer.AddErrorListener(errorListener);
                     var commentTokens = new List<IToken>();
