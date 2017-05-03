@@ -4,6 +4,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using Antlr4.Runtime;
 using PT.PM.SqlParseTreeUst.Parser;
+using System.Collections.Generic;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -11,12 +12,14 @@ namespace PT.PM.SqlParseTreeUst
     {
         public override Language MainLanguage => Language.PlSql;
 
-        protected override FileNode CreateVisitorAndVisit(ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
+        protected override FileNode CreateVisitorAndVisit(IList<IToken> tokens, ParserRuleContext ruleContext,
+            string filePath, string fileData, ILogger logger)
         {
             PlSqlConverterVisitor visitor;
             if (UstType == Common.Ust.UstType.Common)
             {
                 visitor = new PlSqlConverterVisitor(filePath, fileData);
+                visitor.Tokens = tokens;
             }
             else
             {

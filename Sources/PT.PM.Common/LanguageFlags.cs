@@ -12,6 +12,7 @@ namespace PT.PM.Common
         Php = 1 << Language.Php,
         PlSql = 1 << Language.PlSql,
         TSql = 1 << Language.TSql,
-        JavaScript = 1 << Language.JavaScript
+        JavaScript = 1 << Language.JavaScript,
+        Html = 1 << Language.Html
     }
 }

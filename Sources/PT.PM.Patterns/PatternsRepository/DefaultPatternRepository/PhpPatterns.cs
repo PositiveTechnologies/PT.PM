@@ -297,15 +297,15 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Target = new PatternIdToken("(?i)setcookie"),
                         Arguments = new ArgsNode(new List<Expression>()
-                    {
-                        new PatternExpression(),
-                        new PatternExpression(),
-                        new PatternExpression(),
-                        new PatternExpression(),
-                        new PatternStringLiteral(@"^\.\w*"),
-                        new PatternExpression(),
-                        new PatternExpression(),
-                    })
+                        {
+                            new PatternExpression(),
+                            new PatternExpression(),
+                            new PatternExpression(),
+                            new PatternExpression(),
+                            new PatternStringLiteral(@"^\..*"),
+                            new PatternExpression(),
+                            new PatternExpression(),
+                        })
                     }
                 }
             });

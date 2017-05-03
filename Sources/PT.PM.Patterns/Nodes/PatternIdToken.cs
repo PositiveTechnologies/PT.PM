@@ -3,16 +3,17 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using Newtonsoft.Json;
-using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Patterns.Nodes
 {
-    public class PatternIdToken : IdToken
+    public class PatternIdToken : IdToken, IRelativeLocationMatching
     {
         public override NodeType NodeType => NodeType.PatternIdToken;
 
         [JsonIgnore]
         public Regex Regex { get; set; }
+
+        public TextSpan[] MatchedLocations { get; set; }
 
         public override string Id
         {
@@ -60,8 +61,8 @@ namespace PT.PM.Patterns.Nodes
                 return NodeType - other.NodeType;
             }
 
-            bool match = Regex.IsMatch(((IdToken)other).Id);
-            return match ? 0 : 1;
+            MatchedLocations = PatternHelper.MatchRegex(Regex, ((IdToken)other).Id, true);
+            return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }
 }

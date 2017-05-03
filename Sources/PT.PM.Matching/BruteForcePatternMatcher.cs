@@ -16,6 +16,8 @@ namespace PT.PM.Matching
 
         public Pattern[] Patterns { get; set; }
 
+        public bool IsIgnoreFileNameWildcards { get; set; }
+
         public BruteForcePatternMatcher(Pattern[] patterns)
         {
             Patterns = patterns;
@@ -32,8 +34,13 @@ namespace PT.PM.Matching
                 try
                 {
                     var matchingResult = new List<MatchingResult>();
-                    PatternVarRefEnumerator[] patternEnumerators = Patterns
-                        .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None)
+                    IEnumerable<Pattern> patterns = Patterns
+                        .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None);
+                    if (!IsIgnoreFileNameWildcards)
+                    {
+                        patterns = patterns.Where(pattern => pattern.FileNameWildcardRegex?.IsMatch(ust.FileName) ?? true);
+                    }
+                    PatternVarRefEnumerator[] patternEnumerators = patterns
                         .Select(pattern => new PatternVarRefEnumerator(pattern)).ToArray();
                     Traverse(ust.Root, patternEnumerators, matchingResult);
                     MatchComments(ust, matchingResult, patternEnumerators);
@@ -57,18 +64,11 @@ namespace PT.PM.Matching
             if (node == null)
                 return;
 
-            foreach (var pattern in patternsVarRef)
+            foreach (PatternVarRefEnumerator pattern in patternsVarRef)
             {
                 if (Match(pattern, node))
                 {
-                    var matching = new MatchingResult(pattern.Pattern, node);
-                    var patternStatements = pattern.Current as PatternStatements;
-                    if (patternStatements != null)
-                    {
-                        matching.TextSpan = patternStatements.MatchedTextSpan;
-                    }
-                    Logger.LogInfo(matching);
-                    matchingResult.Add(matching);
+                    AddMatchingResults(matchingResult, pattern.Pattern, pattern.Current, node);
                 }
             }
 
@@ -78,7 +78,7 @@ namespace PT.PM.Matching
             }
         }
 
-        private void MatchComments(Ust ust, List<MatchingResult> matchingResult, PatternVarRefEnumerator[] patternEnumerators)
+        private void MatchComments(Ust ust, List<MatchingResult> matchingResults, PatternVarRefEnumerator[] patternEnumerators)
         {
             PatternVarRefEnumerator[] commentPatterns = patternEnumerators.Where(p =>
                 p.Pattern.Data.Node.NodeType == NodeType.PatternComment ||
@@ -98,12 +98,7 @@ namespace PT.PM.Matching
                         {
                             patternComment = (PatternComment)((PatternVarDef)commentPattern.Current).Value;
                         }
-                        var matching = new MatchingResult(commentPattern.Pattern, commentNode)
-                        {
-                            TextSpan = new TextSpan(commentNode.TextSpan.Start + patternComment.Offset, patternComment.Length)
-                        };
-                        Logger.LogInfo(matching);
-                        matchingResult.Add(matching);
+                        AddMatchingResults(matchingResults, commentPattern.Pattern, commentPattern.Current, commentNode);
                     }
                 }
             }
@@ -129,6 +124,38 @@ namespace PT.PM.Matching
                 Logger.LogError(new MatchingException(node.FileNode.FileName.Text, ex) { TextSpan = node.TextSpan });
             }
             return false;
+        }
+
+        private void AddMatchingResults(List<MatchingResult> matchingResults, Pattern pattern, UstNode patternNode, UstNode codeNode)
+        {
+            var absoluteLocationPattern = patternNode as IAbsoluteLocationMatching;
+            if (absoluteLocationPattern != null)
+            {
+                AddMathingResult(matchingResults, pattern, codeNode, absoluteLocationPattern.MatchedLocation);
+            }
+            else if (codeNode != null)
+            {
+                var relativeLocationPattern = patternNode as IRelativeLocationMatching;
+                if (relativeLocationPattern != null)
+                {
+                    foreach (TextSpan location in relativeLocationPattern.MatchedLocations)
+                    {
+                        AddMathingResult(matchingResults, pattern, codeNode,
+                            new TextSpan(codeNode.TextSpan.Start + location.Start, location.Length));
+                    }
+                }
+                else
+                {
+                    AddMathingResult(matchingResults, pattern, codeNode, codeNode.TextSpan);
+                }
+            }
+        }
+
+        private void AddMathingResult(List<MatchingResult> matchingResults, Pattern pattern, UstNode codeNode, TextSpan textSpan)
+        {
+            var matching = new MatchingResult(pattern, codeNode, textSpan);
+            Logger.LogInfo(matching);
+            matchingResults.Add(matching);
         }
     }
 }

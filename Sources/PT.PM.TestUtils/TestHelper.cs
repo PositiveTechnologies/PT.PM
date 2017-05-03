@@ -53,12 +53,17 @@ namespace PT.PM.TestUtils
             SevenZipPath = Helper.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
-        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
+        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage,
+            ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFileNameWildcards = false)
         {
             var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, language, stage: endStage);
+            if (workflow.UstPatternMatcher != null)
+            {
+                workflow.UstPatternMatcher.IsIgnoreFileNameWildcards = isIgnoreFileNameWildcards;
+            }
             workflow.Logger = log;
             WorkflowResult workflowResult = workflow.Process();
 

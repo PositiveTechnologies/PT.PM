@@ -2,20 +2,18 @@
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Patterns.Nodes
 {
-    public class PatternExpressions : ArgsNode
+    public class PatternExpressions : ArgsNode, IAbsoluteLocationMatching
     {
         private HashSet<PatternVarDef> pinnedPatternVarDefs = new HashSet<PatternVarDef>();
 
         public override NodeType NodeType => NodeType.PatternExpressions;
 
-        [JsonIgnore]
-        public TextSpan MatchedTextSpan { get; private set; }
+        public TextSpan MatchedLocation { get; set; }
 
         public PatternExpressions()
         {

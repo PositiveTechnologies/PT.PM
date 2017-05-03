@@ -24,6 +24,7 @@ namespace PT.PM.Patterns
                 }
             }
         }
+
         public Dictionary<UstNodeSerializationFormat, IUstNodeSerializer> UstNodeSerializers { get; set; }
 
         public UstNodeSerializationFormat ConvertBackFormat { get; set; }

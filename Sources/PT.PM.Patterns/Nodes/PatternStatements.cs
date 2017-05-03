@@ -1,25 +1,19 @@
 ﻿using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Statements;
-using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PT.PM.Common;
-using PT.PM.Common.Nodes.Tokens;
 using Newtonsoft.Json;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
 namespace PT.PM.Patterns.Nodes
 {
-    public class PatternStatements : BlockStatement
+    public class PatternStatements : BlockStatement, IAbsoluteLocationMatching
     {
         private HashSet<PatternVarDef> pinnedPatternVarDefs;
 
         public override NodeType NodeType => NodeType.PatternStatements;
 
-        [JsonIgnore]
-        public TextSpan MatchedTextSpan { get; private set; }
+        public TextSpan MatchedLocation { get; set; }
 
         public PatternStatements()
         {
@@ -81,14 +75,14 @@ namespace PT.PM.Patterns.Nodes
                         else
                         {
                             result = 0; // pattern found.
-                            MatchedTextSpan = otherStatements[startIndex].TextSpan; //TODO: otherStatements[startIndex].TextSpan.UnionWith(otherStatements[endIndex].TextSpan);
+                            MatchedLocation = otherStatements[startIndex].TextSpan; //TODO: otherStatements[startIndex].TextSpan.UnionWith(otherStatements[endIndex].TextSpan);
                             break;
                         }
                     }
                     else
                     {
                         result = 0; // pattern found.
-                        MatchedTextSpan = otherStatements[startIndex].TextSpan; //TODO: otherStatements[startIndex].TextSpan.UnionWith(otherStatements[endIndex].TextSpan);
+                        MatchedLocation = otherStatements[startIndex].TextSpan; //TODO: otherStatements[startIndex].TextSpan.UnionWith(otherStatements[endIndex].TextSpan);
                         break;
                     }
                 }

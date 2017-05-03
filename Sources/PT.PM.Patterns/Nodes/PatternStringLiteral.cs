@@ -6,12 +6,14 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Patterns.Nodes
 {
-    public class PatternStringLiteral : StringLiteral
+    public class PatternStringLiteral : StringLiteral, IRelativeLocationMatching
     {
         public override NodeType NodeType => NodeType.PatternStringLiteral;
 
         [JsonIgnore]
         public Regex Regex { get; set; }
+
+        public TextSpan[] MatchedLocations { get; set; }
 
         public override string Text
         {
@@ -36,14 +38,11 @@ namespace PT.PM.Patterns.Nodes
         }
 
         public PatternStringLiteral()
-            : base(@"\w*", default(TextSpan), null)
+            : base(@".*", default(TextSpan), null)
         {
         }
 
-        public override string TextValue
-        {
-            get { return Regex.ToString(); }
-        }
+        public override string TextValue => Regex.ToString();
 
         public override int CompareTo(UstNode other)
         {
@@ -62,8 +61,8 @@ namespace PT.PM.Patterns.Nodes
                 return NodeType - other.NodeType;
             }
 
-            int result = Regex.IsMatch(((StringLiteral) other).Text) ? 0 : 1;
-            return result;
+            MatchedLocations = PatternHelper.MatchRegex(Regex, ((StringLiteral)other).Text);
+            return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }
 }

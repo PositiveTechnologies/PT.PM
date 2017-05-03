@@ -176,6 +176,12 @@ namespace PT.PM.Prebuild
             GenerateStatus result = GenerateStatus.NotGenerated;
             if (generate)
             {
+                if (!ProcessHelpers.IsProcessCanBeExecuted("java"))
+                {
+                    Console.WriteLine("java is not installed or java path is not specified.");
+                    return GenerateStatus.Error;
+                }
+
                 string lexerParser = lexer ? "Lexer" : "Parser";
                 Console.WriteLine($"{lexerParser} for {shortGrammarFileName} generation...");
                 System.Diagnostics.Process process = new System.Diagnostics.Process();

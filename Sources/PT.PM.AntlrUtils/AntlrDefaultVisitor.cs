@@ -21,6 +21,8 @@ namespace PT.PM.AntlrUtils
 
         public FileNode FileNode { get; set; }
 
+        public IList<IToken> Tokens { get; set; }
+
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public AntlrDefaultVisitor(string fileName, string fileData)

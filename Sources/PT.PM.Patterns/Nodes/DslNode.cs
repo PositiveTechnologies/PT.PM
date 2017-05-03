@@ -1,11 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Dsl

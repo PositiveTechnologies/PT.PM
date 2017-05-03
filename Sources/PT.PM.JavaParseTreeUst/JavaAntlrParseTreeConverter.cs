@@ -4,6 +4,8 @@ using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
 using PT.PM.JavaParseTreeUst.Converter;
 using PT.PM.AntlrUtils;
+using Antlr4.Runtime;
+using System.Collections.Generic;
 
 namespace PT.PM.JavaParseTreeUst
 {
@@ -16,12 +18,14 @@ namespace PT.PM.JavaParseTreeUst
             ConvertedLanguages = Language.Java.GetLanguageWithDependentLanguages();
         }
 
-        protected override FileNode CreateVisitorAndVisit(Antlr4.Runtime.ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger)
+        protected override FileNode CreateVisitorAndVisit(IList<IToken> tokens, ParserRuleContext ruleContext,
+            string filePath, string fileData, ILogger logger)
         {
             JavaAntlrUstConverterVisitor visitor;
             if (UstType == UstType.Common)
             {
                 visitor = new JavaAntlrUstConverterVisitor(filePath, fileData);
+                visitor.Tokens = tokens;
             }
             else
             {

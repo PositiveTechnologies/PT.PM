@@ -15,24 +15,35 @@ namespace PT.PM
 
         public override Language? Detect(string sourceCode, Language[] languages = null)
         {
-            var langs = (languages ?? LanguageExt.Languages).ToList();
+            List<Language> langs = (languages ?? LanguageExt.Languages).ToList();
             // Any PHP file contains start tag.
             if (!sourceCode.Contains("<?"))
             {
                 langs.Remove(Language.Php);
             }
-            // Aspx code contains at least one tag.
+            // Aspx and html code contains at least one tag.
             if (!openTagRegex.IsMatch(sourceCode) || !closeTagRegex.IsMatch(sourceCode))
             {
                 langs.Remove(Language.Aspx);
+                langs.Remove(Language.Html);
             }
             var sourceCodeFile = new SourceCodeFile("Temp Source Code") { Code = sourceCode };
             var parseUnits = new Queue<Tuple<Language, ParserUnit>>(langs.Count);
 
+            langs = langs
+                .GroupBy(l => ParserConverterBuilder.GetParserConverterSet(l).Parser.Language)
+                .Select(l => l.First())
+                .ToList();
+
+            if (langs.Count == 1)
+            {
+                return langs[0];
+            }
+
             foreach (var language in langs)
             {
                 var logger = new LoggerMessageCounter();
-                var languageParser = ParserConverterBuilder.GetParserConverterSet(language).Parser;
+                ILanguageParser languageParser = ParserConverterBuilder.GetParserConverterSet(language).Parser;
 
                 var task = Task.Factory.StartNew(() =>
                 {

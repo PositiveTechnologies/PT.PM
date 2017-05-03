@@ -50,8 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CSharpMatchingTests.cs" />
+    <Compile Include="HtmlTests.cs" />
     <Compile Include="JavaMatchingTests.cs" />
     <Compile Include="JavaScriptMatchingTests.cs" />
+    <Compile Include="FileNameMatchingTests.cs" />
     <Compile Include="PatternMatchingTests.cs" />
     <Compile Include="PatternMatchingUtils.cs" />
     <Compile Include="PhpMatchingTests.cs" />
@@ -107,6 +109,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

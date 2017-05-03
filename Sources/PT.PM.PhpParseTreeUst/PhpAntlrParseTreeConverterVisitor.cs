@@ -56,7 +56,8 @@ namespace PT.PM.PhpParseTreeUst
             UstNode result = null;
             if (context.htmlElements() != null)
             {
-                result = (StringLiteral)Visit(context.htmlElements());
+                var stringLiteral = (StringLiteral)Visit(context.htmlElements());
+                result = NodeHelpers.CreateLanguageNamespace(stringLiteral, Language.Html, FileNode);
             }
             else if (context.phpBlock() != null)
             {
@@ -71,7 +72,8 @@ namespace PT.PM.PhpParseTreeUst
 
         public UstNode VisitHtmlElements(PHPParser.HtmlElementsContext context)
         {
-            return new StringLiteral(context.GetText(), context.GetTextSpan(), FileNode);
+            string text = context.GetText(Tokens);
+            return new StringLiteral(text, context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitHtmlElement(PHPParser.HtmlElementContext context)

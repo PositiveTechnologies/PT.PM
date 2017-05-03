@@ -491,7 +491,7 @@ namespace PT.PM.Dsl
         public UstNode VisitPatternStringLiteral(DslParser.PatternStringLiteralContext context)
         {
             string value = RemoveQuotes(context.GetText());
-            return new PatternStringLiteral(value == "" ? "\\w*" : value, context.GetTextSpan());
+            return new PatternStringLiteral(value == "" ? ".*" : value, context.GetTextSpan());
         }
 
         public UstNode VisitPatternIdToken(DslParser.PatternIdTokenContext context)
