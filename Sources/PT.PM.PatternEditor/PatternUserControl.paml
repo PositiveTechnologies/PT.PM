@@ -39,13 +39,14 @@
     </Grid>
     <Grid ColumnDefinitions="100,*">
       <TextBlock Text="Languages" />
-      <Grid Grid.Column="1" RowDefinitions="25,25,25"  ColumnDefinitions="70,70,85" Height="50">
+      <Grid Grid.Column="1" RowDefinitions="25,25,25"  ColumnDefinitions="90,80,80" Height="75">
         <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsCSharpLanguage}">C#</CheckBox>
         <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsJavaLanguage}" >Java</CheckBox>
         <CheckBox Grid.Row="0" Grid.Column="2" IsChecked="{Binding IsPhpLanguage}">PHP</CheckBox>
         <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsPlSqlLanguage}">PL/SQL</CheckBox>
         <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsTSqlLanguage}">T-SQL</CheckBox>
-        <CheckBox Grid.Row="1" Grid.Column="2" IsChecked="{Binding IsJavaScriptLanguage}">JavaScript</CheckBox>
+        <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsJavaScriptLanguage}">JavaScript</CheckBox>
+        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsHtmlLanguage}">Html</CheckBox>
       </Grid>
     </Grid>
     <TextBlock Text="Description" />

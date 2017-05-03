@@ -216,6 +216,7 @@ namespace PT.PM.PatternEditor
                 this.RaisePropertyChanged(nameof(IsPlSqlLanguage));
                 this.RaisePropertyChanged(nameof(IsTSqlLanguage));
                 this.RaisePropertyChanged(nameof(IsJavaScriptLanguage));
+                this.RaisePropertyChanged(nameof(IsHtmlLanguage));
                 this.RaisePropertyChanged(nameof(Description));
                 patternTextBox.Text = selectedPattern?.Value ?? "";
                 CheckPattern();
@@ -320,6 +321,12 @@ namespace PT.PM.PatternEditor
         {
             get { return SelectedPattern?.Languages.Is(LanguageFlags.JavaScript) ?? false; }
             set { ChangeLanguage(LanguageFlags.JavaScript, value); }
+        }
+
+        public bool IsHtmlLanguage
+        {
+            get { return SelectedPattern?.Languages.Is(LanguageFlags.Html) ?? false; }
+            set { ChangeLanguage(LanguageFlags.Html, value); }
         }
 
         public string Description
