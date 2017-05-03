@@ -85,6 +85,7 @@
     <Content Include="Data\Test Project\4.php">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SourceCodeRepositoryTests.cs" />

@@ -212,6 +212,7 @@
       <Link>Data\x.php</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="app.config" />
     <None Include="Data\newLine -r-n.php">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
