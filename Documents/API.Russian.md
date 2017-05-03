@@ -90,8 +90,9 @@
 Репозитории реализуют интерфейс `IPatternsRepository`, находятся в проекте **PT.PM.Patterns**.
 
 * `FilePatternsRepository` - загружает объекты `PatternDto` из файла `filePath`.
-* `MemoryPatternsRepository` - позволяет добавлять объекты `PatternDto` из памяти.
-* `DslPatternRepository` - позволяет добавлять паттерн из строки `patternData` для языков `languageFlags` в формате DSL.
+* `MemoryPatternsRepository` - позволяет загружать объекты `PatternDto` из памяти.
+* `JsonPatternsRepository` - позволяет загружать паттерны из Json документа.
+* `DslPatternRepository` - позволяет загружать паттерн из строки `patternData` для языков `languageFlags` в формате DSL.
 * `DefaultPatternRepository` - содержит шаблоны по-умолчанию, заданные непосредственно в коде.
 
 ## Парсеры и конвертеры
