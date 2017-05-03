@@ -508,7 +508,7 @@ namespace PT.PM.PatternEditor
 
             if (IsDeveloperMode)
             {
-                AntlrParseTree antlrParseTree = workflowResult.ParseTrees.Single() as AntlrParseTree;
+                AntlrParseTree antlrParseTree = workflowResult.ParseTrees.FirstOrDefault() as AntlrParseTree;
                 if (antlrParseTree != null && antlrParseTree.SyntaxTree != null)
                 {
                     Antlr4.Runtime.Parser antlrParser = (workflow.ParserConverterSets[antlrParseTree.SourceLanguage].Parser as AntlrParser).Parser;
@@ -520,9 +520,9 @@ namespace PT.PM.PatternEditor
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tokens.txt"), Tokens);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tree.txt"), ParseTree);
                 }
-                if (Stage >= Stage.Convert && workflowResult.Usts.Single() != null)
+                if (Stage >= Stage.Convert && workflowResult.Usts.FirstOrDefault() != null)
                 {
-                    UstJson = jsonSerializer.Serialize(workflowResult.Usts.Single().Root);
+                    UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault().Root);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UST.json"), UstJson);
                 }
             }
