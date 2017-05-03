@@ -46,7 +46,7 @@
     <Compile Include="PatternJsonSafeConverter.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\HtmlPatternRepository.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\JavaScriptPatterns.cs" />
-    <Compile Include="PatternsRepository\StringPatternsRepository.cs" />
+    <Compile Include="PatternsRepository\JsonPatternsRepository.cs" />
     <Compile Include="UstNodeCloner.cs" />
     <Compile Include="Pattern.cs" />
     <Compile Include="PatternConverter.cs" />

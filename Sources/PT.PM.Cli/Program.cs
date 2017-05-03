@@ -105,7 +105,7 @@ namespace PT.PM.Cli
                     else
                     {
                         var patterns = StringCompressorEscaper.UnescapeDecompress(escapedPatterns);
-                        patternsRepository = new StringPatternsRepository(patterns);
+                        patternsRepository = new JsonPatternsRepository(patterns);
                     }
 
                     var workflow = new Workflow(sourceCodeRepository, languages, patternsRepository, stage)
