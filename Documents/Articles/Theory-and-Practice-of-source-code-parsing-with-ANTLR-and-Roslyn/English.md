@@ -1,6 +1,6 @@
 # Theory and Practice of Source Code Parsing with ANTLR and Roslyn
 
-[PT Application Inspector](https://www.ptsecurity.com/products/#ai) provides several approaches 
+[PT Application Inspector](https://www.ptsecurity.com/ww-en/products/ai/) provides several approaches 
 to analysis of the source code written in different programming languages:
 
 * Search by signatures.
@@ -15,7 +15,7 @@ disadvantage of this approach is that the module is not able to analyze
 complex vulnerabilities, which require developing high-level models of
 code execution.
 
-<img align="right" src="https://habrastorage.org/files/879/56c/123/87956c123b5248f58393586831153cd4.png"/>
+<img align="right" src="https://habrastorage.org/files/879/56c/123/87956c123b5248f58393586831153cd4.png" alt="Unified Pattern Matching Workflow"/>
 
 The following requirements have been defined for the module under
 development:
@@ -162,7 +162,7 @@ context-free and context-sensitive languages.
 
 ### ANTLR
 
-<img align="left" src="https://habrastorage.org/files/3ce/bab/ae6/3cebabae6be0455587bc3a379dc7a4f9.png"/>
+<img align="left" src="https://habrastorage.org/files/3ce/bab/ae6/3cebabae6be0455587bc3a379dc7a4f9.png" alt="ANTLR" />
 
 This parser generator is an
 [LL(\*)](https://en.wikipedia.org/wiki/LL_parser), it has existed for
@@ -204,7 +204,7 @@ algorithms in the following article: [Adaptive LL(\*) Parsing: The Power of Dyna
 
 ### Roslyn
 
-<img align="left" src="https://habrastorage.org/files/f73/8f6/1df/f738f61dfbc34181bb430ac48c0965f3.png"/>
+<img align="left" src="https://habrastorage.org/files/f73/8f6/1df/f738f61dfbc34181bb430ac48c0965f3.png" alt="Roslyn" />
 
 Roslyn is not just a parser; it is a fully-featured tool for parsing,
 analyzing and compiling C\# code. It is also developed on GitHub, but it
@@ -352,7 +352,7 @@ case MOD_UNLOAD:
 
 ### Handling parse errors
 
-<img align="right" src="https://habrastorage.org/files/7eb/ac2/95e/7ebac295e2544306ad18a43b363c41fa.png"/>
+<img align="right" src="https://habrastorage.org/files/7eb/ac2/95e/7ebac295e2544306ad18a43b363c41fa.png" alt="Parsing Error" />
 
 An important capability of each parser is error handling. The reasons
 are as follows:
@@ -485,7 +485,7 @@ code.
 
 ## From theory to practice
 
-<img align="left" src="https://habrastorage.org/files/e54/08c/d6d/e5408cd6dc2f422a90287482ec9df95b.png"/>
+<img align="left" src="https://habrastorage.org/files/e54/08c/d6d/e5408cd6dc2f422a90287482ec9df95b.png" alt="Open Source" />
 
 [Php](https://github.com/antlr/grammars-v4/tree/master/php),
 [tsql](https://github.com/antlr/grammars-v4/blob/master/tsql/tsql.g4),

@@ -2,7 +2,7 @@
 
 [The previous article in this series](http://blog.ptsecurity.com/2016/06/theory-and-practice-of-source-code.html) discussed the theory of source code
 parsing in ANTLR and Roslyn. The article pointed out that a
-signature-based code analysis in [PT Application Inspector](https://www.ptsecurity.com/products/#ai) is divided into the following stages:
+signature-based code analysis in [PT Application Inspector](https://www.ptsecurity.com/ww-en/products/ai/) is divided into the following stages:
 
 1. Parsing into a language dependent representation (abstract syntax
 tree, AST).
@@ -19,16 +19,16 @@ structures.
 
 ## Contents
 
-* [AST Traversing](#AST-Traversing)
-    * [Visitor and Listener](#Visitor-and-Listener)
-    * [Differences between Visitor in ANTLR and Roslyn](#Differences-between-Visitor-in-ANTLR-and-Roslyn)
-    * [Grammar and Visitor in ANTLR](#Grammar-and-Visitor-in-ANTLR)
-    * [Alternative and Element Labels in ANTLR](#Alternative-and-element-labels-in-ANTLR)
-* [Types of nodes in a unified AST](#Types-of-nodes-in-a-unified-AST)
-* [Testing of converters](#Testing-of-converters)
-* [Simplifying an UAST](#Simplifying-an-UAST)
-* [Algorithm for matching tree structures](#Algorithm-for-matching-AST-and-patterns)
-* [Conclusion](#Conclusion)
+* [AST Traversing](#ast-traversing)
+    * [Visitor and Listener](#visitor-and-listener)
+    * [Differences between Visitor in ANTLR and Roslyn](#differences-between-visitor-in-antlr-and-roslyn)
+    * [Grammar and Visitor in ANTLR](#grammar-and-visitor-in-antlr)
+    * [Alternative and Element Labels in ANTLR](#alternative-and-element-labels-in-antlr)
+* [Types of nodes in a unified AST](#types-of-nodes-in-a-unified-ast)
+* [Testing of converters](#testing-of-converters)
+* [Simplifying an UAST](#simplifying-an-uast)
+* [Algorithm for matching tree structures](#algorithm-for-matching-ast-and-patterns)
+* [Conclusion](#conclusion)
 
 ## AST Traversing
 

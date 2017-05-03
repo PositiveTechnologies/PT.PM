@@ -6,7 +6,7 @@ UST). At present time C\#, Java, PHP, PL/SQL, T-SQL, and JavaScript
 are supported. Patterns can be described within the code or using a
 domain-specific language (DSL).
 
-| Windows Build Status | Linux/Mac Build Status |
+| Windows Build Status | Linux Build Status |
 |---|---|
 | [![Windows Build Status](https://ci.appveyor.com/api/projects/status/vo0acpvek4q1x8yh?svg=true)](https://ci.appveyor.com/project/KvanTTT/pt-pm) | [![Linux/Mac Build Status](https://api.travis-ci.org/PositiveTechnologies/PT.PM.svg?branch=master)](https://travis-ci.org/PositiveTechnologies/PT.PM) |
 
@@ -21,6 +21,12 @@ Artifacts also available: [https://ci.appveyor.com/project/KvanTTT/pt-pm/build/a
 * Use Cases and API (TODO)
 * [Command Line Interface (CLI) parameters](Documents/CLI.md)
 * [DSL Description and Examples of Patterns](Documents/DSL.md)
+
+### Additional articles
+
+* [Theory and Practice of Source Code Parsing with ANTLR and Roslyn](Documents/Articles/Theory-and-Practice-of-source-code-parsing-with-ANTLR-and-Roslyn/English.md)
+* [Tree structures processing and unified AST](Documents/Articles/Tree-structures-processing-and-unified-AST/English.md)
+* [Pattern language for a universal signature-based code analyzer](Documents/Articles/Pattern-language-for-a-universal-signature-based-code-analyzer/English.md)
 
 ## Projects Description
 

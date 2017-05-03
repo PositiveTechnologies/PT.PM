@@ -1,131 +1,184 @@
-# Что такое DSL?
+# What is DSL?
 
-DSL - это язык для описания шаблонов PM. Стандартных методов поиска, таких как поиск слова в тексте или текста, который удовлетворяет регулярному выражению, не хватает для эффективного анализа кода.
-Для выявления программных закладок должна быть возможность адаптировать шаблоны PM к бизнес-логике приложения. При помощи DSL можно создать шаблон, который позволит находить блоки кода, содержащие разные типы, выражения и прочее, но схожие логически.
+A pattern matching DSL is a language designed for describing patterns.
+Effective code analysis requires more than standard search methods, such
+as word search in text or search of text that satisfies a regular
+expression. To detect software flaws and vulnerabilities, PM patterns
+should be adapted to the application business logic. DSL allows users to
+create patterns for detecting code blocks that contain different but
+logically similar types, expressions, and other elements.
 
-## Правила создания шаблонов
+## Rules for creating patterns
 
-Шаблон представляет собой фрагмент кода, в котором часть значений может быть заменена на служебные элементы. Поддерживаемые языки программирования: С#, Java, PHP, PL/SQL, T-SQL, JavaScript. Шаблон может быть создан как для одного, так и для нескольких языков.
+A pattern is a code fragment in which a part of the values can be
+replaced by special objects. Supported programming languages: C\#, Java,
+PHP, PL/SQL, T-SQL, and JavaScript. Patterns can be created for a single
+or multiple languages.
 
-### Служебные элементы
+### Special elements
 
-1. `...` или `#*` - произвольное количество любых аргументов;
-2. `#` - любое выражение;
-3. `<[patternValue]>`. Используется для поиска по одному из шести шаблонных значений (patternValue). Допускаются и комбинации значений, в этом случае они объединяются оператором `||`.
+1. `...` or `#*` is an arbitrary number of arguments of any kind
+2. `#` is any expression
+3. `<[patternValue]>`. This element is used to search for one of
+   the six pattern values (patternValue). Combinations of values are
+   also allowed. Values can be combined using the operator `||`.
 
-### Типы примитивных значений
+### Types of primitive values
 
-* `ID`: Идентификатор (ограничения: содержит только буквы латинского алфавита, цифры, `_` и `$`, не должен начинаться с цифры);
-* `String`: Строка (ограничения: должна быть заключена в двойные кавычки `"`, не допускаются одиночные символы обратного слеша и двойной кавычки `\` и `"`; `\"` и `\\` допускаются);
-* `Var`: Фиксированная переменная (содержит только буквы латинского алфавита, цифры, `_` и `$`, не может начинаться с цифры, перед именем переменной должен стоять знак `@`);
+* `ID`: Identifier (should only contain Latin letters,
+   numerals, `_` and `$`, must not start with a digit)
+* `String`: String (Must be enclosed in double quotation marks (`"`).
+   Special characters like single backslash (`\`) or double quote (`"`)
+   need to be escaped by a backslash.)
+* `Var`: Fixed variable (Should only contain Latin letters,
+   numerals, `_` and `$`, must not start with a digit, the `@` character
+   must be added before the variable name.)
 * `Number`:
-    * Целое, восьмеричное (начинается с `0`) или шестнадцатеричное число (начинается с `0X`);
-    * Выражение вида: `number (operator number)*`, где `operator` - это `+`, `-`, `*`, `/`;
-    * Диапазон:
-		* `number1..number2` соответствует диапазону, в котором левая граница включается, а правая - нет
-		* `..` - бесконечный диапазон
-		* `number1..` - диапазон, ограниченный снизу включая границу
-		* `..number2` - диапазон, ограниченный сверху исключая границу
-* `Bool`: `bool`, либо `true`, либо `false`;
-* `Null`: пустое значение `null`.
+  * Integer, octal (starts with `0`) or hexadecimal number (starts with `0X`)
+  * Expression: `number (operator number)*`, where operator is `+`, `-`, `*`, `/`
+  * Range:
+    * `number1..number2` - is consistent with the range in which only
+        the left bound is included
+    * `..` is an infinite range limited by a set of Int64 values
+    * `number1..` - is the range limited by the bottom bound including
+        the bound itself
+    * `..number2` - is the range limited by the bottom bound excluding
+        the bound
+* `Bool`:  `bool`, `true` or `false`
+* `Null`: `null` value
 
-### Типы примитивных конструкций
+### Types of primitive structures
 
-* `expression` - любая из конструкций **1-16** ниже.
-* `patternValue` - регулярное выражение, диапазон чисел, либо любое примитивное значение.
-* `regexString` - регулярное выражение для строк (обособляется двойными кавычками '"').
-* `regexID` - регулярное выражение для идентификаторов.
+* `expression` is any of the structures **1-16** listed below
+* `patternValue` is a regular expression, a range of numbers, or any
+    primitive value
+* `regexString` is a regular expression for strings (separated by
+    double quotation marks `"`)
+* `regexID` is a regular expression for identifiers
 
-### Допустимые выражения в шаблоне
+### Valid expressions in the pattern
 
-1. `expression (<[||]> expression)+` - перечисление, при сопоставлении с кодом каждое выражение сравнивается отдельно;
-2. `expression(args)` - вызов функции;
-3. `expression.Id` или `expression.<[regexID]>` - обращение к члену объекта (поле, метод);
-4. `(expression.)?Id` или `(expression.)?<[regexID]>` - аналогично предыдущему, выражение с точкой может отсутствовать;
-5. `Id expression = expression` или `<[regexID]> expression = expression` - объявление переменной;
-6. `expression = expression` - присваивание;
-7. `new Id(args)` или `new <[regexID]>(args)` - создание объекта; 
-8. `value` - примитивной значение `ID`, `Sting`, `Number`, `Bool` или `Null`;
-9. `<[patternValue (|| patternValue)*]>` - перечисление, при сопоставлении с кодом шаблонное значение сравнивается отдельно;
-10. `<[(~)? patternValue (|| (~)? patternValue)*]>` - перечисление с отрицанием. Если перечисление указывается для синтаксической конструкции, то используется синтаксис `<[~]>` 
-11. `<[regexVar: (~)? patternValue (|| (~)? patternValue)*]>` - после двоеточия перечисляются допустимые значения для фиксированной переменной, например, password (это означает, что переменная является идентификатором password) или `3..10` (это означает, что переменная является числом из диапазона `3..10`);
-12. `expression + expression` - сложение (конкатенация для строк, сложение для чисел);
-13. `expression - expression` - вычитание;
-14. `expression * expression` - умножение;
-15. `expression / expression` - деление;
-16. `expression[expression]` - обращение по индексу или ключу;
-17. `Comment: <[regexString]>` - поиск в комментариях;
-18. `try catch { }` - try-блок с пустым обработчиком исключения.
-19. `<{ expression }>` - данная конструкция предписывает, что `expression` может находиться на любой глубине AST.
+1. `expression (<[||]> expression)+` is an enumeration (When
+    being matched with the code, each expression is matched separately.)
+2. `expression(args)` is a function call
+3. `expression.Id` or `expression.<[regexID]>` is a reference to a
+    member of object (field, method)
+4. `(expression.)?Id` or `(expression.)?<[regexID]>` is similar to
+    the previous one; the expression with a period may be absent
+5. `Id expression = expression` or `<[regexID]> expression = expression` 
+is a declaration of a variable
+6. `expression = expression` is an assignment
+7. `new Id(args)` or `new <[regexID]>(args)` is an object creation
+8. value is a primitive value of `ID`, `Sting`, `Number`, `Bool` or `Null`
+9. `<[patternValue (|| patternValue)*]>` is an enumeration (When
+    being matched with the code, each pattern value is compared
+    separately.)
+10. `<[(~)? patternValue (|| (~)? patternValue)*]>` is a
+    negative enumeration (If the enumeration is specified for the syntax
+    structure, then the `<[~]>` syntax is used.)
+11. `<[regexVar: (~)? patternValue (|| (~)? patternValue)*]>`
+    After the colon, the valid values for the
+    fixed variable are listed. For example, password (This means that
+    the variable is a password identifier) or `3..10` (This means that
+    the variable is a number from 3 to 10.)
+12. `expression + expression` is an addition operation (concatenation for
+    strings, addition for numbers)
+13. `expression - expression` is a subtraction operation
+14. `expression \* expression` is a multiplication operation
+15. `expression / expression` is a division operation
+16. `expression[expression]` is accessing by index or key
+17. `Comment: <[regexString]>` is a search in comments
+18. `try catch { }` is a try block with an empty exception handler
+19. `<{ expression }>` This structure prescribes that `expression` can
+    be at any depth of the AST.
 
-### Аргументы
+### Arguments
 
-Список `arg (, arg)*`, где `arg` - это:
+`arg (, arg)*` is the list where arg is an
 * `expression`;
-* `<[args]>`, или `...`, или `#*` - произвольное количество любых аргументов.
+* `<[args]>` or `...`, or `#*` is an arbitrary number of any
+    arguments
 
-## Особенности создания шаблонов для языков PHP, PL/SQL, T-SQL
+## The particular aspects of creating patterns for PHP, PL/SQL, T-SQL languages
 
-1. В названиях переменных знак `$` должен быть опущен;
-2. Т.к. в PHP имена функций, а в T-SQL и PL/SQL вообще идентификаторы регистронезависимы, то модификаторы `(?i)...(?-i)` для них можно не использовать.
+1.  The `$` character must be skipped in the names of variables.
+2.  Function names in PHP and identifiers in T-SQL and PL/SQL are case
+    insensitive; then, the modifiers `(?i)...(?-i)` may be skipped.
 
-## Временное решение
+## Temporary solution
 
-Допустимые конструкции:
+Valid constructions:
+
 ```
 statement1
 statement2
 ...
 statementN
 ```
-Где `statement` - это:
-1. `expression;` - выражение и точка с запятой;
-2. `<[~]> expression;` - любая инструкция, не содержащая данное выражение;
-3. `...` - произвольное количество любых инструкций (может быть опущено);
-4. `if (expression) {statement1 ... statementN}` - условный оператор с одной ветвью.
-Для того чтобы обозначить одну и ту же переменную в разных инструкциях, необходимо использовать конструкцию `<[@var]>`, где `<[@var]>` - это regexVar.
 
-## Примеры
+Where `statement` is:
+1. `expression;` is an expression with a semicolon
+2. `<[~]> expression;` is any structure that does not contain
+    this expression
+3. `...` is an arbitrary number of any statements (May be skipped.)
+4. `if (expression) {statement1 ... statementN}` is a conditional
+    operator with a single branch. In order to denote the same variable
+    in different statements, use the `<[@var]>` structure
+    where `<[@var]>` is a regexVar.
+
+## Examples
 
 1. `(#.)?<[(?i)password(?-i)]> = <["\w*" || null]>`,
-	* `#` - любое выражение, которое может и отсутствовать;
-	* `<[(?i)password(?-i)]>` - Регулярное выражение ID;
-	* `<["\w*" || null]>` - Регулярное выражение String или Регулярное выражение Null;
-	* `<[(?i)password(?-i)]>` можно переписать как `<[(?i)password]>`, т.к., если модификатор действует до конца регулярного выражения, то выключающий модификатор можно опустить.
+  * `#` - any expression that may be absent
+  * `<[(?i)password(?-i)]>` - regular expression ID
+  * `<["\w*" || null]>` - regular expression String or Null
+  * `<[(?i)password(?-i)]>` may be rewritten
+        as `<[(?i)password]>`, because, if the modifier is
+        effective till the end of a regular expression, then the
+        disabling modifier may be skipped.
 2. `Configure.<[(?i)^write$]>("debug", <[1..9]>)`
-	* `<[(?i)^write$]>` - Регулярное выражение ID;
-	* `("debug", <[1..9]>)` - аргументы функции;
-	* `<[1..9]>` - диапазон целых чисел от 1 до 9.
-	* Если шаблон создается только для PHP, то его можно переписать следующим образом: `Configure.write("debug", <[1..9]>)`.
-3. `new AllowAllHostnameVerifier(...) <[||]> SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER` - ищем `new AllowAllHostnameVerifier` с любым количеством аргументов или `SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER`. Для оператора "шаблонное или" `<[||]>` также доступна и сокращенная версия: `<|>`.
-4. `# = _GET["url"]` - в шаблоне переменная `$_GET` указана без знака `$`.
-5. `<[@pwd:password]> = #.Text;` - фиксированная переменная является идентификатором password;
-   `~<[@pwd]> = #`
-   `#.Session[<[""]>] = <[@pwd]>;`
-6. `<{ document.<[^(URL|referrer|cookie)$]> }>`. Пример кода, на котором этот шаблон сопоставится:
-`document.getElementById('test').onclick=function(){ document.URL + "a" }`
+   * `<[(?i)^write$]>` - regular expression ID
+   * `("debug", <[1..9]>)` - function arguments
+   * `<[1..9]>` - a range of integers from 1 to 9
+   * If a pattern is created for PHP only, it can be rewritten as
+        follows: `Configure.write("debug", <[1..9]>)`.
+3. `new AllowAllHostnameVerifier(...) <[||]> SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER` search for the `new
+    AllowAllHostnameVerifier` with any number of arguments, or
+     `SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER`. A short version of
+    the "pattern or" `<[||]>` operator is also
+    available - `<|>`.
+4. `# = _GET["url"]` - the `$_GET` variable is specified in a
+    pattern without the `$` character.
+5. `<[@pwd:password]> = #.Text;` where the fixed variable is the
+    identifier for password;
+    ```
+    ~<[@pwd]> = #
+    #.Session[<[""]>] = <[@pwd]>;
+    ```
+6. `<{ document.<[^(URL|referrer|cookie)$]> }>`. An
+    example of the code with which the following pattern will be
+    matched: `document.getElementById('test').onclick=function(){ document.URL + "a" }`
 
-Шаблоны, для которых работает временное решение:
+Patterns with a temporary solution:
 
-### Insecure Cookie (C#)
+### Insecure Cookie (C\#)
 
-```
+```CSharp
 HttpCookie <[@cookie]> = new HttpCookie(...);
-... // может быть опущено
+... // may be skipped
 <[~]><[@cookie]>.Secure = True;
-... // может быть опущено
+... // may be skipped
 Response.Cookies.Add(<[@cookie]>);
 ```
 
+Response.Cookies.Add(&lt;\[@cookie\]&gt;);
+
 ### Insecure Cookie (Java)
 
-```
+```Java
 Cookie <[@cookie]> = new Cookie(...);
 ...
 <[~]><[@cookie]>.setSecure(true);
 ...
 #.addCookie(<[@cookie]>);
 ```
-
-
-
