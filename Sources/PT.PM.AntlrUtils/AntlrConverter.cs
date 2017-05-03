@@ -7,6 +7,8 @@ using Antlr4.Runtime;
 using System;
 using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace PT.PM.AntlrUtils
 {
@@ -27,7 +29,7 @@ namespace PT.PM.AntlrUtils
             ConvertedLanguages = MainLanguage.GetLanguageWithDependentLanguages();
         }
 
-        protected abstract FileNode CreateVisitorAndVisit(ITokenStream tokenStream, ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger);
+        protected abstract FileNode CreateVisitorAndVisit(IList<IToken> tokens, ParserRuleContext ruleContext, string filePath, string fileData, ILogger logger);
 
         public Ust Convert(ParseTree langParseTree)
         {
@@ -41,7 +43,7 @@ namespace PT.PM.AntlrUtils
             {
                 try
                 {
-                    fileNode = CreateVisitorAndVisit(antlrParseTree.TokenStream, tree, filePath, langParseTree.FileData, Logger);
+                    fileNode = CreateVisitorAndVisit(antlrParseTree.Tokens, tree, filePath, langParseTree.FileData, Logger);
                     result = new MostCommonUst(fileNode, ConvertedLanguages);
                 }
                 catch (Exception ex)

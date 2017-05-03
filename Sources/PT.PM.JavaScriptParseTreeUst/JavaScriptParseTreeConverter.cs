@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using Antlr4.Runtime;
+using System.Collections.Generic;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -14,11 +15,11 @@ namespace PT.PM.JavaScriptParseTreeUst
             ConvertedLanguages = Language.JavaScript.GetLanguageWithDependentLanguages();
         }
 
-        protected override FileNode CreateVisitorAndVisit(ITokenStream tokenStream, ParserRuleContext ruleContext,
+        protected override FileNode CreateVisitorAndVisit(IList<IToken> tokens, ParserRuleContext ruleContext,
             string filePath, string fileData, ILogger logger)
         {
             JavaScriptAntlrUstConverterVisitor visitor = new JavaScriptAntlrUstConverterVisitor(filePath, fileData);
-            visitor.TokenStream = tokenStream;
+            visitor.Tokens = tokens;
             visitor.Logger = logger;
             FileNode fileNode = (FileNode)visitor.Visit(ruleContext);
             return fileNode;

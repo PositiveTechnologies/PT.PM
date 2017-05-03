@@ -7,7 +7,7 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrParseTree : ParseTree
     {
-        public ITokenStream TokenStream;
+        public IList<IToken> Tokens = new List<IToken>();
 
         public ParserRuleContext SyntaxTree;
 

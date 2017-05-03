@@ -125,7 +125,6 @@ namespace PT.PM.AntlrUtils
 
                     var stopwatch = Stopwatch.StartNew();
                     IList<IToken> tokens = GetAllTokens(lexer);
-                    tokens = PreprocessTokens(tokens);
                     stopwatch.Stop();
                     long lexerTimeSpanTicks = stopwatch.ElapsedTicks;
 
@@ -153,9 +152,9 @@ namespace PT.PM.AntlrUtils
                     IncrementProcessedFilesCount();
 
                     result = Create(syntaxTree);
-                    result.TokenStream = codeTokenStream;
                     result.LexerTimeSpan = new TimeSpan(lexerTimeSpanTicks);
                     result.ParserTimeSpan = new TimeSpan(parserTimeSpanTicks);
+                    result.Tokens = tokens;
                     result.Comments = commentTokens;
                 }
                 catch (Exception ex)
@@ -271,11 +270,6 @@ namespace PT.PM.AntlrUtils
                 i++;
             }
             return result.ToString();
-        }
-
-        protected virtual IList<IToken> PreprocessTokens(IList<IToken> tokens)
-        {
-            return tokens;
         }
 
         protected static IList<IToken> GetAllTokens(Lexer lexer)

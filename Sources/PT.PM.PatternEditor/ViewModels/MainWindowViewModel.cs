@@ -512,7 +512,7 @@ namespace PT.PM.PatternEditor
                 if (antlrParseTree != null && antlrParseTree.SyntaxTree != null)
                 {
                     Antlr4.Runtime.Parser antlrParser = (workflow.ParserConverterSets[antlrParseTree.SourceLanguage].Parser as AntlrParser).Parser;
-                    var tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
+                    string tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
                     string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
 
                     Tokens = tokensString;
