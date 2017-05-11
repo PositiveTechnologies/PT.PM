@@ -2,7 +2,7 @@
 
 namespace PT.PM.Patterns.PatternsRepository
 {
-    public class FilePatternsRepository : StringPatternsRepository
+    public class FilePatternsRepository : JsonPatternsRepository
     {
         public FilePatternsRepository(string filePath)
             : base(File.ReadAllText(filePath))

@@ -12,7 +12,7 @@ namespace PT.PM.Patterns
 
         public string Key { get; set; }
 
-        public string FileNameWildcard { get; set; }
+        public string FilenameWildcard { get; set; }
 
         public LanguageFlags Languages
         {
@@ -34,24 +34,24 @@ namespace PT.PM.Patterns
         public string DebugInfo { get; set; }
 
         [JsonIgnore]
-        public Regex FileNameWildcardRegex
+        public Regex FilenameWildcardRegex
         {
             get
             {
-                if (!string.IsNullOrEmpty(FileNameWildcard) && pathWildcardRegex == null)
+                if (!string.IsNullOrEmpty(FilenameWildcard) && pathWildcardRegex == null)
                 {
-                    pathWildcardRegex = new WildcardConverter().Convert(FileNameWildcard);
+                    pathWildcardRegex = new WildcardConverter().Convert(FilenameWildcard);
                 }
                 return pathWildcardRegex;
             }
         }
 
-        public PatternBase(string key, string debugInfo, LanguageFlags languages, string fileNameWildcard)
+        public PatternBase(string key, string debugInfo, LanguageFlags languages, string filenameWildcard)
         {
             Key = key;
             DebugInfo = debugInfo;
             Languages = languages;
-            FileNameWildcard = fileNameWildcard;
+            FilenameWildcard = filenameWildcard;
         }
 
         public PatternBase()

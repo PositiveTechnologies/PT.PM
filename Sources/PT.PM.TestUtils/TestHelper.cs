@@ -54,7 +54,7 @@ namespace PT.PM.TestUtils
         }
 
         public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage,
-            ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFileNameWildcards = false)
+            ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false)
         {
             var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
 
@@ -62,7 +62,7 @@ namespace PT.PM.TestUtils
             var workflow = new Workflow(codeRep, language, stage: endStage);
             if (workflow.UstPatternMatcher != null)
             {
-                workflow.UstPatternMatcher.IsIgnoreFileNameWildcards = isIgnoreFileNameWildcards;
+                workflow.UstPatternMatcher.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
             }
             workflow.Logger = log;
             WorkflowResult workflowResult = workflow.Process();

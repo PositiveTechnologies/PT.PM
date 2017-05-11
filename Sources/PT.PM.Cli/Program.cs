@@ -22,7 +22,7 @@ namespace PT.PM.Cli
             string fileName = "";
             string escapedPatterns = "";
             int threadCount = 1;
-            LanguageFlags languages = LanguageExt.AllLanguages;
+            string languagesString = "";
             Stage stage = Stage.Match;
             int maxStackSize = 0;
             int maxTimespan = 0;
@@ -33,7 +33,7 @@ namespace PT.PM.Cli
             bool showVersion = true;
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
-            parser.Setup<LanguageFlags>('l', "languages").Callback(l => languages = l);
+            parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
             parser.Setup<string>('p', "patterns").Callback(p =>
                 escapedPatterns = p.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
                     ? p.NormDirSeparator()
@@ -82,6 +82,7 @@ namespace PT.PM.Cli
                         stage = Stage.Patterns;
                     }
 
+                    LanguageFlags languages = LanguageExt.ParseLanguages(languagesString);
                     ISourceCodeRepository sourceCodeRepository;
                     if (Directory.Exists(fileName))
                     {
@@ -105,7 +106,7 @@ namespace PT.PM.Cli
                     else
                     {
                         var patterns = StringCompressorEscaper.UnescapeDecompress(escapedPatterns);
-                        patternsRepository = new StringPatternsRepository(patterns);
+                        patternsRepository = new JsonPatternsRepository(patterns);
                     }
 
                     var workflow = new Workflow(sourceCodeRepository, languages, patternsRepository, stage)

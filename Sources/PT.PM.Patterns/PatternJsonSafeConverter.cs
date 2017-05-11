@@ -25,7 +25,7 @@ namespace PT.PM.Patterns
                 Name = (string)jObject[nameof(PatternDto.Name)] ?? "",
                 Key = (string)jObject[nameof(PatternDto.Key)] ?? "",
                 Languages = resultLanguages,
-                FileNameWildcard = (string)jObject[nameof(PatternDto.FileNameWildcard)] ?? "",
+                FilenameWildcard = (string)jObject[nameof(PatternDto.FilenameWildcard)] ?? "",
                 Value = (string)jObject[nameof(PatternDto.Value)] ?? "",
                 CweId = (string)jObject[nameof(PatternDto.CweId)] ?? "",
                 Description = (string)jObject[nameof(PatternDto.Description)] ?? "",

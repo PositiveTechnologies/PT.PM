@@ -135,7 +135,7 @@ namespace PT.PM.Common
         public static LanguageFlags ParseLanguages(string languageFlagsString)
         {
             LanguageFlags resultLanguages;
-            if (languageFlagsString != null)
+            if (!string.IsNullOrEmpty(languageFlagsString))
             {
                 resultLanguages = LanguageFlags.None;
                 string[] languageStrings = languageFlagsString.Split(languageFlagSeparators, StringSplitOptions.RemoveEmptyEntries);
