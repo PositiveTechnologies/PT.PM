@@ -55,7 +55,7 @@ namespace PT.PM.Cli.Tests
         {
             ProcessExecutionResult result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestHelper.TestsDataPath}\" " +
-                $"-l {Language.PlSql} {Language.TSql} " +
+                $"-l {Language.PlSql},{Language.TSql} " +
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not process php (csharp, java etc.) files.
