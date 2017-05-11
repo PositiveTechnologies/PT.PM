@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using System.Threading.Tasks;
 
@@ -15,8 +16,9 @@ namespace PT.PM.PatternEditor
         public MessageBox(string message, string title = "", MessageBoxType messageBoxType = MessageBoxType.Ok)
         {
             this.InitializeComponent();
+            this.AttachDevTools();
+
             DataContext = new MessageBoxViewModel(this, message, title, messageBoxType);
-            App.AttachDevTools(this);
             Activate();
         }
 

@@ -7,7 +7,7 @@ namespace PT.PM.PatternEditor
     {
         internal static string TempDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-        internal static Settings Settings { get; set; }
+        internal static Settings Settings { get; set; } = new Settings();
 
         internal static Window MainWindow { get; set; }
 
