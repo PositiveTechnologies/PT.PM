@@ -40,7 +40,7 @@ namespace PT.PM.Patterns
 
         public string Description { get; set; } = "";
 
-        public string FileNameWildcard { get; set; } = "";
+        public string FilenameWildcard { get; set; } = "";
 
         public PatternDto()
         {
@@ -51,7 +51,7 @@ namespace PT.PM.Patterns
             Key = pattern.Key;
             Description = pattern.DebugInfo;
             Languages = pattern.Languages;
-            FileNameWildcard = pattern.FileNameWildcard;
+            FilenameWildcard = pattern.FilenameWildcard;
 
             DataFormat = dataFormat;
             Value = data;

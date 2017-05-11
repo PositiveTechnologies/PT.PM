@@ -10,7 +10,7 @@ namespace PT.PM.Matching
         where TPattern : PatternBase
         where TMatchingResult : MatchingResultBase<TPattern>
     {
-        bool IsIgnoreFileNameWildcards { get; set; }
+        bool IsIgnoreFilenameWildcards { get; set; }
 
         TPattern[] Patterns { get; set; }
 

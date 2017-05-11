@@ -16,7 +16,7 @@ namespace PT.PM.Matching
 
         public Pattern[] Patterns { get; set; }
 
-        public bool IsIgnoreFileNameWildcards { get; set; }
+        public bool IsIgnoreFilenameWildcards { get; set; }
 
         public BruteForcePatternMatcher(Pattern[] patterns)
         {
@@ -36,9 +36,9 @@ namespace PT.PM.Matching
                     var matchingResult = new List<MatchingResult>();
                     IEnumerable<Pattern> patterns = Patterns
                         .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None);
-                    if (!IsIgnoreFileNameWildcards)
+                    if (!IsIgnoreFilenameWildcards)
                     {
-                        patterns = patterns.Where(pattern => pattern.FileNameWildcardRegex?.IsMatch(ust.FileName) ?? true);
+                        patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.FileName) ?? true);
                     }
                     PatternVarRefEnumerator[] patternEnumerators = patterns
                         .Select(pattern => new PatternVarRefEnumerator(pattern)).ToArray();
