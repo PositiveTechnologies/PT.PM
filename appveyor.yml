@@ -1,4 +1,4 @@
-version: 0.9.3.{build}
+version: 0.9.4.{build}
 configuration: Release
 platform: Any CPU
 skip_branch_with_pr: true
