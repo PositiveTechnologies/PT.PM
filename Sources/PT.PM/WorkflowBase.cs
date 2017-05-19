@@ -11,6 +11,7 @@ using System;
 using System.Threading.Tasks;
 using PT.PM.Matching;
 using System.Threading;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM
 {
@@ -194,7 +195,7 @@ namespace PT.PM
                 SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
                 stopwatch.Stop();
 
-                Logger.LogInfo("File {0} has been read (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
 
                 workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
                 workflowResult.AddProcessedLinesCount(TextHelper.GetLinesCount(sourceCodeFile.Code));
@@ -215,7 +216,7 @@ namespace PT.PM
                     }
                     result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
-                    Logger.LogInfo("File {0} has been parsed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                    Logger.LogInfo($"File {fileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
 
                     var antlrParseTree = result as AntlrParseTree;
@@ -249,7 +250,7 @@ namespace PT.PM
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError(new ParsingException("Patterns can not be deserialized due to the error: " + ex.Message));
+                        Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
                     }
                 });
                 convertPatternsTask.Start();

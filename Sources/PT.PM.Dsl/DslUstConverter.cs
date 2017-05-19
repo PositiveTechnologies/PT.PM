@@ -12,7 +12,6 @@ using PT.PM.Common.Nodes.Tokens;
 using Antlr4.Runtime.Tree;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using PT.PM.Patterns;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
@@ -44,7 +43,7 @@ namespace PT.PM.Dsl
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                Logger.LogError(new ConversionException("Pattern", ex) { IsPattern = true });
                 throw;
             }
         }
@@ -576,22 +575,22 @@ namespace PT.PM.Dsl
 
         public UstNode Visit(IParseTree tree)
         {
-            throw new ShouldNotBeVisitedException();
+            throw new ShouldNotBeVisitedException("DSL node");
         }
 
         public UstNode VisitChildren(IRuleNode node)
         {
-            throw new ShouldNotBeVisitedException();
+            throw new ShouldNotBeVisitedException("DSL children");
         }
 
         public UstNode VisitTerminal(ITerminalNode node)
         {
-            throw new ShouldNotBeVisitedException();
+            throw new ShouldNotBeVisitedException("DSL Terminal");
         }
 
         public UstNode VisitErrorNode(IErrorNode node)
         {
-            throw new ShouldNotBeVisitedException();
+            throw new ShouldNotBeVisitedException("DSL Error");
         }
 
         private string RemoveQuotes(string str)

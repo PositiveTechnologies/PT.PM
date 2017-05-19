@@ -6,6 +6,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.CSharpParseTreeUst.RoslynUstVisitor;
 using Microsoft.CodeAnalysis;
 using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -50,7 +51,7 @@ namespace PT.PM.CSharpParseTreeUst
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(string.Format("Conversion error in \"{0}\"", filePath), ex);
+                    Logger.LogError(new ConversionException(filePath, ex));
                     result = new MostCommonUst();
                 }
             }
