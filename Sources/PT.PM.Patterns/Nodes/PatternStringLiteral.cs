@@ -61,7 +61,7 @@ namespace PT.PM.Patterns.Nodes
                 return NodeType - other.NodeType;
             }
 
-            MatchedLocations = PatternHelper.MatchRegex(Regex, ((StringLiteral)other).Text);
+            MatchedLocations = PatternHelper.MatchRegex(Regex, ((StringLiteral)other).Text, isString: true);
             return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }
