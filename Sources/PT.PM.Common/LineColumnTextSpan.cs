@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Common
 {
@@ -15,6 +11,10 @@ namespace PT.PM.Common
         public int EndLine { get; set; }
 
         public int EndColumn { get; set; }
+
+        public LineColumnTextSpan()
+        {
+        }
 
         public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn)
         {
