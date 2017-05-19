@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using Antlr4.Runtime;
 using System;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.Dsl
 {
@@ -16,7 +17,7 @@ namespace PT.PM.Dsl
         public DslParser.PatternContext Parse(string data)
         {
             DslParser.PatternContext pattern = null;
-            var errorListener = new AntlrMemoryErrorListener();
+            var errorListener = new AntlrMemoryErrorListener() { IsPattern = true };
             errorListener.FileName = "Pattern";
             errorListener.FileData = data;
             errorListener.Logger = Logger;
@@ -36,7 +37,7 @@ namespace PT.PM.Dsl
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ParsingException("Pattern", ex));
+                Logger.LogError(new ParsingException("Pattern", ex) { IsPattern = true });
                 throw;
             }
 
