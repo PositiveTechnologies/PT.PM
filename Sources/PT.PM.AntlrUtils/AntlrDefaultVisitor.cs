@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Linq;
 
 namespace PT.PM.AntlrUtils
 {
@@ -24,6 +25,8 @@ namespace PT.PM.AntlrUtils
         public IList<IToken> Tokens { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
+
+        public Parser Parser { get; set; }
 
         public AntlrDefaultVisitor(string fileName, string fileData)
         {
@@ -137,7 +140,15 @@ namespace PT.PM.AntlrUtils
 
         protected UstNode VisitShouldNotBeVisited(IParseTree tree)
         {
-            throw new ShouldNotBeVisitedException();
+            var parserRuleContext = tree as ParserRuleContext;
+            string ruleName = "";
+            if (parserRuleContext != null)
+            {
+                ruleName = Parser?.RuleNames.ElementAtOrDefault(parserRuleContext.RuleIndex)
+                           ?? parserRuleContext.RuleIndex.ToString();
+            }
+
+            throw new ShouldNotBeVisitedException(ruleName);
         }
 
         protected UstNode DefaultResult
