@@ -4,7 +4,7 @@
     <id>PT.PM.Cli</id>
     <version>1.0</version>
     <description>An engine with CLI for searching patterns in the source code, based on Unified AST or UST. At present time C#, Java, PHP, PL/SQL, T-SQL, and JavaScript are supported. Patterns can be described within the code or using a DSL.</description>
-    <authors>Ivan Kochurkin</authors>
+    <authors>Positive Technologies</authors>
     
     <owners>ptsecurity,KvanTTT</owners>
     <title>PT Pattern Matching Engine Command Line Interface</title>
