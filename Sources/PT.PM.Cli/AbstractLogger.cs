@@ -32,7 +32,8 @@ namespace PT.PM.Cli
                         var fileTarget = target as NLog.Targets.FileTarget;
                         if (fileTarget != null)
                         {
-                            fileTarget.FileName = Path.Combine(logPath, fileTarget.FileName.ToString().Replace("'", ""));
+                            string fullFileName = fileTarget.FileName.ToString().Replace("'", "");
+                            fileTarget.FileName = Path.Combine(logPath, Path.GetFileName(fullFileName));
                         }
                     }
                 }
