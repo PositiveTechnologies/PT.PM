@@ -20,6 +20,6 @@
     <file src="bin\Release\*.dll" target="lib\net45\" />
     <file src="bin\Release\PT.PM.Cli.exe" target="lib\net45\" />
     <file src="Sources\AspxParser\AspxParser\System.Web.RegularExpressions.dll" target="lib\net45\" />
-    <file src="bin\Release\NLog.config" target="lib\net45\" />
+    <file src="bin\Release\*.config" target="lib\net45\" />
   </files>
 </package>
