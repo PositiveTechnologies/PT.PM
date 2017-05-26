@@ -23,19 +23,11 @@ namespace PT.PM.Common
         {
         }
 
-        public void LogError(string message, Exception ex)
-        {
-        }
-
         public void LogInfo(object infoObj)
         {
         }
 
         public void LogInfo(string message)
-        {
-        }
-
-        public void LogInfo(string format, params string[] args)
         {
         }
     }

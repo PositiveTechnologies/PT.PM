@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,22 +100,22 @@ namespace PT.PM.TestUtils
             return System.IO.Path.Combine(System.IO.Path.GetFullPath(CachedSourceDir), relativePath);
         }
 
-        public SourceCodeFile ReadFile(string file)
+        public SourceCodeFile ReadFile(string fileName)
         {
             var removeBeginLength = CachedSourceDir.Length + (CachedSourceDir.EndsWith("\\") ? 0 : 1);
-            var fileName = System.IO.Path.GetFileName(file);
-            SourceCodeFile result = new SourceCodeFile(fileName);
+            var shortFileName = System.IO.Path.GetFileName(fileName);
+            SourceCodeFile result = new SourceCodeFile(shortFileName);
             try
             {
-                int removeEndLength = fileName.Length + 1;
-                result.RelativePath = removeEndLength + removeBeginLength > file.Length
-                        ? "" : file.Remove(file.Length - removeEndLength).Remove(0, removeBeginLength);
-                result.Code = File.ReadAllText(file);
+                int removeEndLength = shortFileName.Length + 1;
+                result.RelativePath = removeEndLength + removeBeginLength > fileName.Length
+                        ? "" : fileName.Remove(fileName.Length - removeEndLength).Remove(0, removeBeginLength);
+                result.Code = File.ReadAllText(fileName);
                 return result;
             }
             catch (Exception ex)
             {
-                Logger.LogError("File read error: " + file, ex);
+                Logger.LogError(new ReadException(fileName, ex));
             }
             return result;
         }

@@ -18,9 +18,9 @@ namespace PT.PM.Cli
 
         public void LogStatistics()
         {
-            Logger.LogInfo("{0,-22} {1}", "Files count:", WorkflowResult.TotalProcessedFilesCount.ToString());
-            Logger.LogInfo("{0,-22} {1}", "Chars count:", WorkflowResult.TotalProcessedCharsCount.ToString());
-            Logger.LogInfo("{0,-22} {1}", "Lines count:", WorkflowResult.TotalProcessedLinesCount.ToString());
+            Logger.LogInfo($"{"Files count:",-22} {WorkflowResult.TotalProcessedFilesCount}");
+            Logger.LogInfo($"{"Chars count:",-22} {WorkflowResult.TotalProcessedCharsCount}");
+            Logger.LogInfo($"{"Lines count:",-22} {WorkflowResult.TotalProcessedLinesCount}");
             long totalTimeTicks = WorkflowResult.GetTotalTimeTicks();
             if (totalTimeTicks > 0)
             {
@@ -76,10 +76,8 @@ namespace PT.PM.Cli
                     ticks = WorkflowResult.TotalPatternsTicks;
                     break;
             }
-            Logger.LogInfo("{0,-22} {1} {2}%",
-                "Total " + stage.ToString().ToLowerInvariant() + " time:",
-                new TimeSpan(ticks).ToString(), CalculatePercent(ticks, totalTimeTicks).ToString("00.00"));
-
+            Logger.LogInfo
+                ($"{"Total " + stage.ToString().ToLowerInvariant() + " time:",-22} {new TimeSpan(ticks)} {CalculatePercent(ticks, totalTimeTicks):00.00}%");
             if (stage == Stage.Parse)
             {
                 LogAdditionalParserInfo();
@@ -90,14 +88,12 @@ namespace PT.PM.Cli
         {
             if (WorkflowResult.Languages.Any(lang => lang.HaveAntlrParser()))
             {
-                Logger.LogInfo("{0,-22} {1} {2}%",
-                    "  ANTLR lexing time:",
-                    new TimeSpan(WorkflowResult.TotalLexerTicks).ToString(),
-                        CalculatePercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalParseTicks).ToString("00.00"));
-                Logger.LogInfo("{0,-22} {1} {2}%",
-                    "  ANTLR parsing time:",
-                    new TimeSpan(WorkflowResult.TotalParserTicks).ToString(),
-                        CalculatePercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalParseTicks).ToString("00.00"));
+                TimeSpan lexerTimeSpan = new TimeSpan(WorkflowResult.TotalLexerTicks);
+                TimeSpan parserTimeSpan = new TimeSpan(WorkflowResult.TotalParserTicks);
+                double lexerPercent = CalculatePercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalParseTicks);
+                double parserPercent = CalculatePercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalParseTicks);
+                Logger.LogInfo($"{"  ANTLR lexing time: ",-22} {lexerTimeSpan} {lexerPercent:00.00}%");
+                Logger.LogInfo($"{"  ANTLR parisng time: ",-22} {parserTimeSpan} {parserPercent:00.00}%");
             }
         }
 

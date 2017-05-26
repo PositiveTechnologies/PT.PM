@@ -4,7 +4,7 @@
     <id>PT.PM</id>
     <version>1.0</version>
     <description>An engine for searching patterns in the source code, based on Unified AST or UST. At present time C#, Java, PHP, PL/SQL, T-SQL, and JavaScript are supported. Patterns can be described within the code or using a DSL.</description>
-    <authors>Ivan Kochurkin</authors>
+    <authors>Positive Technologies</authors>
     
     <owners>ptsecurity,KvanTTT</owners>
     <title>PT Pattern Matching Engine</title>
@@ -39,5 +39,6 @@
     <file src="Sources\AspxParser\AspxParser\System.Web.RegularExpressions.dll" target="lib\net45\" />
     <file src="bin\Release\AspxParser.dll" target="lib\net45\" />
     <file src="bin\Release\Antlr4.Runtime.dll" target="lib\net45\" />
+    <file src="bin\Release\*.config" target="lib\net45\" />
   </files>
 </package>

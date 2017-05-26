@@ -133,7 +133,7 @@ namespace PT.PM
                         IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
                         Ust ust = converter.Convert(parseTree);
                         stopwatch.Stop();
-                        Logger.LogInfo("File {0} has been converted (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                        Logger.LogInfo($"File {fileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(ust, true);
 
@@ -146,7 +146,7 @@ namespace PT.PM
                                 stopwatch.Restart();
                                 ust = UstPreprocessor.Preprocess(ust);
                                 stopwatch.Stop();
-                                Logger.LogInfo("Ust of file {0} has been preprocessed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                                Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
                                 workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
                                 workflowResult.AddResultEntity(ust, false);
 
@@ -163,7 +163,7 @@ namespace PT.PM
                                 stopwatch.Restart();
                                 IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
                                 stopwatch.Stop();
-                                Logger.LogInfo("File {0} has been matched with patterns (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                                Logger.LogInfo($"File {fileName} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
                                 workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
                                 workflowResult.AddResultEntity(matchingResults);
 

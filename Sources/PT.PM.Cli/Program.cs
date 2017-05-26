@@ -126,24 +126,24 @@ namespace PT.PM.Cli
                         logger.LogInfo("Scan completed.");
                         if (stage == Stage.Match)
                         {
-                            logger.LogInfo("{0,-22} {1}", "Matches count:", workflowResult.MatchingResults.Count().ToString());
+                            logger.LogInfo($"{"Matches count: ",-22} {workflowResult.MatchingResults.Count()}");
                         }
                     }
                     else
                     {
                         logger.LogInfo("Patterns checked.");
                     }
-                    logger.LogInfo("{0,-22} {1}", "Errors count:", workflowResult.ErrorCount.ToString());
+                    logger.LogInfo($"{"Errors count: ",-22} {workflowResult.ErrorCount}");
                     var workflowLoggerHelper = new WorkflowLoggerHelper(logger, workflowResult);
                     workflowLoggerHelper.LogStatistics();
-                    logger.LogInfo("{0,-22} {1}", "Time elapsed:", stopwatch.Elapsed.ToString());
+                    logger.LogInfo($"{"Time elapsed:",-22} {stopwatch.Elapsed}");
                 }
                 catch (Exception ex)
                 {
                     if (logger != null)
                     {
                         logger.IsLogErrors = true;
-                        logger.LogError("Error while processing", ex);
+                        logger.LogError(ex);
                     }
                 }
                 finally

@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Patterns.Nodes;
 using System;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.Patterns
 {
@@ -58,7 +59,7 @@ namespace PT.PM.Patterns
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", ex);
+                    Logger.LogError(new ConversionException($"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", ex));
                 }
             }
             return result.ToArray();
@@ -77,7 +78,7 @@ namespace PT.PM.Patterns
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("Error while \"{pattern.Key}\" pattern serialising", ex);
+                    Logger.LogError(new ConversionException($"Error while \"{pattern.Key}\" pattern serialising", ex));
                 }
             }
             return result.ToArray();

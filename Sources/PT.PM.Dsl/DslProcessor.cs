@@ -5,6 +5,7 @@ using System.Linq;
 using PT.PM.Patterns.Nodes;
 using PT.PM.UstPreprocessing;
 using System.Collections.Generic;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.Dsl
 {
@@ -46,7 +47,7 @@ namespace PT.PM.Dsl
         }
 
 
-        public UstNodeSerializationFormat DataFormat { get { return UstNodeSerializationFormat.Dsl; } }
+        public UstNodeSerializationFormat DataFormat => UstNodeSerializationFormat.Dsl;
 
         public DslProcessor()
         {
@@ -58,7 +59,7 @@ namespace PT.PM.Dsl
         {
             if (string.IsNullOrEmpty(data))
             {
-                throw new ParsingException("Pattern value can not be empty.");
+                throw new ParsingException("Pattern value can not be empty.") { IsPattern = true };
             }
 
             Parser.Logger = Logger;

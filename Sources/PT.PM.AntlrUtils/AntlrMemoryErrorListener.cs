@@ -1,10 +1,6 @@
-﻿using PT.PM.Common;
-using Antlr4.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Antlr4.Runtime;
+using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.AntlrUtils
 {
@@ -19,6 +15,8 @@ namespace PT.PM.AntlrUtils
 
         public string FileData { get; set; }
 
+        public bool IsPattern { get; set; }
+
         public AntlrMemoryErrorListener()
         {
         }
@@ -27,7 +25,7 @@ namespace PT.PM.AntlrUtils
         {
             var error = new AntlrLexerError(offendingSymbol, line, charPositionInLine, msg, e);
             int start = TextHelper.LineColumnToLinear(FileData, line, charPositionInLine);
-            Logger.LogError(new ParsingException(FileName, error.ToString()) { TextSpan = new TextSpan(start, 1) });
+            Logger.LogError(new ParsingException(FileName, message: error.ToString()) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }
 
         public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
@@ -47,7 +45,7 @@ namespace PT.PM.AntlrUtils
                 errorText = errorText.Substring(0, firstInd + 1) + errorCode + errorText.Substring(secondInd);
             }
             int start = TextHelper.LineColumnToLinear(FileData, line, charPositionInLine);
-            Logger.LogError(new ParsingException(FileName, errorText) { TextSpan = new TextSpan(start, 1) });
+            Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }
     }
 }

@@ -33,7 +33,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -41,6 +40,10 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="DummyLogger.cs" />
+    <Compile Include="Exceptions\ExceptionHelper.cs" />
+    <Compile Include="Exceptions\PMException.cs" />
+    <Compile Include="Exceptions\PMExceptionType.cs" />
+    <Compile Include="Exceptions\ReadException.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />
@@ -178,13 +181,13 @@
     <Compile Include="Helper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj">
       <Project>{0292ce45-bba4-46b8-ade4-3c39162c1f46}</Project>
       <Name>PT.PM.Prebuild</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

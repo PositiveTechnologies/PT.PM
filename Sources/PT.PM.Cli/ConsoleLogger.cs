@@ -21,15 +21,6 @@ namespace PT.PM.Cli
             }
         }
 
-        public override void LogError(string message, Exception ex)
-        {
-            base.LogError(message, ex);
-            if (IsLogErrors)
-            {
-                NLogConsoleLogger.Error("Error: {0}; {1}", PrepareForConsole(message), PrepareForConsole(ex.Message));
-            }
-        }
-
         public override void LogError(Exception ex)
         {
             base.LogError(ex);

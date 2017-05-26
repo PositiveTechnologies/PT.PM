@@ -3,21 +3,20 @@ using Avalonia.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using System.Configuration;
 using System.IO;
 
 namespace PT.PM.PatternEditor
 {
     public class Settings
     {
-        private static string defaultPath = ConfigurationManager.AppSettings["DefaultPath"]
+        private static string defaultPath = "%localappdata%/PT.PM"
             .Replace("%localappdata%", Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-        private static string settingsFileName = Path.Combine(defaultPath, ConfigurationManager.AppSettings["SettingsFileName"]);
+        private static string settingsFileName = Path.Combine(defaultPath, "settings.json");
 
         private static readonly object saveLock = new object();
         private static JsonConverter[] jsonConverters = new JsonConverter[] { new StringEnumConverter() };
 
-        public static string DefaultPatternsFileName = Path.Combine(defaultPath, ConfigurationManager.AppSettings["DefaultPatternsFileName"]);
+        public static string DefaultPatternsFileName = Path.Combine(defaultPath, "custom_patterns.json");
 
         public WindowState WindowState { get; set; } = WindowState.Normal;
 

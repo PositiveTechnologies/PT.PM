@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PT.PM.Common.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,30 +30,35 @@ namespace PT.PM.Common.CodeRepository
             return Directory.EnumerateFiles(Path, "*.*", SearchOption.AllDirectories);
         }
 
-        public SourceCodeFile ReadFile(string file)
+        public SourceCodeFile ReadFile(string fileName)
         {
-            var removeBeginLength = Path.Length + (Path.EndsWith("\\") ? 0 : 1);
-            var fileName = System.IO.Path.GetFileName(file);
-            SourceCodeFile result = new SourceCodeFile(fileName);
+            SourceCodeFile result = null;
             try
             {
-                int removeEndLength = fileName.Length + 1;
-                result.RelativePath = removeEndLength + removeBeginLength > file.Length
-                        ? "" : file.Remove(file.Length - removeEndLength).Remove(0, removeBeginLength);
-                result.Code = File.ReadAllText(file);
+                var removeBeginLength = Path.Length + (Path.EndsWith("\\") ? 0 : 1);
+                var shortFileName = System.IO.Path.GetFileName(fileName);
+                result = new SourceCodeFile(shortFileName);
+            
+                int removeEndLength = shortFileName.Length + 1;
+                result.RelativePath = removeEndLength + removeBeginLength > fileName.Length
+                        ? "" : fileName.Remove(fileName.Length - removeEndLength).Remove(0, removeBeginLength);
+                result.Code = File.ReadAllText(fileName);
                 return result;
             }
             catch (Exception ex)
             {
-                Logger.LogError("File read error: " + file, ex);
+                Logger.LogError(new ReadException(fileName, ex));
+                if (result == null)
+                {
+                    result = new SourceCodeFile(fileName);
+                }
             }
             return result;
         }
 
         public string GetFullPath(string relativePath)
         {
-            var result = System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
-            return result;
+            return System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
         }
 
         public bool IsFileIgnored(string fileName)

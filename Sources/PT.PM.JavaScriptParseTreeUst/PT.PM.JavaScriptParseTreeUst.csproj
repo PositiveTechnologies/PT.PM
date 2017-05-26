@@ -80,14 +80,8 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4" --package "PT.PM.JavaScriptParseTreeUst.Parser"  --output "$(ProjectDir)Generated"</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  
+  <Target Name="GenerateJavaScriptAntlrParser" AfterTargets="AfterResolveReferences">
+    <Exec Command="&quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser  --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

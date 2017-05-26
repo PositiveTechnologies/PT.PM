@@ -53,7 +53,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
                     ((IntLiteral)node).Value == 42).First();
 
                 int beginLine, beginColumn, endLine, endColumn;
-                TextHelper.TextSpanToLineColumn(intNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                TextHelper.ToLineColumn(intNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
                 Assert.AreEqual(1, beginLine);
                 Assert.AreEqual(12, beginColumn);
                 Assert.AreEqual(14, endColumn);
@@ -62,7 +62,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
                     node => node.NodeType == NodeType.StringLiteral &&
                     ((StringLiteral)node).Text.StartsWith("Heredoc text")).First();
 
-                TextHelper.TextSpanToLineColumn(heredocNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                TextHelper.ToLineColumn(heredocNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
                 Assert.AreEqual(3, beginLine);
                 Assert.AreEqual(6, endLine);
 
@@ -70,7 +70,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
                     node => node.NodeType == NodeType.StringLiteral &&
                     ((StringLiteral)node).Text.Contains("http://127.0.0.1")).First();
 
-                TextHelper.TextSpanToLineColumn(serverAddressNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                TextHelper.ToLineColumn(serverAddressNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
                 Assert.AreEqual(8, beginLine);
                 Assert.AreEqual(15, beginColumn);
             }

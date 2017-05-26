@@ -2,6 +2,7 @@
 using AspxParser;
 using System;
 using System.IO;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -25,13 +26,13 @@ namespace PT.PM.CSharpParseTreeUst
                     AspxParseResult aspxTree = parser.Parse(source);
                     foreach (var error in aspxTree.ParseErrors)
                     {
-                        Logger.LogError(new ParsingException(filePath, error.Message) { TextSpan = error.Location.GetTextSpan() });
+                        Logger.LogError(new ParsingException(filePath, message: error.Message) { TextSpan = error.Location.GetTextSpan() });
                     }
                     result = new AspxParseTree(aspxTree.RootNode);
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ParsingException(filePath, ex.ToString()));
+                    Logger.LogError(new ParsingException(filePath, ex));
                     result = new CSharpRoslynParseTree();
                 }
             }

@@ -37,7 +37,7 @@ namespace PT.PM
         {
             MatchedCode = fileData.Substring(textSpan.Start, textSpan.Length);
             int beginLine, beginColumn, endLine, endColumn;
-            TextHelper.TextSpanToLineColumn(textSpan, fileData, out beginLine, out beginColumn, out endLine, out endColumn);
+            textSpan.ToLineColumn(fileData, out beginLine, out beginColumn, out endLine, out endColumn);
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;

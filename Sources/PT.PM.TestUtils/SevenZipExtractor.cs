@@ -1,4 +1,4 @@
-﻿using PT.PM.Common;
+﻿using PT.PM.Common.Exceptions;
 using System;
 using System.Diagnostics;
 
@@ -8,6 +8,7 @@ namespace PT.PM.TestUtils
     {
         public static void Extract(string zipPath, string extractPath)
         {
+            string errorMessage = null;
             try
             {
                 var processStartInfo = new ProcessStartInfo
@@ -22,15 +23,17 @@ namespace PT.PM.TestUtils
                 process.WaitForExit();
                 if (process.ExitCode != 0)
                 {
-                    string message = $"Error while extracting {extractPath}.";
-                    Console.Error.WriteLine(message);
-                    throw new ParsingException(message);
+                    errorMessage = $"Error while extracting {extractPath}.";
                 }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("Error while extracting {0}: {1}", extractPath, ex.Message);
-                throw;
+                errorMessage = $"Error while extracting {extractPath}: {ex.Message}";
+            }
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                Console.Error.WriteLine(errorMessage);
+                throw new ReadException(zipPath, message: errorMessage);
             }
         }
     }

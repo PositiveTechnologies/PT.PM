@@ -6,14 +6,15 @@ namespace PT.PM.Patterns
 {
     public class PatternHelper
     {
-        public static TextSpan[] MatchRegex(Regex patternRegex, string text, bool single = false)
+        public static TextSpan[] MatchRegex(Regex patternRegex, string text, bool returnSingle = false, bool isString = false)
         {
-            if (single)
+            if (returnSingle)
             {
                 Match match = patternRegex.Match(text);
                 if (match.Success)
                 {
-                    return new TextSpan[] { new TextSpan(match.Index, match.Length) };
+                    int startIndex = isString ? match.Index + 1 : match.Index; // TODO: Fix location in UST node.
+                    return new TextSpan[] { new TextSpan(startIndex, match.Length) };
                 }
                 else
                 {
@@ -26,7 +27,8 @@ namespace PT.PM.Patterns
                 var result = new List<TextSpan>(matches.Count);
                 foreach (Match match in matches)
                 {
-                    result.Add(new TextSpan(match.Index, match.Length));
+                    int startIndex = isString ? match.Index + 1 : match.Index;  // TODO: Fix location in UST node.
+                    result.Add(new TextSpan(startIndex, match.Length));
                 }
                 return result.ToArray();
             }
