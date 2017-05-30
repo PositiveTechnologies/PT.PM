@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PT.PM.CSharpParseTreeUst.Tests</RootNamespace>
     <AssemblyName>PT.PM.CSharpParseTreeUst.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -35,11 +35,9 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.3.2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.1.3.2\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.7.12.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.7.12\lib\net45\Moq.dll</HintPath>
