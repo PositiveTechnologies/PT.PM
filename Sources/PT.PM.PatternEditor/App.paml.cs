@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Diagnostics;
 using Avalonia.Logging.Serilog;
 using Avalonia.Markup.Xaml;
-using PT.PM.PatternEditor;
 using Serilog;
 
 namespace PT.PM.PatternEditor
