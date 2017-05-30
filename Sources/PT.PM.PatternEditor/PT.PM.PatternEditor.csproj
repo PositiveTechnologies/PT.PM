@@ -65,7 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime">
-      <Version>4.6.1-beta002</Version>
+      <Version>4.6.1</Version>
     </PackageReference>
     <PackageReference Include="Avalonia" Version="0.4.1-build3088-alpha" />
     <PackageReference Include="Avalonia.Desktop" Version="0.4.1-build3088-alpha" />
