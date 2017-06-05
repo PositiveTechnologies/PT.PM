@@ -26,6 +26,8 @@ namespace PT.PM.AntlrUtils
 
         public abstract Language Language { get; }
 
+        public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
+
         public int MaxStackSize { get; set; } = 0;
 
         public int MaxTimespan { get; set; } = 0;
@@ -110,7 +112,7 @@ namespace PT.PM.AntlrUtils
                     AntlrInputStream inputStream;
                     if (Language.IsCaseInsensitive())
                     {
-                        inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText);
+                        inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
                     }
                     else
                     {
