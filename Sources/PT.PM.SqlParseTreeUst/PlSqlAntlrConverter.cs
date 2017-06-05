@@ -3,7 +3,7 @@ using System;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using Antlr4.Runtime;
-using PT.PM.SqlParseTreeUst.Parser;
+using PT.PM.PlSqlParseTreeUst;
 using System.Collections.Generic;
 
 namespace PT.PM.SqlParseTreeUst
@@ -27,7 +27,7 @@ namespace PT.PM.SqlParseTreeUst
             }
 
             visitor.Logger = logger;
-            var fileNode = (FileNode)visitor.Visit((plsqlParser.Compilation_unitContext)ruleContext);
+            var fileNode = (FileNode)visitor.Visit((PlSqlParser.Compilation_unitContext)ruleContext);
             return fileNode;
         }
     }

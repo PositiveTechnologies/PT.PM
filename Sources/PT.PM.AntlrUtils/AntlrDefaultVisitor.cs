@@ -37,6 +37,11 @@ namespace PT.PM.AntlrUtils
         {
             try
             {
+                if (tree == null)
+                {
+                    return null;
+                }
+
                 return tree.Accept(this);
             }
             catch (Exception ex)
