@@ -15,8 +15,8 @@ namespace PT.PM.AntlrUtils
             lookaheadData = CaseInsensitiveType == CaseInsensitiveType.None
                 ? input
                 : CaseInsensitiveType == CaseInsensitiveType.UPPER
-                ? input.ToUpper()
-                : input.ToLower();
+                ? input.ToUpperInvariant()
+                : input.ToLowerInvariant();
         }
 
         public override int La(int i)
