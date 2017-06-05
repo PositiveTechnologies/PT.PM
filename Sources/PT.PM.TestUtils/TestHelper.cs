@@ -67,9 +67,15 @@ namespace PT.PM.TestUtils
             workflow.Logger = log;
             WorkflowResult workflowResult = workflow.Process();
 
+            string errorString = string.Empty;
+            var loggerMessageCounter = log as LoggerMessageCounter;
+            if (loggerMessageCounter != null)
+            {
+                errorString = loggerMessageCounter.ErrorsString;
+            }
             if (!shouldContainsErrors)
             {
-                Assert.AreEqual(0, log.ErrorCount);
+                Assert.AreEqual(0, log.ErrorCount, errorString);
             }
             else
             {
