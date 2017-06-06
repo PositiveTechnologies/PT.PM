@@ -38,6 +38,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{553BE5D1-E6F1-4DDD-97E8-F7C73F4F684C}"
 	ProjectSection(SolutionItems) = preProject
 		AssemblyInfoCommon.cs = AssemblyInfoCommon.cs
+		PT.PM.ico = PT.PM.ico
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst", "PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj", "{8F34670A-B91D-460B-9D67-7A03F7194673}"
