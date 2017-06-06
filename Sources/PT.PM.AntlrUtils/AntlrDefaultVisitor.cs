@@ -165,24 +165,35 @@ namespace PT.PM.AntlrUtils
         }
 
         protected Expression CreateBinaryOperatorExpression(
+            ParserRuleContext left, IToken operatorTerminal, ParserRuleContext right)
+        {
+            return CreateBinaryOperatorExpression(left, operatorTerminal.Text, operatorTerminal.GetTextSpan(), right);
+        }
+
+        protected Expression CreateBinaryOperatorExpression(
             ParserRuleContext left, ITerminalNode operatorTerminal, ParserRuleContext right)
         {
-            BinaryOperator binaryOperator = CreateBinaryOperator(operatorTerminal.GetText());
-
-            var expression0 = (Expression)Visit(left);
-            var expression1 = (Expression)Visit(right);
-            var result = new BinaryOperatorExpression(
-                expression0,
-                new BinaryOperatorLiteral(binaryOperator, operatorTerminal.GetTextSpan(), FileNode),
-                expression1,
-                left.GetTextSpan().Union(right.GetTextSpan()), FileNode);
-
-            return result;
+            return CreateBinaryOperatorExpression(left, operatorTerminal.GetText(), operatorTerminal.GetTextSpan(),  right);
         }
 
         protected virtual BinaryOperator CreateBinaryOperator(string binaryOperatorText)
         {
             return BinaryOperatorLiteral.TextBinaryOperator[binaryOperatorText];
+        }
+
+        private Expression CreateBinaryOperatorExpression(ParserRuleContext left, string operatorText, TextSpan operatorTextSpan, ParserRuleContext right)
+        {
+            BinaryOperator binaryOperator = CreateBinaryOperator(operatorText);
+
+            var expression0 = (Expression)Visit(left);
+            var expression1 = (Expression)Visit(right);
+            var result = new BinaryOperatorExpression(
+                expression0,
+                new BinaryOperatorLiteral(binaryOperator, operatorTextSpan, FileNode),
+                expression1,
+                left.GetTextSpan().Union(right.GetTextSpan()), FileNode);
+
+            return result;
         }
     }
 }
