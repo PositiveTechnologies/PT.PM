@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr4.Runtime.4.6.1\lib\net45\Antlr4.Runtime.dll</HintPath>
@@ -88,6 +91,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GeneratePhpAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="&quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PHPLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\php\PHPParser.g4&quot; --package PT.PM.PhpParseTreeUst --output &quot;$(ProjectDir)Generated&quot;" />
+    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PHPLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\php\PHPParser.g4&quot; --package PT.PM.PhpParseTreeUst --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 </Project>
