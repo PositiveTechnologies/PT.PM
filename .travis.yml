@@ -8,4 +8,4 @@ install:
 script:
     - sudo xbuild /p:Configuration=Release Sources/PT.PM.sln /p:TargetFrameworkVersion="v4.6.2"
     - cd Tests/Unit/bin/Release
-    - mono ../../../../Sources/packages/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe *.Tests.dll
+    - sudo mono ../../../../Sources/packages/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe *.Tests.dll
