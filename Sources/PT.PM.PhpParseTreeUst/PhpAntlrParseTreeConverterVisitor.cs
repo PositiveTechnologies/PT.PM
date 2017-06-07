@@ -28,6 +28,8 @@ namespace PT.PM.PhpParseTreeUst
         protected const string attrNamespacePrefix = Helper.Prefix + "attrNs";
         protected const string inlineHtmlNamespacePrefix = Helper.Prefix + "inlineHtml";
 
+
+
         protected int namespaceDepth;
 
         public LanguageFlags ConvertedLanguages { get; set; }
@@ -92,7 +94,8 @@ namespace PT.PM.PhpParseTreeUst
                 var sourceCodeFile = new SourceCodeFile()
                 {
                     Name = FileNode.FileName.Text,
-                    Code = javaScriptCode
+                    Code = javaScriptCode,
+                    LineOffset = context.Start.Line - 1
                 };
                 var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
 
@@ -100,7 +103,7 @@ namespace PT.PM.PhpParseTreeUst
                 javaScriptConverter.Logger = Logger;
                 result = javaScriptConverter.Visit(parseTree.SyntaxTree);
                 var resultFileNode = result as FileNode;
-                if (resultFileNode != null)
+                if (resultFileNode?.Root != null)
                 {
                     result = resultFileNode.Root.CreateLanguageNamespace(Language.JavaScript, FileNode);
                 }

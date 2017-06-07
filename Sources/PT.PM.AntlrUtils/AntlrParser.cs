@@ -106,6 +106,7 @@ namespace PT.PM.AntlrUtils
                 errorListener.FileName = filePath;
                 errorListener.FileData = sourceCodeFile.Code;
                 errorListener.Logger = Logger;
+                errorListener.LineOffset = sourceCodeFile.LineOffset;
                 try
                 {
                     var preprocessedText = PreprocessText(sourceCodeFile);
