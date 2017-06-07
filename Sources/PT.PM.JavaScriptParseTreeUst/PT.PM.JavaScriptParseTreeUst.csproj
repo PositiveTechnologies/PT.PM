@@ -80,6 +80,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateJavaScriptAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="&quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser  --output &quot;$(ProjectDir)Generated&quot;" />
+    <Exec Command="mono &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser  --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 </Project>
