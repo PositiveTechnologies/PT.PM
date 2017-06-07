@@ -126,7 +126,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\antlr-grammars-v4\csharp\examples\AllInOne.cs">
+    <Content Include="..\antlr-grammars-v4\csharp\not-ready-examples\AllInOne.cs">
       <Link>Data\AllInOne.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

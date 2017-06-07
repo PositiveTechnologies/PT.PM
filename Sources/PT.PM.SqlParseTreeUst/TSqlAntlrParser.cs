@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PT.PM.AntlrUtils;
+﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.SqlParseTreeUst.Parser;
-using PT.PM.TSqlParseTreeUst.Parser;
+using PT.PM.TSqlParseTreeUst;
 using Antlr4.Runtime;
 
 namespace PT.PM.SqlParseTreeUst
@@ -15,32 +9,34 @@ namespace PT.PM.SqlParseTreeUst
     {
         public override Language Language => Language.TSql;
 
+        public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.UPPER;
+
         public TSqlAntlrParser()
         {
         }
 
-        protected override int CommentsChannel => tsqlLexer.Hidden;
+        protected override int CommentsChannel => TSqlLexer.Hidden;
 
-        protected override IVocabulary Vocabulary => tsqlLexer.DefaultVocabulary;
+        protected override IVocabulary Vocabulary => TSqlLexer.DefaultVocabulary;
 
         protected override Lexer InitLexer(ICharStream inputStream)
         {
-            return new tsqlLexer(inputStream);
+            return new TSqlLexer(inputStream);
         }
 
         protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
         {
-            return new tsqlParser(inputStream);
+            return new TSqlParser(inputStream);
         }
 
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
         {
-            return ((tsqlParser) parser).tsql_file();
+            return ((TSqlParser) parser).tsql_file();
         }
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
         {
-            return new TSqlAntlrParseTree((tsqlParser.Tsql_fileContext)syntaxTree);
+            return new TSqlAntlrParseTree((TSqlParser.Tsql_fileContext)syntaxTree);
         }
     }
 }

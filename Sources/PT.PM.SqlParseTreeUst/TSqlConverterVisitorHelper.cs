@@ -5,7 +5,6 @@ using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.TSqlParseTreeUst.Parser;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.TSqlParseTreeUst;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -39,7 +39,7 @@ namespace PT.PM.SqlParseTreeUst
                 new ArgsNode(expressions), context.GetTextSpan(), FileNode);
         }
 
-        private Statement[] GetStatements(tsqlParser.Sql_clausesContext context)
+        private Statement[] GetStatements(TSqlParser.Sql_clausesContext context)
         {
             Statement[] result;
             if (context != null)
@@ -53,7 +53,7 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        private ArgsNode GetArgsNode(tsqlParser.Expression_listContext context)
+        private ArgsNode GetArgsNode(TSqlParser.Expression_listContext context)
         {
             ArgsNode result;
             if (context != null)

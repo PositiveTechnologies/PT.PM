@@ -12,6 +12,8 @@ namespace PT.PM.Common
 
         public string FullPath => Path.Combine(RelativePath, Name);
 
+        public int LineOffset { get; set; }
+
         public SourceCodeFile()
         {
         }

@@ -1,11 +1,6 @@
 ﻿using PT.PM.AntlrUtils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PT.PM.Common;
-using PT.PM.SqlParseTreeUst.Parser;
+using PT.PM.PlSqlParseTreeUst;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -17,7 +12,7 @@ namespace PT.PM.SqlParseTreeUst
         {
         }
 
-        public PlSqlAntlrParseTree(plsqlParser.Compilation_unitContext syntaxTree)
+        public PlSqlAntlrParseTree(PlSqlParser.Compilation_unitContext syntaxTree)
             : base(syntaxTree)
         {
         }

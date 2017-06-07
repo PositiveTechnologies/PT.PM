@@ -54,7 +54,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>PT.PM.ico</ApplicationIcon>
+    <ApplicationIcon>..\PT.PM.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentCommandLineParser, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -82,7 +82,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PT.PM.ico" />
+    <Content Include="..\PT.PM.ico">
+      <Link>PT.PM.ico</Link>
+    </Content>
     <None Include="app.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>

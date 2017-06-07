@@ -43,10 +43,7 @@ namespace PT.PM.Cli
             if (progressEventArgs != null)
             {
                 bool endFile = Math.Abs(progressEventArgs.Progress - 1) < 1e-10;
-                message = string.Format("Progress: {0}%; File: {1}{2}",
-                    (int)(progressEventArgs.Progress * 100),
-                    progressEventArgs.CurrentFile,
-                    endFile);
+                message = $"Progress: {(int)(progressEventArgs.Progress * 100)}%; File: {progressEventArgs.CurrentFile}";
                 NLogConsoleLogger.Info(PrepareForConsole(message));
                 FileLogger.Info(message);
             }

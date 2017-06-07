@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr4.Runtime.4.6.1\lib\net45\Antlr4.Runtime.dll</HintPath>
@@ -50,12 +53,12 @@
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
-    <Compile Include="Generated\plsqlLexer.cs" />
-    <Compile Include="Generated\plsqlParser.cs" />
-    <Compile Include="Generated\plsqlVisitor.cs" />
-    <Compile Include="Generated\tsqlLexer.cs" />
-    <Compile Include="Generated\tsqlParser.cs" />
-    <Compile Include="Generated\tsqlVisitor.cs" />
+    <Compile Include="Generated\PlSqlLexer.cs" />
+    <Compile Include="Generated\PlSqlParser.cs" />
+    <Compile Include="Generated\PlSqlParserVisitor.cs" />
+    <Compile Include="Generated\TSqlLexer.cs" />
+    <Compile Include="Generated\TSqlParser.cs" />
+    <Compile Include="Generated\TSqlParserVisitor.cs" />
     <Compile Include="PlSqlConverterVisitor.cs" />
     <Compile Include="PlSqlConverterVisitorHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,11 +72,17 @@
     <Compile Include="TSqlConverterVisitorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\antlr-grammars-v4\plsql\plsql.g4">
-      <Link>plsql.g4</Link>
+    <None Include="..\antlr-grammars-v4\plsql\PlSqlLexer.g4">
+      <Link>PlSqlLexer.g4</Link>
     </None>
-    <None Include="..\antlr-grammars-v4\tsql\tsql.g4">
-      <Link>tsql.g4</Link>
+    <None Include="..\antlr-grammars-v4\plsql\PlSqlParser.g4">
+      <Link>PlSqlParser.g4</Link>
+    </None>
+    <None Include="..\antlr-grammars-v4\tsql\TSqlLexer.g4">
+      <Link>TSqlLexer.g4</Link>
+    </None>
+    <None Include="..\antlr-grammars-v4\tsql\TSqlParser.g4">
+      <Link>TSqlParser.g4</Link>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
@@ -91,11 +100,12 @@
       <Name>PT.PM.Prebuild</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GeneratePlSqlAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="&quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\plsql\plsql.g4&quot; --package PT.PM.SqlParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot;" />
+    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\plsql\PlSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\plsql\PlSqlParser.g4&quot; --package PT.PM.PlSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
   <Target Name="GenerateTSqlAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="&quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\tsql.g4&quot; --package PT.PM.TSqlParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot;" />
+    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlParser.g4&quot; --package PT.PM.TSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 </Project>

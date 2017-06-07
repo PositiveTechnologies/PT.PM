@@ -52,6 +52,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>..\PT.PM.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="GuiHelpers.cs" />
     <Compile Include="GuiLogger.cs" />
@@ -109,7 +112,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="PT.PM.ico" />
+    <EmbeddedResource Include="..\PT.PM.ico">
+      <Link>PT.PM.ico</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="App.paml" />
     <EmbeddedResource Include="MainWindow.paml">
       <SubType>Designer</SubType>

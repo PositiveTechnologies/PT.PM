@@ -17,6 +17,8 @@ namespace PT.PM.AntlrUtils
 
         public bool IsPattern { get; set; }
 
+        public int LineOffset { get; set; }
+
         public AntlrMemoryErrorListener()
         {
         }
@@ -25,13 +27,14 @@ namespace PT.PM.AntlrUtils
         {
             var error = new AntlrLexerError(offendingSymbol, line, charPositionInLine, msg, e);
             int start = TextHelper.LineColumnToLinear(FileData, line, charPositionInLine);
-            Logger.LogError(new ParsingException(FileName, message: error.ToString()) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
+            string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
+            Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }
 
         public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             var error = new AntlrParserError(offendingSymbol, line, charPositionInLine, msg, e);
-            var errorText = error.ToString();
+            string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
             if (errorText.Contains("no viable alternative at input"))
             {
                 var firstInd = errorText.IndexOf("'");
@@ -46,6 +49,20 @@ namespace PT.PM.AntlrUtils
             }
             int start = TextHelper.LineColumnToLinear(FileData, line, charPositionInLine);
             Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
+        }
+
+        private string FixLineNumber(string errorText, int line, int charPositionInLine)
+        {
+            if (LineOffset != 0)
+            {
+                int atLastIndexOf = errorText.LastIndexOf("at");
+                if (atLastIndexOf != -1)
+                {
+                    errorText = errorText.Remove(atLastIndexOf) + $"at {LineOffset + line}:{charPositionInLine}";
+                }
+            }
+
+            return errorText;
         }
     }
 }

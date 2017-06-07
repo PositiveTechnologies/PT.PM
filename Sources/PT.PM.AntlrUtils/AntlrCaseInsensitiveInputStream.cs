@@ -6,10 +6,17 @@ namespace PT.PM.AntlrUtils
     {
         private string lookaheadData;
 
-        public AntlrCaseInsensitiveInputStream(string input)
+        public CaseInsensitiveType CaseInsensitiveType { get; }
+
+        public AntlrCaseInsensitiveInputStream(string input, CaseInsensitiveType caseInsensitiveType)
             : base(input)
         {
-            lookaheadData = input.ToLower();
+            CaseInsensitiveType = caseInsensitiveType;
+            lookaheadData = CaseInsensitiveType == CaseInsensitiveType.None
+                ? input
+                : CaseInsensitiveType == CaseInsensitiveType.UPPER
+                ? input.ToUpperInvariant()
+                : input.ToLowerInvariant();
         }
 
         public override int La(int i)

@@ -29,6 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr4.Runtime.4.6.1\lib\net45\Antlr4.Runtime.dll</HintPath>
@@ -83,14 +86,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --lexer "$(ProjectDir)DslLexer.g4" --parser "$(ProjectDir)DslParser.g4" --package "PT.PM.Dsl"</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="GenerateDslParser" AfterTargets="AfterResolveReferences">
+    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)DslLexer.g4&quot; --parser &quot;$(ProjectDir)DslParser.g4&quot; --package PT.PM.Dsl --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
