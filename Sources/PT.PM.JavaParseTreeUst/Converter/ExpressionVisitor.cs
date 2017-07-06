@@ -62,8 +62,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var explicitGenericInvocation = context.explicitGenericInvocation();
                         if (explicitGenericInvocation != null)
                         {
-                            // TODO: implement
-                            throw new NotImplementedException();
+                            return VisitChildren(context).ToExpressionIfRequired();
                         }
 
                         var child2Terminal = context.GetChild<ITerminalNode>(1);
@@ -218,7 +217,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 }
             }
             
-            JavaParser.TypeTypeContext type = context.typeType();
+            JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
             if (type != null)
             {
                 var typeToken = (TypeToken)Visit(type);
@@ -239,6 +238,16 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
 
             return Visit(context.GetChild(0));
+        }
+
+        public UstNode VisitMethodReference(JavaParser.MethodReferenceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitClassType(JavaParser.ClassTypeContext context)
+        {
+            return VisitChildren(context);
         }
 
         public UstNode VisitParExpression(JavaParser.ParExpressionContext context)
@@ -366,6 +375,16 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
+        public UstNode VisitTypeTypeOrVoid(JavaParser.TypeTypeOrVoidContext context)
+        {
+            if (context.typeType() != null)
+            {
+                return Visit(context.typeType());
+            }
+
+            return new TypeToken("void", context.GetTextSpan(), FileNode);
+        }
+
         public UstNode VisitTypeType(JavaParser.TypeTypeContext context)
         {
             var result = (TypeToken)Visit(context.GetChild(0));
@@ -458,6 +477,21 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
 
             return VisitChildren(context);
+        }
+
+        public UstNode VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
+        {
+            return VisitChildren(context).ToExpressionIfRequired();
+        }
+
+        public UstNode VisitLambdaParameters(JavaParser.LambdaParametersContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitLambdaBody(JavaParser.LambdaBodyContext context)
+        {
+            return Visit(context.GetChild(0));
         }
     }
 }

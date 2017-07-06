@@ -99,6 +99,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\antlr-grammars-v4\java8-pt\examples\AllInOne8.java">
+      <Link>Data\AllInOne8.java</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\AllInOne.java">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

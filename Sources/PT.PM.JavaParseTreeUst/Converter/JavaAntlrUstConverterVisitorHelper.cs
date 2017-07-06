@@ -12,9 +12,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
 {
     public partial class JavaAntlrUstConverterVisitor
     {
-        private MethodDeclaration ConvertMethodDeclaration(JavaParser.TypeTypeContext type, ITerminalNode child0Terminal,
+        private MethodDeclaration ConvertMethodDeclaration(JavaParser.TypeTypeOrVoidContext type, ITerminalNode child0Terminal,
             ITerminalNode identifier, JavaParser.FormalParametersContext formalParameters,
-            JavaParser.MethodBodyContext methodBody, TextSpan textSpan)
+            JavaParser.BlockContext methodBody, TextSpan textSpan)
         {
             TypeToken typeToken;
             if (type != null)

@@ -12,10 +12,11 @@ using System.Linq;
 using System.Text;
 using Antlr4.Runtime.Misc;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrUstConverterVisitor : AntlrDefaultVisitor, IJavaVisitor<UstNode>
+    public partial class JavaAntlrUstConverterVisitor : AntlrDefaultVisitor, IJavaParserVisitor<UstNode>
     {
         public JavaAntlrUstConverterVisitor(string fileName, string fileData)
             : base(fileName, fileData)
@@ -244,12 +245,17 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitConstDeclaration([NotNull] JavaParser.ConstDeclarationContext context)
         {
-            return VisitChildren(context);
+            var assignments = context.constantDeclarator()
+                .Select(declarator => (AssignmentExpression)Visit(declarator));
+            return new FieldDeclaration(assignments, context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)
         {
-            return VisitChildren(context);
+            return new AssignmentExpression(
+                (Expression)Visit(context.Identifier()),
+                (Expression)Visit(context.variableInitializer()),
+                context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitGenericInterfaceMethodDeclaration([NotNull] JavaParser.GenericInterfaceMethodDeclarationContext context)
@@ -268,11 +274,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
         }
 
         public UstNode VisitAnnotation([NotNull] JavaParser.AnnotationContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public UstNode VisitAnnotationName([NotNull] JavaParser.AnnotationNameContext context)
         {
             return VisitChildren(context);
         }
