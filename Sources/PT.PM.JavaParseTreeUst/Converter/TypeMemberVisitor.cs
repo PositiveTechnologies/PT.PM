@@ -8,6 +8,7 @@ using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 using System.Linq;
 using PT.PM.AntlrUtils;
+using Antlr4.Runtime.Misc;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
@@ -31,19 +32,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitInterfaceBodyDeclaration(JavaParser.InterfaceBodyDeclarationContext context)
         {
-            var result = VisitInterfaceMemberDeclaration(context.interfaceMemberDeclaration());
-            return result;
-        }
-
-        public UstNode VisitConstructorBody(JavaParser.ConstructorBodyContext context)
-        {
-            var result = VisitBlock(context.block());
+            var result = Visit(context.interfaceMemberDeclaration());
             return result;
         }
 
         public UstNode VisitInterfaceMemberDeclaration(JavaParser.InterfaceMemberDeclarationContext context)
         {
-            return (EntityDeclaration)Visit(context.GetChild(0));
+            return Visit(context.GetChild(0));
         }
 
         public UstNode VisitMemberDeclaration(JavaParser.MemberDeclarationContext context)
@@ -53,33 +48,43 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitInterfaceMethodDeclaration(JavaParser.InterfaceMethodDeclarationContext context)
         {
-            JavaParser.TypeTypeContext type = context.typeType();
+            JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
             ITerminalNode child0Terminal = context.GetChild<ITerminalNode>(0);
             ITerminalNode identifier = context.Identifier();
             JavaParser.FormalParametersContext formalParameters = context.formalParameters();
-            JavaParser.MethodBodyContext methodBody = null;
+            JavaParser.BlockContext methodBody = context.methodBody().block();
 
-            MethodDeclaration result = ConvertMethodDeclaration(type, child0Terminal, identifier, formalParameters, methodBody,
+            MethodDeclaration result = ConvertMethodDeclaration(type, child0Terminal, identifier, formalParameters, null,
                 context.GetTextSpan());
             return result;
+        }
+
+        public UstNode VisitInterfaceMethodModifier([NotNull] JavaParser.InterfaceMethodModifierContext context)
+        {
+            return VisitChildren(context);
         }
 
         public UstNode VisitMethodDeclaration(JavaParser.MethodDeclarationContext context)
         {
-            JavaParser.TypeTypeContext type = context.typeType();
+            JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
             ITerminalNode child0Terminal = context.GetChild<ITerminalNode>(0);
             ITerminalNode identifier = context.Identifier();
             JavaParser.FormalParametersContext formalParameters = context.formalParameters();
-            JavaParser.MethodBodyContext methodBody = context.methodBody();
+            JavaParser.BlockContext methodBody = context.methodBody().block();
 
             MethodDeclaration result = ConvertMethodDeclaration(type, child0Terminal, identifier, formalParameters, methodBody,
                 context.GetTextSpan());
             return result;
         }
 
+        public UstNode VisitMethodBody([NotNull] JavaParser.MethodBodyContext context)
+        {
+            return VisitShouldNotBeVisited(context);
+        }
+
         public UstNode VisitGenericMethodDeclaration(JavaParser.GenericMethodDeclarationContext context)
         {
-            return VisitChildren(context);
+            return Visit(context.methodDeclaration());
         }
 
         public UstNode VisitFieldDeclaration(JavaParser.FieldDeclarationContext context)
@@ -105,7 +110,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     .Select(param => (ParameterDeclaration)Visit(param))
                     .Where(p => p != null).ToArray();
 
-            var body = (BlockStatement)Visit(context.constructorBody());
+            var body = (BlockStatement)Visit(context.constructorBody);
 
             var constructorDelaration = new ConstructorDeclaration(id, parameters, body, context.GetTextSpan(), FileNode);
             return constructorDelaration;
@@ -113,7 +118,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitGenericConstructorDeclaration(JavaParser.GenericConstructorDeclarationContext context)
         {
-            return VisitChildren(context);
+            return Visit(context.constructorDeclaration());
         }
 
         public UstNode VisitVariableDeclarators(JavaParser.VariableDeclaratorsContext context)
@@ -141,12 +146,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitVariableInitializer(JavaParser.VariableInitializerContext context)
         {
             var result = (Expression)Visit(context.GetChild(0));
-            return result;
-        }
-
-        public UstNode VisitMethodBody(JavaParser.MethodBodyContext context)
-        {
-            var result = (BlockStatement)Visit(context.block());
             return result;
         }
 

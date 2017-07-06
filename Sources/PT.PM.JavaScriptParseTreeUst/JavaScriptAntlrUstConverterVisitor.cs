@@ -217,7 +217,10 @@ namespace PT.PM.JavaScriptParseTreeUst
             return VisitChildren(context);
         }
 
-        public UstNode VisitStatement([NotNull] ECMAScriptParser.StatementContext context) { return VisitChildren(context); }
+        public UstNode VisitStatement([NotNull] ECMAScriptParser.StatementContext context)
+        {
+            return VisitChildren(context);
+        }
 
         /// <returns><see cref="BlockStatement"/></returns>
         public UstNode VisitBlock([NotNull] ECMAScriptParser.BlockContext context)
