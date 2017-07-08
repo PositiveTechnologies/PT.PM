@@ -8,6 +8,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using PT.PM.Common.Nodes;
+using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Cli
 {
@@ -18,7 +20,7 @@ namespace PT.PM.Cli
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             var parser = new FluentCommandLineParser();
-            
+
             string fileName = "";
             string escapedPatterns = "";
             int threadCount = 1;
@@ -31,6 +33,9 @@ namespace PT.PM.Cli
             bool logErrors = false;
             bool logDebugs = false;
             bool showVersion = true;
+            bool isDumpUst = false;
+            bool isIndentedUst = false;
+            bool isIncludeTextSpansInUst = true;
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
@@ -48,8 +53,11 @@ namespace PT.PM.Cli
             parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
             parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
             parser.Setup<bool>('v', "version").Callback(v => showVersion = v);
+            parser.Setup<bool>("dump-ust").Callback(param => isDumpUst = param);
+            parser.Setup<bool>("indented-ust").Callback(param => isIndentedUst = param);
+            parser.Setup<bool>("text-spans-ust").Callback(param => isIncludeTextSpansInUst = param);
 
-            AbstractLogger logger = new ConsoleLogger();
+            ILogger logger = new ConsoleLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
                 ? ": " + string.Join(" ", args)
                 : " are not defined.");
@@ -60,6 +68,12 @@ namespace PT.PM.Cli
 
             if (!parsingResult.HasErrors)
             {
+                if (isDumpUst)
+                {
+                    stage = Stage.Convert;
+                    logger = new DummyLogger();
+                }
+
                 try
                 {
                     if (showVersion)
@@ -67,10 +81,14 @@ namespace PT.PM.Cli
                         logger.LogInfo($"PT.PM version: {version}");
                     }
 
-                    logger.LogsDir = logsDir;
-                    logger.IsLogErrors = logErrors;
-                    logger.IsLogDebugs = logDebugs;
-                    logger.LogInfo(commandLineArguments);
+                    var abstractLogger = logger as AbstractLogger;
+                    if (abstractLogger != null)
+                    {
+                        abstractLogger.LogsDir = logsDir;
+                        abstractLogger.IsLogErrors = logErrors;
+                        abstractLogger.IsLogDebugs = logDebugs;
+                        abstractLogger.LogInfo(commandLineArguments);
+                    }
 
                     if (string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(escapedPatterns))
                     {
@@ -121,6 +139,11 @@ namespace PT.PM.Cli
                     WorkflowResult workflowResult = workflow.Process();
                     stopwatch.Stop();
 
+                    if (isDumpUst)
+                    {
+                        DumpUst(isIndentedUst, isIncludeTextSpansInUst, workflowResult);
+                    }
+
                     if (stage != Stage.Patterns)
                     {
                         logger.LogInfo("Scan completed.");
@@ -142,7 +165,11 @@ namespace PT.PM.Cli
                 {
                     if (logger != null)
                     {
-                        logger.IsLogErrors = true;
+                        var abstractLogger = logger as AbstractLogger;
+                        if (abstractLogger != null)
+                        {
+                            abstractLogger.IsLogErrors = true;
+                        }
                         logger.LogError(ex);
                     }
                 }
@@ -161,12 +188,16 @@ namespace PT.PM.Cli
                 Console.WriteLine(commandLineArguments);
                 Console.WriteLine("Command line arguments processing error: " + parsingResult.ErrorText);
             }
+        }
 
-            if (logger is ConsoleLogger)
+        private static void DumpUst(bool isIndentedUst, bool isIncludeTextSpansInUst, WorkflowResult workflowResult)
+        {
+            var serializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
             {
-                Console.WriteLine("Press Enter to exit...");
-                Console.ReadLine();
-            }
+                Indented = isIndentedUst,
+                IncludeTextSpans = isIncludeTextSpansInUst
+            };
+            Console.Write(serializer.Serialize(workflowResult.Usts.Select(ust => ust.Root)));
         }
     }
 }

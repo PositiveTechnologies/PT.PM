@@ -34,7 +34,18 @@ namespace PT.PM.Common
 
         public string Serialize(UstNode node)
         {
-            Formatting indent = Indented ? Formatting.Indented : Formatting.None;
+            JsonSerializerSettings jsonSettings = PrepareSettings();
+            return JsonConvert.SerializeObject(node, Indented ? Formatting.Indented : Formatting.None, jsonSettings);
+        }
+
+        public string Serialize(IEnumerable<UstNode> nodes)
+        {
+            JsonSerializerSettings jsonSettings = PrepareSettings();
+            return JsonConvert.SerializeObject(nodes, Indented ? Formatting.Indented : Formatting.None, jsonSettings);
+        }
+
+        private JsonSerializerSettings PrepareSettings()
+        {
             var converters = new List<JsonConverter>() { stringEnumConverter };
             var jsonSettings = new JsonSerializerSettings()
             {
@@ -46,7 +57,7 @@ namespace PT.PM.Common
                 jsonSettings.NullValueHandling = NullValueHandling.Ignore;
             }
             jsonSettings.ContractResolver = new TextSpanResolver() { Ignore = !IncludeTextSpans };
-            return JsonConvert.SerializeObject(node, indent, jsonSettings);
+            return jsonSettings;
         }
     }
 }
