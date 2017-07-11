@@ -135,12 +135,9 @@ namespace PT.PM.Cli
                         ThreadCount = threadCount,
                         MaxStackSize = maxStackSize,
                         MaxTimespan = maxTimespan,
-                        MemoryConsumptionMb = memoryConsumptionMb
+                        MemoryConsumptionMb = memoryConsumptionMb,
+                        IsIncludePreprocessing = isPreprocess
                     };
-                    if (!isPreprocess)
-                    {
-                        workflow.UstPreprocessor = null;
-                    }
                     var stopwatch = Stopwatch.StartNew();
                     WorkflowResult workflowResult = workflow.Process();
                     stopwatch.Stop();
