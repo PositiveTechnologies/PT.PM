@@ -49,8 +49,7 @@ namespace PT.PM.Common
             var converters = new List<JsonConverter>() { stringEnumConverter };
             var jsonSettings = new JsonSerializerSettings()
             {
-                Converters = converters,
-                DefaultValueHandling = DefaultValueHandling.Ignore
+                Converters = converters
             };
             if (ExcludeNulls)
             {
