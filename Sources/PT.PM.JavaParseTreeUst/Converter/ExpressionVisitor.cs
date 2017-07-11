@@ -28,7 +28,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 switch (child0Terminal.Symbol.Type)
                 {
                     case JavaParser.NEW:
-                        result = (ObjectCreateExpression)Visit(context.creator());
+                        result = (Expression)Visit(context.creator());
                         return result;
                     case JavaParser.LPAREN: // '(' type ')' expression
                         var type = (TypeToken)Visit(context.typeType());
@@ -303,61 +303,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitCreator(JavaParser.CreatorContext context)
         {
-            var nonWildcardTypeArguments = context.nonWildcardTypeArguments();
-            var typeName = new StringBuilder();
-            if (nonWildcardTypeArguments != null)
-            {
-                var type0 = (TypeToken)Visit(nonWildcardTypeArguments);
-                typeName.Append(type0.TypeText);
-            }
-            var type = (TypeToken)Visit(context.createdName());
-            typeName.Append(type.TypeText); 
-            JavaParser.ClassCreatorRestContext classCreatorRest = context.classCreatorRest();
-            ArgsNode args;
-            if (classCreatorRest != null)
-                args = (ArgsNode)Visit(classCreatorRest.arguments());
-            else
-                args = new ArgsNode();
-            // TODO: add classBody
-
-            var result = new ObjectCreateExpression(new TypeToken(typeName.ToString(),
-                type.TextSpan, FileNode), args,
-                context.GetTextSpan(), FileNode);
-            return result;
+            return VisitChildren(context);
         }
 
         public UstNode VisitCreatedName(JavaParser.CreatedNameContext context)
         {
-            var primitiveType = context.primitiveType();
-            TypeToken result;
-            if (primitiveType != null)
-            {
-                result = (TypeToken)Visit(primitiveType);
-                return result;
-            }
-
-            var resultTypeString = new StringBuilder();
-            for (int i = 0; i < context.ChildCount; i++)
-            {
-                var idChild = context.GetChild(i) as ITerminalNode;
-                if (idChild != null)
-                {
-                    resultTypeString.Append(((IdToken)Visit(idChild)).Id);
-                    continue;
-                }
-
-                var typeChild = context.GetChild(i) as JavaParser.TypeArgumentsOrDiamondContext;
-                if (typeChild != null)
-                {
-                    resultTypeString.Append(((TypeToken)Visit(typeChild)).TypeText);
-                    continue;
-                }
-
-                resultTypeString.Append(((ITerminalNode)context.GetChild(i)).GetText());
-            }
-
-            result = new TypeToken(resultTypeString.ToString(), context.GetTextSpan(), FileNode);
-            return result;
+            return VisitChildren(context);
         }
 
         public UstNode VisitTypeArgumentsOrDiamond(JavaParser.TypeArgumentsOrDiamondContext context)

@@ -99,9 +99,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             var id = (IdToken)Visit(context.Identifier());
 
-            // TODO: Modifiers
             EntityDeclaration[] typeMembers = context.classBody().classBodyDeclaration()
-                .Select(dec => (EntityDeclaration)Visit(dec))
+                .Select(dec => Visit(dec) as EntityDeclaration)
                 .Where(dec => dec != null).ToArray();
 
             var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);
@@ -122,7 +121,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             // TODO: Modifiers
             EntityDeclaration[] typeMembers = context.interfaceBody().interfaceBodyDeclaration()
-                .Select(dec => (EntityDeclaration)Visit(dec))
+                .Select(dec => Visit(dec) as EntityDeclaration)
                 .Where(dec => dec != null).ToArray();
             
             var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);

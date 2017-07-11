@@ -16,18 +16,16 @@ namespace PT.PM.JavaParseTreeUst.Converter
     {
         public UstNode VisitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext context)
         { 
-            EntityDeclaration result;
             var block = context.block();
             if (block != null)
             {
                 var blockStatement = (BlockStatement)Visit(block);
-                result = new StatementDeclaration(blockStatement, context.GetTextSpan(), FileNode);
+                return new StatementDeclaration(blockStatement, context.GetTextSpan(), FileNode);
             }
             else
             {
-                result = (EntityDeclaration)Visit(context.memberDeclaration());
+                return Visit(context.memberDeclaration());
             }
-            return result;
         }
 
         public UstNode VisitInterfaceBodyDeclaration(JavaParser.InterfaceBodyDeclarationContext context)
@@ -43,7 +41,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitMemberDeclaration(JavaParser.MemberDeclarationContext context)
         {
-            return (EntityDeclaration)Visit(context.GetChild(0));
+            return Visit(context.GetChild(0));
         }
 
         public UstNode VisitInterfaceMethodDeclaration(JavaParser.InterfaceMethodDeclarationContext context)
