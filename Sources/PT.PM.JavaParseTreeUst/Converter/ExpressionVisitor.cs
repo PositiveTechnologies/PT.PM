@@ -303,7 +303,19 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitCreator(JavaParser.CreatorContext context)
         {
-            return VisitChildren(context);
+            JavaParser.CreatedNameContext createdName = context.createdName();
+            JavaParser.ClassCreatorRestContext classCreatorRest = context.classCreatorRest();
+            ArgsNode args;
+            if (classCreatorRest != null)
+                args = (ArgsNode)Visit(classCreatorRest.arguments());
+            else
+                args = new ArgsNode();
+            // TODO: add classBody
+
+            var result = new ObjectCreateExpression(
+                new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), args,
+                context.GetTextSpan(), FileNode);
+            return result;
         }
 
         public UstNode VisitCreatedName(JavaParser.CreatedNameContext context)
