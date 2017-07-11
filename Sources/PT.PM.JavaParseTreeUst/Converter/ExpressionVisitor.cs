@@ -442,14 +442,15 @@ namespace PT.PM.JavaParseTreeUst.Converter
             ITerminalNode stringLiteral = context.StringLiteral();
             if (stringLiteral != null)
             {
-                var text = stringLiteral.GetText();
+                string text = stringLiteral.GetText();
                 return new StringLiteral(text.Substring(1, text.Length - 2), textSpan, FileNode);
             }
 
             ITerminalNode intLiteral = context.IntegerLiteral();
             if (intLiteral != null)
             {
-                return new IntLiteral(long.Parse(intLiteral.GetText().Replace("l", "").Replace("L", "")), textSpan, FileNode);
+                string text = intLiteral.GetText().Replace("_", "");
+                return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan, FileNode);
             }
 
             ITerminalNode boolLiteral = context.BooleanLiteral();
@@ -467,7 +468,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             ITerminalNode floatLiteral = context.FloatingPointLiteral();
             if (floatLiteral != null)
             {
-                var text = floatLiteral.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "");
+                var text = floatLiteral.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
                 return new FloatLiteral(double.Parse(text), textSpan, FileNode);
             }
 
