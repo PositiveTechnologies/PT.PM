@@ -27,7 +27,6 @@ namespace PT.PM.UstPreprocessing.Tests
             );
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(sourceCodeRep, Language.Php, stage: Stage.Preprocess);
-            workflow.UstPreprocessor = new UstPreprocessor();
             workflow.Logger = logger;
             workflow.Process();
 

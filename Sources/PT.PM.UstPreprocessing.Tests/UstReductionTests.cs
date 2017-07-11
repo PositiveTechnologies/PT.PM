@@ -45,7 +45,6 @@ namespace PT.PM.UstPreprocessing.Tests
             {
                 var logger = new LoggerMessageCounter();
                 var workflow = new Workflow(new MemoryCodeRepository(repository.Value), repository.Key, stage: Stage.Preprocess);
-                workflow.UstPreprocessor = new UstPreprocessor();
                 workflow.Logger = logger;
                 workflow.Stage = Stage.Convert;
                 WorkflowResult workflowResult = workflow.Process();
