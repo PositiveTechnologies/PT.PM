@@ -33,7 +33,7 @@ namespace PT.PM.Prebuild
 
             string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             AntlrDefaultPath = Path.Combine(currentPath,
-                @"..\..\Sources\packages\Antlr4.CodeGenerator.4.6.1\tools\antlr4-csharp-4.6.1-complete.jar");
+                @"..\..\Sources\packages\Antlr4.CodeGenerator.4.6.3\tools\antlr4-csharp-4.6.3-complete.jar");
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             var cmdParser = new FluentCommandLineParser();
