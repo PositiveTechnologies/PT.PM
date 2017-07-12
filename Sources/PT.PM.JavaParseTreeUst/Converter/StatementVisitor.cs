@@ -333,7 +333,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitCatchClause(JavaParser.CatchClauseContext context)
         {
             var type = (TypeToken)Visit(context.catchType());
-            var id = (IdToken)Visit(context.Identifier());
+            var id = (IdToken)Visit(context.IDENTIFIER());
             var body = (BlockStatement)Visit(context.block());
 
             var result = new CatchClause(type, id, body, context.GetTextSpan(), FileNode);

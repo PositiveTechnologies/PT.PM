@@ -48,7 +48,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
             ITerminalNode child0Terminal = context.GetChild<ITerminalNode>(0);
-            ITerminalNode identifier = context.Identifier();
+            ITerminalNode identifier = context.IDENTIFIER();
             JavaParser.FormalParametersContext formalParameters = context.formalParameters();
             JavaParser.BlockContext methodBody = context.methodBody().block();
 
@@ -66,7 +66,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
             ITerminalNode child0Terminal = context.GetChild<ITerminalNode>(0);
-            ITerminalNode identifier = context.Identifier();
+            ITerminalNode identifier = context.IDENTIFIER();
             JavaParser.FormalParametersContext formalParameters = context.formalParameters();
             JavaParser.BlockContext methodBody = context.methodBody().block();
 
@@ -98,7 +98,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitConstructorDeclaration(JavaParser.ConstructorDeclarationContext context)
         {
-            var id = (IdToken)Visit(context.Identifier());
+            var id = (IdToken)Visit(context.IDENTIFIER());
             IEnumerable<ParameterDeclaration> parameters;
             JavaParser.FormalParameterListContext formalParameterList = context.formalParameters().formalParameterList();
             if (formalParameterList == null)
@@ -137,7 +137,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitVariableDeclaratorId(JavaParser.VariableDeclaratorIdContext context)
         {
-            var result = (IdToken)Visit(context.Identifier());
+            var result = (IdToken)Visit(context.IDENTIFIER());
             return result;
         }
 

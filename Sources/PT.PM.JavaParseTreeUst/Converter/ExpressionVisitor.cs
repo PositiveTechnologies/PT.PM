@@ -52,7 +52,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 {
                     case JavaParser.DOT: // '.'
                         target = (Expression)Visit(context.expression(0));
-                        var id = context.Identifier();
+                        var id = context.IDENTIFIER();
                         if (id != null)
                         {
                             result = new MemberReferenceExpression(target, (IdToken)Visit(id), textSpan, FileNode);
@@ -402,45 +402,50 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             var textSpan = context.GetTextSpan();
 
-            ITerminalNode stringLiteral = context.StringLiteral();
+            ITerminalNode stringLiteral = context.STRING_LITERAL();
             if (stringLiteral != null)
             {
                 string text = stringLiteral.GetText();
                 return new StringLiteral(text.Substring(1, text.Length - 2), textSpan, FileNode);
             }
-
-            ITerminalNode intLiteral = context.IntegerLiteral();
-            if (intLiteral != null)
+            
+            if (context.integerLiteral() != null)
             {
-                string text = intLiteral.GetText().Replace("_", "");
-                return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan, FileNode);
+                return Visit(context.integerLiteral());
             }
 
-            ITerminalNode boolLiteral = context.BooleanLiteral();
+            ITerminalNode boolLiteral = context.BOOL_LITERAL();
             if (boolLiteral != null)
             {
                 return new BooleanLiteral(bool.Parse(boolLiteral.GetText()), textSpan, FileNode);
             }
 
-            ITerminalNode charLiteral = context.CharacterLiteral();
+            ITerminalNode charLiteral = context.CHAR_LITERAL();
             if (charLiteral != null)
             {
                 return new StringLiteral(charLiteral.GetText(), textSpan, FileNode);
             }
             
-            ITerminalNode floatLiteral = context.FloatingPointLiteral();
+            ITerminalNode floatLiteral = context.FLOAT_LITERAL();
             if (floatLiteral != null)
             {
                 var text = floatLiteral.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
                 return new FloatLiteral(double.Parse(text), textSpan, FileNode);
             }
 
-            if (context.Start.Type == JavaParser.NullLiteral)
+            if (context.Start.Type == JavaParser.NULL_LITERAL)
             {
                 return new NullLiteral(textSpan, FileNode);
             }
 
             return VisitChildren(context);
+        }
+
+        public UstNode VisitIntegerLiteral(JavaParser.IntegerLiteralContext context)
+        {
+            TextSpan textSpan = context.GetTextSpan();
+            string text = context.GetText().Replace("_", "");
+            return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan, FileNode);
         }
 
         public UstNode VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
