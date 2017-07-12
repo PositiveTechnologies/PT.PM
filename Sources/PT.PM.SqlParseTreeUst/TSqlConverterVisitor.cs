@@ -15,6 +15,7 @@ using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.TSqlParseTreeUst;
+using Antlr4.Runtime;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -67,7 +68,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public UstNode VisitCfl_statement([NotNull] TSqlParser.Cfl_statementContext context)
         {
-            return Visit(context);
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="Statement"/></returns>
@@ -137,11 +138,11 @@ namespace PT.PM.SqlParseTreeUst
         public UstNode VisitThrow_statement([NotNull] TSqlParser.Throw_statementContext context)
         {
             var exprs = new List<Expression>();
-            if (context.error_number != null)
+            if (context.throw_error_number() != null)
             {
-                exprs.Add(ExtractLiteral(context.error_number));
-                exprs.Add(ExtractLiteral(context.message));
-                exprs.Add(ExtractLiteral(context.state));
+                exprs.Add(ExtractLiteral((IToken)context.throw_error_number().GetChild(0)));
+                exprs.Add(ExtractLiteral((IToken)context.throw_message().GetChild(0)));
+                exprs.Add(ExtractLiteral((IToken)context.throw_state().GetChild(0)));
             }
             var result = new ThrowStatement(
                 new MultichildExpression(exprs, FileNode),
@@ -1165,7 +1166,22 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Expression"/></returns>
         public UstNode VisitExpression([NotNull] TSqlParser.ExpressionContext context)
         {
-            return Visit(context);
+            if (context.expression().Length == 2)
+            {
+                var expr1 = (Expression)Visit(context.expression(0));
+                var expr2 = (Expression)Visit(context.expression(1));
+                var opText = RemoveSpaces(context.GetChild(1).GetText());
+                if (opText == "=")
+                {
+                    opText = "==";
+                }
+                BinaryOperator op = BinaryOperatorLiteral.TextBinaryOperator[opText];
+                var opLiteral = new BinaryOperatorLiteral(op, context.GetTextSpan(), FileNode);
+                var result = new BinaryOperatorExpression(expr1, opLiteral, expr2, context.GetTextSpan(), FileNode);
+                return result;
+            }
+
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="IdToken"/></returns>
@@ -1191,21 +1207,6 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        /// <returns><see cref="InvocationExpression"/></returns>
-        public UstNode VisitFunction_call_expression([NotNull] TSqlParser.Function_call_expressionContext context)
-        {
-            if (context.function_call() != null)
-            {
-                return Visit(context.function_call());
-            }
-            else
-            {
-                return new InvocationExpression(
-                    new IdToken("Collate", context.COLLATE().GetTextSpan(), FileNode),
-                    new ArgsNode((IdToken)Visit(context.id())), context.GetTextSpan(), FileNode);
-            }
-        }
-
         /// <returns><see cref="WrapperExpression"/></returns>
         public UstNode VisitCase_expression([NotNull] TSqlParser.Case_expressionContext context)
         {
@@ -1227,21 +1228,9 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         /// <returns><see cref="Expression"/></returns>
-        public UstNode VisitColumn_ref_expression([NotNull] TSqlParser.Column_ref_expressionContext context)
-        {
-            return Visit(context.full_column_name());
-        }
-
-        /// <returns><see cref="Expression"/></returns>
         public UstNode VisitBracket_expression([NotNull] TSqlParser.Bracket_expressionContext context)
         {
             return Visit(context.expression());
-        }
-
-        /// <returns><see cref="Expression"/></returns>
-        public UstNode VisitSubquery_expression([NotNull] TSqlParser.Subquery_expressionContext context)
-        {
-            return Visit(context.subquery());
         }
 
         /// <returns><see cref="UnaryOperatorExpression"/></returns>
@@ -1252,28 +1241,6 @@ namespace PT.PM.SqlParseTreeUst
             var opLiteral = new UnaryOperatorLiteral(op, context.GetTextSpan(), FileNode);
             var result = new UnaryOperatorExpression(opLiteral, expr, context.GetTextSpan(), FileNode);
             return result;
-        }
-
-        /// <returns><see cref="BinaryOperatorExpression"/></returns>
-        public UstNode VisitBinary_operator_expression([NotNull] TSqlParser.Binary_operator_expressionContext context)
-        {
-            var expr1 = (Expression)Visit(context.expression(0));
-            var expr2 = (Expression)Visit(context.expression(1));
-            var opText = RemoveSpaces(context.GetChild(1).GetText());
-            if (opText == "=")
-            {
-                opText = "==";
-            }
-            BinaryOperator op = BinaryOperatorLiteral.TextBinaryOperator[opText];
-            var opLiteral = new BinaryOperatorLiteral(op, context.GetTextSpan(), FileNode);
-            var result = new BinaryOperatorExpression(expr1, opLiteral, expr2, context.GetTextSpan(), FileNode);
-            return result;
-        }
-
-        /// <returns><see cref="InvocationExpression"/></returns>
-        public UstNode VisitOver_clause_expression([NotNull] TSqlParser.Over_clause_expressionContext context)
-        {
-            return Visit(context.over_clause());
         }
 
         /// <returns><see cref="Expression"/></returns>
@@ -2446,11 +2413,6 @@ namespace PT.PM.SqlParseTreeUst
 
         #endregion
 
-        public UstNode VisitAsssignment_operator_expression([NotNull] TSqlParser.Asssignment_operator_expressionContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public UstNode VisitCreate_queue([NotNull] TSqlParser.Create_queueContext context)
         {
             return VisitChildren(context);
@@ -2803,6 +2765,31 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public UstNode VisitSend_conversation([NotNull] TSqlParser.Send_conversationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitThrow_error_number([NotNull] TSqlParser.Throw_error_numberContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitThrow_message([NotNull] TSqlParser.Throw_messageContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitThrow_state([NotNull] TSqlParser.Throw_stateContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitDrop_relational_or_xml_or_spatial_index([NotNull] TSqlParser.Drop_relational_or_xml_or_spatial_indexContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitDrop_backward_compatible_index([NotNull] TSqlParser.Drop_backward_compatible_indexContext context)
         {
             return VisitChildren(context);
         }
