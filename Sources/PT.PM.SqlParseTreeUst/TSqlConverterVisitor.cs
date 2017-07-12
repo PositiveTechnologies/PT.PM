@@ -140,9 +140,9 @@ namespace PT.PM.SqlParseTreeUst
             var exprs = new List<Expression>();
             if (context.throw_error_number() != null)
             {
-                exprs.Add(ExtractLiteral((IToken)context.throw_error_number().GetChild(0)));
-                exprs.Add(ExtractLiteral((IToken)context.throw_message().GetChild(0)));
-                exprs.Add(ExtractLiteral((IToken)context.throw_state().GetChild(0)));
+                exprs.Add((Token)VisitTerminal((ITerminalNode)context.throw_error_number().GetChild(0)));
+                exprs.Add((Token)VisitTerminal((ITerminalNode)context.throw_message().GetChild(0)));
+                exprs.Add((Token)VisitTerminal((ITerminalNode)context.throw_state().GetChild(0)));
             }
             var result = new ThrowStatement(
                 new MultichildExpression(exprs, FileNode),
@@ -1175,7 +1175,11 @@ namespace PT.PM.SqlParseTreeUst
                 {
                     opText = "==";
                 }
-                BinaryOperator op = BinaryOperatorLiteral.TextBinaryOperator[opText];
+                BinaryOperator op;
+                if (!BinaryOperatorLiteral.TextBinaryOperator.TryGetValue(opText, out op))
+                {
+                    op = BinaryOperator.Equal;
+                }
                 var opLiteral = new BinaryOperatorLiteral(op, context.GetTextSpan(), FileNode);
                 var result = new BinaryOperatorExpression(expr1, opLiteral, expr2, context.GetTextSpan(), FileNode);
                 return result;
