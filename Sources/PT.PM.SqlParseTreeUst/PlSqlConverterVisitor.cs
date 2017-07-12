@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.PlSqlParseTreeUst;
+using System;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -1394,6 +1395,26 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public UstNode VisitNumeric_function_name([NotNull] PlSqlParser.Numeric_function_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitCreate_table([NotNull] PlSqlParser.Create_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitDrop_table([NotNull] PlSqlParser.Drop_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitAnonymous_block([NotNull] PlSqlParser.Anonymous_blockContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitStart_command([NotNull] PlSqlParser.Start_commandContext context)
         {
             return VisitChildren(context);
         }
