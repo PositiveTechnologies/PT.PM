@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>PT.PM</id>
-    <version>1.0</version>
+    <version>1.1</version>
     <description>An engine for searching patterns in the source code, based on Unified AST or UST. At present time C#, Java, PHP, PL/SQL, T-SQL, and JavaScript are supported. Patterns can be described within the code or using a DSL.</description>
     <authors>Positive Technologies</authors>
     
@@ -16,8 +16,8 @@
     <tags>csharp java php plsql tsql javascript parsing conversion ast parse-trees pattern-matching pattern unified antlr4 roslyn dsl</tags>
     
     <dependencies>
-      <dependency id="Antlr4.Runtime" version="4.6.1" />
-      <dependency id="Newtonsoft.Json" version="10.0.2" />
+      <dependency id="Antlr4.Runtime" version="4.6.3" />
+      <dependency id="Newtonsoft.Json" version="10.0.3" />
       <dependency id="Microsoft.CodeAnalysis.CSharp" version="2.2.0" />
     </dependencies>
   </metadata>

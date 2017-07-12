@@ -1,5 +1,4 @@
 ﻿using PT.PM.AntlrUtils;
-using PT.PM.UstPreprocessing;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Patterns;
@@ -42,11 +41,11 @@ namespace PT.PM
 
         public IUstPatternMatcher<TPattern, TMatchingResult> UstPatternMatcher { get; set; }
 
-        public IUstPreprocessor UstPreprocessor { get; set; } = new UstPreprocessor();
-
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
         public bool IsIncludeIntermediateResult { get; set; }
+
+        public bool IsIncludePreprocessing { get; set; } = true;
 
         public ILogger Logger
         {
@@ -76,10 +75,6 @@ namespace PT.PM
                 if (PatternConverter != null)
                 {
                     PatternConverter.Logger = logger;
-                }
-                if (UstPreprocessor != null)
-                {
-                    UstPreprocessor.Logger = Logger;
                 }
                 if (UstPatternMatcher != null)
                 {

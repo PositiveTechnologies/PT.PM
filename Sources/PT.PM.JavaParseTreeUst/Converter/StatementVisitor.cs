@@ -7,7 +7,6 @@ using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.JavaParseTreeUst.Parser;
 using PT.PM.AntlrUtils;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
@@ -334,7 +333,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitCatchClause(JavaParser.CatchClauseContext context)
         {
             var type = (TypeToken)Visit(context.catchType());
-            var id = (IdToken)Visit(context.Identifier());
+            var id = (IdToken)Visit(context.IDENTIFIER());
             var body = (BlockStatement)Visit(context.block());
 
             var result = new CatchClause(type, id, body, context.GetTextSpan(), FileNode);

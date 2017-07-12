@@ -86,7 +86,7 @@ namespace PT.PM.TestUtils
         }
 
         public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
-            IUstPreprocessor astPreprocessor = null, decimal fileSuccessRatio = 1.0m)
+            decimal fileSuccessRatio = 1.0m)
         {
             var logger = new LoggerMessageCounter()
             {
@@ -119,7 +119,7 @@ namespace PT.PM.TestUtils
 
             var workflow = new Workflow(codeRepository, language, stage: endStage)
             {
-                UstPreprocessor = astPreprocessor
+                IsIncludePreprocessing = false
             };
             workflow.Logger = logger;
             workflow.ThreadCount = 1;

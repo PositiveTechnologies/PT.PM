@@ -36,6 +36,7 @@ namespace PT.PM.Cli
             bool isDumpUst = false;
             bool isIndentedUst = false;
             bool isIncludeTextSpansInUst = true;
+            bool isPreprocess = true;
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
@@ -56,6 +57,7 @@ namespace PT.PM.Cli
             parser.Setup<bool>("dump-ust").Callback(param => isDumpUst = param);
             parser.Setup<bool>("indented-ust").Callback(param => isIndentedUst = param);
             parser.Setup<bool>("text-spans-ust").Callback(param => isIncludeTextSpansInUst = param);
+            parser.Setup<bool>("preprocess-ust").Callback(param => isPreprocess = param);
 
             ILogger logger = new ConsoleLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
@@ -133,7 +135,8 @@ namespace PT.PM.Cli
                         ThreadCount = threadCount,
                         MaxStackSize = maxStackSize,
                         MaxTimespan = maxTimespan,
-                        MemoryConsumptionMb = memoryConsumptionMb
+                        MemoryConsumptionMb = memoryConsumptionMb,
+                        IsIncludePreprocessing = isPreprocess
                     };
                     var stopwatch = Stopwatch.StartNew();
                     WorkflowResult workflowResult = workflow.Process();

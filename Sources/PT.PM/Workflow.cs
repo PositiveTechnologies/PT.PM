@@ -14,6 +14,7 @@ using PT.PM.Matching;
 using PT.PM.Patterns;
 using PT.PM.Patterns.Nodes;
 using PT.PM.Patterns.PatternsRepository;
+using PT.PM.UstPreprocessing;
 
 namespace PT.PM
 {
@@ -141,10 +142,11 @@ namespace PT.PM
 
                         if (Stage >= Stage.Preprocess)
                         {
-                            if (UstPreprocessor != null)
+                            if (IsIncludePreprocessing)
                             {
+                                var ustPreprocessor = new UstPreprocessor() { Logger = logger };
                                 stopwatch.Restart();
-                                ust = UstPreprocessor.Preprocess(ust);
+                                ust = ustPreprocessor.Preprocess(ust);
                                 stopwatch.Stop();
                                 Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
                                 workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);

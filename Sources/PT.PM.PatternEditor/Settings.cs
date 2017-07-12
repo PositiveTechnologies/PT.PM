@@ -44,7 +44,7 @@ namespace PT.PM.PatternEditor
 
         public Language SourceCodeLanguage { get; set; } = Language.CSharp;
 
-        public bool IsDeveloperMode { get; set; } = false;
+        public bool IsDeveloperMode { get; set; } = true;
 
         public bool IsErrorsExpanded { get; set; } = false;
 

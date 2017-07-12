@@ -27,7 +27,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             {">=", BinaryOperator.GreaterOrEqual},
             {"<=", BinaryOperator.LessOrEqual},
 
-            {"??", BinaryOperator.NullCoalescing}
+            {"??", BinaryOperator.NullCoalescing},
+            {".", BinaryOperator.Plus }
         };
 
         public static List<string> TextBinaryAssignmentOperator = new List<string>

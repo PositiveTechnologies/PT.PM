@@ -15,10 +15,10 @@ namespace PT.PM.AntlrUtils
 {
     public class AntlrDefaultVisitor : IParseTreeVisitor<UstNode>, ILoggable
     {
-        private static readonly Regex RegexHexLiteral = new Regex(@"^0[xX][a-fA-F0-9]+([uUlL]{0,2})$", RegexOptions.Compiled);
-        private static readonly Regex RegexOctalLiteral = new Regex(@"^0[0-7]+([uUlL]{0,2})$", RegexOptions.Compiled);
-        private static readonly Regex RegexBinaryLiteral = new Regex(@"^0[bB][01]+([uUlL]{0,2})$", RegexOptions.Compiled);
-        private static readonly Regex RegexDecimalLiteral = new Regex(@"^[0-9]+([uUlL]{0,2})$", RegexOptions.Compiled);
+        protected static readonly Regex RegexHexLiteral = new Regex(@"^0[xX]([a-fA-F0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
+        protected static readonly Regex RegexOctalLiteral = new Regex(@"^0([0-7]+)([uUlL]{0,2})$", RegexOptions.Compiled);
+        protected static readonly Regex RegexBinaryLiteral = new Regex(@"^0[bB]([01]+)([uUlL]{0,2})$", RegexOptions.Compiled);
+        protected static readonly Regex RegexDecimalLiteral = new Regex(@"^([0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
 
         public FileNode FileNode { get; set; }
 
@@ -107,29 +107,11 @@ namespace PT.PM.AntlrUtils
                 double.TryParse(nodeText, out value);
                 return new FloatLiteral(value, textSpan, FileNode);
             }
-            else if (RegexHexLiteral.IsMatch(nodeText))
+
+            var integerToken = TryParseInteger(nodeText, textSpan);
+            if (integerToken != null)
             {
-                long value;
-                nodeText.TryConvertToInt64(16, out value);
-                result = new IntLiteral(value, textSpan, FileNode);
-            }
-            else if (RegexOctalLiteral.IsMatch(nodeText))
-            {
-                long value;
-                nodeText.TryConvertToInt64(8, out value);
-                result = new IntLiteral(value, textSpan, FileNode);
-            }
-            else if (RegexBinaryLiteral.IsMatch(nodeText))
-            {
-                long value;
-                nodeText.Substring(2).TryConvertToInt64(2, out value);
-                result = new IntLiteral(value, textSpan, FileNode);
-            }
-            else if (RegexDecimalLiteral.IsMatch(nodeText))
-            {
-                long value;
-                nodeText.TryConvertToInt64(10, out value);
-                result = new IntLiteral(value, textSpan, FileNode);
+                return integerToken;
             }
             else
             {
@@ -141,6 +123,39 @@ namespace PT.PM.AntlrUtils
         public UstNode VisitErrorNode(IErrorNode node)
         {
             return DefaultResult;
+        }
+
+        protected Token TryParseInteger(string text, TextSpan textSpan)
+        {
+            Match match = RegexHexLiteral.Match(text);
+            if (match.Success)
+            {
+                long value;
+                match.Groups[1].Value.TryConvertToInt64(16, out value);
+                return new IntLiteral(value, textSpan, FileNode);
+            }
+            match = RegexOctalLiteral.Match(text);
+            if (match.Success)
+            {
+                long value;
+                match.Groups[1].Value.TryConvertToInt64(8, out value);
+                return new IntLiteral(value, textSpan, FileNode);
+            }
+            match = RegexBinaryLiteral.Match(text);
+            if (match.Success)
+            {
+                long value;
+                match.Groups[1].Value.TryConvertToInt64(2, out value);
+                return new IntLiteral(value, textSpan, FileNode);
+            }
+            match = RegexDecimalLiteral.Match(text);
+            if (match.Success)
+            {
+                long value;
+                match.Groups[1].Value.TryConvertToInt64(10, out value);
+                return new IntLiteral(value, textSpan, FileNode);
+            }
+            return null;
         }
 
         protected UstNode VisitShouldNotBeVisited(IParseTree tree)
