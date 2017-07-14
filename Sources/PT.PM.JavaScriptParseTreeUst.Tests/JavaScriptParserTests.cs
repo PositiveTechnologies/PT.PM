@@ -9,6 +9,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
     public class JavaScriptParserTests
     {
         [TestCase("helloworld.js")]
+        [TestCase("AllInOne.js")]
         public void Parse_JavaScriptSyntax_WithoutErrors(string fileName)
         {
             TestHelper.CheckFile(fileName, Language.JavaScript, Stage.Parse);

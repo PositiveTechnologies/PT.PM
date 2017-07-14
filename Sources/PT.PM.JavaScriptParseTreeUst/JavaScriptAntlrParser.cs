@@ -9,28 +9,28 @@ namespace PT.PM.JavaScriptParseTreeUst
     {
         public override Language Language => Language.JavaScript;
 
-        protected override int CommentsChannel => ECMAScriptLexer.Hidden;
+        protected override int CommentsChannel => JavaScriptLexer.Hidden;
 
-        protected override IVocabulary Vocabulary => ECMAScriptParser.DefaultVocabulary;
+        protected override IVocabulary Vocabulary => JavaScriptParser.DefaultVocabulary;
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
         {
-            return new JavaScriptAntlrParseTree((ECMAScriptParser.ProgramContext)syntaxTree);
+            return new JavaScriptAntlrParseTree((JavaScriptParser.ProgramContext)syntaxTree);
         }
 
         protected override Lexer InitLexer(ICharStream inputStream)
         {
-            return new ECMAScriptLexer(inputStream);
+            return new JavaScriptLexer(inputStream);
         }
 
         protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
         {
-            return new ECMAScriptParser(inputStream);
+            return new JavaScriptParser(inputStream);
         }
 
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
         {
-            return ((ECMAScriptParser)parser).program();
+            return ((JavaScriptParser)parser).program();
         }
     }
 }

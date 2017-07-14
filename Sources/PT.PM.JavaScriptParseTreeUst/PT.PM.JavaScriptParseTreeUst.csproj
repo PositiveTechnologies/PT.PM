@@ -47,9 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generated\ECMAScriptLexer.cs" />
-    <Compile Include="Generated\ECMAScriptParser.cs" />
-    <Compile Include="Generated\ECMAScriptVisitor.cs" />
+    <Compile Include="..\antlr-grammars-v4\javascript-pt\CSharpSharwell\JavaScriptRuntimeLexer.cs">
+      <Link>JavaScriptRuntimeLexer.cs</Link>
+    </Compile>
+    <Compile Include="..\antlr-grammars-v4\javascript-pt\CSharpSharwell\JavaScriptRuntimeParser.cs">
+      <Link>JavaScriptRuntimeParser.cs</Link>
+    </Compile>
+    <Compile Include="Generated\JavaScriptLexer.cs" />
+    <Compile Include="Generated\JavaScriptParser.cs" />
+    <Compile Include="Generated\JavaScriptParserVisitor.cs" />
     <Compile Include="JavaScriptAntlrUstConverterVisitorHelper.cs" />
     <Compile Include="JavaScriptAntlrParseTree.cs" />
     <Compile Include="JavaScriptAntlrParser.cs" />
@@ -61,8 +67,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4">
-      <Link>ECMAScript.g4</Link>
+    <None Include="..\antlr-grammars-v4\javascript-pt\JavaScriptLexer.g4">
+      <Link>JavaScriptLexer.g4</Link>
+    </None>
+    <None Include="..\antlr-grammars-v4\javascript-pt\JavaScriptParser.g4">
+      <Link>JavaScriptParser.g4</Link>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
@@ -80,9 +89,8 @@
       <Name>PT.PM.Prebuild</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateJavaScriptAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\ecmascript\CSharpSharwell\ECMAScript.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser  --output &quot;$(ProjectDir)Generated&quot;" />
+    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\javascript-pt\JavaScriptLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\javascript-pt\JavaScriptParser.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 </Project>
