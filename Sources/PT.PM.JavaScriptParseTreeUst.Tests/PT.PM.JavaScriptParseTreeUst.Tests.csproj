@@ -55,14 +55,91 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\AllInOne.js">
-      <Link>Data\AllInOne.js</Link>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\ArrowFunctions.js">
+      <Link>Data\ArrowFunctions.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Classes.js">
+      <Link>Data\Classes.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Constants.js">
+      <Link>Data\Constants.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\DestructuringAssignment.js">
+      <Link>Data\DestructuringAssignment.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\EnhancedObjectProperties.js">
+      <Link>Data\EnhancedObjectProperties.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\EnhancedRegularExpression.js">
+      <Link>Data\EnhancedRegularExpression.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\ExtendedLiterals.js">
+      <Link>Data\ExtendedLiterals.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\ExtendedParameterHandling.js">
+      <Link>Data\ExtendedParameterHandling.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Generators.js">
+      <Link>Data\Generators.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\InternationalizationAndLocalization.js">
+      <Link>Data\InternationalizationAndLocalization.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Iterators.js">
+      <Link>Data\Iterators.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\MapSetAndWeakMapWeakSet.js">
+      <Link>Data\MapSetAndWeakMapWeakSet.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Meta-Programming.js">
+      <Link>Data\Meta-Programming.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Modules.js">
+      <Link>Data\Modules.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\NewBuildInMethods.js">
+      <Link>Data\NewBuildInMethods.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Outdated.js">
+      <Link>Data\Outdated.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Promises.js">
+      <Link>Data\Promises.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\Scoping.js">
+      <Link>Data\Scoping.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\SymbolType.js">
+      <Link>Data\SymbolType.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\TemplateLiterals.js">
+      <Link>Data\TemplateLiterals.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\javascript-pt\examples\TypedArrays.js">
+      <Link>Data\TypedArrays.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\JavaScriptTestPatternsInsidePhp.php">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\VeryBig.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="app.config" />
@@ -95,10 +172,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\antlr-grammars-v4\ecmascript\examples\helloworld.js">
-      <Link>Data\helloworld.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Data\Patterns.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
