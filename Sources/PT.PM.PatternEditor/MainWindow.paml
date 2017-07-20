@@ -19,7 +19,7 @@
     <GridSplitter Grid.Column="1" Background="#CFD8DC" />
 
     <Grid Grid.Column="2" Margin="10" RowDefinitions="35,*,Auto,Auto,Auto,Auto,Auto">
-      <Grid Grid.Row="0" Margin="0,0,0,5" ColumnDefinitions="150,50,50,50,30,Auto,*,50,75,75,100">
+      <Grid Grid.Row="0" Margin="0,0,0,5" ColumnDefinitions="150,50,50,50,30,Auto,*,50,75,75,100,Auto,Auto">
         <TextBlock Text="SOURCE CODE" FontWeight="Medium" FontSize="20" />
         <Button Command="{Binding OpenSourceCodeFile}" Grid.Column="1" >Open</Button>
         <Button Command="{Binding SaveSourceCodeFile}" Grid.Column="2" Margin="5,0,0,0" >Save</Button>
@@ -35,6 +35,8 @@
         <DropDown Grid.Column="8" Items="{Binding Stages}" SelectedItem="{Binding Stage}" IsVisible="{Binding DeveloperMode}"/>
         <TextBlock Grid.Column="9" Margin="10,0,0,0" Text="Language"/>
         <DropDown Grid.Column="10" Items="{Binding Languages}" SelectedItem="{Binding SelectedLanguageInfo}" />
+        <TextBlock Grid.Column="11" Margin="10,0,0,0" Text="JS Type  " IsVisible="{Binding IsJavaScriptTypeVisible}" />
+        <DropDown Grid.Column="12" Items="{Binding JavaScriptTypes}" SelectedItem="{Binding JavaScriptType}" IsVisible="{Binding IsJavaScriptTypeVisible}" />
       </Grid>
 
       <TextBox Grid.Row="1" Name="SourceCode" AcceptsReturn="true" />
