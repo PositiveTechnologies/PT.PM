@@ -25,9 +25,10 @@ namespace PT.PM.JavaScriptParseTreeUst
         protected override Lexer InitLexer(ICharStream inputStream)
         {
             var lexer = new JavaScriptLexer(inputStream);
-            lexer.UseStrict = JavaScriptType == JavaScriptType.Undefined
-                ? useStrict
-                : JavaScriptType == JavaScriptType.Strict;
+            if (JavaScriptType != JavaScriptType.Undefined)
+            {
+                lexer.UseStrictDefalult = JavaScriptType == JavaScriptType.Strict;
+            }
 
             return lexer;
         }
@@ -40,16 +41,6 @@ namespace PT.PM.JavaScriptParseTreeUst
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
         {
             return ((JavaScriptParser)parser).program();
-        }
-
-        protected override string PreprocessText(SourceCodeFile file)
-        {
-            var result = base.PreprocessText(file);
-            if (JavaScriptType == JavaScriptType.Undefined)
-            {
-                useStrict = result.StartsWith("\"use strict\"");
-            }
-            return result;
         }
     }
 }

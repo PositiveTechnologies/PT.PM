@@ -529,8 +529,6 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public UstNode VisitKeyword([NotNull] JavaScriptParser.KeywordContext context) { return VisitChildren(context); }
 
-        public UstNode VisitFutureReservedWord([NotNull] JavaScriptParser.FutureReservedWordContext context) { return VisitChildren(context); }
-
         public UstNode VisitGetter([NotNull] JavaScriptParser.GetterContext context) { return VisitChildren(context); }
 
         public UstNode VisitSetter([NotNull] JavaScriptParser.SetterContext context) { return VisitChildren(context); }

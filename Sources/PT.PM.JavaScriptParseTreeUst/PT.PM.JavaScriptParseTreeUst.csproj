@@ -47,11 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\antlr-grammars-v4\javascript-pt\CSharpSharwell\JavaScriptRuntimeLexer.cs">
-      <Link>JavaScriptRuntimeLexer.cs</Link>
+    <Compile Include="..\antlr-grammars-v4\javascript-pt\CSharpSharwell\JavaScriptBaseLexer.cs">
+      <Link>JavaScriptBaseLexer.cs</Link>
     </Compile>
-    <Compile Include="..\antlr-grammars-v4\javascript-pt\CSharpSharwell\JavaScriptRuntimeParser.cs">
-      <Link>JavaScriptRuntimeParser.cs</Link>
+    <Compile Include="..\antlr-grammars-v4\javascript-pt\CSharpSharwell\JavaScriptBaseParser.cs">
+      <Link>JavaScriptBaseParser.cs</Link>
     </Compile>
     <Compile Include="Generated\JavaScriptLexer.cs" />
     <Compile Include="Generated\JavaScriptParser.cs" />

@@ -16,7 +16,6 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         }
 
         [TestCase("JavaScript-Style-Guide-v14.0.0")]
-        //[TestCase("bootstrap-v3.3.7")] // TODO: Improve JavaScript parser performance
         public void Parse_JavaScriptProject_WithoutErrors(string projectKey)
         {
             TestHelper.CheckProject(TestProjects.JavaScriptProjects
