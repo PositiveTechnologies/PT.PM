@@ -173,6 +173,16 @@ namespace PT.PM
             stageHelper = new StageHelper<TStage>(stage);
         }
 
+        public ILanguageParser GetParser(Language language)
+        {
+            return ParserConverterSets[language].Parser;
+        }
+
+        public IParseTreeToUstConverter GetConverter(Language language)
+        {
+            return ParserConverterSets[language].Converter;
+        }
+
         protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
             ParseTree result = null;
