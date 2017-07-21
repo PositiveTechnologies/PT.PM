@@ -8,13 +8,6 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
     [TestFixture]
     public class JavaScriptParserTests
     {
-        [TestCase("helloworld.js")]
-        [TestCase("AllInOne.js")]
-        public void Parse_JavaScriptSyntax_WithoutErrors(string fileName)
-        {
-            TestHelper.CheckFile(fileName, Language.JavaScript, Stage.Parse);
-        }
-
         [TestCase("JavaScript-Style-Guide-v14.0.0")]
         public void Parse_JavaScriptProject_WithoutErrors(string projectKey)
         {
