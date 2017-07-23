@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PT.PM.Patterns</RootNamespace>
     <AssemblyName>PT.PM.Patterns</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,19 +30,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Nodes\IAbsoluteLocationMatching.cs" />
+    <Compile Include="Nodes\IRelativeLocationMatching.cs" />
     <Compile Include="PatternBase.cs" />
+    <Compile Include="PatternHelper.cs" />
     <Compile Include="PatternIdGenerator.cs" />
-    <Compile Include="PatternLanguageFlagsSafeConverter.cs" />
+    <Compile Include="PatternJsonSafeConverter.cs" />
+    <Compile Include="PatternsRepository\DefaultPatternRepository\HtmlPatternRepository.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\JavaScriptPatterns.cs" />
-    <Compile Include="PatternsRepository\StringPatternsRepository.cs" />
+    <Compile Include="PatternsRepository\JsonPatternsRepository.cs" />
     <Compile Include="UstNodeCloner.cs" />
     <Compile Include="Pattern.cs" />
     <Compile Include="PatternConverter.cs" />

@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
-    public class StringPatternsRepository : MemoryPatternsRepository
+    public class JsonPatternsRepository : MemoryPatternsRepository
     {
         private string patternsData;
         private readonly JsonConverter stringEnumConverter;
 
-        public StringPatternsRepository(string patternsData)
+        public JsonPatternsRepository(string patternsData)
         {
             this.patternsData = patternsData;
             stringEnumConverter = new StringEnumConverter();
@@ -18,7 +18,7 @@ namespace PT.PM.Patterns.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            var languageFlagsConverter = new PatternLanguageFlagsSafeConverter
+            var languageFlagsConverter = new PatternJsonSafeConverter
             {
                 Logger = Logger
             };

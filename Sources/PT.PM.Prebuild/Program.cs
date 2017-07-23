@@ -33,7 +33,7 @@ namespace PT.PM.Prebuild
 
             string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             AntlrDefaultPath = Path.Combine(currentPath,
-                @"..\..\Sources\packages\Antlr4.CodeGenerator.4.6.1-beta002\tools\antlr4-csharp-4.6.1-SNAPSHOT-complete.jar");
+                @"..\..\Sources\packages\Antlr4.CodeGenerator.4.6.3\tools\antlr4-csharp-4.6.3-complete.jar");
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             var cmdParser = new FluentCommandLineParser();
@@ -176,6 +176,12 @@ namespace PT.PM.Prebuild
             GenerateStatus result = GenerateStatus.NotGenerated;
             if (generate)
             {
+                if (!ProcessHelpers.IsProcessCanBeExecuted("java"))
+                {
+                    Console.WriteLine("java is not installed or java path is not specified.");
+                    return GenerateStatus.Error;
+                }
+
                 string lexerParser = lexer ? "Lexer" : "Parser";
                 Console.WriteLine($"{lexerParser} for {shortGrammarFileName} generation...");
                 System.Diagnostics.Process process = new System.Diagnostics.Process();

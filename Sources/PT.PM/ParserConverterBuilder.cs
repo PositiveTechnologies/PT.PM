@@ -60,6 +60,10 @@ namespace PT.PM
                     result.Parser = new JavaScriptAntlrParser();
                     result.Converter = new JavaScriptParseTreeConverter();
                     break;
+                case Language.Html:
+                    result.Parser = new PhpAntlrParser();
+                    result.Converter = new PhpAntlrParseTreeConverter();
+                    break;
                 default:
                     throw new NotImplementedException($"Language {language} is not supported");
             }

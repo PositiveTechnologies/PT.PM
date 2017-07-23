@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PT.PM.Common.Exceptions;
+using System;
+using System.Collections.Generic;
 
 namespace PT.PM.Common.CodeRepository
 {
@@ -27,11 +29,19 @@ namespace PT.PM.Common.CodeRepository
 
         public SourceCodeFile ReadFile(string fileName)
         {
-            return new SourceCodeFile(fileName)
+            var result = new SourceCodeFile(fileName);
+            try
             {
-                Code = Code,
-                RelativePath = Path
-            };
+                result.RelativePath = "";
+                result.Code = Code;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(new ReadException(fileName, ex));
+            }
+            return result;
         }
+
+        public bool IsFileIgnored(string fileName) => false;
     }
 }

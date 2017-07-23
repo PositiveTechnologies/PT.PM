@@ -27,7 +27,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             {">=", BinaryOperator.GreaterOrEqual},
             {"<=", BinaryOperator.LessOrEqual},
 
-            {"??", BinaryOperator.NullCoalescing}
+            {"??", BinaryOperator.NullCoalescing},
+            {".", BinaryOperator.Plus }
         };
 
         public static List<string> TextBinaryAssignmentOperator = new List<string>
@@ -56,8 +57,15 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         }
 
         public BinaryOperatorLiteral(string op, TextSpan textSpan, FileNode fileNode)
-            : this(TextBinaryOperator[op], textSpan, fileNode)
         {
+            BinaryOperator binaryOperator;
+            if (!TextBinaryOperator.TryGetValue(op, out binaryOperator))
+            {
+                binaryOperator = BinaryOperator.Equal;
+            }
+            BinaryOperator = binaryOperator;
+            TextSpan = textSpan;
+            FileNode = fileNode;
         }
 
         public BinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan, FileNode fileNode)

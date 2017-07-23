@@ -1,14 +1,18 @@
 ﻿using Newtonsoft.Json;
 using PT.PM.Common;
 using System;
+using System.Text.RegularExpressions;
 
 namespace PT.PM.Patterns
 {
     public abstract class PatternBase
     {
         private LanguageFlags languages = LanguageExt.AllPatternLanguages;
+        private Regex pathWildcardRegex;
 
         public string Key { get; set; }
+
+        public string FilenameWildcard { get; set; }
 
         public LanguageFlags Languages
         {
@@ -29,11 +33,25 @@ namespace PT.PM.Patterns
         [JsonIgnore]
         public string DebugInfo { get; set; }
 
-        public PatternBase(string key, string debugInfo, LanguageFlags languages)
+        [JsonIgnore]
+        public Regex FilenameWildcardRegex
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(FilenameWildcard) && pathWildcardRegex == null)
+                {
+                    pathWildcardRegex = new WildcardConverter().Convert(FilenameWildcard);
+                }
+                return pathWildcardRegex;
+            }
+        }
+
+        public PatternBase(string key, string debugInfo, LanguageFlags languages, string filenameWildcard)
         {
             Key = key;
             DebugInfo = debugInfo;
             Languages = languages;
+            FilenameWildcard = filenameWildcard;
         }
 
         public PatternBase()

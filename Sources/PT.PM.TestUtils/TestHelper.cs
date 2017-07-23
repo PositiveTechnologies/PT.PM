@@ -53,18 +53,29 @@ namespace PT.PM.TestUtils
             SevenZipPath = Helper.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
-        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage, ILogger logger = null, bool shouldContainsErrors = false)
+        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage,
+            ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false)
         {
             var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, language, stage: endStage);
+            if (workflow.UstPatternMatcher != null)
+            {
+                workflow.UstPatternMatcher.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
+            }
             workflow.Logger = log;
             WorkflowResult workflowResult = workflow.Process();
 
+            string errorString = string.Empty;
+            var loggerMessageCounter = log as LoggerMessageCounter;
+            if (loggerMessageCounter != null)
+            {
+                errorString = loggerMessageCounter.ErrorsString;
+            }
             if (!shouldContainsErrors)
             {
-                Assert.AreEqual(0, log.ErrorCount);
+                Assert.AreEqual(0, log.ErrorCount, errorString);
             }
             else
             {
@@ -75,7 +86,7 @@ namespace PT.PM.TestUtils
         }
 
         public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
-            IUstPreprocessor astPreprocessor = null, decimal fileSuccessRatio = 1.0m)
+            decimal fileSuccessRatio = 1.0m)
         {
             var logger = new LoggerMessageCounter()
             {
@@ -88,7 +99,7 @@ namespace PT.PM.TestUtils
                 {
                     codeRepository = new ZipAtUrlCachedCodeRepository(url, testProject.Key)
                     {
-                        Extenstions = LanguageExt.GetExtensions(language),
+                        Extensions = LanguageExt.GetExtensions(language),
                         IgnoredFiles = testProject.IgnoredFiles,
                         Logger = logger
                     };
@@ -108,7 +119,7 @@ namespace PT.PM.TestUtils
 
             var workflow = new Workflow(codeRepository, language, stage: endStage)
             {
-                UstPreprocessor = astPreprocessor
+                IsIncludePreprocessing = false
             };
             workflow.Logger = logger;
             workflow.ThreadCount = 1;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PT.PM.Common.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,11 +12,7 @@ namespace PT.PM.Common.CodeRepository
 
         public string Path { get; set; }
 
-        public IEnumerable<string> Extenstions { get; set; }
-
-        public string FileSkipUpTo { get; set; }
-
-        public string FileSkipAfter { get; set; }
+        public IEnumerable<string> Extenstions { get; set; } = LanguageExt.Extensions;
 
         public FilesAggregatorCodeRepository(string directoryPath, string extension)
             : this(directoryPath, new[] { extension })
@@ -30,44 +27,43 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> GetFileNames()
         {
-            var filesCollection = Directory.GetFiles(Path, "*.*", SearchOption.AllDirectories)
-                .Where(s => Extenstions.Any(s.EndsWith));
-            if (!string.IsNullOrEmpty(FileSkipUpTo))
-            {
-                filesCollection = filesCollection.SkipWhile(file => System.IO.Path.GetFileName(file) != FileSkipUpTo);
-            }
-            if (!string.IsNullOrEmpty(FileSkipAfter))
-            {
-                filesCollection = filesCollection.TakeWhile(file => System.IO.Path.GetFileName(file) != FileSkipAfter);
-            }
-            string[] files = filesCollection.ToArray();
-            return files;
+            return Directory.EnumerateFiles(Path, "*.*", SearchOption.AllDirectories);
         }
 
-        public SourceCodeFile ReadFile(string file)
+        public SourceCodeFile ReadFile(string fileName)
         {
-            var removeBeginLength = Path.Length + (Path.EndsWith("\\") ? 0 : 1);
-            var fileName = System.IO.Path.GetFileName(file);
-            SourceCodeFile result = new SourceCodeFile(fileName);
+            SourceCodeFile result = null;
             try
             {
-                int removeEndLength = fileName.Length + 1;
-                result.RelativePath = removeEndLength + removeBeginLength > file.Length
-                        ? "" : file.Remove(file.Length - removeEndLength).Remove(0, removeBeginLength);
-                result.Code = File.ReadAllText(file);
+                var removeBeginLength = Path.Length + (Path.EndsWith("\\") ? 0 : 1);
+                var shortFileName = System.IO.Path.GetFileName(fileName);
+                result = new SourceCodeFile(shortFileName);
+            
+                int removeEndLength = shortFileName.Length + 1;
+                result.RelativePath = removeEndLength + removeBeginLength > fileName.Length
+                        ? "" : fileName.Remove(fileName.Length - removeEndLength).Remove(0, removeBeginLength);
+                result.Code = File.ReadAllText(fileName);
                 return result;
             }
             catch (Exception ex)
             {
-                Logger.LogError("File read error: " + file, ex);
+                Logger.LogError(new ReadException(fileName, ex));
+                if (result == null)
+                {
+                    result = new SourceCodeFile(fileName);
+                }
             }
             return result;
         }
 
         public string GetFullPath(string relativePath)
         {
-            var result = System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
-            return result;
+            return System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
+        }
+
+        public bool IsFileIgnored(string fileName)
+        {
+            return !Extenstions.Any(fileName.EndsWith);
         }
     }
 }

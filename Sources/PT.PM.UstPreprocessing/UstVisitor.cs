@@ -534,6 +534,10 @@ namespace PT.PM.UstPreprocessing
                         setValue.Parent = result;
                     }
                 }
+                else if (prop.Name.StartsWith(nameof(IAbsoluteLocationMatching.MatchedLocation)))
+                {
+                    // ignore matched locations.
+                }
                 else if (propType.GetInterfaces().Contains(typeof(IEnumerable)))
                 {
                     Type itemType = propType.GetGenericArguments()[0];

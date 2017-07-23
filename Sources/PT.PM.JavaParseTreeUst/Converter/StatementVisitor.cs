@@ -7,11 +7,10 @@ using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.JavaParseTreeUst.Parser;
 using PT.PM.AntlrUtils;
-using Antlr4.Runtime.Tree;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using Antlr4.Runtime.Tree;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
@@ -31,10 +30,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             Statement result;
 
-            var localVariableDeclarationStatement = context.localVariableDeclarationStatement();
-            if (localVariableDeclarationStatement != null)
+            var localVariableDeclaration = context.localVariableDeclaration();
+            if (localVariableDeclaration != null)
             {
-                result = (Statement)Visit(localVariableDeclarationStatement);
+                result = new ExpressionStatement((Expression)Visit(localVariableDeclaration), context.GetTextSpan(), FileNode);
                 return result;
             }
 
@@ -56,13 +55,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return VisitChildren(context);
         }
 
-        public UstNode VisitLocalVariableDeclarationStatement(JavaParser.LocalVariableDeclarationStatementContext context)
-        {
-            var expression = (VariableDeclarationExpression)Visit(context.localVariableDeclaration());
-            var result = new ExpressionStatement(expression);
-            return result;
-        }
-
         public UstNode VisitLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext context)
         {
             var type = (TypeToken)Visit(context.typeType());
@@ -77,151 +69,181 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitStatement(JavaParser.StatementContext context)
         {
             var textSpan = context.GetTextSpan();
-            var child0 = context.GetChild(0) as ITerminalNode;
             Statement result;
             Expression expression;
             Statement statement;
             List<Statement> statements;
-            if (child0 != null)
+
+            if (context.blockLabel != null)
             {
-                switch (child0.Symbol.Type)
-                {
-                    case JavaParser.ASSERT:
-                        throw new NotImplementedException();
-
-                    case JavaParser.IF:
-                        var condition = (Expression)Visit(context.parExpression());
-                        var trueStatement = (Statement)Visit(context.statement(0));
-                        JavaParser.StatementContext statement1 = context.statement(1);
-                        var falseStatment = statement1 == null ? null : (Statement)Visit(statement1);
-
-                        result = new IfElseStatement(condition, trueStatement, textSpan, FileNode)
-                        {
-                            FalseStatement = falseStatment
-                        };
-                        return result;
-
-                    case JavaParser.FOR:
-                        result = (Statement)Visit(context.forControl());
-                        return result;
-
-                    case JavaParser.WHILE:
-                        var conditionWhile = (Expression)Visit(context.parExpression());
-                        statement = (Statement)Visit(context.statement(0));
-
-                        result = new WhileStatement(conditionWhile, statement, textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.DO:
-                        statement = (Statement)Visit(context.statement(0));
-                        expression = (Expression)Visit(context.parExpression());
-
-                        result = new DoWhileStatement(statement, expression, textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.TRY:
-                        // TODO: implement 'try' resourceSpecification block catchClause* finallyBlock? (C# using)
-
-                        var block = (BlockStatement)Visit(context.block());
-                        JavaParser.ResourceSpecificationContext resSpec = context.resourceSpecification();
-
-                        List<CatchClause> catchClauses = context.catchClause() == null ? null
-                            : context.catchClause()
-                            .Select(cc => (CatchClause)Visit(cc))
-                            .Where(cc => cc != null).ToList();
-
-                        var finallyBlock = context.finallyBlock() == null ? null
-                            : (BlockStatement)Visit(context.finallyBlock());
-
-                        if (resSpec == null)
-                        {
-                            result = new TryCatchStatement(block, textSpan, FileNode)
-                            {
-                                CatchClauses = catchClauses,
-                                FinallyBlock = finallyBlock
-                            };
-                        }
-                        else
-                        {
-                            // C# using conversion to tryCatch
-                            statements = new List<Statement>();
-                            statements.AddRange(resSpec.resources().resource()
-                                .Select(res =>
-                                {
-                                    var e = (VariableDeclarationExpression)Visit(res);
-                                    return e == null ? null : new ExpressionStatement(e);
-                                })
-                                .Where(res => res != null));
-                            statements.AddRange(block.Statements);
-                            var blockStatement = new BlockStatement(statements, context.GetTextSpan(), FileNode);
-
-                            result = new TryCatchStatement(block, textSpan, FileNode)
-                            {
-                                CatchClauses = catchClauses,
-                                FinallyBlock = finallyBlock
-                            };
-                        }
-                        return result;
-
-                    case JavaParser.SWITCH:
-                        expression = (Expression)Visit(context.parExpression());
-                        SwitchSection[] switchSections = context.switchBlockStatementGroup()
-                            .Select(group => (SwitchSection)Visit(group))
-                            .Where(group => group != null).ToArray();
-
-                        result = new SwitchStatement(expression, switchSections, textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.SYNCHRONIZED: // synchronized(a) { b; c; } => { a; b; c; }
-                        var resultStatements = new List<Statement>();
-                        expression = (Expression)Visit(context.parExpression());
-                        statements = context.block().blockStatement()
-                            .Select(s => (Statement)Visit(s))
-                            .Where(s => s != null).ToList();
-                        resultStatements.Add(new ExpressionStatement(expression, expression.TextSpan, FileNode));
-                        resultStatements.AddRange(statements);
-
-                        result = new BlockStatement(resultStatements, textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.RETURN:
-                        expression = context.expression(0) != null
-                            ? (Expression)Visit(context.expression(0))
-                            : null;
-                        result = new ReturnStatement(expression, textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.THROW:
-                        expression = (Expression)Visit(context.expression(0));
-                        result = new ThrowStatement(expression, textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.BREAK:
-                        result = new BreakStatement(textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.CONTINUE:
-                        result = new ContinueStatement(textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.SEMI:
-                        result = new EmptyStatement(textSpan, FileNode);
-                        return result;
-
-                    case JavaParser.Identifier:
-                        throw new NotImplementedException();
-                }
+                result = (Statement)Visit(context.blockLabel);
+                return result;
             }
 
-            result = (Statement)Visit(context.GetChild(0));
-            return result;
-        }
+            if (context.statementExpression != null)
+            {
+                result = Visit(context.statementExpression).ToStatementIfRequired();
+                return result;
+            }
 
-        public UstNode VisitStatementExpression(JavaParser.StatementExpressionContext context)
-        {
-            var expression = (Expression)Visit(context.expression());
-            var result = new ExpressionStatement(expression, context.GetTextSpan(), FileNode);
-            return result;
+            if (context.identifierLabel != null)
+            {
+                var defaultResult = VisitChildren(context);
+                return new WrapperStatement(defaultResult, textSpan, FileNode);
+            }
+
+            int firstTokenType = context.GetChild<ITerminalNode>(0).Symbol.Type;
+            if (firstTokenType == JavaLexer.ASSERT)
+            {
+                var defaultResult = VisitChildren(context);
+                return new WrapperStatement(defaultResult, textSpan, FileNode);
+            }
+
+            if (firstTokenType == JavaLexer.IF)
+            {
+                var condition = (Expression)Visit(context.parExpression());
+                var trueStatement = (Statement)Visit(context.statement(0));
+                var falseStatment = context.ELSE() == null
+                    ? null
+                    : (Statement)Visit(context.statement(1));
+
+                result = new IfElseStatement(condition, trueStatement, textSpan, FileNode)
+                {
+                    FalseStatement = falseStatment
+                };
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.FOR)
+            {
+                result = (Statement)Visit(context.forControl());
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.WHILE)
+            {
+                var conditionWhile = (Expression)Visit(context.parExpression());
+                statement = (Statement)Visit(context.statement(0));
+
+                result = new WhileStatement(conditionWhile, statement, textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.DO)
+            {
+                statement = (Statement)Visit(context.statement(0));
+                expression = (Expression)Visit(context.parExpression());
+
+                result = new DoWhileStatement(statement, expression, textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.TRY)
+            {
+                // TODO: implement 'try' resourceSpecification block catchClause* finallyBlock? (C# using)
+
+                var block = (BlockStatement)Visit(context.block());
+                JavaParser.ResourceSpecificationContext resSpec = context.resourceSpecification();
+
+                List<CatchClause> catchClauses = context.catchClause() == null ? null
+                    : context.catchClause()
+                    .Select(cc => (CatchClause)Visit(cc))
+                    .Where(cc => cc != null).ToList();
+
+                var finallyBlock = context.finallyBlock() == null ? null
+                    : (BlockStatement)Visit(context.finallyBlock());
+
+                if (resSpec == null)
+                {
+                    result = new TryCatchStatement(block, textSpan, FileNode)
+                    {
+                        CatchClauses = catchClauses,
+                        FinallyBlock = finallyBlock
+                    };
+                }
+                else
+                {
+                    // C# using conversion to tryCatch
+                    statements = new List<Statement>();
+                    statements.AddRange(resSpec.resources().resource()
+                        .Select(res =>
+                        {
+                            var e = (VariableDeclarationExpression)Visit(res);
+                            return e == null ? null : new ExpressionStatement(e);
+                        })
+                        .Where(res => res != null));
+                    statements.AddRange(block.Statements);
+                    var blockStatement = new BlockStatement(statements, context.GetTextSpan(), FileNode);
+
+                    result = new TryCatchStatement(block, textSpan, FileNode)
+                    {
+                        CatchClauses = catchClauses,
+                        FinallyBlock = finallyBlock
+                    };
+                }
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.SWITCH)
+            {
+                expression = (Expression)Visit(context.parExpression());
+                SwitchSection[] switchSections = context.switchBlockStatementGroup()
+                    .Select(group => (SwitchSection)Visit(group))
+                    .Where(group => group != null).ToArray();
+
+                result = new SwitchStatement(expression, switchSections, textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.SYNCHRONIZED) // synchronized(a) { b; c; } => { a; b; c; }
+            {
+                var resultStatements = new List<Statement>();
+                expression = (Expression)Visit(context.parExpression());
+                statements = context.block().blockStatement()
+                    .Select(s => (Statement)Visit(s))
+                    .Where(s => s != null).ToList();
+                resultStatements.Add(new ExpressionStatement(expression, expression.TextSpan, FileNode));
+                resultStatements.AddRange(statements);
+
+                result = new BlockStatement(resultStatements, textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.RETURN)
+            {
+                expression = context.expression(0) != null
+                            ? (Expression)Visit(context.expression(0))
+                            : null;
+                result = new ReturnStatement(expression, textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.THROW)
+            {
+                expression = (Expression)Visit(context.expression(0));
+                result = new ThrowStatement(expression, textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.BREAK)
+            {
+                result = new BreakStatement(textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.CONTINUE)
+            {
+                result = new ContinueStatement(textSpan, FileNode);
+                return result;
+            }
+
+            if (firstTokenType == JavaLexer.SEMI)
+            {
+                result = new EmptyStatement(textSpan, FileNode);
+                return result;
+            }
+
+            return VisitShouldNotBeVisited(context);
         }
 
         public UstNode VisitForControl(JavaParser.ForControlContext context)
@@ -265,10 +287,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 }
                 Expression condition = context.expression() == null ? null : (Expression)Visit(context.expression());
             
-                JavaParser.ForUpdateContext forUpdate = context.forUpdate();
+                JavaParser.ExpressionListContext forUpdate = context.forUpdate;
                 if (forUpdate != null)
                 {
-                    iterators.AddRange(forUpdate.expressionList().expression()
+                    iterators.AddRange(forUpdate.expression()
                         .Select(expr => (Expression)Visit(expr))
                         .Where(iter => iter != null).ToArray());
                 }
@@ -281,11 +303,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
         }
 
         public UstNode VisitForInit(JavaParser.ForInitContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public UstNode VisitForUpdate(JavaParser.ForUpdateContext context)
         {
             return VisitChildren(context);
         }
@@ -309,18 +326,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitConstantExpression(JavaParser.ConstantExpressionContext context)
-        {
-            var result = (Expression)Visit(context.expression());
-            return result;
-        }
-
-        public UstNode VisitEnumConstantName(JavaParser.EnumConstantNameContext context)
-        {
-            var result = (Expression)Visit(context.Identifier());
-            return result;
-        }
-        
         #endregion
 
         #region Try Catch Finally
@@ -328,7 +333,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitCatchClause(JavaParser.CatchClauseContext context)
         {
             var type = (TypeToken)Visit(context.catchType());
-            var id = (IdToken)Visit(context.Identifier());
+            var id = (IdToken)Visit(context.IDENTIFIER());
             var body = (BlockStatement)Visit(context.block());
 
             var result = new CatchClause(type, id, body, context.GetTextSpan(), FileNode);

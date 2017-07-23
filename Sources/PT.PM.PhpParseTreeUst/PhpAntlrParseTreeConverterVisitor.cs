@@ -28,6 +28,8 @@ namespace PT.PM.PhpParseTreeUst
         protected const string attrNamespacePrefix = Helper.Prefix + "attrNs";
         protected const string inlineHtmlNamespacePrefix = Helper.Prefix + "inlineHtml";
 
+
+
         protected int namespaceDepth;
 
         public LanguageFlags ConvertedLanguages { get; set; }
@@ -56,7 +58,8 @@ namespace PT.PM.PhpParseTreeUst
             UstNode result = null;
             if (context.htmlElements() != null)
             {
-                result = (StringLiteral)Visit(context.htmlElements());
+                var stringLiteral = (StringLiteral)Visit(context.htmlElements());
+                result = NodeHelpers.CreateLanguageNamespace(stringLiteral, Language.Html, FileNode);
             }
             else if (context.phpBlock() != null)
             {
@@ -71,7 +74,8 @@ namespace PT.PM.PhpParseTreeUst
 
         public UstNode VisitHtmlElements(PHPParser.HtmlElementsContext context)
         {
-            return new StringLiteral(context.GetText(), context.GetTextSpan(), FileNode);
+            string text = context.GetText(Tokens);
+            return new StringLiteral(text, context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitHtmlElement(PHPParser.HtmlElementContext context)
@@ -90,7 +94,8 @@ namespace PT.PM.PhpParseTreeUst
                 var sourceCodeFile = new SourceCodeFile()
                 {
                     Name = FileNode.FileName.Text,
-                    Code = javaScriptCode
+                    Code = javaScriptCode,
+                    LineOffset = context.Start.Line - 1
                 };
                 var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
 
@@ -98,7 +103,7 @@ namespace PT.PM.PhpParseTreeUst
                 javaScriptConverter.Logger = Logger;
                 result = javaScriptConverter.Visit(parseTree.SyntaxTree);
                 var resultFileNode = result as FileNode;
-                if (resultFileNode != null)
+                if (resultFileNode?.Root != null)
                 {
                     result = resultFileNode.Root.CreateLanguageNamespace(Language.JavaScript, FileNode);
                 }
@@ -920,6 +925,11 @@ namespace PT.PM.PhpParseTreeUst
             return Visit(context.yieldExpression());
         }
 
+        public UstNode VisitExpression([NotNull] PHPParser.ExpressionContext context)
+        {
+            return Visit(context);
+        }
+
         public UstNode VisitNewExpr(PHPParser.NewExprContext context)
         {
             var type = (TypeToken)Visit(context.typeRef());
@@ -931,107 +941,40 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitExpression(PHPParser.ExpressionContext context)
+        public UstNode VisitConditionalExpression([NotNull] PHPParser.ConditionalExpressionContext context)
         {
-            Expression result;
-            if (context.ChildCount == 1)
-            {
-                result = (Expression)Visit(context.children[0]);
-            }
-            else if (context.QuestionMark() != null)
-            {
-                var expression0 = (Expression)Visit(context.expression(0));
-                var expression1 = (Expression)(context.expression().Length == 3 ? Visit(context.expression(1)) : null);
-                var expression2 = (Expression)Visit(context.andOrExpression());
-                result = new ConditionalExpression(expression0, expression1, expression2,
-                    context.GetTextSpan(), FileNode);
-            }
-            else
-            {
-                result = CreateBinaryOperatorExpression(context.expression(0), context.GetChild<ITerminalNode>(0),
-                    context.andOrExpression());
-            }
+            var expression0 = (Expression)Visit(context.expression(0));
+            var expression1 = (Expression)(context.expression().Length == 3 ? Visit(context.expression(1)) : null);
+            var expression2 = (Expression)Visit(context.expression().Last());
+            var result = new ConditionalExpression(expression0, expression1, expression2, context.GetTextSpan(), FileNode);
             return result;
         }
 
-        public UstNode VisitAndOrExpression([NotNull] PHPParser.AndOrExpressionContext context)
+        public UstNode VisitLogicalExpression([NotNull] PHPParser.LogicalExpressionContext context)
         {
-            Expression result;
-            if (context.ChildCount == 1)
-            {
-                result = (Expression)Visit(context.children[0]);
-            }
-            else
-            {
-                result = CreateBinaryOperatorExpression(context.andOrExpression(), context.GetChild<ITerminalNode>(0),
-                    context.comparisonExpression());
-            }
+            return CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
+        }
+
+        public UstNode VisitArithmeticExpression([NotNull] PHPParser.ArithmeticExpressionContext context)
+        {
+            return CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
+        }
+
+        public UstNode VisitInstanceOfExpression([NotNull] PHPParser.InstanceOfExpressionContext context)
+        {
+            return (Expression)Visit(context.expression()); // TODO: InstanceOf
+        }
+
+        public UstNode VisitBitwiseExpression([NotNull] PHPParser.BitwiseExpressionContext context)
+        {
+            Expression result = CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
             return result;
         }
 
         public UstNode VisitComparisonExpression([NotNull] PHPParser.ComparisonExpressionContext context)
         {
-            Expression result;
-            if (context.ChildCount == 1)
-            {
-                result = (Expression)Visit(context.children[0]);
-            }
-            else
-            {
-                result = CreateBinaryOperatorExpression(context.comparisonExpression(), context.GetChild<ITerminalNode>(0),
-                    context.additionExpression());
-            }
+            Expression result = CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
             return result;
-        }
-
-        public UstNode VisitAdditionExpression([NotNull] PHPParser.AdditionExpressionContext context)
-        {
-            Expression result;
-            if (context.ChildCount == 1)
-            {
-                result = (Expression)Visit(context.children[0]);
-            }
-            else
-            {
-                result = CreateBinaryOperatorExpression(context.additionExpression(), context.GetChild<ITerminalNode>(0),
-                    context.multiplicationExpression());
-            }
-            return result;
-        }
-
-        public UstNode VisitMultiplicationExpression([NotNull] PHPParser.MultiplicationExpressionContext context)
-        {
-            Expression result;
-            if (context.ChildCount == 1)
-            {
-                result = (Expression)Visit(context.children[0]);
-            }
-            else if (context.InstanceOf() != null)
-            {
-                result = (Expression)Visit(context.multiplicationExpression()); // TODO: InstanceOf
-            }
-            else
-            {
-                var terminal = context.GetChild<ITerminalNode>(0);
-                ParserRuleContext left, right;
-                if (terminal.GetText() == "**")
-                {
-                    left = context.notLeftRecursionExpression();
-                    right = context.multiplicationExpression();
-                }
-                else
-                {
-                    left = context.multiplicationExpression();
-                    right = context.notLeftRecursionExpression();
-                }
-                result = CreateBinaryOperatorExpression(left, terminal, right);
-            }
-            return result;
-        }
-
-        public UstNode VisitNotLeftRecursionExpression([NotNull] PHPParser.NotLeftRecursionExpressionContext context)
-        {
-            return (Expression)Visit(context);
         }
 
         public UstNode VisitCloneExpression(PHPParser.CloneExpressionContext context)

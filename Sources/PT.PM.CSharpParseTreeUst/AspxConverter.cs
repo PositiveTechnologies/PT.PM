@@ -2,6 +2,7 @@
 using System;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -35,7 +36,7 @@ namespace PT.PM.CSharpParseTreeUst
             }
             catch (Exception ex)
             {
-                Logger.LogError(string.Format("Conversion error in \"{0}\"", aspxParseTree.FileName), ex);
+                Logger.LogError(new ConversionException(aspxParseTree.FileName, ex));
                 result = new MostCommonUst();
             }
 

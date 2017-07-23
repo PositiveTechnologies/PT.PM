@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PT.PM.JavaParseTreeUst</RootNamespace>
     <AssemblyName>PT.PM.JavaParseTreeUst</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -31,10 +31,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=e9931a4108ef2354, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.1-beta002\lib\net45\Antlr4.Runtime.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,7 +55,7 @@
     <Compile Include="Converter\TypeMemberVisitor.cs" />
     <Compile Include="Generated\JavaLexer.cs" />
     <Compile Include="Generated\JavaParser.cs" />
-    <Compile Include="Generated\JavaVisitor.cs" />
+    <Compile Include="Generated\JavaParserVisitor.cs" />
     <Compile Include="JavaAntlrParseTree.cs" />
     <Compile Include="JavaAntlrParseTreeConverter.cs" />
     <Compile Include="JavaAntlrParser.cs" />
@@ -77,21 +79,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\antlr-grammars-v4\java\Java.g4">
-      <Link>Java.g4</Link>
+    <None Include="..\antlr-grammars-v4\java8-pt\JavaLexer.g4">
+      <Link>JavaLexer.g4</Link>
+    </None>
+    <None Include="..\antlr-grammars-v4\java8-pt\JavaParser.g4">
+      <Link>JavaParser.g4</Link>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe" --parser "$(ProjectDir)..\antlr-grammars-v4\java\Java.g4" --package "PT.PM.JavaParseTreeUst.Parser"  --output "$(ProjectDir)Generated"</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="GenerateJavaAntlrParser" AfterTargets="AfterResolveReferences">
+    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\java8-pt\JavaLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\java8-pt\JavaParser.g4&quot; --package PT.PM.JavaParseTreeUst.Parser  --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

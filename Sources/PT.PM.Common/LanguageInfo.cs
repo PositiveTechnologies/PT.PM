@@ -14,6 +14,12 @@
 
         public readonly bool HaveAntlrParser;
 
+        public LanguageInfo(Language language, string extension, bool caseInsensitive, string title = null,
+            LanguageFlags dependentLanguages = LanguageFlags.None, bool haveAntlrParser = true)
+            :this(language, new string[] { extension }, caseInsensitive, title, dependentLanguages, haveAntlrParser)
+        {
+        }
+
         public LanguageInfo(Language language, string[] extensions, bool caseInsensitive, string title = null,
             LanguageFlags dependentLanguages = LanguageFlags.None, bool haveAntlrParser = true)
         {

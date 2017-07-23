@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.Common
 {
@@ -55,18 +55,6 @@ namespace PT.PM.Common
             Debug.Write(message);
         }
 
-        public void LogError(string message, Exception ex)
-        {
-            string output = message + ex.ToString();
-            lock (errorMessages)
-            {
-                errorMessages.Add(output);
-            }
-            output = output.TrimEnd() + Environment.NewLine;
-            LogToConsoleIfNeeded(output);
-            Debug.Write(output);
-        }
-
         public void LogInfo(object infoObj)
         {
             string message;
@@ -91,17 +79,6 @@ namespace PT.PM.Common
 
         public void LogInfo(string message)
         {
-            lock (infoMessages)
-            {
-                infoMessages.Add(message);
-            }
-            message = message.TrimEnd() + Environment.NewLine;
-            LogToConsoleIfNeeded(message);
-        }
-
-        public void LogInfo(string format, params string[] args)
-        {
-            var message = string.Format(format, args);
             lock (infoMessages)
             {
                 infoMessages.Add(message);

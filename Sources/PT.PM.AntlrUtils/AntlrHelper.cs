@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Antlr4.Runtime.Misc;
 
 namespace PT.PM.AntlrUtils
 {
@@ -13,6 +14,20 @@ namespace PT.PM.AntlrUtils
     {
         private const int IndentSize = 2;
         private const int MaxTokenValueLength = 16;
+
+        public static string GetText(this ParserRuleContext ruleContext, IList<IToken> tokens)
+        {
+            if (tokens == null)
+                return ruleContext.GetText();
+
+            var result = new StringBuilder();
+            Interval interval = ruleContext.SourceInterval;
+            for (int i = interval.a; i <= interval.b; i++)
+            {
+                result.Append(tokens[i].Text);
+            }
+            return result.ToString();
+        }
 
         public static TextSpan GetTextSpan(this ParserRuleContext ruleContext)
         {
@@ -141,7 +156,7 @@ namespace PT.PM.AntlrUtils
             {
                 exceptionText = $"{ex.Message} at position {sourceCodeLine}:{sourceCodeColumn} in source file";
             }
-            logger.LogError(new ConversionException(currentFileName, exceptionText) { TextSpan = textSpan });
+            logger.LogError(new ConversionException(currentFileName, message: exceptionText) { TextSpan = textSpan });
         }
 
         private static string RenderToken(IToken token, TokenValueDisplayMode tokenValueDisplayMode = TokenValueDisplayMode.Show, bool showChannel = false, IVocabulary vocabulary = null)

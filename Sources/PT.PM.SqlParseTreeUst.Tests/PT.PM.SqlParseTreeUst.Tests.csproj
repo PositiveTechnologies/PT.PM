@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PT.PM.SqlParseTreeUst.Tests</RootNamespace>
     <AssemblyName>PT.PM.SqlParseTreeUst.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -31,9 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -149,6 +148,14 @@
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\case_when05.sql">
       <Link>Data\PlSql\case_when05.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\case_when06.sql">
+      <Link>Data\PlSql\case_when06.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\case_when07.sql">
+      <Link>Data\PlSql\case_when07.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\cast_multiset01.sql">
@@ -687,6 +694,18 @@
       <Link>Data\PlSql\query_factoring11.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\round_001.sql">
+      <Link>Data\PlSql\round_001.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\round_decode_001.sql">
+      <Link>Data\PlSql\round_decode_001.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\row_number_001.sql">
+      <Link>Data\PlSql\row_number_001.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\sample01.sql">
       <Link>Data\PlSql\sample01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -737,6 +756,14 @@
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\simple13.sql">
       <Link>Data\PlSql\simple13.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\to_char_001.sql">
+      <Link>Data\PlSql\to_char_001.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\to_char_002.sql">
+      <Link>Data\PlSql\to_char_002.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\union01.sql">
@@ -791,6 +818,10 @@
       <Link>Data\TSql\cursors.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\dbcc.sql">
+      <Link>Data\TSql\dbcc.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_alter_database.sql">
       <Link>Data\TSql\ddl_create_alter_database.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -799,12 +830,32 @@
       <Link>Data\TSql\ddl_create_drop_type.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_table.sql">
+      <Link>Data\TSql\ddl_create_table.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_function.sql">
+      <Link>Data\TSql\ddl_function.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_index.sql">
+      <Link>Data\TSql\ddl_index.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_table.sql">
+      <Link>Data\TSql\ddl_table.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\dml_delete.sql">
       <Link>Data\TSql\dml_delete.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\dml_insert.sql">
       <Link>Data\TSql\dml_insert.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\dml_merge.sql">
+      <Link>Data\TSql\dml_merge.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\dml_openrowset.sql">
@@ -843,6 +894,14 @@
       <Link>Data\TSql\transactions.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\triggers.sql">
+      <Link>Data\TSql\triggers.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\xml_data_type.sql">
+      <Link>Data\TSql\xml_data_type.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\PlSql\plsql_patterns.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -854,6 +913,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

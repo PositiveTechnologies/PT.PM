@@ -30,10 +30,16 @@ namespace PT.PM.SqlParseTreeUst.Tests
 
         [TestCase(@"TSql/control_flow.sql")]
         [TestCase(@"TSql/cursors.sql")]
+        [TestCase(@"TSql/dbcc.sql")]
         [TestCase(@"TSql/ddl_create_alter_database.sql")]
         [TestCase(@"TSql/ddl_create_drop_type.sql")]
+        [TestCase(@"TSql/ddl_create_table.sql")]
+        [TestCase(@"TSql/ddl_function.sql")]
+        [TestCase(@"TSql/ddl_index.sql")]
+        [TestCase(@"TSql/ddl_table.sql")]
         [TestCase(@"TSql/dml_delete.sql")]
         [TestCase(@"TSql/dml_insert.sql")]
+        [TestCase(@"TSql/dml_merge.sql")]
         [TestCase(@"TSql/dml_openrowset.sql")]
         [TestCase(@"TSql/dml_select.sql")]
         [TestCase(@"TSql/dml_update.sql")]
@@ -43,6 +49,8 @@ namespace PT.PM.SqlParseTreeUst.Tests
         [TestCase(@"TSql/procedures.sql")]
         [TestCase(@"TSql/statements.sql")]
         [TestCase(@"TSql/transactions.sql")]
+        [TestCase(@"TSql/triggers.sql")]
+        [TestCase(@"TSql/xml_data_type.sql")]
         public void Convert_TSqlSyntax_WithoutErrors(string fileName)
         {
             TestHelper.CheckFile(fileName, Language.TSql, Stage.Convert);

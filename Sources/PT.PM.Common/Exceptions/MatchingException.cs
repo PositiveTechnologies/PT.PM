@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Common.Exceptions
 {
-    public class MatchingException : Exception
+    public class MatchingException : PMException
     {
-        public string FileName { get; set; }
+        public override PMExceptionType ExceptionType => PMExceptionType.Matching;
 
         public TextSpan TextSpan { get; set; }
 
@@ -16,21 +12,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public MatchingException(string fileName, Exception ex)
-            : base("", ex)
+        public MatchingException(string fileName, Exception ex = null, string message = "")
+            : base(ex, message)
         {
             FileName = fileName;
-        }
-
-        public MatchingException(string fileName, string message)
-            : base(message)
-        {
-            FileName = fileName;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Matching error in \"{0}\": {1}.", FileName, InnerException != null ? InnerException.ToString() : Message);
         }
     }
 }

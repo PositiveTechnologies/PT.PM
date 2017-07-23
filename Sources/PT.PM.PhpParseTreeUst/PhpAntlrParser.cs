@@ -10,6 +10,8 @@ namespace PT.PM.UstParsing
     {
         public override Language Language => Language.Php;
 
+        public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.lower;
+
         public PhpAntlrParser()
         {
         }

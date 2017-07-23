@@ -54,7 +54,7 @@ namespace PT.PM.Common
             return i;
         }
 
-        public static void TextSpanToLineColumn(TextSpan textSpan, string text, out int startLine, out int startColumn, out int endLine, out int endColumn)
+        public static void ToLineColumn(this TextSpan textSpan, string text, out int startLine, out int startColumn, out int endLine, out int endColumn)
         {
             LinearToLineColumn(textSpan.Start, text, out startLine, out startColumn);
             LinearToLineColumn(textSpan.End, text, out endLine, out endColumn);

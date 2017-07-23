@@ -1,5 +1,4 @@
 ﻿using PT.PM.AntlrUtils;
-using PT.PM.UstPreprocessing;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Patterns;
@@ -10,6 +9,8 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using PT.PM.Matching;
+using System.Threading;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM
 {
@@ -40,11 +41,11 @@ namespace PT.PM
 
         public IUstPatternMatcher<TPattern, TMatchingResult> UstPatternMatcher { get; set; }
 
-        public IUstPreprocessor UstPreprocessor { get; set; } = new UstPreprocessor();
-
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
         public bool IsIncludeIntermediateResult { get; set; }
+
+        public bool IsIncludePreprocessing { get; set; } = true;
 
         public ILogger Logger
         {
@@ -75,10 +76,6 @@ namespace PT.PM
                 {
                     PatternConverter.Logger = logger;
                 }
-                if (UstPreprocessor != null)
-                {
-                    UstPreprocessor.Logger = Logger;
-                }
                 if (UstPatternMatcher != null)
                 {
                     UstPatternMatcher.Logger = logger;
@@ -87,7 +84,6 @@ namespace PT.PM
                 {
                     LanguageDetector.Logger = logger;
                 }
-
                 if (logger != null)
                 {
                     logger.SourceCodeRepository = SourceCodeRepository;
@@ -129,7 +125,47 @@ namespace PT.PM
             }
         }
 
-        public abstract TWorkflowResult Process();
+        public int MaxTimespan
+        {
+            get
+            {
+                return maxTimespan;
+            }
+            set
+            {
+                maxTimespan = value;
+                foreach (var pair in ParserConverterSets)
+                {
+                    var antlrParser = pair.Value?.Parser as AntlrParser;
+                    if (antlrParser != null)
+                    {
+                        antlrParser.MaxTimespan = maxTimespan;
+                    }
+                }
+            }
+        }
+
+        public int MemoryConsumptionMb
+        {
+            get
+            {
+                return memoryConsumptionMb;
+            }
+            set
+            {
+                memoryConsumptionMb = value;
+                foreach (var pair in ParserConverterSets)
+                {
+                    var antlrParser = pair.Value?.Parser as AntlrParser;
+                    if (antlrParser != null)
+                    {
+                        antlrParser.MemoryConsumptionMb = memoryConsumptionMb;
+                    }
+                }
+            }
+        }
+
+        public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
         public WorkflowBase(TStage stage)
         {
@@ -137,23 +173,31 @@ namespace PT.PM
             stageHelper = new StageHelper<TStage>(stage);
         }
 
-        protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult)
+        protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
             ParseTree result = null;
             var stopwatch = new Stopwatch();
             string file = fileName;
             if (stageHelper.IsContainsRead)
             {
+                if (SourceCodeRepository.IsFileIgnored(fileName))
+                {
+                    Logger.LogInfo($"File {fileName} has not been read.");
+                    return null;
+                }
+
                 stopwatch.Restart();
                 SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
                 stopwatch.Stop();
 
-                Logger.LogInfo("File {0} has been read (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
 
                 workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
                 workflowResult.AddProcessedLinesCount(TextHelper.GetLinesCount(sourceCodeFile.Code));
                 workflowResult.AddReadTime(stopwatch.ElapsedTicks);
                 workflowResult.AddResultEntity(sourceCodeFile);
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 file = sourceCodeFile.RelativePath;
                 if (stageHelper.IsContainsParse)
@@ -162,20 +206,22 @@ namespace PT.PM
                     Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, Languages);
                     if (detectedLanguage == null)
                     {
-                        Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected");
-                        return result;
+                        Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");
+                        return null;
                     }
                     result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
-                    Logger.LogInfo("File {0} has been parsed (Elapsed: {1}).", fileName, stopwatch.Elapsed.ToString());
+                    Logger.LogInfo($"File {fileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
-                }
 
-                var antlrParseTree = result as AntlrParseTree;
-                if (antlrParseTree != null)
-                {
-                    workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
-                    workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
+                    var antlrParseTree = result as AntlrParseTree;
+                    if (antlrParseTree != null)
+                    {
+                        workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
+                        workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
             }
             return result;
@@ -199,7 +245,7 @@ namespace PT.PM
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError(new ParsingException("Patterns can not be deserialized due to the error: " + ex.Message));
+                        Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
                     }
                 });
                 convertPatternsTask.Start();

@@ -121,7 +121,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternWithNegation_CorrectCount()
         {
             var code = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "XxeSample.java"));
-            var pattern = "new XMLUtil().parse(<[~\"\\w*\"]>)";
+            var pattern = "new XMLUtil().parse(<[~\".*\"]>)";
 
             var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Language.Java);
             Assert.AreEqual(4, matchingResults.Length);

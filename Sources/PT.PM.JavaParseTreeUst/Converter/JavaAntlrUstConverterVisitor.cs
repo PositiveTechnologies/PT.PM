@@ -12,10 +12,11 @@ using System.Linq;
 using System.Text;
 using Antlr4.Runtime.Misc;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrUstConverterVisitor : AntlrDefaultVisitor, IJavaVisitor<UstNode>
+    public partial class JavaAntlrUstConverterVisitor : AntlrDefaultVisitor, IJavaParserVisitor<UstNode>
     {
         public JavaAntlrUstConverterVisitor(string fileName, string fileData)
             : base(fileName, fileData)
@@ -96,11 +97,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var typeTypeToken = new TypeTypeLiteral(TypeType.Class,
                 context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan(), FileNode);
 
-            var id = (IdToken)Visit(context.Identifier());
+            var id = (IdToken)Visit(context.IDENTIFIER());
 
-            // TODO: Modifiers
             EntityDeclaration[] typeMembers = context.classBody().classBodyDeclaration()
-                .Select(dec => (EntityDeclaration)Visit(dec))
+                .Select(dec => Visit(dec) as EntityDeclaration)
                 .Where(dec => dec != null).ToArray();
 
             var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);
@@ -117,11 +117,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var typeTypeToken = new TypeTypeLiteral(TypeType.Interface,
                 context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan(), FileNode);
 
-            var id = (IdToken)Visit(context.Identifier());
+            var id = (IdToken)Visit(context.IDENTIFIER());
 
             // TODO: Modifiers
             EntityDeclaration[] typeMembers = context.interfaceBody().interfaceBodyDeclaration()
-                .Select(dec => (EntityDeclaration)Visit(dec))
+                .Select(dec => Visit(dec) as EntityDeclaration)
                 .Where(dec => dec != null).ToArray();
             
             var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);
@@ -135,7 +135,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitClassOrInterfaceType(JavaParser.ClassOrInterfaceTypeContext context)
         {
-            var id = (IdToken)Visit(context.Identifier(0));
+            var id = (IdToken)Visit(context.IDENTIFIER(0));
             var typeArguments = context.typeArguments();
             var typeNodes = new StringBuilder();
             foreach (var typeArgument in typeArguments)
@@ -244,12 +244,17 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitConstDeclaration([NotNull] JavaParser.ConstDeclarationContext context)
         {
-            return VisitChildren(context);
+            var assignments = context.constantDeclarator()
+                .Select(declarator => (AssignmentExpression)Visit(declarator));
+            return new FieldDeclaration(assignments, context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)
         {
-            return VisitChildren(context);
+            return new AssignmentExpression(
+                (Expression)Visit(context.IDENTIFIER()),
+                (Expression)Visit(context.variableInitializer()),
+                context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitGenericInterfaceMethodDeclaration([NotNull] JavaParser.GenericInterfaceMethodDeclarationContext context)
@@ -268,11 +273,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
         }
 
         public UstNode VisitAnnotation([NotNull] JavaParser.AnnotationContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public UstNode VisitAnnotationName([NotNull] JavaParser.AnnotationNameContext context)
         {
             return VisitChildren(context);
         }

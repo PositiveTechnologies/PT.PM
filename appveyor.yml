@@ -1,9 +1,8 @@
-version: 0.9.2.{build}
+os: Visual Studio 2017
+version: 1.1.0.{build}
 configuration: Release
 platform: Any CPU
 skip_branch_with_pr: true
-nuget:
-  disable_publish_on_pr: true
 install:
 - cmd: git submodule update --init --recursive
 assembly_info:

@@ -16,16 +16,6 @@ namespace PT.PM.UstPreprocessing.Tests
     [TestFixture]
     public class UstVisitorTests
     {
-        // TODO: Complete this test.
-        [Test]
-        public void VisitUst_WebGoatPhp_VisitedEqualToOrig()
-        {
-            Assert.Inconclusive("Not completed");
-            var preprocessor = new UstCloner();
-            TestHelper.CheckProject(
-                TestProjects.PhpProjects.Single(p => p.Key == "WebGoatPHP-6f48c9"), Language.Php, Stage.Preprocess, preprocessor);
-        }
-
         [Test]
         public void Check_IUstVisitor_AllVisitMethodsExists()
         {

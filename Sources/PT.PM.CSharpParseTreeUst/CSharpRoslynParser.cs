@@ -5,6 +5,7 @@ using System.Linq;
 using PT.PM.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -45,7 +46,7 @@ namespace PT.PM.CSharpParseTreeUst
                             diagnostic.Id != "CS1029")
                         {
                             var textSpan = RoslynHelper.ConvertTextSpan(diagnostic.Location);
-                            Logger.LogError(new ParsingException(filePath, diagnostic.ToString())
+                            Logger.LogError(new ParsingException(filePath, message: diagnostic.ToString())
                             {
                                 TextSpan = textSpan
                             });
@@ -54,7 +55,7 @@ namespace PT.PM.CSharpParseTreeUst
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ParsingException(filePath, ex.ToString()));
+                    Logger.LogError(new ParsingException(filePath, ex));
                     result = new CSharpRoslynParseTree();
                 }
             }

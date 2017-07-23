@@ -21,15 +21,6 @@ namespace PT.PM.Cli
             }
         }
 
-        public override void LogError(string message, Exception ex)
-        {
-            base.LogError(message, ex);
-            if (IsLogErrors)
-            {
-                NLogConsoleLogger.Error("Error: {0}; {1}", PrepareForConsole(message), PrepareForConsole(ex.Message));
-            }
-        }
-
         public override void LogError(Exception ex)
         {
             base.LogError(ex);
@@ -52,10 +43,7 @@ namespace PT.PM.Cli
             if (progressEventArgs != null)
             {
                 bool endFile = Math.Abs(progressEventArgs.Progress - 1) < 1e-10;
-                message = string.Format("Progress: {0}%; File: {1}{2}",
-                    (int)(progressEventArgs.Progress * 100),
-                    progressEventArgs.CurrentFile,
-                    endFile);
+                message = $"Progress: {(int)(progressEventArgs.Progress * 100)}%; File: {progressEventArgs.CurrentFile}";
                 NLogConsoleLogger.Info(PrepareForConsole(message));
                 FileLogger.Info(message);
             }

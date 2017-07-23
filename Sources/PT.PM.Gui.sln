@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM", "PT.PM\PT.PM.csproj", "{ECB44673-2FB0-49E1-811F-973E3FA4DD22}"
 EndProject
@@ -38,6 +38,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{553BE5D1-E6F1-4DDD-97E8-F7C73F4F684C}"
 	ProjectSection(SolutionItems) = preProject
 		AssemblyInfoCommon.cs = AssemblyInfoCommon.cs
+		PT.PM.ico = PT.PM.ico
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst", "PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj", "{8F34670A-B91D-460B-9D67-7A03F7194673}"
@@ -47,8 +48,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.UstPreprocessing", "PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj", "{6B3D2A76-9A11-4C40-97E1-18EA210376B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.UstPreprocessing.Tests", "PT.PM.UstPreprocessing.Tests\PT.PM.UstPreprocessing.Tests.csproj", "{43651FD8-2C13-4DE9-B424-5FDB91000625}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PatternEditor", "PT.PM.PatternEditor\PT.PM.PatternEditor.csproj", "{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli.Tests", "PT.PM.Cli.Tests\PT.PM.Cli.Tests.csproj", "{836A5763-216D-4596-94B6-5F60E7F0655C}"
 EndProject
@@ -61,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst.Tests", "PT.PM.JavaScriptParseTreeUst.Tests\PT.PM.JavaScriptParseTreeUst.Tests.csproj", "{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.TestUtils", "PT.PM.TestUtils\PT.PM.TestUtils.csproj", "{FEC55A64-1B65-4D39-B5FA-D559D55BB190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PatternEditor", "PT.PM.PatternEditor\PT.PM.PatternEditor.csproj", "{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -230,14 +231,6 @@ Global
 		{43651FD8-2C13-4DE9-B424-5FDB91000625}.Release|Any CPU.Build.0 = Release|Any CPU
 		{43651FD8-2C13-4DE9-B424-5FDB91000625}.Release|x86.ActiveCfg = Release|Any CPU
 		{43651FD8-2C13-4DE9-B424-5FDB91000625}.Release|x86.Build.0 = Release|Any CPU
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Debug|x86.ActiveCfg = Debug|x86
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Debug|x86.Build.0 = Debug|x86
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Release|x86.ActiveCfg = Release|x86
-		{5A5FABF2-CA58-46F0-A4A9-4E7E81C7769A}.Release|x86.Build.0 = Release|x86
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -286,6 +279,14 @@ Global
 		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Release|x86.ActiveCfg = Release|Any CPU
 		{FEC55A64-1B65-4D39-B5FA-D559D55BB190}.Release|x86.Build.0 = Release|Any CPU
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Debug|x86.ActiveCfg = Debug|x86
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Debug|x86.Build.0 = Debug|x86
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Release|x86.ActiveCfg = Release|x86
+		{0F58CE94-C0A3-4517-9FAF-6197BBE99FF7}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

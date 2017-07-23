@@ -1,1 +1,1 @@
-new XMLUtil().parse(<[~"\w*"]>)
+new XMLUtil().parse(<[~".*"]>)

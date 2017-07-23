@@ -10,13 +10,14 @@ namespace PT.PM.JavaParseTreeUst.Tests
     {
         [TestCase("ManyStringsConcat.java")]
         [TestCase("AllInOne.java")]
+        [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
             TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
         }
 
         [Test]
-        public void Convert_WebGoatJava_WithoutErrors()
+        public void Convert_JavaWebGoat_WithoutErrors()
         {
             string projectKey = "WebGoat.Java-05a1f5";
             TestHelper.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),

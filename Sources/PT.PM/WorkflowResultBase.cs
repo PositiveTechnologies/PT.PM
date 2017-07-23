@@ -29,18 +29,24 @@ namespace PT.PM
         private long totalLexerTicks;
         private long totalParserTicks;
 
-        private int totalProcessedFileCount;
+        private int totalProcessedFilesCount;
         private int totalProcessedCharsCount;
         private int totalProcessedLinesCount;
 
         protected StageHelper<TStage> stageExt;
 
-        public WorkflowResultBase(TStage stage, bool isIncludeIntermediateResult)
+        public WorkflowResultBase(Language[] languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
         {
+            Languages = languages;
+            ThreadCount = threadCount;
             Stage = stage;
             stageExt = new StageHelper<TStage>(stage);
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
+
+        public Language[] Languages { get; private set; }
+
+        public int ThreadCount { get; private set; }
 
         public TStage Stage { get; private set; }
 
@@ -89,18 +95,17 @@ namespace PT.PM
         public long TotalLexerTicks => totalLexerTicks;
         public long TotalParserTicks => totalParserTicks;
 
-        public int TotalProcessedFilesCount => totalProcessedFileCount;
+        public int TotalProcessedFilesCount => totalProcessedFilesCount;
         public int TotalProcessedCharsCount => totalProcessedCharsCount;
         public int TotalProcessedLinesCount => totalProcessedLinesCount;
+
+        public int TotalFilesCount { get; set; }
 
         public void AddResultEntity(SourceCodeFile sourceCodeFile)
         {
             if (stageExt.IsRead || IsIncludeIntermediateResult)
             {
-                lock (sourceCodeFiles)
-                {
-                    sourceCodeFiles.Add(sourceCodeFile);
-                }
+                AddEntity(sourceCodeFiles, sourceCodeFile);
             }
         }
 
@@ -108,23 +113,17 @@ namespace PT.PM
         {
             if (stageExt.IsParse || IsIncludeIntermediateResult)
             {
-                lock (parseTrees)
-                {
-                    parseTrees.Add(parseTree);
-                }
+                AddEntity(parseTrees, parseTree);
             }
         }
 
         public void AddResultEntity(Ust ust, bool convert)
         {
-            if (IsIncludeIntermediateResult ||
-                (convert && stageExt.IsConvert) ||
-                (!convert && stageExt.IsPreprocess))
+            if (IsIncludeIntermediateResult || (convert && stageExt.IsConvert) || (!convert && stageExt.IsPreprocess))
             {
-                
+                int ustIndex = usts.FindIndex(tree => tree.FileName == ust.FileName);
                 lock (usts)
                 {
-                    int ustIndex = usts.FindIndex(tree => tree.FileName == ust.FileName);
                     if (ustIndex == -1)
                     {
                         usts.Add(ust);
@@ -140,73 +139,67 @@ namespace PT.PM
 
         public void AddResultEntity(IEnumerable<TMatchingResult> matchingResults)
         {
-            lock (this.matchingResults)
-            {
-                this.matchingResults.AddRange(matchingResults);
-            }
+            AddEntities(this.matchingResults, matchingResults);
         }
 
         public void AddResultEntity(TPattern[] patterns)
         {
-            lock (this.patterns)
-            {
-                this.patterns.AddRange(patterns);
-            }
+            AddEntities(this.patterns, patterns);
         }
 
         public void AddProcessedFilesCount(int filesCount)
         {
-            Interlocked.Add(ref totalProcessedFileCount, filesCount);
+            AddInt(ref totalProcessedFilesCount, filesCount);
         }
 
         public void AddProcessedCharsCount(int charsCount)
         {
-            Interlocked.Add(ref totalProcessedCharsCount, charsCount);
+            AddInt(ref totalProcessedCharsCount, charsCount);
         }
 
         public void AddProcessedLinesCount(int linesCount)
         {
-            Interlocked.Add(ref totalProcessedLinesCount, linesCount);
+            AddInt(ref totalProcessedLinesCount, linesCount);
         }
 
         public void AddReadTime(long readTicks)
         {
-            Interlocked.Add(ref totalReadTicks, readTicks);
+            AddTicks(ref totalReadTicks, readTicks);
         }
 
         public void AddParseTime(long parseTicks)
         {
-            Interlocked.Add(ref totalParseTicks, parseTicks);
+            AddTicks(ref totalParseTicks, parseTicks);
         }
 
         public void AddConvertTime(long convertTicks)
         {
-            Interlocked.Add(ref totalConvertTicks, convertTicks);
+            AddTicks(ref totalConvertTicks, convertTicks);
         }
 
         public void AddPreprocessTime(long preprocessTicks)
         {
-            Interlocked.Add(ref totalPreprocessTicks, preprocessTicks);
+            AddTicks(ref totalPreprocessTicks, preprocessTicks);
         }
 
         public void AddMatchTime(long matchTicks)
         {
-            Interlocked.Add(ref totalMatchTicks, matchTicks);
+            AddTicks(ref totalMatchTicks, matchTicks);
         }
 
         public void AddPatternsTime(long patternsTicks)
         {
-            Interlocked.Add(ref totalPatternsTicks, patternsTicks);
+            AddTicks(ref totalPatternsTicks, patternsTicks);
         }
 
         public void AddLexerTime(long ticks)
         {
-            Interlocked.Add(ref totalLexerTicks, ticks);
+            AddTicks(ref totalLexerTicks, ticks);
         }
 
         public void AddParserTicks(long ticks)
         {
-            Interlocked.Add(ref totalParserTicks, ticks);
+            AddTicks(ref totalParserTicks, ticks);
         }
 
         public long GetTotalTimeTicks()
@@ -225,6 +218,60 @@ namespace PT.PM
         protected void ThrowInvalidStageException(string stage)
         {
             throw new InvalidOperationException($"Set {stage} as a final Stage or activate {nameof(IsIncludeIntermediateResult)} property");
+        }
+
+        protected void AddEntity<T>(List<T> collection, T entity)
+        {
+            if (ThreadCount == 1)
+            {
+                collection.Add(entity);
+            }
+            else
+            {
+                lock (collection)
+                {
+                    collection.Add(entity);
+                }
+            }
+        }
+
+        protected void AddEntities<T>(List<T> collection, IEnumerable<T> entities)
+        {
+            if (ThreadCount == 1)
+            {
+                collection.AddRange(entities);
+            }
+            else
+            {
+                lock (collection)
+                {
+                    collection.AddRange(entities);
+                }
+            }
+        }
+
+        protected void AddInt(ref int total, int value)
+        {
+            if (ThreadCount == 1)
+            {
+                total += value;
+            }
+            else
+            {
+                Interlocked.Add(ref total, value);
+            }
+        }
+
+        protected void AddTicks(ref long total, long ticks)
+        {
+            if (ThreadCount == 1)
+            {
+                total += ticks;
+            }
+            else
+            {
+                Interlocked.Add(ref total, ticks);
+            }
         }
     }
 }
