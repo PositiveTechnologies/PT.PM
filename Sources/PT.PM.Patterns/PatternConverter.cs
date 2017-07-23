@@ -59,7 +59,7 @@ namespace PT.PM.Patterns
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException($"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", ex));
+                    Logger.LogError(new ConversionException("", ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", true));
                 }
             }
             return result.ToArray();
@@ -78,7 +78,7 @@ namespace PT.PM.Patterns
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException($"Error while \"{pattern.Key}\" pattern serialising", ex));
+                    Logger.LogError(new ConversionException("", ex, $"Error while \"{pattern.Key}\" pattern serialising", true));
                 }
             }
             return result.ToArray();
