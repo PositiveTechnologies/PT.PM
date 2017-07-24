@@ -16,9 +16,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public PMException(Exception innerException, string message = "")
+        public PMException(Exception innerException, string message = "", bool isPattern = false)
             : base(message, innerException)
         {
+            IsPattern = isPattern;
         }
 
         protected PMException(SerializationInfo info, StreamingContext context)

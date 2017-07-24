@@ -4,7 +4,11 @@
     {
         public override PMExceptionType ExceptionType => PMExceptionType.ShouldNotBeVisited;
 
-        private readonly string _ruleName;
+        private readonly string _ruleName = "";
+
+        public ShouldNotBeVisitedException()
+        {
+        }
 
         public ShouldNotBeVisitedException(string ruleName)
         {

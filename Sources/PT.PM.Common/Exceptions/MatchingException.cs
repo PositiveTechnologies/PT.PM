@@ -12,8 +12,8 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public MatchingException(string fileName, Exception ex = null, string message = "")
-            : base(ex, message)
+        public MatchingException(string fileName, Exception ex = null, string message = "", bool isPattern = false)
+            : base(ex, message, isPattern)
         {
             FileName = fileName;
         }
