@@ -12,7 +12,7 @@ namespace PT.PM.PhpParseTreeUst
 {
     public partial class PhpAntlrParseTreeConverterVisitor
     {
-        private Expression CreateSpecialInvocation(ITerminalNode specialMethodTerminal, PHPParser.ExpressionContext expression, TextSpan contextTextSpan)
+        private Expression CreateSpecialInvocation(ITerminalNode specialMethodTerminal, PhpParser.ExpressionContext expression, TextSpan contextTextSpan)
         {
             var expression0 = (Expression)VisitExpression(expression);
             var result = new InvocationExpression(
@@ -28,14 +28,14 @@ namespace PT.PM.PhpParseTreeUst
             return new IdToken(text, terminalNode.GetTextSpan(), FileNode);
         }
 
-        private ParameterDeclaration[] ConvertParameters(PHPParser.FormalParameterListContext parameters)
+        private ParameterDeclaration[] ConvertParameters(PhpParser.FormalParameterListContext parameters)
         {
             ParameterDeclaration[] result = parameters.formalParameter()
                 .Select(p => (ParameterDeclaration)Visit(p)).ToArray();
             return result;
         }
 
-        private List<Expression> ConvertSquareCurlyExpressions(PHPParser.SquareCurlyExpressionContext[] exprs)
+        private List<Expression> ConvertSquareCurlyExpressions(PhpParser.SquareCurlyExpressionContext[] exprs)
         {
             List<Expression> expressions = exprs
                 .Select(e => Visit(e))

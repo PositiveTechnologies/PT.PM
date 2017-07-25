@@ -12,7 +12,7 @@ namespace PT.PM.UstParsing
         {
         }
 
-        public PhpAntlrParseTree(PHPParser.HtmlDocumentContext syntaxTree)
+        public PhpAntlrParseTree(PhpParser.HtmlDocumentContext syntaxTree)
             : base(syntaxTree)
         {
         }
