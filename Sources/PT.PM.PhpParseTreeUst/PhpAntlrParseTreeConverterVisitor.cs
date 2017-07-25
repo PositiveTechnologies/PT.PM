@@ -122,16 +122,8 @@ namespace PT.PM.PhpParseTreeUst
                     wsLength = Tokens[j].Text.Length;
                     if (GetLastNotWhitespace(jsCode) == '=')
                     {
-                        if (Tokens[j].Text.Length >= 2)
-                        {
-                            jsCode.Append('\'');
-                            jsCode.Append(' ', Tokens[j].Text.Length - 2);
-                            jsCode.Append('\'');
-                        }
-                        else
-                        {
-                            jsCode.Append(0);
-                        }
+                        jsCode.Append(0);
+                        jsCode.Append(' ', Tokens[j].Text.Length - 1);
                     }
                     else
                     {
