@@ -34,9 +34,9 @@ namespace PT.PM.AntlrUtils
 
         public bool UseFastParseStrategyAtFirst { get; set; } = true;
 
-        public int ClearCacheLexerFilesCount { get; set; } = 300;
+        public int ClearCacheLexerFilesCount { get; set; } = 100;
 
-        public int ClearCacheParserFilesCount { get; set; } = 150;
+        public int ClearCacheParserFilesCount { get; set; } = 50;
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
@@ -92,6 +92,7 @@ namespace PT.PM.AntlrUtils
             lexer.Interpreter.ClearDFA();
             Parser parser = InitParser(new CommonTokenStream(new ListTokenSource(new IToken[0])));
             parser.Interpreter.ClearDFA();
+            GC.Collect();
             processedFilesCount = 1;
         }
 
@@ -135,8 +136,7 @@ namespace PT.PM.AntlrUtils
 #if DEBUG
                     var codeTokensStr = AntlrHelper.GetTokensString(tokens, Vocabulary, onlyDefaultChannel: false);
 #endif
-
-                    ClearLexerCacheIfRequired(lexer);
+                    ClearCacheIfRequired(lexer.Interpreter, lexerLock, ClearCacheLexerFilesCount);
 
                     foreach (var token in tokens)
                     {
@@ -231,7 +231,7 @@ namespace PT.PM.AntlrUtils
                     parserLock.ExitReadLock();
                 }
             }
-            ClearParserCacheIfRequired(parser);
+            ClearCacheIfRequired(parser.Interpreter, parserLock, ClearCacheParserFilesCount);
 
 #if DEBUG
             var tree = syntaxTree.ToStringTree(parser);
@@ -291,43 +291,35 @@ namespace PT.PM.AntlrUtils
             return tokens;
         }
 
-        protected void ClearLexerCacheIfRequired(Lexer lexer)
+        protected void ClearCacheIfRequired(ATNSimulator interpreter, ReaderWriterLockSlim interpreterLock,
+            int interpreterFilesCount)
         {
-            if (processedFilesCount % ClearCacheLexerFilesCount == 0)
+            if (processedFilesCount % interpreterFilesCount == 0)
             {
-                lexerLock.EnterWriteLock();
-                try
+                long memory = Process.GetCurrentProcess().PrivateMemorySize64 / 1000000;
+                if (memory > MemoryConsumptionMb)
                 {
-                    lexer.Interpreter.ClearDFA();
-                }
-                finally
-                {
-                    lexerLock.ExitWriteLock();
-                }
-            }
-        }
-
-        protected void ClearParserCacheIfRequired(Parser parser)
-        {
-            if (processedFilesCount % ClearCacheParserFilesCount == 0 &&
-                GC.GetTotalMemory(true) / 1000000 > MemoryConsumptionMb)
-            {
-                parserLock.EnterWriteLock();
-                try
-                {
-                    parser.Interpreter.ClearDFA();
-                }
-                finally
-                {
-                    parserLock.ExitWriteLock();
+                    interpreterLock.EnterWriteLock();
+                    try
+                    {
+                        interpreter.ClearDFA();
+                        GC.Collect();
+                    }
+                    finally
+                    {
+                        interpreterLock.ExitWriteLock();
+                    }
                 }
             }
         }
 
         protected void IncrementProcessedFilesCount()
         {
-            Interlocked.Increment(ref processedFilesCount);
-            Interlocked.CompareExchange(ref processedFilesCount, 0, int.MaxValue);
+            int newValue = Interlocked.Increment(ref processedFilesCount);
+            if (newValue == int.MaxValue)
+            {
+                processedFilesCount = 1;
+            }
         }
     }
 }
