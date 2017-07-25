@@ -90,8 +90,9 @@ namespace PT.PM.Matching.Tests
 
             Assert.AreEqual(3, matchingResults.Length);
             Assert.IsTrue(matchingResults[0].MatchedCode.Contains("GLOBAL"));
-            Assert.AreEqual(8, matchingResults[1].BeginLine);
+            Assert.AreEqual(8, matchingResults[0].BeginLine);
             Assert.IsTrue(matchingResults[1].MatchedCode.Contains("frame_content"));
+            Assert.AreEqual(9, matchingResults[1].BeginLine);
         }
     }
 }

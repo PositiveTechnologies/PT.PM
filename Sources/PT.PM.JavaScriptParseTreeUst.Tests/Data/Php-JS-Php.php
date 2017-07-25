@@ -1,4 +1,5 @@
 <html>
+<script src="source.js"></script>
 <script type="text/javascript">
     var common_query = '<?php echo PMA_escapeJsString(PMA_generate_common_url('', '', '&'));?>';
     var hints = <?php echo "['No hints']" ?>;

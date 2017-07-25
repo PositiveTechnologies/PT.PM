@@ -59,8 +59,15 @@ namespace PT.PM.PhpParseTreeUst
             UstNode result = null;
             if (context.htmlElements() != null)
             {
-                var stringLiteral = (StringLiteral)Visit(context.htmlElements());
-                result = NodeHelpers.CreateLanguageNamespace(stringLiteral, Language.Html, FileNode);
+                UstNode htmlElements = Visit(context.htmlElements());
+                if (htmlElements is StringLiteral stringLiteral)
+                {
+                    result = NodeHelpers.CreateLanguageNamespace(stringLiteral, Language.Html, FileNode);
+                }
+                else
+                {
+                    result = htmlElements;
+                }
             }
             else if (context.phpBlock() != null)
             {
