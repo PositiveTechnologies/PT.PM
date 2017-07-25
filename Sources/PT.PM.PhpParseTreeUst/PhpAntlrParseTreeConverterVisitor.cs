@@ -17,6 +17,7 @@ using PT.PM.Common.Nodes.TypeMembers;
 using Antlr4.Runtime.Misc;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Text;
 
 namespace PT.PM.PhpParseTreeUst
 {
@@ -28,7 +29,7 @@ namespace PT.PM.PhpParseTreeUst
         protected const string attrNamespacePrefix = Helper.Prefix + "attrNs";
         protected const string inlineHtmlNamespacePrefix = Helper.Prefix + "inlineHtml";
 
-
+        protected int jsStartCodeInd = 0;
 
         protected int namespaceDepth;
 
@@ -74,8 +75,94 @@ namespace PT.PM.PhpParseTreeUst
 
         public UstNode VisitHtmlElements(PHPParser.HtmlElementsContext context)
         {
-            string text = context.GetText(Tokens);
-            return new StringLiteral(text, context.GetTextSpan(), FileNode);
+            var text = new StringBuilder();
+            for (int i = context.Start.TokenIndex; i < context.Stop.TokenIndex; i++)
+            {
+                IToken token = Tokens[i];
+
+                if (ConvertedLanguages.Is(Language.JavaScript))
+                {
+                    if (token.Type == PHPLexer.HtmlScriptOpen)
+                    {
+                        jsStartCodeInd = context.Start.TokenIndex;
+                    }
+                    else if (token.Type == PHPLexer.ScriptClose)
+                    {
+                        UstNode result = ConvertJavaScript(context);
+                        return result;
+                    }
+                }
+
+                text.Append(token.Text);
+            }
+
+            return new StringLiteral(text.ToString(), context.GetTextSpan(), FileNode);
+        }
+
+        private UstNode ConvertJavaScript(PHPParser.HtmlElementsContext context)
+        {
+            int jsStopCodeInd = context.start.TokenIndex;
+            var jsCode = new StringBuilder();
+            int wsLength = 0;
+            for (int j = jsStartCodeInd; j < jsStopCodeInd; j++)
+            {
+                if (Tokens[j].Type == PHPLexer.ScriptText)
+                {
+                    jsCode.Append(Tokens[j].Text);
+                }
+                else
+                {
+                    wsLength = Tokens[j].Text.Length;
+                    if (GetLastNotWhitespace(jsCode) == '=')
+                    {
+                        if (Tokens[j].Text.Length >= 2)
+                        {
+                            jsCode.Append('\'');
+                            jsCode.Append(' ', Tokens[j].Text.Length - 2);
+                            jsCode.Append('\'');
+                        }
+                        else
+                        {
+                            jsCode.Append(0);
+                        }
+                    }
+                    else
+                    {
+                        jsCode.Append(' ', Tokens[j].Text.Length);
+                    }
+                }
+            }
+
+            var javaScriptParser = new JavaScriptAntlrParser();
+            javaScriptParser.Logger = Logger;
+            var sourceCodeFile = new SourceCodeFile()
+            {
+                Name = FileNode.FileName.Text,
+                Code = jsCode.ToString(),
+                LineOffset = Tokens[jsStartCodeInd].Line - 1
+            };
+            var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
+
+            var javaScriptConverter = new JavaScriptAntlrUstConverterVisitor(FileNode.FileName.Text, FileNode.FileData);
+            javaScriptConverter.Logger = Logger;
+            UstNode result = javaScriptConverter.Visit(parseTree.SyntaxTree);
+            var resultFileNode = result as FileNode;
+            if (resultFileNode?.Root != null)
+            {
+                result = resultFileNode.Root.CreateLanguageNamespace(Language.JavaScript, FileNode);
+            }
+            int jsCodeOffset = Tokens[jsStartCodeInd].StartIndex;
+            result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(jsCodeOffset));
+            return result;
+        }
+
+        private char GetLastNotWhitespace(StringBuilder builder)
+        {
+            int ind = builder.Length - 1;
+            while (ind > 0 && char.IsWhiteSpace(builder[ind]))
+                ind--;
+
+            return ind > 0 ? builder[ind] : '\0';
         }
 
         public UstNode VisitHtmlElement(PHPParser.HtmlElementContext context)
@@ -89,26 +176,8 @@ namespace PT.PM.PhpParseTreeUst
             UstNode result;
             if (ConvertedLanguages.Is(Language.JavaScript))
             {
-                var javaScriptParser = new JavaScriptAntlrParser();
-                javaScriptParser.Logger = Logger;
-                var sourceCodeFile = new SourceCodeFile()
-                {
-                    Name = FileNode.FileName.Text,
-                    Code = javaScriptCode,
-                    LineOffset = context.Start.Line - 1
-                };
-                var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
-
-                var javaScriptConverter = new JavaScriptAntlrUstConverterVisitor(FileNode.FileName.Text, FileNode.FileData);
-                javaScriptConverter.Logger = Logger;
-                result = javaScriptConverter.Visit(parseTree.SyntaxTree);
-                var resultFileNode = result as FileNode;
-                if (resultFileNode?.Root != null)
-                {
-                    result = resultFileNode.Root.CreateLanguageNamespace(Language.JavaScript, FileNode);
-                }
-                TextSpan contextTextSpan = context.GetTextSpan();
-                result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(contextTextSpan.Start));
+                // Process JavaScript at close script tag </script>
+                result = null;
             }
             else
             {
@@ -119,7 +188,8 @@ namespace PT.PM.PhpParseTreeUst
 
         public UstNode VisitPhpBlock(PHPParser.PhpBlockContext context)
         {
-            var namespaceName = new StringLiteral(Helper.Prefix + "default", context.GetTextSpan(), FileNode);
+            TextSpan textSpan = context.GetTextSpan();
+            var namespaceName = new StringLiteral(Helper.Prefix + "default", textSpan, FileNode);
             UsingDeclaration[] usingDeclarations = context.importStatement()
                 .Select(importStatement => (UsingDeclaration)Visit(importStatement))
                 .Where(stmt => stmt != null)
@@ -135,7 +205,7 @@ namespace PT.PM.PhpParseTreeUst
             members.AddRange(usingDeclarations);
             members.Add(statementsNode);
 
-            var result = new NamespaceDeclaration(namespaceName, members, Language.Php, context.GetTextSpan(), FileNode);
+            var result = new NamespaceDeclaration(namespaceName, members, Language.Php, textSpan, FileNode);
             return result;
         }
 
@@ -157,17 +227,9 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                UstNode statement = Visit(context.GetChild(0));
-                var resultStatmenet = statement as Statement;
-                if (resultStatmenet != null)
-                {
-                    result = resultStatmenet;
-                }
-                else
-                {
-                    result = new WrapperStatement(statement, statement.TextSpan, FileNode);
-                }
+                result = Visit(context.GetChild(0)).ToStatementIfRequired();
             }
+
             return result;
         }
 
@@ -369,26 +431,6 @@ namespace PT.PM.PhpParseTreeUst
         public UstNode VisitStatement(PHPParser.StatementContext context)
         {
             Statement result;
-            UstNode visitResult = Visit(context.GetChild(0));
-            Expression expr = visitResult as Expression;
-            if (expr != null)
-            {
-                result = new ExpressionStatement(expr);
-            }
-            else
-            {
-                result = (Statement)visitResult;
-            }
-            return result;
-        }
-
-        public UstNode VisitEmptyStatement(PHPParser.EmptyStatementContext context)
-        {
-            return new EmptyStatement(context.GetTextSpan(), FileNode);
-        }
-
-        public UstNode VisitNonEmptyStatement(PHPParser.NonEmptyStatementContext context)
-        {
             if (context.identifier() != null)
             {
                 return new EmptyStatement(context.GetTextSpan(), FileNode);
@@ -396,12 +438,39 @@ namespace PT.PM.PhpParseTreeUst
 
             if (context.yieldExpression() != null)
             {
-                var result = new ExpressionStatement((Expression)Visit(context.yieldExpression()),
+                result = new ExpressionStatement((Expression)Visit(context.yieldExpression()),
                     context.GetTextSpan(), FileNode);
                 return result;
             }
 
-            return Visit(context.GetChild(0));
+            result = Visit(context.GetChild(0)).ToStatementIfRequired();
+
+            return result;
+        }
+
+        private int GetFirstHiddenTokenOrDefaultToLeft(int index)
+        {
+            int i = index;
+            while (i > 0 && Tokens[i].Channel != Lexer.DefaultTokenChannel)
+            {
+                i--;
+            }
+            return i + 1;
+        }
+
+        private int GetLastHiddenTokenOrDefaultToRight(int index)
+        {
+            int i = index;
+            while (i < Tokens.Count && Tokens[i].Channel != Lexer.DefaultTokenChannel)
+            {
+                i++;
+            }
+            return i - 1;
+        }
+
+        public UstNode VisitEmptyStatement(PHPParser.EmptyStatementContext context)
+        {
+            return new EmptyStatement(context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitBlockStatement(PHPParser.BlockStatementContext context)
@@ -716,6 +785,11 @@ namespace PT.PM.PhpParseTreeUst
         public UstNode VisitDeclareList(PHPParser.DeclareListContext context)
         {
             return VisitShouldNotBeVisited(context);
+        }
+
+        public UstNode VisitInlineHtmlStatement([NotNull] PHPParser.InlineHtmlStatementContext context)
+        {
+            return VisitChildren(context);
         }
 
         public UstNode VisitInlineHtml(PHPParser.InlineHtmlContext context)
