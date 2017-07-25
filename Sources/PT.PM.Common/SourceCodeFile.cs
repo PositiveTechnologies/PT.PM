@@ -39,5 +39,7 @@ namespace PT.PM.Common
             TextHelper.LinearToLineColumn(textSpan.End, Code, out endLine, out endColumn);
             return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
         }
+
+        public override string ToString() => Name;
     }
 }

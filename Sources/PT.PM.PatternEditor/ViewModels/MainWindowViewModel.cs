@@ -175,7 +175,10 @@ namespace PT.PM.PatternEditor
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(width =>
                 {
-                    Settings.Width = width;
+                    if (window.WindowState != WindowState.Maximized)
+                    {
+                        Settings.Width = width;
+                    }
                     Settings.WindowState = window.WindowState;
                     Settings.Save();
                 });
@@ -184,8 +187,24 @@ namespace PT.PM.PatternEditor
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(height =>
                 {
-                    Settings.Height = height;
+                    if (window.WindowState != WindowState.Maximized)
+                    {
+                        Settings.Height = height;
+                    }
                     Settings.WindowState = window.WindowState;
+                    Settings.Save();
+                });
+
+            Observable.FromEventPattern<PointEventArgs>(
+                ev => window.PositionChanged += ev, ev => window.PositionChanged -= ev)
+                .Throttle(TimeSpan.FromMilliseconds(250))
+                .Subscribe(ev =>
+                {
+                    if (window.WindowState != WindowState.Maximized)
+                    {
+                        Settings.Left = window.Position.X;
+                        Settings.Top = window.Position.Y;
+                    }
                     Settings.Save();
                 });
 
@@ -194,8 +213,6 @@ namespace PT.PM.PatternEditor
                 .Subscribe(ev =>
                 {
                     ServiceLocator.PatternViewModel.SavePatterns();
-                    Settings.Left = window.Position.X;
-                    Settings.Top = window.Position.Y;
                     Settings.PatternsPanelWidth = patternsPanelColumn.Width.Value;
                     Settings.Save();
                 });
@@ -216,8 +233,7 @@ namespace PT.PM.PatternEditor
 
         private void UpdateSourceCodeCaretIndex(int caretIndex)
         {
-            int line, column;
-            TextHelper.LinearToLineColumn(caretIndex, sourceCodeTextBox.Text, out line, out column);
+            TextHelper.LinearToLineColumn(caretIndex, sourceCodeTextBox.Text, out int line, out int column);
             SourceCodeTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition)));
         }

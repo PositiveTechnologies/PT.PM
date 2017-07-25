@@ -13,7 +13,7 @@
     </Style>
   </Window.Styles>
   
-  <Grid Name="MainGrid" Margin="5" ColumnDefinitions="350,Auto,*" >
+  <Grid Name="MainGrid" Margin="5" ColumnDefinitions="Auto,Auto,*" >
     <PatternEditor:PatternUserControl Margin="10" />
     
     <GridSplitter Grid.Column="1" Background="#CFD8DC" />
