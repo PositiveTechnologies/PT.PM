@@ -88,15 +88,17 @@ namespace PT.PM.UstPreprocessing.Tests
             Assert.AreEqual(1, result.GetAllDescendants().Count(child => child.NodeType == NodeType.PatternMultipleExpressions));
         }
 
-        [Ignore("TODO: fix it. Actually I does not know why it failed in TeamCity.")]
-        public void Sort_PatternVars()
+        [Test]
+        public void Sort_PatternVars_CorrectOrder()
         {
             var unsortedExpressions = new List<Expression>()
             {
+                new PatternExpression(new StringLiteral { Text = "42" }, false),
                 new IntLiteral { Value = 100 },
                 new IntLiteral { Value = 42 },
                 new IntLiteral { Value = 0 },
                 new StringLiteral { Text = "42" },
+                new PatternExpression(new StringLiteral { Text = "42" }, true),
                 new StringLiteral { Text = "Hello World!" },
                 new IdToken { Id = "testId" },
                 new IdToken { Id = "42" },
@@ -105,13 +107,15 @@ namespace PT.PM.UstPreprocessing.Tests
             var expectedSortedExpressions = new List<Expression>
             {
                 new StringLiteral { Text = "42" },
-                new PatternExpression(new StringLiteral { Text = "42" }, true),
                 new StringLiteral { Text = "Hello World!" },
                 new IdToken { Id = "42" },
                 new IdToken { Id = "testId" },
                 new IntLiteral { Value = 0 },
                 new IntLiteral { Value = 42 },
                 new IntLiteral { Value = 100 },
+                new PatternExpression(new StringLiteral { Text = "42" }, false),
+                new PatternExpression(new StringLiteral { Text = "42" }, true),
+                new PatternExpression(new StringLiteral { Text = "42" }, true),
             };
             var patternVarDef = new PatternVarDef
             {
