@@ -59,11 +59,7 @@ namespace PT.PM.Cli
 
         public override void LogDebug(string message)
         {
-            bool debug = false;
-#if DEBUG
-            debug = true;
-#endif
-            if (debug || IsLogDebugs)
+            if (IsLogDebugs)
             {
                 base.LogDebug(message);
                 NLogConsoleLogger.Debug(PrepareForConsole(message));
