@@ -122,7 +122,7 @@ namespace PT.PM.PhpParseTreeUst
                     wsLength = Tokens[j].Text.Length;
                     if (GetLastNotWhitespace(jsCode) == '=')
                     {
-                        jsCode.Append(0);
+                        jsCode.Append('_');
                         jsCode.Append(' ', Tokens[j].Text.Length - 1);
                     }
                     else
