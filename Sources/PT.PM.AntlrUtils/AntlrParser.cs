@@ -88,12 +88,8 @@ namespace PT.PM.AntlrUtils
 
         public void ClearCache()
         {
-            Lexer lexer = InitLexer(new AntlrInputStream());
-            lexer.Interpreter.ClearDFA();
-            Parser parser = InitParser(new CommonTokenStream(new ListTokenSource(new IToken[0])));
-            parser.Interpreter.ClearDFA();
-            GC.Collect();
-            processedFilesCount = 1;
+            ClearCacheIfRequired(InitLexer(null).Interpreter, lexerLock, 1);
+            ClearCacheIfRequired(InitParser(null).Interpreter, parserLock, 1);
         }
 
         protected virtual ParseTree TokenizeAndParse(SourceCodeFile sourceCodeFile)
@@ -292,7 +288,7 @@ namespace PT.PM.AntlrUtils
         }
 
         protected void ClearCacheIfRequired(ATNSimulator interpreter, ReaderWriterLockSlim interpreterLock,
-            int interpreterFilesCount)
+            int interpreterFilesCount, bool startGC = true)
         {
             if (processedFilesCount % interpreterFilesCount == 0)
             {
@@ -303,7 +299,10 @@ namespace PT.PM.AntlrUtils
                     try
                     {
                         interpreter.ClearDFA();
-                        GC.Collect();
+                        if (startGC)
+                        {
+                            GC.Collect();
+                        }
                     }
                     finally
                     {
