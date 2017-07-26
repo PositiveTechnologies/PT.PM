@@ -387,7 +387,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public UstNode VisitLoop_statement([NotNull] PlSqlParser.Loop_statementContext context)
         {
-            Statement result;
+            UstNode result;
             var block = (BlockStatement)Visit(context.seq_of_statements());
             var textSpan = context.GetTextSpan();
             if (context.WHILE() != null)
@@ -397,7 +397,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 var cursorLoopParam = context.cursor_loop_param();
-                if (context.cursor_loop_param().lower_bound() != null)
+                if (context.cursor_loop_param()?.lower_bound() != null)
                 {
                     var varName = (IdToken)Visit(cursorLoopParam.index_name());
                     bool reverse = cursorLoopParam.REVERSE() != null;
@@ -405,7 +405,7 @@ namespace PT.PM.SqlParseTreeUst
                     var upperBound = (Expression)Visit(cursorLoopParam.upper_bound());
                     if (reverse)
                     {
-                        var t = lowerBound;
+                        Expression t = lowerBound;
                         lowerBound = upperBound;
                         upperBound = t;
                     }
@@ -421,7 +421,7 @@ namespace PT.PM.SqlParseTreeUst
                 }
                 else
                 {
-                    return VisitChildren(context);
+                    result = VisitChildren(context);
                 }
             }
             return result;
