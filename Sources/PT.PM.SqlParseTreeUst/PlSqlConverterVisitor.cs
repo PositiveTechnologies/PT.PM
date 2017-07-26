@@ -1418,5 +1418,30 @@ namespace PT.PM.SqlParseTreeUst
         {
             return VisitChildren(context);
         }
+
+        public UstNode VisitComment_on_column([NotNull] PlSqlParser.Comment_on_columnContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitCreate_synonym([NotNull] PlSqlParser.Create_synonymContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitComment_on_table([NotNull] PlSqlParser.Comment_on_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitSynonym_name([NotNull] PlSqlParser.Synonym_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitSchema_object_name([NotNull] PlSqlParser.Schema_object_nameContext context)
+        {
+            return VisitChildren(context);
+        }
     }
 }
