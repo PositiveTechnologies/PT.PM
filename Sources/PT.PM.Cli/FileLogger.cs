@@ -49,13 +49,6 @@ namespace PT.PM.Cli
 
         public ISourceCodeRepository SourceCodeRepository { get; set; }
 
-        public virtual void LogError(string message)
-        {
-            ErrorsLogger.Error(message);
-            FileInternalLogger.Error(message);
-            Interlocked.Increment(ref errorCount);
-        }
-
         public virtual void LogError(Exception ex)
         {
             var exString = ex.FormatExceptionMessage();
@@ -66,15 +59,13 @@ namespace PT.PM.Cli
 
         public virtual void LogInfo(object infoObj)
         {
-            string message;
             var progressEventArgs = infoObj as ProgressEventArgs;
             if (progressEventArgs != null)
             {
                 string value = progressEventArgs.Progress >= 1
                     ? $"{(int)progressEventArgs.Progress} items"
                     : $"{(int)(progressEventArgs.Progress * 100):0.00}%";
-                message = $"Progress: {value}; File: {progressEventArgs.CurrentFile}";
-                LogInfo(message);
+                LogInfo($"Progress: {value}; File: {progressEventArgs.CurrentFile}");
             }
             else
             {

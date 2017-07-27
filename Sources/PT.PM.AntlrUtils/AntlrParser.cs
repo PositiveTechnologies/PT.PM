@@ -79,7 +79,7 @@ namespace PT.PM.AntlrUtils
                 {
                     thread.Interrupt();
                     thread.Abort();
-                    Logger.LogError($"Parsing error in \"{sourceCodeFile.Name}\": Timeout ({MaxTimespan}) expired");
+                    Logger.LogError(new ParsingException(sourceCodeFile.Name, message: $"Parsing error in \"{sourceCodeFile.Name}\": Timeout ({MaxTimespan}) expired"));
                 }
 
                 return result;

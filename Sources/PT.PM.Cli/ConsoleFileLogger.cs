@@ -7,15 +7,6 @@ namespace PT.PM.Cli
     {
         protected Logger NLogConsoleLogger { get; } = LogManager.GetLogger("console");
 
-        public override void LogError(string message)
-        {
-            base.LogError(message);
-            if (IsLogErrors)
-            {
-                NLogConsoleLogger.Error($"Error: {PrepareForConsole(message)}");
-            }
-        }
-
         public override void LogError(Exception ex)
         {
             base.LogError(ex);
