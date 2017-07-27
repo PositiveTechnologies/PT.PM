@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace PT.PM.Tests
 {
     [TestFixture]
-    public class TextSpanTests
+    public class TextTests
     {
         [Test]
         public void ConvertPosition_LineColumn_CorrectLinear()
@@ -21,6 +21,21 @@ namespace PT.PM.Tests
             TextHelper.LinearToLineColumn(linearPos, text, out line, out column);
             Assert.AreEqual(4, line);
             Assert.AreEqual(4, column);
+        }
+
+        [Test]
+        public void TruncMessages()
+        {
+            string origin = "The sample of very long message.";
+            string actual = origin.TruncMessage(32);
+            Assert.AreEqual(origin, actual);
+
+            actual = origin.TruncMessage(30, truncMessageCutWords: true);
+            Assert.AreEqual(30, actual.Length);
+            Assert.AreEqual("The sample of v ... g message.", actual);
+
+            actual = origin.TruncMessage(30, truncMessageCutWords: false);
+            Assert.AreEqual("The sample of ... message.", actual);
         }
     }
 }
