@@ -1,13 +1,11 @@
 language: csharp
-dist: trusty
-sudo: false
 solution: Sources/PT.PM.Gui.sln
 install:
     - mono Dependencies/nuget.exe sources add -Name Avalonia -Source https://www.myget.org/F/avalonia-ci/api/v2
     - mono Dependencies/nuget.exe restore Sources/PT.PM.sln
-    - apt-get install graphviz
-    - apt-get install p7zip-full
+    - sudo apt-get install graphviz
+    - sudo apt-get install p7zip-full
 script:
-    - xbuild /p:Configuration=Release Sources/PT.PM.sln /p:TargetFrameworkVersion="v4.6.2"
+    - sudo xbuild /p:Configuration=Release Sources/PT.PM.sln /p:TargetFrameworkVersion="v4.6.2"
     - cd Tests/Unit/bin/Release
-    - mono ../../../../Sources/packages/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe *.Tests.dll
+    - sudo mono ../../../../Sources/packages/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe *.Tests.dll
