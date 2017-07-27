@@ -14,6 +14,8 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> Extenstions { get; set; } = LanguageExt.Extensions;
 
+        public SearchOption SearchOption { get; set; } = SearchOption.AllDirectories;
+
         public FilesAggregatorCodeRepository(string directoryPath, string extension)
             : this(directoryPath, new[] { extension })
         {
@@ -27,7 +29,7 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> GetFileNames()
         {
-            return Directory.EnumerateFiles(Path, "*.*", SearchOption.AllDirectories);
+            return Directory.EnumerateFiles(Path, "*.*", SearchOption);
         }
 
         public SourceCodeFile ReadFile(string fileName)

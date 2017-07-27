@@ -168,6 +168,10 @@
       <Link>Data\numericScale.php</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\antlr-grammars-v4\php\examples\php-js-php.php">
+      <Link>Data\php-js-php.php</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\antlr-grammars-v4\php\examples\scriptInHtml.php">
       <Link>Data\scriptInHtml.php</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -206,6 +210,10 @@
     </None>
     <None Include="..\antlr-grammars-v4\php\examples\x.php">
       <Link>Data\x.php</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\antlr-grammars-v4\php\examples\xmlTag.php">
+      <Link>Data\xmlTag.php</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.config" />

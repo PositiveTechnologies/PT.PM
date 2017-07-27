@@ -387,7 +387,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public UstNode VisitLoop_statement([NotNull] PlSqlParser.Loop_statementContext context)
         {
-            Statement result;
+            UstNode result;
             var block = (BlockStatement)Visit(context.seq_of_statements());
             var textSpan = context.GetTextSpan();
             if (context.WHILE() != null)
@@ -397,7 +397,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 var cursorLoopParam = context.cursor_loop_param();
-                if (context.cursor_loop_param().lower_bound() != null)
+                if (context.cursor_loop_param()?.lower_bound() != null)
                 {
                     var varName = (IdToken)Visit(cursorLoopParam.index_name());
                     bool reverse = cursorLoopParam.REVERSE() != null;
@@ -405,7 +405,7 @@ namespace PT.PM.SqlParseTreeUst
                     var upperBound = (Expression)Visit(cursorLoopParam.upper_bound());
                     if (reverse)
                     {
-                        var t = lowerBound;
+                        Expression t = lowerBound;
                         lowerBound = upperBound;
                         upperBound = t;
                     }
@@ -421,7 +421,7 @@ namespace PT.PM.SqlParseTreeUst
                 }
                 else
                 {
-                    return VisitChildren(context);
+                    result = VisitChildren(context);
                 }
             }
             return result;
@@ -1415,6 +1415,31 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public UstNode VisitStart_command([NotNull] PlSqlParser.Start_commandContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitComment_on_column([NotNull] PlSqlParser.Comment_on_columnContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitCreate_synonym([NotNull] PlSqlParser.Create_synonymContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitComment_on_table([NotNull] PlSqlParser.Comment_on_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitSynonym_name([NotNull] PlSqlParser.Synonym_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitSchema_object_name([NotNull] PlSqlParser.Schema_object_nameContext context)
         {
             return VisitChildren(context);
         }

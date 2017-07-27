@@ -35,18 +35,6 @@ namespace PT.PM.AntlrUtils
         {
             var error = new AntlrParserError(offendingSymbol, line, charPositionInLine, msg, e);
             string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
-            if (errorText.Contains("no viable alternative at input"))
-            {
-                var firstInd = errorText.IndexOf("'");
-                var secondInd = errorText.LastIndexOf("'");
-                var errorCode = errorText.Substring(firstInd + 1, secondInd - firstInd - 1);
-                if (errorCode.Length > MaxErrorCodeLength + ErrorCodeSplitter.Length)
-                {
-                    errorCode = errorCode.Substring(0, MaxErrorCodeLength / 2) + ErrorCodeSplitter +
-                                errorCode.Substring(errorCode.Length - MaxErrorCodeLength / 2);
-                }
-                errorText = errorText.Substring(0, firstInd + 1) + errorCode + errorText.Substring(secondInd);
-            }
             int start = TextHelper.LineColumnToLinear(FileData, line, charPositionInLine);
             Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }

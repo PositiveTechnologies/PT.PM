@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace PT.PM.Common
 {
@@ -6,6 +7,10 @@ namespace PT.PM.Common
     {
         private const int StartLine = 1;
         private const int StartColumn = 1;
+        private const int MaxMessageLength = 200;
+        private const double TruncMessageStartRatio = 0.5;
+        private const string TruncMessageDelimiter = " ... ";
+        private const bool TruncMessageCutWords = false;
 
         public static int LineColumnToLinear(string text, int line, int column)
         {
@@ -114,6 +119,49 @@ namespace PT.PM.Common
                 i++;
             }
             return result;
+        }
+
+        public static string Trunc(this string message,
+            int maxMessageLength = MaxMessageLength,
+            double truncMessageStartRatio = TruncMessageStartRatio,
+            string truncMessageSplitter = TruncMessageDelimiter,
+            bool truncMessageCutWords = TruncMessageCutWords)
+        {
+            if (message.Length > maxMessageLength)
+            {
+                int startLength = (int)Math.Round(maxMessageLength * truncMessageStartRatio);
+                int endLength;
+                if (!truncMessageCutWords)
+                {
+                    startLength = message.LastIndexOf(message.LastIndexOf(startLength - 1, false), true) + 1;
+                    int endIndex = message.Length - (maxMessageLength - startLength - truncMessageSplitter.Length);
+                    endLength = message.Length - message.FirstIndexOf(FirstIndexOf(message, endIndex, false), true);
+                }
+                else
+                {
+                    endLength = maxMessageLength - startLength - truncMessageSplitter.Length;
+                }
+                return message.Substring(0, startLength) +
+                       truncMessageSplitter +
+                       message.Substring(message.Length - endLength, endLength);
+            }
+            return message;
+        }
+
+        private static int LastIndexOf(this string str, int index, bool whitespace)
+        {
+            int i = index;
+            while (i >= 0 && (whitespace ? char.IsWhiteSpace(str[i]) : !char.IsWhiteSpace(str[i])))
+                i--;
+            return i;
+        }
+
+        private static int FirstIndexOf(this  string str, int index, bool whitespace)
+        {
+            int i = index;
+            while (i < str.Length && (whitespace ? char.IsWhiteSpace(str[i]) : !char.IsWhiteSpace(str[i])))
+                i++;
+            return i;
         }
 
         public static string NormDirSeparator(this string path)

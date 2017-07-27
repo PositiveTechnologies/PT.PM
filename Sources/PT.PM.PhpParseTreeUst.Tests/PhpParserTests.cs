@@ -3,7 +3,6 @@ using PT.PM.UstParsing;
 using PT.PM.Common;
 using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.TestUtils;
 using NUnit.Framework;
 using System.IO;
@@ -24,6 +23,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         [TestCase("aspTags.php")]
         [TestCase("deepConcatanation.php")]
         [TestCase("strings.php")]
+        [TestCase("xmlTag.php")]
         public void Parse_PhpSyntax_WithoutErrors(string fileName)
         {
             TestHelper.CheckFile(fileName, Language.Php, Stage.Parse);

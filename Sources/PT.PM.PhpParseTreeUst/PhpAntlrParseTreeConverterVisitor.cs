@@ -17,10 +17,11 @@ using PT.PM.Common.Nodes.TypeMembers;
 using Antlr4.Runtime.Misc;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Text;
 
 namespace PT.PM.PhpParseTreeUst
 {
-    public partial class PhpAntlrParseTreeConverterVisitor : AntlrDefaultVisitor, IPHPParserVisitor<UstNode>
+    public partial class PhpAntlrParseTreeConverterVisitor : AntlrDefaultVisitor, IPhpParserVisitor<UstNode>
     {
         protected const string namespacePrefix = Helper.Prefix + "ns";
         protected const string elementNamespacePrefix = Helper.Prefix + "elemNs";
@@ -28,7 +29,7 @@ namespace PT.PM.PhpParseTreeUst
         protected const string attrNamespacePrefix = Helper.Prefix + "attrNs";
         protected const string inlineHtmlNamespacePrefix = Helper.Prefix + "inlineHtml";
 
-
+        protected int jsStartCodeInd = 0;
 
         protected int namespaceDepth;
 
@@ -40,7 +41,7 @@ namespace PT.PM.PhpParseTreeUst
             namespaceDepth = 0;
         }
 
-        public UstNode VisitHtmlDocument(PHPParser.HtmlDocumentContext context)
+        public UstNode VisitHtmlDocument(PhpParser.HtmlDocumentContext context)
         {
             UstNode[] phpBlocks = context.htmlElementOrPhpBlock()
                 .Select(block => Visit(block))
@@ -53,13 +54,20 @@ namespace PT.PM.PhpParseTreeUst
             return FileNode;
         }
 
-        public UstNode VisitHtmlElementOrPhpBlock(PHPParser.HtmlElementOrPhpBlockContext context)
+        public UstNode VisitHtmlElementOrPhpBlock(PhpParser.HtmlElementOrPhpBlockContext context)
         {
             UstNode result = null;
             if (context.htmlElements() != null)
             {
-                var stringLiteral = (StringLiteral)Visit(context.htmlElements());
-                result = NodeHelpers.CreateLanguageNamespace(stringLiteral, Language.Html, FileNode);
+                UstNode htmlElements = Visit(context.htmlElements());
+                if (htmlElements is StringLiteral stringLiteral)
+                {
+                    result = NodeHelpers.CreateLanguageNamespace(stringLiteral, Language.Html, FileNode);
+                }
+                else
+                {
+                    result = htmlElements;
+                }
             }
             else if (context.phpBlock() != null)
             {
@@ -72,43 +80,103 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitHtmlElements(PHPParser.HtmlElementsContext context)
+        public UstNode VisitHtmlElements(PhpParser.HtmlElementsContext context)
         {
-            string text = context.GetText(Tokens);
-            return new StringLiteral(text, context.GetTextSpan(), FileNode);
+            var text = new StringBuilder();
+            for (int i = context.Start.TokenIndex; i < context.Stop.TokenIndex; i++)
+            {
+                IToken token = Tokens[i];
+
+                if (ConvertedLanguages.Is(Language.JavaScript))
+                {
+                    if (token.Type == PhpLexer.HtmlScriptOpen)
+                    {
+                        jsStartCodeInd = context.Start.TokenIndex;
+                    }
+                    else if (token.Type == PhpLexer.ScriptClose)
+                    {
+                        UstNode result = ConvertJavaScript(context);
+                        return result;
+                    }
+                }
+
+                text.Append(token.Text);
+            }
+
+            return new StringLiteral(text.ToString(), context.GetTextSpan(), FileNode);
         }
 
-        public UstNode VisitHtmlElement(PHPParser.HtmlElementContext context)
+        private UstNode ConvertJavaScript(PhpParser.HtmlElementsContext context)
+        {
+            int jsStopCodeInd = context.start.TokenIndex;
+            var jsCode = new StringBuilder();
+            int wsLength = 0;
+            for (int j = jsStartCodeInd; j < jsStopCodeInd; j++)
+            {
+                if (Tokens[j].Type == PhpLexer.ScriptText)
+                {
+                    jsCode.Append(Tokens[j].Text);
+                }
+                else
+                {
+                    wsLength = Tokens[j].Text.Length;
+                    if (GetLastNotWhitespace(jsCode) == '=')
+                    {
+                        jsCode.Append('_');
+                        jsCode.Append(' ', Tokens[j].Text.Length - 1);
+                    }
+                    else
+                    {
+                        jsCode.Append(' ', Tokens[j].Text.Length);
+                    }
+                }
+            }
+
+            var javaScriptParser = new JavaScriptAntlrParser();
+            javaScriptParser.Logger = Logger;
+            var sourceCodeFile = new SourceCodeFile()
+            {
+                Name = FileNode.FileName.Text,
+                Code = jsCode.ToString(),
+                LineOffset = Tokens[jsStartCodeInd].Line - 1
+            };
+            var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
+
+            var javaScriptConverter = new JavaScriptAntlrUstConverterVisitor(FileNode.FileName.Text, FileNode.FileData);
+            javaScriptConverter.Logger = Logger;
+            UstNode result = javaScriptConverter.Visit(parseTree.SyntaxTree);
+            var resultFileNode = result as FileNode;
+            if (resultFileNode?.Root != null)
+            {
+                result = resultFileNode.Root.CreateLanguageNamespace(Language.JavaScript, FileNode);
+            }
+            int jsCodeOffset = Tokens[jsStartCodeInd].StartIndex;
+            result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(jsCodeOffset));
+            return result;
+        }
+
+        private char GetLastNotWhitespace(StringBuilder builder)
+        {
+            int ind = builder.Length - 1;
+            while (ind > 0 && char.IsWhiteSpace(builder[ind]))
+                ind--;
+
+            return ind > 0 ? builder[ind] : '\0';
+        }
+
+        public UstNode VisitHtmlElement(PhpParser.HtmlElementContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitScriptTextPart(PHPParser.ScriptTextPartContext context)
+        public UstNode VisitScriptTextPart(PhpParser.ScriptTextPartContext context)
         {
             string javaScriptCode = string.Join("", context.ScriptText().Select(text => text.GetText()));
             UstNode result;
             if (ConvertedLanguages.Is(Language.JavaScript))
             {
-                var javaScriptParser = new JavaScriptAntlrParser();
-                javaScriptParser.Logger = Logger;
-                var sourceCodeFile = new SourceCodeFile()
-                {
-                    Name = FileNode.FileName.Text,
-                    Code = javaScriptCode,
-                    LineOffset = context.Start.Line - 1
-                };
-                var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
-
-                var javaScriptConverter = new JavaScriptAntlrUstConverterVisitor(FileNode.FileName.Text, FileNode.FileData);
-                javaScriptConverter.Logger = Logger;
-                result = javaScriptConverter.Visit(parseTree.SyntaxTree);
-                var resultFileNode = result as FileNode;
-                if (resultFileNode?.Root != null)
-                {
-                    result = resultFileNode.Root.CreateLanguageNamespace(Language.JavaScript, FileNode);
-                }
-                TextSpan contextTextSpan = context.GetTextSpan();
-                result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(contextTextSpan.Start));
+                // Process JavaScript at close script tag </script>
+                result = null;
             }
             else
             {
@@ -117,9 +185,10 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitPhpBlock(PHPParser.PhpBlockContext context)
+        public UstNode VisitPhpBlock(PhpParser.PhpBlockContext context)
         {
-            var namespaceName = new StringLiteral(Helper.Prefix + "default", context.GetTextSpan(), FileNode);
+            TextSpan textSpan = context.GetTextSpan();
+            var namespaceName = new StringLiteral(Helper.Prefix + "default", textSpan, FileNode);
             UsingDeclaration[] usingDeclarations = context.importStatement()
                 .Select(importStatement => (UsingDeclaration)Visit(importStatement))
                 .Where(stmt => stmt != null)
@@ -135,11 +204,11 @@ namespace PT.PM.PhpParseTreeUst
             members.AddRange(usingDeclarations);
             members.Add(statementsNode);
 
-            var result = new NamespaceDeclaration(namespaceName, members, Language.Php, context.GetTextSpan(), FileNode);
+            var result = new NamespaceDeclaration(namespaceName, members, Language.Php, textSpan, FileNode);
             return result;
         }
 
-        public UstNode VisitImportStatement(PHPParser.ImportStatementContext context)
+        public UstNode VisitImportStatement(PhpParser.ImportStatementContext context)
         {
             var namespaceName = (StringLiteral)Visit(context.namespaceNameList());
 
@@ -147,7 +216,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitTopStatement(PHPParser.TopStatementContext context)
+        public UstNode VisitTopStatement(PhpParser.TopStatementContext context)
         {
             Statement result;
             if (context.classDeclaration() != null)
@@ -157,21 +226,13 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                UstNode statement = Visit(context.GetChild(0));
-                var resultStatmenet = statement as Statement;
-                if (resultStatmenet != null)
-                {
-                    result = resultStatmenet;
-                }
-                else
-                {
-                    result = new WrapperStatement(statement, statement.TextSpan, FileNode);
-                }
+                result = Visit(context.GetChild(0)).ToStatementIfRequired();
             }
+
             return result;
         }
 
-        public UstNode VisitUseDeclaration(PHPParser.UseDeclarationContext context)
+        public UstNode VisitUseDeclaration(PhpParser.UseDeclarationContext context)
         {
             var result = new UsingDeclaration(
                 new StringLiteral(context.useDeclarationContentList().GetText(), context.useDeclarationContentList().GetTextSpan(), FileNode),
@@ -179,12 +240,12 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitUseDeclarationContentList(PHPParser.UseDeclarationContentListContext context)
+        public UstNode VisitUseDeclarationContentList(PhpParser.UseDeclarationContentListContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitUseDeclarationContent(PHPParser.UseDeclarationContentContext context)
+        public UstNode VisitUseDeclarationContent(PhpParser.UseDeclarationContentContext context)
         {
             var namespaceNameListUstNode = (StringLiteral)Visit(context.namespaceNameList());
 
@@ -192,7 +253,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitNamespaceDeclaration(PHPParser.NamespaceDeclarationContext context)
+        public UstNode VisitNamespaceDeclaration(PhpParser.NamespaceDeclarationContext context)
         {
             StringLiteral name;
             if (context.namespaceNameList() != null)
@@ -213,12 +274,12 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitNamespaceStatement(PHPParser.NamespaceStatementContext context)
+        public UstNode VisitNamespaceStatement(PhpParser.NamespaceStatementContext context)
         {
             return Visit(context.GetChild(0));
         }
 
-        public UstNode VisitFunctionDeclaration(PHPParser.FunctionDeclarationContext context)
+        public UstNode VisitFunctionDeclaration(PhpParser.FunctionDeclarationContext context)
         {
             TypeToken returnType = null;
             if (context.typeParameterListInBrackets() != null)
@@ -236,7 +297,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitClassDeclaration(PHPParser.ClassDeclarationContext context)
+        public UstNode VisitClassDeclaration(PhpParser.ClassDeclarationContext context)
         {
             TypeTypeLiteral typeTypeToken;
             if (context.classEntryType() != null)
@@ -258,42 +319,42 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitClassEntryType(PHPParser.ClassEntryTypeContext context)
+        public UstNode VisitClassEntryType(PhpParser.ClassEntryTypeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitInterfaceList(PHPParser.InterfaceListContext context)
+        public UstNode VisitInterfaceList(PhpParser.InterfaceListContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTypeParameterListInBrackets(PHPParser.TypeParameterListInBracketsContext context)
+        public UstNode VisitTypeParameterListInBrackets(PhpParser.TypeParameterListInBracketsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTypeParameterList(PHPParser.TypeParameterListContext context)
+        public UstNode VisitTypeParameterList(PhpParser.TypeParameterListContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTypeParameterWithDefaultsList(PHPParser.TypeParameterWithDefaultsListContext context)
+        public UstNode VisitTypeParameterWithDefaultsList(PhpParser.TypeParameterWithDefaultsListContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTypeParameterDecl(PHPParser.TypeParameterDeclContext context)
+        public UstNode VisitTypeParameterDecl(PhpParser.TypeParameterDeclContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTypeParameterWithDefaultDecl(PHPParser.TypeParameterWithDefaultDeclContext context)
+        public UstNode VisitTypeParameterWithDefaultDecl(PhpParser.TypeParameterWithDefaultDeclContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitGenericDynamicArgs(PHPParser.GenericDynamicArgsContext context)
+        public UstNode VisitGenericDynamicArgs(PhpParser.GenericDynamicArgsContext context)
         {
             string[] typeRefs = context.typeRef()
                 .Select(type => ((TypeToken)Visit(type))?.TypeText)
@@ -304,37 +365,37 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitAttributes(PHPParser.AttributesContext context)
+        public UstNode VisitAttributes(PhpParser.AttributesContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitAttributesGroup(PHPParser.AttributesGroupContext context)
+        public UstNode VisitAttributesGroup(PhpParser.AttributesGroupContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitAttribute(PHPParser.AttributeContext context)
+        public UstNode VisitAttribute(PhpParser.AttributeContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitAttributeArgList(PHPParser.AttributeArgListContext context)
+        public UstNode VisitAttributeArgList(PhpParser.AttributeArgListContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitAttributeNamedArgList(PHPParser.AttributeNamedArgListContext context)
+        public UstNode VisitAttributeNamedArgList(PhpParser.AttributeNamedArgListContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitAttributeNamedArg(PHPParser.AttributeNamedArgContext context)
+        public UstNode VisitAttributeNamedArg(PhpParser.AttributeNamedArgContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitInnerStatementList(PHPParser.InnerStatementListContext context)
+        public UstNode VisitInnerStatementList(PhpParser.InnerStatementListContext context)
         {
             List<Statement> innerStatementUstNodes = context.innerStatement()
                 .Select(c => (Statement)Visit(c))
@@ -346,7 +407,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitInnerStatement(PHPParser.InnerStatementContext context)
+        public UstNode VisitInnerStatement(PhpParser.InnerStatementContext context)
         {
             Statement result;
             if (context.statement() != null)
@@ -366,29 +427,9 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitStatement(PHPParser.StatementContext context)
+        public UstNode VisitStatement(PhpParser.StatementContext context)
         {
             Statement result;
-            UstNode visitResult = Visit(context.GetChild(0));
-            Expression expr = visitResult as Expression;
-            if (expr != null)
-            {
-                result = new ExpressionStatement(expr);
-            }
-            else
-            {
-                result = (Statement)visitResult;
-            }
-            return result;
-        }
-
-        public UstNode VisitEmptyStatement(PHPParser.EmptyStatementContext context)
-        {
-            return new EmptyStatement(context.GetTextSpan(), FileNode);
-        }
-
-        public UstNode VisitNonEmptyStatement(PHPParser.NonEmptyStatementContext context)
-        {
             if (context.identifier() != null)
             {
                 return new EmptyStatement(context.GetTextSpan(), FileNode);
@@ -396,15 +437,42 @@ namespace PT.PM.PhpParseTreeUst
 
             if (context.yieldExpression() != null)
             {
-                var result = new ExpressionStatement((Expression)Visit(context.yieldExpression()),
+                result = new ExpressionStatement((Expression)Visit(context.yieldExpression()),
                     context.GetTextSpan(), FileNode);
                 return result;
             }
 
-            return Visit(context.GetChild(0));
+            result = Visit(context.GetChild(0)).ToStatementIfRequired();
+
+            return result;
         }
 
-        public UstNode VisitBlockStatement(PHPParser.BlockStatementContext context)
+        private int GetFirstHiddenTokenOrDefaultToLeft(int index)
+        {
+            int i = index;
+            while (i > 0 && Tokens[i].Channel != Lexer.DefaultTokenChannel)
+            {
+                i--;
+            }
+            return i + 1;
+        }
+
+        private int GetLastHiddenTokenOrDefaultToRight(int index)
+        {
+            int i = index;
+            while (i < Tokens.Count && Tokens[i].Channel != Lexer.DefaultTokenChannel)
+            {
+                i++;
+            }
+            return i - 1;
+        }
+
+        public UstNode VisitEmptyStatement(PhpParser.EmptyStatementContext context)
+        {
+            return new EmptyStatement(context.GetTextSpan(), FileNode);
+        }
+
+        public UstNode VisitBlockStatement(PhpParser.BlockStatementContext context)
         {
             var innerStatementListUstNode = (BlockStatement)Visit(context.innerStatementList());
 
@@ -412,7 +480,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitIfStatement(PHPParser.IfStatementContext context)
+        public UstNode VisitIfStatement(PhpParser.IfStatementContext context)
         {
             var condition = (Expression)Visit(context.parenthesis());
             Statement trueStatement;
@@ -452,7 +520,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitElseIfStatement(PHPParser.ElseIfStatementContext context)
+        public UstNode VisitElseIfStatement(PhpParser.ElseIfStatementContext context)
         {
             var condition = (Expression)Visit(context.parenthesis());
             var statement = (Statement)Visit(context.statement());
@@ -461,7 +529,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitElseIfColonStatement(PHPParser.ElseIfColonStatementContext context)
+        public UstNode VisitElseIfColonStatement(PhpParser.ElseIfColonStatementContext context)
         {
             var condition = (Expression)Visit(context.parenthesis());
             var statement = (Statement)Visit(context.innerStatementList());
@@ -470,19 +538,19 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitElseStatement(PHPParser.ElseStatementContext context)
+        public UstNode VisitElseStatement(PhpParser.ElseStatementContext context)
         {
             var statement = (Statement)Visit(context.statement());
             return statement;
         }
 
-        public UstNode VisitElseColonStatement(PHPParser.ElseColonStatementContext context)
+        public UstNode VisitElseColonStatement(PhpParser.ElseColonStatementContext context)
         {
             var statement = (Statement)Visit(context.innerStatementList());
             return statement;
         }
 
-        public UstNode VisitWhileStatement(PHPParser.WhileStatementContext context)
+        public UstNode VisitWhileStatement(PhpParser.WhileStatementContext context)
         {
             var condition = (Expression)Visit(context.parenthesis());
             Statement statement = context.statement() != null
@@ -493,7 +561,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitDoWhileStatement(PHPParser.DoWhileStatementContext context)
+        public UstNode VisitDoWhileStatement(PhpParser.DoWhileStatementContext context)
         {
             var statement = (Statement)Visit(context.statement());
             var condition = (Expression)Visit(context.parenthesis());
@@ -502,7 +570,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitForStatement(PHPParser.ForStatementContext context)
+        public UstNode VisitForStatement(PhpParser.ForStatementContext context)
         {
             List<Statement> initializer = new List<Statement>();
             if (context.forInit() != null)
@@ -538,17 +606,17 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitForInit(PHPParser.ForInitContext context)
+        public UstNode VisitForInit(PhpParser.ForInitContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitForUpdate(PHPParser.ForUpdateContext context)
+        public UstNode VisitForUpdate(PhpParser.ForUpdateContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitSwitchStatement(PHPParser.SwitchStatementContext context)
+        public UstNode VisitSwitchStatement(PhpParser.SwitchStatementContext context)
         {
             var expression = (Expression)Visit(context.parenthesis());
             SwitchSection[] switchBlocks = context.switchBlock()
@@ -560,7 +628,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitSwitchBlock(PHPParser.SwitchBlockContext context)
+        public UstNode VisitSwitchBlock(PhpParser.SwitchBlockContext context)
         {
             Expression[] caseLabels = context.expression().Select(e => (Expression)Visit(e))
                 .Where(e => e != null).ToArray();
@@ -573,7 +641,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitBreakStatement(PHPParser.BreakStatementContext context)
+        public UstNode VisitBreakStatement(PhpParser.BreakStatementContext context)
         {
             var result = new BreakStatement(context.GetTextSpan(), FileNode)
             {
@@ -582,7 +650,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitContinueStatement(PHPParser.ContinueStatementContext context)
+        public UstNode VisitContinueStatement(PhpParser.ContinueStatementContext context)
         {
             var result = new ContinueStatement(context.GetTextSpan(), FileNode)
             {
@@ -591,21 +659,21 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitReturnStatement(PHPParser.ReturnStatementContext context)
+        public UstNode VisitReturnStatement(PhpParser.ReturnStatementContext context)
         {
             var returnExpression = context.expression() == null ? null : (Expression)Visit(context.expression());
             var result = new ReturnStatement(returnExpression, context.GetTextSpan(), FileNode);
             return result;
         }
 
-        public UstNode VisitExpressionStatement(PHPParser.ExpressionStatementContext context)
+        public UstNode VisitExpressionStatement(PhpParser.ExpressionStatementContext context)
         {
             var expression = (Expression)Visit(context.expression());
             var result = new ExpressionStatement(expression, context.GetTextSpan(), FileNode);
             return result;
         }
 
-        public UstNode VisitUnsetStatement(PHPParser.UnsetStatementContext context)
+        public UstNode VisitUnsetStatement(PhpParser.UnsetStatementContext context)
         {
             var args = (ArgsNode)Visit(context.chainList());
             var invocation = new InvocationExpression(
@@ -615,7 +683,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitForeachStatement(PHPParser.ForeachStatementContext context)
+        public UstNode VisitForeachStatement(PhpParser.ForeachStatementContext context)
         {
             var expressions = new List<Expression>();
             if (context.expression() != null)
@@ -640,7 +708,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitTryCatchFinally(PHPParser.TryCatchFinallyContext context)
+        public UstNode VisitTryCatchFinally(PhpParser.TryCatchFinallyContext context)
         {
             var statement = (BlockStatement)Visit(context.blockStatement());
 
@@ -663,7 +731,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitCatchClause(PHPParser.CatchClauseContext context)
+        public UstNode VisitCatchClause(PhpParser.CatchClauseContext context)
         {
             var type = (TypeToken)Visit(context.qualifiedStaticTypeRef());
             var varName = (IdToken)ConvertVar(context.VarName());
@@ -673,25 +741,25 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitFinallyStatement(PHPParser.FinallyStatementContext context)
+        public UstNode VisitFinallyStatement(PhpParser.FinallyStatementContext context)
         {
             var result = (BlockStatement)Visit(context.blockStatement());
             return result;
         }
 
-        public UstNode VisitThrowStatement(PHPParser.ThrowStatementContext context)
+        public UstNode VisitThrowStatement(PhpParser.ThrowStatementContext context)
         {
             var expression = (Expression)Visit(context.expression());
             var result = new ThrowStatement(expression, context.GetTextSpan(), FileNode);
             return result;
         }
 
-        public UstNode VisitGotoStatement(PHPParser.GotoStatementContext context)
+        public UstNode VisitGotoStatement(PhpParser.GotoStatementContext context)
         {
             return new EmptyStatement(context.GetTextSpan(), FileNode);
         }
 
-        public UstNode VisitDeclareStatement(PHPParser.DeclareStatementContext context)
+        public UstNode VisitDeclareStatement(PhpParser.DeclareStatementContext context)
         {
             AssignmentExpression[] variables = context.declareList().identifierInititalizer().Select(
                 id => (AssignmentExpression)Visit(id))
@@ -713,22 +781,27 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitDeclareList(PHPParser.DeclareListContext context)
+        public UstNode VisitDeclareList(PhpParser.DeclareListContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitInlineHtml(PHPParser.InlineHtmlContext context)
+        public UstNode VisitInlineHtmlStatement([NotNull] PhpParser.InlineHtmlStatementContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitFormalParameterList(PHPParser.FormalParameterListContext context)
+        public UstNode VisitInlineHtml(PhpParser.InlineHtmlContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public UstNode VisitFormalParameterList(PhpParser.FormalParameterListContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitFormalParameter(PHPParser.FormalParameterContext context)
+        public UstNode VisitFormalParameter(PhpParser.FormalParameterContext context)
         {
             TypeToken type = null;
             if (context.typeHint() != null)
@@ -741,7 +814,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitTypeHint(PHPParser.TypeHintContext context)
+        public UstNode VisitTypeHint(PhpParser.TypeHintContext context)
         {
             if (context.Callable() != null)
                 return new TypeToken(context.GetText(), context.GetTextSpan(), FileNode);
@@ -749,7 +822,7 @@ namespace PT.PM.PhpParseTreeUst
             return (TypeToken)Visit(context.GetChild(0));
         }
 
-        public UstNode VisitGlobalStatement(PHPParser.GlobalStatementContext context)
+        public UstNode VisitGlobalStatement(PhpParser.GlobalStatementContext context)
         {
             Expression[] globalVars = context.globalVar()
                 .Select(globalVar => (Expression)Visit(globalVar))
@@ -760,7 +833,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitGlobalVar(PHPParser.GlobalVarContext context)
+        public UstNode VisitGlobalVar(PhpParser.GlobalVarContext context)
         {
             if (context.VarName() != null)
                 return (IdToken)ConvertVar(context.VarName());
@@ -771,7 +844,7 @@ namespace PT.PM.PhpParseTreeUst
             return (Expression)Visit(context.expression());
         }
 
-        public UstNode VisitEchoStatement(PHPParser.EchoStatementContext context)
+        public UstNode VisitEchoStatement(PhpParser.EchoStatementContext context)
         {
             var name = new IdToken(context.Echo().GetText(), context.GetTextSpan(), FileNode);
             var args = new ArgsNode(((MultichildExpression)Visit(context.expressionList())).Expressions.ToList(),
@@ -781,7 +854,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitStaticVariableStatement(PHPParser.StaticVariableStatementContext context)
+        public UstNode VisitStaticVariableStatement(PhpParser.StaticVariableStatementContext context)
         {
             AssignmentExpression[] variables = context.variableInitializer()
                 .Select(varInit => (AssignmentExpression)Visit(varInit))
@@ -792,7 +865,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitClassStatement(PHPParser.ClassStatementContext context)
+        public UstNode VisitClassStatement(PhpParser.ClassStatementContext context)
         {
             EntityDeclaration result = null;
 
@@ -829,37 +902,37 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitTraitAdaptations(PHPParser.TraitAdaptationsContext context)
+        public UstNode VisitTraitAdaptations(PhpParser.TraitAdaptationsContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTraitAdaptationStatement(PHPParser.TraitAdaptationStatementContext context)
+        public UstNode VisitTraitAdaptationStatement(PhpParser.TraitAdaptationStatementContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTraitPrecedence(PHPParser.TraitPrecedenceContext context)
+        public UstNode VisitTraitPrecedence(PhpParser.TraitPrecedenceContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTraitAlias(PHPParser.TraitAliasContext context)
+        public UstNode VisitTraitAlias(PhpParser.TraitAliasContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitTraitMethodReference(PHPParser.TraitMethodReferenceContext context)
+        public UstNode VisitTraitMethodReference(PhpParser.TraitMethodReferenceContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitBaseCtorCall(PHPParser.BaseCtorCallContext context)
+        public UstNode VisitBaseCtorCall(PhpParser.BaseCtorCallContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitMethodBody(PHPParser.MethodBodyContext context)
+        public UstNode VisitMethodBody(PhpParser.MethodBodyContext context)
         {
             if (context.blockStatement() != null)
                 return (BlockStatement)Visit(context.blockStatement());
@@ -867,17 +940,17 @@ namespace PT.PM.PhpParseTreeUst
             return null;
         }
 
-        public UstNode VisitPropertyModifiers(PHPParser.PropertyModifiersContext context)
+        public UstNode VisitPropertyModifiers(PhpParser.PropertyModifiersContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitMemberModifiers(PHPParser.MemberModifiersContext context)
+        public UstNode VisitMemberModifiers(PhpParser.MemberModifiersContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitVariableInitializer(PHPParser.VariableInitializerContext context)
+        public UstNode VisitVariableInitializer(PhpParser.VariableInitializerContext context)
         {
             IdToken name = (IdToken)ConvertVar(context.VarName());
             Expression initializer = null;
@@ -890,7 +963,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitIdentifierInititalizer(PHPParser.IdentifierInititalizerContext context)
+        public UstNode VisitIdentifierInititalizer(PhpParser.IdentifierInititalizerContext context)
         {
             var id = (IdToken)Visit(context.identifier());
             var initializer = (Expression)Visit(context.constantInititalizer());
@@ -899,7 +972,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitGlobalConstantDeclaration(PHPParser.GlobalConstantDeclarationContext context)
+        public UstNode VisitGlobalConstantDeclaration(PhpParser.GlobalConstantDeclarationContext context)
         {
             AssignmentExpression[] identifiers = context.identifierInititalizer()
                 .Select(id => (AssignmentExpression)Visit(id))
@@ -909,7 +982,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitExpressionList(PHPParser.ExpressionListContext context)
+        public UstNode VisitExpressionList(PhpParser.ExpressionListContext context)
         {
             Expression[] expressions = context.expression().Select(c => (Expression)Visit(c))
                 .Where(c => c != null).ToArray();
@@ -917,7 +990,7 @@ namespace PT.PM.PhpParseTreeUst
             return new MultichildExpression(expressions, context.GetTextSpan(), FileNode);
         }
 
-        public UstNode VisitParenthesis(PHPParser.ParenthesisContext context)
+        public UstNode VisitParenthesis(PhpParser.ParenthesisContext context)
         {
             if (context.expression() != null)
                 return Visit(context.expression());
@@ -925,12 +998,12 @@ namespace PT.PM.PhpParseTreeUst
             return Visit(context.yieldExpression());
         }
 
-        public UstNode VisitExpression([NotNull] PHPParser.ExpressionContext context)
+        public UstNode VisitExpression([NotNull] PhpParser.ExpressionContext context)
         {
             return Visit(context);
         }
 
-        public UstNode VisitNewExpr(PHPParser.NewExprContext context)
+        public UstNode VisitNewExpr(PhpParser.NewExprContext context)
         {
             var type = (TypeToken)Visit(context.typeRef());
             ArgsNode args = context.arguments() != null
@@ -941,7 +1014,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitConditionalExpression([NotNull] PHPParser.ConditionalExpressionContext context)
+        public UstNode VisitConditionalExpression([NotNull] PhpParser.ConditionalExpressionContext context)
         {
             var expression0 = (Expression)Visit(context.expression(0));
             var expression1 = (Expression)(context.expression().Length == 3 ? Visit(context.expression(1)) : null);
@@ -950,44 +1023,44 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitLogicalExpression([NotNull] PHPParser.LogicalExpressionContext context)
+        public UstNode VisitLogicalExpression([NotNull] PhpParser.LogicalExpressionContext context)
         {
             return CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
         }
 
-        public UstNode VisitArithmeticExpression([NotNull] PHPParser.ArithmeticExpressionContext context)
+        public UstNode VisitArithmeticExpression([NotNull] PhpParser.ArithmeticExpressionContext context)
         {
             return CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
         }
 
-        public UstNode VisitInstanceOfExpression([NotNull] PHPParser.InstanceOfExpressionContext context)
+        public UstNode VisitInstanceOfExpression([NotNull] PhpParser.InstanceOfExpressionContext context)
         {
             return (Expression)Visit(context.expression()); // TODO: InstanceOf
         }
 
-        public UstNode VisitBitwiseExpression([NotNull] PHPParser.BitwiseExpressionContext context)
+        public UstNode VisitBitwiseExpression([NotNull] PhpParser.BitwiseExpressionContext context)
         {
             Expression result = CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
             return result;
         }
 
-        public UstNode VisitComparisonExpression([NotNull] PHPParser.ComparisonExpressionContext context)
+        public UstNode VisitComparisonExpression([NotNull] PhpParser.ComparisonExpressionContext context)
         {
             Expression result = CreateBinaryOperatorExpression(context.expression(0), context.op, context.expression(1));
             return result;
         }
 
-        public UstNode VisitCloneExpression(PHPParser.CloneExpressionContext context)
+        public UstNode VisitCloneExpression(PhpParser.CloneExpressionContext context)
         {
             return CreateSpecialInvocation(context.Clone(), context.expression(), context.GetTextSpan());
         }
 
-        public UstNode VisitNewExpression(PHPParser.NewExpressionContext context)
+        public UstNode VisitNewExpression(PhpParser.NewExpressionContext context)
         {
             return (Expression)Visit(context.newExpr());
         }
 
-        public UstNode VisitIndexerExpression(PHPParser.IndexerExpressionContext context)
+        public UstNode VisitIndexerExpression(PhpParser.IndexerExpressionContext context)
         {
             var target = (Expression)Visit(context.stringConstant());
             var arg = (Expression)Visit(context.expression());
@@ -996,7 +1069,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitPrefixIncDecExpression(PHPParser.PrefixIncDecExpressionContext context)
+        public UstNode VisitPrefixIncDecExpression(PhpParser.PrefixIncDecExpressionContext context)
         {
             ITerminalNode operatorTerminal = context.GetChild<ITerminalNode>(0);
             string unaryOperatorText = operatorTerminal.GetText();
@@ -1010,7 +1083,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitPostfixIncDecExpression(PHPParser.PostfixIncDecExpressionContext context)
+        public UstNode VisitPostfixIncDecExpression(PhpParser.PostfixIncDecExpressionContext context)
         {
             ITerminalNode operatorTerminal = context.GetChild<ITerminalNode>(0);
             string unaryOperatorText = operatorTerminal.GetText();
@@ -1024,7 +1097,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
         
-        public UstNode VisitCastExpression(PHPParser.CastExpressionContext context)
+        public UstNode VisitCastExpression(PhpParser.CastExpressionContext context)
         {
             var castType = (TypeToken)Visit(context.castOperation());
             var expression = (Expression)Visit(context.expression());
@@ -1033,7 +1106,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
         
-        public UstNode VisitUnaryOperatorExpression(PHPParser.UnaryOperatorExpressionContext context)
+        public UstNode VisitUnaryOperatorExpression(PhpParser.UnaryOperatorExpressionContext context)
         {
             UnaryOperator unaryOperator;
             ITerminalNode operatorTerminal = context.GetChild<ITerminalNode>(0);
@@ -1055,7 +1128,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
         
-        public UstNode VisitAssignmentExpression(PHPParser.AssignmentExpressionContext context)
+        public UstNode VisitAssignmentExpression(PhpParser.AssignmentExpressionContext context)
         {
             var left = (Expression)Visit(context.chain(0));
 
@@ -1098,22 +1171,22 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitAssignmentOperator(PHPParser.AssignmentOperatorContext context)
+        public UstNode VisitAssignmentOperator(PhpParser.AssignmentOperatorContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitPrintExpression(PHPParser.PrintExpressionContext context)
+        public UstNode VisitPrintExpression(PhpParser.PrintExpressionContext context)
         {
             return (Expression)CreateSpecialInvocation(context.Print(), context.expression(), context.GetTextSpan());
         }
         
-        public UstNode VisitChainExpression(PHPParser.ChainExpressionContext context)
+        public UstNode VisitChainExpression(PhpParser.ChainExpressionContext context)
         {
             return (Expression)Visit(context.GetChild(0));
         }
         
-        public UstNode VisitScalarExpression(PHPParser.ScalarExpressionContext context)
+        public UstNode VisitScalarExpression(PhpParser.ScalarExpressionContext context)
         {
             if (context.Label() != null)
             {
@@ -1123,17 +1196,17 @@ namespace PT.PM.PhpParseTreeUst
             return (Expression)Visit(context.GetChild(0));
         }
         
-        public UstNode VisitBackQuoteStringExpression(PHPParser.BackQuoteStringExpressionContext context)
+        public UstNode VisitBackQuoteStringExpression(PhpParser.BackQuoteStringExpressionContext context)
         {
             return Visit(context.BackQuoteString());
         }
         
-        public UstNode VisitParenthesisExpression(PHPParser.ParenthesisExpressionContext context)
+        public UstNode VisitParenthesisExpression(PhpParser.ParenthesisExpressionContext context)
         {
             return (Expression)Visit(context.parenthesis());
         }
 
-        public UstNode VisitArrayCreationExpression(PHPParser.ArrayCreationExpressionContext context)
+        public UstNode VisitArrayCreationExpression(PhpParser.ArrayCreationExpressionContext context)
         {
             List<Expression> inits = context.arrayItemList().arrayItem()
                 .Select(item => (Expression)Visit(item))
@@ -1146,7 +1219,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitSpecialWordExpression(PHPParser.SpecialWordExpressionContext context)
+        public UstNode VisitSpecialWordExpression(PhpParser.SpecialWordExpressionContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
             Expression expression, result;
@@ -1201,7 +1274,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitLambdaFunctionExpression(PHPParser.LambdaFunctionExpressionContext context)
+        public UstNode VisitLambdaFunctionExpression(PhpParser.LambdaFunctionExpressionContext context)
         {
             ParameterDeclaration[] parameters = ConvertParameters(context.formalParameterList());
             var body = (BlockStatement)Visit(context.blockStatement());
@@ -1210,7 +1283,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitYieldExpression(PHPParser.YieldExpressionContext context)
+        public UstNode VisitYieldExpression(PhpParser.YieldExpressionContext context)
         {
             var expressions = context.expression()
                 .Select(expression => (Expression)Visit(expression))
@@ -1221,12 +1294,12 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitArrayItemList(PHPParser.ArrayItemListContext context)
+        public UstNode VisitArrayItemList(PhpParser.ArrayItemListContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitArrayItem(PHPParser.ArrayItemContext context)
+        public UstNode VisitArrayItem(PhpParser.ArrayItemContext context)
         {
             Expression result;
             TextSpan textSpan = context.GetTextSpan();
@@ -1261,17 +1334,17 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitLambdaFunctionUseVars(PHPParser.LambdaFunctionUseVarsContext context)
+        public UstNode VisitLambdaFunctionUseVars(PhpParser.LambdaFunctionUseVarsContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitLambdaFunctionUseVar(PHPParser.LambdaFunctionUseVarContext context)
+        public UstNode VisitLambdaFunctionUseVar(PhpParser.LambdaFunctionUseVarContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitQualifiedStaticTypeRef(PHPParser.QualifiedStaticTypeRefContext context)
+        public UstNode VisitQualifiedStaticTypeRef(PhpParser.QualifiedStaticTypeRefContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
             if (context.qualifiedNamespaceName() != null)
@@ -1289,7 +1362,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitTypeRef(PHPParser.TypeRefContext context)
+        public UstNode VisitTypeRef(PhpParser.TypeRefContext context)
         {
             TypeToken result;
             TextSpan textSpan = context.GetTextSpan();
@@ -1322,7 +1395,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitIndirectTypeRef(PHPParser.IndirectTypeRefContext context)
+        public UstNode VisitIndirectTypeRef(PhpParser.IndirectTypeRefContext context)
         {
             var chainBase = (Expression)Visit(context.chainBase());
 
@@ -1359,24 +1432,24 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitQualifiedNamespaceName(PHPParser.QualifiedNamespaceNameContext context)
+        public UstNode VisitQualifiedNamespaceName(PhpParser.QualifiedNamespaceNameContext context)
         {
             var result = (StringLiteral)Visit(context.namespaceNameList());
             return result;
         }
 
-        public UstNode VisitNamespaceNameList(PHPParser.NamespaceNameListContext context)
+        public UstNode VisitNamespaceNameList(PhpParser.NamespaceNameListContext context)
         {
             var result = new StringLiteral(context.GetText(), context.GetTextSpan(), FileNode);
             return result;
         }
 
-        public UstNode VisitQualifiedNamespaceNameList(PHPParser.QualifiedNamespaceNameListContext context)
+        public UstNode VisitQualifiedNamespaceNameList(PhpParser.QualifiedNamespaceNameListContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitArguments(PHPParser.ArgumentsContext context)
+        public UstNode VisitArguments(PhpParser.ArgumentsContext context)
         {
             var args = new List<Expression>();
             if (context.yieldExpression() != null)
@@ -1392,7 +1465,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitActualArgument(PHPParser.ActualArgumentContext context)
+        public UstNode VisitActualArgument(PhpParser.ActualArgumentContext context)
         {
              if (context.expression() != null)
              {
@@ -1404,7 +1477,7 @@ namespace PT.PM.PhpParseTreeUst
              }
         }
 
-        public UstNode VisitConstantInititalizer(PHPParser.ConstantInititalizerContext context)
+        public UstNode VisitConstantInititalizer(PhpParser.ConstantInititalizerContext context)
         {
             if (context.constantArrayItemList() != null)
             {
@@ -1429,12 +1502,12 @@ namespace PT.PM.PhpParseTreeUst
             return Visit(context.GetChild(0));
         }
         
-        public UstNode VisitConstantArrayItemList(PHPParser.ConstantArrayItemListContext context)
+        public UstNode VisitConstantArrayItemList(PhpParser.ConstantArrayItemListContext context)
         {
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitConstantArrayItem(PHPParser.ConstantArrayItemContext context)
+        public UstNode VisitConstantArrayItem(PhpParser.ConstantArrayItemContext context)
         {
             if (context.constantInititalizer().Length == 1)
             {
@@ -1450,7 +1523,7 @@ namespace PT.PM.PhpParseTreeUst
             }
         }
 
-        public UstNode VisitConstant(PHPParser.ConstantContext context)
+        public UstNode VisitConstant(PhpParser.ConstantContext context)
         {
             if (context.Null() != null)
                 return new NullLiteral(context.GetTextSpan(), FileNode);
@@ -1459,7 +1532,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitLiteralConstant(PHPParser.LiteralConstantContext context)
+        public UstNode VisitLiteralConstant(PhpParser.LiteralConstantContext context)
         {
             Token result;
             var contextText = context.GetText();
@@ -1487,7 +1560,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitNumericConstant([NotNull] PHPParser.NumericConstantContext context)
+        public UstNode VisitNumericConstant([NotNull] PhpParser.NumericConstantContext context)
         {
             string text = context.GetText();
             Token result;
@@ -1519,13 +1592,13 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitStringConstant(PHPParser.StringConstantContext context)
+        public UstNode VisitStringConstant(PhpParser.StringConstantContext context)
         {
             var result = new IdToken(context.GetText(), context.GetTextSpan(), FileNode);
             return result;
         }
 
-        public UstNode VisitString(PHPParser.StringContext context)
+        public UstNode VisitString(PhpParser.StringContext context)
         {
             Expression result;
             if (context.StartHereDoc() != null || context.StartNowDoc() != null)
@@ -1560,7 +1633,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitInterpolatedStringPart([NotNull] PHPParser.InterpolatedStringPartContext context)
+        public UstNode VisitInterpolatedStringPart([NotNull] PhpParser.InterpolatedStringPartContext context)
         {
             Expression result;
             if (context.StringPart() != null)
@@ -1574,7 +1647,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitClassConstant(PHPParser.ClassConstantContext context)
+        public UstNode VisitClassConstant(PhpParser.ClassConstantContext context)
         {
             var target = (Token)Visit(context.GetChild(0));
             var targetId = new IdToken(target.TextValue, target.TextSpan, FileNode);
@@ -1583,7 +1656,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitChainList(PHPParser.ChainListContext context)
+        public UstNode VisitChainList(PhpParser.ChainListContext context)
         {
             Expression[] expressions = context.chain()
                 .Select(c => (Expression)Visit(c))
@@ -1592,7 +1665,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitChain(PHPParser.ChainContext context)
+        public UstNode VisitChain(PhpParser.ChainContext context)
         {
             Expression result;
             Expression target;
@@ -1637,7 +1710,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitMemberAccess(PHPParser.MemberAccessContext context)
+        public UstNode VisitMemberAccess(PhpParser.MemberAccessContext context)
         {
             MultichildExpression expression = null;
             if (context.actualArguments() != null)
@@ -1650,7 +1723,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitFunctionCall(PHPParser.FunctionCallContext context)
+        public UstNode VisitFunctionCall(PhpParser.FunctionCallContext context)
         {
             var target = (Expression)Visit(context.functionCallName());
             var args = (ArgsNode)Visit(context.actualArguments());
@@ -1659,7 +1732,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitFunctionCallName(PHPParser.FunctionCallNameContext context)
+        public UstNode VisitFunctionCallName(PhpParser.FunctionCallNameContext context)
         {
             Expression result;
             if (context.qualifiedNamespaceName() != null) // TODO: Fix QualifiedNamespaceName Type.
@@ -1674,7 +1747,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitActualArguments(PHPParser.ActualArgumentsContext context)
+        public UstNode VisitActualArguments(PhpParser.ActualArgumentsContext context)
         {
             TypeToken genericArgs;
             if (context.genericDynamicArgs() != null)
@@ -1689,7 +1762,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitChainBase(PHPParser.ChainBaseContext context)
+        public UstNode VisitChainBase(PhpParser.ChainBaseContext context)
         {
             Expression result;
             TextSpan textSpan = context.GetTextSpan();
@@ -1721,12 +1794,12 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitKeyedFieldName(PHPParser.KeyedFieldNameContext context)
+        public UstNode VisitKeyedFieldName(PhpParser.KeyedFieldNameContext context)
         {
             return (IdToken)Visit(context.GetChild(0));
         }
 
-        public UstNode VisitKeyedSimpleFieldName(PHPParser.KeyedSimpleFieldNameContext context)
+        public UstNode VisitKeyedSimpleFieldName(PhpParser.KeyedSimpleFieldNameContext context)
         {
             List<Expression> exprs = ConvertSquareCurlyExpressions(context.squareCurlyExpression());
 
@@ -1745,7 +1818,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitKeyedVariable(PHPParser.KeyedVariableContext context)
+        public UstNode VisitKeyedVariable(PhpParser.KeyedVariableContext context)
         {
             Expression left;
             if (context.VarName() != null)
@@ -1772,12 +1845,12 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitSquareCurlyExpression(PHPParser.SquareCurlyExpressionContext context)
+        public UstNode VisitSquareCurlyExpression(PhpParser.SquareCurlyExpressionContext context)
         {
             return context.expression() != null ? Visit(context.expression()) : null;
         }
 
-        public UstNode VisitAssignmentList(PHPParser.AssignmentListContext context)
+        public UstNode VisitAssignmentList(PhpParser.AssignmentListContext context)
         {
             Expression[] exps = context.assignmentListElement()
                 .Select(elem => (Expression)Visit(elem))
@@ -1787,7 +1860,7 @@ namespace PT.PM.PhpParseTreeUst
             return result;
         }
 
-        public UstNode VisitAssignmentListElement(PHPParser.AssignmentListElementContext context)
+        public UstNode VisitAssignmentListElement(PhpParser.AssignmentListElementContext context)
         {
             if (context.chain() != null)
             {
@@ -1802,40 +1875,40 @@ namespace PT.PM.PhpParseTreeUst
             }
         }
 
-        public UstNode VisitModifier(PHPParser.ModifierContext context)
+        public UstNode VisitModifier(PhpParser.ModifierContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitIdentifier(PHPParser.IdentifierContext context)
+        public UstNode VisitIdentifier(PhpParser.IdentifierContext context)
         {
             var result = new IdToken(context.GetText(), context.GetTextSpan(), FileNode);
             return result;
         }
 
-        public UstNode VisitMemberModifier(PHPParser.MemberModifierContext context)
+        public UstNode VisitMemberModifier(PhpParser.MemberModifierContext context)
         {
             throw new NotImplementedException();
         }
 
-        public UstNode VisitMagicConstant(PHPParser.MagicConstantContext context)
+        public UstNode VisitMagicConstant(PhpParser.MagicConstantContext context)
         {
             return new IdToken(context.GetText(), context.GetTextSpan(), FileNode);
         }
 
-        public UstNode VisitMagicMethod(PHPParser.MagicMethodContext context)
+        public UstNode VisitMagicMethod(PhpParser.MagicMethodContext context)
         {
             var result = new IdToken(context.GetText(), context.GetTextSpan(), FileNode);
             return result;
         }
         
-        public UstNode VisitPrimitiveType(PHPParser.PrimitiveTypeContext context)
+        public UstNode VisitPrimitiveType(PhpParser.PrimitiveTypeContext context)
         {
             var result = new TypeToken(context.GetText(), context.GetTextSpan(), FileNode);
             return result;
         }
         
-        public UstNode VisitCastOperation(PHPParser.CastOperationContext context)
+        public UstNode VisitCastOperation(PhpParser.CastOperationContext context)
         {
             var result = new TypeToken(context.GetText(), context.GetTextSpan(), FileNode);
             return result;

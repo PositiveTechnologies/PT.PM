@@ -20,10 +20,12 @@ namespace PT.PM
         where TPattern : PatternBase
         where TMatchingResult : MatchingResultBase<TPattern>
     {
-        protected ILogger logger = DummyLogger.Instance;
-        protected int maxStackSize;
         private int maxTimespan;
         private int memoryConsumptionMb;
+
+        protected ILogger logger = DummyLogger.Instance;
+        protected int maxStackSize;
+        protected Task filesCountTask;
 
         protected Language[] languages;
 
@@ -171,6 +173,16 @@ namespace PT.PM
         {
             Stage = stage;
             stageHelper = new StageHelper<TStage>(stage);
+        }
+
+        public ILanguageParser GetParser(Language language)
+        {
+            return ParserConverterSets[language].Parser;
+        }
+
+        public IParseTreeToUstConverter GetConverter(Language language)
+        {
+            return ParserConverterSets[language].Converter;
         }
 
         protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))

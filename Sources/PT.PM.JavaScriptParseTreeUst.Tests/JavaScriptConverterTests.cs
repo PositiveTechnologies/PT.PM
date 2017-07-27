@@ -7,11 +7,10 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
     [TestFixture]
     public class JavaScriptConverterTests
     {
-        [TestCase("helloworld.js")]
-        [TestCase("VeryBig.js")]
-        public void Convert_JavaScriptSyntax_WithoutErrors(string fileName)
+        [Test]
+        public void Convert_JavaScriptSyntaxFiles_WithoutErrors()
         {
-            TestHelper.CheckFile(fileName, Language.JavaScript, Stage.Convert);
+            TestHelper.CheckProject(TestHelper.TestsDataPath, Language.JavaScript, Stage.Convert);
         }
     }
 }

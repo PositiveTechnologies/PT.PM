@@ -1,4 +1,5 @@
-﻿using PT.PM.Common;
+﻿using Newtonsoft.Json;
+using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
 using PT.PM.Matching;
@@ -8,16 +9,18 @@ using System.Threading;
 
 namespace PT.PM.Cli
 {
-    public abstract class AbstractLogger : ILogger
+    public class FileLogger : ILogger
     {
         private int errorCount;
         private string logPath;
 
         public int ErrorCount => errorCount;
 
-        protected virtual NLog.Logger FileLogger => NLog.LogManager.GetLogger("file");
+        protected NLog.Logger FileInternalLogger => NLog.LogManager.GetLogger("file");
 
         protected NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
+
+        protected NLog.Logger MatchLogger { get; } = NLog.LogManager.GetLogger("match");
 
         public string LogsDir
         {
@@ -46,27 +49,41 @@ namespace PT.PM.Cli
 
         public ISourceCodeRepository SourceCodeRepository { get; set; }
 
-        public virtual void LogError(string message)
+        public virtual void LogError(Exception ex)
         {
-            ErrorsLogger.Error(message);
-            FileLogger.Error(message);
+            var exString = ex.FormatExceptionMessage().Trunc();
+            ErrorsLogger.Error(exString);
+            FileInternalLogger.Error(exString);
             Interlocked.Increment(ref errorCount);
         }
 
-        public virtual void LogError(Exception ex)
+        public virtual void LogInfo(object infoObj)
         {
-            var exString = ex.FormatExceptionMessage();
-            ErrorsLogger.Error(exString);
-            FileLogger.Error(exString);
-            Interlocked.Increment(ref errorCount);
+            var progressEventArgs = infoObj as ProgressEventArgs;
+            if (progressEventArgs != null)
+            {
+                string value = progressEventArgs.Progress >= 1
+                    ? $"{(int)progressEventArgs.Progress} items"
+                    : $"{(int)(progressEventArgs.Progress * 100):0.00}%";
+                LogInfo($"Progress: {value}; File: {progressEventArgs.CurrentFile}");
+            }
+            else
+            {
+                var matchingResult = infoObj as MatchingResult;
+                if (matchingResult != null)
+                {
+                    var matchingResultDto = MatchingResultDto.CreateFromMatchingResult(matchingResult, SourceCodeRepository);
+                    var json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
+                    MatchLogger.Info(json);
+                    LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
+                }
+            }
         }
 
         public virtual void LogInfo(string message)
         {
-            FileLogger.Info(message);
+            FileInternalLogger.Info(message.Trunc());
         }
-
-        public abstract void LogInfo(object infoObj);
 
         public virtual void LogDebug(string message)
         {
@@ -76,10 +93,8 @@ namespace PT.PM.Cli
 #endif
             if (isDebug || IsLogDebugs)
             {
-                FileLogger.Debug(message);
+                FileInternalLogger.Debug(message.Trunc());
             }
         }
-
-        protected abstract void LogMatchingResult(MatchingResult matchingResult);
     }
 }

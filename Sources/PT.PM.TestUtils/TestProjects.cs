@@ -17,16 +17,6 @@
                     @"src\Common\tests\System\Xml\XmlCoreTest\TestData.g.cs"
                 }
             },
-            new TestProject("roslyn-1.1.1")
-            {
-                Urls = new [] {
-                    $"{TestHelper.GithubUrlPrefix}dotnet/roslyn/archive/version-1.1.1.zip"
-                },
-                IgnoredFiles = new [] {
-                    @"src\Compilers\Test\Resources\Core\Encoding\sjis.cs",
-                    @"src\Workspaces\Core\Portable\Shared\Extensions\SourceTextExtensions.cs"
-                }
-            },
             new TestProject("EntityFramework-7.0.0-rc1")
             {
                 Urls = new [] {
@@ -97,22 +87,6 @@
             {
                 // TODO: Add samples from https://github.com/antlr/codebuff/tree/master/corpus/sql/training
                 Urls = new string[0],
-            }
-        };
-
-        public static TestProject[] PlSqlProjects = new TestProject[]
-        {
-            new TestProject("plsql-parser-66cff4")
-            {
-                Urls = new [] {
-                    $"{TestHelper.GithubUrlPrefix}porcelli/plsql-parser/archive/66cff4c8bda5a58698a035bfb2312c326b233a58.zip",
-                },
-                IgnoredFiles = new []
-                {
-                    @"tests\function06.sql",
-                    @"tests\string01.sql",
-                    @"tests\xmltable01.sql"
-                }
             }
         };
 
