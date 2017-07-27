@@ -133,9 +133,16 @@ namespace PT.PM.Common
                 int endLength;
                 if (!truncMessageCutWords)
                 {
-                    startLength = message.LastIndexOf(message.LastIndexOf(startLength - 1, false), true) + 1;
+                    int newStartLength = message.LastIndexOf(message.LastIndexOf(startLength - 1, false), true) + 1;
+                    startLength = newStartLength == 0 && !char.IsWhiteSpace(message[0])
+                        ? startLength
+                        : newStartLength;
+
                     int endIndex = message.Length - (maxMessageLength - startLength - truncMessageSplitter.Length);
-                    endLength = message.Length - message.FirstIndexOf(FirstIndexOf(message, endIndex, false), true);
+                    int newEndLength = message.Length - message.FirstIndexOf(FirstIndexOf(message, endIndex, false), true);
+                    endLength = newEndLength == 0 && !char.IsWhiteSpace(message[message.Length - 1])
+                        ? maxMessageLength - startLength - truncMessageSplitter.Length
+                        : newEndLength;
                 }
                 else
                 {

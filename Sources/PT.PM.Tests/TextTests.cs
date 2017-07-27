@@ -37,7 +37,10 @@ namespace PT.PM.Tests
             actual = origin.Trunc(30, truncMessageCutWords: false);
             Assert.AreEqual("The sample of ... message.", actual);
 
-            Assert.AreEqual(" ... ", origin = "                          ".Trunc(10, truncMessageCutWords: false));
+            Assert.AreEqual(" ... ", "                          ".Trunc(10, truncMessageCutWords: false));
+
+            origin = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            Assert.AreEqual("aaaaaaaaaa ... aaaaa", origin.Trunc(20, truncMessageCutWords: false));
         }
     }
 }
