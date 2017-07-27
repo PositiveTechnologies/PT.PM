@@ -62,10 +62,7 @@ namespace PT.PM.Cli
             var progressEventArgs = infoObj as ProgressEventArgs;
             if (progressEventArgs != null)
             {
-                string value = progressEventArgs.Progress >= 1
-                    ? $"{(int)progressEventArgs.Progress} items"
-                    : $"{(int)(progressEventArgs.Progress * 100):0.00}%";
-                LogInfo($"Progress: {value}; File: {progressEventArgs.CurrentFile}");
+                LogInfo(progressEventArgs.ToString());
             }
             else
             {

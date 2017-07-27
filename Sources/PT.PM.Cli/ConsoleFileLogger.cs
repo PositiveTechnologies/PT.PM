@@ -13,7 +13,7 @@ namespace PT.PM.Cli
             base.LogError(ex);
             if (IsLogErrors)
             {
-                NLogConsoleLogger.Error($"Error: {PrepareForConsole(ex.Message.Trunc())}");
+                NLogConsoleLogger.Error($"Error: {PrepareForConsole(ex.Message)}".Trunc());
             }
         }
 
@@ -26,10 +26,10 @@ namespace PT.PM.Cli
 
         public override void LogDebug(string message)
         {
-            string truncatedMessage = message.Trunc();
-            base.LogDebug(truncatedMessage);
             if (IsLogDebugs)
             {
+                string truncatedMessage = message.Trunc();
+                base.LogDebug(truncatedMessage);
                 NLogConsoleLogger.Debug(PrepareForConsole(truncatedMessage));
             }
         }
