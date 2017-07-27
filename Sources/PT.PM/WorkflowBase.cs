@@ -20,10 +20,12 @@ namespace PT.PM
         where TPattern : PatternBase
         where TMatchingResult : MatchingResultBase<TPattern>
     {
-        protected ILogger logger = DummyLogger.Instance;
-        protected int maxStackSize;
         private int maxTimespan;
         private int memoryConsumptionMb;
+
+        protected ILogger logger = DummyLogger.Instance;
+        protected int maxStackSize;
+        protected Task filesCountTask;
 
         protected Language[] languages;
 

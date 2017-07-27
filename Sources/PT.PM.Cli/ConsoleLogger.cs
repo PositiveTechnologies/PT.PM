@@ -42,8 +42,10 @@ namespace PT.PM.Cli
             var progressEventArgs = infoObj as ProgressEventArgs;
             if (progressEventArgs != null)
             {
-                bool endFile = Math.Abs(progressEventArgs.Progress - 1) < 1e-10;
-                message = $"Progress: {(int)(progressEventArgs.Progress * 100)}%; File: {progressEventArgs.CurrentFile}";
+                string value = progressEventArgs.Progress >= 1
+                    ? $"{(int)progressEventArgs.Progress} items"
+                    : $"{(int)(progressEventArgs.Progress * 100):0.00}%";
+                message = $"Progress: {value}; File: {progressEventArgs.CurrentFile}";
                 NLogConsoleLogger.Info(PrepareForConsole(message));
                 FileLogger.Info(message);
             }
