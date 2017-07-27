@@ -1,5 +1,6 @@
 language: csharp
 dist: trusty
+sudo: false
 solution: Sources/PT.PM.Gui.sln
 install:
     - mono Dependencies/nuget.exe sources add -Name Avalonia -Source https://www.myget.org/F/avalonia-ci/api/v2
