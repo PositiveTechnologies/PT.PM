@@ -61,7 +61,7 @@ namespace PT.PM.Cli
             parser.Setup<bool>("preprocess-ust").Callback(param => isPreprocess = param);
             parser.Setup<bool>('w', "wait").Callback(param => isWaitForUserInput = param);
 
-            ILogger logger = new ConsoleLogger();
+            ILogger logger = new ConsoleFileLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
                 ? ": " + string.Join(" ", args)
                 : " are not defined.");
@@ -85,7 +85,7 @@ namespace PT.PM.Cli
                         logger.LogInfo($"PT.PM version: {version}");
                     }
 
-                    var abstractLogger = logger as AbstractLogger;
+                    var abstractLogger = logger as FileLogger;
                     if (abstractLogger != null)
                     {
                         abstractLogger.LogsDir = logsDir;
@@ -170,7 +170,7 @@ namespace PT.PM.Cli
                 {
                     if (logger != null)
                     {
-                        var abstractLogger = logger as AbstractLogger;
+                        var abstractLogger = logger as FileLogger;
                         if (abstractLogger != null)
                         {
                             abstractLogger.IsLogErrors = true;
