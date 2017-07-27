@@ -70,6 +70,7 @@ namespace PT.PM.Cli
                 if (matchingResult != null)
                 {
                     var matchingResultDto = MatchingResultDto.CreateFromMatchingResult(matchingResult, SourceCodeRepository);
+                    matchingResultDto.MatchedCode = matchingResultDto.MatchedCode.Trunc();
                     var json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
                     MatchLogger.Info(json);
                     LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
@@ -79,7 +80,7 @@ namespace PT.PM.Cli
 
         public virtual void LogInfo(string message)
         {
-            FileInternalLogger.Info(message.Trunc());
+            FileInternalLogger.Info(message);
         }
 
         public virtual void LogDebug(string message)
