@@ -82,7 +82,7 @@ namespace PT.PM.Cli
 
         public virtual void LogInfo(string message)
         {
-            FileInternalLogger.Info(message);
+            FileInternalLogger.Info(message.Trunc());
         }
 
         public virtual void LogDebug(string message)

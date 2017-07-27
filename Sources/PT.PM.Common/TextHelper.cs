@@ -151,7 +151,7 @@ namespace PT.PM.Common
         private static int LastIndexOf(this string str, int index, bool whitespace)
         {
             int i = index;
-            while (i > 0 && (whitespace ? char.IsWhiteSpace(str[i]) : !char.IsWhiteSpace(str[i])))
+            while (i >= 0 && (whitespace ? char.IsWhiteSpace(str[i]) : !char.IsWhiteSpace(str[i])))
                 i--;
             return i;
         }

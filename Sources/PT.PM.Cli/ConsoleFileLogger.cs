@@ -19,8 +19,9 @@ namespace PT.PM.Cli
 
         public override void LogInfo(string message)
         {
-            base.LogInfo(message);
-            NLogConsoleLogger.Info(PrepareForConsole(message));
+            string truncatedMessage = message.Trunc();
+            base.LogInfo(truncatedMessage);
+            NLogConsoleLogger.Info(PrepareForConsole(truncatedMessage));
         }
 
         public override void LogDebug(string message)
