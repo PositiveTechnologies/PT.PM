@@ -121,7 +121,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static string TruncMessage(this string message,
+        public static string Trunc(this string message,
             int maxMessageLength = MaxMessageLength,
             double truncMessageStartRatio = TruncMessageStartRatio,
             string truncMessageSplitter = TruncMessageDelimiter,

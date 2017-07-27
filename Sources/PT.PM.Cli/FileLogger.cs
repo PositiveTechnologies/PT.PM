@@ -51,7 +51,7 @@ namespace PT.PM.Cli
 
         public virtual void LogError(Exception ex)
         {
-            var exString = ex.FormatExceptionMessage();
+            var exString = ex.FormatExceptionMessage().Trunc();
             ErrorsLogger.Error(exString);
             FileInternalLogger.Error(exString);
             Interlocked.Increment(ref errorCount);
@@ -93,7 +93,7 @@ namespace PT.PM.Cli
 #endif
             if (isDebug || IsLogDebugs)
             {
-                FileInternalLogger.Debug(message);
+                FileInternalLogger.Debug(message.Trunc());
             }
         }
     }

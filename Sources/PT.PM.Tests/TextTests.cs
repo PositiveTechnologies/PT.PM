@@ -27,14 +27,14 @@ namespace PT.PM.Tests
         public void TruncMessages()
         {
             string origin = "The sample of very long message.";
-            string actual = origin.TruncMessage(32);
+            string actual = origin.Trunc(32);
             Assert.AreEqual(origin, actual);
 
-            actual = origin.TruncMessage(30, truncMessageCutWords: true);
+            actual = origin.Trunc(30, truncMessageCutWords: true);
             Assert.AreEqual(30, actual.Length);
             Assert.AreEqual("The sample of v ... g message.", actual);
 
-            actual = origin.TruncMessage(30, truncMessageCutWords: false);
+            actual = origin.Trunc(30, truncMessageCutWords: false);
             Assert.AreEqual("The sample of ... message.", actual);
         }
     }

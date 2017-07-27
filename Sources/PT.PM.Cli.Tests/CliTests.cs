@@ -104,7 +104,6 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
-        [Ignore("Failed in AppVeyor build")]
         public void CheckCli_FilePatternsRepository_CorrectlyProcessed()
         {
             if (Helper.IsRunningOnLinux)
