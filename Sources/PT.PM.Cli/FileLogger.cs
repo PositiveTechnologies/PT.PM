@@ -22,6 +22,12 @@ namespace PT.PM.Cli
 
         protected NLog.Logger MatchLogger { get; } = NLog.LogManager.GetLogger("match");
 
+        protected TextTruncater ErrorTruncater { get; } = new TextTruncater { MaxMessageLength = 300, CutWords = false };
+
+        protected TextTruncater MessageTruncater { get; } = new TextTruncater();
+
+        protected TextTruncater CodeTruncater { get; } = new TextTruncater { TrimIndent = true };
+
         public string LogsDir
         {
             get { return logPath; }
@@ -51,7 +57,7 @@ namespace PT.PM.Cli
 
         public virtual void LogError(Exception ex)
         {
-            var exString = ex.FormatExceptionMessage().Trunc();
+            var exString = ErrorTruncater.Trunc(ex.GetPrettyErrorMessage(FileNameType.Full));
             ErrorsLogger.Error(exString);
             FileInternalLogger.Error(exString);
             Interlocked.Increment(ref errorCount);
@@ -70,7 +76,7 @@ namespace PT.PM.Cli
                 if (matchingResult != null)
                 {
                     var matchingResultDto = MatchingResultDto.CreateFromMatchingResult(matchingResult, SourceCodeRepository);
-                    matchingResultDto.MatchedCode = matchingResultDto.MatchedCode.Trunc();
+                    matchingResultDto.MatchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
                     var json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
                     MatchLogger.Info(json);
                     LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
@@ -85,13 +91,9 @@ namespace PT.PM.Cli
 
         public virtual void LogDebug(string message)
         {
-            bool isDebug = false;
-#if DEBUG
-            isDebug = true;
-#endif
-            if (isDebug || IsLogDebugs)
+            if (IsLogDebugs)
             {
-                FileInternalLogger.Debug(message.Trunc());
+                FileInternalLogger.Debug(MessageTruncater.Trunc(message));
             }
         }
     }

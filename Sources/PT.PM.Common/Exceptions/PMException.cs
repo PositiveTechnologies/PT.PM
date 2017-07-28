@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.Serialization;
 
 namespace PT.PM.Common.Exceptions
@@ -29,13 +30,19 @@ namespace PT.PM.Common.Exceptions
 
         public override string ToString()
         {
-            return ToString(false, false);
+            return ToString(FileNameType.Short, false);
         }
 
-        public string ToString(bool printFileName, bool printStackTrace)
+        public string ToString(FileNameType fileNameType = FileNameType.Short, bool printStackTrace = false)
         {
-            string fileNameString = (printFileName && !string.IsNullOrEmpty(FileName))
-                ? $@" in ""{FileName}"""
+            string fileName = fileNameType == FileNameType.None
+                ? ""
+                : fileNameType == FileNameType.Full
+                ? FileName
+                : Path.GetFileName(FileName);
+
+            string fileNameString = !string.IsNullOrEmpty(fileName)
+                ? $@" in ""{fileName}"""
                 : "";
             string patternString = IsPattern ? "Pattern " : "";
             string exceptionString = printStackTrace
