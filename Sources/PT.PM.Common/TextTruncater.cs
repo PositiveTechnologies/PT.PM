@@ -6,7 +6,7 @@ namespace PT.PM.Common
 {
     public class TextTruncater
     {
-        private static string[] newLines = new string[] { "\r\n", "\n " };
+        private static string[] newLines = new string[] { "\r\n", "\n" };
 
         public int MaxMessageLength { get; set; } = 200;
 
