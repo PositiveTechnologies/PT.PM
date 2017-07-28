@@ -146,6 +146,43 @@ namespace PT.PM.UstPreprocessing
             return result;
         }
 
+        public override UstNode Visit(UnaryOperatorExpression unaryOperatorExpression)
+        {
+            UstNode result;
+            UnaryOperatorLiteral op = unaryOperatorExpression.Operator;
+            Expression ex = unaryOperatorExpression.Expression;
+            bool isOperatorMinus = op.UnaryOperator == UnaryOperator.Minus;
+            bool isExpressionInt = ex.NodeType == NodeType.IntLiteral;
+            bool isExpressionFloat = ex.NodeType == NodeType.FloatLiteral;
+            if (isOperatorMinus && isExpressionInt)
+            {
+                long intValue = ((IntLiteral)ex).Value;
+                result = new IntLiteral
+                {
+                    Value = -intValue,
+                    FileNode = unaryOperatorExpression.FileNode,
+                    TextSpan = op.TextSpan.Union(ex.TextSpan)
+                };
+                Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-intValue} at {result.TextSpan}");
+            }
+            else if(isOperatorMinus && isExpressionFloat)
+            {
+                double doubleValue = ((FloatLiteral)ex).Value;
+                result = new FloatLiteral
+                {
+                    Value = -doubleValue,
+                    FileNode = unaryOperatorExpression.FileNode,
+                    TextSpan = op.TextSpan.Union(ex.TextSpan)
+                };
+                Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-doubleValue} at {result.TextSpan}");
+            }
+            else
+            {
+                result = VisitChildren(unaryOperatorExpression);
+            }
+            return result;
+        }
+
         private BlockStatement ConvertToBlockStatement(Statement statement)
         {
             BlockStatement result;
