@@ -26,21 +26,49 @@ namespace PT.PM.Tests
         [Test]
         public void TruncMessages()
         {
+            var truncater = new TextTruncater() { MaxMessageLength = 32 };
             string origin = "The sample of very long message.";
-            string actual = origin.Trunc(32);
+            string actual = truncater.Trunc(origin);
             Assert.AreEqual(origin, actual);
 
-            actual = origin.Trunc(30, truncMessageCutWords: true);
+            truncater = new TextTruncater() { MaxMessageLength = 30, CutWords = true };
+            actual = truncater.Trunc(origin);
             Assert.AreEqual(30, actual.Length);
             Assert.AreEqual("The sample of v ... g message.", actual);
 
-            actual = origin.Trunc(30, truncMessageCutWords: false);
+            truncater = new TextTruncater() { MaxMessageLength = 30, CutWords = false };
+            actual = truncater.Trunc(origin);
             Assert.AreEqual("The sample of ... message.", actual);
 
-            Assert.AreEqual(" ... ", "                          ".Trunc(10, truncMessageCutWords: false));
+            truncater = new TextTruncater() { MaxMessageLength = 10, CutWords = false };
+            Assert.AreEqual(" ... ", truncater.Trunc("                          "));
 
             origin = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-            Assert.AreEqual("aaaaaaaaaa ... aaaaa", origin.Trunc(20, truncMessageCutWords: false));
+            truncater = new TextTruncater() { MaxMessageLength = 20, CutWords = false };
+            Assert.AreEqual("aaaaaaaaaa ... aaaaa", truncater.Trunc(origin));
+        }
+
+        [Test]
+        public void TrimIndents()
+        {
+            string origin =
+@"try {
+			$LogHandler->writeToLog(""message"");
+		} catch (Exception $e) {
+			// do nothing
+		}";
+
+            var truncater = new TextTruncater() { TrimIndent = true };
+            string actual = truncater.Trunc(origin);
+
+            string expected =
+@"try {
+	$LogHandler->writeToLog(""message"");
+} catch (Exception $e) {
+	// do nothing
+}";
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }

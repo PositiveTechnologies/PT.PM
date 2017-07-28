@@ -41,9 +41,11 @@
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="DummyLogger.cs" />
     <Compile Include="Exceptions\ExceptionHelper.cs" />
+    <Compile Include="Exceptions\FileNameType.cs" />
     <Compile Include="Exceptions\PMException.cs" />
     <Compile Include="Exceptions\PMExceptionType.cs" />
     <Compile Include="Exceptions\ReadException.cs" />
+    <Compile Include="TextTruncater.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />

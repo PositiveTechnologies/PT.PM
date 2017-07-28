@@ -29,29 +29,25 @@ namespace PT.PM.Common.Exceptions
 
         public override string ToString()
         {
-            return ToString(false);
+            return ToString(false, false);
         }
 
-        public string ToString(bool printStackTrace)
+        public string ToString(bool printFileName, bool printStackTrace)
         {
-            string fileNameString = !string.IsNullOrEmpty(FileName) ? $" in \"{FileName}\"" : "";
+            string fileNameString = (printFileName && !string.IsNullOrEmpty(FileName))
+                ? $@" in ""{FileName}"""
+                : "";
             string patternString = IsPattern ? "Pattern " : "";
+            string exceptionString = printStackTrace
+                ? InnerException?.FormatExceptionMessage() ?? Message
+                : Message;
 
-            string exceptionString = "";
-            if (printStackTrace)
-            {
-                exceptionString = InnerException?.FormatExceptionMessage() ?? Message;
-            }
-            else
-            {
-                exceptionString = Message;
-            }
             if (!string.IsNullOrEmpty(exceptionString))
             {
                 exceptionString = $": {exceptionString}";
             }
 
-            return $"{patternString}{ExceptionType} error{fileNameString}{exceptionString}.";
+            return $"{patternString}{ExceptionType} Error{fileNameString}{exceptionString}.";
         }
     }
 }
