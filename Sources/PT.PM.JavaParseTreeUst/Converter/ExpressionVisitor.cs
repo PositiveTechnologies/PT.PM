@@ -181,7 +181,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         return result;
                 }
             }
-            
+
             return Visit(context.GetChild(0));
         }
 
@@ -209,14 +209,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.VOID:
                         var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan(), FileNode);
                         var child0TerminalSpan = child0Terminal.GetTextSpan();
-                        result = new InvocationExpression(id, 
+                        result = new InvocationExpression(id,
                             new ArgsNode(new Expression[] { new NullLiteral(child0TerminalSpan, FileNode) }, child0TerminalSpan, FileNode),
                             textSpan,
                             FileNode);
                         return result;
                 }
             }
-            
+
             JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
             if (type != null)
             {
@@ -303,18 +303,54 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitCreator(JavaParser.CreatorContext context)
         {
+            UstNode result;
             JavaParser.CreatedNameContext createdName = context.createdName();
-            JavaParser.ClassCreatorRestContext classCreatorRest = context.classCreatorRest();
-            ArgsNode args;
-            if (classCreatorRest != null)
-                args = (ArgsNode)Visit(classCreatorRest.arguments());
+            JavaParser.ArrayCreatorRestContext arrayCreatorRest = context.arrayCreatorRest();
+            if (arrayCreatorRest != null)
+            {
+                var initializer = (MultichildExpression)Visit(arrayCreatorRest.arrayInitializer());
+                if (initializer != null)
+                {
+                    // new int[] { 1, 2 };
+                    int dimensions = (arrayCreatorRest.ChildCount - 1) / 2; // number of square bracket pairs
+                    var sizes = Enumerable.Range(0, dimensions).Select(
+                        _ => new IntLiteral(0, createdName.GetTextSpan(), FileNode)).ToList<Expression>();
+                    var initializers = initializer.Expressions.Where(el => el.NodeType != NodeType.IdToken);
+                    result = new ArrayCreationExpression(
+                        new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), sizes,
+                        initializers, context.GetTextSpan(), FileNode);
+                }
+                else
+                {
+                    // new int[3][4][];
+                    int dimensions = (arrayCreatorRest.ChildCount - arrayCreatorRest.expression().Length) / 2;
+                    var sizes = Enumerable.Range(0, dimensions).Select(
+                        i => i < arrayCreatorRest.expression().Length ?
+                                (Expression)Visit(arrayCreatorRest.expression(i)) :
+                                new IntLiteral(0, createdName.GetTextSpan(), FileNode)).ToList();
+                    result = new ArrayCreationExpression(
+                        new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), sizes,
+                        null, context.GetTextSpan(), FileNode);
+                }
+            }
             else
-                args = new ArgsNode();
-            // TODO: add classBody
+            {
+                JavaParser.ClassCreatorRestContext classCreatorRest = context.classCreatorRest();
+                ArgsNode args;
+                if (classCreatorRest != null)
+                {
+                    args = (ArgsNode)Visit(classCreatorRest.arguments());
+                }
+                else
+                {
+                    args = new ArgsNode();
+                }
+                // TODO: add classBody
 
-            var result = new ObjectCreateExpression(
-                new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), args,
-                context.GetTextSpan(), FileNode);
+                result = new ObjectCreateExpression(
+                    new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), args,
+                    context.GetTextSpan(), FileNode);
+            }
             return result;
         }
 
@@ -408,7 +444,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 string text = stringLiteral.GetText();
                 return new StringLiteral(text.Substring(1, text.Length - 2), textSpan, FileNode);
             }
-            
+
             if (context.integerLiteral() != null)
             {
                 return Visit(context.integerLiteral());
@@ -425,7 +461,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 return new StringLiteral(charLiteral.GetText(), textSpan, FileNode);
             }
-            
+
             ITerminalNode floatLiteral = context.FLOAT_LITERAL();
             if (floatLiteral != null)
             {
