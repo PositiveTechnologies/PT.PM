@@ -10,7 +10,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [Test]
         public void Parse_JavaSyntaxErrorFile_CatchErrors()
         {
-            TestHelper.CheckFile("ParseError.java", Language.Java, Stage.Parse, shouldContainsErrors:true);
+            TestHelper.CheckFile("ParseError.java", Language.Java, Stage.Parse, shouldContainsErrors: true);
         }
 
         [TestCase("ManyStringsConcat.java")]

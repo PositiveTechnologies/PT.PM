@@ -42,6 +42,31 @@ namespace PT.PM.Common.Nodes.Expressions
             return result.ToArray();
         }
 
+        public override int CompareTo(UstNode other)
+        {
+            if (other == null)
+            {
+                return (int)NodeType;
+            }
+
+            var nodeTypeCompareResult = NodeType - other.NodeType;
+            if (nodeTypeCompareResult != 0)
+            {
+                return nodeTypeCompareResult;
+            }
+
+            var otherArrayCreation = (ArrayCreationExpression)other;
+            int compareSizesResult =
+                UstNodeHelper.CompareCollections(Sizes?.ToArray(), otherArrayCreation.Sizes?.ToArray());
+            if (compareSizesResult != 0)
+            {
+                return compareSizesResult;
+            }
+
+            return UstNodeHelper.CompareCollections(
+                Initializers?.ToArray(), otherArrayCreation.Initializers?.ToArray());
+        }
+
         public override string ToString()
         {
             return $"new {Type}[{string.Join(", ", Sizes)}]";

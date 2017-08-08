@@ -65,33 +65,7 @@ namespace PT.PM.Common.Nodes
                 return nodeTypeCompareResult;
             }
 
-            var childrenCountCompareResult = Children.Length - other.Children.Length;
-            if (childrenCountCompareResult != 0)
-            {
-                return childrenCountCompareResult;
-            }
-
-            for (int i = 0; i < Children.Length; i++)
-            {
-                var child = Children[i];
-                if (child == null)
-                {
-                    if (other.Children[i] != null)
-                    {
-                        return -(int)NodeType;
-                    }
-                }
-                else if (child.NodeType != NodeType.FileNode)
-                {
-                    var childCompareResult = child.CompareTo(other.Children[i]);
-                    if (childCompareResult != 0)
-                    {
-                        return childCompareResult;
-                    }
-                }
-            }
-
-            return 0;
+            return UstNodeHelper.CompareCollections(Children, other.Children);
         }
 
         public bool DoesAnyDescendantMatchPredicate(Func<UstNode, bool> predicate)
@@ -171,6 +145,55 @@ namespace PT.PM.Common.Nodes
                 result.Append(" ");
             }
             return result.ToString();
+        }
+    }
+
+    class UstNodeHelper
+    {
+        public static int CompareCollections(UstNode[] collection1, UstNode[] collection2)
+        {
+            if (collection1 == null && collection2 == null)
+            {
+                return 0;
+            }
+
+            if (collection1 != null && collection2 == null)
+            {
+                return collection1.Length;
+            }
+
+            if (collection1 == null && collection2 != null)
+            {
+                return -collection2.Length;
+            }
+
+            var collectionCountCompareResult = collection1.Length - collection2.Length;
+            if (collectionCountCompareResult != 0)
+            {
+                return collectionCountCompareResult;
+            }
+
+            for (int i = 0; i < collection1.Length; i++)
+            {
+                var element = collection1[i];
+                if (element == null)
+                {
+                    if (collection2[i] != null)
+                    {
+                        return -(int)collection2[i].NodeType;
+                    }
+                }
+                else if (element.NodeType != NodeType.FileNode)
+                {
+                    var elementCompareResult = element.CompareTo(collection2[i]);
+                    if (elementCompareResult != 0)
+                    {
+                        return elementCompareResult;
+                    }
+                }
+            }
+
+            return 0;
         }
     }
 }
