@@ -336,15 +336,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
             else
             {
                 JavaParser.ClassCreatorRestContext classCreatorRest = context.classCreatorRest();
-                ArgsNode args;
-                if (classCreatorRest != null)
-                {
-                    args = (ArgsNode)Visit(classCreatorRest.arguments());
-                }
-                else
-                {
-                    args = new ArgsNode();
-                }
+                ArgsNode args = (ArgsNode)Visit(classCreatorRest?.arguments()) ?? new ArgsNode();
+
                 // TODO: add classBody
 
                 result = new ObjectCreateExpression(

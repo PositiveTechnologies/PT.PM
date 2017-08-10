@@ -56,15 +56,13 @@ namespace PT.PM.Common.Nodes.Expressions
             }
 
             var otherArrayCreation = (ArrayCreationExpression)other;
-            int compareSizesResult =
-                UstNodeHelper.CompareCollections(Sizes?.ToArray(), otherArrayCreation.Sizes?.ToArray());
+            int compareSizesResult = Sizes.CompareTo(otherArrayCreation.Sizes);
             if (compareSizesResult != 0)
             {
                 return compareSizesResult;
             }
 
-            return UstNodeHelper.CompareCollections(
-                Initializers?.ToArray(), otherArrayCreation.Initializers?.ToArray());
+            return Initializers.CompareTo(otherArrayCreation.Initializers);
         }
 
         public override string ToString()

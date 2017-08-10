@@ -148,39 +148,39 @@ namespace PT.PM.UstPreprocessing
 
         public override UstNode Visit(UnaryOperatorExpression unaryOperatorExpression)
         {
-            UstNode result;
             UnaryOperatorLiteral op = unaryOperatorExpression.Operator;
             Expression ex = unaryOperatorExpression.Expression;
-            bool isOperatorMinus = op.UnaryOperator == UnaryOperator.Minus;
-            bool isExpressionInt = ex.NodeType == NodeType.IntLiteral;
-            bool isExpressionFloat = ex.NodeType == NodeType.FloatLiteral;
-            if (isOperatorMinus && isExpressionInt)
+
+            if (op.UnaryOperator == UnaryOperator.Minus)
             {
-                long intValue = ((IntLiteral)ex).Value;
-                result = new IntLiteral
+                if (ex.NodeType == NodeType.IntLiteral)
                 {
-                    Value = -intValue,
-                    FileNode = unaryOperatorExpression.FileNode,
-                    TextSpan = op.TextSpan.Union(ex.TextSpan)
-                };
-                Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-intValue} at {result.TextSpan}");
-            }
-            else if(isOperatorMinus && isExpressionFloat)
-            {
-                double doubleValue = ((FloatLiteral)ex).Value;
-                result = new FloatLiteral
+                    long intValue = ((IntLiteral)ex).Value;
+                    UstNode result = new IntLiteral
+                    {
+                        Value = -intValue,
+                        FileNode = unaryOperatorExpression.FileNode,
+                        TextSpan = op.TextSpan.Union(ex.TextSpan)
+                    };
+                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-intValue} at {result.TextSpan}");
+                    return result;
+                }
+
+                if (ex.NodeType == NodeType.FloatLiteral)
                 {
-                    Value = -doubleValue,
-                    FileNode = unaryOperatorExpression.FileNode,
-                    TextSpan = op.TextSpan.Union(ex.TextSpan)
-                };
-                Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-doubleValue} at {result.TextSpan}");
+                    double doubleValue = ((FloatLiteral)ex).Value;
+                    UstNode result = new FloatLiteral
+                    {
+                        Value = -doubleValue,
+                        FileNode = unaryOperatorExpression.FileNode,
+                        TextSpan = op.TextSpan.Union(ex.TextSpan)
+                    };
+                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-doubleValue} at {result.TextSpan}");
+                    return result;
+                }
             }
-            else
-            {
-                result = VisitChildren(unaryOperatorExpression);
-            }
-            return result;
+
+            return VisitChildren(unaryOperatorExpression);
         }
 
         private BlockStatement ConvertToBlockStatement(Statement statement)
@@ -244,7 +244,7 @@ namespace PT.PM.UstPreprocessing
             int index = 0;
             while (index < collection.Count)
             {
-                if (collection[index].NodeType ==  NodeType.PatternMultipleStatements &&
+                if (collection[index].NodeType == NodeType.PatternMultipleStatements &&
                     index + 1 < collection.Count &&
                     collection[index + 1].NodeType == NodeType.PatternMultipleStatements)
                 {
