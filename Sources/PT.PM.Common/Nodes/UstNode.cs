@@ -4,7 +4,6 @@ using System.Text;
 using System.Linq;
 using Newtonsoft.Json;
 
-
 namespace PT.PM.Common.Nodes
 {
     public abstract class UstNode : Node, IComparable<UstNode>, IEquatable<UstNode>
@@ -152,10 +151,10 @@ namespace PT.PM.Common.Nodes
 
     static class UstNodeHelper
     {
-        public static int CompareTo(this IEnumerable<UstNode> collection1, IEnumerable<UstNode> collection2)
+        public static int CompareTo<T>(this IEnumerable<T> collection1, IEnumerable<T> collection2) where T : UstNode
         {
-            var list1 = new List<UstNode>(collection1 ?? Enumerable.Empty<UstNode>());
-            var list2 = new List<UstNode>(collection2 ?? Enumerable.Empty<UstNode>());
+            var list1 = collection1 as IList<T> ?? new List<T>(collection1 ?? Enumerable.Empty<T>());
+            var list2 = collection2 as IList<T> ?? new List<T>(collection2 ?? Enumerable.Empty<T>());
 
             var collectionCountCompareResult = list1.Count - list2.Count;
             if (collectionCountCompareResult != 0)
