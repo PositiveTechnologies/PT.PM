@@ -23,7 +23,9 @@ namespace PT.PM.UstPreprocessing.Tests
                 "<?php\r\n" +
                 "echo 'Hello ' . 'World' . '!';\r\n" +
                 "echo 60 * 60 * 24;\r\n" +
-                "echo 6 + 6 * 6;"
+                "echo 6 + 6 * 6;\r\n" +
+                "$a = -3;\r\n" +
+                "$b = -3.1;"
             );
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(sourceCodeRep, Language.Php, stage: Stage.Preprocess);
@@ -34,6 +36,8 @@ namespace PT.PM.UstPreprocessing.Tests
             Assert.IsTrue(logger.ContainsDebugMessagePart("Hello World!"));
             Assert.IsTrue(logger.ContainsDebugMessagePart("86400"));
             Assert.IsTrue(logger.ContainsDebugMessagePart("42"));
+            Assert.IsTrue(logger.ContainsDebugMessagePart("-3"));
+            Assert.IsTrue(logger.ContainsDebugMessagePart("-3.1"));
         }
 
         [Test]

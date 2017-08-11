@@ -146,6 +146,43 @@ namespace PT.PM.UstPreprocessing
             return result;
         }
 
+        public override UstNode Visit(UnaryOperatorExpression unaryOperatorExpression)
+        {
+            UnaryOperatorLiteral op = unaryOperatorExpression.Operator;
+            Expression ex = unaryOperatorExpression.Expression;
+
+            if (op.UnaryOperator == UnaryOperator.Minus)
+            {
+                if (ex.NodeType == NodeType.IntLiteral)
+                {
+                    long intValue = ((IntLiteral)ex).Value;
+                    UstNode result = new IntLiteral
+                    {
+                        Value = -intValue,
+                        FileNode = unaryOperatorExpression.FileNode,
+                        TextSpan = op.TextSpan.Union(ex.TextSpan)
+                    };
+                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-intValue} at {result.TextSpan}");
+                    return result;
+                }
+
+                if (ex.NodeType == NodeType.FloatLiteral)
+                {
+                    double doubleValue = ((FloatLiteral)ex).Value;
+                    UstNode result = new FloatLiteral
+                    {
+                        Value = -doubleValue,
+                        FileNode = unaryOperatorExpression.FileNode,
+                        TextSpan = op.TextSpan.Union(ex.TextSpan)
+                    };
+                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-doubleValue} at {result.TextSpan}");
+                    return result;
+                }
+            }
+
+            return VisitChildren(unaryOperatorExpression);
+        }
+
         private BlockStatement ConvertToBlockStatement(Statement statement)
         {
             BlockStatement result;
@@ -207,7 +244,7 @@ namespace PT.PM.UstPreprocessing
             int index = 0;
             while (index < collection.Count)
             {
-                if (collection[index].NodeType ==  NodeType.PatternMultipleStatements &&
+                if (collection[index].NodeType == NodeType.PatternMultipleStatements &&
                     index + 1 < collection.Count &&
                     collection[index + 1].NodeType == NodeType.PatternMultipleStatements)
                 {
