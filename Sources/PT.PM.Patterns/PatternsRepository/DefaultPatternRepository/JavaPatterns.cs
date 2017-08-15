@@ -202,7 +202,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Arguments = new ArgsNode
                         {
-                        Collection = new List<Expression>()
+                            Collection = new List<Expression>()
                         {
                             new PatternExpression(new PatternStringLiteral(), true)
                         }
@@ -462,6 +462,21 @@ namespace PT.PM.Patterns.PatternsRepository
                             }
                         })
                     }
+                    }
+                }
+            });
+
+            patterns.Add(new Pattern
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "Use of NullPointerException Catch to Detect NULL Pointer Dereference",
+                Languages = LanguageFlags.Java,
+                Data = new PatternNode
+                {
+                    Node = new PatternTryCatchStatement
+                    {
+                        ExceptionTypes = new List<TypeToken> { new TypeToken("NullPointerException") },
+                        IsCatchBodyEmpty = false
                     }
                 }
             });

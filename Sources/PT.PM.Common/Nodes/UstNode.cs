@@ -149,7 +149,7 @@ namespace PT.PM.Common.Nodes
         }
     }
 
-    static class UstNodeHelper
+    public static class UstNodeHelper
     {
         public static int CompareTo<T>(this IEnumerable<T> collection1, IEnumerable<T> collection2) where T : UstNode
         {

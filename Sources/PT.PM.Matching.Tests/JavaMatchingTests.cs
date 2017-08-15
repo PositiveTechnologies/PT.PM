@@ -54,6 +54,9 @@ namespace PT.PM.Matching.Tests
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsSimple")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsComplex")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsAnotherVarName")));
+
+            var useOfNullPointerException = patternDtos.Single(dto => dto.Description.StartsWith("Use of NullPointerException"));
+            Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == useOfNullPointerException.Key));
         }
     }
 }

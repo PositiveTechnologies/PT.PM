@@ -16,7 +16,9 @@ statement
     : ('<[' PatternNot ']>')? expression ';'               #ExpressionStatement
     | '<[' Stmt ']>' ';'?                                  #PatternStatement
     | ('<[' Stmts ']>' ';'? | Ellipsis)                    #PatternMultipleStatement
-    | 'try' 'catch' '{' '}'                                #PatternTryCatchStatement
+    | 'try'
+      'catch' ('(' literalOrPatternId (',' literalOrPatternId)* ')')?
+      '{' Ellipsis? '}'                                    #PatternTryCatchStatement
     ;
 
 expression

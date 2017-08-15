@@ -61,6 +61,9 @@ class Test
 		}
 		catch (Throwable t) {
 		}
+		catch (NullPointerException e) {
+			throw e;
+		}
 	}
     
 	
