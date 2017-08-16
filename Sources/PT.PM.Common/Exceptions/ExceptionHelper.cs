@@ -5,6 +5,17 @@ namespace PT.PM.Common.Exceptions
 {
     public static class ExceptionHelper
     {
+        public static string GetPrettyErrorMessage(this Exception ex, FileNameType fileNameType = FileNameType.None)
+        {
+            var pmException = ex as PMException;
+            if (pmException != null)
+            {
+                return pmException.ToString(fileNameType);
+            }
+
+            return ex.FormatExceptionMessage();
+        }
+
         public static string FormatExceptionMessage(this Exception ex)
         {
             if (ex == null)

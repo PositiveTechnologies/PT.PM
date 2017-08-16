@@ -1,6 +1,6 @@
 ﻿using System;
 using NLog;
-using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.Cli
 {
@@ -13,23 +13,22 @@ namespace PT.PM.Cli
             base.LogError(ex);
             if (IsLogErrors)
             {
-                NLogConsoleLogger.Error($"Error: {PrepareForConsole(ex.Message.Trunc())}");
+                NLogConsoleLogger.Error(MessageTruncater.Trunc(ex.GetPrettyErrorMessage(FileNameType.Short)));
             }
         }
 
         public override void LogInfo(string message)
         {
-            string truncatedMessage = message.Trunc();
-            base.LogInfo(truncatedMessage);
-            NLogConsoleLogger.Info(PrepareForConsole(truncatedMessage));
+            base.LogInfo(message);
+            NLogConsoleLogger.Info(PrepareForConsole(message));
         }
 
         public override void LogDebug(string message)
         {
-            string truncatedMessage = message.Trunc();
-            base.LogDebug(truncatedMessage);
             if (IsLogDebugs)
             {
+                string truncatedMessage = MessageTruncater.Trunc(message);
+                base.LogDebug(truncatedMessage);
                 NLogConsoleLogger.Debug(PrepareForConsole(truncatedMessage));
             }
         }

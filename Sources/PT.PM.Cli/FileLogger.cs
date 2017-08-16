@@ -22,6 +22,12 @@ namespace PT.PM.Cli
 
         protected NLog.Logger MatchLogger { get; } = NLog.LogManager.GetLogger("match");
 
+        protected TextTruncater ErrorTruncater { get; } = new TextTruncater { MaxMessageLength = 300, CutWords = false };
+
+        protected TextTruncater MessageTruncater { get; } = new TextTruncater();
+
+        protected TextTruncater CodeTruncater { get; } = new TextTruncater { TrimIndent = true };
+
         public string LogsDir
         {
             get { return logPath; }
@@ -51,7 +57,7 @@ namespace PT.PM.Cli
 
         public virtual void LogError(Exception ex)
         {
-            var exString = ex.FormatExceptionMessage().Trunc();
+            var exString = ErrorTruncater.Trunc(ex.GetPrettyErrorMessage(FileNameType.Full));
             ErrorsLogger.Error(exString);
             FileInternalLogger.Error(exString);
             Interlocked.Increment(ref errorCount);
@@ -62,10 +68,7 @@ namespace PT.PM.Cli
             var progressEventArgs = infoObj as ProgressEventArgs;
             if (progressEventArgs != null)
             {
-                string value = progressEventArgs.Progress >= 1
-                    ? $"{(int)progressEventArgs.Progress} items"
-                    : $"{(int)(progressEventArgs.Progress * 100):0.00}%";
-                LogInfo($"Progress: {value}; File: {progressEventArgs.CurrentFile}");
+                LogInfo(progressEventArgs.ToString());
             }
             else
             {
@@ -73,6 +76,7 @@ namespace PT.PM.Cli
                 if (matchingResult != null)
                 {
                     var matchingResultDto = MatchingResultDto.CreateFromMatchingResult(matchingResult, SourceCodeRepository);
+                    matchingResultDto.MatchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
                     var json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
                     MatchLogger.Info(json);
                     LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
@@ -82,18 +86,14 @@ namespace PT.PM.Cli
 
         public virtual void LogInfo(string message)
         {
-            FileInternalLogger.Info(message.Trunc());
+            FileInternalLogger.Info(message);
         }
 
         public virtual void LogDebug(string message)
         {
-            bool isDebug = false;
-#if DEBUG
-            isDebug = true;
-#endif
-            if (isDebug || IsLogDebugs)
+            if (IsLogDebugs)
             {
-                FileInternalLogger.Debug(message.Trunc());
+                FileInternalLogger.Debug(MessageTruncater.Trunc(message));
             }
         }
     }
