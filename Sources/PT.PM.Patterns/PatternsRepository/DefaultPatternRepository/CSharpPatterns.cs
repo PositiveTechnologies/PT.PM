@@ -42,7 +42,25 @@ namespace PT.PM.Patterns.PatternsRepository
                     }
                 }
             });
-            
+
+            patterns.Add(new Pattern
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "Use of NullReferenceException Catch to Detect NULL Pointer Dereference",
+                Languages = LanguageFlags.CSharp,
+                Data = new PatternNode
+                {
+                    Node = new PatternTryCatchStatement
+                    {
+                        ExceptionTypes = new List<TypeToken> {
+                            new TypeToken("NullReferenceException"),
+                            new TypeToken("System.NullReferenceException")
+                    },
+                        IsCatchBodyEmpty = false
+                    }
+                }
+            });
+
             return patterns;
         }
     }
