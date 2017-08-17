@@ -29,10 +29,14 @@ public class CSharpSamples
         Random r = new Random();
     }
 
-    public void EmptyTryCatchBlock()
+    public void BadCatchBlocks()
     {
         try
         {
+        }
+        catch(System.NullReferenceException e)
+        {
+            throw e;
         }
         catch
         {
