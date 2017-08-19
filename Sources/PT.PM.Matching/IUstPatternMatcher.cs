@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using PT.PM.Common;
-using PT.PM.Common.Ust;
 using PT.PM.Patterns;
 
 namespace PT.PM.Matching
 {
-    public interface IUstPatternMatcher<TPattern, TMatchingResult> : ILoggable
+    public interface IUstPatternMatcher<TInputGraph, TPattern, TMatchingResult> : ILoggable
         where TPattern : PatternBase
         where TMatchingResult : MatchingResultBase<TPattern>
     {
@@ -14,6 +13,6 @@ namespace PT.PM.Matching
 
         TPattern[] Patterns { get; set; }
 
-        List<TMatchingResult> Match(Ust ust);
+        List<TMatchingResult> Match(TInputGraph ust);
     }
 }

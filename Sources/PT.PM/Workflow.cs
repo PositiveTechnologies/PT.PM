@@ -18,7 +18,7 @@ using PT.PM.UstPreprocessing;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<Stage, WorkflowResult, Pattern, MatchingResult>
+    public class Workflow: WorkflowBase<Ust, Stage, WorkflowResult, Pattern, MatchingResult>
     {
         public Workflow()
             : this(null, LanguageExt.AllLanguages)

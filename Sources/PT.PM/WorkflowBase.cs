@@ -14,7 +14,7 @@ using PT.PM.Common.Exceptions;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
+    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
         where TPattern : PatternBase
@@ -39,7 +39,7 @@ namespace PT.PM
 
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
-        public IUstPatternMatcher<TPattern, TMatchingResult> UstPatternMatcher { get; set; }
+        public IUstPatternMatcher<TInputGraph, TPattern, TMatchingResult> UstPatternMatcher { get; set; }
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
