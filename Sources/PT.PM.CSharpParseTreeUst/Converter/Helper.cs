@@ -1,12 +1,8 @@
 ﻿using System;
-using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using Microsoft.CodeAnalysis;
 using PT.PM.Common.Exceptions;
-using PT.PM.Common.Nodes.Expressions;
-//using Microsoft.CodeAnalysis.FindSymbols;
-using PT.PM.Common.Symbols;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
@@ -16,29 +12,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         protected IdToken ConvertId(SyntaxToken node)
         {
             string name = node.ValueText;
-            TypeSymbol typeSymbol = null;
-
-            /*if (SemanticModel != null)
-            {
-                var symbolInfo = SemanticModel.GetSymbolInfo(node.Parent);
-                var symbol2 = SymbolFinder.FindSymbolAtPositionAsync(SemanticModel, node.Span.Start, new AdhocWorkspace()).Result;
-                var b = symbol2;
-                var asdf = b.ToString();
-
-                var typeInfo = SemanticModel.GetTypeInfo(node.Parent);
-
-                if (symbolInfo.Symbol != null)
-                {
-                    name = symbolInfo.Symbol.ToString();
-                }
-                var a = SemanticModel.GetTypeInfo(node.Parent);
-                if (typeInfo.Type != null)
-                {
-                    typeSymbol = new TypeSymbol(typeInfo.Type.ToString());
-                }
-            }*/
-
-            return new IdToken(name, node.GetTextSpan(), FileNode) { ReturnType = typeSymbol };
+            return new IdToken(name, node.GetTextSpan(), FileNode);
         }
 
         protected ModifierLiteral ConvertModifier(SyntaxToken token)
@@ -75,39 +49,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     TextSpan = node.GetTextSpan()
                 });
                 return null;
-            }
-        }
-
-        /*protected void Resolve(SyntaxToken node, Expression expression)
-        {
-            if (SemanticModel != null)
-            {
-                var symbolInfo = SemanticModel.GetSymbolInfo(node.Parent);
-                if (symbolInfo.Symbol != null)
-                {
-                    name = symbolInfo.Symbol.ToString();
-                }
-                if (expression.ReturnType == null)
-                {
-                    var typeInfo = SemanticModel.GetTypeInfo(node.Parent);
-                    if (typeInfo.Type != null)
-                    {
-                        expression.ReturnType = new TypeSymbol() { Name = typeInfo.Type.ToString() };
-                    }
-                }
-            }
-        }*/
-
-        protected void ResolveType(SyntaxNode node, TypeToken type)
-        {
-            if (SemanticModel != null)
-            {
-                var symbolInfo = SemanticModel.GetSymbolInfo(node);
-                if (symbolInfo.Symbol != null)
-                {
-                    type.TypeText = symbolInfo.Symbol.ContainingNamespace + "." + symbolInfo.Symbol.Name;
-                    type.ReturnType = new TypeSymbol(type.TypeText);
-                }
             }
         }
     }

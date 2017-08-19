@@ -10,7 +10,6 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.Common.Symbols;
 using PT.PM.Dsl;
 using PT.PM.Patterns.Nodes;
 using System;
@@ -569,10 +568,6 @@ namespace PT.PM.UstPreprocessing
                 else if (propType == typeof(Regex))
                 {
                     // ignore regex as they assignment via strings.
-                }
-                else if (propType == typeof(ISymbol))
-                {
-                    // ignore Symbols.
                 }
                 else
                 {

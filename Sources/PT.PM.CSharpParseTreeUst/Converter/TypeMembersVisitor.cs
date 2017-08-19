@@ -6,7 +6,6 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.TypeMembers;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -129,12 +128,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitParameter(ParameterSyntax node)
         {
             TypeToken type = ConvertType(base.Visit(node.Type));
-            ResolveType(node.Type, type);
             var id = ConvertId(node.Identifier);
-            if (type != null)
-            {
-                id.ReturnType = type.ReturnType;
-            }
             var result = new ParameterDeclaration(type, id, node.GetTextSpan(), FileNode);
             return result;
         }

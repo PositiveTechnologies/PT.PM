@@ -7,7 +7,5 @@ namespace PT.PM
         public ILanguageParser Parser { get; set; }
 
         public IParseTreeToUstConverter Converter { get; set; }
-
-        public ISemanticsCollector SemanticsCollector { get; set; }
     }
 }

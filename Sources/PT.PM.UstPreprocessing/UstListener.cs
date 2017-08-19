@@ -15,7 +15,6 @@ using PT.PM.Patterns.Nodes;
 using System.Reflection;
 using PT.PM.Common;
 using System.Collections;
-using PT.PM.Common.Symbols;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.UstPreprocessing
@@ -658,8 +657,7 @@ namespace PT.PM.UstPreprocessing
                         }
                     }
                 }
-                else if (propTypeInfo == typeof(TextSpan) || propTypeInfo == typeof(ISymbol) ||
-                         propTypeInfo == typeof(FileNode))
+                else if (propTypeInfo == typeof(TextSpan) || propTypeInfo == typeof(FileNode))
                 {
                 }
                 else

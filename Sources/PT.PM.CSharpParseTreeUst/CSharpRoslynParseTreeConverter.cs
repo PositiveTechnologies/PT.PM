@@ -20,8 +20,6 @@ namespace PT.PM.CSharpParseTreeUst
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public SemanticsInfo SemanticsInfo { get; set; }
-
         public CSharpRoslynParseTreeConverter()
         {
             ConvertedLanguages = MainLanguage.GetLanguageWithDependentLanguages();
@@ -38,10 +36,6 @@ namespace PT.PM.CSharpParseTreeUst
                 try
                 {
                     var visitor = new RoslynUstCommonConverterVisitor(syntaxTree, filePath);
-                    if (SemanticsInfo != null)
-                    {
-                        visitor.SemanticsInfo = (CSharpRoslynSemanticsInfo)SemanticsInfo;
-                    }
                     visitor.Logger = Logger;
                     FileNode fileNode = visitor.Walk();
                     

@@ -52,9 +52,6 @@
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
-    <Compile Include="UstSemantics.cs" />
-    <Compile Include="UstSemanticsCollector.cs" />
-    <Compile Include="UstSemanticsCollectorWalker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
