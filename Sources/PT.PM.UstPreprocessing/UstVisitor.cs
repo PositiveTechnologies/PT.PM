@@ -574,10 +574,6 @@ namespace PT.PM.UstPreprocessing
                 {
                     // ignore Symbols.
                 }
-                else if (prop.Name == nameof(UstNode.CfgNode) || prop.Name == nameof(UstNode.PdgNode))
-                {
-                    // ignore CfgNode and PdgNode.
-                }
                 else
                 {
                     throw new NotImplementedException($"Property \"{prop}\" processing is not implemented via reflection");

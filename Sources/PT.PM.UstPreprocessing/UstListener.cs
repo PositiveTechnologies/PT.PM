@@ -661,11 +661,6 @@ namespace PT.PM.UstPreprocessing
                 else if (propTypeInfo == typeof(TextSpan) || propTypeInfo == typeof(ISymbol) ||
                          propTypeInfo == typeof(FileNode))
                 {
-
-                }
-                else if (prop.Name == nameof(UstNode.CfgNode) || prop.Name == nameof(UstNode.PdgNode))
-                {
-                    // ignore CfgNode and PdgNode.
                 }
                 else
                 {

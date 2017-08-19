@@ -23,12 +23,6 @@ namespace PT.PM.Common.Nodes
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TextSpan TextSpan { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public object CfgNode { get; set; }
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public object PdgNode { get; set; }
-
         protected UstNode(TextSpan textSpan, FileNode fileNode)
             : this(textSpan)
         {
