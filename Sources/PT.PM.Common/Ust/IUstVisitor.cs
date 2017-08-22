@@ -8,11 +8,9 @@ using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.Dsl;
-using PT.PM.Patterns.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
-namespace PT.PM.UstPreprocessing
+namespace PT.PM.Common.Ust
 {
     public interface IUstVisitor<out T>
     {
@@ -131,35 +129,6 @@ namespace PT.PM.UstPreprocessing
 
         T Visit(FileNode fileNode);
         T Visit(NotImplementedNode notImplementedNode);
-
-        #endregion
-
-        #region Patterns
-
-        T Visit(PatternNode patternVars);
-        T Visit(PatternBooleanLiteral patternBooleanLiteral);
-        T Visit(PatternComment patternComment);
-        T Visit(PatternExpression patternExpression);
-        T Visit(PatternExpressionInsideExpression patternExpressionInsideExpression);
-        T Visit(PatternExpressionInsideStatement patternExpressionInsideStatement);
-        T Visit(PatternExpressions patternExpressions);
-        T Visit(PatternIdToken patternIdToken);
-        T Visit(PatternIntLiteral patternIntLiteral);
-        T Visit(PatternMultipleExpressions patternMultiExpressions);
-        T Visit(PatternMultipleStatements patternMultiStatements);
-        T Visit(PatternStatement patternStatement);
-        T Visit(PatternStatements patternStatements);
-        T Visit(PatternStringLiteral patternStringLiteral);
-        T Visit(PatternTryCatchStatement patternTryCatchStatement);
-        T Visit(PatternVarDef patternVarDef);
-        T Visit(PatternVarRef patternVarRef);
-
-        #endregion
-
-        #region Dsl
-
-        T Visit(DslNode patternExpression);
-        T Visit(LangCodeNode langCodeNode);
 
         #endregion
     }

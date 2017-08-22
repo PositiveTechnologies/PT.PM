@@ -37,6 +37,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IUstPatternVisitor.cs" />
     <Compile Include="Nodes\IAbsoluteLocationMatching.cs" />
     <Compile Include="Nodes\IRelativeLocationMatching.cs" />
     <Compile Include="PatternBase.cs" />

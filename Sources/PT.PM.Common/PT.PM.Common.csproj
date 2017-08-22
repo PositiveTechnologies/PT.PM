@@ -44,7 +44,9 @@
     <Compile Include="Exceptions\PMException.cs" />
     <Compile Include="Exceptions\PMExceptionType.cs" />
     <Compile Include="Exceptions\ReadException.cs" />
+    <Compile Include="Ust\IUstVisitor.cs" />
     <Compile Include="UstNodeRefComparer.cs" />
+    <Compile Include="Ust\UstVisitor.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />
