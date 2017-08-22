@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
 {
@@ -10,6 +11,8 @@ namespace PT.PM.Common.CodeRepository
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public string Path { get; set; }
+
+        public IEnumerable<string> Extensions { get; set; } = Enumerable.Empty<string>();
 
         public FileCodeRepository(string filePath)
         {
@@ -46,6 +49,12 @@ namespace PT.PM.Common.CodeRepository
             return System.IO.Path.GetFullPath(relativePath);
         }
 
-        public bool IsFileIgnored(string fileName) => false;
+        public bool IsFileIgnored(string fileName)
+        {
+            if (!Extensions.Any())
+                return false;
+
+            return !Extensions.Any(fileName.EndsWith);
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace PT.PM.Common.CodeRepository
 
         public string Path { get; set; }
 
-        public IEnumerable<string> Extenstions { get; set; } = LanguageExt.Extensions;
+        public IEnumerable<string> Extensions { get; set; } = LanguageExt.Extensions;
 
         public SearchOption SearchOption { get; set; } = SearchOption.AllDirectories;
 
@@ -24,7 +24,7 @@ namespace PT.PM.Common.CodeRepository
         public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<string> extensions)
         {
             Path = directoryPath;
-            Extenstions = extensions;
+            Extensions = extensions;
         }
 
         public IEnumerable<string> GetFileNames()
@@ -65,7 +65,7 @@ namespace PT.PM.Common.CodeRepository
 
         public bool IsFileIgnored(string fileName)
         {
-            return !Extenstions.Any(fileName.EndsWith);
+            return !Extensions.Any(fileName.EndsWith);
         }
     }
 }

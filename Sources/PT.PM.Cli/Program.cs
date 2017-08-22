@@ -37,7 +37,6 @@ namespace PT.PM.Cli
             bool isIndentedUst = false;
             bool isIncludeTextSpansInUst = true;
             bool isPreprocess = true;
-            bool isWaitForUserInput = false;
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
@@ -59,7 +58,6 @@ namespace PT.PM.Cli
             parser.Setup<bool>("indented-ust").Callback(param => isIndentedUst = param);
             parser.Setup<bool>("text-spans-ust").Callback(param => isIncludeTextSpansInUst = param);
             parser.Setup<bool>("preprocess-ust").Callback(param => isPreprocess = param);
-            parser.Setup<bool>('w', "wait").Callback(param => isWaitForUserInput = param);
 
             ILogger logger = new ConsoleFileLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
@@ -193,8 +191,9 @@ namespace PT.PM.Cli
                 Console.WriteLine(commandLineArguments);
                 Console.WriteLine("Command line arguments processing error: " + parsingResult.ErrorText);
             }
-            if (isWaitForUserInput)
+            if (Debugger.IsAttached)
             {
+                Console.WriteLine("Press Enter to exit");
                 Console.ReadLine();
             }
         }
