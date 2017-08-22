@@ -55,10 +55,9 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 "}"
             );
 
-            var logger = new LoggerMessageCounter();
             var workflow = new Workflow(sourceCodeRep, Language.Java, stage: Stage.Convert);
             var workflowResult = workflow.Process();
-            var ust = workflowResult.Usts[0];
+            var ust = workflowResult.Usts.First();
             var intType = new TypeToken("int");
 
             var arrayData = new List<Tuple<List<Expression>, List<Expression>>>();
@@ -90,6 +89,26 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 bool exist = ust.Root.DoesAnyDescendantMatchPredicate(node => node.Equals(arrayCreationExpression));
                 Assert.IsTrue(exist, "Test failed on " + i + " iteration.");
             }
+        }
+
+        [Test]
+        public void Convert_Char_StringLiteralWithoutQuotes()
+        {
+            var sourceCodeRep = new MemoryCodeRepository(
+                @"class foo {
+                    bar() {
+                        obj.f1 = 'a';
+                        obj.f2 = ""'b'"";
+                    }
+                }"
+            );
+
+            var workflow = new Workflow(sourceCodeRep, Language.Java, stage: Stage.Convert);
+            var workflowResult = workflow.Process();
+            var ust = workflowResult.Usts.First();
+
+            Assert.IsTrue(ust.Root.DoesAnyDescendantMatchPredicate(ustNode =>
+                ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
         }
     }
 }
