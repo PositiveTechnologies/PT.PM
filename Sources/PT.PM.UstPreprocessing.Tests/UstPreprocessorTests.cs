@@ -81,7 +81,7 @@ namespace PT.PM.UstPreprocessing.Tests
             };
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
-            UstPreprocessor preprocessor = new UstPreprocessor() { Logger = logger };
+            UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
             UstNode result = preprocessor.Preprocess(patternWithDuplicateMultiStatementsExpressions);
 
             Assert.AreEqual(1, result.GetAllDescendants().Count(child => child.NodeType == NodeType.PatternMultipleStatements));
@@ -126,7 +126,7 @@ namespace PT.PM.UstPreprocessing.Tests
 
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
-            UstPreprocessor preprocessor = new UstPreprocessor() { Logger = logger };
+            UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
             Expression[] resultSortedExpressions = ((PatternNode)preprocessor.Preprocess(patternVars))
                 .Vars.First().Values.ToArray();
 

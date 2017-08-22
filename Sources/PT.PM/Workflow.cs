@@ -144,7 +144,7 @@ namespace PT.PM
                         {
                             if (IsIncludePreprocessing)
                             {
-                                var ustPreprocessor = new UstPreprocessor() { Logger = logger };
+                                var ustPreprocessor = new UstSimplifier() { Logger = logger };
                                 stopwatch.Restart();
                                 ust = ustPreprocessor.Preprocess(ust);
                                 stopwatch.Stop();
