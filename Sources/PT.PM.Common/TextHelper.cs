@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace PT.PM.Common
 {
@@ -6,6 +7,10 @@ namespace PT.PM.Common
     {
         private const int StartLine = 1;
         private const int StartColumn = 1;
+        private const int MaxMessageLength = 200;
+        private const double TruncMessageStartRatio = 0.5;
+        private const string TruncMessageDelimiter = " ... ";
+        private const bool TruncMessageCutWords = false;
 
         public static int LineColumnToLinear(string text, int line, int column)
         {
@@ -114,6 +119,22 @@ namespace PT.PM.Common
                 i++;
             }
             return result;
+        }
+
+        public static int LastIndexOf(this string str, int index, bool whitespace)
+        {
+            int i = index;
+            while (i >= 0 && (whitespace ? char.IsWhiteSpace(str[i]) : !char.IsWhiteSpace(str[i])))
+                i--;
+            return i;
+        }
+
+        public static int FirstIndexOf(this  string str, int index, bool whitespace)
+        {
+            int i = index;
+            while (i < str.Length && (whitespace ? char.IsWhiteSpace(str[i]) : !char.IsWhiteSpace(str[i])))
+                i++;
+            return i;
         }
 
         public static string NormDirSeparator(this string path)

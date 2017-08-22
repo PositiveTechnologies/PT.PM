@@ -198,6 +198,34 @@
       <Link>Data\PlSql\comment01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_column01.sql">
+      <Link>Data\PlSql\comment_on_column01.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_column02.sql">
+      <Link>Data\PlSql\comment_on_column02.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_column03.sql">
+      <Link>Data\PlSql\comment_on_column03.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table01.sql">
+      <Link>Data\PlSql\comment_on_table01.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table02.sql">
+      <Link>Data\PlSql\comment_on_table02.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table03.sql">
+      <Link>Data\PlSql\comment_on_table03.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table04.sql">
+      <Link>Data\PlSql\comment_on_table04.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\condition01.sql">
       <Link>Data\PlSql\condition01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -276,6 +304,18 @@
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\connect_by05.sql">
       <Link>Data\PlSql\connect_by05.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\create_synonym01.sql">
+      <Link>Data\PlSql\create_synonym01.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\create_synonym02.sql">
+      <Link>Data\PlSql\create_synonym02.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\create_synonym03.sql">
+      <Link>Data\PlSql\create_synonym03.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\datetime01.sql">
@@ -810,6 +850,26 @@
       <Link>Data\PlSql\xmltable02.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\analytic_windowed_functions.sql">
+      <Link>Data\TSql\analytic_windowed_functions.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\applicaton_roles.sql">
+      <Link>Data\TSql\applicaton_roles.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\assemblies.sql">
+      <Link>Data\TSql\assemblies.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\asymmetric_keys.sql">
+      <Link>Data\TSql\asymmetric_keys.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\authorizations.sql">
+      <Link>Data\TSql\authorizations.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\control_flow.sql">
       <Link>Data\TSql\control_flow.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -822,12 +882,20 @@
       <Link>Data\TSql\dbcc.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_alter_database_mirroring.sql">
+      <Link>Data\TSql\ddl_alter_database_mirroring.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_alter_database.sql">
       <Link>Data\TSql\ddl_create_alter_database.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_drop_type.sql">
       <Link>Data\TSql\ddl_create_drop_type.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_endpoint.sql">
+      <Link>Data\TSql\ddl_create_endpoint.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_table.sql">

@@ -19,9 +19,13 @@ namespace PT.PM.Common.Nodes
                 {
                     result = new ExpressionStatement(expr);
                 }
-                else
+                else if (node != null)
                 {
                     result = new WrapperStatement(node);
+                }
+                else
+                {
+                    result = null;
                 }
             }
             return result;

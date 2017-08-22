@@ -139,7 +139,13 @@ namespace PT.PM.Dsl
 
         public UstNode VisitPatternTryCatchStatement(DslParser.PatternTryCatchStatementContext context)
         {
-            var result = new PatternTryCatchStatement(context.GetTextSpan(), null);
+            var exceptionTypes = context.literalOrPatternId().Select(token =>
+            {
+                var literal = (Token)VisitLiteralOrPatternId(token);
+                return new TypeToken(literal.TextValue, literal.TextSpan, null);
+            });
+            bool isCatchBodyEmpty = context.Ellipsis() == null;
+            var result = new PatternTryCatchStatement(exceptionTypes.ToList(), isCatchBodyEmpty, context.GetTextSpan(), null);
             return result;
         }
 

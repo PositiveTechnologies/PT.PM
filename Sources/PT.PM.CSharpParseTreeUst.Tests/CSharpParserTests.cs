@@ -22,13 +22,5 @@ namespace PT.PM.CSharpParseTreeUst.Tests
 
             Assert.AreEqual(7, logger.ErrorCount);
         }
-
-        [TestCase("WebGoat.NET-1c6cab")]
-        [TestCase("roslyn-1.1.1")]
-        public void Parse_NETProject_WithoutErrors(string projectKey)
-        {
-            TestHelper.CheckProject(TestProjects.CSharpProjects
-                .Single(p => p.Key == projectKey), Language.CSharp, Stage.Parse);
-        }
     }
 }

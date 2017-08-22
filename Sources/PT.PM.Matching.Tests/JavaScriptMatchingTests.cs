@@ -80,5 +80,19 @@ namespace PT.PM.Matching.Tests
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
         }
+
+        [Test]
+        public void Match_PhpInJsInPhp_CorrectMatching()
+        {
+            string code = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "php-js-php.php"));
+            var matchingResults = PatternMatchingUtils.GetMatchings(code, "<[GLOBALS|frame_content]>",
+                LanguageFlags.Php | LanguageFlags.JavaScript, LanguageFlags.Php | LanguageFlags.JavaScript);
+
+            Assert.AreEqual(3, matchingResults.Length);
+            Assert.IsTrue(matchingResults[0].MatchedCode.Contains("GLOBAL"));
+            Assert.AreEqual(9, matchingResults[0].BeginLine);
+            Assert.IsTrue(matchingResults[1].MatchedCode.Contains("frame_content"));
+            Assert.AreEqual(10, matchingResults[1].BeginLine);
+        }
     }
 }

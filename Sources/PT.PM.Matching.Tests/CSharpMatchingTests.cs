@@ -52,7 +52,7 @@ namespace PT.PM.Matching.Tests
                 .Where(patternDto => patternDto.Languages.Is(LanguageFlags.CSharp)).ToArray();
             foreach (var dto in patternDtos)
             {
-                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
+                Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
         }
 

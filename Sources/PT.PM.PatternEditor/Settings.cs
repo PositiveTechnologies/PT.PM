@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.IO;
+using PT.PM.JavaScriptParseTreeUst;
 
 namespace PT.PM.PatternEditor
 {
@@ -39,10 +40,12 @@ namespace PT.PM.PatternEditor
         public string SourceCodeFile { get; set; } = "";
 
         public string SourceCode { get; set; } = "";
-        
+
         public Stage SelectedStage { get; set; } = Stage.Match;
 
         public Language SourceCodeLanguage { get; set; } = Language.CSharp;
+
+        public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
         public bool IsDeveloperMode { get; set; } = true;
 

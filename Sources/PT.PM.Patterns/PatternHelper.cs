@@ -27,7 +27,9 @@ namespace PT.PM.Patterns
                 var result = new List<TextSpan>(matches.Count);
                 foreach (Match match in matches)
                 {
-                    int startIndex = isString ? match.Index + 1 : match.Index;  // TODO: Fix location in UST node.
+                    int startIndex = match.Index;
+                    if (isString && (match.Value.StartsWith("\"") || match.Value.StartsWith("'")))
+                        startIndex += 1; // TODO: Fix location in UST node.
                     result.Add(new TextSpan(startIndex, match.Length));
                 }
                 return result.ToArray();

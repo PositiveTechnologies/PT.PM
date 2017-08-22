@@ -40,6 +40,8 @@ namespace PT.PM.Prebuild
 
             string lexerFile = null;
             string parserFile = null;
+            string lexerSuperClass = null;
+            string parserSuperClass = null;
             string packageName = null;
             bool listener = false;
             string output = null;
@@ -50,6 +52,8 @@ namespace PT.PM.Prebuild
             cmdParser.Setup<string>("antlrJar").Callback(antlrJar => AntlrJarFileName = NormDirSeparator(antlrJar));
             cmdParser.Setup<bool>("listener").Callback(l => listener = l);
             cmdParser.Setup<string>("output").Callback(o => output = NormDirSeparator(o));
+            cmdParser.Setup<string>("lexerSuperClass").Callback(param => lexerSuperClass = param);
+            cmdParser.Setup<string>("parserSuperClass").Callback(param => parserSuperClass = param);
 
             var result = cmdParser.Parse(argsWithUsualSlashes);
             if (!result.HasErrors)
@@ -57,7 +61,7 @@ namespace PT.PM.Prebuild
                 GenerateStatus generateStatus = GenerateStatus.NotGenerated;
                 if (!string.IsNullOrEmpty(lexerFile))
                 {
-                    generateStatus = GenerateCode(lexerFile, packageName, true, listener, output);
+                    generateStatus = GenerateCode(lexerFile, packageName, true, listener, output, lexerSuperClass);
                 }
                 if (generateStatus == GenerateStatus.Error)
                 {
@@ -66,7 +70,7 @@ namespace PT.PM.Prebuild
 
                 if (!string.IsNullOrEmpty(parserFile))
                 {
-                    generateStatus = GenerateCode(parserFile, packageName, false, listener, output);
+                    generateStatus = GenerateCode(parserFile, packageName, false, listener, output, parserSuperClass);
                 }
                 if (generateStatus == GenerateStatus.Error)
                 {
@@ -80,7 +84,7 @@ namespace PT.PM.Prebuild
             }
         }
 
-        private static GenerateStatus GenerateCode(string grammarFileName, string packageName, bool lexer, bool listener, string output)
+        private static GenerateStatus GenerateCode(string grammarFileName, string packageName, bool lexer, bool listener, string output, string superClass)
         {
             DateTime grammarModifyDate = File.GetLastWriteTime(grammarFileName);
             grammarModifyDate = DateTime.Parse(grammarModifyDate.ToString());
@@ -188,7 +192,8 @@ namespace PT.PM.Prebuild
                 process.StartInfo.FileName = "java";
                 process.StartInfo.WorkingDirectory = grammarFileDir;
                 string visitorListenerStr = (listener ? "-listener " : "-no-listener ") + "-visitor";
-                process.StartInfo.Arguments = $@"-jar ""{AntlrJarFileName}"" -o ""{outputDirectory}"" ""{shortGrammarFileName}"" -Dlanguage=CSharp_v4_5 {visitorListenerStr} -Werror -package {packageName}";
+                string superClassParam = string.IsNullOrEmpty(superClass) ? "" : $"-DsuperClass={superClass}";
+                process.StartInfo.Arguments = $@"-jar ""{AntlrJarFileName}"" -o ""{outputDirectory}"" ""{shortGrammarFileName}"" -Dlanguage=CSharp_v4_5 {visitorListenerStr} {superClassParam} -Werror -package {packageName}";
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.UseShellExecute = false;

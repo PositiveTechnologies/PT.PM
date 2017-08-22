@@ -97,7 +97,7 @@ namespace PT.PM.Patterns.Nodes
                 return "#;";
             }
 
-            return (Not ? "<[~]>" : "") + Statement.ToString() + ";";
+            return (Not ? "<~>" : "") + Statement.ToString() + ";";
         }
     }
 }

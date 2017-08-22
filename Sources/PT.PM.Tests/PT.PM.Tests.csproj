@@ -45,7 +45,7 @@
   <ItemGroup>
     <Compile Include="UstRenderTests.cs" />
     <Compile Include="BuildersTests.cs" />
-    <Compile Include="TextSpanTests.cs" />
+    <Compile Include="TextTests.cs" />
     <Content Include="Data\TaintPoc.cs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -59,7 +59,7 @@ namespace PT.PM.Cli
             parser.Setup<bool>("text-spans-ust").Callback(param => isIncludeTextSpansInUst = param);
             parser.Setup<bool>("preprocess-ust").Callback(param => isPreprocess = param);
 
-            ILogger logger = new ConsoleLogger();
+            ILogger logger = new ConsoleFileLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
                 ? ": " + string.Join(" ", args)
                 : " are not defined.");
@@ -83,7 +83,7 @@ namespace PT.PM.Cli
                         logger.LogInfo($"PT.PM version: {version}");
                     }
 
-                    var abstractLogger = logger as AbstractLogger;
+                    var abstractLogger = logger as FileLogger;
                     if (abstractLogger != null)
                     {
                         abstractLogger.LogsDir = logsDir;
@@ -168,7 +168,7 @@ namespace PT.PM.Cli
                 {
                     if (logger != null)
                     {
-                        var abstractLogger = logger as AbstractLogger;
+                        var abstractLogger = logger as FileLogger;
                         if (abstractLogger != null)
                         {
                             abstractLogger.IsLogErrors = true;
@@ -190,6 +190,11 @@ namespace PT.PM.Cli
                 Console.WriteLine($"PT.PM version: {version}");
                 Console.WriteLine(commandLineArguments);
                 Console.WriteLine("Command line arguments processing error: " + parsingResult.ErrorText);
+            }
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("Press Enter to exit");
+                Console.ReadLine();
             }
         }
 

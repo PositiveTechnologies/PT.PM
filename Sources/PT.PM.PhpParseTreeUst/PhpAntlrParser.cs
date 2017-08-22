@@ -16,28 +16,28 @@ namespace PT.PM.UstParsing
         {
         }
 
-        protected override int CommentsChannel => PHPLexer.PhpComments;
+        protected override int CommentsChannel => PhpLexer.PhpComments;
 
-        protected override IVocabulary Vocabulary => PHPLexer.DefaultVocabulary;
+        protected override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
 
         protected override Lexer InitLexer(ICharStream inputStream)
         {
-            return new PHPLexer(inputStream);
+            return new PhpLexer(inputStream);
         }
 
         protected override Parser InitParser(ITokenStream inputStream)
         {
-            return new PHPParser(inputStream);
+            return new PhpParser(inputStream);
         }
 
         protected override ParserRuleContext Parse(Parser parser)
         {
-            return ((PHPParser)parser).htmlDocument();
+            return ((PhpParser)parser).htmlDocument();
         }
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
         {
-            return new PhpAntlrParseTree((PHPParser.HtmlDocumentContext)syntaxTree);
+            return new PhpAntlrParseTree((PhpParser.HtmlDocumentContext)syntaxTree);
         }
 
         protected override string PreprocessText(SourceCodeFile file)

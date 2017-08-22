@@ -82,7 +82,7 @@ namespace PT.PM.TestUtils
                         }
                         catch (Exception ex)
                         {
-                            Logger.LogError("Something going wrong: " + ex.Message);
+                            Logger.LogError(ex);
                         }
                         finally
                         {
@@ -212,7 +212,7 @@ namespace PT.PM.TestUtils
                 }
                 catch (IOException ex)
                 {
-                    Logger.LogError("Something going wrong during unpacking: " + ex.Message);
+                    Logger.LogError(new IOException("Something going wrong during unpacking: ", ex));
                 }
             }
             else

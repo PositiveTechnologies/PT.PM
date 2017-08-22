@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes
@@ -59,33 +60,7 @@ namespace PT.PM.Common.Nodes
                 return nodeTypeCompareResult;
             }
 
-            var childrenCountCompareResult = Children.Length - other.Children.Length;
-            if (childrenCountCompareResult != 0)
-            {
-                return childrenCountCompareResult;
-            }
-
-            for (int i = 0; i < Children.Length; i++)
-            {
-                var child = Children[i];
-                if (child == null)
-                {
-                    if (other.Children[i] != null)
-                    {
-                        return -(int)NodeType;
-                    }
-                }
-                else if (child.NodeType != NodeType.FileNode)
-                {
-                    var childCompareResult = child.CompareTo(other.Children[i]);
-                    if (childCompareResult != 0)
-                    {
-                        return childCompareResult;
-                    }
-                }
-            }
-
-            return 0;
+            return Children.CompareTo(other.Children);
         }
 
         public bool DoesAnyDescendantMatchPredicate(Func<UstNode, bool> predicate)
@@ -165,6 +140,43 @@ namespace PT.PM.Common.Nodes
                 result.Append(" ");
             }
             return result.ToString();
+        }
+    }
+
+    public static class UstNodeHelper
+    {
+        public static int CompareTo<T>(this IEnumerable<T> collection1, IEnumerable<T> collection2) where T : UstNode
+        {
+            var list1 = collection1 as IList<T> ?? new List<T>(collection1 ?? Enumerable.Empty<T>());
+            var list2 = collection2 as IList<T> ?? new List<T>(collection2 ?? Enumerable.Empty<T>());
+
+            var collectionCountCompareResult = list1.Count - list2.Count;
+            if (collectionCountCompareResult != 0)
+            {
+                return collectionCountCompareResult;
+            }
+
+            for (int i = 0; i < list1.Count; i++)
+            {
+                var element = list1[i];
+                if (element == null)
+                {
+                    if (list2[i] != null)
+                    {
+                        return -(int)list2[i].NodeType;
+                    }
+                }
+                else if (element.NodeType != NodeType.FileNode)
+                {
+                    var elementCompareResult = element.CompareTo(list2[i]);
+                    if (elementCompareResult != 0)
+                    {
+                        return elementCompareResult;
+                    }
+                }
+            }
+
+            return 0;
         }
     }
 }

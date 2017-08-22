@@ -12,7 +12,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
         }
 
-        public JavaScriptAntlrParseTree(ECMAScriptParser.ProgramContext syntaxTree)
+        public JavaScriptAntlrParseTree(JavaScriptParser.ProgramContext syntaxTree)
             : base(syntaxTree)
         {
         }

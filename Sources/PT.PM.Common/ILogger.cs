@@ -9,8 +9,6 @@ namespace PT.PM.Common
 
         ISourceCodeRepository SourceCodeRepository { get; set; }
 
-        void LogError(string message);
-
         void LogError(Exception ex);
 
         void LogInfo(string message);

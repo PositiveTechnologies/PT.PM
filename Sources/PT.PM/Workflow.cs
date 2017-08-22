@@ -68,11 +68,14 @@ namespace PT.PM
             else
             {
                 IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
-                result.TotalFilesCount = fileNames.Count();
+                if (!(fileNames is IList<string>))
+                {
+                    filesCountTask = Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
+                }
 
                 try
                 {
-                    if (ThreadCount == 1 || result.TotalFilesCount == 1)
+                    if (ThreadCount == 1 || (fileNames is IList<string> fileNamesList && fileNamesList.Count == 1))
                     {
                         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -186,7 +189,7 @@ namespace PT.PM
             {
                 workflowResult.AddProcessedFilesCount(1);
                 double progress = workflowResult.TotalFilesCount == 0
-                    ? 1
+                    ? workflowResult.TotalProcessedFilesCount
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
                 Logger.LogInfo(new ProgressEventArgs(progress, fileName));
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));

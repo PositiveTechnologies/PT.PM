@@ -476,7 +476,7 @@ namespace PT.PM.PatternEditor
 
                 if (ServiceLocator.MainWindowViewModel != null)
                 {
-                    ServiceLocator.MainWindowViewModel.UpdateMatchings();
+                    ServiceLocator.MainWindowViewModel.RunWorkflow();
                 }
             }
         }

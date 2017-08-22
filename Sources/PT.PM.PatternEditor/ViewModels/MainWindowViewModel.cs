@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using PT.PM.JavaScriptParseTreeUst;
 
 namespace PT.PM.PatternEditor
 {
@@ -41,6 +42,7 @@ namespace PT.PM.PatternEditor
         private bool fileOpened;
         private string oldSourceCode = "";
         private Stage oldEndStage;
+        private JavaScriptType oldJavaScriptType;
         private int sourceCodeSelectionStart, sourceCodeSelectionEnd;
         private LanguageDetector languageDetector = new ParserLanguageDetector();
 
@@ -173,7 +175,10 @@ namespace PT.PM.PatternEditor
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(width =>
                 {
-                    Settings.Width = width;
+                    if (window.WindowState != WindowState.Maximized)
+                    {
+                        Settings.Width = width;
+                    }
                     Settings.WindowState = window.WindowState;
                     Settings.Save();
                 });
@@ -182,8 +187,24 @@ namespace PT.PM.PatternEditor
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(height =>
                 {
-                    Settings.Height = height;
+                    if (window.WindowState != WindowState.Maximized)
+                    {
+                        Settings.Height = height;
+                    }
                     Settings.WindowState = window.WindowState;
+                    Settings.Save();
+                });
+
+            Observable.FromEventPattern<PointEventArgs>(
+                ev => window.PositionChanged += ev, ev => window.PositionChanged -= ev)
+                .Throttle(TimeSpan.FromMilliseconds(250))
+                .Subscribe(ev =>
+                {
+                    if (window.WindowState != WindowState.Maximized)
+                    {
+                        Settings.Left = window.Position.X;
+                        Settings.Top = window.Position.Y;
+                    }
                     Settings.Save();
                 });
 
@@ -192,8 +213,6 @@ namespace PT.PM.PatternEditor
                 .Subscribe(ev =>
                 {
                     ServiceLocator.PatternViewModel.SavePatterns();
-                    Settings.Left = window.Position.X;
-                    Settings.Top = window.Position.Y;
                     Settings.PatternsPanelWidth = patternsPanelColumn.Width.Value;
                     Settings.Save();
                 });
@@ -214,8 +233,7 @@ namespace PT.PM.PatternEditor
 
         private void UpdateSourceCodeCaretIndex(int caretIndex)
         {
-            int line, column;
-            TextHelper.LinearToLineColumn(caretIndex, sourceCodeTextBox.Text, out line, out column);
+            TextHelper.LinearToLineColumn(caretIndex, sourceCodeTextBox.Text, out int line, out int column);
             SourceCodeTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition)));
         }
@@ -305,6 +323,7 @@ namespace PT.PM.PatternEditor
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
                     this.RaisePropertyChanged(nameof(IsTreeVisible));
+                    this.RaisePropertyChanged(nameof(IsJavaScriptTypeVisible));
                     CheckSourceCode();
                 }
             }
@@ -327,6 +346,34 @@ namespace PT.PM.PatternEditor
                 }
             }
         }
+
+        public ObservableCollection<JavaScriptType> JavaScriptTypes
+        {
+            get
+            {
+                return new ObservableCollection<JavaScriptType>((JavaScriptType[])Enum.GetValues(typeof(JavaScriptType)));
+            }
+        }
+
+        public JavaScriptType JavaScriptType
+        {
+            get
+            {
+                return Settings.JavaScriptType;
+            }
+            set
+            {
+                if (Settings.JavaScriptType != value)
+                {
+                    Settings.JavaScriptType = value;
+                    Settings.Save();
+                    this.RaisePropertyChanged(nameof(JavaScriptType));
+                    CheckSourceCode();
+                }
+            }
+        }
+
+        public bool IsJavaScriptTypeVisible => SelectedLanguage == Language.JavaScript;
 
         public ReactiveCommand<object> OpenSourceCodeFile { get; } = ReactiveCommand.Create();
 
@@ -468,7 +515,10 @@ namespace PT.PM.PatternEditor
 
         private void CheckSourceCode()
         {
-            if (oldSourceCode != sourceCodeTextBox.Text || oldSelectedLanguage != Settings.SourceCodeLanguage || oldEndStage != Settings.SelectedStage)
+            if (oldSourceCode != sourceCodeTextBox.Text ||
+                oldSelectedLanguage != Settings.SourceCodeLanguage ||
+                oldEndStage != Settings.SelectedStage ||
+                oldJavaScriptType != Settings.JavaScriptType)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
@@ -476,15 +526,16 @@ namespace PT.PM.PatternEditor
                 Settings.SourceCode = !string.IsNullOrEmpty(OpenedFileName) ? "" : sourceCode;
                 Settings.Save();
 
-                UpdateMatchings();
+                RunWorkflow();
 
                 oldSourceCode = sourceCodeTextBox.Text;
                 oldSelectedLanguage = Settings.SourceCodeLanguage;
                 oldEndStage = Settings.SelectedStage;
+                oldJavaScriptType = Settings.JavaScriptType;
             }
         }
 
-        internal void UpdateMatchings()
+        internal void RunWorkflow()
         {
             sourceCodeLogger.Clear();
 
@@ -501,6 +552,11 @@ namespace PT.PM.PatternEditor
             var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage);
             workflow.IsIncludeIntermediateResult = true;
             workflow.Logger = sourceCodeLogger;
+            if (SelectedLanguage == Language.JavaScript)
+            {
+                var javaScriptParser = workflow.GetParser(SelectedLanguage) as JavaScriptAntlrParser;
+                javaScriptParser.JavaScriptType = JavaScriptType;
+            }
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults
                 .ToDto(workflow.SourceCodeRepository)
@@ -511,7 +567,7 @@ namespace PT.PM.PatternEditor
                 AntlrParseTree antlrParseTree = workflowResult.ParseTrees.FirstOrDefault() as AntlrParseTree;
                 if (antlrParseTree != null && antlrParseTree.SyntaxTree != null)
                 {
-                    Antlr4.Runtime.Parser antlrParser = (workflow.ParserConverterSets[antlrParseTree.SourceLanguage].Parser as AntlrParser).Parser;
+                    Antlr4.Runtime.Parser antlrParser = (workflow.GetParser(antlrParseTree.SourceLanguage) as AntlrParser).Parser;
                     string tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
                     string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
 

@@ -23,7 +23,9 @@ namespace PT.PM.UstPreprocessing.Tests
                 "<?php\r\n" +
                 "echo 'Hello ' . 'World' . '!';\r\n" +
                 "echo 60 * 60 * 24;\r\n" +
-                "echo 6 + 6 * 6;"
+                "echo 6 + 6 * 6;\r\n" +
+                "$a = -3;\r\n" +
+                "$b = -3.1;"
             );
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(sourceCodeRep, Language.Php, stage: Stage.Preprocess);
@@ -34,6 +36,8 @@ namespace PT.PM.UstPreprocessing.Tests
             Assert.IsTrue(logger.ContainsDebugMessagePart("Hello World!"));
             Assert.IsTrue(logger.ContainsDebugMessagePart("86400"));
             Assert.IsTrue(logger.ContainsDebugMessagePart("42"));
+            Assert.IsTrue(logger.ContainsDebugMessagePart("-3"));
+            Assert.IsTrue(logger.ContainsDebugMessagePart("-3.1"));
         }
 
         [Test]
@@ -88,15 +92,22 @@ namespace PT.PM.UstPreprocessing.Tests
             Assert.AreEqual(1, result.GetAllDescendants().Count(child => child.NodeType == NodeType.PatternMultipleExpressions));
         }
 
-        [Ignore("TODO: fix it. Actually I does not know why it failed in TeamCity.")]
-        public void Sort_PatternVars()
+        [Test]
+        public void Sort_PatternVars_CorrectOrder()
         {
+            if (Helper.IsRunningOnLinux)
+            {
+                Assert.Ignore("TODO: fix failed unit-test on mono (Linux)");
+            }
+
             var unsortedExpressions = new List<Expression>()
             {
+                new PatternExpression(new StringLiteral { Text = "42" }, false),
                 new IntLiteral { Value = 100 },
                 new IntLiteral { Value = 42 },
                 new IntLiteral { Value = 0 },
                 new StringLiteral { Text = "42" },
+                new PatternExpression(new StringLiteral { Text = "42" }, true),
                 new StringLiteral { Text = "Hello World!" },
                 new IdToken { Id = "testId" },
                 new IdToken { Id = "42" },
@@ -105,13 +116,15 @@ namespace PT.PM.UstPreprocessing.Tests
             var expectedSortedExpressions = new List<Expression>
             {
                 new StringLiteral { Text = "42" },
-                new PatternExpression(new StringLiteral { Text = "42" }, true),
                 new StringLiteral { Text = "Hello World!" },
                 new IdToken { Id = "42" },
                 new IdToken { Id = "testId" },
                 new IntLiteral { Value = 0 },
                 new IntLiteral { Value = 42 },
                 new IntLiteral { Value = 100 },
+                new PatternExpression(new StringLiteral { Text = "42" }, false),
+                new PatternExpression(new StringLiteral { Text = "42" }, true),
+                new PatternExpression(new StringLiteral { Text = "42" }, true),
             };
             var patternVarDef = new PatternVarDef
             {
