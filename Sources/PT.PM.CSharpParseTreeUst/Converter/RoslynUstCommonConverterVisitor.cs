@@ -329,6 +329,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var nameLiteral = ConvertId(node.Identifier);
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
+            var bases = node
+                .BaseList
+                .Types
+                .Select(x => x.Type)
+                .OfType<IdentifierNameSyntax>()
+                .Select(x => ConvertId(x.Identifier))
+                .ToList();
 
             var result = new TypeDeclaration(
                 typeTypeToken,
@@ -337,7 +344,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 node.GetTextSpan(),
                 FileNode)
             {
-                Modifiers = modifiers
+                Modifiers = modifiers,
+                BaseTypes = bases,
             };
             return result;
         }
