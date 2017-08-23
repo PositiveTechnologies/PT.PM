@@ -16,9 +16,6 @@ namespace PT.PM.CSharpParseTreeUst
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public SemanticsInfo SemanticsInfo { get; set; }
-
-
         public AspxConverter()
         {
             ConvertedLanguages = MainLanguage.GetLanguageWithDependentLanguages();

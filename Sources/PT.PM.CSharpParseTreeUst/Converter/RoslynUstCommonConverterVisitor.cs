@@ -17,25 +17,11 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
     public partial class RoslynUstCommonConverterVisitor : CSharpSyntaxVisitor<UstNode>
     {
-        private CSharpRoslynSemanticsInfo semanticsInfo;
-
         protected SyntaxNode Root;
-
-        protected SemanticModel SemanticModel;
 
         protected FileNode FileNode { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public CSharpRoslynSemanticsInfo SemanticsInfo
-        {
-            get { return semanticsInfo; }
-            set
-            {
-                semanticsInfo = value;
-                //SemanticModel = semanticsInfo.Compilation.GetSemanticModel(Root, true);
-            }
-        }
 
         public RoslynUstCommonConverterVisitor(SyntaxTree syntaxTree, string filePath)
         {
@@ -351,8 +337,21 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 node.GetTextSpan(),
                 FileNode)
             {
-                Modifiers = modifiers
+                Modifiers = modifiers,
             };
+
+            if(node.BaseList?.Types != null)
+            {
+                var bases = node
+                    .BaseList
+                    .Types
+                    .Select(x => x.Type)
+                    .OfType<IdentifierNameSyntax>()
+                    .Select(x => ConvertId(x.Identifier))
+                    .ToList();
+                result.BaseTypes = bases;
+            }
+
             return result;
         }
 

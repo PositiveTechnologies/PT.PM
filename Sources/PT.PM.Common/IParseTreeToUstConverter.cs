@@ -12,7 +12,5 @@ namespace PT.PM.Common
         LanguageFlags ConvertedLanguages { get; set; }
 
         Ust.Ust Convert(ParseTree langParseTree);
-
-        SemanticsInfo SemanticsInfo { get; set; }
     }
 }

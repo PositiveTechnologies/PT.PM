@@ -45,7 +45,10 @@
     <Compile Include="Exceptions\PMException.cs" />
     <Compile Include="Exceptions\PMExceptionType.cs" />
     <Compile Include="Exceptions\ReadException.cs" />
+    <Compile Include="Ust\IUstVisitor.cs" />
     <Compile Include="TextTruncater.cs" />
+    <Compile Include="UstNodeRefComparer.cs" />
+    <Compile Include="Ust\UstVisitor.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />
@@ -59,7 +62,6 @@
     <Compile Include="DotFormatHelper.cs" />
     <Compile Include="Exceptions\PreprocessingException.cs" />
     <Compile Include="INodeRenderer.cs" />
-    <Compile Include="ISemanticsCollector.cs" />
     <Compile Include="Json\UstJsonConverter.cs" />
     <Compile Include="UstNodeSerializationFormat.cs" />
     <Compile Include="Ust\Ust.cs" />
@@ -149,10 +151,6 @@
     <Compile Include="Exceptions\ParsingException.cs" />
     <Compile Include="Json\TextSpanResolver.cs" />
     <Compile Include="ReflectionCache.cs" />
-    <Compile Include="Symbols\ISymbol.cs" />
-    <Compile Include="SemanticsInfo.cs" />
-    <Compile Include="Symbols\MethodSymbol.cs" />
-    <Compile Include="Symbols\TypeSymbol.cs" />
     <Compile Include="TextSpan.cs" />
     <Compile Include="Nodes\Tokens\Token.cs" />
     <Compile Include="Nodes\Tokens\BinaryOperator.cs" />

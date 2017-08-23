@@ -34,7 +34,6 @@ namespace PT.PM
                 case Language.CSharp:
                     result.Parser = new CSharpRoslynParser();
                     result.Converter = new CSharpRoslynParseTreeConverter();
-                    result.SemanticsCollector = new CSharpRoslynSemanticsCollector();
                     break;
                 case Language.Java:
                     result.Parser = new JavaAntlrParser();

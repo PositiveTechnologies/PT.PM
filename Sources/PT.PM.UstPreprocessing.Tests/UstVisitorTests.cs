@@ -1,15 +1,13 @@
-﻿using PT.PM.UstPreprocessing;
+﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Ust;
+using PT.PM.Patterns;
 using PT.PM.TestUtils;
-using PT.PM.Patterns.Nodes;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.UstPreprocessing.Tests
 {
@@ -19,18 +17,13 @@ namespace PT.PM.UstPreprocessing.Tests
         [Test]
         public void Check_IUstVisitor_AllVisitMethodsExists()
         {
-            MethodInfo[] iUstVisitorMethods = typeof(IUstVisitor<>).GetMethods();
-            IEnumerable<Type> allUstNodeTypes = ListenerVisitorUtils.GetAssemblyUstNodeTypes(typeof(UstNode), typeof(PatternVarDef));
-            foreach (Type type in allUstNodeTypes)
-            {
-                Assert.IsTrue(iUstVisitorMethods
-                    .FirstOrDefault(methodInfo =>
-                    {
-                        var parameters = methodInfo.GetParameters();
-                        return parameters.Length > 0 && parameters[0].ParameterType == type;
-                    }) != null,
-                    $"Visitor for Type {type} is not exists");
-            }
+            CheckVisitorMethods(typeof(IUstVisitor<>));
+        }
+
+        [Test]
+        public void Check_IUstPatternVisitor_AllVisitMethodsExists()
+        {
+            CheckVisitorMethods(typeof(IUstPatternVisitor<>));
         }
 
         [Test]
@@ -54,6 +47,28 @@ namespace PT.PM.UstPreprocessing.Tests
             foreach (var descendant in descendantsExceptFirst)
             {
                 Assert.IsNotNull(descendant.Parent);
+            }
+        }
+
+        private static IEnumerable<Type> GetAssemblyUstNodeTypes(params Type[] types)
+        {
+            return types.SelectMany(type => Assembly.GetAssembly(type).GetTypes())
+                .Where(t => t.IsSubclassOf(typeof(UstNode)) && !t.IsAbstract);
+        }
+
+        private static void CheckVisitorMethods(Type visitorType)
+        {
+            MethodInfo[] iUstVisitorMethods = visitorType.GetMethods();
+            IEnumerable<Type> allUstNodeTypes = GetAssemblyUstNodeTypes(visitorType);
+            foreach (Type type in allUstNodeTypes)
+            {
+                Assert.IsTrue(iUstVisitorMethods
+                    .FirstOrDefault(methodInfo =>
+                    {
+                        var parameters = methodInfo.GetParameters();
+                        return parameters.Length > 0 && parameters[0].ParameterType == type;
+                    }) != null,
+                    $"Visitor for Type {type} is not exists");
             }
         }
     }

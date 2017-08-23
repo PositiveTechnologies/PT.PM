@@ -2,12 +2,10 @@
 using PT.PM.Common.Ust;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens;
 using Antlr4.Runtime;
 using System;
 using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace PT.PM.AntlrUtils
@@ -21,8 +19,6 @@ namespace PT.PM.AntlrUtils
         public LanguageFlags ConvertedLanguages { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public SemanticsInfo SemanticsInfo { get; set; }
 
         public AntlrConverter()
         {

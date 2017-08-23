@@ -18,7 +18,7 @@ using PT.PM.UstPreprocessing;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<Stage, WorkflowResult, Pattern, MatchingResult>
+    public class Workflow: WorkflowBase<Ust, Stage, WorkflowResult, Pattern, MatchingResult>
     {
         public Workflow()
             : this(null, LanguageExt.AllLanguages)
@@ -147,7 +147,7 @@ namespace PT.PM
                         {
                             if (IsIncludePreprocessing)
                             {
-                                var ustPreprocessor = new UstPreprocessor() { Logger = logger };
+                                var ustPreprocessor = new UstSimplifier() { Logger = logger };
                                 stopwatch.Restart();
                                 ust = ustPreprocessor.Preprocess(ust);
                                 stopwatch.Stop();

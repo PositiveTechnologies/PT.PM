@@ -70,7 +70,7 @@ namespace PT.PM.Dsl
             DslNode dslNode = UstConverter.Convert(patternContext);
             UstNode result = dslNode.Collection.First();
             ResultPatternVars = dslNode.PatternVarDefs;
-            var preprocessor = new UstPreprocessor();
+            var preprocessor = new UstSimplifier();
             preprocessor.Logger = Logger;
             result = new PatternNode(result, dslNode.PatternVarDefs);
             result = preprocessor.Preprocess(result);

@@ -1,11 +1,8 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.UstPreprocessing.Tests
 {

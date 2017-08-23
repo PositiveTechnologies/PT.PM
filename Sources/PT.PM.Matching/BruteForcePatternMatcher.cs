@@ -10,7 +10,7 @@ using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {
-    public class BruteForcePatternMatcher : IUstPatternMatcher<Pattern, MatchingResult>
+    public class BruteForcePatternMatcher : IUstPatternMatcher<Ust, Pattern, MatchingResult>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
