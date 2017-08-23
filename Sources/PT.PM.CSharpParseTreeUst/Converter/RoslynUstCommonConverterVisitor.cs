@@ -340,7 +340,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 Modifiers = modifiers,
             };
 
-            if(node.BaseList != null && node.BaseList.Types != null)
+            if(node.BaseList?.Types != null)
             {
                 var bases = node
                     .BaseList
