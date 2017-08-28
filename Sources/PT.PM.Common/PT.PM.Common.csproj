@@ -61,7 +61,6 @@
     <Compile Include="ConverterHelper.cs" />
     <Compile Include="DotFormatHelper.cs" />
     <Compile Include="Exceptions\PreprocessingException.cs" />
-    <Compile Include="INodeRenderer.cs" />
     <Compile Include="Json\UstJsonConverter.cs" />
     <Compile Include="UstNodeSerializationFormat.cs" />
     <Compile Include="Ust\Ust.cs" />
@@ -113,7 +112,6 @@
     <Compile Include="Nodes\Tokens\Literals\ModifierLiteral.cs" />
     <Compile Include="Nodes\Tokens\Modifier.cs" />
     <Compile Include="Nodes\Tokens\Literals\UnaryOperatorLiteral.cs" />
-    <Compile Include="Nodes\Node.cs" />
     <Compile Include="Nodes\NotImplementedNode.cs" />
     <Compile Include="Nodes\Specific\AsExpression.cs" />
     <Compile Include="Nodes\Specific\CheckedExpression.cs" />

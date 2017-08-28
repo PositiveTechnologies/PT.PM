@@ -7,8 +7,6 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public class JavaScriptAntlrParser: AntlrParser
     {
-        private bool useStrict = false;
-
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
         public override Language Language => Language.JavaScript;

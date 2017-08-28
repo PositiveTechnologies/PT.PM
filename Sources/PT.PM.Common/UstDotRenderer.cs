@@ -4,9 +4,10 @@ using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using System.Text;
+
 namespace PT.PM.Common
 {
-    public class UstDotRenderer: INodeRenderer<UstNode>
+    public class UstDotRenderer
     {
         private StringBuilder vertexesString;
         private StringBuilder edgesString;

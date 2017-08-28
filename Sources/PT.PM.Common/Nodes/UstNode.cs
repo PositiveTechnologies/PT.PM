@@ -6,11 +6,14 @@ using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes
 {
-    public abstract class UstNode : Node, IComparable<UstNode>, IEquatable<UstNode>
+    public abstract class UstNode : IComparable<UstNode>, IEquatable<UstNode>
     {
         private UstNode[] children;
 
         public abstract NodeType NodeType { get; }
+
+        [JsonIgnore]
+        public FileNode FileNode { get; set; }
 
         [JsonIgnore]
         public UstNode Parent { get; set; }
