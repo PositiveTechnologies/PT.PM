@@ -41,6 +41,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
         public override UstNode[] GetChildren()
         {
             var result = new List<UstNode>(base.GetChildren());
+            result.Add(ReturnType);
+            result.AddRange(Parameters);
             result.Add(Body);
             return result.ToArray();
         }
