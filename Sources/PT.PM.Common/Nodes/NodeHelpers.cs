@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 
@@ -63,6 +62,7 @@ namespace PT.PM.Common.Nodes
             }
             return result;
         }
+
         public static NamespaceDeclaration CreateRootNamespace(this IEnumerable<UstNode> members, Language language, FileNode fileNode)
         {
             return new NamespaceDeclaration(new StringLiteral("root"), members, language, members.GetTextSpan(), fileNode);
@@ -76,6 +76,18 @@ namespace PT.PM.Common.Nodes
         public static NamespaceDeclaration CreateLanguageNamespace(this UstNode member, Language language, FileNode fileNode)
         {
             return new NamespaceDeclaration(new StringLiteral(language.ToString()), new UstNode[] { member }, language, member.TextSpan, fileNode);
+        }
+
+        public static void FillParents(this UstNode root)
+        {
+            foreach (var child in root.Children)
+            {
+                if (child != null)
+                {
+                    child.Parent = root;
+                    FillParents(child);
+                }
+            }
         }
     }
 }

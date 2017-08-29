@@ -64,9 +64,6 @@
     <Compile Include="Json\UstJsonConverter.cs" />
     <Compile Include="UstNodeSerializationFormat.cs" />
     <Compile Include="Ust\Ust.cs" />
-    <Compile Include="Ust\UstType.cs" />
-    <Compile Include="Ust\MostCommonUst.cs" />
-    <Compile Include="Ust\MostDetailUst.cs" />
     <Compile Include="CodeRepository\FileCodeRepository.cs" />
     <Compile Include="CodeRepository\FilesAggregatorCodeRepository.cs" />
     <Compile Include="Exceptions\ConversionException.cs" />

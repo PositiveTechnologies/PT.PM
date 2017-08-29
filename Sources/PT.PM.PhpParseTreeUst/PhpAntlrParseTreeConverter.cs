@@ -16,18 +16,9 @@ namespace PT.PM.ParseTreeUst
         protected override FileNode CreateVisitorAndVisit(IList<IToken> tokens, ParserRuleContext ruleContext,
             string filePath, string fileData, ILogger logger)
         {
-            PhpAntlrParseTreeConverterVisitor visitor;
-            if (UstType == UstType.Common)
-            {
-                visitor = new PhpAntlrParseTreeConverterVisitor(filePath, fileData);
-                visitor.Tokens = tokens;
-                visitor.ConvertedLanguages = ConvertedLanguages;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
+            var visitor = new PhpAntlrParseTreeConverterVisitor(filePath, fileData);
+            visitor.Tokens = tokens;
+            visitor.ConvertedLanguages = ConvertedLanguages;
             visitor.Logger = logger;
             FileNode fileNode = (FileNode)visitor.Visit(ruleContext);
             return fileNode;

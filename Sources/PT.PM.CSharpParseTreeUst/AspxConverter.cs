@@ -8,8 +8,6 @@ namespace PT.PM.CSharpParseTreeUst
 {
     public class AspxConverter: IParseTreeToUstConverter
     {
-        public UstType UstType { get; set; }
-
         public Language MainLanguage => Language.Aspx;
 
         public LanguageFlags ConvertedLanguages { get; set; }
@@ -29,12 +27,12 @@ namespace PT.PM.CSharpParseTreeUst
             try
             {
                 var converter = new AspxToCsConverter(aspxParseTree.FileName, aspxParseTree.FileData);
-                result = new MostCommonUst((FileNode)aspxParseTree.Root.Accept(converter), ConvertedLanguages);
+                result = new Ust((FileNode)aspxParseTree.Root.Accept(converter), ConvertedLanguages);
             }
             catch (Exception ex)
             {
                 Logger.LogError(new ConversionException(aspxParseTree.FileName, ex));
-                result = new MostCommonUst();
+                result = new Ust();
             }
 
             result.FileName = langParseTree.FileName;

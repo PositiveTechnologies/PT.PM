@@ -5,15 +5,12 @@ using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
 using PT.PM.CSharpParseTreeUst.RoslynUstVisitor;
 using Microsoft.CodeAnalysis;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst
 {
     public class CSharpRoslynParseTreeConverter : IParseTreeToUstConverter
     {
-        public UstType UstType { get; set; }
-
         public Language MainLanguage => Language.CSharp;
 
         public LanguageFlags ConvertedLanguages { get; set; }
@@ -39,19 +36,20 @@ namespace PT.PM.CSharpParseTreeUst
                     visitor.Logger = Logger;
                     FileNode fileNode = visitor.Walk();
                     
-                    result = new MostCommonUst(fileNode, ConvertedLanguages);
+                    result = new Ust(fileNode, ConvertedLanguages);
                     result.Comments = roslynParseTree.Comments.Select(c =>
                         new Common.Nodes.Tokens.Literals.CommentLiteral(c.ToString(), c.GetTextSpan(), fileNode)).ToArray();
+                    result.Root.FillParents();
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError(new ConversionException(filePath, ex));
-                    result = new MostCommonUst();
+                    result = new Ust();
                 }
             }
             else
             {
-                result = new MostCommonUst();
+                result = new Ust();
             }
             result.FileName = langParseTree.FileName;
 

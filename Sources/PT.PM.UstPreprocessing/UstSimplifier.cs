@@ -29,7 +29,7 @@ namespace PT.PM.UstPreprocessing
         {
             Ust result;
             fileNode = null;
-            result = ust.Type == UstType.Common ? (Ust)new MostCommonUst() : (Ust)new MostDetailUst();
+            result = new Ust();
             result.FileName = ust.FileName;
             result.SourceLanguages = ust.SourceLanguages;
             result.Root = (FileNode)Visit(ust.Root);

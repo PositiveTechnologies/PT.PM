@@ -12,8 +12,6 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrConverter : IParseTreeToUstConverter
     {
-        public UstType UstType { get; set; }
-
         public abstract Language MainLanguage { get; }
 
         public LanguageFlags ConvertedLanguages { get; set; }
@@ -40,7 +38,7 @@ namespace PT.PM.AntlrUtils
                 try
                 {
                     fileNode = CreateVisitorAndVisit(antlrParseTree.Tokens, tree, filePath, langParseTree.FileData, Logger);
-                    result = new MostCommonUst(fileNode, ConvertedLanguages);
+                    result = new Ust(fileNode, ConvertedLanguages);
                 }
                 catch (Exception ex)
                 {
@@ -48,7 +46,7 @@ namespace PT.PM.AntlrUtils
 
                     if (result == null)
                     {
-                        result = new MostCommonUst();
+                        result = new Ust();
                         result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
                     }
                 }
@@ -56,7 +54,7 @@ namespace PT.PM.AntlrUtils
             else
             {
                 fileNode = new FileNode(filePath, langParseTree.FileData);
-                result = new MostCommonUst() { Root = fileNode };
+                result = new Ust() { Root = fileNode };
                 result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
             }
             result.FileName = langParseTree.FileName;

@@ -21,17 +21,8 @@ namespace PT.PM.JavaParseTreeUst
         protected override FileNode CreateVisitorAndVisit(IList<IToken> tokens, ParserRuleContext ruleContext,
             string filePath, string fileData, ILogger logger)
         {
-            JavaAntlrUstConverterVisitor visitor;
-            if (UstType == UstType.Common)
-            {
-                visitor = new JavaAntlrUstConverterVisitor(filePath, fileData);
-                visitor.Tokens = tokens;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
+            var visitor = new JavaAntlrUstConverterVisitor(filePath, fileData);
+            visitor.Tokens = tokens;
             visitor.Logger = logger;
             FileNode fileNode = (FileNode)visitor.Visit(ruleContext);
             return fileNode;

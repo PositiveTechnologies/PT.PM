@@ -15,17 +15,8 @@ namespace PT.PM.SqlParseTreeUst
         protected override FileNode CreateVisitorAndVisit(IList<IToken> tokens, ParserRuleContext ruleContext,
             string filePath, string fileData, ILogger logger)
         {
-            PlSqlConverterVisitor visitor;
-            if (UstType == Common.Ust.UstType.Common)
-            {
-                visitor = new PlSqlConverterVisitor(filePath, fileData);
-                visitor.Tokens = tokens;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
+            var visitor = new PlSqlConverterVisitor(filePath, fileData);
+            visitor.Tokens = tokens;
             visitor.Logger = logger;
             var fileNode = (FileNode)visitor.Visit((PlSqlParser.Compilation_unitContext)ruleContext);
             return fileNode;

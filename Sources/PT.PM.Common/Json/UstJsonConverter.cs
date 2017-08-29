@@ -78,16 +78,7 @@ namespace PT.PM.Common
                 }
                 else if (objectType == typeof(Ust.Ust))
                 {
-                    var obj = jObject[nameof(Type)];
-                    var astType = (UstType) Enum.Parse(typeof(UstType), obj.ToString());
-                    if (astType == UstType.Common)
-                    {
-                        target = new MostCommonUst();
-                    }
-                    else
-                    {
-                        target = new MostDetailUst();
-                    }
+                    target = new Ust.Ust();
                 }
                 else
                 {
