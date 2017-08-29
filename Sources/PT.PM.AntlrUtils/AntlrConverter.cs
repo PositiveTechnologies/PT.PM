@@ -39,6 +39,7 @@ namespace PT.PM.AntlrUtils
                 {
                     fileNode = CreateVisitorAndVisit(antlrParseTree.Tokens, tree, filePath, langParseTree.FileData, Logger);
                     result = new Ust(fileNode, ConvertedLanguages);
+                    result.Root.FillParents();
                 }
                 catch (Exception ex)
                 {
