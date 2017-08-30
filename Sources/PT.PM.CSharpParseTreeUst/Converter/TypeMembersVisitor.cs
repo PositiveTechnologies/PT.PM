@@ -108,6 +108,24 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             var id = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan());
+
+            TypeToken returnType = null;
+            if(node.ReturnType != null)
+            {
+                if (node.ReturnType is PredefinedTypeSyntax predifinedReturnType)
+                {
+                    var typeId = predifinedReturnType.Keyword.Text;
+                    if (typeId != null)
+                    {
+                        returnType = new TypeToken(typeId, node.ReturnType.GetTextSpan(), FileNode);
+                    }
+                }
+                else
+                {
+                    returnType = new TypeToken(node.ReturnType.ToString(), node.ReturnType.GetTextSpan(), FileNode);
+                }
+            }
+
             var parameters = node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p)).ToArray();
             var statement = node.Body == null ? null : (BlockStatement)VisitBlock(node.Body); // abstract method if null
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
@@ -118,7 +136,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 statement,
                 node.GetTextSpan())
             {
-                Modifiers = modifiers
+                Modifiers = modifiers,
+                ReturnType = returnType,
             };
             return result;
         }
