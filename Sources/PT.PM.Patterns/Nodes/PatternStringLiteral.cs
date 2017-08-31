@@ -28,17 +28,17 @@ namespace PT.PM.Patterns.Nodes
         }
 
         public PatternStringLiteral(string regexString, TextSpan textSpan)
-            : base(regexString, textSpan, null)
+            : base(regexString, textSpan)
         {
         }
 
         public PatternStringLiteral(string regexString)
-            : base(regexString, default(TextSpan), null)
+            : base(regexString, default(TextSpan))
         {
         }
 
         public PatternStringLiteral()
-            : base(@".*", default(TextSpan), null)
+            : base(@".*", default(TextSpan))
         {
         }
 

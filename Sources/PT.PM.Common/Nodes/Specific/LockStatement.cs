@@ -11,8 +11,8 @@ namespace PT.PM.Common.Nodes.Specific
 
         public Statement Embedded { get; set; }
 
-        public LockStatement(Expression lockExpression, Statement embedded, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public LockStatement(Expression lockExpression, Statement embedded, TextSpan textSpan)
+            : base(textSpan)
         {
             Lock = lockExpression;
             Embedded = embedded;

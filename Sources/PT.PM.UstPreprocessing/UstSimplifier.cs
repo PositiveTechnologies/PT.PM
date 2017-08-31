@@ -194,7 +194,7 @@ namespace PT.PM.UstPreprocessing
             if (result == null)
             {
                 result = new BinaryOperatorExpression(leftExpression, op, rightExpression,
-                    new TextSpan(binaryOperatorExpression.TextSpan), binaryOperatorExpression.Root);
+                    new TextSpan(binaryOperatorExpression.TextSpan));
                 leftExpression.Parent = result;
                 rightExpression.Parent = result;
                 op.Parent = result;
@@ -209,7 +209,7 @@ namespace PT.PM.UstPreprocessing
             Expression condition = (Expression)Visit(ifElseStatement.Condition);
             BlockStatement trueStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.TrueStatement));
             BlockStatement falseStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.FalseStatement));
-            var result = new IfElseStatement(condition, trueStatement, ifElseStatement.TextSpan, ifElseStatement.Root);
+            var result = new IfElseStatement(condition, trueStatement, ifElseStatement.TextSpan);
             result.Condition.Parent = result;
             result.TrueStatement.Parent = result;
             if (result.FalseStatement != null)
@@ -269,7 +269,7 @@ namespace PT.PM.UstPreprocessing
             }
             else
             {
-                result = new BlockStatement(new Statement[] { statement }, statement.TextSpan, statement.Root);
+                result = new BlockStatement(new Statement[] { statement }, statement.TextSpan);
                 statement.Parent = result;
             }
             return result;

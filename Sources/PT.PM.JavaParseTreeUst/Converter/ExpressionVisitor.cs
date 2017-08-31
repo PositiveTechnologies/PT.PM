@@ -33,13 +33,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.LPAREN: // '(' type ')' expression
                         var type = (TypeToken)Visit(context.typeType());
                         target = (Expression)Visit(context.expression(0));
-                        result = new CastExpression(type, target, textSpan, root);
+                        result = new CastExpression(type, target, textSpan);
                         return result;
                     default: // unary operator ('+', '-', '++', '--', '~', '!')
                         UnaryOperator op = UnaryOperatorLiteral.PrefixTextUnaryOperator[child0Terminal.GetText()];
-                        var opLiteral = new UnaryOperatorLiteral(op, child0Terminal.GetTextSpan(), root);
+                        var opLiteral = new UnaryOperatorLiteral(op, child0Terminal.GetTextSpan());
                         target = (Expression)Visit(context.expression(0));
-                        result = new UnaryOperatorExpression(opLiteral, target, textSpan, root);
+                        result = new UnaryOperatorExpression(opLiteral, target, textSpan);
                         return result;
                 }
             }
@@ -55,7 +55,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var id = context.IDENTIFIER();
                         if (id != null)
                         {
-                            result = new MemberReferenceExpression(target, (IdToken)Visit(id), textSpan, root);
+                            result = new MemberReferenceExpression(target, (IdToken)Visit(id), textSpan);
                             return result;
                         }
 
@@ -81,9 +81,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.LBRACK: // '['
                         target = (Expression)Visit(context.expression(0));
                         Expression expr = (Expression)Visit(context.expression(1));
-                        args = new ArgsNode(new Expression[] { expr }, expr.TextSpan, root);
+                        args = new ArgsNode(new Expression[] { expr }, expr.TextSpan);
 
-                        result = new IndexerExpression(target, args, textSpan, root);
+                        result = new IndexerExpression(target, args, textSpan);
                         return result;
 
                     case JavaParser.LPAREN: // '('
@@ -100,7 +100,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                             args = new ArgsNode();
                         }
 
-                        result = new InvocationExpression(target, args, textSpan, root);
+                        result = new InvocationExpression(target, args, textSpan);
                         return result;
 
                     case JavaParser.INSTANCEOF: // x instanceof y -> (y)x != null
@@ -108,9 +108,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var type = (TypeToken)Visit(context.typeType());
                         result = new BinaryOperatorExpression
                         {
-                            Left = new CastExpression(type, expression, context.GetTextSpan(), root),
-                            Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual, default(TextSpan), root),
-                            Right = new NullLiteral(default(TextSpan), root),
+                            Left = new CastExpression(type, expression, context.GetTextSpan()),
+                            Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual, default(TextSpan)),
+                            Right = new NullLiteral(default(TextSpan)),
                             TextSpan = context.GetTextSpan(),
                             Root = root
                         };
@@ -121,7 +121,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var trueExpr = (Expression)Visit(context.expression(1));
                         var falseExpr = (Expression)Visit(context.expression(2));
 
-                        result = new ConditionalExpression(condition, trueExpr, falseExpr, textSpan, root);
+                        result = new ConditionalExpression(condition, trueExpr, falseExpr, textSpan);
                         return result;
 
                     default: // binary operator
@@ -135,7 +135,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                             if (text == "=")
                             {
-                                result = new AssignmentExpression(left, right, textSpan, root);
+                                result = new AssignmentExpression(left, right, textSpan);
                             }
                             else if (BinaryOperatorLiteral.TextBinaryAssignmentOperator.Contains(text))
                             {
@@ -150,7 +150,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                                 }
 
                                 result = ConverterHelper.ConvertToAssignmentExpression(left, op, child1Terminal.GetTextSpan(), right,
-                                    context.GetTextSpan(), root);
+                                    context.GetTextSpan());
                             }
                             else
                             {
@@ -163,18 +163,18 @@ namespace PT.PM.JavaParseTreeUst.Converter
                                 {
                                     op = BinaryOperatorLiteral.TextBinaryOperator[text];
                                 }
-                                var opLiteral = new BinaryOperatorLiteral(op, child1Terminal.GetTextSpan(), root);
+                                var opLiteral = new BinaryOperatorLiteral(op, child1Terminal.GetTextSpan());
 
-                                result = new BinaryOperatorExpression(left, opLiteral, right, textSpan, root);
+                                result = new BinaryOperatorExpression(left, opLiteral, right, textSpan);
                             }
                         }
                         else
                         {
                             // post increment or decrement.
                             UnaryOperator op = UnaryOperatorLiteral.PostfixTextUnaryOperator[text];
-                            var opLiteral = new UnaryOperatorLiteral(op, child1Terminal.GetTextSpan(), root);
+                            var opLiteral = new UnaryOperatorLiteral(op, child1Terminal.GetTextSpan());
 
-                            result = new UnaryOperatorExpression(opLiteral, left, textSpan, root);
+                            result = new UnaryOperatorExpression(opLiteral, left, textSpan);
                             return result;
                         }
 
@@ -199,20 +199,19 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         return result;
 
                     case JavaParser.THIS:
-                        result = new ThisReferenceToken(textSpan, root);
+                        result = new ThisReferenceToken(textSpan);
                         return result;
 
                     case JavaParser.SUPER:
-                        result = new BaseReferenceExpression(textSpan, root);
+                        result = new BaseReferenceExpression(textSpan);
                         return result;
 
                     case JavaParser.VOID:
-                        var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan(), root);
+                        var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan());
                         var child0TerminalSpan = child0Terminal.GetTextSpan();
                         result = new InvocationExpression(id,
-                            new ArgsNode(new Expression[] { new NullLiteral(child0TerminalSpan, root) }, child0TerminalSpan, root),
-                            textSpan,
-                            root);
+                            new ArgsNode(new Expression[] { new NullLiteral(child0TerminalSpan) }, child0TerminalSpan),
+                            textSpan);
                         return result;
                 }
             }
@@ -221,11 +220,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (type != null)
             {
                 var typeToken = (TypeToken)Visit(type);
-                var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan(), root);
+                var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan());
                 result = new InvocationExpression(id,
-                    new ArgsNode(new Expression[] { typeToken }, typeToken.TextSpan, root),
-                    textSpan,
-                    root);
+                    new ArgsNode(new Expression[] { typeToken }, typeToken.TextSpan),
+                    textSpan);
                 return result;
             }
 
@@ -266,7 +264,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var type = (TypeToken)Visit(context.typeList());
             string resultType = context.GetChild<ITerminalNode>(0) + type.TypeText + context.GetChild<ITerminalNode>(1);
 
-            var result = new TypeToken(resultType, context.GetTextSpan(), root);
+            var result = new TypeToken(resultType, context.GetTextSpan());
             return result;
         }
 
@@ -297,7 +295,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitExpressionList(JavaParser.ExpressionListContext context)
         {
             Expression[] exprs = context.expression().Select(expr => (Expression)Visit(expr)).ToArray();
-            var result = new ArgsNode(exprs, context.GetTextSpan(), root);
+            var result = new ArgsNode(exprs, context.GetTextSpan());
             return result;
         }
 
@@ -314,11 +312,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     // new int[] { 1, 2 };
                     int dimensions = (arrayCreatorRest.ChildCount - 1) / 2; // number of square bracket pairs
                     var sizes = Enumerable.Range(0, dimensions).Select(
-                        _ => new IntLiteral(0, createdName.GetTextSpan(), root)).ToList<Expression>();
+                        _ => new IntLiteral(0, createdName.GetTextSpan())).ToList<Expression>();
                     var initializers = initializer.Expressions.Where(el => el.NodeType != NodeType.IdToken);
                     result = new ArrayCreationExpression(
-                        new TypeToken(createdName.GetText(), createdName.GetTextSpan(), root), sizes,
-                        initializers, context.GetTextSpan(), root);
+                        new TypeToken(createdName.GetText(), createdName.GetTextSpan()), sizes,
+                        initializers, context.GetTextSpan());
                 }
                 else
                 {
@@ -327,10 +325,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     var sizes = Enumerable.Range(0, dimensions).Select(
                         i => i < arrayCreatorRest.expression().Length ?
                                 (Expression)Visit(arrayCreatorRest.expression(i)) :
-                                new IntLiteral(0, createdName.GetTextSpan(), root)).ToList();
+                                new IntLiteral(0, createdName.GetTextSpan())).ToList();
                     result = new ArrayCreationExpression(
-                        new TypeToken(createdName.GetText(), createdName.GetTextSpan(), root), sizes,
-                        null, context.GetTextSpan(), root);
+                        new TypeToken(createdName.GetText(), createdName.GetTextSpan()), sizes,
+                        null, context.GetTextSpan());
                 }
             }
             else
@@ -341,8 +339,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 // TODO: add classBody
 
                 result = new ObjectCreateExpression(
-                    new TypeToken(createdName.GetText(), createdName.GetTextSpan(), root), args,
-                    context.GetTextSpan(), root);
+                    new TypeToken(createdName.GetText(), createdName.GetTextSpan()), args,
+                    context.GetTextSpan());
             }
             return result;
         }
@@ -363,7 +361,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
 
             result = new TypeToken(context.GetChild<ITerminalNode>(0).GetText() + context.GetChild<ITerminalNode>(1).GetText(),
-                context.GetTextSpan(), root);
+                context.GetTextSpan());
             return result;
         }
 
@@ -374,7 +372,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 return Visit(context.typeType());
             }
 
-            return new TypeToken("void", context.GetTextSpan(), root);
+            return new TypeToken("void", context.GetTextSpan());
         }
 
         public UstNode VisitTypeType(JavaParser.TypeTypeContext context)
@@ -402,7 +400,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var types = context.typeType().Select(t => ((TypeToken)Visit(t))?.TypeText)
                 .Where(t => t != null).ToArray();
 
-            var result = new TypeToken(string.Join(",", types), context.GetTextSpan(), root);
+            var result = new TypeToken(string.Join(",", types), context.GetTextSpan());
             return result;
         }
 
@@ -411,7 +409,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             string complexName = string.Join("", context.children.Select(c => c.ToString()).ToArray());
             TextSpan textSpan = context.GetTextSpan();
 
-            var result = new StringLiteral(complexName, textSpan, root);
+            var result = new StringLiteral(complexName, textSpan);
             return result;
         }
 
@@ -423,7 +421,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitPrimitiveType(JavaParser.PrimitiveTypeContext context)
         {
             var name = context.GetChild<ITerminalNode>(0).GetText();
-            var result = new TypeToken(name, context.GetTextSpan(), root);
+            var result = new TypeToken(name, context.GetTextSpan());
             return result;
         }
 
@@ -435,7 +433,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (stringLiteral != null)
             {
                 string text = stringLiteral.GetText();
-                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan, root);
+                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
             }
 
             if (context.integerLiteral() != null)
@@ -446,25 +444,25 @@ namespace PT.PM.JavaParseTreeUst.Converter
             ITerminalNode boolLiteral = context.BOOL_LITERAL();
             if (boolLiteral != null)
             {
-                return new BooleanLiteral(bool.Parse(boolLiteral.GetText()), textSpan, root);
+                return new BooleanLiteral(bool.Parse(boolLiteral.GetText()), textSpan);
             }
 
             ITerminalNode charLiteral = context.CHAR_LITERAL();
             if (charLiteral != null)
             {
-                return new StringLiteral(charLiteral.GetText(), textSpan, root);
+                return new StringLiteral(charLiteral.GetText(), textSpan);
             }
 
             ITerminalNode floatLiteral = context.FLOAT_LITERAL();
             if (floatLiteral != null)
             {
                 var text = floatLiteral.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
-                return new FloatLiteral(double.Parse(text), textSpan, root);
+                return new FloatLiteral(double.Parse(text), textSpan);
             }
 
             if (context.Start.Type == JavaParser.NULL_LITERAL)
             {
-                return new NullLiteral(textSpan, root);
+                return new NullLiteral(textSpan);
             }
 
             return VisitChildren(context);
@@ -474,7 +472,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             TextSpan textSpan = context.GetTextSpan();
             string text = context.GetText().Replace("_", "");
-            return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan, root);
+            return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan);
         }
 
         public UstNode VisitLambdaExpression(JavaParser.LambdaExpressionContext context)

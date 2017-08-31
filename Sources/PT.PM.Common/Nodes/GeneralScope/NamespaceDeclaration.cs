@@ -14,14 +14,14 @@ namespace PT.PM.Common.Nodes.GeneralScope
         public List<UstNode> Members { get; set; }
 
         public NamespaceDeclaration(StringLiteral name, UstNode member,
-            TextSpan textSpan, RootNode fileNode)
-            : this(name, new UstNode[] { member }, textSpan, fileNode)
+            TextSpan textSpan)
+            : this(name, new UstNode[] { member }, textSpan)
         {
         }
 
         public NamespaceDeclaration(StringLiteral name, IEnumerable<UstNode> members,
-            TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Name = name;
             Members = members as List<UstNode> ?? members.ToList();

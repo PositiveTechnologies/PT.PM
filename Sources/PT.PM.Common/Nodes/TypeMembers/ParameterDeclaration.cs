@@ -14,8 +14,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public Expression Initializer { get; set; }
 
-        public ParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public ParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             Name = name;

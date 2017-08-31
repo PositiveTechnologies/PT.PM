@@ -119,7 +119,7 @@ namespace PT.PM.Dsl
             var expression = (Expression)VisitExpression(context.expression());
             if (!PatternExpressionInsideStatement)
             {
-                result = new ExpressionStatement(expression, context.GetTextSpan(), null);
+                result = new ExpressionStatement(expression, context.GetTextSpan());
                 if (context.PatternNot() != null)
                 {
                     result = new PatternStatement(result, true);
@@ -147,10 +147,10 @@ namespace PT.PM.Dsl
             var exceptionTypes = context.literalOrPatternId().Select(token =>
             {
                 var literal = (Token)VisitLiteralOrPatternId(token);
-                return new TypeToken(literal.TextValue, literal.TextSpan, null);
+                return new TypeToken(literal.TextValue, literal.TextSpan);
             });
             bool isCatchBodyEmpty = context.Ellipsis() == null;
-            var result = new PatternTryCatchStatement(exceptionTypes.ToList(), isCatchBodyEmpty, context.GetTextSpan(), null);
+            var result = new PatternTryCatchStatement(exceptionTypes.ToList(), isCatchBodyEmpty, context.GetTextSpan());
             return result;
         }
 
@@ -173,7 +173,7 @@ namespace PT.PM.Dsl
         {
             ArgsNode args = context.args() == null ? new ArgsNode() : (ArgsNode)VisitArgs(context.args());
             var expr = (Expression)VisitExpression(context.expression());
-            var result = new InvocationExpression(expr, args, context.GetTextSpan(), null);
+            var result = new InvocationExpression(expr, args, context.GetTextSpan());
             return result;
         }
 
@@ -181,18 +181,18 @@ namespace PT.PM.Dsl
         {
             var target = (Expression)VisitExpression(context.expression());
             var type = (Expression)VisitLiteralOrPatternId(context.literalOrPatternId());
-            var result = new MemberReferenceExpression(target, type, context.GetTextSpan(), null);
+            var result = new MemberReferenceExpression(target, type, context.GetTextSpan());
             return result;
         }
 
         public UstNode VisitBinaryOperatorExpression(DslParser.BinaryOperatorExpressionContext context)
         {
             var left = (Expression)VisitExpression(context.expression(0));
-            var literal = new BinaryOperatorLiteral(context.op.Text, context.op.GetTextSpan(), null);
+            var literal = new BinaryOperatorLiteral(context.op.Text, context.op.GetTextSpan());
             var right = (Expression)VisitExpression(context.expression(1));
             var textSpan = context.GetTextSpan();
 
-            var result = new BinaryOperatorExpression(left, literal, right, textSpan, null);
+            var result = new BinaryOperatorExpression(left, literal, right, textSpan);
             return result;
         }
 
@@ -200,9 +200,9 @@ namespace PT.PM.Dsl
         {
             var target = (Expression)VisitExpression(context.expression(0));
             var args = new ArgsNode(new[] { (Expression)VisitExpression(context.expression(1)) },
-                context.expression(1).GetTextSpan(), null);
+                context.expression(1).GetTextSpan());
 
-            var result = new IndexerExpression(target, args, context.GetTextSpan(), null);
+            var result = new IndexerExpression(target, args, context.GetTextSpan());
             return result;
         }
 
@@ -211,7 +211,7 @@ namespace PT.PM.Dsl
             var textSpan = context.GetTextSpan();
             var values = new Expression[]
             {
-                new MemberReferenceExpression((Expression)VisitExpression(context.expression()), (Expression)VisitLiteralOrPatternId(context.literalOrPatternId()), textSpan, null),
+                new MemberReferenceExpression((Expression)VisitExpression(context.expression()), (Expression)VisitLiteralOrPatternId(context.literalOrPatternId()), textSpan),
                 (Expression)VisitLiteralOrPatternId(context.literalOrPatternId())
             };
             var result = new PatternVarDef(GetNewVarDefName(), values, context.GetTextSpan());
@@ -223,19 +223,19 @@ namespace PT.PM.Dsl
             Expression result;
             var left = (Expression)VisitExpression(context.expression(0));
             var right = (Expression)VisitExpression(context.expression(1));
-            result = new AssignmentExpression(left, right, context.GetTextSpan(), null);
+            result = new AssignmentExpression(left, right, context.GetTextSpan());
             return result;
         }
 
         public UstNode VisitVariableDeclarationExpression([NotNull] DslParser.VariableDeclarationExpressionContext context)
         {
             var literal = (Token)VisitLiteralOrPatternId(context.literalOrPatternId());
-            var typeToken = new TypeToken(literal.TextValue, literal.TextSpan, null);
+            var typeToken = new TypeToken(literal.TextValue, literal.TextSpan);
             var left = (Expression)VisitExpression(context.expression(0));
             var right = (Expression)VisitExpression(context.expression(1));
             var variables = new AssignmentExpression[] {
-                new AssignmentExpression(left, right, left.TextSpan.Union(right.TextSpan), null) };
-            var result = new VariableDeclarationExpression(typeToken, variables, context.GetTextSpan(), null);
+                new AssignmentExpression(left, right, left.TextSpan.Union(right.TextSpan)) };
+            var result = new VariableDeclarationExpression(typeToken, variables, context.GetTextSpan());
             return result;
         }
 
@@ -244,17 +244,17 @@ namespace PT.PM.Dsl
             var left = (Expression)VisitExpression(context.expression(0));
             var right = (Expression)VisitExpression(context.expression(1));
             var opLiteral = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[context.op.Text],
-                context.op.GetTextSpan(), null);
-            var result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan(), null);
+                context.op.GetTextSpan());
+            var result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan());
             return result;
         }
 
         public UstNode VisitObjectCreationExpression(DslParser.ObjectCreationExpressionContext context)
         {
             var literal = (Token)VisitLiteralOrPatternId(context.literalOrPatternId());
-            var typeToken = new TypeToken(literal.TextValue, literal.TextSpan, null);
+            var typeToken = new TypeToken(literal.TextValue, literal.TextSpan);
             ArgsNode args = context.args() == null ? new ArgsNode() : (ArgsNode)VisitArgs(context.args());
-            var result = new ObjectCreateExpression(typeToken, args, context.GetTextSpan(), null);
+            var result = new ObjectCreateExpression(typeToken, args, context.GetTextSpan());
             return result;
         }
 
@@ -262,7 +262,7 @@ namespace PT.PM.Dsl
         {
             var body = new PatternStatements(
                 new Statement[] { new ExpressionStatement((Expression)VisitExpression(context.expression())) });
-            return new AnonymousMethodExpression(new ParameterDeclaration[0], body, context.GetTextSpan(), null);
+            return new AnonymousMethodExpression(new ParameterDeclaration[0], body, context.GetTextSpan());
         }
 
         public UstNode VisitPatternLiteralExpression(DslParser.PatternLiteralExpressionContext context)
@@ -299,7 +299,7 @@ namespace PT.PM.Dsl
             ArgsNode result;
             if (expressions.All(expr => expr.NodeType != NodeType.PatternMultipleExpressions))
             {
-                result = new ArgsNode(expressions, span, null);
+                result = new ArgsNode(expressions, span);
             }
             else
             {
@@ -334,29 +334,29 @@ namespace PT.PM.Dsl
             }
             else if (context.String() != null)
             {
-                result = new StringLiteral(RemoveQuotes(context.GetText()), textSpan, null);
+                result = new StringLiteral(RemoveQuotes(context.GetText()), textSpan);
             }
             else if (context.Oct() != null)
             {
                 result = new IntLiteral(
-                    System.Convert.ToInt64(context.Oct().GetText(), 8), textSpan, null);
+                    System.Convert.ToInt64(context.Oct().GetText(), 8), textSpan);
             }
             else if (context.Int() != null)
             {
-                result = new IntLiteral(long.Parse(context.Int().GetText()), textSpan, null);
+                result = new IntLiteral(long.Parse(context.Int().GetText()), textSpan);
             }
             else if (context.Hex() != null)
             {
                 result = new IntLiteral(
-                    System.Convert.ToInt64(context.Hex().GetText(), 16), textSpan, null);
+                    System.Convert.ToInt64(context.Hex().GetText(), 16), textSpan);
             }
             else if (context.Bool() != null)
             {
-                result = new BooleanLiteral(bool.Parse(context.Bool().GetText()), textSpan, null);
+                result = new BooleanLiteral(bool.Parse(context.Bool().GetText()), textSpan);
             }
             else if (context.Null() != null)
             {
-                result = new NullLiteral(textSpan, null);
+                result = new NullLiteral(textSpan);
             }
             else
             {
@@ -495,7 +495,7 @@ namespace PT.PM.Dsl
             {
                 resultValue = System.Convert.ToInt64(context.PatternHex().GetText(), 16);
             }
-            return new IntLiteral(resultValue, context.GetTextSpan(), null);
+            return new IntLiteral(resultValue, context.GetTextSpan());
         }
 
         public UstNode VisitPatternStringLiteral(DslParser.PatternStringLiteralContext context)
@@ -551,7 +551,7 @@ namespace PT.PM.Dsl
                     default:
                         throw new NotImplementedException($"Operation {context.op.Text} is not implemented");
                 }
-                result = new IntLiteral(resultValue, context.GetTextSpan(), null);
+                result = new IntLiteral(resultValue, context.GetTextSpan());
             }
             else
             {
@@ -570,7 +570,7 @@ namespace PT.PM.Dsl
 
         public UstNode VisitPatternNullLiteral(DslParser.PatternNullLiteralContext context)
         {
-            return new NullLiteral(context.GetTextSpan(), null);
+            return new NullLiteral(context.GetTextSpan());
         }
 
         public UstNode VisitPatternId([NotNull] DslParser.PatternIdContext context)
@@ -613,7 +613,7 @@ namespace PT.PM.Dsl
         private IdToken ProcessId(ITerminalNode idTerminal)
         {
             string id = idTerminal.GetText();
-            IdToken result = new IdToken(id, idTerminal.GetTextSpan(), null);
+            IdToken result = new IdToken(id, idTerminal.GetTextSpan());
             return result;
         }
     }

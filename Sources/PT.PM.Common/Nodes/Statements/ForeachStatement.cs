@@ -17,8 +17,8 @@ namespace PT.PM.Common.Nodes.Statements
         public Statement EmbeddedStatement { get; set; }
 
         public ForeachStatement(TypeToken type, IdToken varName, Expression inExpression,
-            Statement embeddedStatement, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+            Statement embeddedStatement, TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             VarName = varName;

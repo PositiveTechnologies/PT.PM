@@ -16,16 +16,16 @@ namespace PT.PM.PhpParseTreeUst
         {
             var expression0 = (Expression)VisitExpression(expression);
             var result = new InvocationExpression(
-                new IdToken(specialMethodTerminal.GetText(), specialMethodTerminal.GetTextSpan(), root),
-                new ArgsNode(new List<Expression>() { expression0 }, expression.GetTextSpan(), root),
-                contextTextSpan, root);
+                new IdToken(specialMethodTerminal.GetText(), specialMethodTerminal.GetTextSpan()),
+                new ArgsNode(new List<Expression>() { expression0 }, expression.GetTextSpan()),
+                contextTextSpan);
             return result;
         }
 
         private IdToken ConvertVar(ITerminalNode terminalNode)
         {
             var text = terminalNode.GetText().Substring(1);
-            return new IdToken(text, terminalNode.GetTextSpan(), root);
+            return new IdToken(text, terminalNode.GetTextSpan());
         }
 
         private ParameterDeclaration[] ConvertParameters(PhpParser.FormalParameterListContext parameters)

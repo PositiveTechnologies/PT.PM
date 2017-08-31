@@ -10,7 +10,7 @@ namespace PT.PM.Common.Nodes.Statements
 
         public List<Statement> Statements { get; set; } = new List<Statement>();
 
-        public BlockStatement(IEnumerable<Statement> statements, RootNode fileNode)
+        public BlockStatement(IEnumerable<Statement> statements)
         {
             Statements = statements as List<Statement> ?? statements.ToList();
             if (Statements.Count > 0)
@@ -21,11 +21,10 @@ namespace PT.PM.Common.Nodes.Statements
             {
                 TextSpan = default(TextSpan);
             }
-            Root = fileNode;
         }
 
-        public BlockStatement(IEnumerable<Statement> statements, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public BlockStatement(IEnumerable<Statement> statements, TextSpan textSpan)
+            : base(textSpan)
         {
             Statements = statements as List<Statement> ?? statements.ToList();
         }

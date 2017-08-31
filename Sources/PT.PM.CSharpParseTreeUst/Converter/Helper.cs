@@ -12,14 +12,14 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         protected IdToken ConvertId(SyntaxToken node)
         {
             string name = node.ValueText;
-            return new IdToken(name, node.GetTextSpan(), root);
+            return new IdToken(name, node.GetTextSpan());
         }
 
         protected ModifierLiteral ConvertModifier(SyntaxToken token)
         {
             Modifier modifier;
             Enum.TryParse(token.ValueText, true, out modifier);
-            return new ModifierLiteral(modifier, token.GetTextSpan(), root);
+            return new ModifierLiteral(modifier, token.GetTextSpan());
         }
 
         protected TypeToken ConvertType(UstNode node)
@@ -30,7 +30,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             var idToken = node as IdToken;
             if (idToken != null)
-                return new TypeToken(idToken.Id, idToken.TextSpan, root);
+                return new TypeToken(idToken.Id, idToken.TextSpan);
 
             return null;
         }

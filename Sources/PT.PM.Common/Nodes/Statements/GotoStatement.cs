@@ -18,8 +18,8 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public GotoStatement(Expression id, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public GotoStatement(Expression id, TextSpan textSpan)
+            : base(textSpan)
         {
             Id = id;
         }

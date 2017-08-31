@@ -17,8 +17,8 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public TypeDeclarationStatement(TypeDeclaration typeDeclaration, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public TypeDeclarationStatement(TypeDeclaration typeDeclaration, TextSpan textSpan)
+            : base(textSpan)
         {
             TypeDeclaration = typeDeclaration;
         }

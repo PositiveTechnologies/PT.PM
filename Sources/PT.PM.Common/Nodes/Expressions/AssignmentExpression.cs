@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -11,8 +10,8 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public Expression Right { get; set; }
 
-        public AssignmentExpression(Expression left, Expression right, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public AssignmentExpression(Expression left, Expression right, TextSpan textSpan)
+            : base(textSpan)
         {
             Left = left;
             Right = right;

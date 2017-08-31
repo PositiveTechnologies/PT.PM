@@ -10,8 +10,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public IdToken Name { get; set; }
 
-        protected EntityDeclaration(IdToken name, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        protected EntityDeclaration(IdToken name, TextSpan textSpan)
+            : base(textSpan)
         {
             Name = name;
         }

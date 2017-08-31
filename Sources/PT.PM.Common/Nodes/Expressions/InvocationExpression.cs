@@ -10,8 +10,8 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public ArgsNode Arguments { get; set; }
 
-        public InvocationExpression(Expression target, ArgsNode arguments, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public InvocationExpression(Expression target, ArgsNode arguments, TextSpan textSpan)
+            : base(textSpan)
         {
             Target = target;
             Arguments = arguments;

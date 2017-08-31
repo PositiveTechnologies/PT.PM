@@ -9,12 +9,12 @@
         public override string TextValue => Value.ToString();
 
         public IntLiteral(long value)
-            : this(value, default(TextSpan), null)
+            : this(value, default(TextSpan))
         {
         }
 
-        public IntLiteral(long value, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public IntLiteral(long value, TextSpan textSpan)
+            : base(textSpan)
         {
             Value = value;
         }

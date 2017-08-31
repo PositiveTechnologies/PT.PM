@@ -16,8 +16,8 @@ namespace PT.PM.Common.Nodes.Specific
 
         public Statement Embedded { get; set; }
 
-        public FixedStatement(TypeToken type, IEnumerable<AssignmentExpression> vars, Statement embedded, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public FixedStatement(TypeToken type, IEnumerable<AssignmentExpression> vars, Statement embedded, TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             Variables = vars as List<AssignmentExpression> ?? vars.ToList();

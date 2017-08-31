@@ -14,8 +14,8 @@ namespace PT.PM.Common.Nodes.Expressions
         public BlockStatement Body { get; set; }
 
         public AnonymousMethodExpression(IEnumerable<ParameterDeclaration> parameters, BlockStatement body,
-            TextSpan textSpan, RootNode rootNode)
-            : base(textSpan, rootNode)
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Parameters = parameters as List<ParameterDeclaration> ?? parameters.ToList();
             Body = body;

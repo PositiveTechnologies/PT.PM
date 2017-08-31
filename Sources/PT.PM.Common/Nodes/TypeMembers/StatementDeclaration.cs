@@ -14,8 +14,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public Statement Statement { get; set; }
 
-        public StatementDeclaration(Statement statement, TextSpan textSpan, RootNode fileNode)
-            :base(new IdToken("Statement"), textSpan, fileNode)
+        public StatementDeclaration(Statement statement, TextSpan textSpan)
+            :base(new IdToken("Statement"), textSpan)
         {
             Statement = statement;
         }

@@ -19,30 +19,30 @@ namespace PT.PM.SqlParseTreeUst
             double doubleResult;
             if (text.StartsWith("'"))
             {
-                result = new StringLiteral(text.Substring(1, text.Length - 2), textSpan, root);
+                result = new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
             }
             else if (text.ToLowerInvariant().StartsWith("n'"))
             {
-                result = new StringLiteral(text.Substring(2, text.Length - 3), textSpan, root);
+                result = new StringLiteral(text.Substring(2, text.Length - 3), textSpan);
             }
             else if (text.All(c => char.IsDigit(c)))
             {
-                result = new IntLiteral(long.Parse(text), textSpan, root);
+                result = new IntLiteral(long.Parse(text), textSpan);
             }
             else if (double.TryParse(text, out doubleResult))
             {
-                result = new FloatLiteral(doubleResult, textSpan, root);
+                result = new FloatLiteral(doubleResult, textSpan);
             }
             else if (text.All(c => char.IsLetterOrDigit(c) || c == '_'))
             {
-                result = new IdToken(text, textSpan, root);
+                result = new IdToken(text, textSpan);
             }
             else
             {
                 if (text.Any(c => char.IsLetterOrDigit(c) || c == '_'))
                 {
                     Logger.LogDebug($"{text} converter to IdToken");
-                    result = new IdToken(text, textSpan, root);
+                    result = new IdToken(text, textSpan);
                 }
                 else
                 {

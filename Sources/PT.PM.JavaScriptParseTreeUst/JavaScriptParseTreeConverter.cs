@@ -31,7 +31,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             var condition = (Expression)Visit(context.singleExpression(0));
             var trueExpression = (Expression)Visit(context.singleExpression(1));
             var falseExpression = (Expression)Visit(context.singleExpression(2));
-            return new ConditionalExpression(condition, trueExpression, falseExpression, context.GetTextSpan(), root);
+            return new ConditionalExpression(condition, trueExpression, falseExpression, context.GetTextSpan());
         }
 
         public UstNode VisitLogicalAndExpression([NotNull] JavaScriptParser.LogicalAndExpressionContext context)
@@ -60,7 +60,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             var target = (Expression)Visit(context.singleExpression());
             var argsNode = (ArgsNode)Visit(context.arguments());
-            var result = new InvocationExpression(target, argsNode, context.GetTextSpan(), root);
+            var result = new InvocationExpression(target, argsNode, context.GetTextSpan());
             return result;
         }
 
@@ -71,14 +71,14 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public UstNode VisitThisExpression([NotNull] JavaScriptParser.ThisExpressionContext context)
         {
-            return new ThisReferenceToken(context.GetTextSpan(), root);
+            return new ThisReferenceToken(context.GetTextSpan());
         }
 
         /// <returns><see cref="AnonymousMethodExpression"/></returns>
         public UstNode VisitFunctionExpression([NotNull] JavaScriptParser.FunctionExpressionContext context)
         {
             var body = (BlockStatement)Visit(context.functionBody());
-            var result = new AnonymousMethodExpression(new ParameterDeclaration[0], body, context.GetTextSpan(), root);
+            var result = new AnonymousMethodExpression(new ParameterDeclaration[0], body, context.GetTextSpan());
             return result;
         }
 
@@ -90,7 +90,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             Expression left = Visit(context.singleExpression(0)).ToExpressionIfRequired();
             Expression right = Visit(context.singleExpression(1)).ToExpressionIfRequired();
-            return new AssignmentExpression(left, right, context.GetTextSpan(), root);
+            return new AssignmentExpression(left, right, context.GetTextSpan());
         }
 
         public UstNode VisitTypeofExpression([NotNull] JavaScriptParser.TypeofExpressionContext context) { return VisitChildren(context); }
@@ -174,7 +174,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             var target = (Expression)Visit(context.singleExpression());
             var name = (Expression)Visit(context.identifierName());
-            return new MemberReferenceExpression(target, name, context.GetTextSpan(), root);
+            return new MemberReferenceExpression(target, name, context.GetTextSpan());
         }
 
         public UstNode VisitArrayLiteralExpression([NotNull] JavaScriptParser.ArrayLiteralExpressionContext context) { return VisitChildren(context); }
@@ -183,7 +183,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public UstNode VisitIdentifierExpression([NotNull] JavaScriptParser.IdentifierExpressionContext context)
         {
-            return new IdToken(context.GetText(), context.GetTextSpan(), root);
+            return new IdToken(context.GetText(), context.GetTextSpan());
         }
 
         public UstNode VisitBitAndExpression([NotNull] JavaScriptParser.BitAndExpressionContext context)
@@ -202,7 +202,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             var left = (Expression)Visit(context.singleExpression(0));
             var right = (Expression)Visit(context.singleExpression(1));
-            return new AssignmentExpression(left, right, context.GetTextSpan(), root);
+            return new AssignmentExpression(left, right, context.GetTextSpan());
         }
 
         public UstNode VisitVoidExpression([NotNull] JavaScriptParser.VoidExpressionContext context) { return VisitChildren(context); }
@@ -247,7 +247,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         public UstNode VisitSourceElements([NotNull] JavaScriptParser.SourceElementsContext context)
         {
             var statements = context.sourceElement().Select(element => Visit(element).ToStatementIfRequired()).ToList();
-            return new BlockStatement(statements, context.GetTextSpan(), root);
+            return new BlockStatement(statements, context.GetTextSpan());
         }
 
         public UstNode VisitSourceElement([NotNull] JavaScriptParser.SourceElementContext context)
@@ -280,7 +280,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             return new BlockStatement(
                 context.statement().Select(s => Visit(s).ToStatementIfRequired()).ToArray(),
-                context.GetTextSpan(), root);
+                context.GetTextSpan());
         }
 
         public UstNode VisitVariableStatement([NotNull] JavaScriptParser.VariableStatementContext context) { return VisitChildren(context); }
@@ -294,7 +294,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public UstNode VisitEmptyStatement([NotNull] JavaScriptParser.EmptyStatementContext context)
         {
-            return new EmptyStatement(context.GetTextSpan(), root);
+            return new EmptyStatement(context.GetTextSpan());
         }
 
         public UstNode VisitExpressionStatement([NotNull] JavaScriptParser.ExpressionStatementContext context) { return VisitChildren(context); }
@@ -320,7 +320,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             {
                 expression = (Expression)Visit(context.expressionSequence());
             }
-            return new ReturnStatement(expression, context.GetTextSpan(), root);
+            return new ReturnStatement(expression, context.GetTextSpan());
         }
 
         public UstNode VisitWithStatement([NotNull] JavaScriptParser.WithStatementContext context) { return VisitChildren(context); }
@@ -364,7 +364,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             var identifier = context.Identifier();
             var result = new CatchClause
             {
-                VarName = new IdToken(identifier.GetText(), identifier.GetTextSpan(), root),
+                VarName = new IdToken(identifier.GetText(), identifier.GetTextSpan()),
                 Body = (BlockStatement)Visit(context.block())
             };
             return result;
@@ -401,7 +401,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             BlockStatement result;
             if (context.sourceElements() == null)
             {
-                result = new BlockStatement(new Statement[] { new EmptyStatement(context.GetTextSpan(), root) }, root);
+                result = new BlockStatement(new Statement[] { new EmptyStatement(context.GetTextSpan()) });
             }
             else
             {
@@ -431,7 +431,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         public UstNode VisitArguments([NotNull] JavaScriptParser.ArgumentsContext context)
         {
             Expression[] args = context.singleExpression().Select(expr => Visit(expr).ToExpressionIfRequired()).ToArray();
-            var result = new ArgsNode(args, context.GetTextSpan(), root);
+            var result = new ArgsNode(args, context.GetTextSpan());
             return result;
         }
 
@@ -447,7 +447,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 .Select(expr => Visit(expr).ToExpressionIfRequired())
                 .Where(expr => expr != null)
                 .ToList();
-            var result = new MultichildExpression(expressions, context.GetTextSpan(), root);
+            var result = new MultichildExpression(expressions, context.GetTextSpan());
             return result;
         }
 
@@ -462,22 +462,22 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             if (context.NullLiteral() != null)
             {
-                return new NullLiteral(context.GetTextSpan(), root);
+                return new NullLiteral(context.GetTextSpan());
             }
             else if (context.BooleanLiteral() != null)
             {
                 bool value;
                 bool.TryParse(context.GetText(), out value);
-                return new BooleanLiteral(value, context.GetTextSpan(), root);
+                return new BooleanLiteral(value, context.GetTextSpan());
             }
             else if (context.StringLiteral() != null)
             {
                 string s = context.GetText();
-                return new StringLiteral(s.Substring(1, s.Length - 2), context.GetTextSpan(), root);
+                return new StringLiteral(s.Substring(1, s.Length - 2), context.GetTextSpan());
             }
             else if (context.RegularExpressionLiteral() != null)
             {
-                return new StringLiteral(context.GetText(), context.GetTextSpan(), root);
+                return new StringLiteral(context.GetText(), context.GetTextSpan());
             }
             else
             {
@@ -491,31 +491,31 @@ namespace PT.PM.JavaScriptParseTreeUst
             {
                 double value;
                 double.TryParse(context.GetText(), out value);
-                return new FloatLiteral(value, context.GetTextSpan(), root);
+                return new FloatLiteral(value, context.GetTextSpan());
             }
             else if (context.HexIntegerLiteral() != null)
             {
                 long value;
                 context.GetText().TryConvertToInt64(16, out value);
-                return new IntLiteral(value, context.GetTextSpan(), root);
+                return new IntLiteral(value, context.GetTextSpan());
             }
             else if (context.OctalIntegerLiteral2() != null)
             {
                 long value;
                 context.GetText().Substring(2).TryConvertToInt64(8, out value);
-                return new IntLiteral(value, context.GetTextSpan(), root);
+                return new IntLiteral(value, context.GetTextSpan());
             }
             else if (context.BinaryIntegerLiteral() != null)
             {
                 long value;
                 context.GetText().Substring(2).TryConvertToInt64(2, out value);
-                return new IntLiteral(value, context.GetTextSpan(), root);
+                return new IntLiteral(value, context.GetTextSpan());
             }
             else
             {
                 long value;
                 context.GetText().TryConvertToInt64(8, out value);
-                return new IntLiteral(value, context.GetTextSpan(), root);
+                return new IntLiteral(value, context.GetTextSpan());
             }
         }
 

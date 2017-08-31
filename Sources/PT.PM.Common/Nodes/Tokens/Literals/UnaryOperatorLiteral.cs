@@ -31,17 +31,17 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public UnaryOperator UnaryOperator { get; set; }
 
         public UnaryOperatorLiteral(UnaryOperator op)
-            : this(op, default(TextSpan), null)
+            : this(op, default(TextSpan))
         {
         }
 
-        public UnaryOperatorLiteral(bool prefix, string op, TextSpan textSpan, RootNode fileNode)
-            : this(prefix ? PrefixTextUnaryOperator[op] : PostfixTextUnaryOperator[op], textSpan, fileNode)
+        public UnaryOperatorLiteral(bool prefix, string op, TextSpan textSpan)
+            : this(prefix ? PrefixTextUnaryOperator[op] : PostfixTextUnaryOperator[op], textSpan)
         {
         }
 
-        public UnaryOperatorLiteral(UnaryOperator op, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public UnaryOperatorLiteral(UnaryOperator op, TextSpan textSpan)
+            : base(textSpan)
         {
             UnaryOperator = op;
         }

@@ -1,5 +1,4 @@
-﻿using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Tokens.Literals;
+﻿using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
@@ -9,8 +8,8 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public StringLiteral Name { get; set; }
 
-        public UsingDeclaration(StringLiteral name, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public UsingDeclaration(StringLiteral name, TextSpan textSpan)
+            : base(textSpan)
         {
             Name = name;
         }

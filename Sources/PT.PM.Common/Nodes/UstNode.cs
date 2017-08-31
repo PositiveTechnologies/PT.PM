@@ -25,12 +25,6 @@ namespace PT.PM.Common.Nodes
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TextSpan TextSpan { get; set; }
 
-        protected UstNode(TextSpan textSpan, RootNode fileNode)
-            : this(textSpan)
-        {
-            Root = fileNode;
-        }
-
         protected UstNode(TextSpan textSpan)
             : this()
         {

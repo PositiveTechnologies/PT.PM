@@ -7,12 +7,12 @@
         public bool Value { get; set; }
 
         public BooleanLiteral(bool value)
-            : this(value, default(TextSpan), null)
+            : this(value, default(TextSpan))
         {
         }
 
-        public BooleanLiteral(bool value, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public BooleanLiteral(bool value, TextSpan textSpan)
+            : base(textSpan)
         {
             Value = value;
         }

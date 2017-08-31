@@ -21,7 +21,7 @@ namespace PT.PM.Patterns.Nodes
         }
 
         public PatternStatements(params Statement[] statements)
-            : base(statements, default(TextSpan), null)
+            : base(statements, default(TextSpan))
         {
         }
 

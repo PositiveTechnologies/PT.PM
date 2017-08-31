@@ -13,8 +13,8 @@ namespace PT.PM.Common.Nodes.Expressions
         public List<AssignmentExpression> Variables { get; set; }
 
         public VariableDeclarationExpression(TypeToken type, IEnumerable<AssignmentExpression> variables,
-            TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             Variables = variables as List<AssignmentExpression> ?? variables.ToList();

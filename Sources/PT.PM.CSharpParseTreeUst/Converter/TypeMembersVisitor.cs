@@ -51,7 +51,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
             var body = (BlockStatement)VisitBlock(node.Body);
 
-            var result = new ConstructorDeclaration(typeName, args, body, node.GetTextSpan(), root)
+            var result = new ConstructorDeclaration(typeName, args, body, node.GetTextSpan())
             {
                 Modifiers = modifiers
             };
@@ -72,10 +72,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitDestructorDeclaration(DestructorDeclarationSyntax node)
         {
-            var name = new IdToken(node.Identifier.ValueText + "_Destroy", node.Identifier.GetTextSpan(), root);
+            var name = new IdToken(node.Identifier.ValueText + "_Destroy", node.Identifier.GetTextSpan());
             var body = (BlockStatement)VisitBlock(node.Body);
 
-            var result = new MethodDeclaration(name, null, body, node.GetTextSpan(), root);
+            var result = new MethodDeclaration(name, null, body, node.GetTextSpan());
             return result;
         }
 
@@ -85,11 +85,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             AssignmentExpression[] vars = new [] { new AssignmentExpression(
                 ConvertId(node.Identifier),
                 init,
-                node.GetTextSpan(),
-                root)
+                node.GetTextSpan())
             };
 
-            var result = new FieldDeclaration(vars, node.GetTextSpan(), root);
+            var result = new FieldDeclaration(vars, node.GetTextSpan());
             return result;
         }
 
@@ -99,7 +98,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 var => (AssignmentExpression)VisitAndReturnNullIfError(var)).ToArray();
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
-            var result = new FieldDeclaration(varDelaraions, node.GetTextSpan(), root)
+            var result = new FieldDeclaration(varDelaraions, node.GetTextSpan())
             {
                 Modifiers = modifiers
             };
@@ -108,7 +107,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            var id = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), root);
+            var id = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan());
             var parameters = node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p)).ToArray();
             var statement = node.Body == null ? null : (BlockStatement)VisitBlock(node.Body); // abstract method if null
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
@@ -117,8 +116,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 id,
                 parameters,
                 statement,
-                node.GetTextSpan(),
-                root)
+                node.GetTextSpan())
             {
                 Modifiers = modifiers
             };
@@ -129,7 +127,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             TypeToken type = ConvertType(base.Visit(node.Type));
             var id = ConvertId(node.Identifier);
-            var result = new ParameterDeclaration(type, id, node.GetTextSpan(), root);
+            var result = new ParameterDeclaration(type, id, node.GetTextSpan());
             return result;
         }
 
@@ -138,10 +136,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var initializer = node.Initializer != null ? (Expression)base.Visit(node.Initializer.Value) : null;
 
             var result = new AssignmentExpression(
-                new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), root),
+                new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan()),
                 initializer,
-                node.GetTextSpan(),
-                root
+                node.GetTextSpan()
             );
 
             return result;

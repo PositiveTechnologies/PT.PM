@@ -7,8 +7,8 @@ namespace PT.PM.Common.Nodes.Statements
 
         public Expression Expression  { get; set; }
 
-        public BreakStatement(TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public BreakStatement(TextSpan textSpan)
+            : base(textSpan)
         {
         }
 

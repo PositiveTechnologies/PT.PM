@@ -17,8 +17,8 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public List<EntityDeclaration> TypeMembers { get; set; }
 
-        public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<EntityDeclaration> typeMembers, TextSpan textSpan, RootNode fileNode)
-            : base(name, textSpan, fileNode)
+        public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<EntityDeclaration> typeMembers, TextSpan textSpan)
+            : base(name, textSpan)
         {
             Type = type;
             BaseTypes = new List<IdToken>();

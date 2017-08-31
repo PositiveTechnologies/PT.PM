@@ -68,24 +68,24 @@ namespace PT.PM.Common.Nodes
                 return;
             }
 
-            FillAscendants(ustNode, ustNode as RootNode);
-        }
+            FillAscendantsHelper(ustNode, ustNode as RootNode);
 
-        private static void FillAscendants(UstNode node, RootNode root)
-        {
-            foreach (UstNode child in node.Children)
+            void FillAscendantsHelper(UstNode node, RootNode root)
             {
-                if (child != null)
+                foreach (UstNode child in node.Children)
                 {
-                    child.Parent = node;
-                    child.Root = root;
-                    if (child is RootNode rootUstChild)
+                    if (child != null)
                     {
-                        FillAscendants(rootUstChild);
-                    }
-                    else
-                    {
-                        FillAscendants(child, root);
+                        child.Parent = node;
+                        child.Root = root;
+                        if (child is RootNode rootUstChild)
+                        {
+                            FillAscendants(rootUstChild);
+                        }
+                        else
+                        {
+                            FillAscendantsHelper(child, root);
+                        }
                     }
                 }
             }

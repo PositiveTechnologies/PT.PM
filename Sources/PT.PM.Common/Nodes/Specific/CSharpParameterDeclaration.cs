@@ -14,8 +14,8 @@ namespace PT.PM.Common.Nodes.Specific
 
         public Expression DefaultExpression { get; set; }
 
-        public CSharpParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan, RootNode fileNode)
-            : base(type, name, textSpan, fileNode)
+        public CSharpParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan)
+            : base(type, name, textSpan)
         {
             Name = name;
         }

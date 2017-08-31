@@ -15,8 +15,8 @@ namespace PT.PM.Common.Nodes.Expressions
         public List<Expression> Initializers { get; set; }
 
         public ArrayCreationExpression(TypeToken type, IEnumerable<Expression> sizes, IEnumerable<Expression> inits,
-            TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             Sizes = sizes as List<Expression> ?? sizes?.ToList() ?? new List<Expression>();

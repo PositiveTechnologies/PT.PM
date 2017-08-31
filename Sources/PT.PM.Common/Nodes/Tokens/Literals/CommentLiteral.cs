@@ -8,14 +8,8 @@
 
         public override string TextValue => Comment;
 
-        public CommentLiteral(string comment, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
-        {
-            Comment = comment;
-        }
-
         public CommentLiteral(string comment, TextSpan textSpan)
-           : base(textSpan)
+            : base(textSpan)
         {
             Comment = comment;
         }

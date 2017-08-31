@@ -22,7 +22,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 .Select(s => (Statement)Visit(s))
                 .Where(s => s != null).ToArray();
 
-            var result = new BlockStatement(statements, context.GetTextSpan(), root);
+            var result = new BlockStatement(statements, context.GetTextSpan());
             return result;
         }
 
@@ -33,7 +33,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var localVariableDeclaration = context.localVariableDeclaration();
             if (localVariableDeclaration != null)
             {
-                result = new ExpressionStatement((Expression)Visit(localVariableDeclaration), context.GetTextSpan(), root);
+                result = new ExpressionStatement((Expression)Visit(localVariableDeclaration), context.GetTextSpan());
                 return result;
             }
 
@@ -48,7 +48,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (typeDec != null)
             {
                 var typeDeclaration = (TypeDeclaration)Visit(typeDec);
-                result = new TypeDeclarationStatement(typeDeclaration, typeDeclaration.TextSpan, root);
+                result = new TypeDeclarationStatement(typeDeclaration, typeDeclaration.TextSpan);
                 return result;
             }
 
@@ -62,7 +62,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 .Select(varDec => (AssignmentExpression)Visit(varDec))
                 .Where(initializer => initializer != null).ToArray();
 
-            var result = new VariableDeclarationExpression(type, initializers, context.GetTextSpan(), root);
+            var result = new VariableDeclarationExpression(type, initializers, context.GetTextSpan());
             return result;
         }
 
@@ -89,14 +89,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (context.identifierLabel != null)
             {
                 var defaultResult = VisitChildren(context);
-                return new WrapperStatement(defaultResult, textSpan, root);
+                return new WrapperStatement(defaultResult, textSpan);
             }
 
             int firstTokenType = context.GetChild<ITerminalNode>(0).Symbol.Type;
             if (firstTokenType == JavaLexer.ASSERT)
             {
                 var defaultResult = VisitChildren(context);
-                return new WrapperStatement(defaultResult, textSpan, root);
+                return new WrapperStatement(defaultResult, textSpan);
             }
 
             if (firstTokenType == JavaLexer.IF)
@@ -107,7 +107,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     ? null
                     : (Statement)Visit(context.statement(1));
 
-                result = new IfElseStatement(condition, trueStatement, textSpan, root)
+                result = new IfElseStatement(condition, trueStatement, textSpan)
                 {
                     FalseStatement = falseStatment
                 };
@@ -125,7 +125,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 var conditionWhile = (Expression)Visit(context.parExpression());
                 statement = (Statement)Visit(context.statement(0));
 
-                result = new WhileStatement(conditionWhile, statement, textSpan, root);
+                result = new WhileStatement(conditionWhile, statement, textSpan);
                 return result;
             }
 
@@ -134,7 +134,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 statement = (Statement)Visit(context.statement(0));
                 expression = (Expression)Visit(context.parExpression());
 
-                result = new DoWhileStatement(statement, expression, textSpan, root);
+                result = new DoWhileStatement(statement, expression, textSpan);
                 return result;
             }
 
@@ -155,7 +155,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                 if (resSpec == null)
                 {
-                    result = new TryCatchStatement(block, textSpan, root)
+                    result = new TryCatchStatement(block, textSpan)
                     {
                         CatchClauses = catchClauses,
                         FinallyBlock = finallyBlock
@@ -173,9 +173,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         })
                         .Where(res => res != null));
                     statements.AddRange(block.Statements);
-                    var blockStatement = new BlockStatement(statements, context.GetTextSpan(), root);
+                    var blockStatement = new BlockStatement(statements, context.GetTextSpan());
 
-                    result = new TryCatchStatement(block, textSpan, root)
+                    result = new TryCatchStatement(block, textSpan)
                     {
                         CatchClauses = catchClauses,
                         FinallyBlock = finallyBlock
@@ -191,7 +191,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     .Select(group => (SwitchSection)Visit(group))
                     .Where(group => group != null).ToArray();
 
-                result = new SwitchStatement(expression, switchSections, textSpan, root);
+                result = new SwitchStatement(expression, switchSections, textSpan);
                 return result;
             }
 
@@ -202,10 +202,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 statements = context.block().blockStatement()
                     .Select(s => (Statement)Visit(s))
                     .Where(s => s != null).ToList();
-                resultStatements.Add(new ExpressionStatement(expression, expression.TextSpan, root));
+                resultStatements.Add(new ExpressionStatement(expression, expression.TextSpan));
                 resultStatements.AddRange(statements);
 
-                result = new BlockStatement(resultStatements, textSpan, root);
+                result = new BlockStatement(resultStatements, textSpan);
                 return result;
             }
 
@@ -214,32 +214,32 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 expression = context.expression(0) != null
                             ? (Expression)Visit(context.expression(0))
                             : null;
-                result = new ReturnStatement(expression, textSpan, root);
+                result = new ReturnStatement(expression, textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.THROW)
             {
                 expression = (Expression)Visit(context.expression(0));
-                result = new ThrowStatement(expression, textSpan, root);
+                result = new ThrowStatement(expression, textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.BREAK)
             {
-                result = new BreakStatement(textSpan, root);
+                result = new BreakStatement(textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.CONTINUE)
             {
-                result = new ContinueStatement(textSpan, root);
+                result = new ContinueStatement(textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.SEMI)
             {
-                result = new EmptyStatement(textSpan, root);
+                result = new EmptyStatement(textSpan);
                 return result;
             }
 
@@ -258,7 +258,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 var parent = (JavaParser.StatementContext)context.parent;
                 var statement = (Statement)Visit(parent.statement(0));
 
-                var result = new ForeachStatement(type, varDecId, expr, statement, parent.GetTextSpan(), root);
+                var result = new ForeachStatement(type, varDecId, expr, statement, parent.GetTextSpan());
                 return result;
             }
             else
@@ -281,7 +281,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                             .Select(expr => 
                                 {
                                     var ex = (Expression)Visit(expr);
-                                    return ex == null ? null : new ExpressionStatement(ex, expr.GetTextSpan(), root);
+                                    return ex == null ? null : new ExpressionStatement(ex, expr.GetTextSpan());
                                 }).Where(stmt => stmt != null).ToArray());
                     }
                 }
@@ -297,7 +297,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                 var parent = (JavaParser.StatementContext)context.parent;
                 var statement = (Statement)Visit(parent.statement(0));
-                var result = new ForStatement(initializers, condition, iterators, statement, parent.GetTextSpan(), root);
+                var result = new ForStatement(initializers, condition, iterators, statement, parent.GetTextSpan());
                 return result;
             }
         }
@@ -316,7 +316,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             Statement[] statements = context.blockStatement().Select(s => (Statement)Visit(s))
                 .Where(s => s != null).ToArray();
 
-            var result = new SwitchSection(caseLabels, statements, context.GetTextSpan(), root);
+            var result = new SwitchSection(caseLabels, statements, context.GetTextSpan());
             return result;
         }
 
@@ -336,7 +336,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var id = (IdToken)Visit(context.IDENTIFIER());
             var body = (BlockStatement)Visit(context.block());
 
-            var result = new CatchClause(type, id, body, context.GetTextSpan(), root);
+            var result = new CatchClause(type, id, body, context.GetTextSpan());
             return result;
         }
 
@@ -345,7 +345,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             string[] names = context.qualifiedName().Select(name => ((StringLiteral)Visit(name))?.Text)
                 .Where(n => n != null).ToArray();
 
-            var result = new TypeToken(string.Join("|", names), context.GetTextSpan(), root);
+            var result = new TypeToken(string.Join("|", names), context.GetTextSpan());
             return result;
         }
 
@@ -362,8 +362,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var initializer = (Expression)Visit(context.expression());
 
             var result = new VariableDeclarationExpression(type,
-                new[] { new AssignmentExpression(id, initializer, context.variableDeclaratorId().GetTextSpan(), root) },
-                context.GetTextSpan(), root);
+                new[] { new AssignmentExpression(id, initializer, context.variableDeclaratorId().GetTextSpan()) },
+                context.GetTextSpan());
             return result;
         }
 

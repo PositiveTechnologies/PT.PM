@@ -8,12 +8,11 @@ namespace PT.PM.Common.Nodes.Specific
 
         public Expression Expression { get; set; }
 
-        public CheckedExpression(Expression checkedExpression, TextSpan textSpan, RootNode rootNode)
-            : base(textSpan, rootNode)
+        public CheckedExpression(Expression checkedExpression, TextSpan textSpan)
+            : base(textSpan)
         {
             Expression = checkedExpression;
             TextSpan = textSpan;
-            Root = rootNode;
         }
 
         public CheckedExpression()

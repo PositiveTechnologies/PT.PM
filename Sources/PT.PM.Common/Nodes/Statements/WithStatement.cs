@@ -15,8 +15,8 @@ namespace PT.PM.Common.Nodes.Statements
 
         public Statement Body { get; set; }
 
-        public WithStatement(UstNode withNode, Statement body, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public WithStatement(UstNode withNode, Statement body, TextSpan textSpan)
+            : base(textSpan)
         {
             WithNode = withNode;
             Body = body;

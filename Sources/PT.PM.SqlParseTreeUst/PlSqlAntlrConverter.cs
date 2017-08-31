@@ -24,7 +24,7 @@ namespace PT.PM.SqlParseTreeUst
         public UstNode VisitSwallow_to_semi([NotNull] PlSqlParser.Swallow_to_semiContext context)
         {
             Expression[] args = context.children.Select(c => (Expression)Visit(c)).ToArray();
-            var result = new ArgsNode(args, context.GetTextSpan(), root);
+            var result = new ArgsNode(args, context.GetTextSpan());
             return result;
         }
 
@@ -55,7 +55,7 @@ namespace PT.PM.SqlParseTreeUst
             ParameterDeclaration[] parameters = context.parameter().Select(p => (ParameterDeclaration)Visit(p)).ToArray();
             var body = (BlockStatement)Visit(context.body());
 
-            var result = new MethodDeclaration(name, parameters, body, context.GetTextSpan(), root);
+            var result = new MethodDeclaration(name, parameters, body, context.GetTextSpan());
             result.ReturnType = (TypeToken)Visit(context.type_spec());
             return result;
         }
@@ -94,7 +94,7 @@ namespace PT.PM.SqlParseTreeUst
             ParameterDeclaration[] parameters = context.parameter().Select(p => (ParameterDeclaration)Visit(p)).ToArray();
             var body = (BlockStatement)Visit(context.body());
 
-            var result = new MethodDeclaration(name, parameters, body, context.GetTextSpan(), root);
+            var result = new MethodDeclaration(name, parameters, body, context.GetTextSpan());
             return result;
         }
 
@@ -246,7 +246,7 @@ namespace PT.PM.SqlParseTreeUst
                 typeToken = (TypeToken)Visit(context.type_spec());
             }
             var name = (IdToken)Visit(context.parameter_name());
-            result = new ParameterDeclaration(typeToken, name, context.GetTextSpan(), root);
+            result = new ParameterDeclaration(typeToken, name, context.GetTextSpan());
             return result;
         }
 
@@ -276,7 +276,7 @@ namespace PT.PM.SqlParseTreeUst
         public UstNode VisitSeq_of_statements([NotNull] PlSqlParser.Seq_of_statementsContext context)
         {
             var result = new BlockStatement(context.statement().Select(s => (Statement)Visit(s)).ToArray(),
-                context.GetTextSpan(), root);
+                context.GetTextSpan());
             return result;
         }
 
@@ -294,8 +294,8 @@ namespace PT.PM.SqlParseTreeUst
                     str += "_" + context.ALL().GetText().ToLowerInvariant();
                 }
                 var args = (ArgsNode)Visit(context.swallow_to_semi());
-                var funcName = new IdToken(str, context.GetTextSpan(), root);
-                result = new ExpressionStatement(new InvocationExpression(funcName, args, context.GetTextSpan(), root));
+                var funcName = new IdToken(str, context.GetTextSpan());
+                result = new ExpressionStatement(new InvocationExpression(funcName, args, context.GetTextSpan()));
             }
             else
             {
@@ -330,18 +330,18 @@ namespace PT.PM.SqlParseTreeUst
                 left = (Expression)Visit(context.bind_variable());
             }
             var right = (Expression)Visit(context.expression());
-            var result = new AssignmentExpression(left, right, context.GetTextSpan(), root);
+            var result = new AssignmentExpression(left, right, context.GetTextSpan());
             return result;
         }
 
         public UstNode VisitContinue_statement([NotNull] PlSqlParser.Continue_statementContext context)
         {
-            return new ContinueStatement(context.GetTextSpan(), root);
+            return new ContinueStatement(context.GetTextSpan());
         }
 
         public UstNode VisitExit_statement([NotNull] PlSqlParser.Exit_statementContext context)
         {
-            return new BreakStatement(context.GetTextSpan(), root);
+            return new BreakStatement(context.GetTextSpan());
         }
 
         public UstNode VisitGoto_statement([NotNull] PlSqlParser.Goto_statementContext context) { return VisitChildren(context); }
@@ -351,7 +351,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var condition = (Expression)Visit(context.condition());
             var block = (BlockStatement)Visit(context.seq_of_statements());
-            var result = new IfElseStatement(condition, block, context.GetTextSpan(), root);
+            var result = new IfElseStatement(condition, block, context.GetTextSpan());
             IfElseStatement stmt = result;
             for (int i = 0; i < context.elsif_part().Length; i++)
             {
@@ -370,7 +370,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var condition = (Expression)Visit(context.condition());
             var block = (BlockStatement)Visit(context.seq_of_statements());
-            var result = new IfElseStatement(condition, block, context.GetTextSpan(), root);
+            var result = new IfElseStatement(condition, block, context.GetTextSpan());
             return result;
         }
 
@@ -388,7 +388,7 @@ namespace PT.PM.SqlParseTreeUst
             var textSpan = context.GetTextSpan();
             if (context.WHILE() != null)
             {
-                result = new WhileStatement((Expression)Visit(context.condition()), block, textSpan, root);
+                result = new WhileStatement((Expression)Visit(context.condition()), block, textSpan);
             }
             else
             {
@@ -405,15 +405,15 @@ namespace PT.PM.SqlParseTreeUst
                         lowerBound = upperBound;
                         upperBound = t;
                     }
-                    var init = new ExpressionStatement(new AssignmentExpression(varName, lowerBound, varName.TextSpan.Union(lowerBound.TextSpan), root));
+                    var init = new ExpressionStatement(new AssignmentExpression(varName, lowerBound, varName.TextSpan.Union(lowerBound.TextSpan)));
                     var condition = new BinaryOperatorExpression(varName,
-                        new BinaryOperatorLiteral(BinaryOperator.Less, cursorLoopParam.range.GetTextSpan(), root), upperBound,
-                        lowerBound.TextSpan.Union(upperBound.TextSpan), root);
+                        new BinaryOperatorLiteral(BinaryOperator.Less, cursorLoopParam.range.GetTextSpan()), upperBound,
+                        lowerBound.TextSpan.Union(upperBound.TextSpan));
                     var iterator = new UnaryOperatorExpression(
-                        new UnaryOperatorLiteral(UnaryOperator.PostIncrement, default(TextSpan), root), varName,
-                        cursorLoopParam.range.GetTextSpan(), root);
+                        new UnaryOperatorLiteral(UnaryOperator.PostIncrement, default(TextSpan)), varName,
+                        cursorLoopParam.range.GetTextSpan());
                     result = new ForStatement(new Statement[] { init }, condition, new Expression[] { iterator },
-                        block, textSpan, root);
+                        block, textSpan);
                 }
                 else
                 {
@@ -440,7 +440,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public UstNode VisitNull_statement([NotNull] PlSqlParser.Null_statementContext context)
         {
-            return new NullLiteral(context.GetTextSpan(), root);
+            return new NullLiteral(context.GetTextSpan());
         }
 
         public UstNode VisitRaise_statement([NotNull] PlSqlParser.Raise_statementContext context) { return VisitChildren(context); }
@@ -452,7 +452,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 returnExpression = (Expression)Visit(context.expression());
             }
-            var result = new ReturnStatement(returnExpression, context.GetTextSpan(), root);
+            var result = new ReturnStatement(returnExpression, context.GetTextSpan());
             return result;
         }
 
@@ -468,7 +468,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 args = new ArgsNode();
             }
-            var result = new InvocationExpression(target, args, context.GetTextSpan(), root);
+            var result = new InvocationExpression(target, args, context.GetTextSpan());
             return result;
         }
 
@@ -479,10 +479,10 @@ namespace PT.PM.SqlParseTreeUst
             var block = (BlockStatement)Visit(context.seq_of_statements());
             if (context.exception_handler().Length > 0)
             {
-                var tryCatch = new TryCatchStatement(block, context.GetTextSpan(), root);
+                var tryCatch = new TryCatchStatement(block, context.GetTextSpan());
                 tryCatch.CatchClauses = context.exception_handler().Select(handler =>
                     (CatchClause)Visit(handler)).ToList();
-                result = new BlockStatement(new Statement[] { tryCatch }, context.GetTextSpan(), root);
+                result = new BlockStatement(new Statement[] { tryCatch }, context.GetTextSpan());
             }
             else
             {
@@ -508,9 +508,9 @@ namespace PT.PM.SqlParseTreeUst
                 body.Statements[0].NodeType == NodeType.ExpressionStatement &&
                 ((ExpressionStatement)body.Statements[0]).Expression.NodeType == NodeType.NullLiteral)
             {
-                body = new BlockStatement(new Statement[0], context.seq_of_statements().GetTextSpan(), root);
+                body = new BlockStatement(new Statement[0], context.seq_of_statements().GetTextSpan());
             }
-            var result = new CatchClause(type, null, body, context.GetTextSpan(), root);
+            var result = new CatchClause(type, null, body, context.GetTextSpan());
             return result;
         }
 
@@ -520,10 +520,10 @@ namespace PT.PM.SqlParseTreeUst
         public UstNode VisitBlock([NotNull] PlSqlParser.BlockContext context)
         {
             var declare = new BlockStatement(context.declare_spec().Select(s => Visit(s).ToStatementIfRequired()).ToArray(),
-                context.GetTextSpan(), root);
+                context.GetTextSpan());
             var body = (BlockStatement)Visit(context.body());
 
-            var result = new BlockStatement(new Statement[] { declare, body }, context.GetTextSpan(), root);
+            var result = new BlockStatement(new Statement[] { declare, body }, context.GetTextSpan());
             return result;
         }
 
@@ -759,8 +759,8 @@ namespace PT.PM.SqlParseTreeUst
             {
                 var left = (Expression)Visit(context.logical_or_expression());
                 var right = (Expression)Visit(context.logical_and_expression());
-                var opLiteral = new BinaryOperatorLiteral(BinaryOperator.LogicalOr, context.GetTextSpan(), root);
-                result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan(), root);
+                var opLiteral = new BinaryOperatorLiteral(BinaryOperator.LogicalOr, context.GetTextSpan());
+                result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan());
             }
             else
             {
@@ -777,8 +777,8 @@ namespace PT.PM.SqlParseTreeUst
             {
                 var left = (Expression)Visit(context.negated_expression());
                 var right = (Expression)Visit(context.logical_and_expression());
-                var opLiteral = new BinaryOperatorLiteral(BinaryOperator.LogicalAnd, context.GetTextSpan(), root);
-                result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan(), root);
+                var opLiteral = new BinaryOperatorLiteral(BinaryOperator.LogicalAnd, context.GetTextSpan());
+                result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan());
             }
             else
             {
@@ -793,8 +793,8 @@ namespace PT.PM.SqlParseTreeUst
             Expression result;
             if (context.NOT() != null)
             {
-                var opLiteral = new UnaryOperatorLiteral(UnaryOperator.Not, context.NOT().GetTextSpan(), root);
-                result = new UnaryOperatorExpression(opLiteral, (Expression)Visit(context.negated_expression()), context.GetTextSpan(), root);
+                var opLiteral = new UnaryOperatorLiteral(UnaryOperator.Not, context.NOT().GetTextSpan());
+                result = new UnaryOperatorExpression(opLiteral, (Expression)Visit(context.negated_expression()), context.GetTextSpan());
             }
             else
             {
@@ -822,7 +822,7 @@ namespace PT.PM.SqlParseTreeUst
                 var left = (Expression)Visit(context.relational_expression(0));
                 var right = (Expression)Visit(context.relational_expression(1));
                 var op = (BinaryOperatorLiteral)Visit(context.relational_operator());
-                result = new BinaryOperatorExpression(left, op, right, context.GetTextSpan(), root);
+                result = new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
             }
             return result;
         }
@@ -853,7 +853,7 @@ namespace PT.PM.SqlParseTreeUst
                     opText = "==";
                 }
                 var literal = BinaryOperatorLiteral.TextBinaryOperator[opText];
-                result = new BinaryOperatorLiteral(literal, context.GetTextSpan(), root);
+                result = new BinaryOperatorLiteral(literal, context.GetTextSpan());
             }
             return result;
         }
@@ -875,7 +875,7 @@ namespace PT.PM.SqlParseTreeUst
                 {
                     var right = (Expression)Visit(context.additive_expression(i));
                     result = new BinaryOperatorExpression(result, (BinaryOperatorLiteral)Visit(context.concatenation_op(i - 1)), right,
-                        result.TextSpan.Union(right.TextSpan), root);
+                        result.TextSpan.Union(right.TextSpan));
                 }
             }
             return result;
@@ -890,9 +890,9 @@ namespace PT.PM.SqlParseTreeUst
                 for (int i = 1; i < context.multiply_expression().Length; i++)
                 {
                     var op = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[context._op[i - 1].Text],
-                      context._op[i - 1].GetTextSpan(), root);
+                      context._op[i - 1].GetTextSpan());
                     var right = (Expression)Visit(context.multiply_expression(i));
-                    result = new BinaryOperatorExpression(result, op, right, result.TextSpan.Union(right.TextSpan), root);
+                    result = new BinaryOperatorExpression(result, op, right, result.TextSpan.Union(right.TextSpan));
                 }
             }
             return result;
@@ -908,8 +908,8 @@ namespace PT.PM.SqlParseTreeUst
                 {
                     var right = (Expression)Visit(context.datetime_expression(i));
                     var op  = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[context._op[i - 1].Text],
-                        context._op[i - 1].GetTextSpan(), root);
-                    result = new BinaryOperatorExpression(result, op, right, result.TextSpan.Union(right.TextSpan), root);
+                        context._op[i - 1].GetTextSpan());
+                    result = new BinaryOperatorExpression(result, op, right, result.TextSpan.Union(right.TextSpan));
                 }
             }
             return result;
@@ -1051,7 +1051,7 @@ namespace PT.PM.SqlParseTreeUst
                 for (int i = 0; i < context.id_expression().Length; i++)
                 {
                     result = new MemberReferenceExpression(result,
-                        (Expression)Visit(context.id_expression(i)), firstSpan.Union(context.id_expression(i).GetTextSpan()), root);
+                        (Expression)Visit(context.id_expression(i)), firstSpan.Union(context.id_expression(i).GetTextSpan()));
                 }
             }
             return result;
@@ -1082,7 +1082,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var typeName = new TypeToken(
                 string.Join(".", context.id_expression().Select(expr => ((IdToken)Visit(expr)).TextValue)),
-                context.GetTextSpan(), root);
+                context.GetTextSpan());
             return typeName;
         }
 
@@ -1091,7 +1091,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="TypeToken"/></returns>
         public UstNode VisitException_name([NotNull] PlSqlParser.Exception_nameContext context)
         {
-            var result = new TypeToken(context.GetText(), context.GetTextSpan(), root);
+            var result = new TypeToken(context.GetText(), context.GetTextSpan());
             return result;
         }
 
@@ -1129,7 +1129,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 args.Add((Expression)Visit(context.keep_clause()));
             }
-            var result = new ArgsNode(args, context.GetTextSpan(), root);
+            var result = new ArgsNode(args, context.GetTextSpan());
             return result;
         }
 
@@ -1176,7 +1176,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="TypeToken"/></returns>
         public UstNode VisitNative_datatype_element([NotNull] PlSqlParser.Native_datatype_elementContext context)
         {
-            return new TypeToken(context.GetText(), context.GetTextSpan(), root);
+            return new TypeToken(context.GetText(), context.GetTextSpan());
         }
 
         public UstNode VisitBind_variable([NotNull] PlSqlParser.Bind_variableContext context)
@@ -1184,7 +1184,7 @@ namespace PT.PM.SqlParseTreeUst
             var result = VisitChildren(context);
             if (result == null)
             {
-                result = new NullLiteral(context.GetTextSpan(), root);
+                result = new NullLiteral(context.GetTextSpan());
             }
             return result;
         }
@@ -1198,12 +1198,12 @@ namespace PT.PM.SqlParseTreeUst
             for (int i = 1; i < context.id_expression().Length; i++)
             {
                 result = new MemberReferenceExpression(result, (Expression)Visit(context.id_expression(i)),
-                    firstSpan.Union(context.id_expression(i).GetTextSpan()), root);
+                    firstSpan.Union(context.id_expression(i).GetTextSpan()));
             }
             if (context.function_argument() != null)
             {
                 var argsNode = (ArgsNode)Visit(context.function_argument());
-                result = new InvocationExpression(result, argsNode, firstSpan.Union(argsNode.TextSpan), root);
+                result = new InvocationExpression(result, argsNode, firstSpan.Union(argsNode.TextSpan));
             }
             return result;
         }
@@ -1216,11 +1216,11 @@ namespace PT.PM.SqlParseTreeUst
             Token result;
             if (context.NULL() != null)
             {
-                result = new NullLiteral(context.GetTextSpan(), root);
+                result = new NullLiteral(context.GetTextSpan());
             }
             else if (context.TRUE() != null || context.FALSE() != null)
             {
-                result = new BooleanLiteral(bool.Parse(context.GetText().ToLowerInvariant()), context.GetTextSpan(), root);
+                result = new BooleanLiteral(bool.Parse(context.GetText().ToLowerInvariant()), context.GetTextSpan());
             }
             else
             {
@@ -1235,12 +1235,12 @@ namespace PT.PM.SqlParseTreeUst
             string text = context.GetText();
             if (context.UNSIGNED_INTEGER() != null)
             {
-                result = new IntLiteral(long.Parse(text), context.GetTextSpan(), root);
+                result = new IntLiteral(long.Parse(text), context.GetTextSpan());
             }
             else
             {
                 text = text.ToLowerInvariant().Replace("f", "").Replace("d", "");
-                result = new FloatLiteral(double.Parse(text), context.GetTextSpan(), root);
+                result = new FloatLiteral(double.Parse(text), context.GetTextSpan());
             }
             return result;
         }
@@ -1266,7 +1266,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 string text = context.GetText();
-                result = new IdToken(text.Substring(1, text.Length - 2), context.GetTextSpan(), root);
+                result = new IdToken(text.Substring(1, text.Length - 2), context.GetTextSpan());
             }
             return result;
         }
@@ -1274,24 +1274,24 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="BinaryOperatorLiteral"/></returns>
         public UstNode VisitNot_equal_op([NotNull] PlSqlParser.Not_equal_opContext context)
         {
-            return new BinaryOperatorLiteral(BinaryOperator.NotEqual, context.GetTextSpan(), root);
+            return new BinaryOperatorLiteral(BinaryOperator.NotEqual, context.GetTextSpan());
         }
 
         /// <returns><see cref="BinaryOperatorLiteral"/></returns>
         public UstNode VisitGreater_than_or_equals_op([NotNull] PlSqlParser.Greater_than_or_equals_opContext context)
         {
-            return new BinaryOperatorLiteral(BinaryOperator.GreaterOrEqual, context.GetTextSpan(), root);
+            return new BinaryOperatorLiteral(BinaryOperator.GreaterOrEqual, context.GetTextSpan());
         }
 
         /// <returns><see cref="BinaryOperatorLiteral"/></returns>
         public UstNode VisitLess_than_or_equals_op([NotNull] PlSqlParser.Less_than_or_equals_opContext context)
         {
-            return new BinaryOperatorLiteral(BinaryOperator.LessOrEqual, context.GetTextSpan(), root);
+            return new BinaryOperatorLiteral(BinaryOperator.LessOrEqual, context.GetTextSpan());
         }
 
         public UstNode VisitConcatenation_op([NotNull] PlSqlParser.Concatenation_opContext context)
         {
-            return new BinaryOperatorLiteral(BinaryOperator.Plus, context.GetTextSpan(), root);
+            return new BinaryOperatorLiteral(BinaryOperator.Plus, context.GetTextSpan());
         }
 
         public UstNode VisitOuter_join_sign([NotNull] PlSqlParser.Outer_join_signContext context) { return VisitChildren(context); }

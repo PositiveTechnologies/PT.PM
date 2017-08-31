@@ -14,8 +14,8 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public Expression Right { get; set; }
 
-        public BinaryOperatorExpression(Expression left, BinaryOperatorLiteral op, Expression right, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public BinaryOperatorExpression(Expression left, BinaryOperatorLiteral op, Expression right, TextSpan textSpan)
+            : base(textSpan)
         {
             Left = left;
             Operator = op;

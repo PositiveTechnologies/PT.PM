@@ -7,8 +7,8 @@ namespace PT.PM.Common.Nodes.Statements
 
         public Expression Expression { get; set; }
 
-        public ContinueStatement(TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public ContinueStatement(TextSpan textSpan)
+            : base(textSpan)
         {
         }
 

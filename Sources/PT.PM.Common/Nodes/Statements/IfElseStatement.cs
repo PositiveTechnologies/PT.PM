@@ -17,8 +17,8 @@ namespace PT.PM.Common.Nodes.Statements
         /// </summary>
         public Statement FalseStatement { get; set; }
 
-        public IfElseStatement(Expression condition, Statement trueStatement, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public IfElseStatement(Expression condition, Statement trueStatement, TextSpan textSpan)
+            : base(textSpan)
         {
             Condition = condition;
             TrueStatement = trueStatement;

@@ -4,8 +4,8 @@
     {
         public override NodeType NodeType => NodeType.EmptyStatement;
 
-        public EmptyStatement(TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public EmptyStatement(TextSpan textSpan)
+            : base(textSpan)
         {
         }
 

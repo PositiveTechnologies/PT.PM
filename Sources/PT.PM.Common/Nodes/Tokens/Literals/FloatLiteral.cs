@@ -11,12 +11,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public override string TextValue => Value.ToString(CultureInfo.InvariantCulture);
 
         public FloatLiteral(double value)
-            : this(value, default(TextSpan), null)
+            : this(value, default(TextSpan))
         {
         }
 
-        public FloatLiteral(double value, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public FloatLiteral(double value, TextSpan textSpan)
+            : base(textSpan)
         {
             Value = value;
         }

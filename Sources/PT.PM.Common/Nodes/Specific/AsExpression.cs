@@ -12,8 +12,8 @@ namespace PT.PM.Common.Nodes.Specific
 
         public TypeToken Type { get; set; }
 
-        public AsExpression(Expression expression, TypeToken type, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public AsExpression(Expression expression, TypeToken type, TextSpan textSpan)
+            : base(textSpan)
         {
             Expression = expression;
             Type = type;

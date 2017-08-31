@@ -24,8 +24,8 @@ namespace PT.PM.Patterns.Nodes
         }
 
         public PatternTryCatchStatement(List<TypeToken> exceptionTypes, bool isCatchBodyEmpty,
-            TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+            TextSpan textSpan)
+            : base(textSpan)
         {
             ExceptionTypes = exceptionTypes ?? throw new ArgumentNullException("exceptionTypes");
             IsCatchBodyEmpty = isCatchBodyEmpty;

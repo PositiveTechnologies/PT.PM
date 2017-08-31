@@ -80,7 +80,7 @@ namespace PT.PM.AntlrUtils
                 result = new RootNode(langParseTree.SourceCodeFile, Language);
                 result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
             }
-            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan(), result)).ToArray();
+            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())).ToArray();
             return result;
         }
 
@@ -137,7 +137,7 @@ namespace PT.PM.AntlrUtils
                         }
                     }
                 }
-                result = new MultichildExpression(exprs, root);
+                result = new MultichildExpression(exprs);
             }
             return result;
         }
@@ -150,13 +150,13 @@ namespace PT.PM.AntlrUtils
             if ((nodeText.StartsWith("'") && nodeText.EndsWith("'")) ||
                 (nodeText.StartsWith("\"") && nodeText.EndsWith("\"")))
             {
-                result = new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan, root);
+                result = new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan);
             }
             else if (nodeText.Contains("."))
             {
                 double value;
                 double.TryParse(nodeText, out value);
-                return new FloatLiteral(value, textSpan, root);
+                return new FloatLiteral(value, textSpan);
             }
 
             var integerToken = TryParseInteger(nodeText, textSpan);
@@ -166,7 +166,7 @@ namespace PT.PM.AntlrUtils
             }
             else
             {
-                result = new IdToken(nodeText, textSpan, root);
+                result = new IdToken(nodeText, textSpan);
             }
             return result;
         }
@@ -183,28 +183,28 @@ namespace PT.PM.AntlrUtils
             {
                 long value;
                 match.Groups[1].Value.TryConvertToInt64(16, out value);
-                return new IntLiteral(value, textSpan, root);
+                return new IntLiteral(value, textSpan);
             }
             match = RegexOctalLiteral.Match(text);
             if (match.Success)
             {
                 long value;
                 match.Groups[1].Value.TryConvertToInt64(8, out value);
-                return new IntLiteral(value, textSpan, root);
+                return new IntLiteral(value, textSpan);
             }
             match = RegexBinaryLiteral.Match(text);
             if (match.Success)
             {
                 long value;
                 match.Groups[1].Value.TryConvertToInt64(2, out value);
-                return new IntLiteral(value, textSpan, root);
+                return new IntLiteral(value, textSpan);
             }
             match = RegexDecimalLiteral.Match(text);
             if (match.Success)
             {
                 long value;
                 match.Groups[1].Value.TryConvertToInt64(10, out value);
-                return new IntLiteral(value, textSpan, root);
+                return new IntLiteral(value, textSpan);
             }
             return null;
         }
@@ -255,9 +255,9 @@ namespace PT.PM.AntlrUtils
             var expression1 = (Expression)Visit(right);
             var result = new BinaryOperatorExpression(
                 expression0,
-                new BinaryOperatorLiteral(binaryOperator, operatorTextSpan, root),
+                new BinaryOperatorLiteral(binaryOperator, operatorTextSpan),
                 expression1,
-                left.GetTextSpan().Union(right.GetTextSpan()), root);
+                left.GetTextSpan().Union(right.GetTextSpan()));
 
             return result;
         }

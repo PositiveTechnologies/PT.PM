@@ -24,7 +24,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             else
             {
                 var voidTerminal = child0Terminal;
-                typeToken = new TypeToken(voidTerminal.GetText(), voidTerminal.GetTextSpan(), root);
+                typeToken = new TypeToken(voidTerminal.GetText(), voidTerminal.GetTextSpan());
             }
 
             var id = (IdToken)Visit(identifier);
@@ -45,7 +45,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     GetAndConvertTextSpan((ITerminalNode)context.GetChild(context.ChildCount - 1)), FileNode);*/
                 : null;
 
-            var result = new MethodDeclaration(id, parameters, body, textSpan, root);
+            var result = new MethodDeclaration(id, parameters, body, textSpan);
             return result;
         }
     }

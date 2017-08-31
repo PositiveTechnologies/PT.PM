@@ -32,17 +32,17 @@ namespace PT.PM.Patterns.Nodes
         }
 
         public PatternIdToken(string regexId, TextSpan textSpan)
-            : base(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, textSpan, null)
+            : base(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, textSpan)
         {
         }
 
         public PatternIdToken(string regexId)
-            : base(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, default(TextSpan), null)
+            : base(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, default(TextSpan))
         {
         }
 
         public PatternIdToken()
-            : base(@"\w+", default(TextSpan), null)
+            : base(@"\w+", default(TextSpan))
         {
         }
 

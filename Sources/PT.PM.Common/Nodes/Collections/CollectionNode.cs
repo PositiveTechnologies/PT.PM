@@ -8,8 +8,8 @@ namespace PT.PM.Common.Nodes.Collections
     {
         public List<TUstNode> Collection { get; set; }
 
-        protected CollectionNode(IEnumerable<TUstNode> collection, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        protected CollectionNode(IEnumerable<TUstNode> collection, TextSpan textSpan)
+            : base(textSpan)
         {
             Collection = collection as List<TUstNode> ?? collection.ToList();
         }

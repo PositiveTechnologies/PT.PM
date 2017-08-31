@@ -12,8 +12,8 @@ namespace PT.PM.Common.Nodes.Statements.Switch
 
         public List<Statement> Statements { get; set; }
 
-        public SwitchSection(IEnumerable<Expression> caseLabels, IEnumerable<Statement> statements, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public SwitchSection(IEnumerable<Expression> caseLabels, IEnumerable<Statement> statements, TextSpan textSpan)
+            : base(textSpan)
         {
             CaseLabels = caseLabels as List<Expression> ?? caseLabels.ToList();
             Statements = statements as List<Statement> ?? statements.ToList();

@@ -10,8 +10,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
         public virtual string Text { get; set; }
 
-        public StringLiteral(string text, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public StringLiteral(string text, TextSpan textSpan)
+            : base(textSpan)
         {
             Text = text;
         }

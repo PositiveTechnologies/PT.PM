@@ -4,11 +4,6 @@
     {
         public override NodeType NodeType => NodeType.Literal;
 
-        protected Literal(TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
-        {
-        }
-
         protected Literal(TextSpan textSpan)
             : base(textSpan)
         {

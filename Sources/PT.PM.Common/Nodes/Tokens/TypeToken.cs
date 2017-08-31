@@ -12,17 +12,17 @@ namespace PT.PM.Common.Nodes.Tokens
         public override string TextValue => TypeText;
 
         public TypeToken(string type)
-            : this(type, default(TextSpan), null)
+            : this(type, default(TextSpan))
         {
         }
 
-        public TypeToken(string type, TextSpan textSpan, RootNode fileNode)
-            : this(new List<string>() {type},textSpan, fileNode)
+        public TypeToken(string type, TextSpan textSpan)
+            : this(new List<string>() {type},textSpan)
         {
         }
 
-        public TypeToken(IList<string> complexType, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public TypeToken(IList<string> complexType, TextSpan textSpan)
+            : base(textSpan)
         {
             TypeText = string.Join(".", complexType);
         }

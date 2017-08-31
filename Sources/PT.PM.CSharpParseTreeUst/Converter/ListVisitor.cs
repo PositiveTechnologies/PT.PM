@@ -19,7 +19,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             Expression[] args = node.Arguments.Select(arg => (Expression)VisitAndReturnNullIfError(arg))
                 .ToArray();
 
-            var result = new ArgsNode(args, node.GetTextSpan(), root);
+            var result = new ArgsNode(args, node.GetTextSpan());
             return result;
         }
 
@@ -43,7 +43,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             Expression[] args = node.Arguments.Select(arg => (Expression)VisitAndReturnNullIfError(arg))
                 .ToArray();
 
-            var result = new ArgsNode(args, node.GetTextSpan(), root);
+            var result = new ArgsNode(args, node.GetTextSpan());
             return result;
         }
 

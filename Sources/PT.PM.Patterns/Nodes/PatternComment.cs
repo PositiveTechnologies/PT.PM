@@ -27,11 +27,6 @@ namespace PT.PM.Patterns.Nodes
             }
         }
 
-        public PatternComment(string comment, TextSpan textSpan, RootNode fileNode)
-            : base(comment, textSpan, fileNode)
-        {
-        }
-
         public PatternComment(string comment, TextSpan textSpan)
             : base(comment, textSpan)
         {

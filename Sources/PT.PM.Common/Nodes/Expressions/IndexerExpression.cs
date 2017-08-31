@@ -11,8 +11,8 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public ArgsNode Arguments { get; set; }
 
-        public IndexerExpression(Expression target, ArgsNode args, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public IndexerExpression(Expression target, ArgsNode args, TextSpan textSpan)
+            : base(textSpan)
         {
             Target = target;
             Arguments = args;

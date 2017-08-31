@@ -4,8 +4,8 @@
     {
         public override NodeType NodeType => NodeType.BaseReferenceExpression;
 
-        public BaseReferenceExpression(TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public BaseReferenceExpression(TextSpan textSpan)
+            : base(textSpan)
         {
         }
 

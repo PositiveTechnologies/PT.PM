@@ -10,8 +10,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public List<AssignmentExpression> Variables { get; set; }
 
-        public FieldDeclaration(IEnumerable<AssignmentExpression> variables, TextSpan textSpan, RootNode fileNode)
-            : base(null, textSpan, fileNode)
+        public FieldDeclaration(IEnumerable<AssignmentExpression> variables, TextSpan textSpan)
+            : base(null, textSpan)
         {
             Variables = variables as List<AssignmentExpression> ?? variables.ToList();
         }

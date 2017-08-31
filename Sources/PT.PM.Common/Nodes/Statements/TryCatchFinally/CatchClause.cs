@@ -13,8 +13,8 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 
         public BlockStatement Body { get; set; }
 
-        public CatchClause(TypeToken type, IdToken varName, BlockStatement body, TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
+        public CatchClause(TypeToken type, IdToken varName, BlockStatement body, TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             VarName = varName;

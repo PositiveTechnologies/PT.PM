@@ -27,16 +27,16 @@ namespace PT.PM.SqlParseTreeUst
                 ParserRuleContext context, Expression expression)
         {
             return new InvocationExpression(
-                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), root),
-                new ArgsNode(expression), context.GetTextSpan(), root);
+                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan()),
+                new ArgsNode(expression), context.GetTextSpan());
         }
 
         private InvocationExpression CreateSpecialInvocation(ITerminalNode name,
                     ParserRuleContext context, List<Expression> expressions)
         {
             return new InvocationExpression(
-                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), root),
-                new ArgsNode(expressions), context.GetTextSpan(), root);
+                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan()),
+                new ArgsNode(expressions), context.GetTextSpan());
         }
 
         private Statement[] GetStatements(TSqlParser.Sql_clausesContext context)
@@ -88,11 +88,11 @@ namespace PT.PM.SqlParseTreeUst
             double floatValue;
             if (text.StartsWith("@"))
             {
-                result = new IdToken(text.Substring(1), textSpan, root);
+                result = new IdToken(text.Substring(1), textSpan);
             }
             else if (text.StartsWith("\"") || text.StartsWith("["))
             {
-                result = new IdToken(text.Substring(1, text.Length - 2), textSpan, root);
+                result = new IdToken(text.Substring(1, text.Length - 2), textSpan);
             }
             else if (text.EndsWith("'"))
             {
@@ -101,25 +101,25 @@ namespace PT.PM.SqlParseTreeUst
                     text = text.Substring(1);
                 }
                 text = text.Substring(1, text.Length - 2);
-                result = new StringLiteral(text, textSpan, root);
+                result = new StringLiteral(text, textSpan);
             }
             else if (text.All(c => char.IsDigit(c)))
             {
-                result = new IntLiteral(long.Parse(text), textSpan, root);
+                result = new IntLiteral(long.Parse(text), textSpan);
             }
             else if (text.StartsWith("0X") || text.StartsWith("0x"))
             {
-                result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan, root);
+                result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
             }
             else if (double.TryParse(text, out floatValue))
             {
-                result = new FloatLiteral(floatValue, textSpan, root);
+                result = new FloatLiteral(floatValue, textSpan);
             }
             else
             {
                 if (text.Any(c => char.IsLetterOrDigit(c) || c == '_'))
                 {
-                    result = new IdToken(text, textSpan, root);
+                    result = new IdToken(text, textSpan);
                 }
                 else
                 {

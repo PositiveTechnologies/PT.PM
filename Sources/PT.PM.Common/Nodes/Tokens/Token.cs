@@ -13,11 +13,6 @@ namespace PT.PM.Common.Nodes.Tokens
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Expression Expression { get; set; }
 
-        protected Token(TextSpan textSpan, RootNode fileNode)
-            : base(textSpan, fileNode)
-        {
-        }
-
         protected Token(TextSpan textSpan)
             : base(textSpan)
         {
