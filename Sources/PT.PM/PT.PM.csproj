@@ -30,6 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849" />
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -44,8 +46,7 @@
     <Compile Include="LanguageDetector.cs" />
     <Compile Include="MessageEventArgs.cs" />
     <Compile Include="MessageType.cs" />
-    <Compile Include="ParserConverterBuilder.cs" />
-    <Compile Include="ParserConverterSet.cs" />
+    <Compile Include="ParserConverterFactory.cs" />
     <Compile Include="ParserLanguageDetector.cs" />
     <Compile Include="MatchingResultDto.cs" />
     <Compile Include="ParserUnit.cs" />
@@ -62,6 +63,10 @@
     <Compile Include="WorkflowResultBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AspxParser\AspxParser\AspxParser.csproj">
+      <Project>{88AF3957-A64A-4715-ADE5-3BE099034BDD}</Project>
+      <Name>AspxParser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj">
       <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
       <Name>PT.PM.AntlrUtils</Name>

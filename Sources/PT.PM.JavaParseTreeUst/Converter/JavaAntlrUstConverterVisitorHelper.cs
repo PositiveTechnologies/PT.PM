@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrUstConverterVisitor
+    public partial class JavaAntlrParseTreeConverter
     {
         private MethodDeclaration ConvertMethodDeclaration(JavaParser.TypeTypeOrVoidContext type, ITerminalNode child0Terminal,
             ITerminalNode identifier, JavaParser.FormalParametersContext formalParameters,
@@ -24,7 +24,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             else
             {
                 var voidTerminal = child0Terminal;
-                typeToken = new TypeToken(voidTerminal.GetText(), voidTerminal.GetTextSpan(), FileNode);
+                typeToken = new TypeToken(voidTerminal.GetText(), voidTerminal.GetTextSpan(), root);
             }
 
             var id = (IdToken)Visit(identifier);
@@ -45,7 +45,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     GetAndConvertTextSpan((ITerminalNode)context.GetChild(context.ChildCount - 1)), FileNode);*/
                 : null;
 
-            var result = new MethodDeclaration(id, parameters, body, textSpan, FileNode);
+            var result = new MethodDeclaration(id, parameters, body, textSpan, root);
             return result;
         }
     }

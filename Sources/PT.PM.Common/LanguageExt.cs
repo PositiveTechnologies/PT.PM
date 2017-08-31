@@ -1,30 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using static PT.PM.Common.Language;
 
 namespace PT.PM.Common
 {
     public static class LanguageExt
     {
-        private static char[] languageFlagSeparators = new char[] { ',', ' ', '\t', '\r', '\n' };
+        private static readonly char[] LanguageSeparators = new char[] { ',', ' ', '\t', '\r', '\n' };
 
         public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>()
         {
-            [Language.CSharp] = new LanguageInfo(Language.CSharp, ".cs", false, "C#", haveAntlrParser: false),
-            [Language.Java] = new LanguageInfo(Language.Java, ".java", false, "Java"),
-            [Language.Php] = new LanguageInfo(Language.Php, new string[] { ".php" }, true, "PHP", LanguageFlags.JavaScript | LanguageFlags.Html),
-            [Language.PlSql] = new LanguageInfo(Language.PlSql, new string[] { ".sql", ".pks", ".pkb", ".tps", ".vw" } , true, "PL/SQL"),
-            [Language.TSql] = new LanguageInfo(Language.TSql, ".sql", true, "T-SQL"),
-            [Language.Aspx] = new LanguageInfo(Language.Aspx, new string[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", LanguageFlags.CSharp),
-            [Language.JavaScript] = new LanguageInfo(Language.JavaScript, ".js", false, "JavaScript"),
-            [Language.Html] = new LanguageInfo(Language.Html, ".html", true, "HTML", LanguageFlags.JavaScript)
+            [CSharp] = new LanguageInfo(CSharp, ".cs", false, "C#", haveAntlrParser: false),
+            [Java] = new LanguageInfo(Java, ".java", false, "Java"),
+            [Php] = new LanguageInfo(Php, new [] { ".php" }, true, "PHP", new [] { JavaScript, Html }),
+            [PlSql] = new LanguageInfo(PlSql, new [] { ".sql", ".pks", ".pkb", ".tps", ".vw" }, true, "PL/SQL"),
+            [TSql] = new LanguageInfo(TSql, ".sql", true, "T-SQL"),
+            [Aspx] = new LanguageInfo(Aspx, new [] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new [] { CSharp }),
+            [JavaScript] = new LanguageInfo(JavaScript, ".js", false, "JavaScript"),
+            [Html] = new LanguageInfo(Html, ".html", true, "HTML", new [] { JavaScript })
         };
 
-        public static readonly LanguageFlags AllLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.PlSql | LanguageFlags.TSql | LanguageFlags.Aspx | LanguageFlags.JavaScript | LanguageFlags.Html;
+        public static readonly Language[] AllLanguages = new Language[]
+        {
+            CSharp,
+            Java,
+            Php,
+            PlSql,
+            TSql,
+            Aspx,
+            JavaScript,
+            Html
+        };
 
-        public static readonly LanguageFlags AllGplPatternLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.Java | LanguageFlags.JavaScript;
-        public static readonly LanguageFlags AllSqlPatternLanguages = LanguageFlags.PlSql | LanguageFlags.TSql;
-        public static readonly LanguageFlags AllPatternLanguages = LanguageFlags.CSharp | LanguageFlags.Java | LanguageFlags.Php | LanguageFlags.PlSql | LanguageFlags.TSql | LanguageFlags.JavaScript | LanguageFlags.Html;
+        public static readonly Language[] AllGplPatternLanguages = new Language[]
+        {
+            CSharp,
+            Java,
+            Php,
+            Java,
+            JavaScript
+        };
+
+        public static readonly Language[] AllSqlPatternLanguages = new Language[]
+        {
+            PlSql,
+            TSql
+        };
+
+        public static readonly Language[] AllPatternLanguages = new Language[]
+        {
+            CSharp,
+            Java,
+            Php,
+            PlSql ,
+            TSql ,
+            JavaScript,
+            Html
+        };
 
         public static IEnumerable<Language> Languages => LanguageInfos.Keys;
 
@@ -40,30 +73,23 @@ namespace PT.PM.Common
             return LanguageInfos[language].HaveAntlrParser;
         }
 
-        public static bool IsCaseInsensitive(this LanguageFlags languageFlags)
+        public static string[] GetExtensions(Language language)
         {
-            int flags = (int)languageFlags;
-            int language = 0;
-            while (flags != 0)
-            {
-                if ((flags & 1) == 1)
-                {
-                    var isCaseInsensitive = ((Language)language).IsCaseInsensitive();
-                    if (!isCaseInsensitive)
-                    {
-                        return false;
-                    }
-                }
-
-                flags = flags >> 1;
-                ++language;
-            }
-            return true;
+            return LanguageInfos[language].Extensions;
         }
 
-        public static LanguageFlags GetLanguageWithDependentLanguages(this Language language)
+        public static string[] GetExtensions(Language[] languages)
         {
-            return language.ToFlags() | LanguageInfos[language].DependentLanguages;
+            return languages.SelectMany(lang => GetExtensions(lang)).ToArray();
+        }
+
+        public static HashSet<Language> GetSelfAndSublanguages(this Language language)
+        {
+            var result = new HashSet<Language>();
+            result.Add(language);
+            foreach (var lang in LanguageInfos[language].Sublanguages)
+                result.Add(lang);
+            return result;
         }
 
         public static Language? GetLanguageFromFileName(string fileName)
@@ -81,79 +107,26 @@ namespace PT.PM.Common
             }
         }
 
-        public static string[] GetExtensions(Language language)
+        public static Language[] ParseLanguages(string LanguageString)
         {
-            return LanguageInfos[language].Extensions;
-        }
-
-        public static string[] GetExtensions(LanguageFlags languages)
-        {
-            return languages.GetLanguages().SelectMany(lang => GetExtensions(lang)).ToArray();
-        }
-
-        public static Language[] GetImpactLanguages(this LanguageFlags value)
-        {
-            var languages = value.GetLanguages();
-            var result = new List<Language>();
-            foreach (Language language in languages)
+            if (!string.IsNullOrEmpty(LanguageString))
             {
-                var impactLanguageInfo = LanguageInfos.FirstOrDefault(languageInfo => languageInfo.Value.DependentLanguages.Is(language));
-                if (!impactLanguageInfo.Equals(default(KeyValuePair<Language, LanguageInfo>)))
-                {
-                    if (!result.Contains(impactLanguageInfo.Key))
-                    {
-                        result.Add(impactLanguageInfo.Key);
-                    }
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        public static Language[] GetLanguages(this LanguageFlags value)
-        {
-            var result = new List<Language>();
-            foreach (Language language in Languages)
-            {
-                if (value.Is(language))
-                {
-                    result.Add(language);
-                }
-            }
-            return result.ToArray();
-        }
-
-        public static bool Is(this LanguageFlags value, Language language) => value.Is(language.ToFlags());
-
-        public static bool Is(this LanguageFlags value, LanguageFlags flag) => (value & flag) == flag;
-
-        public static LanguageFlags ToFlags(this Language language)
-        {
-            return (LanguageFlags)(1 << (int)language);
-        }
-
-        public static LanguageFlags ParseLanguages(string languageFlagsString)
-        {
-            LanguageFlags resultLanguages;
-            if (!string.IsNullOrEmpty(languageFlagsString))
-            {
-                resultLanguages = LanguageFlags.None;
-                string[] languageStrings = languageFlagsString.Split(languageFlagSeparators, StringSplitOptions.RemoveEmptyEntries);
+                var resultLanguages = new List<Language>();
+                string[] languageStrings = LanguageString.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string languageString in languageStrings)
                 {
                     Language language;
                     if (Enum.TryParse(languageString, true, out language))
                     {
-                        resultLanguages |= language.ToFlags();
+                        resultLanguages.Add(language);
                     }
                 }
+                return resultLanguages.ToArray();
             }
             else
             {
-                resultLanguages = LanguageExt.AllPatternLanguages;
+                return AllPatternLanguages;
             }
-
-            return resultLanguages;
         }
     }
 }

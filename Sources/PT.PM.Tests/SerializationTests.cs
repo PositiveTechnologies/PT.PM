@@ -29,7 +29,7 @@ namespace PT.PM.Tests
         public void JsonSerialize_PatternWithVar_JsonEqualsToDsl()
         {
             var pwdVar = new PatternVarDef { Id = "pwd", Values = new List<Expression>() { new PatternIdToken("password") } };
-            var patternNode = new PatternNode
+            var patternNode = new PatternRootNode
             {
                 Vars = new List<PatternVarDef>() { pwdVar },
                 Node = new PatternStatements(
@@ -61,10 +61,10 @@ namespace PT.PM.Tests
             jsonSerializer.IncludeTextSpans = false;
 
             string json = jsonSerializer.Serialize(patternNode);
-            UstNode nodeFromJson = jsonSerializer.Deserialize(json, LanguageExt.AllPatternLanguages);
+            UstNode nodeFromJson = jsonSerializer.Deserialize(json);
 
             var dslSeializer = new DslProcessor() { PatternExpressionInsideStatement = false };
-            var nodeFromDsl = dslSeializer.Deserialize("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);", LanguageExt.AllPatternLanguages);
+            var nodeFromDsl = dslSeializer.Deserialize("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);");
 
             Assert.IsTrue(nodeFromJson.Equals(patternNode));
             Assert.IsTrue(nodeFromJson.Equals(nodeFromDsl));

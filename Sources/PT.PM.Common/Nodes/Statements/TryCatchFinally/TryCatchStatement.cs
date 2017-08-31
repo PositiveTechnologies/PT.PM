@@ -13,7 +13,7 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 
         public BlockStatement FinallyBlock { get; set; }
 
-        public TryCatchStatement(BlockStatement tryBlock, TextSpan textSpan, FileNode fileNode)
+        public TryCatchStatement(BlockStatement tryBlock, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             TryBlock = tryBlock;

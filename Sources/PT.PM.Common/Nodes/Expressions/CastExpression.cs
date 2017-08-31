@@ -10,7 +10,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public Expression Expression { get; set; }
 
-        public CastExpression(TypeToken type, Expression expression, TextSpan textSpan, FileNode fileNode)
+        public CastExpression(TypeToken type, Expression expression, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Type = type;

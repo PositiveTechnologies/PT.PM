@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converter\ExpressionVisitor.cs" />
-    <Compile Include="Converter\JavaAntlrUstConverterVisitor.cs" />
+    <Compile Include="Converter\JavaAntlrParseTreeConverter.cs" />
     <Compile Include="Converter\JavaAntlrUstConverterVisitorHelper.cs" />
     <Compile Include="Converter\StatementVisitor.cs" />
     <Compile Include="Converter\TypeMemberVisitor.cs" />
@@ -57,7 +57,6 @@
     <Compile Include="Generated\JavaParser.cs" />
     <Compile Include="Generated\JavaParserVisitor.cs" />
     <Compile Include="JavaAntlrParseTree.cs" />
-    <Compile Include="JavaAntlrParseTreeConverter.cs" />
     <Compile Include="JavaAntlrParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">

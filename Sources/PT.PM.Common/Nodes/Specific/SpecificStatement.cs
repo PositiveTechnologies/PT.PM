@@ -4,7 +4,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public abstract class SpecificStatement : Statement
     {
-        protected SpecificStatement(TextSpan textSpan, FileNode fileNode)
+        protected SpecificStatement(TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
         }

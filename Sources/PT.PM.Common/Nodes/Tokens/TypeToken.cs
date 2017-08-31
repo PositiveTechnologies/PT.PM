@@ -16,12 +16,12 @@ namespace PT.PM.Common.Nodes.Tokens
         {
         }
 
-        public TypeToken(string type, TextSpan textSpan, FileNode fileNode)
+        public TypeToken(string type, TextSpan textSpan, RootNode fileNode)
             : this(new List<string>() {type},textSpan, fileNode)
         {
         }
 
-        public TypeToken(IList<string> complexType, TextSpan textSpan, FileNode fileNode)
+        public TypeToken(IList<string> complexType, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             TypeText = string.Join(".", complexType);

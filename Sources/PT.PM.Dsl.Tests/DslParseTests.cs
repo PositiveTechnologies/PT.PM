@@ -8,6 +8,7 @@ using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace PT.PM.Dsl.Tests
 {
@@ -15,7 +16,7 @@ namespace PT.PM.Dsl.Tests
     public class DslParseTests
     {
         private DefaultPatternRepository patternsRepository;
-        private Pattern[] patterns;
+        private PatternRootNode[] patterns;
 
         [SetUp]
         public void Init()
@@ -45,17 +46,20 @@ namespace PT.PM.Dsl.Tests
             var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger, PatternExpressionInsideStatement = false };
-            UstNode result = processor.Deserialize(data, fileName == @"DebugInfo.aipm" ? LanguageFlags.Php : LanguageExt.AllPatternLanguages);
+            PatternRootNode result = (PatternRootNode)processor.Deserialize(data);
+            result.Languages = fileName == @"DebugInfo.aipm"
+                ? new HashSet<Language>() { Language.Php }
+                : new HashSet<Language>(LanguageExt.AllPatternLanguages);
             Assert.AreEqual(0, logger.ErrorCount);
 
             string patternName = Path.GetFileNameWithoutExtension(fileName);
-            Pattern defaultPattern = patterns.FirstOrDefault(p => p.DebugInfo.StartsWith(patternName));
+            PatternRootNode defaultPattern = patterns.FirstOrDefault(p => p.DebugInfo.StartsWith(patternName));
             if (defaultPattern == null)
             {
                 Assert.Inconclusive($"Pattern {patternName} does not exists in DefaultPatternRepository");
             }
             
-            Assert.IsTrue(result.Equals(defaultPattern.Data));
+            Assert.IsTrue(result.Equals(defaultPattern));
         }
 
         [TestCase(@"Range.aipm")]
@@ -64,7 +68,7 @@ namespace PT.PM.Dsl.Tests
             var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger };
-            UstNode result = processor.Deserialize(data, LanguageExt.AllPatternLanguages);
+            UstNode result = processor.Deserialize(data);
             Assert.AreEqual(0, logger.ErrorCount);
         }
 
@@ -74,7 +78,7 @@ namespace PT.PM.Dsl.Tests
             var logger = new LoggerMessageCounter();
             var data = "(?i)password(?-i)]> = <[\"\\w*\" || null]>";
             var processor = new DslProcessor() { Logger = logger };
-            UstNode result = processor.Deserialize(data, LanguageExt.AllPatternLanguages);
+            UstNode result = processor.Deserialize(data);
             Assert.AreEqual(5, logger.ErrorCount);
         }
 
@@ -85,7 +89,7 @@ namespace PT.PM.Dsl.Tests
             Assert.Throws(typeof(ConversionException), () =>
             {
                 var processor = new DslProcessor();
-                UstNode result = processor.Deserialize(data, LanguageExt.AllPatternLanguages);
+                UstNode result = processor.Deserialize(data);
             });
         }
     }

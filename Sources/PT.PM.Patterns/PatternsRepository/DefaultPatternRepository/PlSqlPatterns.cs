@@ -5,84 +5,73 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Patterns.Nodes;
 using System.Collections.Generic;
+using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<Pattern> CreatePlSqlPatterns()
+        public IEnumerable<PatternRootNode> CreatePlSqlPatterns()
         {
-            var patterns = new List<Pattern>();
+            var patterns = new List<PatternRootNode>();
 
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Dangerous Function",
-                Languages = LanguageFlags.PlSql,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { PlSql },
+                Node = new InvocationExpression()
                 {
-                    Node = new InvocationExpression()
+                    Target = new MemberReferenceExpression
                     {
-                        Target = new MemberReferenceExpression
-                        {
-                            Target = new IdToken("DBMS_UTILITY"),
-                            Name = new IdToken("EXEC_DDL_STATEMENT")
-                        },
-                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
-                    }
+                        Target = new IdToken("DBMS_UTILITY"),
+                        Name = new IdToken("EXEC_DDL_STATEMENT")
+                    },
+                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
                 }
             });
 
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
-                Languages = LanguageFlags.PlSql,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { PlSql },
+                Node = new InvocationExpression()
                 {
-                    Node = new InvocationExpression()
+                    Target = new MemberReferenceExpression
                     {
-                        Target = new MemberReferenceExpression
-                        {
-                            Target = new IdToken("DBMS_OBFUSCATION_TOOLKIT"),
-                            Name = new PatternIdToken("^(md2|md4|md5)$")
-                        },
-                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
-                    }
+                        Target = new IdToken("DBMS_OBFUSCATION_TOOLKIT"),
+                        Name = new PatternIdToken("^(md2|md4|md5)$")
+                    },
+                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
                 }
             });
 
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
-                Languages = LanguageFlags.PlSql,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { PlSql },
+                Node = new MemberReferenceExpression
                 {
-                    Node = new MemberReferenceExpression
-                    {
-                        Target = new IdToken("dbms_crypto"),
-                        Name = new IdToken("hash_sh1")
-                    }
+                    Target = new IdToken("dbms_crypto"),
+                    Name = new IdToken("hash_sh1")
                 }
             });
-            
-            patterns.Add(new Pattern
+
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Insecure Randomness",
-                Languages = LanguageFlags.PlSql,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { PlSql },
+                Node = new InvocationExpression
                 {
-                    Node = new InvocationExpression
+                    Target = new MemberReferenceExpression
                     {
-                        Target = new MemberReferenceExpression
-                        {
-                            Target = new IdToken("DBMS_RANDOM"),
-                            Name = new PatternIdToken()
-                        },
-                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
-                    }
+                        Target = new IdToken("DBMS_RANDOM"),
+                        Name = new PatternIdToken()
+                    },
+                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
                 }
             });
 
@@ -91,44 +80,41 @@ namespace PT.PM.Patterns.PatternsRepository
                 Id = "cursor",
                 Values = new List<Expression>() { new PatternIdToken() }
             };
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: Cursor Snarfing",
-                Languages = LanguageFlags.PlSql,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { PlSql },
+                Vars = new List<PatternVarDef> { cursorVar },
+                Node = new PatternStatements
                 {
-                    Vars = new List<PatternVarDef> { cursorVar },
-                    Node = new PatternStatements
+                    Statements = new List<Statement>()
                     {
-                        Statements = new List<Statement>()
+                        new PatternExpressionInsideStatement
                         {
-                            new PatternExpressionInsideStatement
+                            Statement = new ExpressionStatement(new AssignmentExpression
                             {
-                                Statement = new ExpressionStatement(new AssignmentExpression
+                                Left = new PatternVarRef(cursorVar),
+                                Right = new MemberReferenceExpression
                                 {
-                                    Left = new PatternVarRef(cursorVar),
-                                    Right = new MemberReferenceExpression
-                                    {
-                                        Target = new IdToken("DBMS_SQL"),
-                                        Name = new IdToken("OPEN_CURSOR")
-                                    }
-                                })
-                            },
-                            new PatternMultipleStatements(),
-                            new PatternExpressionInsideStatement
+                                    Target = new IdToken("DBMS_SQL"),
+                                    Name = new IdToken("OPEN_CURSOR")
+                                }
+                            })
+                        },
+                        new PatternMultipleStatements(),
+                        new PatternExpressionInsideStatement
+                        {
+                            Statement = new ExpressionStatement(new InvocationExpression
                             {
-                                Statement = new ExpressionStatement(new InvocationExpression
+                                Target = new MemberReferenceExpression
                                 {
-                                    Target = new MemberReferenceExpression
-                                    {
-                                        Target = new IdToken("DBMS_SQL"),
-                                        Name = new IdToken("CLOSE_CURSOR")
-                                    },
-                                    Arguments = new ArgsNode(new PatternVarRef(cursorVar))
-                                }),
-                                Not = true
-                            }
+                                    Target = new IdToken("DBMS_SQL"),
+                                    Name = new IdToken("CLOSE_CURSOR")
+                                },
+                                Arguments = new ArgsNode(new PatternVarRef(cursorVar))
+                            }),
+                            Not = true
                         }
                     }
                 }
@@ -139,48 +125,45 @@ namespace PT.PM.Patterns.PatternsRepository
                 Id = "file",
                 Values = new List<Expression>() { new PatternIdToken() }
             };
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: File Snarfing",
-                Languages = LanguageFlags.PlSql,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { PlSql },
+                Vars = new List<PatternVarDef> { fileVar },
+                Node = new PatternStatements
                 {
-                    Vars = new List<PatternVarDef> { fileVar },
-                    Node = new PatternStatements
+                    Statements = new List<Statement>()
                     {
-                        Statements = new List<Statement>()
+                        new PatternExpressionInsideStatement
                         {
-                            new PatternExpressionInsideStatement
+                            Statement = new ExpressionStatement(new AssignmentExpression
                             {
-                                Statement = new ExpressionStatement(new AssignmentExpression
-                                {
-                                    Left = new PatternVarRef(fileVar),
-                                    Right = new InvocationExpression
-                                    {
-                                        Target = new MemberReferenceExpression
-                                        {
-                                            Target = new PatternIdToken("(?i)UTL_FILE"),
-                                            Name = new PatternIdToken("(?i)FOPEN")
-                                        },
-                                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
-                                    }
-                                })
-                            },
-                            new PatternMultipleStatements(),
-                            new PatternExpressionInsideStatement
-                            {
-                                Statement = new ExpressionStatement(new InvocationExpression
+                                Left = new PatternVarRef(fileVar),
+                                Right = new InvocationExpression
                                 {
                                     Target = new MemberReferenceExpression
                                     {
                                         Target = new PatternIdToken("(?i)UTL_FILE"),
-                                        Name = new PatternIdToken("(?i)FCLOSE")
+                                        Name = new PatternIdToken("(?i)FOPEN")
                                     },
-                                    Arguments = new ArgsNode(new PatternVarRef(fileVar))
-                                }),
-                                Not = true
-                            }
+                                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
+                                }
+                            })
+                        },
+                        new PatternMultipleStatements(),
+                        new PatternExpressionInsideStatement
+                        {
+                            Statement = new ExpressionStatement(new InvocationExpression
+                            {
+                                Target = new MemberReferenceExpression
+                                {
+                                    Target = new PatternIdToken("(?i)UTL_FILE"),
+                                    Name = new PatternIdToken("(?i)FCLOSE")
+                                },
+                                Arguments = new ArgsNode(new PatternVarRef(fileVar))
+                            }),
+                            Not = true
                         }
                     }
                 }

@@ -56,7 +56,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public BinaryOperatorLiteral(string op, TextSpan textSpan, FileNode fileNode)
+        public BinaryOperatorLiteral(string op, TextSpan textSpan, RootNode fileNode)
         {
             BinaryOperator binaryOperator;
             if (!TextBinaryOperator.TryGetValue(op, out binaryOperator))
@@ -65,10 +65,10 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             }
             BinaryOperator = binaryOperator;
             TextSpan = textSpan;
-            FileNode = fileNode;
+            Root = fileNode;
         }
 
-        public BinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan, FileNode fileNode)
+        public BinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             BinaryOperator = op;

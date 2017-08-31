@@ -14,32 +14,52 @@ using System.Reflection;
 using System.Collections;
 using System.Text.RegularExpressions;
 using PT.PM.Patterns;
-using PT.PM.Dsl;
 using PT.PM.Common.Nodes.TypeMembers;
 
 namespace PT.PM.UstPreprocessing
 {
-    public class UstSimplifier : UstVisitor<UstNode>, IUstPatternVisitor<UstNode>, IUstPreprocessor
+    public class UstSimplifier : UstVisitor<UstNode>, IUstPatternVisitor<UstNode>
     {
-        protected FileNode fileNode;
-
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Ust Preprocess(Ust ust)
+        public RootNode Preprocess(RootNode ust)
         {
-            Ust result;
-            fileNode = null;
-            result = new Ust();
-            result.FileName = ust.FileName;
-            result.SourceLanguages = ust.SourceLanguages;
-            result.Root = (FileNode)Visit(ust.Root);
-            result.Comments = ust.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
+            var result = (RootNode)Visit((dynamic)ust);
             return result;
         }
 
         public UstNode Preprocess(UstNode ustNode)
         {
-            return Visit(ustNode);
+            return Visit((dynamic)ustNode);
+        }
+
+        public override UstNode Visit(RootNode rootUstNode)
+        {
+            var newRoot = new RootNode(rootUstNode.SourceCodeFile, rootUstNode.Language);
+
+            newRoot.SourceCodeFile = rootUstNode.SourceCodeFile;
+            newRoot.Nodes = rootUstNode.Nodes.Select(node => Visit(node)).ToArray();
+            newRoot.Comments = rootUstNode.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
+
+            newRoot.FillAscendants();
+            return newRoot;
+        }
+
+        public UstNode Visit(PatternRootNode patternNode)
+        {
+            var newPattern = new PatternRootNode(patternNode.SourceCodeFile);
+
+            newPattern.SourceCodeFile = patternNode.SourceCodeFile;
+            newPattern.Nodes = patternNode.Nodes.Select(node => Visit(node)).ToArray();
+            newPattern.Comments = patternNode.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
+            newPattern.Languages = new HashSet<Language>(patternNode.Languages);
+
+            List<PatternVarDef> vars = patternNode.Vars.Select(v => (PatternVarDef)Visit(v)).ToList();
+            vars.Sort();
+            newPattern.Vars = vars;
+
+            newPattern.FillAscendants();
+            return newPattern;
         }
 
         public override UstNode Visit(UstNode ustNode)
@@ -105,7 +125,7 @@ namespace PT.PM.UstPreprocessing
                     result = new StringLiteral
                     {
                         Text = resultText,
-                        FileNode = binaryOperatorExpression.FileNode,
+                        Root = binaryOperatorExpression.Root,
                         TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan)
                     };
                     Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {result.TextSpan}");
@@ -164,7 +184,7 @@ namespace PT.PM.UstPreprocessing
                     result = new IntLiteral
                     {
                         Value = resultValue,
-                        FileNode = binaryOperatorExpression.FileNode,
+                        Root = binaryOperatorExpression.Root,
                         TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan)
                     };
                     Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} has been folded to {resultValue} at {result.TextSpan}");
@@ -174,7 +194,7 @@ namespace PT.PM.UstPreprocessing
             if (result == null)
             {
                 result = new BinaryOperatorExpression(leftExpression, op, rightExpression,
-                    new TextSpan(binaryOperatorExpression.TextSpan), binaryOperatorExpression.FileNode);
+                    new TextSpan(binaryOperatorExpression.TextSpan), binaryOperatorExpression.Root);
                 leftExpression.Parent = result;
                 rightExpression.Parent = result;
                 op.Parent = result;
@@ -189,7 +209,7 @@ namespace PT.PM.UstPreprocessing
             Expression condition = (Expression)Visit(ifElseStatement.Condition);
             BlockStatement trueStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.TrueStatement));
             BlockStatement falseStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.FalseStatement));
-            var result = new IfElseStatement(condition, trueStatement, ifElseStatement.TextSpan, ifElseStatement.FileNode);
+            var result = new IfElseStatement(condition, trueStatement, ifElseStatement.TextSpan, ifElseStatement.Root);
             result.Condition.Parent = result;
             result.TrueStatement.Parent = result;
             if (result.FalseStatement != null)
@@ -212,7 +232,7 @@ namespace PT.PM.UstPreprocessing
                     UstNode result = new IntLiteral
                     {
                         Value = -intValue,
-                        FileNode = unaryOperatorExpression.FileNode,
+                        Root = unaryOperatorExpression.Root,
                         TextSpan = op.TextSpan.Union(ex.TextSpan)
                     };
                     Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-intValue} at {result.TextSpan}");
@@ -225,7 +245,7 @@ namespace PT.PM.UstPreprocessing
                     UstNode result = new FloatLiteral
                     {
                         Value = -doubleValue,
-                        FileNode = unaryOperatorExpression.FileNode,
+                        Root = unaryOperatorExpression.Root,
                         TextSpan = op.TextSpan.Union(ex.TextSpan)
                     };
                     Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-doubleValue} at {result.TextSpan}");
@@ -249,18 +269,10 @@ namespace PT.PM.UstPreprocessing
             }
             else
             {
-                result = new BlockStatement(new Statement[] { statement }, statement.TextSpan, statement.FileNode);
+                result = new BlockStatement(new Statement[] { statement }, statement.TextSpan, statement.Root);
                 statement.Parent = result;
             }
             return result;
-        }
-
-        public UstNode Visit(PatternNode patternVars)
-        {
-            UstNode data = Visit(patternVars.Node);
-            List<PatternVarDef> vars = patternVars.Vars.Select(v => (PatternVarDef)Visit(v)).ToList();
-            vars.Sort();
-            return new PatternNode(data, vars);
         }
 
         public UstNode Visit(PatternExpressions patternExpressions)
@@ -387,16 +399,6 @@ namespace PT.PM.UstPreprocessing
             return VisitChildren(patternVarRef);
         }
 
-        public UstNode Visit(DslNode patternExpression)
-        {
-            return VisitChildren(patternExpression);
-        }
-
-        public UstNode Visit(LangCodeNode langCodeNode)
-        {
-            return VisitChildren(langCodeNode);
-        }
-
         protected override UstNode VisitChildren(UstNode ustNode)
         {
             try
@@ -417,14 +419,17 @@ namespace PT.PM.UstPreprocessing
                     {
                         prop.SetValue(result, prop.GetValue(ustNode));
                     }
-                    else if (typeof(UstNode).IsAssignableFrom(propType) && propType.Name != nameof(UstNode.Parent))
+                    else if (prop.Name == nameof(UstNode.Parent) || prop.Name == nameof(UstNode.Root))
+                    {
+                        continue;
+                    }
+                    else if (typeof(UstNode).IsAssignableFrom(propType))
                     {
                         UstNode getValue = (UstNode)prop.GetValue(ustNode);
-                        UstNode setValue = VisitNodeOrIgnoreFileNode(getValue);
-                        prop.SetValue(result, setValue);
-                        if (setValue != null)
+                        if (getValue != null)
                         {
-                            setValue.Parent = result;
+                            UstNode setValue = Visit(getValue);
+                            prop.SetValue(result, setValue);
                         }
                     }
                     else if (prop.Name.StartsWith(nameof(IAbsoluteLocationMatching.MatchedLocation)))
@@ -439,17 +444,13 @@ namespace PT.PM.UstPreprocessing
                         if (sourceCollection != null)
                         {
                             destCollection = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
-                            foreach (var item in sourceCollection)
+                            foreach (object item in sourceCollection)
                             {
                                 var ustNodeItem = item as UstNode;
                                 if (ustNodeItem != null)
                                 {
-                                    var destUstNodeItem = VisitNodeOrIgnoreFileNode(ustNodeItem);
+                                    var destUstNodeItem = Visit(ustNodeItem);
                                     destCollection.Add(destUstNodeItem);
-                                    if (destUstNodeItem != null)
-                                    {
-                                        destUstNodeItem.Parent = result;
-                                    }
                                 }
                                 else
                                 {
@@ -461,7 +462,7 @@ namespace PT.PM.UstPreprocessing
                     }
                     else if (propType == typeof(Regex))
                     {
-                        // ignore regex as they assignment via strings.
+                        continue;
                     }
                     else
                     {
@@ -473,29 +474,8 @@ namespace PT.PM.UstPreprocessing
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(ustNode.FileNode?.FileName?.Text ?? "", ex) { TextSpan = ustNode.TextSpan });
+                Logger.LogError(new ConversionException(ustNode.Root?.SourceCodeFile?.FullPath ?? "", ex) { TextSpan = ustNode.TextSpan });
                 return null;
-            }
-        }
-
-        protected UstNode VisitNodeOrIgnoreFileNode(UstNode node)
-        {
-            if (node == null)
-            {
-                return null;
-            }
-            else if (node.NodeType != NodeType.FileNode)
-            {
-                return Visit(node); // Prevent endless recursion.
-            }
-            else
-            {
-                if (fileNode == null)
-                {
-                    var fileNode = (FileNode)node;
-                    this.fileNode = new FileNode(fileNode?.FileName?.Text, fileNode?.FileData);
-                }
-                return fileNode;
             }
         }
     }

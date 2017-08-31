@@ -14,7 +14,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public List<Expression> Initializers { get; set; }
 
-        public ObjectCreateExpression(Token type, ArgsNode args, TextSpan textSpan, FileNode fileNode)
+        public ObjectCreateExpression(Token type, ArgsNode args, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Type = type;

@@ -9,13 +9,13 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public List<Expression> Expressions { get; set; }
 
-        public MultichildExpression(IEnumerable<Expression> children, TextSpan textSpan, FileNode fileNode)
+        public MultichildExpression(IEnumerable<Expression> children, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Expressions = children as List<Expression> ?? children.ToList();
         }
 
-        public MultichildExpression(IEnumerable<Expression> children, FileNode fileNode)
+        public MultichildExpression(IEnumerable<Expression> children, RootNode fileNode)
         {
             Expressions = children as List<Expression> ?? children.ToList();
             if (Expressions.Count > 0)
@@ -28,7 +28,7 @@ namespace PT.PM.Common.Nodes.Expressions
             }
         }
 
-        public MultichildExpression(TextSpan textSpan, FileNode fileNode, params Expression[] children)
+        public MultichildExpression(TextSpan textSpan, RootNode fileNode, params Expression[] children)
             : base(textSpan, fileNode)
         {
             Expressions = children.ToList();

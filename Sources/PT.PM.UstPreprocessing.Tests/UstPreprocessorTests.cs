@@ -131,7 +131,7 @@ namespace PT.PM.UstPreprocessing.Tests
                 Id = "testVarDef",
                 Values = unsortedExpressions
             };
-            var patternVars = new PatternNode
+            var patternVars = new PatternRootNode
             {
                 Vars = new List<PatternVarDef>() { patternVarDef },
                 Node = new PatternVarRef(patternVarDef)
@@ -140,7 +140,7 @@ namespace PT.PM.UstPreprocessing.Tests
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
             UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
-            Expression[] resultSortedExpressions = ((PatternNode)preprocessor.Preprocess(patternVars))
+            Expression[] resultSortedExpressions = ((PatternRootNode)preprocessor.Preprocess(patternVars))
                 .Vars.First().Values.ToArray();
 
             Assert.AreEqual(expectedSortedExpressions.Count, resultSortedExpressions.Length);

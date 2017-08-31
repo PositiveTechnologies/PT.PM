@@ -5,7 +5,7 @@ namespace PT.PM.Common.Nodes.Expressions
     {
         public override NodeType NodeType => NodeType.ThisReferenceToken;
 
-        public ThisReferenceToken(TextSpan textSpan, FileNode fileNode)
+        public ThisReferenceToken(TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
         }

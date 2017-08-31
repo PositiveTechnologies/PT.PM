@@ -35,7 +35,7 @@ namespace PT.PM.CSharpParseTreeUst
             return result;
         }
 
-        internal static TextSpan GetTextSpan(this AspxParser.Location location)
+        internal static TextSpan GetTextSpan(this global::AspxParser.Location location)
         {
             return new TextSpan(location.Start, location.Length);
         }

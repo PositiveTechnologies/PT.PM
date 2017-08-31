@@ -6,14 +6,14 @@
 
         public UstNode Node { get; set; }
 
-        public WrapperExpression(UstNode node, TextSpan textSpan, FileNode fileNode)
+        public WrapperExpression(UstNode node, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Node = node;
         }
 
         public WrapperExpression(UstNode node)
-            : base(node.TextSpan, node.FileNode)
+            : base(node.TextSpan, node.Root)
         {
             Node = node;
         }

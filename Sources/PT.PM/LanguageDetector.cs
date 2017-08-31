@@ -38,7 +38,7 @@ namespace PT.PM
             else
             {
                 result = Detect(sourceCode, languages);
-                LogDetection(result, languages ?? LanguageExt.AllLanguages.GetLanguages(), sourceCodeFileName);
+                LogDetection(result, languages ?? LanguageExt.AllLanguages, sourceCodeFileName);
             }
             return result;
         }
@@ -76,7 +76,7 @@ namespace PT.PM
             var result = new List<Language>();
             if (extensions.Length == 0)
             {
-                return languages;
+                return languages ?? new Language[0];
             }
             foreach (var extension in extensions)
             {

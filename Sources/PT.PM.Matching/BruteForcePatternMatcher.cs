@@ -1,24 +1,23 @@
-﻿using System;
+﻿using PT.PM.Common;
+using PT.PM.Common.Exceptions;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Patterns.Nodes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PT.PM.Common;
-using PT.PM.Common.Ust;
-using PT.PM.Common.Nodes;
-using PT.PM.Patterns;
-using PT.PM.Common.Exceptions;
-using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {
-    public class BruteForcePatternMatcher : IUstPatternMatcher<Ust, Pattern, MatchingResult>
+    public class BruteForcePatternMatcher : IUstPatternMatcher<RootNode, PatternRootNode, MatchingResult>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Pattern[] Patterns { get; set; }
+        public PatternRootNode[] Patterns { get; set; }
 
         public bool IsIgnoreFilenameWildcards { get; set; }
 
-        public BruteForcePatternMatcher(Pattern[] patterns)
+        public BruteForcePatternMatcher(PatternRootNode[] patterns)
         {
             Patterns = patterns;
         }
@@ -27,29 +26,30 @@ namespace PT.PM.Matching
         {
         }
 
-        public List<MatchingResult> Match(Ust ust)
+        public List<MatchingResult> Match(RootNode ust)
         {
-            if (ust.Root != null)
+            if (ust.Nodes != null)
             {
                 try
                 {
                     var matchingResult = new List<MatchingResult>();
-                    IEnumerable<Pattern> patterns = Patterns
-                        .Where(pattern => (pattern.Languages & ust.SourceLanguages) != LanguageFlags.None);
+                    IEnumerable<PatternRootNode> patterns = Patterns
+                        .Where(pattern => pattern.Languages.Any(patternLang => ust.Sublanguages.Contains(patternLang)));
                     if (!IsIgnoreFilenameWildcards)
                     {
-                        patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.FileName) ?? true);
+                        patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceCodeFile.FullPath) ?? true);
                     }
-                    PatternVarRefEnumerator[] patternEnumerators = patterns
-                        .Select(pattern => new PatternVarRefEnumerator(pattern)).ToArray();
-                    Traverse(ust.Root, patternEnumerators, matchingResult);
-                    MatchComments(ust, matchingResult, patternEnumerators);
+                    foreach (UstNode node in ust.Nodes)
+                    {
+                        Traverse(node, patterns, matchingResult);
+                    }
+                    MatchComments(ust, matchingResult, patterns);
 
                     return matchingResult;
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new MatchingException(ust.Root.FileName.Text, ex));
+                    Logger.LogError(new MatchingException(ust.SourceCodeFile.FullPath, ex));
                     return new List<MatchingResult>();
                 }
             }
@@ -59,74 +59,55 @@ namespace PT.PM.Matching
             }
         }
 
-        private void Traverse(UstNode node, PatternVarRefEnumerator[] patternsVarRef, List<MatchingResult> matchingResult)
+        private void Traverse(UstNode node, IEnumerable<PatternRootNode> patterns, List<MatchingResult> matchingResult)
         {
             if (node == null)
                 return;
 
-            foreach (PatternVarRefEnumerator pattern in patternsVarRef)
+            foreach (PatternRootNode pattern in patterns)
             {
-                if (Match(pattern, node))
+                if (pattern.Node.Equals(node))
                 {
-                    AddMatchingResults(matchingResult, pattern.Pattern, pattern.Current, node);
+                    AddMatchingResults(matchingResult, pattern, pattern.Node, node);
                 }
             }
 
             foreach (var child in node.Children)
             {
-                Traverse(child, patternsVarRef, matchingResult);
+                Traverse(child, patterns, matchingResult);
             }
         }
 
-        private void MatchComments(Ust ust, List<MatchingResult> matchingResults, PatternVarRefEnumerator[] patternEnumerators)
+        private void MatchComments(RootNode ust, List<MatchingResult> matchingResults, IEnumerable<PatternRootNode> patterns)
         {
-            PatternVarRefEnumerator[] commentPatterns = patternEnumerators.Where(p =>
-                p.Pattern.Data.Node.NodeType == NodeType.PatternComment ||
-                (p.Pattern.Data.Node.NodeType == NodeType.PatternVarDef && ((PatternVarDef)p.Pattern.Data.Node).Values.Any(v => v.NodeType == NodeType.PatternComment))).ToArray();
-            foreach (var commentNode in ust.Comments)
+            PatternRootNode[] commentPatterns = patterns.Where(p =>
+                p.Node.NodeType == NodeType.PatternComment ||
+                (p.Node.NodeType == NodeType.PatternVarDef && ((PatternVarDef)p.Node).Values.Any(v => v.NodeType == NodeType.PatternComment))).ToArray();
+            foreach (CommentLiteral commentNode in ust.Comments)
             {
-                foreach (var commentPattern in commentPatterns)
+                foreach (PatternRootNode commentPattern in commentPatterns)
                 {
-                    if (Match(commentPattern, commentNode))
+                    if (commentPattern.Node.Equals(commentNode))
                     {
-                        PatternComment patternComment;
-                        if (commentPattern.Current.NodeType == NodeType.PatternComment)
+                        PatternComment patternComment = null;
+                        if (commentPattern.Node.NodeType == NodeType.PatternComment)
                         {
-                            patternComment = (PatternComment)commentPattern.Current;
+                            patternComment = (PatternComment)commentPattern.Node;
                         }
-                        else
+                        else if (commentPattern.Node.NodeType == NodeType.PatternVarDef)
                         {
-                            patternComment = (PatternComment)((PatternVarDef)commentPattern.Current).Value;
+                            patternComment = (PatternComment)((PatternVarDef)commentPattern.Node).Value;
                         }
-                        AddMatchingResults(matchingResults, commentPattern.Pattern, commentPattern.Current, commentNode);
+                        if (patternComment != null)
+                        {
+                            AddMatchingResults(matchingResults, commentPattern, patternComment, commentNode);
+                        }
                     }
                 }
             }
         }
 
-        private bool Match(PatternVarRefEnumerator patternVarRefEnum, UstNode node)
-        {
-            try
-            {
-                while (patternVarRefEnum.MoveNext())
-                {
-                    if (patternVarRefEnum.Current.Equals(node))
-                    {
-                        patternVarRefEnum.Reset();
-                        return true;
-                    }
-                }
-
-                patternVarRefEnum.Reset();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(new MatchingException(node.FileNode.FileName.Text, ex) { TextSpan = node.TextSpan });
-            }
-            return false;
-        }
-
-        private void AddMatchingResults(List<MatchingResult> matchingResults, Pattern pattern, UstNode patternNode, UstNode codeNode)
+        private void AddMatchingResults(List<MatchingResult> matchingResults, PatternRootNode pattern, UstNode patternNode, UstNode codeNode)
         {
             var absoluteLocationPattern = patternNode as IAbsoluteLocationMatching;
             if (absoluteLocationPattern != null)
@@ -151,7 +132,7 @@ namespace PT.PM.Matching
             }
         }
 
-        private void AddMathingResult(List<MatchingResult> matchingResults, Pattern pattern, UstNode codeNode, TextSpan textSpan)
+        private void AddMathingResult(List<MatchingResult> matchingResults, PatternRootNode pattern, UstNode codeNode, TextSpan textSpan)
         {
             var matching = new MatchingResult(pattern, codeNode, textSpan);
             Logger.LogInfo(matching);

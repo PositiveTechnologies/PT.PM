@@ -63,8 +63,7 @@ namespace PT.PM.CSharpParseTreeUst
             {
                 result = new CSharpRoslynParseTree();
             }
-            result.FileName = filePath;
-            result.FileData = sourceCodeFile.Code;
+            result.SourceCodeFile = sourceCodeFile;
 
             return result;
         }

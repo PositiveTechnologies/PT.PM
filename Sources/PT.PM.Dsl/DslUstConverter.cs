@@ -19,7 +19,7 @@ namespace PT.PM.Dsl
 {
     public class DslUstConverter : IDslParserVisitor<UstNode>
     {
-        public LanguageFlags SourceLanguage { get; set; }
+        public HashSet<Language> Languages { get; set; }
 
         public bool PatternExpressionInsideStatement { get; set; } = true;
 
@@ -31,14 +31,16 @@ namespace PT.PM.Dsl
         private Dictionary<string, PatternVarDef> patternVarDefs;
         private int unnamedVarNumber;
 
-        public DslNode Convert(DslParser.PatternContext pattern)
+        public PatternRootNode Convert(DslParser.PatternContext pattern)
         {
             try
             {
                 unnamedVarNumber = 0;
                 patternVarDefs = new Dictionary<string, PatternVarDef>();
-                var result = (DslNode)VisitPattern(pattern);
-                result.PatternVarDefs = patternVarDefs.Select(keyValue => keyValue.Value).ToList();
+                var result = (PatternRootNode)VisitPattern(pattern);
+                result.Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
+                result.Vars = patternVarDefs.Select(keyValue => keyValue.Value).ToList();
+                result.FillAscendants();
                 return result;
             }
             catch (Exception ex)
@@ -50,8 +52,11 @@ namespace PT.PM.Dsl
 
         public UstNode VisitPattern(DslParser.PatternContext context)
         {
-            DslNode result;
-            result = new DslNode(context.dslCode().Select(code => VisitDslCode(code)).ToList());
+            PatternRootNode result;
+            result = new PatternRootNode
+            {
+                Nodes = context.dslCode().Select(code => VisitDslCode(code)).ToArray()
+            };
             return result;
         }
 
@@ -571,10 +576,6 @@ namespace PT.PM.Dsl
         public UstNode VisitPatternId([NotNull] DslParser.PatternIdContext context)
         {
             string patternId = context.GetText();
-            if (SourceLanguage.IsCaseInsensitive() && !patternId.StartsWith("(?i)"))
-            {
-                patternId = "(?i)" + patternId;
-            }
             IdToken result = new PatternIdToken(patternId, context.GetTextSpan());
             return result;
         }
@@ -612,15 +613,7 @@ namespace PT.PM.Dsl
         private IdToken ProcessId(ITerminalNode idTerminal)
         {
             string id = idTerminal.GetText();
-            IdToken result;
-            if (SourceLanguage.IsCaseInsensitive())
-            {
-                result = new PatternIdToken("(?i)^" + id + "$", idTerminal.GetTextSpan());
-            }
-            else
-            {
-                result = new IdToken(id, idTerminal.GetTextSpan(), null);
-            }
+            IdToken result = new IdToken(id, idTerminal.GetTextSpan(), null);
             return result;
         }
     }

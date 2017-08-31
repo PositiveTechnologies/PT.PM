@@ -4,7 +4,7 @@
     {
         public override NodeType NodeType => NodeType.NullLiteral;
 
-        public NullLiteral(TextSpan textSpan, FileNode fileNode)
+        public NullLiteral(TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
         }

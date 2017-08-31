@@ -20,6 +20,7 @@ namespace PT.PM.Patterns
         {
             var json = JsonConvert.SerializeObject(source, stringEnumConverter);
             var result = JsonConvert.DeserializeObject<UstNode>(json, astJsonConverter);
+            result.FillAscendants();
             return result;
         }
     }

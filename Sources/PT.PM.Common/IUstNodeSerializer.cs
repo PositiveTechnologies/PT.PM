@@ -6,7 +6,7 @@ namespace PT.PM.Common
     {
         ILogger Logger { get; set; }
         UstNodeSerializationFormat DataFormat { get; }
-        UstNode Deserialize(string data, LanguageFlags sourceLanguage);
+        UstNode Deserialize(string data);
         string Serialize(UstNode node);
     }
 }

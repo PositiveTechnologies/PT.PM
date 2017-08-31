@@ -45,6 +45,7 @@
     <Compile Include="Exceptions\PMException.cs" />
     <Compile Include="Exceptions\PMExceptionType.cs" />
     <Compile Include="Exceptions\ReadException.cs" />
+    <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Ust\IUstVisitor.cs" />
     <Compile Include="TextTruncater.cs" />
     <Compile Include="UstNodeRefComparer.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="Exceptions\PreprocessingException.cs" />
     <Compile Include="Json\UstJsonConverter.cs" />
     <Compile Include="UstNodeSerializationFormat.cs" />
-    <Compile Include="Ust\Ust.cs" />
     <Compile Include="CodeRepository\FileCodeRepository.cs" />
     <Compile Include="CodeRepository\FilesAggregatorCodeRepository.cs" />
     <Compile Include="Exceptions\ConversionException.cs" />
@@ -151,8 +151,7 @@
     <Compile Include="Nodes\Tokens\BinaryOperator.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="Language.cs" />
-    <Compile Include="LanguageFlags.cs" />
-    <Compile Include="Nodes\FileNode.cs" />
+    <Compile Include="Nodes\RootNode.cs" />
     <Compile Include="Nodes\Tokens\TypeType.cs" />
     <Compile Include="Nodes\GeneralScope\TypeDeclaration.cs" />
     <Compile Include="Nodes\Tokens\IdToken.cs" />

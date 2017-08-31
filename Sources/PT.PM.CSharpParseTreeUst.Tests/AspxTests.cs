@@ -15,7 +15,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         {
             string fileName = Path.Combine(TestHelper.TestsDataPath, "TestAspxParser.aspx");
             string text = File.ReadAllText(fileName);
-            var aspxParser = new AspxParser.AspxParser(fileName, true);
+            var aspxParser = new global::AspxParser.AspxParser(fileName, true);
             var source = new AspxSource(fileName, text);
             AspxParseResult result = aspxParser.Parse(source);
             var foundNode = result.RootNode.Descendants<AspxNode.AspxExpressionTag>()

@@ -9,7 +9,7 @@ namespace PT.PM.Common
     {
         public static AssignmentExpression ConvertToAssignmentExpression(
              Expression left, BinaryOperator op, TextSpan opSpan, Expression right, TextSpan textSpan,
-             FileNode fileNode)
+             RootNode fileNode)
         {
             var opLiteral = new BinaryOperatorLiteral(op, opSpan, fileNode);
             var expression = new BinaryOperatorExpression(left, opLiteral, right, textSpan, fileNode);

@@ -12,7 +12,7 @@ namespace PT.PM.Common.Nodes.Statements.Switch
 
         public List<SwitchSection> Sections { get; set; }
 
-        public SwitchStatement(Expression expression, IEnumerable<SwitchSection> sections, TextSpan textSpan, FileNode fileNode)
+        public SwitchStatement(Expression expression, IEnumerable<SwitchSection> sections, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Expression = expression;

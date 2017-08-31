@@ -4,7 +4,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public abstract class SpecificExpression : Expression
     {
-        protected SpecificExpression(TextSpan textSpan, FileNode fileNode)
+        protected SpecificExpression(TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
         }

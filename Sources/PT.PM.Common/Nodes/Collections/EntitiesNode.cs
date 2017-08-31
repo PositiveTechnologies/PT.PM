@@ -7,7 +7,7 @@ namespace PT.PM.Common.Nodes.Collections
     {
         public override NodeType NodeType => NodeType.EntitiesNode;
 
-        public EntitiesNode(List<EntityDeclaration> entities, TextSpan textSpan, FileNode fileNode)
+        public EntitiesNode(List<EntityDeclaration> entities, TextSpan textSpan, RootNode fileNode)
             : base(entities, textSpan, fileNode)
         {
 

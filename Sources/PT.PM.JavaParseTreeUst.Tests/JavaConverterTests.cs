@@ -87,7 +87,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                     Initializers = data.Item1,
                     Sizes = data.Item2
                 };
-                bool exist = ust.Root.DoesAnyDescendantMatchPredicate(node => node.Equals(arrayCreationExpression));
+                bool exist = ust.DoesAnyDescendantMatchPredicate(node => node.Equals(arrayCreationExpression));
                 Assert.IsTrue(exist, "Test failed on " + i + " iteration.");
             }
         }

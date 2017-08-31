@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Collections
     {
         public override NodeType NodeType => NodeType.ArgsNode;
 
-        public ArgsNode(IEnumerable<Expression> args, TextSpan textSpan, FileNode fileNode)
+        public ArgsNode(IEnumerable<Expression> args, TextSpan textSpan, RootNode fileNode)
             : base(args, textSpan, fileNode)
         {
         }

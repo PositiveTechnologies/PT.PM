@@ -25,7 +25,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
             }
         }
 
-        public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan, FileNode fileNode)
+        public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan, RootNode fileNode)
             : base(name, textSpan, fileNode)
         {
             Parameters = parameters as List<ParameterDeclaration>

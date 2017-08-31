@@ -554,8 +554,7 @@ namespace PT.PM.PatternEditor
             workflow.Logger = sourceCodeLogger;
             if (SelectedLanguage == Language.JavaScript)
             {
-                var javaScriptParser = workflow.GetParser(SelectedLanguage) as JavaScriptAntlrParser;
-                javaScriptParser.JavaScriptType = JavaScriptType;
+                workflow.JavaScriptType = JavaScriptType;
             }
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults
@@ -567,7 +566,7 @@ namespace PT.PM.PatternEditor
                 AntlrParseTree antlrParseTree = workflowResult.ParseTrees.FirstOrDefault() as AntlrParseTree;
                 if (antlrParseTree != null && antlrParseTree.SyntaxTree != null)
                 {
-                    Antlr4.Runtime.Parser antlrParser = (workflow.GetParser(antlrParseTree.SourceLanguage) as AntlrParser).Parser;
+                    var antlrParser = (Antlr4.Runtime.Parser)ParserConverterFactory.CreateParser(antlrParseTree.SourceLanguage);
                     string tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
                     string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
 
@@ -578,7 +577,7 @@ namespace PT.PM.PatternEditor
                 }
                 if (Stage >= Stage.Convert && workflowResult.Usts.FirstOrDefault() != null)
                 {
-                    UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault().Root);
+                    UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault().Nodes);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UST.json"), UstJson);
                 }
             }

@@ -1,7 +1,9 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using PT.PM.Patterns;
+using PT.PM.Patterns.Nodes;
 using System.Linq;
 
 namespace PT.PM
@@ -29,37 +31,38 @@ namespace PT.PM
         }
 
         public MatchingResultDto(MatchingResult result)
-            : this(result.FileNode.FileName.Text, result.FileNode.FileData, result.Nodes.Last().TextSpan, result.Pattern)
+            : this(result.SourceCodeFile, result.Nodes.Last().TextSpan, result.Pattern)
         {
         }
 
-        public MatchingResultDto(string fileName, string fileData, TextSpan textSpan, Pattern pattern)
+        public MatchingResultDto(SourceCodeFile sourceCodeFile, TextSpan textSpan, PatternRootNode pattern)
         {
-            MatchedCode = fileData.Substring(textSpan.Start, textSpan.Length);
+            MatchedCode = sourceCodeFile.Code.Substring(textSpan.Start, textSpan.Length);
             int beginLine, beginColumn, endLine, endColumn;
-            textSpan.ToLineColumn(fileData, out beginLine, out beginColumn, out endLine, out endColumn);
+            textSpan.ToLineColumn(sourceCodeFile.Code, out beginLine, out beginColumn, out endLine, out endColumn);
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;
             EndColumn = endColumn;
             PatternKey = pattern.Key;
-            SourceFile = fileName;
+            SourceFile = sourceCodeFile.FullPath;
             
-            var startLineIndex = fileData.LastIndexOfAny(newLineChars, textSpan.Start) + 1;
-            var endLineIndex = fileData.IndexOfAny(newLineChars, textSpan.Start + textSpan.Length);
+            var startLineIndex = sourceCodeFile.Code.LastIndexOfAny(newLineChars, textSpan.Start) + 1;
+            var endLineIndex = sourceCodeFile.Code.IndexOfAny(newLineChars, textSpan.Start + textSpan.Length);
             if (endLineIndex < 0)
             {
-                endLineIndex = fileData.Length;
+                endLineIndex = sourceCodeFile.Code.Length;
             }
             endLineIndex--;
         }
 
         public static MatchingResultDto CreateFromMatchingResult(MatchingResult matchingResult, ISourceCodeRepository sourceCodeRepository)
         {
-            var fileNode = matchingResult.Nodes.First().FileNode;
+            var sourceCodeFile = matchingResult.Nodes.First() is RootNode rootNode
+                ? rootNode.SourceCodeFile
+                : matchingResult.Nodes.First().Root.SourceCodeFile;
             var result = new MatchingResultDto(
-                sourceCodeRepository.GetFullPath(fileNode.FileName.Text),
-                fileNode.FileData,
+                sourceCodeFile,
                 matchingResult.TextSpan,
                 matchingResult.Pattern);
             return result;

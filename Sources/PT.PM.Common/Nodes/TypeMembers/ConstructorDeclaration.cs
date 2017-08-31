@@ -14,7 +14,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         public BlockStatement Body { get; set; }
 
         public ConstructorDeclaration(IdToken typeName, IEnumerable<ParameterDeclaration> args, BlockStatement body,
-            TextSpan textSpan, FileNode fileNode)
+            TextSpan textSpan, RootNode fileNode)
             : base(typeName, textSpan, fileNode)
         {
             Args = args as List<ParameterDeclaration> ?? args.ToList();

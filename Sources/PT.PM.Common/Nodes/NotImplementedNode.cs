@@ -4,11 +4,11 @@
     {
         public override NodeType NodeType => NodeType.NotImplementedNode;
 
-        public NotImplementedNode(TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public NotImplementedNode(TextSpan textSpan, RootNode rootNode)
+            : base(textSpan, rootNode)
         {
             TextSpan = textSpan;
-            FileNode = fileNode;
+            Root = rootNode;
         }
 
         public NotImplementedNode()

@@ -127,8 +127,9 @@ namespace PT.PM.Common.Ust
 
         #region Other
 
-        T Visit(FileNode fileNode);
+        T Visit(RootNode fileNode);
         T Visit(NotImplementedNode notImplementedNode);
+        T Visit(Collection collection);
 
         #endregion
     }

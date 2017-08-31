@@ -7,7 +7,7 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class RoslynUstCommonConverterVisitor
+    public partial class CSharpRoslynParseTreeConverter
     {
         public override UstNode VisitAccessorList(AccessorListSyntax node)
         {
@@ -19,7 +19,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             Expression[] args = node.Arguments.Select(arg => (Expression)VisitAndReturnNullIfError(arg))
                 .ToArray();
 
-            var result = new ArgsNode(args, node.GetTextSpan(), FileNode);
+            var result = new ArgsNode(args, node.GetTextSpan(), root);
             return result;
         }
 
@@ -43,7 +43,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             Expression[] args = node.Arguments.Select(arg => (Expression)VisitAndReturnNullIfError(arg))
                 .ToArray();
 
-            var result = new ArgsNode(args, node.GetTextSpan(), FileNode);
+            var result = new ArgsNode(args, node.GetTextSpan(), root);
             return result;
         }
 

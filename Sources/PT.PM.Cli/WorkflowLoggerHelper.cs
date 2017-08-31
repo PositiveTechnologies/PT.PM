@@ -86,7 +86,7 @@ namespace PT.PM.Cli
 
         protected void LogAdditionalParserInfo()
         {
-            if (WorkflowResult.Languages.Any(lang => lang.HaveAntlrParser()))
+            if (WorkflowResult.AnalyzedLanguages.Any(lang => lang.HaveAntlrParser()))
             {
                 TimeSpan lexerTimeSpan = new TimeSpan(WorkflowResult.TotalLexerTicks);
                 TimeSpan parserTimeSpan = new TimeSpan(WorkflowResult.TotalParserTicks);

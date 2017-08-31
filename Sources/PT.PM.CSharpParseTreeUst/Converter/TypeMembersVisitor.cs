@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class RoslynUstCommonConverterVisitor
+    public partial class CSharpRoslynParseTreeConverter
     {
         #region Never invoked overrides (Implementation error if invoked)
 
@@ -51,7 +51,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
             var body = (BlockStatement)VisitBlock(node.Body);
 
-            var result = new ConstructorDeclaration(typeName, args, body, node.GetTextSpan(), FileNode)
+            var result = new ConstructorDeclaration(typeName, args, body, node.GetTextSpan(), root)
             {
                 Modifiers = modifiers
             };
@@ -72,10 +72,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitDestructorDeclaration(DestructorDeclarationSyntax node)
         {
-            var name = new IdToken(node.Identifier.ValueText + "_Destroy", node.Identifier.GetTextSpan(), FileNode);
+            var name = new IdToken(node.Identifier.ValueText + "_Destroy", node.Identifier.GetTextSpan(), root);
             var body = (BlockStatement)VisitBlock(node.Body);
 
-            var result = new MethodDeclaration(name, null, body, node.GetTextSpan(), FileNode);
+            var result = new MethodDeclaration(name, null, body, node.GetTextSpan(), root);
             return result;
         }
 
@@ -86,10 +86,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 ConvertId(node.Identifier),
                 init,
                 node.GetTextSpan(),
-                FileNode)
+                root)
             };
 
-            var result = new FieldDeclaration(vars, node.GetTextSpan(), FileNode);
+            var result = new FieldDeclaration(vars, node.GetTextSpan(), root);
             return result;
         }
 
@@ -99,7 +99,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 var => (AssignmentExpression)VisitAndReturnNullIfError(var)).ToArray();
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
-            var result = new FieldDeclaration(varDelaraions, node.GetTextSpan(), FileNode)
+            var result = new FieldDeclaration(varDelaraions, node.GetTextSpan(), root)
             {
                 Modifiers = modifiers
             };
@@ -108,7 +108,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            var id = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), FileNode);
+            var id = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), root);
             var parameters = node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p)).ToArray();
             var statement = node.Body == null ? null : (BlockStatement)VisitBlock(node.Body); // abstract method if null
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
@@ -118,7 +118,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 parameters,
                 statement,
                 node.GetTextSpan(),
-                FileNode)
+                root)
             {
                 Modifiers = modifiers
             };
@@ -129,7 +129,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             TypeToken type = ConvertType(base.Visit(node.Type));
             var id = ConvertId(node.Identifier);
-            var result = new ParameterDeclaration(type, id, node.GetTextSpan(), FileNode);
+            var result = new ParameterDeclaration(type, id, node.GetTextSpan(), root);
             return result;
         }
 
@@ -138,10 +138,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var initializer = node.Initializer != null ? (Expression)base.Visit(node.Initializer.Value) : null;
 
             var result = new AssignmentExpression(
-                new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), FileNode),
+                new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), root),
                 initializer,
                 node.GetTextSpan(),
-                FileNode
+                root
             );
 
             return result;

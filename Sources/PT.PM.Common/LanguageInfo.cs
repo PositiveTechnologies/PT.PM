@@ -10,24 +10,24 @@
 
         public readonly bool CaseInsensitive;
 
-        public readonly LanguageFlags DependentLanguages;
+        public readonly Language[] Sublanguages;
 
         public readonly bool HaveAntlrParser;
 
         public LanguageInfo(Language language, string extension, bool caseInsensitive, string title = null,
-            LanguageFlags dependentLanguages = LanguageFlags.None, bool haveAntlrParser = true)
-            :this(language, new string[] { extension }, caseInsensitive, title, dependentLanguages, haveAntlrParser)
+            Language[] sublanguages = null, bool haveAntlrParser = true)
+            :this(language, new string[] { extension }, caseInsensitive, title, sublanguages, haveAntlrParser)
         {
         }
 
         public LanguageInfo(Language language, string[] extensions, bool caseInsensitive, string title = null,
-            LanguageFlags dependentLanguages = LanguageFlags.None, bool haveAntlrParser = true)
+            Language[] sublanguages = null, bool haveAntlrParser = true)
         {
             Language = language;
             Extensions = extensions;
             CaseInsensitive = caseInsensitive;
             Title = string.IsNullOrEmpty(title) ? Language.ToString() : title;
-            DependentLanguages = dependentLanguages;
+            Sublanguages = sublanguages ?? ArrayUtils<Language>.EmptyArray;
             HaveAntlrParser = haveAntlrParser;
         }
 

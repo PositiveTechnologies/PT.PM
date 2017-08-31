@@ -1,11 +1,10 @@
-﻿using PT.PM.Dsl;
-using PT.PM.Patterns.Nodes;
+﻿using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Patterns
 {
     public interface IUstPatternVisitor<out T>
     {
-        T Visit(PatternNode patternVars);
+        T Visit(PatternRootNode patternVars);
         T Visit(PatternBooleanLiteral patternBooleanLiteral);
         T Visit(PatternComment patternComment);
         T Visit(PatternExpression patternExpression);
@@ -22,8 +21,5 @@ namespace PT.PM.Patterns
         T Visit(PatternTryCatchStatement patternTryCatchStatement);
         T Visit(PatternVarDef patternVarDef);
         T Visit(PatternVarRef patternVarRef);
-
-        T Visit(DslNode patternExpression);
-        T Visit(LangCodeNode langCodeNode);
     }
 }

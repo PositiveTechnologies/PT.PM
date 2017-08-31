@@ -6,7 +6,7 @@ using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst
 {
-    public class AspxPmParser : ILanguageParser
+    public class AspxParser : ILanguageParser
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -21,7 +21,7 @@ namespace PT.PM.CSharpParseTreeUst
             {
                 try
                 {
-                    var parser = new AspxParser.AspxParser(sourceCodeFile.RelativePath);
+                    var parser = new global::AspxParser.AspxParser(sourceCodeFile.RelativePath);
                     var source = new AspxSource(sourceCodeFile.FullPath, sourceCodeFile.Code);
                     AspxParseResult aspxTree = parser.Parse(source);
                     foreach (var error in aspxTree.ParseErrors)
@@ -40,8 +40,7 @@ namespace PT.PM.CSharpParseTreeUst
             {
                 result = new CSharpRoslynParseTree();
             }
-            result.FileName = filePath;
-            result.FileData = sourceCodeFile.Code;
+            result.SourceCodeFile = sourceCodeFile;
 
             return result;
         }

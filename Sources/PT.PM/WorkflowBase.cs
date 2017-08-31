@@ -11,18 +11,17 @@ using System.Threading.Tasks;
 using PT.PM.Matching;
 using System.Threading;
 using PT.PM.Common.Exceptions;
+using PT.PM.Patterns.Nodes;
+using PT.PM.JavaScriptParseTreeUst;
 
 namespace PT.PM
 {
     public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
-        where TPattern : PatternBase
+        where TPattern : PatternRootNode
         where TMatchingResult : MatchingResultBase<TPattern>
     {
-        private int maxTimespan;
-        private int memoryConsumptionMb;
-
         protected ILogger logger = DummyLogger.Instance;
         protected int maxStackSize;
         protected Task filesCountTask;
@@ -37,8 +36,6 @@ namespace PT.PM
 
         public IPatternsRepository PatternsRepository { get; set; }
 
-        public Dictionary<Language, ParserConverterSet> ParserConverterSets { get; set; } = new Dictionary<Language, ParserConverterSet>();
-
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
         public IUstPatternMatcher<TInputGraph, TPattern, TMatchingResult> UstPatternMatcher { get; set; }
@@ -49,6 +46,8 @@ namespace PT.PM
 
         public bool IsIncludePreprocessing { get; set; } = true;
 
+        public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
+
         public ILogger Logger
         {
             get { return logger; }
@@ -58,17 +57,6 @@ namespace PT.PM
                 if (SourceCodeRepository != null)
                 {
                     SourceCodeRepository.Logger = Logger;
-                }
-                foreach (var languageParser in ParserConverterSets)
-                {
-                    if (languageParser.Value.Parser != null)
-                    {
-                        languageParser.Value.Parser.Logger = logger;
-                    }
-                    if (languageParser.Value.Converter != null)
-                    {
-                        languageParser.Value.Converter.Logger = logger;
-                    }
                 }
                 if (PatternsRepository != null)
                 {
@@ -95,94 +83,23 @@ namespace PT.PM
 
         public int ThreadCount { get; set; }
 
-        public int MaxStackSize
-        {
-            get
-            {
-                return maxStackSize;
-            }
-            set
-            {
-                maxStackSize = value;
-                foreach (var languageParser in ParserConverterSets)
-                {
-                    var antlrParser = languageParser.Value.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MaxStackSize = maxStackSize;
-                    }
-                }
-            }
-        }
+        public int MaxStackSize { get; set; } = 0;
 
-        public Language[] Languages
-        {
-            get
-            {
-                if (languages == null)
-                {
-                    languages = ParserConverterSets.Keys.Select(key => key).ToArray();
-                }
-                return languages;
-            }
-        }
+        public int MaxTimespan { get; set; } = 0;
 
-        public int MaxTimespan
-        {
-            get
-            {
-                return maxTimespan;
-            }
-            set
-            {
-                maxTimespan = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MaxTimespan = maxTimespan;
-                    }
-                }
-            }
-        }
+        public long MemoryConsumptionMb { get; set; } = 300;
 
-        public int MemoryConsumptionMb
-        {
-            get
-            {
-                return memoryConsumptionMb;
-            }
-            set
-            {
-                memoryConsumptionMb = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MemoryConsumptionMb = memoryConsumptionMb;
-                    }
-                }
-            }
-        }
+        public HashSet<Language> AnalyzedLanguages { get; set; } = new HashSet<Language>(LanguageExt.AllLanguages);
+
+        public HashSet<Language> BaseLanguages { get; set; }
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        public WorkflowBase(TStage stage)
+        public WorkflowBase(TStage stage, IEnumerable<Language> languages)
         {
+            AnalyzedLanguages = new HashSet<Language>(languages);
             Stage = stage;
             stageHelper = new StageHelper<TStage>(stage);
-        }
-
-        public ILanguageParser GetParser(Language language)
-        {
-            return ParserConverterSets[language].Parser;
-        }
-
-        public IParseTreeToUstConverter GetConverter(Language language)
-        {
-            return ParserConverterSets[language].Converter;
         }
 
         protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
@@ -215,13 +132,25 @@ namespace PT.PM
                 if (stageHelper.IsContainsParse)
                 {
                     stopwatch.Restart();
-                    Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, Languages);
+                    Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
                     if (detectedLanguage == null)
                     {
                         Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");
                         return null;
                     }
-                    result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
+                    var parser = ParserConverterFactory.CreateParser((Language)detectedLanguage);
+                    parser.Logger = Logger;
+                    if (parser is AntlrParser antlrParser)
+                    {
+                        antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
+                        antlrParser.MaxTimespan = MaxTimespan;
+                        antlrParser.MaxStackSize = MaxStackSize;
+                        if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
+                        {
+                            javaScriptAntlrParser.JavaScriptType = JavaScriptType;
+                        }
+                    }
+                    result = parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
                     Logger.LogInfo($"File {fileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
@@ -264,6 +193,26 @@ namespace PT.PM
             }
 
             return convertPatternsTask;
+        }
+
+        protected static HashSet<Language> GetBaseLanguages(HashSet<Language> analyzedLanguages)
+        {
+            HashSet<Language> result = new HashSet<Language>();
+            foreach (Language language in analyzedLanguages)
+            {
+                result.Add(language);
+                LanguageInfo superLangInfo = LanguageExt.LanguageInfos[language];
+                do
+                {
+                    superLangInfo = LanguageExt.LanguageInfos.FirstOrDefault(l => l.Value.Sublanguages.Contains(superLangInfo.Language)).Value;
+                    if (superLangInfo != null)
+                    {
+                        result.Add(superLangInfo.Language);
+                    }
+                }
+                while (superLangInfo != null);
+            }
+            return result;
         }
     }
 }

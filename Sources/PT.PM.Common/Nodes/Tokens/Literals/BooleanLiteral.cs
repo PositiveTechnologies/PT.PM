@@ -11,7 +11,7 @@
         {
         }
 
-        public BooleanLiteral(bool value, TextSpan textSpan, FileNode fileNode)
+        public BooleanLiteral(bool value, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Value = value;

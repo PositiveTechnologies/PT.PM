@@ -21,7 +21,7 @@ namespace PT.PM.Tests
             WorkflowResult workflowResult = workflow.Process();
 
             var astSerializer = new UstDotRenderer();
-            var dotString = astSerializer.Render(workflowResult.Usts.First().Root);
+            var dotString = astSerializer.Render(workflowResult.Usts.First());
 
             fileName = fileName.Replace(".txt", "") + ".ust";
             TestHelper.RenderGraphvizGraph(TestHelper.CombineWithOutputDir(fileName), dotString);

@@ -27,11 +27,11 @@ namespace PT.PM
                 langs.Remove(Language.Aspx);
                 langs.Remove(Language.Html);
             }
-            var sourceCodeFile = new SourceCodeFile("Temp Source Code") { Code = sourceCode };
+            var sourceCodeFile = new SourceCodeFile() { Code = sourceCode };
             var parseUnits = new Queue<Tuple<Language, ParserUnit>>(langs.Count);
 
             langs = langs
-                .GroupBy(l => ParserConverterBuilder.GetParserConverterSet(l).Parser.Language)
+                .GroupBy(l => ParserConverterFactory.CreateParser(l))
                 .Select(l => l.First())
                 .ToList();
 
@@ -40,10 +40,10 @@ namespace PT.PM
                 return langs[0];
             }
 
-            foreach (var language in langs)
+            foreach (Language language in langs)
             {
                 var logger = new LoggerMessageCounter();
-                ILanguageParser languageParser = ParserConverterBuilder.GetParserConverterSet(language).Parser;
+                ILanguageParser languageParser = ParserConverterFactory.CreateParser(language);
 
                 var task = Task.Factory.StartNew(() =>
                 {

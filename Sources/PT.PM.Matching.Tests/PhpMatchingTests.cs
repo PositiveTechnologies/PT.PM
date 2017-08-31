@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Tests
                 .OrderBy(r => r.PatternKey)
                 .ToArray();
             PatternDto[] patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Is(LanguageFlags.Php)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains(Language.Php)).ToArray();
             foreach (var dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);

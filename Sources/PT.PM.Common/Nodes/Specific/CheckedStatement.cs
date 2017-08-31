@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Specific
 
         public BlockStatement Body { get; set; }
 
-        public CheckedStatement(BlockStatement body, TextSpan textSpan, FileNode fileNode)
+        public CheckedStatement(BlockStatement body, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Body = body;

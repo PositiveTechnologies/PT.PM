@@ -10,6 +10,6 @@
         Aspx = 7,
         JavaScript = 8,
         Html = 9,
-        Unified = 10,
+        Universal = 10,
     }
 }

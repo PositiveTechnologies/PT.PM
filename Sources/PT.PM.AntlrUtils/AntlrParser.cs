@@ -52,6 +52,8 @@ namespace PT.PM.AntlrUtils
 
         protected abstract int CommentsChannel { get; }
 
+        public int LineOffset { get; set; }
+
         public AntlrParser()
         {
             Lexer = InitLexer(null);
@@ -103,7 +105,7 @@ namespace PT.PM.AntlrUtils
                 errorListener.FileName = filePath;
                 errorListener.FileData = sourceCodeFile.Code;
                 errorListener.Logger = Logger;
-                errorListener.LineOffset = sourceCodeFile.LineOffset;
+                errorListener.LineOffset = LineOffset;
                 try
                 {
                     var preprocessedText = PreprocessText(sourceCodeFile);
@@ -171,8 +173,7 @@ namespace PT.PM.AntlrUtils
             {
                 result = Create(null);
             }
-            result.FileName = filePath;
-            result.FileData = sourceCodeFile.Code;
+            result.SourceCodeFile = sourceCodeFile;
 
             return result;
         }

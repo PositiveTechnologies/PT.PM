@@ -1,16 +1,14 @@
-﻿using PT.PM.AntlrUtils;
+﻿using Antlr4.Runtime.Tree;
+using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Statements;
-using Antlr4.Runtime.Tree;
-using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Linq;
 
 namespace PT.PM.SqlParseTreeUst
 {
-    public partial class PlSqlConverterVisitor
+    public partial class PlSqlAntlrConverter
     {
         /// <returns><see cref="Token"/></returns>
         public override UstNode VisitTerminal(ITerminalNode node)
@@ -21,30 +19,30 @@ namespace PT.PM.SqlParseTreeUst
             double doubleResult;
             if (text.StartsWith("'"))
             {
-                result = new StringLiteral(text.Substring(1, text.Length - 2), textSpan, FileNode);
+                result = new StringLiteral(text.Substring(1, text.Length - 2), textSpan, root);
             }
             else if (text.ToLowerInvariant().StartsWith("n'"))
             {
-                result = new StringLiteral(text.Substring(2, text.Length - 3), textSpan, FileNode);
+                result = new StringLiteral(text.Substring(2, text.Length - 3), textSpan, root);
             }
             else if (text.All(c => char.IsDigit(c)))
             {
-                result = new IntLiteral(long.Parse(text), textSpan, FileNode);
+                result = new IntLiteral(long.Parse(text), textSpan, root);
             }
             else if (double.TryParse(text, out doubleResult))
             {
-                result = new FloatLiteral(doubleResult, textSpan, FileNode);
+                result = new FloatLiteral(doubleResult, textSpan, root);
             }
             else if (text.All(c => char.IsLetterOrDigit(c) || c == '_'))
             {
-                result = new IdToken(text, textSpan, FileNode);
+                result = new IdToken(text, textSpan, root);
             }
             else
             {
                 if (text.Any(c => char.IsLetterOrDigit(c) || c == '_'))
                 {
                     Logger.LogDebug($"{text} converter to IdToken");
-                    result = new IdToken(text, textSpan, FileNode);
+                    result = new IdToken(text, textSpan, root);
                 }
                 else
                 {

@@ -13,6 +13,9 @@ namespace PT.PM.Patterns.Nodes
         [JsonIgnore]
         public Regex Regex { get; set; }
 
+        [JsonIgnore]
+        public Regex CaseInsensitiveRegex { get; set; }
+
         public TextSpan[] MatchedLocations { get; set; }
 
         public override string Id
@@ -24,6 +27,7 @@ namespace PT.PM.Patterns.Nodes
             set
             {
                 Regex = new Regex(value, RegexOptions.Compiled);
+                CaseInsensitiveRegex = value.StartsWith("(?i)") ? Regex : new Regex(value, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
         }
 
@@ -56,12 +60,15 @@ namespace PT.PM.Patterns.Nodes
                 return Id.CompareTo(((PatternIdToken)other).Id);
             }
 
-            if (other.NodeType != NodeType.PatternIdToken && other.NodeType != NodeType.IdToken)
+            if (other.NodeType != NodeType.IdToken)
             {
                 return NodeType - other.NodeType;
             }
 
-            MatchedLocations = PatternHelper.MatchRegex(Regex, ((IdToken)other).Id, true);
+            var regex = other.Root.Language.IsCaseInsensitive()
+                ? CaseInsensitiveRegex
+                : Regex;
+            MatchedLocations = PatternHelper.MatchRegex(regex, ((IdToken)other).Id, true);
             return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }

@@ -1,7 +1,7 @@
-﻿using PT.PM.Common;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
@@ -29,9 +29,9 @@ namespace PT.PM.Patterns.PatternsRepository
             var result = new List<PatternDto>();
             foreach (var patternDto in patternDtos)
             {
-                if (patternDto.Languages == LanguageFlags.None)
+                if (patternDto.Languages.Count() == 0)
                 {
-                    Logger.LogInfo($"Pattern \"{patternDto.Key}\" ignored because of it doesn't have target languages.");
+                    Logger.LogInfo($"PatternNode \"{patternDto.Key}\" ignored because of it doesn't have target languages.");
                 }
                 else
                 {

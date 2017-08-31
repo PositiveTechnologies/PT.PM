@@ -1,37 +1,32 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common;
 using PT.PM.Patterns.Nodes;
+using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<Pattern> CreateHtmlPatterns()
+        public IEnumerable<PatternRootNode> CreateHtmlPatterns()
         {
-            var patterns = new List<Pattern>();
+            var patterns = new List<PatternRootNode>();
 
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 1 possible XSS",
-                Languages = LanguageFlags.Html,
+                Languages = new HashSet<Language>() { Html },
                 FilenameWildcard = "**/app/views/*.html",
-                Data = new PatternNode
-                {
-                    Node = new PatternStringLiteral("&{\\w+}")
-                }
+                Node = new PatternStringLiteral("&{\\w+}")
             });
 
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 2 possible XSS",
-                Languages = LanguageFlags.Html,
+                Languages = new HashSet<Language>() { Html },
                 FilenameWildcard = "**/app/views/*.html",
-                Data = new PatternNode
-                {
-                    Node = new PatternStringLiteral("@Html\\(\\w+\\)")
-                }
+                Node = new PatternStringLiteral("@Html\\(\\w+\\)")
             });
 
             return patterns;

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class RoslynUstCommonConverterVisitor
+    public partial class CSharpRoslynParseTreeConverter
     {
         public override UstNode VisitBadDirectiveTrivia(BadDirectiveTriviaSyntax node)
         {

@@ -1,4 +1,5 @@
-﻿using PT.PM.Common.Nodes;
+﻿using System;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
@@ -389,7 +390,7 @@ namespace PT.PM.Common.Ust
             return VisitChildren(statementDeclaration);
         }
 
-        public virtual T Visit(FileNode fileNode)
+        public virtual T Visit(RootNode fileNode)
         {
             return VisitChildren(fileNode);
         }
@@ -397,6 +398,11 @@ namespace PT.PM.Common.Ust
         public virtual T Visit(NotImplementedNode notImplementedNode)
         {
             return VisitChildren(notImplementedNode);
+        }
+
+        public T Visit(Collection collection)
+        {
+            return VisitChildren(collection);
         }
 
         protected virtual T VisitChildren(UstNode ustNode)

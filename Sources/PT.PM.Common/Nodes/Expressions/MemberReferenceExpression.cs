@@ -10,7 +10,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public Expression Name { get; set; }
 
-        public MemberReferenceExpression(Expression target, Expression name, TextSpan textSpan, FileNode fileNode)
+        public MemberReferenceExpression(Expression target, Expression name, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Target = target;

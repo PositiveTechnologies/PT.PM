@@ -59,13 +59,9 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternExpressionsInCalls(string patternData, params int[] matchMethodNumbers)
         {
             var processor = new DslProcessor();
-            var patternNode = (PatternNode)processor.Deserialize(patternData, LanguageExt.AllPatternLanguages);
-            Pattern pattern = new Pattern
-            {
-                Data = patternNode,
-                DebugInfo = patternData
-            };
-            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { pattern }));
+            var patternNode = (PatternRootNode)processor.Deserialize(patternData);
+            patternNode.DebugInfo = patternData;
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
@@ -82,13 +78,9 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternVarWithRegex(string patternData)
         {
             var processor = new DslProcessor();
-            var patternNode = (PatternNode)processor.Deserialize(patternData, LanguageExt.AllPatternLanguages);
-            Pattern pattern = new Pattern
-            {
-                Data = patternNode,
-                DebugInfo = patternData
-            };
-            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { pattern }));
+            var patternNode = (PatternRootNode)processor.Deserialize(patternData);
+            patternNode.DebugInfo = patternData;
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
@@ -102,13 +94,9 @@ namespace PT.PM.Matching.Tests
         public void Match_PasswordCheckInsideStatement(string patternData)
         {
             var processor = new DslProcessor();
-            var patternNode = (PatternNode)processor.Deserialize(patternData, LanguageExt.AllPatternLanguages);
-            Pattern pattern = new Pattern
-            {
-                Data = patternNode,
-                DebugInfo = patternData
-            };
-            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { pattern }));
+            var patternNode = (PatternRootNode)processor.Deserialize(patternData);
+            patternNode.DebugInfo = patternData;
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
@@ -163,7 +151,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Create_PatternWithWrongLanguage_ThrowsException()
         {
-            Assert.Throws(typeof(ArgumentException), () => new PatternDto() { Languages = LanguageFlags.Aspx });
+            Assert.Throws(typeof(ArgumentException), () => new PatternDto() { Languages = new HashSet<Language>() { Language.Aspx } });
         }
     }
 }

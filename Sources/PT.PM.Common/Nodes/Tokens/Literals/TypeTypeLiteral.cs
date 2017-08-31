@@ -8,7 +8,7 @@
 
         public override string TextValue => TypeType.ToString();
 
-        public TypeTypeLiteral(TypeType typeType, TextSpan textSpan, FileNode fileNode)
+        public TypeTypeLiteral(TypeType typeType, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             TypeType = typeType;

@@ -29,15 +29,15 @@ namespace PT.PM.Matching.Tests
 
             Assert.AreEqual(13, workflowResult.MatchingResults.Count);
             Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 400 && r.FileNode.FileName.Text.EndsWith(@"WebGoat\AddNewUser.aspx.cs".NormDirSeparator())), 1);
+                r.TextSpan.Start == 400 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\AddNewUser.aspx.cs".NormDirSeparator())), 1);
             Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 70174 && r.FileNode.FileName.Text.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
+                r.TextSpan.Start == 70174 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
             Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 70254 && r.FileNode.FileName.Text.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
+                r.TextSpan.Start == 70254 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
             Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 72299 && r.FileNode.FileName.Text.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
+                r.TextSpan.Start == 72299 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
             Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 618 && r.FileNode.FileName.Text.EndsWith(@"WebGoat\Content\EncryptVSEncode.aspx.cs".NormDirSeparator())), 1);
+                r.TextSpan.Start == 618 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Content\EncryptVSEncode.aspx.cs".NormDirSeparator())), 1);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace PT.PM.Matching.Tests
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, patternsRepository);
             MatchingResultDto[] matchingResults = workflow.Process().MatchingResults.ToDto(workflow.SourceCodeRepository);
             var patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Is(LanguageFlags.CSharp)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains(Language.CSharp)).ToArray();
             foreach (var dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
@@ -71,7 +71,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_HardcodedPasswordAspx_WithoutException()
         {
-            var hardcodedPassRepository = new DslPatternRepository("<[(?i)password]> = <[\"\\w*\"]>", LanguageFlags.CSharp);
+            var hardcodedPassRepository = new DslPatternRepository("<[(?i)password]> = <[\"\\w*\"]>", Language.CSharp);
             var sourceCodeRep = new FileCodeRepository(Path.Combine(TestHelper.TestsDataPath, "HardcodedPassword.aspx"));
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, hardcodedPassRepository);
             MatchingResultDto[] matchingResults = workflow.Process().MatchingResults.ToDto(workflow.SourceCodeRepository);

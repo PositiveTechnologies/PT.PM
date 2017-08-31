@@ -15,16 +15,18 @@ namespace PT.PM.Common.Nodes.Expressions
         public List<Expression> Initializers { get; set; }
 
         public ArrayCreationExpression(TypeToken type, IEnumerable<Expression> sizes, IEnumerable<Expression> inits,
-            TextSpan textSpan, FileNode fileNode)
+            TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Type = type;
-            Sizes = sizes as List<Expression> ?? Sizes?.ToList();
-            Initializers = inits as List<Expression> ?? inits?.ToList();
+            Sizes = sizes as List<Expression> ?? sizes?.ToList() ?? new List<Expression>();
+            Initializers = inits as List<Expression> ?? inits?.ToList() ?? new List<Expression>();
         }
 
         public ArrayCreationExpression()
         {
+            Sizes = new List<Expression>();
+            Initializers = new List<Expression>();
         }
 
         public override UstNode[] GetChildren()

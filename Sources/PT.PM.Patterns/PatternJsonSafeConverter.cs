@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace PT.PM.Patterns
 {
@@ -18,13 +19,13 @@ namespace PT.PM.Patterns
         {
             JObject jObject = JObject.Load(reader);
             var languageFlagsString = (string)jObject[nameof(PatternDto.Languages)];
-            LanguageFlags resultLanguages = LanguageExt.ParseLanguages(languageFlagsString);
+            Language[] resultLanguages = LanguageExt.ParseLanguages(languageFlagsString);
 
             var result = new PatternDto
             {
                 Name = (string)jObject[nameof(PatternDto.Name)] ?? "",
                 Key = (string)jObject[nameof(PatternDto.Key)] ?? "",
-                Languages = resultLanguages,
+                Languages = new HashSet<Language>(resultLanguages),
                 FilenameWildcard = (string)jObject[nameof(PatternDto.FilenameWildcard)] ?? "",
                 Value = (string)jObject[nameof(PatternDto.Value)] ?? "",
                 CweId = (string)jObject[nameof(PatternDto.CweId)] ?? "",

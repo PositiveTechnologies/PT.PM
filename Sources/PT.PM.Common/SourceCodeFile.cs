@@ -4,15 +4,13 @@ namespace PT.PM.Common
 {
     public class SourceCodeFile
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         public string RelativePath { get; set; } = "";
 
-        public string Code { get; set; }
+        public string Code { get; set; } = "";
 
         public string FullPath => Path.Combine(RelativePath, Name);
-
-        public int LineOffset { get; set; }
 
         public SourceCodeFile()
         {
@@ -21,13 +19,6 @@ namespace PT.PM.Common
         public SourceCodeFile(string name)
         {
             Name = name;
-        }
-
-        public SourceCodeFile(SourceCodeFile sourceCodeFile)
-        {
-            Name = sourceCodeFile.Name;
-            RelativePath = sourceCodeFile.RelativePath;
-            Code = sourceCodeFile.Code;
         }
 
         public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)

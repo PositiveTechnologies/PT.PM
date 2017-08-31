@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Statements
 
         public Expression ThrowExpression { get; set; }
 
-        public ThrowStatement(Expression throwExpression, TextSpan textSpan, FileNode fileNode)
+        public ThrowStatement(Expression throwExpression, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             ThrowExpression = throwExpression;

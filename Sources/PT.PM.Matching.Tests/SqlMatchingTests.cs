@@ -41,7 +41,7 @@ namespace PT.PM.Matching.Tests
                 .ToDto(workflow.SourceCodeRepository)
                 .OrderBy(r => r.PatternKey).ToArray();
             var patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Is(language)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains(language)).ToArray();
 
             foreach (var dto in patternDtos)
             {

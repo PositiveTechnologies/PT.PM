@@ -18,7 +18,7 @@ namespace PT.PM.Common.Nodes.Statements
         public Statement Statement { get; set; }
 
         public ForStatement(IEnumerable<Statement> initializers, Expression condition,
-            IEnumerable<Expression> iterators, Statement statement, TextSpan textSpan, FileNode fileNode)
+            IEnumerable<Expression> iterators, Statement statement, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Initializers = initializers as List<Statement> ?? initializers.ToList();

@@ -102,7 +102,7 @@ namespace PT.PM.Cli
                         stage = Stage.Patterns;
                     }
 
-                    LanguageFlags languages = LanguageExt.ParseLanguages(languagesString);
+                    var languages = LanguageExt.ParseLanguages(languagesString);
                     ISourceCodeRepository sourceCodeRepository;
                     if (Directory.Exists(fileName))
                     {
@@ -205,7 +205,7 @@ namespace PT.PM.Cli
                 Indented = isIndentedUst,
                 IncludeTextSpans = isIncludeTextSpansInUst
             };
-            Console.Write(serializer.Serialize(workflowResult.Usts.Select(ust => ust.Root)));
+            Console.Write(serializer.Serialize(workflowResult.Usts));
         }
     }
 }

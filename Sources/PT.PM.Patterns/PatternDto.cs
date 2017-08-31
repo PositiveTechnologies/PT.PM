@@ -3,19 +3,20 @@ using Newtonsoft.Json;
 using System.Linq;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Collections.Generic;
+using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Patterns
 {
     public class PatternDto
     {
-        private LanguageFlags languages = LanguageExt.AllPatternLanguages;
+        private HashSet<Language> languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
 
         public string Name { get; set; } = "";
 
         public string Key { get; set; } = "";
 
-        [JsonConverter(typeof(StringEnumConverter))]
-        public LanguageFlags Languages
+        public HashSet<Language> Languages
         {
             get
             {
@@ -23,7 +24,7 @@ namespace PT.PM.Patterns
             }
             set
             {
-                if (value.Is(LanguageFlags.Aspx))
+                if (value.Contains(Language.Aspx))
                 {
                     throw new ArgumentException($"Unable to create pattern for Aspx");
                 }
@@ -46,7 +47,7 @@ namespace PT.PM.Patterns
         {
         }
 
-        public PatternDto(Pattern pattern, UstNodeSerializationFormat dataFormat, string data)
+        public PatternDto(PatternRootNode pattern, UstNodeSerializationFormat dataFormat, string data)
         {
             Key = pattern.Key;
             Description = pattern.DebugInfo;
@@ -59,8 +60,8 @@ namespace PT.PM.Patterns
 
         public override string ToString()
         {
-            var titles = LanguageExt.Languages
-                .Where(lang => Languages.Is(lang))
+            var titles = LanguageExt.AllLanguages
+                .Where(lang => Languages.Contains(lang))
                 .Select(lang => LanguageExt.LanguageInfos[lang].Title);
             return $"{Name} ({(string.Join(", ", titles))})";
         }

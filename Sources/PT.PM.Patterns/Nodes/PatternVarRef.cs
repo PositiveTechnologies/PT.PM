@@ -89,7 +89,7 @@ namespace PT.PM.Patterns.Nodes
                 result = CurrentValue.CompareTo(other);
                 if (result == 0)
                 {
-                    PatternVar.PinValue = (Token)other;
+                    PatternVar.PinValue = other as Token;
                     PinValueAssigned = true;
                 }
                 return result;

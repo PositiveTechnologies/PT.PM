@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Statements
 
         public Expression Return { get; set; }
 
-        public ReturnStatement(Expression returnExpression, TextSpan textSpan, FileNode fileNode)
+        public ReturnStatement(Expression returnExpression, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Return = returnExpression;

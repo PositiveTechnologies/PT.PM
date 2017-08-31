@@ -35,12 +35,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public UnaryOperatorLiteral(bool prefix, string op, TextSpan textSpan, FileNode fileNode)
+        public UnaryOperatorLiteral(bool prefix, string op, TextSpan textSpan, RootNode fileNode)
             : this(prefix ? PrefixTextUnaryOperator[op] : PostfixTextUnaryOperator[op], textSpan, fileNode)
         {
         }
 
-        public UnaryOperatorLiteral(UnaryOperator op, TextSpan textSpan, FileNode fileNode)
+        public UnaryOperatorLiteral(UnaryOperator op, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             UnaryOperator = op;

@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common;
+using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Patterns
 {
     public interface IPatternConverter<TPattern> : ILoggable
-        where TPattern : PatternBase
+        where TPattern : PatternRootNode
     {
         Dictionary<UstNodeSerializationFormat, IUstNodeSerializer> UstNodeSerializers { get; set; }
-
-        UstNodeSerializationFormat ConvertBackFormat { get; set; }
 
         TPattern[] Convert(IEnumerable<PatternDto> patternDtos);
 

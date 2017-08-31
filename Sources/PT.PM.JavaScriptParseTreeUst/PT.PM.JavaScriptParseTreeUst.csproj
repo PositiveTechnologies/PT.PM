@@ -59,7 +59,6 @@
     <Compile Include="JavaScriptAntlrUstConverterVisitorHelper.cs" />
     <Compile Include="JavaScriptAntlrParseTree.cs" />
     <Compile Include="JavaScriptAntlrParser.cs" />
-    <Compile Include="JavaScriptAntlrUstConverterVisitor.cs" />
     <Compile Include="JavaScriptParseTreeConverter.cs" />
     <Compile Include="JavaScriptType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

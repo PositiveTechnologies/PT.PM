@@ -3,10 +3,12 @@ using PT.PM.Common;
 using PT.PM.Patterns.Nodes;
 using System;
 using PT.PM.Common.Exceptions;
+using System.Linq;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Patterns
 {
-    public class PatternConverter : IPatternConverter<Pattern>
+    public class PatternConverter : IPatternConverter<PatternRootNode>
     {
         private ILogger logger { get; set; } = DummyLogger.Instance;
 
@@ -28,33 +30,39 @@ namespace PT.PM.Patterns
 
         public Dictionary<UstNodeSerializationFormat, IUstNodeSerializer> UstNodeSerializers { get; set; }
 
-        public UstNodeSerializationFormat ConvertBackFormat { get; set; }
-
-        public PatternConverter(IUstNodeSerializer serializer, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
-            : this(new[] { serializer }, format)
+        public PatternConverter(IUstNodeSerializer serializer)
+            : this(new[] { serializer })
         {
         }
 
-        public PatternConverter(IEnumerable<IUstNodeSerializer> serializers, UstNodeSerializationFormat format = UstNodeSerializationFormat.Json)
+        public PatternConverter(IEnumerable<IUstNodeSerializer> serializers)
         {
             UstNodeSerializers = new Dictionary<UstNodeSerializationFormat, IUstNodeSerializer>();
             foreach (var serializer in serializers)
             {
                 UstNodeSerializers[serializer.DataFormat] = serializer;
             }
-            ConvertBackFormat = format;
         }
 
-        public Pattern[] Convert(IEnumerable<PatternDto> patternsDto)
+        public PatternRootNode[] Convert(IEnumerable<PatternDto> patternsDto)
         {
-            var result = new List<Pattern>();
-            foreach (var patternDto in patternsDto)
+            var result = new List<PatternRootNode>(patternsDto.Count());
+            foreach (PatternDto patternDto in patternsDto)
             {
                 var serializer = UstNodeSerializers[patternDto.DataFormat];
                 try
                 {
-                    PatternNode data = (PatternNode)serializer.Deserialize(patternDto.Value, patternDto.Languages);
-                    var pattern = new Pattern(patternDto, data);
+                    var node = serializer.Deserialize(patternDto.Value);
+                    PatternRootNode pattern = new PatternRootNode
+                    {
+                        DataFormat = serializer.DataFormat,
+                        Key = patternDto.Key,
+                        Languages = patternDto.Languages,
+                        Node = node is PatternRootNode patternRootNode ? patternRootNode.Node : node,
+                        DebugInfo = patternDto.Description,
+                        FilenameWildcard = patternDto.FilenameWildcard
+                    };
+                    pattern.FillAscendants();
                     result.Add(pattern);
                 }
                 catch (Exception ex)
@@ -65,16 +73,27 @@ namespace PT.PM.Patterns
             return result.ToArray();
         }
 
-        public PatternDto[] ConvertBack(IEnumerable<Pattern> patterns)
+        public PatternDto[] ConvertBack(IEnumerable<PatternRootNode> patterns)
         {
             var result = new List<PatternDto>();
-            foreach (var pattern in patterns)
+            foreach (PatternRootNode pattern in patterns)
             {
-                var serializer = UstNodeSerializers[ConvertBackFormat];
+                var serializer = UstNodeSerializers[pattern.DataFormat];
                 try
                 {
-                    var serializedData = serializer.Serialize(pattern.Data);
-                    result.Add(new PatternDto(pattern, serializer.DataFormat, serializedData));
+                    PatternDto patternDto = new PatternDto
+                    {
+                        DataFormat = pattern.DataFormat,
+                        Key = pattern.Key,
+                        Languages = pattern.Languages,
+                        Value = serializer.Serialize(
+                              pattern is PatternRootNode patternNode
+                            ? patternNode.Node
+                            : pattern),
+                        Description = pattern.DebugInfo,
+                        FilenameWildcard = pattern.FilenameWildcard
+                    };
+                    result.Add(patternDto);
                 }
                 catch (Exception ex)
                 {

@@ -12,49 +12,70 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class RoslynUstCommonConverterVisitor : CSharpSyntaxVisitor<UstNode>
+    public partial class CSharpRoslynParseTreeConverter : CSharpSyntaxVisitor<UstNode>, IParseTreeToUstConverter
     {
-        protected SyntaxNode Root;
+        private RootNode root { get; set; }
 
-        protected FileNode FileNode { get; set; }
+        public Language Language => Language.CSharp;
+
+        public HashSet<Language> AnalyzedLanguages { get; set; }
+
+        public RootNode ParentRoot { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public RoslynUstCommonConverterVisitor(SyntaxTree syntaxTree, string filePath)
+        public CSharpRoslynParseTreeConverter()
         {
-            Root = syntaxTree.GetRoot();
-            FileNode = new FileNode(filePath, syntaxTree.GetText().ToString());
+            AnalyzedLanguages = Language.GetSelfAndSublanguages();
         }
 
-        public RoslynUstCommonConverterVisitor(SyntaxTree syntaxTree, FileNode fileNode)
+        public RootNode Convert(ParseTree langParseTree)
         {
-            Root = syntaxTree.GetRoot();
-            FileNode = fileNode;
-        }
+            var roslynParseTree = (CSharpRoslynParseTree)langParseTree;
+            SyntaxTree syntaxTree = roslynParseTree.SyntaxTree;
+            RootNode result;
+            if (syntaxTree != null)
+            {
+                string filePath = syntaxTree.FilePath;
+                try
+                {
+                    UstNode visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
+                    if (visited is RootNode rootUstNode)
+                    {
+                        result = rootUstNode;
+                    }
+                    else
+                    {
+                        result = new RootNode(langParseTree.SourceCodeFile, Language);
+                        result.Node = visited;
+                    }
+                    result.SourceCodeFile = langParseTree.SourceCodeFile;
+                    result.Comments = roslynParseTree.Comments.Select(c =>
+                        new CommentLiteral(c.ToString(), c.GetTextSpan(), result)).ToArray();
+                    result.FillAscendants();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(new ConversionException(filePath, ex));
+                    result = new RootNode(langParseTree.SourceCodeFile, Language);
+                }
+            }
+            else
+            {
+                result = new RootNode(langParseTree.SourceCodeFile, Language);
+            }
 
-        public RoslynUstCommonConverterVisitor(SyntaxNode root, FileNode fileNode)
-        {
-            Root = root;
-            FileNode = fileNode;
-        }
-
-        public FileNode Walk()
-        {
-            return (FileNode)Visit(Root);
-        }
-
-        public UstNode Walk(SyntaxNode node)
-        {
-            return Visit(node);
+            return result;
         }
 
         public override UstNode Visit(SyntaxNode node)
         {
             var children = new List<UstNode>();
-            foreach (var child in node.ChildNodes())
+            foreach (SyntaxNode child in node.ChildNodes())
             {
                 var result = VisitAndReturnNullIfError(child);
                 if (result != null)
@@ -62,9 +83,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     children.Add(result);
                 }
             }
-            FileNode.Root = children.CreateRootNamespace(Language.CSharp, FileNode);
 
-            return FileNode;
+            if (root == null)
+            {
+                root = new RootNode(children.FirstOrDefault()?.Root?.SourceCodeFile, Language.CSharp);
+            }
+            root.Nodes = children.ToArray();
+            return root;
         }
 
         public override UstNode DefaultVisit(SyntaxNode node)
@@ -80,20 +105,20 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitUsingDirective(UsingDirectiveSyntax node)
         {
             var nameSpan = node.Name.GetTextSpan();
-            var name = new StringLiteral(node.Name.ToFullString(), nameSpan, FileNode);
-            return new UsingDeclaration(name, node.GetTextSpan(), FileNode);
+            var name = new StringLiteral(node.Name.ToFullString(), nameSpan, root);
+            return new UsingDeclaration(name, node.GetTextSpan(), root);
         }
 
         public override UstNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
             var nameSpan = node.Name.GetTextSpan();
-            var name = new StringLiteral(node.Name.ToFullString(), nameSpan, FileNode);
+            var name = new StringLiteral(node.Name.ToFullString(), nameSpan, root);
             var members = node.Members.Select(member => VisitAndReturnNullIfError(member))
                 .ToArray();
 
             var result = new NamespaceDeclaration(
                 name, members,
-                Language.CSharp, node.GetTextSpan(), FileNode
+                node.GetTextSpan(), root
             );
             return result;
         }
@@ -106,9 +131,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitDelegateDeclaration(DelegateDeclarationSyntax node)
         {
             var typeType = ConvertTypeType(TypeType.Delegate);
-            var typeTypeToken = new TypeTypeLiteral(typeType, node.DelegateKeyword.GetTextSpan(), FileNode);
+            var typeTypeToken = new TypeTypeLiteral(typeType, node.DelegateKeyword.GetTextSpan(), root);
             var result = new TypeDeclaration(typeTypeToken, ConvertId(node.Identifier), new EntityDeclaration[0],
-                node.GetTextSpan(), FileNode);
+                node.GetTextSpan(), root);
             return result;
         }
 
@@ -125,7 +150,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
             var type = ConvertTypeType(TypeType.Enum);
-            var typeTypeToken = new TypeTypeLiteral(type, node.EnumKeyword.GetTextSpan(), FileNode);
+            var typeTypeToken = new TypeTypeLiteral(type, node.EnumKeyword.GetTextSpan(), root);
             var members = node.Members.Select(m => (FieldDeclaration)VisitAndReturnNullIfError(m))
                 .ToArray();
 
@@ -135,14 +160,14 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitPredefinedType(PredefinedTypeSyntax node)
         {
-            var result = new TypeToken(node.Keyword.ValueText, node.GetTextSpan(), FileNode);
+            var result = new TypeToken(node.Keyword.ValueText, node.GetTextSpan(), root);
             return result;
         }
 
         public override UstNode VisitGenericName(GenericNameSyntax node)
         {
             var typeName = string.Join("", node.DescendantTokens().Select(t => t.ValueText));
-            var result = new TypeToken(typeName, node.GetTextSpan(), FileNode);
+            var result = new TypeToken(typeName, node.GetTextSpan(), root);
             return result;
         }
 
@@ -158,7 +183,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             TypeType type;
             Enum.TryParse(node.Keyword.ValueText, true, out type);
             type = ConvertTypeType(type);
-            var typeTypeToken = new TypeTypeLiteral(type, node.Keyword.GetTextSpan(), FileNode);
+            var typeTypeToken = new TypeTypeLiteral(type, node.Keyword.GetTextSpan(), root);
 
             var typeMembers = new List<EntityDeclaration>();
             foreach (var member in node.Members)
@@ -179,7 +204,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     if (indexerSyntax.AccessorList == null)
                     {
                         typeMembers.Add(ConvertToExpressionBodyMethod(indexerSyntax.ExpressionBody,
-                            new IdToken(name, default(TextSpan), FileNode), indexerSyntax.GetTextSpan()));
+                            new IdToken(name, default(TextSpan), root), indexerSyntax.GetTextSpan()));
                     }
                     else
                     {
@@ -223,11 +248,11 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     {
                         var expressionBody = (Expression)VisitArrowExpressionClause(operatorSyntax.ExpressionBody);
                         body = new BlockStatement(new Statement[] {
-                            new ExpressionStatement(expressionBody, expressionBody.TextSpan, FileNode) },
-                            expressionBody.TextSpan, FileNode);
+                            new ExpressionStatement(expressionBody, expressionBody.TextSpan, root) },
+                            expressionBody.TextSpan, root);
                     }
 
-                    var method = new MethodDeclaration(id, parameters, body, operatorSyntax.GetTextSpan(), FileNode)
+                    var method = new MethodDeclaration(id, parameters, body, operatorSyntax.GetTextSpan(), root)
                     {
                         Modifiers = operatorSyntax.Modifiers.Select(ConvertModifier).ToList()
                     };
@@ -243,7 +268,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     else
                     {
                         var typeToken = (TypeToken)base.Visit(conversionOperatorSyntax.Type);
-                        id = new IdToken("To" + typeToken.TypeText, typeToken.TextSpan, FileNode);
+                        id = new IdToken("To" + typeToken.TypeText, typeToken.TextSpan, root);
                     }
 
                     BlockStatement body;
@@ -255,15 +280,15 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     {
                         var expressionBody = (Expression)VisitArrowExpressionClause(conversionOperatorSyntax.ExpressionBody);
                         body = new BlockStatement(new Statement[] {
-                            new ExpressionStatement(expressionBody, expressionBody.TextSpan, FileNode) },
-                            expressionBody.TextSpan, FileNode);
+                            new ExpressionStatement(expressionBody, expressionBody.TextSpan, root) },
+                            expressionBody.TextSpan, root);
                     }
 
                     var parameters =
                         conversionOperatorSyntax.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
                         .ToArray();
 
-                    var method = new MethodDeclaration(id, parameters, body, conversionOperatorSyntax.GetTextSpan(), FileNode)
+                    var method = new MethodDeclaration(id, parameters, body, conversionOperatorSyntax.GetTextSpan(), root)
                     {
                         Modifiers = conversionOperatorSyntax.Modifiers.Select(ConvertModifier).ToList()
                     };
@@ -302,10 +327,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var ex = (Expression)VisitArrowExpressionClause(expressionBody);
             var body = new BlockStatement(new Statement[] { new ExpressionStatement(ex) },
-                ex.TextSpan, FileNode);
+                ex.TextSpan, root);
             var method = new MethodDeclaration(
-                new IdToken(name.TextValue + "_method", name.TextSpan, FileNode),
-                Enumerable.Empty<ParameterDeclaration>(), body, textSpan, FileNode);
+                new IdToken(name.TextValue + "_method", name.TextSpan, root),
+                Enumerable.Empty<ParameterDeclaration>(), body, textSpan, root);
             return method;
         }
 
@@ -315,7 +340,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 .Select(var => (AssignmentExpression)VisitAndReturnNullIfError(var))
                 .ToList();
 
-            var result = new FieldDeclaration(declarations, node.GetTextSpan(), FileNode)
+            var result = new FieldDeclaration(declarations, node.GetTextSpan(), root)
             {
                 Modifiers = node.Modifiers.Select(ConvertModifier).ToList()
             };
@@ -335,7 +360,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 nameLiteral,
                 typeMembers,
                 node.GetTextSpan(),
-                FileNode)
+                root)
             {
                 Modifiers = modifiers,
             };
@@ -374,17 +399,17 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             IEnumerable<ParameterDeclaration> parameters = null)
         {
             var methodLiteral = new IdToken(name + "_" + node.Keyword.ValueText,
-               node.Keyword.GetTextSpan(), FileNode);
+               node.Keyword.GetTextSpan(), root);
             var body = node.Body == null ?
-                new BlockStatement(new Statement[0], node.SemicolonToken.GetTextSpan(), FileNode) :
+                new BlockStatement(new Statement[0], node.SemicolonToken.GetTextSpan(), root) :
                 (BlockStatement)VisitBlock(node.Body);
 
             var method = new MethodDeclaration(
                 methodLiteral,
                 parameters ?? new ParameterDeclaration[0],
-                body ?? new BlockStatement(null, node.SemicolonToken.GetTextSpan(), FileNode),
+                body ?? new BlockStatement(null, node.SemicolonToken.GetTextSpan(), root),
                 node.GetTextSpan(),
-                FileNode)
+                root)
             {
                 Modifiers = node.Modifiers.Select(ConvertModifier).ToList()
             };

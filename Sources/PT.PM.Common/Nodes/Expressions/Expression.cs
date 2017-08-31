@@ -2,7 +2,7 @@
 {
     public abstract class Expression : UstNode
     {
-        protected Expression(TextSpan textSpan, FileNode fileNode)
+        protected Expression(TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
         }

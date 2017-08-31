@@ -8,7 +8,7 @@
 
         public override string TextValue => Modifier.ToString();
 
-        public ModifierLiteral(Modifier modifier, TextSpan textSpan, FileNode fileNode)
+        public ModifierLiteral(Modifier modifier, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Modifier = modifier;

@@ -46,7 +46,7 @@ namespace PT.PM.UstPreprocessing.Tests
                 workflow.Stage = Stage.Convert;
                 WorkflowResult workflowResult = workflow.Process();
 
-                Assert.IsTrue(workflowResult.Usts.First().Root.ToString().Contains("a = a + 2"));
+                Assert.IsTrue(workflowResult.Usts.First().Nodes[0].ToString().Contains("a = a + 2"));
             }
         }
     }

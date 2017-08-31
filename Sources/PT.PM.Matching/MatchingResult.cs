@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Patterns;
 using System.Collections.Generic;
+using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResult : MatchingResultBase<Pattern>
+    public class MatchingResult : MatchingResultBase<PatternRootNode>
     {
-        public FileNode FileNode => Nodes.FirstOrDefault()?.FileNode;
+        public SourceCodeFile SourceCodeFile => Nodes.FirstOrDefault()?.Root?.SourceCodeFile;
 
         public TextSpan TextSpan { get; private set; }
 
@@ -17,13 +17,13 @@ namespace PT.PM.Matching
             Nodes = new List<UstNode>();
         }
 
-        public MatchingResult(Pattern pattern, UstNode node, TextSpan textSpan)
+        public MatchingResult(PatternRootNode pattern, UstNode node, TextSpan textSpan)
             : this(pattern, new List<UstNode> { node })
         {
             TextSpan = textSpan;
         }
 
-        public MatchingResult(Pattern pattern, List<UstNode> nodes)
+        public MatchingResult(PatternRootNode pattern, List<UstNode> nodes)
         {
             Pattern = pattern;
             Nodes = nodes;

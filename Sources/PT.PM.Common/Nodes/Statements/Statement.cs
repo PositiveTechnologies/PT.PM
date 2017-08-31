@@ -2,8 +2,8 @@
 {
     public abstract class Statement : UstNode
     {
-        protected Statement(TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        protected Statement(TextSpan textSpan, RootNode root)
+            : base(textSpan, root)
         {
         }
 

@@ -16,13 +16,9 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrUstConverterVisitor : AntlrDefaultVisitor, IJavaParserVisitor<UstNode>
+    public partial class JavaAntlrParseTreeConverter : AntlrConverter, IJavaParserVisitor<UstNode>
     {
-        public JavaAntlrUstConverterVisitor(string fileName, string fileData)
-            : base(fileName, fileData)
-        {
-            FileNode = new FileNode(fileName, fileData);
-        }
+        public override Language Language => Language.Java;
 
         public UstNode VisitCompilationUnit(JavaParser.CompilationUnitContext context)
         {
@@ -40,16 +36,16 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (packageDeclaration != null)
             {
                 var name = (StringLiteral)Visit(packageDeclaration.qualifiedName());
-                var ns = new NamespaceDeclaration(name, typeDecs, Language.Java, context.GetTextSpan(), FileNode);
+                var ns = new NamespaceDeclaration(name, typeDecs, context.GetTextSpan(), root);
                 roots.Add(ns);
             }
             else
             {
                 roots.AddRange(typeDecs);
             }
-            FileNode.Root = roots.CreateRootNamespace(Language.Java, FileNode);
+            root.Nodes = roots.ToArray();
 
-            return FileNode;
+            return root;
         }
 
         public UstNode VisitPackageDeclaration(JavaParser.PackageDeclarationContext context)
@@ -61,7 +57,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             StringLiteral name = (StringLiteral)Visit(context.qualifiedName());
             TextSpan textSpan = context.GetTextSpan();
-            var result = new UsingDeclaration(name, textSpan, FileNode);
+            var result = new UsingDeclaration(name, textSpan, root);
 
             return result;
         }
@@ -88,14 +84,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
             Modifier modifier;
             ModifierLiteral result = null;
             if (Enum.TryParse<Modifier>(context.GetChild<ITerminalNode>(0).GetText(), true, out modifier))
-                result = new ModifierLiteral(modifier, context.GetTextSpan(), FileNode);
+                result = new ModifierLiteral(modifier, context.GetTextSpan(), root);
             return result;
         }
 
         public UstNode VisitClassDeclaration(JavaParser.ClassDeclarationContext context)
         {
             var typeTypeToken = new TypeTypeLiteral(TypeType.Class,
-                context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan(), FileNode);
+                context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan(), root);
 
             var id = (IdToken)Visit(context.IDENTIFIER());
 
@@ -103,7 +99,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 .Select(dec => Visit(dec) as EntityDeclaration)
                 .Where(dec => dec != null).ToArray();
 
-            var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);
+            var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), root);
             return result;
         }
 
@@ -115,7 +111,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public UstNode VisitInterfaceDeclaration(JavaParser.InterfaceDeclarationContext context)
         {
             var typeTypeToken = new TypeTypeLiteral(TypeType.Interface,
-                context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan(), FileNode);
+                context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan(), root);
 
             var id = (IdToken)Visit(context.IDENTIFIER());
 
@@ -124,7 +120,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 .Select(dec => Visit(dec) as EntityDeclaration)
                 .Where(dec => dec != null).ToArray();
             
-            var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);
+            var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), root);
             return result;
         }
 
@@ -157,7 +153,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 }
             }
 
-            var result = new TypeToken(id.Id + typeNodes.ToString(), context.GetTextSpan(), FileNode);
+            var result = new TypeToken(id.Id + typeNodes.ToString(), context.GetTextSpan(), root);
             return result;
         }
 
@@ -172,7 +168,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 string.Join(",", typeArgs.Select(arg => arg.TypeText)) +
                 ((ITerminalNode)context.GetChild(context.ChildCount - 1)).Symbol.Text;
 
-            var result = new TypeToken(resultString.ToString(), context.GetTextSpan(), FileNode);
+            var result = new TypeToken(resultString.ToString(), context.GetTextSpan(), root);
             return result;
         }
 
@@ -185,7 +181,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
             else
             {
-                result = new TypeToken("object", context.GetTextSpan(), FileNode);
+                result = new TypeToken("object", context.GetTextSpan(), root);
             }
             return result;
         }
@@ -246,7 +242,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             var assignments = context.constantDeclarator()
                 .Select(declarator => (AssignmentExpression)Visit(declarator));
-            return new FieldDeclaration(assignments, context.GetTextSpan(), FileNode);
+            return new FieldDeclaration(assignments, context.GetTextSpan(), root);
         }
 
         public UstNode VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)
@@ -254,7 +250,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return new AssignmentExpression(
                 (Expression)Visit(context.IDENTIFIER()),
                 (Expression)Visit(context.variableInitializer()),
-                context.GetTextSpan(), FileNode);
+                context.GetTextSpan(), root);
         }
 
         public UstNode VisitGenericInterfaceMethodDeclaration([NotNull] JavaParser.GenericInterfaceMethodDeclarationContext context)

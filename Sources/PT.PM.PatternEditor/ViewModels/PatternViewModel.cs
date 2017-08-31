@@ -35,7 +35,7 @@ namespace PT.PM.PatternEditor
         private TextBox logger;
 
         private PatternDto selectedPattern;
-        private LanguageFlags oldLanguages;
+        private HashSet<Language> oldLanguages;
         private string oldPattern;
         private GuiLogger patternLogger;
         private DslProcessor dslProcessor = new DslProcessor();
@@ -271,15 +271,15 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public LanguageFlags Languages
+        public HashSet<Language> Languages
         {
             get
             {
-                return SelectedPattern?.Languages ?? LanguageFlags.None;
+                return SelectedPattern?.Languages ?? new HashSet<Language>();
             }
             set
             {
-                if (SelectedPattern != null && SelectedPattern.Languages != value)
+                if (SelectedPattern?.Languages != value)
                 {
                     CheckPattern();
                     this.RaisePropertyChanged();
@@ -289,44 +289,44 @@ namespace PT.PM.PatternEditor
 
         public bool IsCSharpLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.CSharp) ?? false; }
-            set { ChangeLanguage(LanguageFlags.CSharp, value); }
+            get { return SelectedPattern?.Languages.Contains(Language.CSharp) ?? false; }
+            set { ChangeLanguage(Language.CSharp, value); }
         }
 
         public bool IsJavaLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.Java) ?? false; }
-            set { ChangeLanguage(LanguageFlags.Java, value); }
+            get { return SelectedPattern?.Languages.Contains(Language.Java) ?? false; }
+            set { ChangeLanguage(Language.Java, value); }
         }
 
         public bool IsPhpLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.Php) ?? false; }
-            set { ChangeLanguage(LanguageFlags.Php, value); }
+            get { return SelectedPattern?.Languages.Contains(Language.Php) ?? false; }
+            set { ChangeLanguage(Language.Php, value); }
         }
 
         public bool IsPlSqlLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.PlSql) ?? false; }
-            set { ChangeLanguage(LanguageFlags.PlSql, value); }
+            get { return SelectedPattern?.Languages.Contains(Language.PlSql) ?? false; }
+            set { ChangeLanguage(Language.PlSql, value); }
         }
 
         public bool IsTSqlLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.TSql) ?? false; }
-            set { ChangeLanguage(LanguageFlags.TSql, value); }
+            get { return SelectedPattern?.Languages.Contains(Language.TSql) ?? false; }
+            set { ChangeLanguage(Language.TSql, value); }
         }
 
         public bool IsJavaScriptLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.JavaScript) ?? false; }
-            set { ChangeLanguage(LanguageFlags.JavaScript, value); }
+            get { return SelectedPattern?.Languages.Contains(Language.JavaScript) ?? false; }
+            set { ChangeLanguage(Language.JavaScript, value); }
         }
 
         public bool IsHtmlLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.Html) ?? false; }
-            set { ChangeLanguage(LanguageFlags.Html, value); }
+            get { return SelectedPattern?.Languages.Contains(Language.Html) ?? false; }
+            set { ChangeLanguage(Language.Html, value); }
         }
 
         public string Description
@@ -412,14 +412,23 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(IsDeveloperMode));
         }
 
-        private void ChangeLanguage(LanguageFlags languages, bool value)
+        private void ChangeLanguage(Language language, bool value)
         {
             if (SelectedPattern != null)
             {
-                var flags = value ? (SelectedPattern.Languages | languages) : (SelectedPattern.Languages & ~languages);
-                if (SelectedPattern.Languages != flags)
+                bool changed = false;
+                if (value && !SelectedPattern.Languages.Contains(language))
                 {
-                    SelectedPattern.Languages = flags;
+                    SelectedPattern.Languages.Add(language);
+                    changed = true;
+                }
+                else if (!value && SelectedPattern.Languages.Contains(language))
+                {
+                    SelectedPattern.Languages.Remove(language);
+                    changed = true;
+                }
+                if (changed)
+                {
                     CheckPattern();
                     this.RaisePropertyChanged();
                 }
@@ -428,7 +437,7 @@ namespace PT.PM.PatternEditor
 
         private void CheckPattern()
         {
-            if (oldPattern != patternTextBox.Text || oldLanguages != Languages)
+            if (oldPattern != patternTextBox.Text || !oldLanguages.SequenceEqual(Languages))
             {
                 oldPattern = patternTextBox.Text;
                 oldLanguages = Languages;
@@ -441,7 +450,7 @@ namespace PT.PM.PatternEditor
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
-                        patternNode = dslProcessor.Deserialize(patternTextBox.Text, Languages);
+                        patternNode = dslProcessor.Deserialize(patternTextBox.Text);
                     }
                 }
                 catch

@@ -44,14 +44,13 @@
   <ItemGroup>
     <Compile Include="AntlrParseTree.cs" />
     <Compile Include="AntlrCaseInsensitiveInputStream.cs" />
-    <Compile Include="AntlrConverter.cs" />
     <Compile Include="AntlrHelper.cs" />
     <Compile Include="AntlrMemoryErrorListener.cs" />
     <Compile Include="AntlrParser.cs" />
     <Compile Include="AntlrError.cs" />
     <Compile Include="AntlrParserError.cs" />
     <Compile Include="AntlrLexerError.cs" />
-    <Compile Include="AntlrDefaultVisitor.cs" />
+    <Compile Include="AntlrConverter.cs" />
     <Compile Include="CaseInsensitiveType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">

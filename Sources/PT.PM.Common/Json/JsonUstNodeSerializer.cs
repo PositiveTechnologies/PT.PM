@@ -27,9 +27,11 @@ namespace PT.PM.Common
             stringEnumConverter = new StringEnumConverter();
         }
 
-        public UstNode Deserialize(string data, LanguageFlags sourceLanguage)
+        public UstNode Deserialize(string data)
         {
-            return JsonConvert.DeserializeObject<UstNode>(data, astJsonConverter, stringEnumConverter);
+            var result = JsonConvert.DeserializeObject<UstNode>(data, astJsonConverter, stringEnumConverter);
+            result.FillAscendants();
+            return result;
         }
 
         public string Serialize(UstNode node)

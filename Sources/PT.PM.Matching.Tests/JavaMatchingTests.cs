@@ -22,6 +22,8 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsJava_MatchedAllDefault()
         {
+            Assert.Ignore("Won't be supported in future versions of PT.PM");
+
             var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.java");
             var sourceCodeRep = new FileCodeRepository(path);
 
@@ -31,7 +33,7 @@ namespace PT.PM.Matching.Tests
                 .OrderBy(r => r.PatternKey)
                 .ToArray();
             var patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Is(LanguageFlags.Java)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains(Language.Java)).ToArray();
             foreach (var dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);

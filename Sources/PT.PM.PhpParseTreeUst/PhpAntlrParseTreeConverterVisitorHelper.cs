@@ -10,22 +10,22 @@ using System.Linq;
 
 namespace PT.PM.PhpParseTreeUst
 {
-    public partial class PhpAntlrParseTreeConverterVisitor
+    public partial class PhpAntlrParseTreeConverter
     {
         private Expression CreateSpecialInvocation(ITerminalNode specialMethodTerminal, PhpParser.ExpressionContext expression, TextSpan contextTextSpan)
         {
             var expression0 = (Expression)VisitExpression(expression);
             var result = new InvocationExpression(
-                new IdToken(specialMethodTerminal.GetText(), specialMethodTerminal.GetTextSpan(), FileNode),
-                new ArgsNode(new List<Expression>() { expression0 }, expression.GetTextSpan(), FileNode),
-                contextTextSpan, FileNode);
+                new IdToken(specialMethodTerminal.GetText(), specialMethodTerminal.GetTextSpan(), root),
+                new ArgsNode(new List<Expression>() { expression0 }, expression.GetTextSpan(), root),
+                contextTextSpan, root);
             return result;
         }
 
         private IdToken ConvertVar(ITerminalNode terminalNode)
         {
             var text = terminalNode.GetText().Substring(1);
-            return new IdToken(text, terminalNode.GetTextSpan(), FileNode);
+            return new IdToken(text, terminalNode.GetTextSpan(), root);
         }
 
         private ParameterDeclaration[] ConvertParameters(PhpParser.FormalParameterListContext parameters)

@@ -59,16 +59,14 @@
     <Compile Include="Generated\TSqlLexer.cs" />
     <Compile Include="Generated\TSqlParser.cs" />
     <Compile Include="Generated\TSqlParserVisitor.cs" />
-    <Compile Include="PlSqlConverterVisitor.cs" />
+    <Compile Include="PlSqlAntlrConverter.cs" />
     <Compile Include="PlSqlConverterVisitorHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PlSqlAntlrParseTree.cs" />
-    <Compile Include="PlSqlAntlrConverter.cs" />
     <Compile Include="PlSqlAntlrParser.cs" />
     <Compile Include="TSqlAntlrParseTree.cs" />
-    <Compile Include="TSqlAntlrConverter.cs" />
     <Compile Include="TSqlAntlrParser.cs" />
-    <Compile Include="TSqlConverterVisitor.cs" />
+    <Compile Include="TSqlAntlrConverter.cs" />
     <Compile Include="TSqlConverterVisitorHelper.cs" />
   </ItemGroup>
   <ItemGroup>

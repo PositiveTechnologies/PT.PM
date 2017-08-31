@@ -13,21 +13,18 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public List<UstNode> Members { get; set; }
 
-        public Language Language { get; set; }
-
         public NamespaceDeclaration(StringLiteral name, UstNode member,
-            Language language, TextSpan textSpan, FileNode fileNode)
-            : this(name, new UstNode[] { member }, language, textSpan, fileNode)
+            TextSpan textSpan, RootNode fileNode)
+            : this(name, new UstNode[] { member }, textSpan, fileNode)
         {
         }
 
         public NamespaceDeclaration(StringLiteral name, IEnumerable<UstNode> members,
-            Language language, TextSpan textSpan, FileNode fileNode)
+            TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Name = name;
             Members = members as List<UstNode> ?? members.ToList();
-            Language = language;
         }
 
         public NamespaceDeclaration()

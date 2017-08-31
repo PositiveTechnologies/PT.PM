@@ -9,7 +9,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public StringLiteral Name { get; set; }
 
-        public UsingDeclaration(StringLiteral name, TextSpan textSpan, FileNode fileNode)
+        public UsingDeclaration(StringLiteral name, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Name = name;

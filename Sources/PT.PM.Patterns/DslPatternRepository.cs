@@ -7,12 +7,17 @@ namespace PT.PM.Patterns
     public class DslPatternRepository : MemoryPatternsRepository
     {
         private string patternData;
-        private LanguageFlags languageFlags;
+        private HashSet<Language> languages;
 
-        public DslPatternRepository(string patternData, LanguageFlags languageFlags)
+        public DslPatternRepository(string patternData, Language language)
+            : this(patternData, new [] { language })
+        {
+        }
+
+        public DslPatternRepository(string patternData, IEnumerable<Language> languages)
         {
             this.patternData = patternData;
-            this.languageFlags = languageFlags;
+            this.languages = new HashSet<Language>(languages);
         }
 
         protected override List<PatternDto> InitPatterns()
@@ -22,7 +27,7 @@ namespace PT.PM.Patterns
                 new PatternDto
                 {
                     Key = "temp",
-                    Languages = languageFlags,
+                    Languages = languages,
                     DataFormat = UstNodeSerializationFormat.Dsl,
                     Value = patternData
                 }

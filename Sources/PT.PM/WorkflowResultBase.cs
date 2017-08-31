@@ -1,21 +1,21 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Ust;
+using PT.PM.Common.Nodes;
 using PT.PM.Matching;
-using PT.PM.Patterns;
+using PT.PM.Patterns.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
 namespace PT.PM
 {
-    public abstract class WorkflowResultBase<TStage, TPattern, TMatchingResult> 
+    public abstract class WorkflowResultBase<TStage, TPattern, TMatchingResult>
         where TStage : struct, IConvertible
-        where TPattern : PatternBase
+        where TPattern : PatternRootNode
         where TMatchingResult : MatchingResultBase<TPattern>
     {
         private List<SourceCodeFile> sourceCodeFiles = new List<SourceCodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
-        private List<Ust> usts = new List<Ust>();
+        private List<RootNode> usts = new List<RootNode>();
         private List<TPattern> patterns = new List<TPattern>();
         private List<TMatchingResult> matchingResults = new List<TMatchingResult>();
 
@@ -37,14 +37,16 @@ namespace PT.PM
 
         public WorkflowResultBase(Language[] languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
         {
-            Languages = languages;
+            AnalyzedLanguages = languages;
             ThreadCount = threadCount;
             Stage = stage;
             stageExt = new StageHelper<TStage>(stage);
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
-        public Language[] Languages { get; private set; }
+        public Language[] AnalyzedLanguages { get; private set; }
+
+        public Language[] BaseLanguages { get; set; }
 
         public int ThreadCount { get; private set; }
 
@@ -58,7 +60,7 @@ namespace PT.PM
 
         public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.Parse.ToString(), parseTrees);
 
-        public IReadOnlyList<Ust> Usts
+        public IReadOnlyList<RootNode> Usts
         {
             get
             {
@@ -117,11 +119,11 @@ namespace PT.PM
             }
         }
 
-        public void AddResultEntity(Ust ust, bool convert)
+        public void AddResultEntity(RootNode ust, bool convert)
         {
             if (IsIncludeIntermediateResult || (convert && stageExt.IsConvert) || (!convert && stageExt.IsPreprocess))
             {
-                int ustIndex = usts.FindIndex(tree => tree.FileName == ust.FileName);
+                int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
                 lock (usts)
                 {
                     if (ustIndex == -1)

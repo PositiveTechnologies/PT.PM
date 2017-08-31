@@ -8,18 +8,16 @@ namespace PT.PM.Common.Nodes
 {
     public abstract class UstNode : IComparable<UstNode>, IEquatable<UstNode>
     {
-        private UstNode[] children;
-
         public abstract NodeType NodeType { get; }
 
         [JsonIgnore]
-        public FileNode FileNode { get; set; }
+        public RootNode Root { get; set; }
 
         [JsonIgnore]
         public UstNode Parent { get; set; }
 
         [JsonIgnore]
-        public UstNode[] Children => children ?? (children = GetChildren());
+        public UstNode[] Children => GetChildren(); // TODO: optimized performance
 
         [JsonIgnore]
         public virtual bool IsLiteral => false;
@@ -27,10 +25,10 @@ namespace PT.PM.Common.Nodes
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TextSpan TextSpan { get; set; }
 
-        protected UstNode(TextSpan textSpan, FileNode fileNode)
+        protected UstNode(TextSpan textSpan, RootNode fileNode)
             : this(textSpan)
         {
-            FileNode = fileNode;
+            Root = fileNode;
         }
 
         protected UstNode(TextSpan textSpan)
@@ -169,7 +167,7 @@ namespace PT.PM.Common.Nodes
                         return -(int)list2[i].NodeType;
                     }
                 }
-                else if (element.NodeType != NodeType.FileNode)
+                else if (element.NodeType != NodeType.RootNode)
                 {
                     var elementCompareResult = element.CompareTo(list2[i]);
                     if (elementCompareResult != 0)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,7 +14,6 @@ namespace PT.PM.Common
         private static ICollection<Assembly> cachedAssemblies = new HashSet<Assembly>();
         private static IDictionary<NodeType, Type> nodeTypes = new ConcurrentDictionary<NodeType, Type>();
         private static readonly object assemblyLock = new object();
-        private FileNode currentFileNode;
 
         public UstJsonConverter(params Type[] ustNodeAssemblyTypes)
         {
@@ -49,8 +47,7 @@ namespace PT.PM.Common
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(UstNode) || objectType.IsSubclassOf(typeof(UstNode)) ||
-                objectType == typeof(Ust.Ust);
+            return objectType == typeof(UstNode) || objectType.IsSubclassOf(typeof(UstNode));
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
@@ -66,19 +63,6 @@ namespace PT.PM.Common
                     var obj = jObject[nameof(NodeType)];
                     var nodeType = (NodeType) Enum.Parse(typeof (NodeType), obj.ToString());
                     target = Activator.CreateInstance(nodeTypes[nodeType]);
-
-                    if (objectType == typeof(FileNode))
-                    {
-                        currentFileNode = (FileNode)target;
-                    }
-                    else
-                    {
-                        ((UstNode)target).FileNode = currentFileNode;
-                    }
-                }
-                else if (objectType == typeof(Ust.Ust))
-                {
-                    target = new Ust.Ust();
                 }
                 else
                 {

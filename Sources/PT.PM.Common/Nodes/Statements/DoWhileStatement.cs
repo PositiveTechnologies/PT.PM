@@ -11,8 +11,8 @@ namespace PT.PM.Common.Nodes.Statements
 
         public Expression Condition { get; set; }
 
-        public DoWhileStatement(Statement embeddedStatement, Expression condition, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public DoWhileStatement(Statement embeddedStatement, Expression condition, TextSpan textSpan, RootNode root)
+            : base(textSpan, root)
         {
             EmbeddedStatement = embeddedStatement;
             Condition = condition;

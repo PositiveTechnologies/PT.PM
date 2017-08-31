@@ -11,7 +11,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public Expression Expression { get; set; }
 
-        public UnaryOperatorExpression(UnaryOperatorLiteral op, Expression ex, TextSpan textSpan, FileNode fileNode)
+        public UnaryOperatorExpression(UnaryOperatorLiteral op, Expression ex, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Operator = op;

@@ -12,7 +12,7 @@ namespace PT.PM.Common.Nodes.Statements
 
         public Statement Embedded { get; set; }
 
-        public WhileStatement(Expression condition, Statement embedded, TextSpan textSpan, FileNode fileNode)
+        public WhileStatement(Expression condition, Statement embedded, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Condition = condition;

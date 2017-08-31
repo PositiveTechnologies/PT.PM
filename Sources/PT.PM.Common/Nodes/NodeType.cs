@@ -2,8 +2,7 @@
 {
     public enum NodeType
     {
-        FileNode = 500,
-        RootNode,
+        RootNode = 500,
 
         // Global Scope
         Attribute = 400,
@@ -128,6 +127,7 @@
         UnsafeStatement,
 
         // Collection
+        Collection,
         ArgsNode,
         EntitiesNode,
 
@@ -140,7 +140,7 @@
         WrapperExpression,
 
         // Patterns
-        PatternNode = 600,
+        PatternRootNode = 600,
         PatternVarDef,
         PatternVarRef,
         PatternStringLiteral,
@@ -158,9 +158,5 @@
         PatternComment,
         PatternIfElseStatement,
         PatternTryCatchStatement,
-
-        // Dsl
-        LangCodeNode,
-        DslNode
     }
 }

@@ -10,8 +10,8 @@ namespace PT.PM.Common.Nodes.Tokens
 
         public override string TextValue => Id;
 
-        public IdToken(string id, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public IdToken(string id, TextSpan textSpan, RootNode rootNode)
+            : base(textSpan, rootNode)
         {
             Id = id;
         }

@@ -1,12 +1,11 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes
 {
-    public static class NodeHelpers
+    public static class NodeHelper
     {
         public static Statement ToStatementIfRequired(this UstNode node)
         {
@@ -45,47 +44,49 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static UstNode RemoveNotIncludedNodes(this UstNode root, Language mainLanguage, LanguageFlags dependentLanguages)
+        public static UstNode[] SelectAnalyzedNodes(this UstNode ustNode, Language language, HashSet<Language> analyzedLanguages)
         {
-            UstNode result;
-            if (dependentLanguages.Is(mainLanguage))
+            UstNode[] result;
+            if (analyzedLanguages.Contains(language))
             {
-                result = root;
+                result = new UstNode[] { ustNode };
             }
             else
             {
-                var includedChildren = root.GetAllDescendants(node =>
-                    node.NodeType == NodeType.NamespaceDeclaration &&
-                    dependentLanguages.Is(((NamespaceDeclaration)node).Language) &&
-                    dependentLanguages.ToString().Contains(((NamespaceDeclaration)node).Name.Text));
-                result = CreateRootNamespace(includedChildren, mainLanguage, root.FileNode);
+                result = ustNode.GetAllDescendants(
+                    node => node is RootNode rootUstNode && analyzedLanguages.Contains(rootUstNode.Language))
+                    .Cast<RootNode>()
+                    .ToArray();
             }
             return result;
         }
 
-        public static NamespaceDeclaration CreateRootNamespace(this IEnumerable<UstNode> members, Language language, FileNode fileNode)
+        public static void FillAscendants(this UstNode ustNode)
         {
-            return new NamespaceDeclaration(new StringLiteral("root"), members, language, members.GetTextSpan(), fileNode);
+            if (ustNode == null)
+            {
+                return;
+            }
+
+            FillAscendants(ustNode, ustNode as RootNode);
         }
 
-        public static NamespaceDeclaration CreateLanguageNamespace(this IEnumerable<UstNode> members, Language language, FileNode fileNode)
+        private static void FillAscendants(UstNode node, RootNode root)
         {
-            return new NamespaceDeclaration(new StringLiteral(language.ToString()), members, language, members.GetTextSpan(), fileNode);
-        }
-
-        public static NamespaceDeclaration CreateLanguageNamespace(this UstNode member, Language language, FileNode fileNode)
-        {
-            return new NamespaceDeclaration(new StringLiteral(language.ToString()), new UstNode[] { member }, language, member.TextSpan, fileNode);
-        }
-
-        public static void FillParents(this UstNode root)
-        {
-            foreach (var child in root.Children)
+            foreach (UstNode child in node.Children)
             {
                 if (child != null)
                 {
-                    child.Parent = root;
-                    FillParents(child);
+                    child.Parent = node;
+                    child.Root = root;
+                    if (child is RootNode rootUstChild)
+                    {
+                        FillAscendants(rootUstChild);
+                    }
+                    else
+                    {
+                        FillAscendants(child, root);
+                    }
                 }
             }
         }

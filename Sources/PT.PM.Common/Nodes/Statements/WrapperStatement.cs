@@ -7,12 +7,12 @@
         public UstNode Node { get; set; }
 
         public WrapperStatement(UstNode node)
-            : base(node.TextSpan, node.FileNode)
+            : base(node.TextSpan, node.Root)
         {
             Node = node;
         }
 
-        public WrapperStatement(UstNode node, TextSpan textSpan, FileNode fileNode)
+        public WrapperStatement(UstNode node, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Node = node;

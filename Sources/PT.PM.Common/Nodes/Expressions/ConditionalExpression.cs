@@ -11,7 +11,7 @@
         public Expression FalseExpression { get; set; }
 
         public ConditionalExpression(Expression condition, Expression trueExpression, Expression falseExpression,
-            TextSpan textSpan, FileNode fileNode)
+            TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Condition = condition;

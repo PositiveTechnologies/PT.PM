@@ -3,61 +3,56 @@ using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Patterns.Nodes;
 using System.Collections.Generic;
+using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<Pattern> CreateCSharpPatterns()
+        public IEnumerable<PatternRootNode> CreateCSharpPatterns()
         {
-            var patterns = new List<Pattern>();
+            var patterns = new List<PatternRootNode>();
 
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash",
-                Languages = LanguageFlags.CSharp,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { CSharp },
+                Node = new InvocationExpression
                 {
-                    Node = new InvocationExpression
+                    Target = new MemberReferenceExpression
                     {
+                        Name = new IdToken("Create"),
                         Target = new MemberReferenceExpression
                         {
-                            Name = new IdToken("Create"),
+                            Name = new IdToken("MD5"),
                             Target = new MemberReferenceExpression
                             {
-                                Name = new IdToken("MD5"),
+                                Name = new IdToken("Cryptography"),
                                 Target = new MemberReferenceExpression
                                 {
-                                    Name = new IdToken("Cryptography"),
-                                    Target = new MemberReferenceExpression
-                                    {
-                                        Name = new IdToken("Security"),
-                                        Target = new IdToken("System")
-                                    }
+                                    Name = new IdToken("Security"),
+                                    Target = new IdToken("System")
                                 }
                             }
-                        },
-                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
-                    }
+                        }
+                    },
+                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
                 }
             });
 
-            patterns.Add(new Pattern
+            patterns.Add(new PatternRootNode
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Use of NullReferenceException Catch to Detect NULL Pointer Dereference",
-                Languages = LanguageFlags.CSharp,
-                Data = new PatternNode
+                Languages = new HashSet<Language>() { CSharp },
+                Node = new PatternTryCatchStatement
                 {
-                    Node = new PatternTryCatchStatement
-                    {
-                        ExceptionTypes = new List<TypeToken> {
+                    ExceptionTypes = new List<TypeToken> {
                             new TypeToken("NullReferenceException"),
                             new TypeToken("System.NullReferenceException")
-                    },
-                        IsCatchBodyEmpty = false
-                    }
+                        },
+                    IsCatchBodyEmpty = false
                 }
             });
 

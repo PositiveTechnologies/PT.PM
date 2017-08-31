@@ -1,11 +1,11 @@
 ﻿using PT.PM.Common.Nodes;
-using PT.PM.Patterns;
+using PT.PM.Patterns.Nodes;
 using System.Collections.Generic;
 
 namespace PT.PM.Matching
 {
     public abstract class MatchingResultBase<TPattern>
-        where TPattern : PatternBase
+        where TPattern : PatternRootNode
     {
         public TPattern Pattern { get; set; }
 

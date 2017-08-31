@@ -16,7 +16,7 @@ using PT.PM.TSqlParseTreeUst;
 
 namespace PT.PM.SqlParseTreeUst
 {
-    public partial class TSqlConverterVisitor
+    public partial class TSqlAntlrConverter
     {
         public override UstNode VisitTerminal(ITerminalNode node)
         {
@@ -27,16 +27,16 @@ namespace PT.PM.SqlParseTreeUst
                 ParserRuleContext context, Expression expression)
         {
             return new InvocationExpression(
-                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), FileNode),
-                new ArgsNode(expression), context.GetTextSpan(), FileNode);
+                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), root),
+                new ArgsNode(expression), context.GetTextSpan(), root);
         }
 
         private InvocationExpression CreateSpecialInvocation(ITerminalNode name,
                     ParserRuleContext context, List<Expression> expressions)
         {
             return new InvocationExpression(
-                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), FileNode),
-                new ArgsNode(expressions), context.GetTextSpan(), FileNode);
+                new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan(), root),
+                new ArgsNode(expressions), context.GetTextSpan(), root);
         }
 
         private Statement[] GetStatements(TSqlParser.Sql_clausesContext context)
@@ -88,11 +88,11 @@ namespace PT.PM.SqlParseTreeUst
             double floatValue;
             if (text.StartsWith("@"))
             {
-                result = new IdToken(text.Substring(1), textSpan, FileNode);
+                result = new IdToken(text.Substring(1), textSpan, root);
             }
             else if (text.StartsWith("\"") || text.StartsWith("["))
             {
-                result = new IdToken(text.Substring(1, text.Length - 2), textSpan, FileNode);
+                result = new IdToken(text.Substring(1, text.Length - 2), textSpan, root);
             }
             else if (text.EndsWith("'"))
             {
@@ -101,25 +101,25 @@ namespace PT.PM.SqlParseTreeUst
                     text = text.Substring(1);
                 }
                 text = text.Substring(1, text.Length - 2);
-                result = new StringLiteral(text, textSpan, FileNode);
+                result = new StringLiteral(text, textSpan, root);
             }
             else if (text.All(c => char.IsDigit(c)))
             {
-                result = new IntLiteral(long.Parse(text), textSpan, FileNode);
+                result = new IntLiteral(long.Parse(text), textSpan, root);
             }
             else if (text.StartsWith("0X") || text.StartsWith("0x"))
             {
-                result = new IntLiteral(Convert.ToInt64(text.Substring(2), 16), textSpan, FileNode);
+                result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan, root);
             }
             else if (double.TryParse(text, out floatValue))
             {
-                result = new FloatLiteral(floatValue, textSpan, FileNode);
+                result = new FloatLiteral(floatValue, textSpan, root);
             }
             else
             {
                 if (text.Any(c => char.IsLetterOrDigit(c) || c == '_'))
                 {
-                    result = new IdToken(text, textSpan, FileNode);
+                    result = new IdToken(text, textSpan, root);
                 }
                 else
                 {

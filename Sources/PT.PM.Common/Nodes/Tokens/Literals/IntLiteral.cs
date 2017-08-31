@@ -13,7 +13,7 @@
         {
         }
 
-        public IntLiteral(long value, TextSpan textSpan, FileNode fileNode)
+        public IntLiteral(long value, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Value = value;

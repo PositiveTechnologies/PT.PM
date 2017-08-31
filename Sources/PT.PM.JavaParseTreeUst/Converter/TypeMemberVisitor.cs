@@ -12,7 +12,7 @@ using Antlr4.Runtime.Misc;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrUstConverterVisitor
+    public partial class JavaAntlrParseTreeConverter
     {
         public UstNode VisitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext context)
         { 
@@ -20,7 +20,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (block != null)
             {
                 var blockStatement = (BlockStatement)Visit(block);
-                return new StatementDeclaration(blockStatement, context.GetTextSpan(), FileNode);
+                return new StatementDeclaration(blockStatement, context.GetTextSpan(), root);
             }
             else
             {
@@ -92,7 +92,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 .Select(varDec => (AssignmentExpression)Visit(varDec))
                 .Where(varDec => varDec != null).ToArray();
 
-            var result = new FieldDeclaration(varInits, context.GetTextSpan(), FileNode);
+            var result = new FieldDeclaration(varInits, context.GetTextSpan(), root);
             return result;
         }
 
@@ -110,7 +110,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             var body = (BlockStatement)Visit(context.constructorBody);
 
-            var constructorDelaration = new ConstructorDeclaration(id, parameters, body, context.GetTextSpan(), FileNode);
+            var constructorDelaration = new ConstructorDeclaration(id, parameters, body, context.GetTextSpan(), root);
             return constructorDelaration;
         }
 
@@ -131,7 +131,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             Expression initializer = variableInitializer != null ? 
                 (Expression)Visit(variableInitializer) : null;
             
-            var result = new AssignmentExpression(id, initializer, context.GetTextSpan(), FileNode);
+            var result = new AssignmentExpression(id, initializer, context.GetTextSpan(), root);
             return result;
         }
 
@@ -162,7 +162,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var type = (TypeToken)Visit(context.typeType());
             var id = (IdToken)Visit(context.variableDeclaratorId());
 
-            var result = new ParameterDeclaration(type, id, context.GetTextSpan(), FileNode);
+            var result = new ParameterDeclaration(type, id, context.GetTextSpan(), root);
             return result;
         }
     }

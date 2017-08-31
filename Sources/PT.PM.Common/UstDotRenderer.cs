@@ -55,7 +55,7 @@ namespace PT.PM.Common
 
             foreach (var child in node.Children)
             {
-                if (child != null && child.NodeType != NodeType.FileNode)
+                if (child != null && child.NodeType != NodeType.RootNode)
                 {
                     currentIndex++;
                     edgesString.AppendEdge(index, currentIndex);

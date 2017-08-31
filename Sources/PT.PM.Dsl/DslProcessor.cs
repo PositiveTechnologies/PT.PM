@@ -55,7 +55,7 @@ namespace PT.PM.Dsl
             UstConverter = new DslUstConverter();
         }
 
-        public UstNode Deserialize(string data, LanguageFlags sourceLanguage)
+        public UstNode Deserialize(string data)
         {
             if (string.IsNullOrEmpty(data))
             {
@@ -65,20 +65,17 @@ namespace PT.PM.Dsl
             Parser.Logger = Logger;
             UstConverter.Logger = Logger;
             DslParser.PatternContext patternContext = Parser.Parse(data);
-            UstConverter.SourceLanguage = sourceLanguage;
             UstConverter.Data = data;
-            DslNode dslNode = UstConverter.Convert(patternContext);
-            UstNode result = dslNode.Collection.First();
-            ResultPatternVars = dslNode.PatternVarDefs;
+
+            PatternRootNode patternNode = UstConverter.Convert(patternContext);
+            patternNode.Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
+
             var preprocessor = new UstSimplifier();
             preprocessor.Logger = Logger;
-            result = new PatternNode(result, dslNode.PatternVarDefs);
-            result = preprocessor.Preprocess(result);
+            patternNode = (PatternRootNode)preprocessor.Visit(patternNode);
 
-            return result;
+            return patternNode;
         }
-
-        public List<PatternVarDef> ResultPatternVars { get; private set; }
 
         public string Serialize(UstNode node)
         {

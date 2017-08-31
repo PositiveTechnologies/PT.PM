@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PT.PM.Common;
-using PT.PM.Common.Ust;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
@@ -18,7 +17,7 @@ using PT.PM.UstPreprocessing;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<Ust, Stage, WorkflowResult, Pattern, MatchingResult>
+    public class Workflow: WorkflowBase<RootNode, Stage, WorkflowResult, PatternRootNode, MatchingResult>
     {
         public Workflow()
             : this(null, LanguageExt.AllLanguages)
@@ -27,23 +26,22 @@ namespace PT.PM
 
         public Workflow(ISourceCodeRepository sourceCodeRepository, Language language,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            : this(sourceCodeRepository, language.ToFlags(), patternsRepository, stage)
+            : this(sourceCodeRepository, new [] { language }, patternsRepository, stage)
         {
         }
 
         public Workflow(ISourceCodeRepository sourceCodeRepository,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            :this(sourceCodeRepository,  LanguageExt.AllLanguages, patternsRepository, stage)
+            :this(sourceCodeRepository, LanguageExt.AllLanguages, patternsRepository, stage)
         {
         }
 
-        public Workflow(ISourceCodeRepository sourceCodeRepository, LanguageFlags languages,
+        public Workflow(ISourceCodeRepository sourceCodeRepository, IEnumerable<Language> languages,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            : base(stage)
+            : base(stage, languages)
         {
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
-            ParserConverterSets = ParserConverterBuilder.GetParserConverterSets(languages);
             UstPatternMatcher = new BruteForcePatternMatcher();
             IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
             IUstNodeSerializer dslNodeSerializer = new DslProcessor();
@@ -55,7 +53,9 @@ namespace PT.PM
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var result = workflowResult ?? new WorkflowResult(Languages, ThreadCount, Stage, IsIncludeIntermediateResult);
+            BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
+            var result = workflowResult ?? new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
+            result.BaseLanguages = BaseLanguages.ToArray();
             Task convertPatternsTask = GetConvertPatternsTask(result);
 
             if (Stage == Stage.Patterns)
@@ -109,10 +109,10 @@ namespace PT.PM
                     Logger.LogInfo("Scan has been cancelled by user");
                 }
 
-                foreach (var pair in ParserConverterSets)
+                /*foreach (var pair in ParserConverterSets) // TODO: cache clearint at the end.
                 {
                     pair.Value?.Parser.ClearCache();
-                }
+                }*/
             }
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
@@ -134,8 +134,10 @@ namespace PT.PM
                     if (Stage >= Stage.Convert)
                     {
                         var stopwatch = Stopwatch.StartNew();
-                        IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
-                        Ust ust = converter.Convert(parseTree);
+                        var converter = ParserConverterFactory.CreateConverter(parseTree.SourceLanguage);
+                        converter.Logger = Logger;
+                        converter.AnalyzedLanguages = AnalyzedLanguages;
+                        RootNode ust = converter.Convert(parseTree);
                         stopwatch.Stop();
                         Logger.LogInfo($"File {fileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddConvertTime(stopwatch.ElapsedTicks);

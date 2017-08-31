@@ -15,7 +15,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public FloatLiteral(double value, TextSpan textSpan, FileNode fileNode)
+        public FloatLiteral(double value, TextSpan textSpan, RootNode fileNode)
             : base(textSpan, fileNode)
         {
             Value = value;
