@@ -20,12 +20,12 @@ namespace PT.PM.UstParsing
 
         protected override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
 
-        protected override Lexer InitLexer(ICharStream inputStream)
+        public override Lexer InitLexer(ICharStream inputStream)
         {
             return new PhpLexer(inputStream);
         }
 
-        protected override Parser InitParser(ITokenStream inputStream)
+        public override Parser InitParser(ITokenStream inputStream)
         {
             return new PhpParser(inputStream);
         }

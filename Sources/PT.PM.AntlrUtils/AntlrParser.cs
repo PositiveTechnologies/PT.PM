@@ -40,9 +40,9 @@ namespace PT.PM.AntlrUtils
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        protected abstract Lexer InitLexer(ICharStream inputStream);
+        public abstract Lexer InitLexer(ICharStream inputStream);
 
-        protected abstract Parser InitParser(ITokenStream inputStream);
+        public abstract Parser InitParser(ITokenStream inputStream);
 
         protected abstract ParserRuleContext Parse(Parser parser);
 

@@ -14,12 +14,12 @@ namespace PT.PM.JavaParseTreeUst
         {
         }
 
-        protected override Lexer InitLexer(ICharStream inputStream)
+        public override Lexer InitLexer(ICharStream inputStream)
         {
             return new JavaLexer(inputStream);
         }
 
-        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
+        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
         {
             return new JavaParser(inputStream);
         }

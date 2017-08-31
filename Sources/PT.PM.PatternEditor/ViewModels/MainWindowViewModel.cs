@@ -564,9 +564,9 @@ namespace PT.PM.PatternEditor
             if (IsDeveloperMode)
             {
                 AntlrParseTree antlrParseTree = workflowResult.ParseTrees.FirstOrDefault() as AntlrParseTree;
-                if (antlrParseTree != null && antlrParseTree.SyntaxTree != null)
+                if (antlrParseTree?.SyntaxTree != null)
                 {
-                    var antlrParser = (Antlr4.Runtime.Parser)ParserConverterFactory.CreateParser(antlrParseTree.SourceLanguage);
+                    var antlrParser = ((AntlrParser)ParserConverterFactory.CreateParser(antlrParseTree.SourceLanguage)).InitParser(null);
                     string tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
                     string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
 
