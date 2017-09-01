@@ -19,7 +19,6 @@ namespace PT.PM
     public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
-        where TPattern : PatternRootNode
         where TMatchingResult : MatchingResultBase<TPattern>
     {
         protected ILogger logger = DummyLogger.Instance;
@@ -132,7 +131,7 @@ namespace PT.PM
                 if (stageHelper.IsContainsParse)
                 {
                     stopwatch.Restart();
-                    Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
+                    Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages.ToArray());
                     if (detectedLanguage == null)
                     {
                         Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");

@@ -10,7 +10,6 @@ namespace PT.PM
 {
     public abstract class WorkflowResultBase<TStage, TPattern, TMatchingResult>
         where TStage : struct, IConvertible
-        where TPattern : PatternRootNode
         where TMatchingResult : MatchingResultBase<TPattern>
     {
         private List<SourceCodeFile> sourceCodeFiles = new List<SourceCodeFile>();
@@ -44,9 +43,9 @@ namespace PT.PM
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
-        public Language[] AnalyzedLanguages { get; private set; }
+        public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
 
-        public Language[] BaseLanguages { get; set; }
+        public IReadOnlyList<Language> BaseLanguages { get; set; }
 
         public int ThreadCount { get; private set; }
 

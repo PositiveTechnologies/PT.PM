@@ -5,7 +5,6 @@ using System.Collections.Generic;
 namespace PT.PM.Matching
 {
     public abstract class MatchingResultBase<TPattern>
-        where TPattern : PatternRootNode
     {
         public TPattern Pattern { get; set; }
 
