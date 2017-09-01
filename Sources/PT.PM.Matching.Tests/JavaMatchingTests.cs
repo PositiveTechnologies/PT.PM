@@ -22,8 +22,6 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsJava_MatchedAllDefault()
         {
-            Assert.Ignore("Won't be supported in future versions of PT.PM");
-
             var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.java");
             var sourceCodeRep = new FileCodeRepository(path);
 
@@ -44,6 +42,8 @@ namespace PT.PM.Matching.Tests
 
             var missingBroadcasterPermission = patternDtos.Single(dto => dto.Description.StartsWith("MissingBroadcasterPermission"));
             Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == missingBroadcasterPermission.Key));
+
+            Assert.Ignore("Pin vars won't be supported in future versions of PT.PM");
 
             var cookieNotSentOverSslDto = patternDtos.Single(dto => dto.Description.StartsWith("CookieNotSentOverSSL"));
             var cookieNotSentOverSslResults =
