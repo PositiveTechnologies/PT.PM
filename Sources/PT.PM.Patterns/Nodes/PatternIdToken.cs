@@ -56,12 +56,12 @@ namespace PT.PM.Patterns.Nodes
                 return Id.CompareTo(((PatternIdToken)other).Id);
             }
 
-            if (other.NodeType != NodeType.PatternIdToken && other.NodeType != NodeType.IdToken)
+            if (!typeof(Token).IsAssignableFrom(other.GetType()))
             {
                 return NodeType - other.NodeType;
             }
 
-            MatchedLocations = PatternHelper.MatchRegex(Regex, ((IdToken)other).Id, true);
+            MatchedLocations = PatternHelper.MatchRegex(Regex, ((Token)other).TextValue, true);
             return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }

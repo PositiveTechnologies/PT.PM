@@ -9,7 +9,7 @@ namespace PT.PM.Patterns
         T Visit(PatternBooleanLiteral patternBooleanLiteral);
         T Visit(PatternComment patternComment);
         T Visit(PatternExpression patternExpression);
-        T Visit(PatternExpressionInsideExpression patternExpressionInsideExpression);
+        T Visit(PatternExpressionInsideNode patternExpressionInsideExpression);
         T Visit(PatternExpressionInsideStatement patternExpressionInsideStatement);
         T Visit(PatternExpressions patternExpressions);
         T Visit(PatternIdToken patternIdToken);
@@ -22,6 +22,10 @@ namespace PT.PM.Patterns
         T Visit(PatternTryCatchStatement patternTryCatchStatement);
         T Visit(PatternVarDef patternVarDef);
         T Visit(PatternVarRef patternVarRef);
+        T Visit(PatternAnd patternAnd);
+        T Visit(PatternNot patternNot);
+        T Visit(PatternClassDeclaration patternClassDeclaration);
+        T Visit(PatternMethodDeclaration patternMethodDeclaration);
 
         T Visit(DslNode patternExpression);
         T Visit(LangCodeNode langCodeNode);

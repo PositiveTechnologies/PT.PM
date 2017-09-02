@@ -17,7 +17,7 @@ namespace PT.PM.Common.Nodes.Tokens
         }
 
         public TypeToken(string type, TextSpan textSpan, FileNode fileNode)
-            : this(new List<string>() {type},textSpan, fileNode)
+            : this(new List<string>() { type }, textSpan, fileNode)
         {
         }
 

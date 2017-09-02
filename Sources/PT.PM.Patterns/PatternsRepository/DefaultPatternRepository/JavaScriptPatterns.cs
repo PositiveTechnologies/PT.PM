@@ -35,7 +35,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 {
                                     new ExpressionStatement
                                     {
-                                        Expression = new PatternExpressionInsideExpression
+                                        Expression = new PatternExpressionInsideNode
                                         {
                                             Expression = new PatternVarDef
                                             {

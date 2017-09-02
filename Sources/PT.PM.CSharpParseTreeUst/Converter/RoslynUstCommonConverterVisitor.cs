@@ -330,27 +330,26 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var nameLiteral = ConvertId(node.Identifier);
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
+            var baseTypes = new List<TypeToken>();
+            if (node.BaseList != null)
+            {
+                baseTypes = node.BaseList.Types.Select(t =>
+                {
+                    var name = t.Type is IdentifierNameSyntax id ? id.Identifier.ValueText : t.ToString();
+                    return new TypeToken(name, t.GetTextSpan(), FileNode);
+                }).ToList();
+            }
+
             var result = new TypeDeclaration(
                 typeTypeToken,
                 nameLiteral,
+                baseTypes,
                 typeMembers,
                 node.GetTextSpan(),
                 FileNode)
             {
                 Modifiers = modifiers,
             };
-
-            if(node.BaseList?.Types != null)
-            {
-                var bases = node
-                    .BaseList
-                    .Types
-                    .Select(x => x.Type)
-                    .OfType<IdentifierNameSyntax>()
-                    .Select(x => ConvertId(x.Identifier))
-                    .ToList();
-                result.BaseTypes = bases;
-            }
 
             return result;
         }
@@ -365,7 +364,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 case TypeType.Struct:
                     return TypeType.Class;
                 case TypeType.Interface:
-                    return  TypeType.Interface;
+                    return TypeType.Interface;
             }
         }
 

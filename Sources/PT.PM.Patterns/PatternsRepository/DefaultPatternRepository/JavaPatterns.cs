@@ -475,7 +475,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Node = new PatternTryCatchStatement
                     {
-                        ExceptionTypes = new List<TypeToken> { new TypeToken("NullPointerException") },
+                        ExceptionTypes = new List<Token> { new TypeToken("NullPointerException") },
                         IsCatchBodyEmpty = false
                     }
                 }

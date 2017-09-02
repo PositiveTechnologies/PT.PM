@@ -141,6 +141,8 @@
 
         // Patterns
         PatternNode = 600,
+        PatternAnd,
+        PatternNot,
         PatternVarDef,
         PatternVarRef,
         PatternStringLiteral,
@@ -149,13 +151,15 @@
         PatternBooleanLiteral,
         PatternExpressions,
         PatternExpression,
-        PatternExpressionInsideExpression,
+        PatternExpressionInsideNode,
         PatternExpressionInsideStatement,
         PatternStatement,
         PatternMultipleExpressions,
         PatternMultipleStatements,
         PatternStatements,
         PatternComment,
+        PatternClassDeclaration,
+        PatternMethodDeclaration,
         PatternIfElseStatement,
         PatternTryCatchStatement,
 

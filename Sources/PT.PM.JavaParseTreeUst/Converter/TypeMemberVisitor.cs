@@ -9,13 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using PT.PM.AntlrUtils;
 using Antlr4.Runtime.Misc;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
     public partial class JavaAntlrUstConverterVisitor
     {
         public UstNode VisitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext context)
-        { 
+        {
             var block = context.block();
             if (block != null)
             {
@@ -24,7 +25,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
             else
             {
-                return Visit(context.memberDeclaration());
+                var result = Visit(context.memberDeclaration());
+                ((EntityDeclaration)result).Modifiers =
+                    context.modifier().Select(Visit).OfType<ModifierLiteral>().ToList();
+                return result;
             }
         }
 
@@ -128,9 +132,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             var id = (IdToken)Visit(context.variableDeclaratorId());
             JavaParser.VariableInitializerContext variableInitializer = context.variableInitializer();
-            Expression initializer = variableInitializer != null ? 
+            Expression initializer = variableInitializer != null ?
                 (Expression)Visit(variableInitializer) : null;
-            
+
             var result = new AssignmentExpression(id, initializer, context.GetTextSpan(), FileNode);
             return result;
         }
