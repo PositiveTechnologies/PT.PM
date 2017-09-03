@@ -77,6 +77,8 @@ namespace PT.PM.Matching.Tests
         [TestCase("<[@pwd:username]> = #; ... #(#*, <[@pwd]>, #*);")]
         public void Match_PatternVarWithRegex(string patternData)
         {
+            Assert.Ignore("Won't be supported in future versions of PT.PM");
+
             var processor = new DslProcessor();
             var patternNode = (PatternRootNode)processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
@@ -89,7 +91,6 @@ namespace PT.PM.Matching.Tests
             Assert.AreEqual(expectedMatchingCount, matchingResults.Count());
         }
 
-        //[TestCase("<[@pwd:password2]> = #; ... ~<[@pwd]>.Length; ... #(#*, <[@pwd]>, #*);")]
         [TestCase("<[@pwd:password2]> = #; ...                       #(#*, <[@pwd]>, #*);")]
         public void Match_PasswordCheckInsideStatement(string patternData)
         {

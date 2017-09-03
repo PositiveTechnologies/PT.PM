@@ -33,6 +33,17 @@ namespace PT.PM.Common
             Html
         };
 
+        public static readonly Language[] AllPatternLanguages = new Language[]
+        {
+            CSharp,
+            Java,
+            Php,
+            PlSql,
+            TSql,
+            JavaScript,
+            Html
+        };
+
         public static readonly Language[] AllGplPatternLanguages = new Language[]
         {
             CSharp,
@@ -46,17 +57,6 @@ namespace PT.PM.Common
         {
             PlSql,
             TSql
-        };
-
-        public static readonly Language[] AllPatternLanguages = new Language[]
-        {
-            CSharp,
-            Java,
-            Php,
-            PlSql,
-            TSql,
-            JavaScript,
-            Html
         };
 
         public static IEnumerable<string> AllExtensions => LanguageInfos.SelectMany(extLang => extLang.Value.Extensions);
