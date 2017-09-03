@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Patterns
 {
@@ -18,8 +19,19 @@ namespace PT.PM.Patterns
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject jObject = JObject.Load(reader);
-            var languageFlagsString = (string)jObject[nameof(PatternDto.Languages)];
-            Language[] resultLanguages = LanguageExt.ParseLanguages(languageFlagsString);
+            var languagesArray = (JArray)jObject[nameof(PatternDto.Languages)];
+            HashSet<Language> resultLanguages;
+            if (languagesArray?.Count > 0)
+            {
+                resultLanguages = new HashSet<Language>(languagesArray.Values<string>()
+                    .Select(value => Enum.TryParse(value, true, out Language language) ? (Language?)language : null)
+                    .Where(lang => lang != null)
+                    .Cast<Language>());
+            }
+            else
+            {
+                resultLanguages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
+            }
 
             var result = new PatternDto
             {

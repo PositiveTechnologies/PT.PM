@@ -53,15 +53,13 @@ namespace PT.PM.Common
             CSharp,
             Java,
             Php,
-            PlSql ,
-            TSql ,
+            PlSql,
+            TSql,
             JavaScript,
             Html
         };
 
-        public static IEnumerable<Language> Languages => LanguageInfos.Keys;
-
-        public static IEnumerable<string> Extensions => LanguageInfos.SelectMany(extLang => extLang.Value.Extensions);
+        public static IEnumerable<string> AllExtensions => LanguageInfos.SelectMany(extLang => extLang.Value.Extensions);
 
         public static bool IsCaseInsensitive(this Language language)
         {
@@ -73,14 +71,14 @@ namespace PT.PM.Common
             return LanguageInfos[language].HaveAntlrParser;
         }
 
-        public static string[] GetExtensions(Language language)
-        {
-            return LanguageInfos[language].Extensions;
-        }
-
         public static string[] GetExtensions(Language[] languages)
         {
             return languages.SelectMany(lang => GetExtensions(lang)).ToArray();
+        }
+
+        public static string[] GetExtensions(Language language)
+        {
+            return LanguageInfos[language].Extensions;
         }
 
         public static HashSet<Language> GetSelfAndSublanguages(this Language language)
@@ -107,12 +105,12 @@ namespace PT.PM.Common
             }
         }
 
-        public static Language[] ParseLanguages(string LanguageString)
+        public static Language[] ParseLanguages(string str)
         {
-            if (!string.IsNullOrEmpty(LanguageString))
+            if (!string.IsNullOrEmpty(str))
             {
                 var resultLanguages = new List<Language>();
-                string[] languageStrings = LanguageString.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries);
+                string[] languageStrings = str.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string languageString in languageStrings)
                 {
                     Language language;

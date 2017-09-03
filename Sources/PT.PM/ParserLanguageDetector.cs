@@ -15,7 +15,7 @@ namespace PT.PM
 
         public override Language? Detect(string sourceCode, Language[] languages = null)
         {
-            List<Language> langs = (languages ?? LanguageExt.Languages).ToList();
+            List<Language> langs = (languages ?? LanguageExt.AllLanguages).ToList();
             // Any PHP file contains start tag.
             if (!sourceCode.Contains("<?"))
             {

@@ -95,13 +95,14 @@ namespace PT.PM.Cli.Tests
                 Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
             }
 
-            // Patterns: [{"Name":"","Key":"1","Languages":"Fake","DataFormat":"Dsl","Value":"<[(?i)password(?-i)]> = <[\"\\w*\" || null]>","CweId":"","Description":""}]
+            var patternTempFile = Path.GetTempFileName() + ".json";
+            File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(? i)password(?-i)] > = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
             ProcessExecutionResult result = ProcessHelpers.SetupHiddenProcessAndStart(exeName,
                $"--stage {Stage.Patterns} " +
-               $"--patterns kAAAAB+LCAAAAAAABAAljb0KwjAURl8l3KkVHVyltoOhUBRHlyTDxYYSTJOSH4JY391b3M534PCJD9xx1nAC2MNVvwmORDd0U8ZJR9o9vjQpjgl7H2ZM5Hi0pB5o85Y2oupMvWCMxYex6g6mVi07s0ZIkLLsJLB1ZS5bq1rKLkUP4/+R6/gMZknGu0181Q+1349CkAAAAA== " +
+               $"--patterns {patternTempFile} " +
                $"--log-debugs --log-errors");
 
-            Assert.AreEqual("Pattern \"1\" ignored because of it doesn't have target languages.", result.Output[2]);
+            Assert.AreEqual("PatternNode \"1\" ignored because of it doesn't have target languages.", result.Output[2]);
         }
 
         [Test]

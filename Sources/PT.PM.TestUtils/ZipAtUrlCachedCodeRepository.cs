@@ -28,7 +28,7 @@ namespace PT.PM.TestUtils
 
         public string DownloadPath { get; set; } = TestHelper.TestsDownloadedPath;
 
-        public IEnumerable<string> Extensions { get; set; } = LanguageExt.Extensions;
+        public IEnumerable<string> Extensions { get; set; } = LanguageExt.AllExtensions;
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
