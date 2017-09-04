@@ -117,12 +117,12 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     var typeId = predifinedReturnType.Keyword.Text;
                     if (typeId != null)
                     {
-                        returnType = new TypeToken(typeId, node.ReturnType.GetTextSpan(), FileNode);
+                        returnType = new TypeToken(typeId, node.ReturnType.GetTextSpan());
                     }
                 }
                 else
                 {
-                    returnType = new TypeToken(node.ReturnType.ToString(), node.ReturnType.GetTextSpan(), FileNode);
+                    returnType = new TypeToken(node.ReturnType.ToString(), node.ReturnType.GetTextSpan());
                 }
             }
 
