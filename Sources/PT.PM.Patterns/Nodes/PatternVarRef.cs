@@ -2,6 +2,8 @@
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Patterns.Nodes
 {
@@ -47,6 +49,8 @@ namespace PT.PM.Patterns.Nodes
 
         [JsonIgnore]
         internal bool PinValueAssigned { get; private set; }
+
+        public List<Expression> Values { get; set; } = new List<Expression>();
 
         public PatternVarRef(PatternVarDef patternVar, TextSpan textSpan)
             : base()
