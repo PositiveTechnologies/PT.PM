@@ -17,12 +17,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public ModifierLiteral(Modifier modifier, TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {
-            Modifier = modifier;
-            if (Modifier == Modifier.Other)
-            {
-                throw new ArgumentException("modifier should not equal to the Other value");
-            }
-            ModifierName = Modifier.ToString().ToLowerInvariant();
+            initModifierAndName(modifier);
         }
 
         public ModifierLiteral(string modifierName, TextSpan textSpan, FileNode fileNode)
@@ -41,6 +36,11 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             }
         }
 
+        public ModifierLiteral(Modifier modifier)
+        {
+            initModifierAndName(modifier);
+        }
+
         public ModifierLiteral()
         {
             Modifier = Modifier.None;
@@ -57,6 +57,16 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
             var modifierCompareResult = Modifier - ((ModifierLiteral)other).Modifier;
             return modifierCompareResult;
+        }
+
+        private void initModifierAndName(Modifier modifier)
+        {
+            Modifier = modifier;
+            if (Modifier == Modifier.Other)
+            {
+                throw new ArgumentException("modifier should not equal to the Other value");
+            }
+            ModifierName = Modifier.ToString().ToLowerInvariant();
         }
     }
 }

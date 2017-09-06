@@ -6,6 +6,8 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System;
 using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.Common.Nodes.Statements;
+using System.Linq;
 
 namespace PT.PM.Patterns.Nodes
 {
@@ -19,7 +21,7 @@ namespace PT.PM.Patterns.Nodes
 
         public bool AnyBody { get; set; }
 
-        public PatternExpressionInsideNode Body { get; set; }
+        public UstNode Body { get; set; }
 
         public PatternMethodDeclaration(List<Token> modifiers, Token name,
             PatternExpressionInsideNode body, TextSpan textSpan, FileNode fileNode)
@@ -28,16 +30,18 @@ namespace PT.PM.Patterns.Nodes
             Modifiers = modifiers;
             Name = name;
             AnyBody = false;
-            Body = body;
+            Body = body ?? throw new ArgumentException("body should be null");
         }
 
-        public PatternMethodDeclaration(List<Token> modifiers, Token name,
+        public PatternMethodDeclaration(List<Token> modifiers, Token name, bool anyBody,
             TextSpan textSpan, FileNode fileNode) : base(textSpan, fileNode)
         {
-            Modifiers = modifiers;
-            Name = name;
-            AnyBody = true;
-            Body = null;
+            initFields(modifiers, name, anyBody);
+        }
+
+        public PatternMethodDeclaration(List<Token> modifiers, Token name, bool anyBody)
+        {
+            initFields(modifiers, name, anyBody);
         }
 
         public PatternMethodDeclaration()
@@ -111,6 +115,21 @@ namespace PT.PM.Patterns.Nodes
             result += " { " + (Body?.ToString() ?? "") + " }";
 
             return result;
+        }
+
+        private void initFields(List<Token> modifiers, Token name, bool anyBody)
+        {
+            Modifiers = modifiers;
+            Name = name;
+            AnyBody = anyBody;
+            if (anyBody)
+            {
+                Body = null;
+            }
+            else
+            {
+                Body = new BlockStatement(Enumerable.Empty<Statement>(), FileNode);
+            }
         }
     }
 }

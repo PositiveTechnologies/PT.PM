@@ -40,6 +40,9 @@ namespace PT.PM.Dsl.Tests
         [TestCase(@"AndroidHostnameVerificationDisabled.aipm")]
         [TestCase(@"KeyManagementNullEncryptionKey.aipm")]
         [TestCase(@"AttributesCodeInsideElementEvent.aipm")]
+        [TestCase(@"ExtendingSecurityManagerWithoutFinal.aipm")]
+        [TestCase(@"ImproperValidationEmptyMethod.aipm")]
+        [TestCase(@"UsingCloneWithoutCloneable.aipm")]
         public void Process_Dsl_EqualsToHardcoded(string fileName)
         {
             var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
@@ -54,7 +57,7 @@ namespace PT.PM.Dsl.Tests
             {
                 Assert.Inconclusive($"Pattern {patternName} does not exists in DefaultPatternRepository");
             }
-            
+
             Assert.IsTrue(result.Equals(defaultPattern.Data));
         }
 

@@ -211,11 +211,11 @@ namespace PT.PM.Dsl
             else if (context.Ellipsis() != null)
             {
                 // Any body
-                result = new PatternMethodDeclaration(modifiers, name, context.GetTextSpan(), null);
+                result = new PatternMethodDeclaration(modifiers, name, true, context.GetTextSpan(), null);
             }
             else
             {
-                result = new PatternMethodDeclaration(modifiers, name, null, context.GetTextSpan(), null);
+                result = new PatternMethodDeclaration(modifiers, name, false, context.GetTextSpan(), null);
             }
             return result;
         }

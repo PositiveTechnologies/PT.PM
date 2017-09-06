@@ -8,6 +8,7 @@ using System.Linq;
 using System.Collections.Generic;
 using PT.PM.TestUtils;
 using NUnit.Framework;
+using PT.PM.Common.Nodes.GeneralScope;
 
 namespace PT.PM.JavaParseTreeUst.Tests
 {
@@ -112,6 +113,19 @@ namespace PT.PM.JavaParseTreeUst.Tests
 
             Assert.IsTrue(ust.Root.DoesAnyDescendantMatchPredicate(ustNode =>
                 ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
+        }
+
+        [TestCase("AllInOne.java")]
+        public void Convert_Java_CheckNodesPresence(string fileName)
+        {
+            var workflowResults = TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
+            var ust = workflowResults.Usts.First();
+            bool result = ust.Root.DoesAnyDescendantMatchPredicate(el =>
+            {
+                bool isTypeDeclaration = el.NodeType == Common.Nodes.NodeType.TypeDeclaration;
+                return isTypeDeclaration && ((TypeDeclaration)el).BaseTypes.Any(t => t.TypeText == "Runnable");
+            });
+            Assert.IsTrue(result, "Ust doesn't contain type declaration node with Runnable base type");
         }
     }
 }
