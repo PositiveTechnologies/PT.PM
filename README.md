@@ -22,7 +22,4 @@ See a [wiki section](https://github.com/PositiveTechnologies/PT.PM/wiki) and art
 
 ## License
 
-PT.PM is authorized under the [Attribution-NonCommercial 4.0
-International](https://creativecommons.org/licenses/by-nc/4.0/legalcode)
-(BY-NC) license. The source code and compiled files can be used for
-non-commercial projects.
+[PT.PM License](LICENSE.md).
