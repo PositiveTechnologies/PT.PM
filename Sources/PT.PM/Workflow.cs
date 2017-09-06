@@ -162,10 +162,10 @@ namespace PT.PM
 
                             if (Stage >= Stage.Match)
                             {
-                                if (!convertPatternsTask.IsCompleted)
+                                /*if (!convertPatternsTask.IsCompleted)
                                 {
                                     convertPatternsTask.Wait();
-                                }
+                                }*/
 
                                 stopwatch.Restart();
                                 IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);

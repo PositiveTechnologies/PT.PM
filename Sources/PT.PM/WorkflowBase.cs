@@ -172,7 +172,7 @@ namespace PT.PM
             Task convertPatternsTask = null;
             if (stageHelper.IsPatterns || stageHelper.IsContainsMatch)
             {
-                convertPatternsTask = new Task(() =>
+                //convertPatternsTask = new Task(() =>
                 {
                     try
                     {
@@ -187,8 +187,9 @@ namespace PT.PM
                     {
                         Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
                     }
-                });
-                convertPatternsTask.Start();
+                }
+                /*});
+                convertPatternsTask.Start();*/
             }
 
             return convertPatternsTask;
