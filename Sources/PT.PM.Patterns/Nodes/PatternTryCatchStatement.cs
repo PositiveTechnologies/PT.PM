@@ -13,17 +13,17 @@ namespace PT.PM.Patterns.Nodes
     {
         public override NodeType NodeType => NodeType.PatternTryCatchStatement;
 
-        public List<TypeToken> ExceptionTypes { get; set; }
+        public List<Token> ExceptionTypes { get; set; }
 
         public bool IsCatchBodyEmpty { get; set; }
 
         public PatternTryCatchStatement()
         {
-            ExceptionTypes = new List<TypeToken>();
+            ExceptionTypes = new List<Token>();
             IsCatchBodyEmpty = true;
         }
 
-        public PatternTryCatchStatement(List<TypeToken> exceptionTypes, bool isCatchBodyEmpty,
+        public PatternTryCatchStatement(List<Token> exceptionTypes, bool isCatchBodyEmpty,
             TextSpan textSpan, FileNode fileNode)
             : base(textSpan, fileNode)
         {

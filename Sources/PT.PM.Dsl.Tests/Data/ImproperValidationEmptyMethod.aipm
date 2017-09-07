@@ -1,0 +1,3 @@
+class : <[X509TrustManager|SSLSocketFactory]> {
+	<{ <[.+]>() {} }>
+}

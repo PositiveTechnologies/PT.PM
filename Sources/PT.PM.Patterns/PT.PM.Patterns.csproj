@@ -40,6 +40,12 @@
     <Compile Include="IUstPatternVisitor.cs" />
     <Compile Include="Nodes\IAbsoluteLocationMatching.cs" />
     <Compile Include="Nodes\IRelativeLocationMatching.cs" />
+    <Compile Include="Nodes\PatternAnd.cs" />
+    <Compile Include="Nodes\PatternClassDeclaration.cs" />
+    <Compile Include="Nodes\PatternDeclarationHelper.cs" />
+    <Compile Include="Nodes\PatternExpressionInsideNode.cs" />
+    <Compile Include="Nodes\PatternMethodDeclaration.cs" />
+    <Compile Include="Nodes\PatternNot.cs" />
     <Compile Include="PatternBase.cs" />
     <Compile Include="PatternHelper.cs" />
     <Compile Include="PatternIdGenerator.cs" />
@@ -53,7 +59,6 @@
     <Compile Include="DslPatternRepository.cs" />
     <Compile Include="Nodes\DslNode.cs" />
     <Compile Include="Nodes\LangCodeNode.cs" />
-    <Compile Include="Nodes\PatternExpressionInsideExpression.cs" />
     <Compile Include="Nodes\PatternExpressionInsideStatement.cs" />
     <Compile Include="Nodes\PatternExpressions.cs" />
     <Compile Include="Nodes\PatternBooleanLiteral.cs" />

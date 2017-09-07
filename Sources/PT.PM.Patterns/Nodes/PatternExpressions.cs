@@ -53,7 +53,7 @@ namespace PT.PM.Patterns.Nodes
                 item.NodeType == NodeType.PatternExpression && ((PatternExpression)item).Not) > 0;
             // TODO: not all cases work correctly.
             bool match = Match(otherExpressions);
-            
+
             result = match ? 0 : 1;
             if (includeNegative)
                 result = 1 - result;
@@ -134,7 +134,7 @@ namespace PT.PM.Patterns.Nodes
             {
                 nextStateIndex++;
             }
-    
+
             // if lastMatchIndex == -1 then function has 0 arguments.
             return nextStateIndex == Collection.Count && lastMatchIndex == otherExpressions.Count - 1; // if all states has been visited.
         }

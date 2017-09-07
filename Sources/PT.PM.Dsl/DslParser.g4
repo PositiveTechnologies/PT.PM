@@ -22,7 +22,14 @@ statement
     ;
 
 expression
-    : expression '.' literalOrPatternId                    #MemberReferenceExpression
+    : modifiers+=literalOrPatternId* 'class' name=literalOrPatternId?
+      (':' baseTypes+=literalOrPatternId (',' baseTypes+=literalOrPatternId)*)?
+      '{' arbitraryDepthExpression? '}'                    #ClassDeclaration
+
+    | modifiers+=literalOrPatternId* methodName=literalOrPatternId '(' ')'
+      '{' (arbitraryDepthExpression | Ellipsis)? '}'       #MethodDeclaration
+
+    | expression '.' literalOrPatternId                    #MemberReferenceExpression
     | expression '(' args? ')'                             #InvocationExpression
     | expression op=('*' | '/') expression                 #BinaryOperatorExpression
     | expression op=('+' | '-') expression                 #BinaryOperatorExpression
@@ -37,8 +44,15 @@ expression
     | literal                                              #LiteralExpression
     | ('<[' Expr ']>' | '#' )                              #PatternExpression
     | expression (('<[' '||' ']>' | '<|>') expression)+    #PatternOrExpression
+    | expression ('<&>' expression)+                       #PatternAndExpression
+    | '<~>' expression                                     #PatternNotExpression
+    | arbitraryDepthExpression                             #PatternArbitraryDepthExpression
     | '(' expression ')'                                   #ParenthesisExpression
-    | '<{' expression '}>'                                 #ArbitraryDepthExpression
+    | BaseReference                                        #BaseReferenceExpression
+    ;
+
+arbitraryDepthExpression
+    : '<{' expression '}>'
     ;
 
 args

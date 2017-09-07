@@ -72,8 +72,15 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (child0Terminal != null) // ignore ';'
                 return null;
 
-            // TODO: implement modifiers.
             var result = Visit(context.GetChild(context.ChildCount - 1));
+
+            if (context.classOrInterfaceModifier().Any() && result is TypeDeclaration typeDeclaration)
+            {
+                var modifiers = context.classOrInterfaceModifier()
+                    .Select(m => (ModifierLiteral)VisitClassOrInterfaceModifier(m)).ToList();
+                typeDeclaration.Modifiers = modifiers;
+            }
+
             return result;
         }
 
@@ -84,12 +91,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 return VisitChildren(context);
             }
-
-            Modifier modifier;
-            ModifierLiteral result = null;
-            if (Enum.TryParse<Modifier>(context.GetChild<ITerminalNode>(0).GetText(), true, out modifier))
-                result = new ModifierLiteral(modifier, context.GetTextSpan(), FileNode);
-            return result;
+            return new ModifierLiteral(context.GetChild<ITerminalNode>(0).GetText(), context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitClassDeclaration(JavaParser.ClassDeclarationContext context)
@@ -100,10 +102,20 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var id = (IdToken)Visit(context.IDENTIFIER());
 
             EntityDeclaration[] typeMembers = context.classBody().classBodyDeclaration()
-                .Select(dec => Visit(dec) as EntityDeclaration)
-                .Where(dec => dec != null).ToArray();
+                 .Select(dec => Visit(dec) as EntityDeclaration)
+                 .Where(dec => dec != null).ToArray();
 
-            var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);
+            var baseTypes = new List<TypeToken>();
+            if (context.typeType() != null)
+            {
+                baseTypes.Add((TypeToken)Visit(context.typeType()));
+            }
+            if (context.typeList() != null)
+            {
+                baseTypes.AddRange(context.typeList().typeType().Select(t => (TypeToken)Visit(t)));
+            }
+
+            var result = new TypeDeclaration(typeTypeToken, id, baseTypes, typeMembers, context.GetTextSpan(), FileNode);
             return result;
         }
 
@@ -119,12 +131,17 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             var id = (IdToken)Visit(context.IDENTIFIER());
 
-            // TODO: Modifiers
             EntityDeclaration[] typeMembers = context.interfaceBody().interfaceBodyDeclaration()
                 .Select(dec => Visit(dec) as EntityDeclaration)
                 .Where(dec => dec != null).ToArray();
-            
-            var result = new TypeDeclaration(typeTypeToken, id, typeMembers, context.GetTextSpan(), FileNode);
+
+            var baseTypes = new List<TypeToken>();
+            if (context.typeList() != null)
+            {
+                baseTypes = context.typeList().typeType().Select(t => (TypeToken)Visit(t)).ToList();
+            }
+
+            var result = new TypeDeclaration(typeTypeToken, id, baseTypes, typeMembers, context.GetTextSpan(), FileNode);
             return result;
         }
 
@@ -190,14 +207,18 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        #region Not implemented
-
-        public UstNode VisitClassBody(JavaParser.ClassBodyContext context)
+        public UstNode VisitModifier([NotNull] JavaParser.ModifierContext context)
         {
+            if (context.classOrInterfaceModifier() != null)
+            {
+                return VisitClassOrInterfaceModifier(context.classOrInterfaceModifier());
+            }
             return VisitChildren(context);
         }
 
-        public UstNode VisitModifier([NotNull] JavaParser.ModifierContext context)
+        #region Not implemented
+
+        public UstNode VisitClassBody(JavaParser.ClassBodyContext context)
         {
             return VisitChildren(context);
         }

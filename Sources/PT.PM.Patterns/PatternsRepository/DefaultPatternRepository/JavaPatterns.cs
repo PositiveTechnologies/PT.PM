@@ -6,6 +6,9 @@ using PT.PM.Common.Nodes.Statements;
 using PT.PM.Patterns.Nodes;
 using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes;
+using System;
+using System.Linq;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
@@ -475,8 +478,100 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Node = new PatternTryCatchStatement
                     {
-                        ExceptionTypes = new List<TypeToken> { new TypeToken("NullPointerException") },
+                        ExceptionTypes = new List<Token> { new TypeToken("NullPointerException") },
                         IsCatchBodyEmpty = false
+                    }
+                }
+            });
+
+            patterns.Add(new Pattern
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "UsingCloneWithoutCloneable. Using clone method without implementing Clonable",
+                Languages = LanguageFlags.Java,
+                Data = new PatternNode
+                {
+                    Node = new PatternAnd
+                    {
+                        Expressions = new List<Expression>
+                        {
+                            new PatternClassDeclaration
+                            {
+                                Body = new PatternExpressionInsideNode
+                                {
+                                    Expression = new PatternMethodDeclaration
+                                    {
+                                        Name = new IdToken("clone"),
+                                        AnyBody = true
+                                    }
+                                }
+                            },
+
+                            new PatternNot
+                            {
+                                Expression = new PatternClassDeclaration
+                                {
+                                    BaseTypes = new List<Token>{ new TypeToken("Cloneable") }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            patterns.Add(new Pattern
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "ExtendingSecurityManagerWithoutFinal. Class extending SecurityManager is not final",
+                Languages = LanguageFlags.Java,
+                Data = new PatternNode
+                {
+                    Node = new PatternAnd
+                    {
+                        Expressions = new List<Expression>
+                        {
+                            new PatternClassDeclaration
+                            {
+                                BaseTypes = new List<Token>
+                                {
+                                    new PatternIdToken("SecurityManager")
+                                }
+                            },
+
+                            new PatternNot
+                            {
+                                Expression = new PatternClassDeclaration
+                                {
+                                    Modifiers = new List<Token>
+                                    {
+                                        new PatternIdToken("final")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            patterns.Add(new Pattern
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "ImproperValidationEmptyMethod. Improper Certificate Validation (Empty method)",
+                Languages = LanguageFlags.Java,
+                Data = new PatternNode
+                {
+                    Node = new PatternClassDeclaration
+                    {
+                        BaseTypes = new List<Token>
+                        {
+                            new PatternIdToken("X509TrustManager|SSLSocketFactory")
+                        },
+
+                        Body = new PatternExpressionInsideNode
+                        {
+                            Expression = new PatternMethodDeclaration(
+                                Enumerable.Empty<Token>().ToList(), new PatternIdToken(".+"), false)
+                        }
                     }
                 }
             });

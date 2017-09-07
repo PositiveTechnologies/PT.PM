@@ -9,7 +9,7 @@
         Public,
         Abstract,
         Static,
-        
+
         // Specific
         New,
         Const,
@@ -28,5 +28,7 @@
         Final,
         Synchronized,
         Transient,
+
+        Other,
     }
 }
