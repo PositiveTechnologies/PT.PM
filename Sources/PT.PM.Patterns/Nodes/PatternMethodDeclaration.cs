@@ -30,7 +30,7 @@ namespace PT.PM.Patterns.Nodes
             Modifiers = modifiers;
             Name = name;
             AnyBody = false;
-            Body = body ?? throw new ArgumentException("body should be null");
+            Body = body ?? throw new ArgumentNullException("body should not be null");
         }
 
         public PatternMethodDeclaration(List<Token> modifiers, Token name, bool anyBody,

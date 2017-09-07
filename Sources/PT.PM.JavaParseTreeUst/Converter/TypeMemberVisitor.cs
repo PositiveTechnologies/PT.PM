@@ -25,9 +25,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
             else
             {
-                var result = Visit(context.memberDeclaration());
-                ((EntityDeclaration)result).Modifiers =
-                    context.modifier().Select(Visit).OfType<ModifierLiteral>().ToList();
+                var result = (EntityDeclaration)Visit(context.memberDeclaration());
+                result.Modifiers = context.modifier().Select(Visit).OfType<ModifierLiteral>().ToList();
                 return result;
             }
         }

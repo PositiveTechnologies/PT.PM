@@ -329,16 +329,11 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var nameLiteral = ConvertId(node.Identifier);
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
-
-            var baseTypes = new List<TypeToken>();
-            if (node.BaseList != null)
+            var baseTypes = node.BaseList?.Types.Select(t =>
             {
-                baseTypes = node.BaseList.Types.Select(t =>
-                {
-                    var name = t.Type is IdentifierNameSyntax id ? id.Identifier.ValueText : t.ToString();
-                    return new TypeToken(name, t.GetTextSpan(), FileNode);
-                }).ToList();
-            }
+                var name = t.Type is IdentifierNameSyntax id ? id.Identifier.ValueText : t.ToString();
+                return new TypeToken(name, t.GetTextSpan(), FileNode);
+            }).ToList() ?? new List<TypeToken>();
 
             var result = new TypeDeclaration(
                 typeTypeToken,

@@ -20,7 +20,7 @@ namespace PT.PM.Patterns.Nodes
         public PatternAnd(List<Expression> expressions, TextSpan textSpan, FileNode fileNode) :
             base(textSpan, fileNode)
         {
-            Expressions = expressions ?? throw new ArgumentException("expressions should be not null");
+            Expressions = expressions ?? throw new ArgumentNullException("expressions should be not null");
             if (Expressions.Count < 2)
             {
                 throw new ArgumentException("expressions size should be greater than or equal to 2 ");

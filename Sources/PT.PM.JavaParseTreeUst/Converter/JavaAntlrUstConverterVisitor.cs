@@ -74,8 +74,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             var result = Visit(context.GetChild(context.ChildCount - 1));
 
-            var typeDeclaration = result as TypeDeclaration;
-            if (context.classOrInterfaceModifier().Any() && typeDeclaration != null)
+            if (context.classOrInterfaceModifier().Any() && result is TypeDeclaration typeDeclaration)
             {
                 var modifiers = context.classOrInterfaceModifier()
                     .Select(m => (ModifierLiteral)VisitClassOrInterfaceModifier(m)).ToList();

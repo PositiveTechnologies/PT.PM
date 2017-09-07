@@ -25,7 +25,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         }
 
         [TestCase("AllInOne.cs")]
-        public void Convert_CSharp_CheckNodesPresence(string fileName)
+        public void Convert_CSharp_BaseTypesExist(string fileName)
         {
             var workflowResults = TestHelper.CheckFile(fileName, Language.CSharp, Stage.Convert);
             var ust = workflowResults.Usts.First();

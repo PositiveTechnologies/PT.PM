@@ -191,7 +191,7 @@ namespace PT.PM.Dsl
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                body = (PatternExpressionInsideNode)VisitArbitraryDepthExpression(context.arbitraryDepthExpression());
+                body = (PatternExpressionInsideNode)VisitArbitraryDepthExpression(arbitraryDepthExpression);
             }
 
             return new PatternClassDeclaration(modifiers, name, baseTypes, body, context.GetTextSpan(), null);
@@ -205,7 +205,7 @@ namespace PT.PM.Dsl
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                var body = (PatternExpressionInsideNode)VisitArbitraryDepthExpression(context.arbitraryDepthExpression());
+                var body = (PatternExpressionInsideNode)VisitArbitraryDepthExpression(arbitraryDepthExpression);
                 result = new PatternMethodDeclaration(modifiers, name, body, context.GetTextSpan(), null);
             }
             else if (context.Ellipsis() != null)
@@ -694,7 +694,7 @@ namespace PT.PM.Dsl
                 {
                     return ProcessPatternIds(context.patternId());
                 }
-            }).ToList(); ;
+            }).ToList();
         }
 
         private Token ProcessPatternIds(IList<DslParser.PatternIdContext> contexts)
@@ -707,10 +707,7 @@ namespace PT.PM.Dsl
             }
             else
             {
-                Token[] values = contexts.Select(literal =>
-                {
-                    return (IdToken)VisitPatternId(literal);
-                }).ToArray();
+                Token[] values = contexts.Select(literal => (IdToken)VisitPatternId(literal)).ToArray();
                 result = new PatternVarDef(GetNewVarDefName(), values, firstPatternId.GetTextSpan());
             }
             return result;

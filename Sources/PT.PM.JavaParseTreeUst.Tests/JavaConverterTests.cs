@@ -15,10 +15,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
     [TestFixture]
     public class JavaConverterTests
     {
-        [TestCase("ManyStringsConcat.java",
-            Ignore = "true",
-            IgnoreReason = "Stackoverflow when filling Modifiers in the " +
-                           "VisitClassBodyDeclaration function. There're too many strings.")]
+        [TestCase("ManyStringsConcat.java")]
         [TestCase("AllInOne.java")]
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
@@ -116,7 +113,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         }
 
         [TestCase("AllInOne.java")]
-        public void Convert_Java_CheckNodesPresence(string fileName)
+        public void Convert_Java_BaseTypesExist(string fileName)
         {
             var workflowResults = TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
             var ust = workflowResults.Usts.First();
