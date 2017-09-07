@@ -50,7 +50,7 @@ namespace PT.PM.Patterns.Nodes
         [JsonIgnore]
         internal bool PinValueAssigned { get; private set; }
 
-        public List<Expression> Values { get; set; } = new List<Expression>() { new PatternIdToken() };
+        public PatternIdToken Value { get; set; } = new PatternIdToken();
 
         public PatternVarRef(PatternVarDef patternVar, TextSpan textSpan)
             : base()
