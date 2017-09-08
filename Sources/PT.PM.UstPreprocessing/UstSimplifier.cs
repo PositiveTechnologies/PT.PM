@@ -357,6 +357,23 @@ namespace PT.PM.UstPreprocessing
             return VisitChildren(patternIntLiteral);
         }
 
+        public override UstNode Visit(MultichildExpression multichildExpression)
+        {
+            UstNode result;
+            // char array folding
+            if (IsCharArray(multichildExpression.Expressions))
+            {
+                var stringExprs = multichildExpression.Expressions.Where(expr => expr.NodeType == NodeType.StringLiteral);
+                String value = String.Concat(stringExprs.OfType<StringLiteral>().Select(expr => expr.Text));
+                result = new StringLiteral(value, multichildExpression.TextSpan, multichildExpression.FileNode);
+            }
+            else
+            {
+                result = VisitChildren(multichildExpression);
+            }
+            return result;
+        }
+
         public UstNode Visit(PatternMultipleExpressions patternMultiExpressions)
         {
             return VisitChildren(patternMultiExpressions);
@@ -517,6 +534,37 @@ namespace PT.PM.UstPreprocessing
                 }
                 return fileNode;
             }
+        }
+
+        // shame on me
+        protected bool IsCharArray(List<Expression> expressions)
+        {
+            if (!tryCheckIdTokenValue(expressions.First(), "{") || !tryCheckIdTokenValue(expressions.Last(), "}"))
+            {
+                return false;
+            }
+
+            for (int i = 1; i < expressions.Count - 1; i++)
+            {
+                if (i % 2 == 0 && !tryCheckIdTokenValue(expressions[i], ","))
+                {
+                    return false;
+                }
+                if (i % 2 == 1 && expressions[i].NodeType != NodeType.StringLiteral)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        protected bool tryCheckIdTokenValue(Expression expr, String value)
+        {
+            if (expr == null || expr.NodeType != NodeType.IdToken)
+            {
+                return false;
+            }
+            return ((IdToken)expr).TextValue == value;
         }
     }
 }
