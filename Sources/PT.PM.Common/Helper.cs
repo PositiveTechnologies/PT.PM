@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common
 {
@@ -31,7 +33,7 @@ namespace PT.PM.Common
 
         public static bool TryConvertToInt64(this string value, int fromBase, out long result)
         {
-            
+
             try
             {
                 result = Convert.ToInt64(value, fromBase);
@@ -51,6 +53,15 @@ namespace PT.PM.Common
                 int p = (int)Environment.OSVersion.Platform;
                 return (p == 4) || (p == 6) || (p == 128);
             }
+        }
+
+        static public bool TryCheckIdTokenValue(Expression expr, string value)
+        {
+            if (expr == null || expr.NodeType != NodeType.IdToken)
+            {
+                return false;
+            }
+            return ((IdToken)expr).TextValue == value;
         }
     }
 }

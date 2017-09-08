@@ -38,6 +38,13 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
+        public int GetDepth(int multichildExpressionArgNumber)
+        {
+            return 1 +
+                (Expressions.Count() > 2 && Expressions[multichildExpressionArgNumber] is MultichildExpression child ?
+                    child.GetDepth(multichildExpressionArgNumber) : 0);
+        }
+
         public override UstNode[] GetChildren()
         {
             var result = new List<UstNode>(Expressions);
