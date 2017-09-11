@@ -89,7 +89,7 @@ namespace PT.PM.UstPreprocessing
 
         public override UstNode Visit(ArrayCreationExpression arrayCreationExpression)
         {
-            if (arrayCreationExpression.Initializers.All(i => i is StringLiteral))
+            if (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false)
             {
                 string value = String.Concat(
                     arrayCreationExpression.Initializers.OfType<StringLiteral>().Select(expr => expr.Text));

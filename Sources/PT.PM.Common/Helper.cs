@@ -57,7 +57,7 @@ namespace PT.PM.Common
 
         static public bool TryCheckIdTokenValue(Expression expr, string value)
         {
-            if (expr == null || expr.NodeType != NodeType.IdToken)
+            if (expr?.NodeType != NodeType.IdToken)
             {
                 return false;
             }
