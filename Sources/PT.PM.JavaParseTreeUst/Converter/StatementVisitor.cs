@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using Antlr4.Runtime.Tree;
+using PT.PM.Common;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
@@ -61,6 +62,23 @@ namespace PT.PM.JavaParseTreeUst.Converter
             AssignmentExpression[] initializers = context.variableDeclarators().variableDeclarator()
                 .Select(varDec => (AssignmentExpression)Visit(varDec))
                 .Where(initializer => initializer != null).ToArray();
+
+            if (initializers.Count() == 1 && initializers.First().Right is MultichildExpression multichildExpression)
+            {
+                var expressions = multichildExpression.Expressions;
+                // is array?
+                if (Helper.TryCheckIdTokenValue(expressions.FirstOrDefault(), "{") &&
+                    Helper.TryCheckIdTokenValue(expressions.LastOrDefault(), "}"))
+                {
+                    int dimensions = multichildExpression.GetDepth(1);
+                    var sizes = Enumerable.Range(0, dimensions).Select(
+                        _ => new IntLiteral(0, type.TextSpan, FileNode)).ToList<Expression>();
+                    var array_initializers = expressions.Where(el => el.NodeType != NodeType.IdToken);
+                    initializers.First().Right = new ArrayCreationExpression(
+                        new TypeToken(type.TypeText, type.TextSpan, FileNode), sizes,
+                        array_initializers, multichildExpression.TextSpan, FileNode);
+                }
+            }
 
             var result = new VariableDeclarationExpression(type, initializers, context.GetTextSpan(), FileNode);
             return result;
@@ -278,7 +296,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     else
                     {
                         initializers.AddRange(forInit.expressionList().expression()
-                            .Select(expr => 
+                            .Select(expr =>
                                 {
                                     var ex = (Expression)Visit(expr);
                                     return ex == null ? null : new ExpressionStatement(ex, expr.GetTextSpan(), FileNode);
@@ -286,7 +304,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     }
                 }
                 Expression condition = context.expression() == null ? null : (Expression)Visit(context.expression());
-            
+
                 JavaParser.ExpressionListContext forUpdate = context.forUpdate;
                 if (forUpdate != null)
                 {

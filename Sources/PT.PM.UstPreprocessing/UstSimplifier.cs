@@ -87,6 +87,17 @@ namespace PT.PM.UstPreprocessing
             return Visit((dynamic)literal);
         }
 
+        public override UstNode Visit(ArrayCreationExpression arrayCreationExpression)
+        {
+            if (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false)
+            {
+                string value = String.Concat(
+                    arrayCreationExpression.Initializers.OfType<StringLiteral>().Select(expr => expr.Text));
+                return new StringLiteral(value, arrayCreationExpression.TextSpan, arrayCreationExpression.FileNode);
+            }
+            return VisitChildren(arrayCreationExpression);
+        }
+
         public override UstNode Visit(BinaryOperatorExpression binaryOperatorExpression)
         {
             Expression result = null;
@@ -355,6 +366,11 @@ namespace PT.PM.UstPreprocessing
         public UstNode Visit(PatternIntLiteral patternIntLiteral)
         {
             return VisitChildren(patternIntLiteral);
+        }
+
+        public override UstNode Visit(MultichildExpression multichildExpression)
+        {
+            return VisitChildren(multichildExpression);
         }
 
         public UstNode Visit(PatternMultipleExpressions patternMultiExpressions)
