@@ -67,8 +67,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 var expressions = multichildExpression.Expressions;
                 // is array?
-                if (Helper.TryCheckIdTokenValue(expressions.First(), "{") &&
-                    Helper.TryCheckIdTokenValue(expressions.Last(), "}"))
+                if (Helper.TryCheckIdTokenValue(expressions.FirstOrDefault(), "{") &&
+                    Helper.TryCheckIdTokenValue(expressions.LastOrDefault(), "}"))
                 {
                     int dimensions = multichildExpression.GetDepth(1);
                     var sizes = Enumerable.Range(0, dimensions).Select(

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -38,10 +39,21 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
+        /// MultichildExpression can express an array initializer.
+        /// This function does some work to get dimensions of the array from
+        /// view of its initializer. For example { { 1, 2} , { 1, 2} } init
+        /// 2d array. multichildExpressionArgNumber is the expected position number of the
+        /// child which type should be MultichildExpression
         public int GetDepth(int multichildExpressionArgNumber)
         {
+            var count = Expressions.Count();
+            if (count > 2 && multichildExpressionArgNumber >= count)
+            {
+                throw new ArgumentException("multichildExpressionArgNumber should be " +
+                    "less than the number of Expressions elements");
+            }
             return 1 +
-                (Expressions.Count() > 2 && Expressions[multichildExpressionArgNumber] is MultichildExpression child ?
+                (count > 2 && Expressions[multichildExpressionArgNumber] is MultichildExpression child ?
                     child.GetDepth(multichildExpressionArgNumber) : 0);
         }
 
