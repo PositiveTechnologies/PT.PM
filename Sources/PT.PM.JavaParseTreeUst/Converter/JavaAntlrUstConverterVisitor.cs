@@ -265,9 +265,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitConstDeclaration([NotNull] JavaParser.ConstDeclarationContext context)
         {
+            var type = (TypeToken)Visit(context.typeType());
             var assignments = context.constantDeclarator()
                 .Select(declarator => (AssignmentExpression)Visit(declarator));
-            return new FieldDeclaration(assignments, context.GetTextSpan(), FileNode);
+            return new FieldDeclaration(type, assignments, context.GetTextSpan(), FileNode);
         }
 
         public UstNode VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)

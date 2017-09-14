@@ -423,6 +423,11 @@ namespace PT.PM.UstPreprocessing
             return VisitChildren(patternMethodDeclaration);
         }
 
+        public UstNode Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration)
+        {
+            return VisitChildren(patternVarOrFieldDeclaration);
+        }
+
         public UstNode Visit(DslNode patternExpression)
         {
             return VisitChildren(patternExpression);

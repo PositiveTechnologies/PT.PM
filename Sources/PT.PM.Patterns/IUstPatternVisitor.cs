@@ -26,6 +26,7 @@ namespace PT.PM.Patterns
         T Visit(PatternNot patternNot);
         T Visit(PatternClassDeclaration patternClassDeclaration);
         T Visit(PatternMethodDeclaration patternMethodDeclaration);
+        T Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration);
 
         T Visit(DslNode patternExpression);
         T Visit(LangCodeNode langCodeNode);
