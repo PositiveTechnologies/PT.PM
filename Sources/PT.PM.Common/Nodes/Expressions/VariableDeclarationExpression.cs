@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Tokens;
+﻿using PT.PM.Common.Nodes.Tokens;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Common.Nodes.Expressions
@@ -30,6 +30,11 @@ namespace PT.PM.Common.Nodes.Expressions
             result.Add(Type);
             result.AddRange(Variables);
             return result.ToArray();
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[0]; // TODO: Fix (I don't know how, maybe transform VariableDeclarationExpression to something else).
         }
 
         public override string ToString()

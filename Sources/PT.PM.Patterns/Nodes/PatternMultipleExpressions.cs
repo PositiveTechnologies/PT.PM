@@ -1,4 +1,5 @@
-﻿using PT.PM.Common;
+﻿using System;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 
@@ -15,6 +16,11 @@ namespace PT.PM.Patterns.Nodes
         public override UstNode[] GetChildren()
         {
             return ArrayUtils<UstNode>.EmptyArray;
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { this };
         }
 
         public override int CompareTo(UstNode other)

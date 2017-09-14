@@ -1,12 +1,8 @@
-﻿using PT.PM.Common;
+﻿using System;
+using Newtonsoft.Json;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PT.PM.Common;
 
 namespace PT.PM.Patterns.Nodes
 {
@@ -95,6 +91,16 @@ namespace PT.PM.Patterns.Nodes
         public override UstNode[] GetChildren()
         {
             return new UstNode[] { Expression };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            if (Expression == null)
+            {
+                return ArrayUtils<Expression>.EmptyArray;
+            }
+
+            return Expression.GetArgs();
         }
 
         public override string ToString()

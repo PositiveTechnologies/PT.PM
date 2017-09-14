@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -12,6 +13,11 @@ namespace PT.PM.Common.Nodes.Expressions
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
         public BlockStatement Body { get; set; }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[0];
+        }
 
         public AnonymousMethodExpression(IEnumerable<ParameterDeclaration> parameters, BlockStatement body,
             TextSpan textSpan)

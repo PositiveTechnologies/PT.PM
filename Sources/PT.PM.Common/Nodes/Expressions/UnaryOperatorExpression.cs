@@ -1,4 +1,5 @@
-﻿using PT.PM.Common.Nodes.Tokens;
+﻿using System;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.Expressions
@@ -24,7 +25,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override UstNode[] GetChildren()
         {
-            return new UstNode[] {Operator, Expression};
+            return new UstNode[] { Operator, Expression };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Operator, Expression };
         }
 
         public override string ToString()

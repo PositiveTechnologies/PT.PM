@@ -24,8 +24,14 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override UstNode[] GetChildren()
         {
-            var result = new UstNode[] { Target, Arguments };
-            return result;
+            return new UstNode[] { Target, Arguments };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            var result = new List<Expression> { Target };
+            result.AddRange(Arguments.Collection);
+            return result.ToArray();
         }
 
         public override string ToString()

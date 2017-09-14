@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Expressions;
+﻿using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common.Nodes.Specific
@@ -25,8 +24,12 @@ namespace PT.PM.Common.Nodes.Specific
 
         public override UstNode[] GetChildren()
         {
-            var result = new List<UstNode> { Expression, Type };
-            return result.ToArray();
+            return new UstNode[] { Expression, Type };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Expression, Type };
         }
     }
 }

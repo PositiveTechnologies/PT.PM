@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace PT.PM.Common.Nodes.Expressions
+﻿namespace PT.PM.Common.Nodes.Expressions
 {
     public class AssignmentExpression : Expression
     {
@@ -23,8 +21,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override UstNode[] GetChildren()
         {
-            var result = new List<UstNode> {Left, Right};
-            return result.ToArray();
+            return new UstNode[] { Left, Right };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Left, Right };
         }
 
         public override string ToString()

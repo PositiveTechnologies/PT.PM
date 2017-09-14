@@ -36,7 +36,7 @@ namespace PT.PM.Common.Nodes.Expressions
             return -1;
         }
 
-        public Expression[] GetTargetAndArgs()
+        public override Expression[] GetArgs()
         {
             var result = new List<Expression> { Target };
             result.AddRange(Arguments.Collection);

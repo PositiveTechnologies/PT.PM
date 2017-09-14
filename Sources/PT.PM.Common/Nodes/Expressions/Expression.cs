@@ -10,5 +10,7 @@
         protected Expression()
         {
         }
+
+        public abstract Expression[] GetArgs();
     }
 }

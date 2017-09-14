@@ -42,6 +42,13 @@ namespace PT.PM.Common.Nodes.Expressions
             return result.ToArray();
         }
 
+        public override Expression[] GetArgs()
+        {
+            var result = new List<Expression> { Type };
+            result.AddRange(Arguments.Collection);
+            return result.ToArray();
+        }
+
         public override string ToString()
         {
             return $"new {Type}({string.Join(", ", Arguments)})";

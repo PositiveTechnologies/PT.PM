@@ -1,6 +1,4 @@
-﻿using PT.PM.Common.Nodes.Tokens;
-
-namespace PT.PM.Common.Nodes.Expressions
+﻿namespace PT.PM.Common.Nodes.Expressions
 {
     public class MemberReferenceExpression : Expression
     {
@@ -23,8 +21,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override UstNode[] GetChildren()
         {
-            var result = new UstNode[] {Target, Name};
-            return result;
+            return new UstNode[] { Target, Name };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Target, Name };
         }
 
         public override string ToString()

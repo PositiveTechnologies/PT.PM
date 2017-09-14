@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Tokens;
+﻿using PT.PM.Common.Nodes.Tokens;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Common.Nodes.Expressions
@@ -41,6 +41,13 @@ namespace PT.PM.Common.Nodes.Expressions
             {
                 result.AddRange(Initializers);
             }
+            return result.ToArray();
+        }
+
+        public override Expression[] GetArgs()
+        {
+            var result = new List<Expression> { Type };
+            result.AddRange(Sizes);
             return result.ToArray();
         }
 

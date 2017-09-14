@@ -23,7 +23,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override UstNode[] GetChildren()
         {
-            return new UstNode[] {Type, Expression};
+            return new UstNode[] { Type, Expression };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Type, Expression };
         }
 
         public override string ToString()

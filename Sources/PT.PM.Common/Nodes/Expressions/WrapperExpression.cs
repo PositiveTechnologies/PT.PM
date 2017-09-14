@@ -27,6 +27,11 @@
             return new UstNode[] { Node };
         }
 
+        public override Expression[] GetArgs()
+        {
+            return new Expression[0];
+        }
+
         public override string ToString()
         {
             return $"WrapExpr({Node})";

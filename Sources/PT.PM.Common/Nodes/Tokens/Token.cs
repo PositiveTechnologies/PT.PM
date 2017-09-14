@@ -27,6 +27,11 @@ namespace PT.PM.Common.Nodes.Tokens
             return ArrayUtils<UstNode>.EmptyArray;
         }
 
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { this };
+        }
+
         public override int CompareTo(UstNode other)
         {
             if (other == null)

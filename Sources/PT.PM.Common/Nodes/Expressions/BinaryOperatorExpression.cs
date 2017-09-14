@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Tokens.Literals;
+﻿using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -28,8 +26,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override UstNode[] GetChildren()
         {
-            var result = new List<UstNode> { Left, Operator, Right };
-            return result.ToArray();
+            return new UstNode[] { Left, Operator, Right };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Left, Operator, Right };
         }
 
         public override string ToString()

@@ -1,4 +1,6 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿using System;
+
+namespace PT.PM.Common.Nodes.Expressions
 {
     public class ConditionalExpression : Expression
     {
@@ -25,7 +27,12 @@
 
         public override UstNode[] GetChildren()
         {
-            return new UstNode[] {Condition, TrueExpression, FalseExpression};
+            return new UstNode[] { Condition, TrueExpression, FalseExpression };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Condition };
         }
 
         public override string ToString()

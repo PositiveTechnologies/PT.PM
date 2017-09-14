@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -42,6 +42,11 @@ namespace PT.PM.Common.Nodes.Expressions
         {
             var result = new List<UstNode>(Expressions);
             return result.ToArray();
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return Expressions.ToArray();
         }
 
         public override string ToString()
