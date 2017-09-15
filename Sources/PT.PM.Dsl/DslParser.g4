@@ -29,6 +29,9 @@ expression
     | modifiers+=literalOrPatternId* methodName=literalOrPatternId '(' ')'
       '{' (arbitraryDepthExpression | Ellipsis)? '}'       #MethodDeclaration
 
+    | Field? modifiers+=literalOrPatternId*
+      type=literalOrPatternId variableName                 #VarOrFieldDeclarationExpression
+
     | expression '.' literalOrPatternId                    #MemberReferenceExpression
     | expression '(' args? ')'                             #InvocationExpression
     | expression op=('*' | '/') expression                 #BinaryOperatorExpression
@@ -37,7 +40,6 @@ expression
     | '(' expression '.' ')?' literalOrPatternId           #MemberReferenceOrLiteralExpression
     | expression op=('==' | '!=') expression               #ComparisonExpression
     | expression '=' expression                            #AssignmentExpression
-    | literalOrPatternId expression '=' expression         #VariableDeclarationExpression
     | 'new' literalOrPatternId '(' args? ')'               #ObjectCreationExpression
     | 'function' '{' expression '}'                        #FunctionExpression
     | patternLiterals                                      #PatternLiteralExpression
@@ -49,6 +51,13 @@ expression
     | arbitraryDepthExpression                             #PatternArbitraryDepthExpression
     | '(' expression ')'                                   #ParenthesisExpression
     | BaseReference                                        #BaseReferenceExpression
+    ;
+
+// We need this rule for for backward compatibility and bypass of incorrect determination
+// of the $(<[""]>) as  VarOrFieldDeclarationExpression
+variableName
+    : literalOrPatternId
+    | patternLiterals
     ;
 
 arbitraryDepthExpression

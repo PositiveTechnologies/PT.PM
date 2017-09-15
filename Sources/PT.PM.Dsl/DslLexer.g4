@@ -33,6 +33,7 @@ Finally:  'finally';
 If:       'if';
 Function: 'function';
 Class:    'class';
+Field:    'field';
 BaseReference:       'base';
 OpenCurlyBracket:    '{';
 CloseCurlyBracket:   '}';

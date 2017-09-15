@@ -90,12 +90,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitFieldDeclaration(JavaParser.FieldDeclarationContext context)
         {
-            var type = VisitTypeType(context.typeType());
+            var type = (TypeToken)VisitTypeType(context.typeType());
             AssignmentExpression[] varInits = context.variableDeclarators().variableDeclarator()
                 .Select(varDec => (AssignmentExpression)Visit(varDec))
                 .Where(varDec => varDec != null).ToArray();
 
-            var result = new FieldDeclaration(varInits, context.GetTextSpan(), FileNode);
+            var result = new FieldDeclaration(type, varInits, context.GetTextSpan(), FileNode);
             return result;
         }
 

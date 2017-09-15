@@ -46,6 +46,7 @@
     <Compile Include="Nodes\PatternExpressionInsideNode.cs" />
     <Compile Include="Nodes\PatternMethodDeclaration.cs" />
     <Compile Include="Nodes\PatternNot.cs" />
+    <Compile Include="Nodes\PatternVarOrFieldDeclaration.cs" />
     <Compile Include="PatternBase.cs" />
     <Compile Include="PatternHelper.cs" />
     <Compile Include="PatternIdGenerator.cs" />

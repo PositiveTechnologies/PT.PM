@@ -181,8 +181,7 @@ namespace PT.PM.Dsl
             List<Token> baseTypes = ProcessLiteralsOrPatternIds(context._baseTypes);
 
             Token name = null;
-            var nameContext = context.name;
-            if (nameContext != null)
+            if (context.name != null)
             {
                 name = (Token)VisitLiteralOrPatternId(context.name);
             }
@@ -217,6 +216,19 @@ namespace PT.PM.Dsl
             {
                 result = new PatternMethodDeclaration(modifiers, name, false, context.GetTextSpan(), null);
             }
+            return result;
+        }
+
+        public UstNode VisitVarOrFieldDeclarationExpression(DslParser.VarOrFieldDeclarationExpressionContext context)
+        {
+            bool localVariable = context.Field() == null;
+            var typeLiteralOrPatternId = (Token)VisitLiteralOrPatternId(context.type);
+            var type = typeLiteralOrPatternId is PatternIdToken ?
+                typeLiteralOrPatternId :
+                new TypeToken(typeLiteralOrPatternId.TextValue, typeLiteralOrPatternId.TextSpan, null);
+            var name = (Expression)VisitVariableName(context.variableName());
+            List<Token> modifiers = ProcessLiteralsOrPatternIds(context._modifiers);
+            var result = new PatternVarOrFieldDeclaration(localVariable, modifiers, type, name, context.GetTextSpan(), null);
             return result;
         }
 
@@ -274,19 +286,15 @@ namespace PT.PM.Dsl
             Expression result;
             var left = (Expression)VisitExpression(context.expression(0));
             var right = (Expression)VisitExpression(context.expression(1));
-            result = new AssignmentExpression(left, right, context.GetTextSpan(), null);
-            return result;
-        }
-
-        public UstNode VisitVariableDeclarationExpression([NotNull] DslParser.VariableDeclarationExpressionContext context)
-        {
-            var literal = (Token)VisitLiteralOrPatternId(context.literalOrPatternId());
-            var typeToken = new TypeToken(literal.TextValue, literal.TextSpan, null);
-            var left = (Expression)VisitExpression(context.expression(0));
-            var right = (Expression)VisitExpression(context.expression(1));
-            var variables = new AssignmentExpression[] {
-                new AssignmentExpression(left, right, left.TextSpan.Union(right.TextSpan), null) };
-            var result = new VariableDeclarationExpression(typeToken, variables, context.GetTextSpan(), null);
+            if (left is PatternVarOrFieldDeclaration declaration)
+            {
+                declaration.Right = right;
+                result = declaration;
+            }
+            else
+            {
+                result = new AssignmentExpression(left, right, context.GetTextSpan(), null);
+            }
             return result;
         }
 
@@ -351,6 +359,20 @@ namespace PT.PM.Dsl
         public UstNode VisitBaseReferenceExpression(DslParser.BaseReferenceExpressionContext context)
         {
             return new BaseReferenceExpression(context.GetTextSpan(), null);
+        }
+
+        public UstNode VisitVariableName(DslParser.VariableNameContext context)
+        {
+            UstNode result;
+            if(context.literalOrPatternId() != null)
+            {
+                result = VisitLiteralOrPatternId(context.literalOrPatternId());
+            }
+            else
+            {
+                result = VisitPatternLiterals(context.patternLiterals());
+            }
+            return result;
         }
 
         public UstNode VisitArgs([NotNull] DslParser.ArgsContext context)

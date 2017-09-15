@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Tests
             foreach (var tuple in jsCodeAndPatterns)
             {
                 var matchingResults = PatternMatchingUtils.GetMatchings(tuple.Item1, tuple.Item2, Language.JavaScript);
-                Assert.AreEqual(1, matchingResults.Length);
+                Assert.AreEqual(1, matchingResults.Length, tuple.Item2 + " doesn't match " + tuple.Item1);
             }
         }
 

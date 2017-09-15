@@ -160,6 +160,7 @@
         PatternComment,
         PatternClassDeclaration,
         PatternMethodDeclaration,
+        PatternVarOrFieldDeclaration,
         PatternIfElseStatement,
         PatternTryCatchStatement,
 
