@@ -43,6 +43,7 @@ namespace PT.PM.Dsl.Tests
         [TestCase(@"ExtendingSecurityManagerWithoutFinal.aipm")]
         [TestCase(@"ImproperValidationEmptyMethod.aipm")]
         [TestCase(@"UsingCloneWithoutCloneable.aipm")]
+        [TestCase(@"PoorLoggingPractice.aipm")]
         public void Process_Dsl_EqualsToHardcoded(string fileName)
         {
             var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));

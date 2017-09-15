@@ -576,6 +576,43 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
+            patterns.Add(new Pattern
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "PoorLoggingPractice. Declare logger not static or final",
+                Languages = LanguageFlags.Java,
+                Data = new PatternNode
+                {
+                    Node = new PatternAnd
+                    {
+                        Expressions = new List<Expression>
+                        {
+                            new PatternVarOrFieldDeclaration
+                            {
+                                LocalVariable = false,
+                                Modifiers = new List<Token>(),
+                                Type = new PatternIdToken("[Ll]og"),
+                                Name = new PatternIdToken(".+")
+                            },
+                            new PatternNot
+                            {
+                                Expression = new PatternVarOrFieldDeclaration
+                                {
+                                    LocalVariable = false,
+                                    Modifiers = new List<Token>
+                                    {
+                                        new PatternIdToken("static"),
+                                        new PatternIdToken("final")
+                                    },
+                                    Type = new PatternIdToken("[Ll]og"),
+                                    Name = new PatternIdToken(".+")
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
             return patterns;
         }
     }

@@ -1,6 +1,7 @@
 class Test extends SecurityManager implements X509TrustManager
 {
 	public static String passwordQuestion = "What is your favorite color";
+	private final Logger logger = Logger.getLogger(MyClass.class);
 	
     extraneous_token
     

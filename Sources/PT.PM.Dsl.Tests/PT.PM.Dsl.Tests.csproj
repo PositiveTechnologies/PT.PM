@@ -110,6 +110,9 @@
     <Content Include="Data\UsingCloneWithoutCloneable.aipm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\PoorLoggingPractice.aipm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
