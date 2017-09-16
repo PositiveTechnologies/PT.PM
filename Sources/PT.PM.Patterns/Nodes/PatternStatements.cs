@@ -1,9 +1,8 @@
-﻿using PT.PM.Common.Nodes;
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Statements;
-using System.Linq;
-using PT.PM.Common;
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Patterns.Nodes
 {

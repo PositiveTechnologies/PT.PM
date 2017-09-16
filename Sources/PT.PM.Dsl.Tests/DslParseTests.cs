@@ -26,32 +26,32 @@ namespace PT.PM.Dsl.Tests
             patterns = patternsConverter.Convert(patternsRepository.GetAll());
         }
 
-        [TestCase(@"HardcodedPassword.aipm")]
-        [TestCase(@"InsecureTransport.aipm")]
-        [TestCase(@"InsecureRandomness.aipm")]
-        [TestCase(@"WeakCryptographicHash.aipm")]
-        [TestCase(@"AndroidPermissionCheck.aipm")]
-        [TestCase(@"MissingBroadcasterPermission.aipm")]
-        [TestCase(@"CookieNotSentOverSSL.aipm")]
-        [TestCase(@"CookieSecurityOverlyBroadDomain.aipm")]
-        [TestCase(@"PasswordInComment.aipm")]
-        [TestCase(@"InadequateRSAPadding.aipm")]
-        [TestCase(@"DebugInfo.aipm")]
-        [TestCase(@"XmlExternalEntity.aipm")]
-        [TestCase(@"AndroidHostnameVerificationDisabled.aipm")]
-        [TestCase(@"KeyManagementNullEncryptionKey.aipm")]
-        [TestCase(@"AttributesCodeInsideElementEvent.aipm")]
-        [TestCase(@"ExtendingSecurityManagerWithoutFinal.aipm")]
-        [TestCase(@"ImproperValidationEmptyMethod.aipm")]
-        [TestCase(@"UsingCloneWithoutCloneable.aipm")]
-        [TestCase(@"PoorLoggingPractice.aipm")]
+        [TestCase(@"HardcodedPassword.ptpm")]
+        [TestCase(@"InsecureTransport.ptpm")]
+        [TestCase(@"InsecureRandomness.ptpm")]
+        [TestCase(@"WeakCryptographicHash.ptpm")]
+        [TestCase(@"AndroidPermissionCheck.ptpm")]
+        [TestCase(@"MissingBroadcasterPermission.ptpm")]
+        [TestCase(@"CookieNotSentOverSSL.ptpm")]
+        [TestCase(@"CookieSecurityOverlyBroadDomain.ptpm")]
+        [TestCase(@"PasswordInComment.ptpm")]
+        [TestCase(@"InadequateRSAPadding.ptpm")]
+        [TestCase(@"DebugInfo.ptpm")]
+        [TestCase(@"XmlExternalEntity.ptpm")]
+        [TestCase(@"AndroidHostnameVerificationDisabled.ptpm")]
+        [TestCase(@"KeyManagementNullEncryptionKey.ptpm")]
+        [TestCase(@"AttributesCodeInsideElementEvent.ptpm")]
+        [TestCase(@"ExtendingSecurityManagerWithoutFinal.ptpm")]
+        [TestCase(@"ImproperValidationEmptyMethod.ptpm")]
+        [TestCase(@"UsingCloneWithoutCloneable.ptpm")]
+        [TestCase(@"PoorLoggingPractice.ptpm")]
         public void Process_Dsl_EqualsToHardcoded(string fileName)
         {
             var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger, PatternExpressionInsideStatement = false };
             PatternRootNode result = (PatternRootNode)processor.Deserialize(data);
-            result.Languages = fileName == @"DebugInfo.aipm"
+            result.Languages = fileName == @"DebugInfo.ptpm"
                 ? new HashSet<Language>() { Language.Php }
                 : new HashSet<Language>(LanguageExt.AllPatternLanguages);
             Assert.AreEqual(0, logger.ErrorCount);
@@ -66,7 +66,7 @@ namespace PT.PM.Dsl.Tests
             Assert.IsTrue(result.Equals(defaultPattern));
         }
 
-        [TestCase(@"Range.aipm")]
+        [TestCase(@"Range.ptpm")]
         public void Parse_Dsl_WithoutErrors(string fileName)
         {
             var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
