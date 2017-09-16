@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Tests
             foreach (var tuple in jsCodeAndPatterns)
             {
                 var matchingResults = PatternMatchingUtils.GetMatchings(tuple.Item1, tuple.Item2, Language.JavaScript);
-                Assert.AreEqual(1, matchingResults.Length);
+                Assert.AreEqual(1, matchingResults.Length, tuple.Item2 + " doesn't match " + tuple.Item1);
             }
         }
 
@@ -87,7 +87,7 @@ namespace PT.PM.Matching.Tests
             string code = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "php-js-php.php"));
             var matchingResults = PatternMatchingUtils.GetMatchings(code, "<[GLOBALS|frame_content]>",
                 new[] { Language.Php, Language.JavaScript },
-                 new[] { Language.Php, Language.JavaScript });
+                new[] { Language.Php, Language.JavaScript });
 
             Assert.AreEqual(3, matchingResults.Length);
             Assert.IsTrue(matchingResults[0].MatchedCode.Contains("GLOBAL"));

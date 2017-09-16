@@ -11,7 +11,7 @@ namespace PT.PM
             ISourceCodeRepository sourceCodeRepository)
         {
             return matchingResults
-                .Where(result => result != null)
+                .Where(result => result != null && result.Nodes.First().Root != null /* Hack to work with pattern matching any node */)
                 .Select(result => MatchingResultDto.CreateFromMatchingResult(result, sourceCodeRepository))
                 .ToArray();
         }

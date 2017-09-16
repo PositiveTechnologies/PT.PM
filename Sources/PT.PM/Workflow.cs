@@ -56,14 +56,11 @@ namespace PT.PM
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ?? new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
             result.BaseLanguages = BaseLanguages.ToArray();
-            Task convertPatternsTask = GetConvertPatternsTask(result);
 
+            StartConvertPatternsTaskIfRequired(result);
             if (Stage == Stage.Patterns)
             {
-                if (!convertPatternsTask.IsCompleted)
-                {
-                    convertPatternsTask.Wait();
-                }
+                WaitOrConverterPatterns(result);
             }
             else
             {
@@ -82,7 +79,7 @@ namespace PT.PM
 
                         foreach (string fileName in fileNames)
                         {
-                            ProcessFile(fileName, convertPatternsTask, result, cancellationToken);
+                            ProcessFile(fileName, result, cancellationToken);
                         }
                     }
                     else
@@ -100,7 +97,7 @@ namespace PT.PM
                             {
                                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
                                 Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-                                ProcessFile(fileName, convertPatternsTask, result, parallelOptions.CancellationToken);
+                                ProcessFile(fileName, result, parallelOptions.CancellationToken);
                             });
                     }
                 }
@@ -119,7 +116,7 @@ namespace PT.PM
             return result;
         }
 
-        private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        private void ProcessFile(string fileName, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
             ParseTree parseTree = null;
             try
@@ -162,10 +159,7 @@ namespace PT.PM
 
                             if (Stage >= Stage.Match)
                             {
-                                /*if (!convertPatternsTask.IsCompleted)
-                                {
-                                    convertPatternsTask.Wait();
-                                }*/
+                                WaitOrConverterPatterns(workflowResult);
 
                                 stopwatch.Restart();
                                 IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
@@ -202,6 +196,18 @@ namespace PT.PM
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
+            }
+        }
+
+        private void WaitOrConverterPatterns(WorkflowResult result)
+        {
+            if (IsAsyncPatternsConversion)
+            {
+                convertPatternsTask.Wait();
+            }
+            else
+            {
+                ConvertPatterns(result);
             }
         }
     }

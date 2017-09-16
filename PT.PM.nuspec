@@ -8,7 +8,7 @@
     
     <owners>ptsecurity,KvanTTT</owners>
     <title>PT Pattern Matching Engine</title>
-    <licenseUrl>https://creativecommons.org/licenses/by-nc/4.0/legalcode</licenseUrl>
+    <licenseUrl>https://github.com/PositiveTechnologies/PT.PM/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>https://www.ptsecurity.com/ww-en/products/ai/</projectUrl>
     <iconUrl>https://github.com/PositiveTechnologies/PT.PM/blob/master/PT.PM.png?raw=true</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>

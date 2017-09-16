@@ -1,15 +1,14 @@
-﻿using PT.PM.Common;
+﻿using Antlr4.Runtime.Tree;
+using PT.PM.AntlrUtils;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.JavaParseTreeUst.Parser;
-using PT.PM.AntlrUtils;
-using Antlr4.Runtime.Tree;
 using System;
 using System.Linq;
-using System.Text;
-using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
@@ -450,7 +449,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
             ITerminalNode charLiteral = context.CHAR_LITERAL();
             if (charLiteral != null)
             {
-                return new StringLiteral(charLiteral.GetText(), textSpan);
+                string text = charLiteral.GetText();
+                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
             }
 
             ITerminalNode floatLiteral = context.FLOAT_LITERAL();

@@ -6,6 +6,9 @@ using PT.PM.Common.Nodes.Statements;
 using PT.PM.Patterns.Nodes;
 using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes;
+using System;
+using System.Linq;
 using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
@@ -423,8 +426,124 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternTryCatchStatement
                 {
-                    ExceptionTypes = new List<TypeToken> { new TypeToken("NullPointerException") },
+                    ExceptionTypes = new List<Token> { new TypeToken("NullPointerException") },
                     IsCatchBodyEmpty = false
+                }
+            });
+
+            patterns.Add(new PatternRootNode
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "UsingCloneWithoutCloneable. Using clone method without implementing Clonable",
+                Languages = new HashSet<Language>() { Java },
+                Node = new PatternAnd
+                {
+                    Expressions = new List<Expression>
+                    {
+                        new PatternClassDeclaration
+                        {
+                            Body = new PatternExpressionInsideNode
+                            {
+                                Expression = new PatternMethodDeclaration
+                                {
+                                    Name = new IdToken("clone"),
+                                    AnyBody = true
+                                }
+                            }
+                        },
+
+                        new PatternNot
+                        {
+                            Expression = new PatternClassDeclaration
+                            {
+                                BaseTypes = new List<Token>{ new TypeToken("Cloneable") }
+                            }
+                        }
+                    }
+                }
+            });
+
+            patterns.Add(new PatternRootNode
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "ExtendingSecurityManagerWithoutFinal. Class extending SecurityManager is not final",
+                Languages = new HashSet<Language>() { Java },
+                Node = new PatternAnd
+                {
+                    Expressions = new List<Expression>
+                    {
+                        new PatternClassDeclaration
+                        {
+                            BaseTypes = new List<Token>
+                            {
+                                new PatternIdToken("SecurityManager")
+                            }
+                        },
+
+                        new PatternNot
+                        {
+                            Expression = new PatternClassDeclaration
+                            {
+                                Modifiers = new List<Token>
+                                {
+                                    new PatternIdToken("final")
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            patterns.Add(new PatternRootNode
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "ImproperValidationEmptyMethod. Improper Certificate Validation (Empty method)",
+                Languages = new HashSet<Language>() { Java },
+                Node = new PatternClassDeclaration
+                {
+                    BaseTypes = new List<Token>
+                    {
+                        new PatternIdToken("X509TrustManager|SSLSocketFactory")
+                    },
+                    Body = new PatternExpressionInsideNode
+                    {
+                        Expression = new PatternMethodDeclaration(
+                            Enumerable.Empty<Token>().ToList(), new PatternIdToken(".+"), false)
+                    }
+                }
+            });
+
+            patterns.Add(new PatternRootNode
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "PoorLoggingPractice. Declare logger not static or final",
+                Languages = new HashSet<Language>() { Java },
+                Node = new PatternAnd
+                {
+                    Expressions = new List<Expression>
+                    {
+                        new PatternVarOrFieldDeclaration
+                        {
+                            LocalVariable = false,
+                            Modifiers = new List<Token>(),
+                            Type = new PatternIdToken("[Ll]og"),
+                            Name = new PatternIdToken(".+")
+                        },
+                        new PatternNot
+                        {
+                            Expression = new PatternVarOrFieldDeclaration
+                            {
+                                LocalVariable = false,
+                                Modifiers = new List<Token>
+                                {
+                                    new PatternIdToken("static"),
+                                    new PatternIdToken("final")
+                                },
+                                Type = new PatternIdToken("[Ll]og"),
+                                Name = new PatternIdToken(".+")
+                            }
+                        }
+                    }
                 }
             });
 

@@ -82,7 +82,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override UstNode VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
             var init = (Expression)base.Visit(node.EqualsValue != null ? node.EqualsValue.Value : null);
-            AssignmentExpression[] vars = new [] { new AssignmentExpression(
+            AssignmentExpression[] vars = new[] { new AssignmentExpression(
                 ConvertId(node.Identifier),
                 init,
                 node.GetTextSpan())
@@ -94,11 +94,12 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override UstNode VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
+            var type = ConvertType(base.Visit(node.Declaration.Type));
             var varDelaraions = node.Declaration.Variables.Select(
                 var => (AssignmentExpression)VisitAndReturnNullIfError(var)).ToArray();
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
-            var result = new FieldDeclaration(varDelaraions, node.GetTextSpan())
+            var result = new FieldDeclaration(type, varDelaraions, node.GetTextSpan())
             {
                 Modifiers = modifiers
             };

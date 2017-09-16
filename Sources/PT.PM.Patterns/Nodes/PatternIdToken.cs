@@ -60,7 +60,7 @@ namespace PT.PM.Patterns.Nodes
                 return Id.CompareTo(((PatternIdToken)other).Id);
             }
 
-            if (other.NodeType != NodeType.IdToken)
+            if (!typeof(Token).IsAssignableFrom(other.GetType()))
             {
                 return NodeType - other.NodeType;
             }
@@ -68,7 +68,7 @@ namespace PT.PM.Patterns.Nodes
             var regex = other.Root.Language.IsCaseInsensitive()
                 ? CaseInsensitiveRegex
                 : Regex;
-            MatchedLocations = PatternHelper.MatchRegex(regex, ((IdToken)other).Id, true);
+            MatchedLocations = PatternHelper.MatchRegex(regex, ((Token)other).TextValue, true);
             return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }

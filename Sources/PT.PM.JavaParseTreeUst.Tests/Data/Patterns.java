@@ -1,6 +1,7 @@
-class Test
+class Test extends SecurityManager implements X509TrustManager
 {
 	public static String passwordQuestion = "What is your favorite color";
+	private final Logger logger = Logger.getLogger(MyClass.class);
     
 	// Default password: "asdf"
 	public void bar() {
@@ -106,4 +107,12 @@ class Test
         Cookie emailCookieExistsTwoPatterns1 = new Cookie("emailCookieExistsTwoPatterns1", email);
 		response.addCookie(emailCookieExistsTwoPatterns1);
     }
+
+	public Object clone() throws CloneNotSupportedException {
+		return this;
+	}
+
+	@Override
+	public void checkClientTrusted(final X509Certificate[] array, final String s)
+		throws CertificateException {}
 }

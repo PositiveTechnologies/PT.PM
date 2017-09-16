@@ -9,13 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using PT.PM.AntlrUtils;
 using Antlr4.Runtime.Misc;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
     public partial class JavaAntlrParseTreeConverter
     {
         public UstNode VisitClassBodyDeclaration(JavaParser.ClassBodyDeclarationContext context)
-        { 
+        {
             var block = context.block();
             if (block != null)
             {
@@ -24,7 +25,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
             else
             {
-                return Visit(context.memberDeclaration());
+                var result = (EntityDeclaration)Visit(context.memberDeclaration());
+                result.Modifiers = context.modifier().Select(Visit).OfType<ModifierLiteral>().ToList();
+                return result;
             }
         }
 
@@ -87,12 +90,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public UstNode VisitFieldDeclaration(JavaParser.FieldDeclarationContext context)
         {
-            var type = VisitTypeType(context.typeType());
+            var type = (TypeToken)VisitTypeType(context.typeType());
             AssignmentExpression[] varInits = context.variableDeclarators().variableDeclarator()
                 .Select(varDec => (AssignmentExpression)Visit(varDec))
                 .Where(varDec => varDec != null).ToArray();
 
-            var result = new FieldDeclaration(varInits, context.GetTextSpan());
+            var result = new FieldDeclaration(type, varInits, context.GetTextSpan());
             return result;
         }
 
@@ -128,9 +131,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             var id = (IdToken)Visit(context.variableDeclaratorId());
             JavaParser.VariableInitializerContext variableInitializer = context.variableInitializer();
-            Expression initializer = variableInitializer != null ? 
+            Expression initializer = variableInitializer != null ?
                 (Expression)Visit(variableInitializer) : null;
-            
+
             var result = new AssignmentExpression(id, initializer, context.GetTextSpan());
             return result;
         }

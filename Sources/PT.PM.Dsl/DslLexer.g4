@@ -32,6 +32,9 @@ Catch:    'catch';
 Finally:  'finally';
 If:       'if';
 Function: 'function';
+Class:    'class';
+Field:    'field';
+BaseReference:       'base';
 OpenCurlyBracket:    '{';
 CloseCurlyBracket:   '}';
 
@@ -57,6 +60,8 @@ Star:                     '*';
 Slash:                    '/';
 OpenPatternMark:          '<['    -> pushMode(PATTERN_MODE);
 ShortPatternOr:           '<|>';
+ShortPatternAnd:          '<&>';
+ShortPatternNot:          '<~>';
 OpenArbitraryDepthMark:   '<{';
 CloseArbitraryDepthMark:  '}>';
 CloseParenthesisQuestion: ')?';

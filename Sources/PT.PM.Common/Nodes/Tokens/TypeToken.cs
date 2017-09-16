@@ -17,7 +17,7 @@ namespace PT.PM.Common.Nodes.Tokens
         }
 
         public TypeToken(string type, TextSpan textSpan)
-            : this(new List<string>() {type},textSpan)
+            : this(new List<string>() { type }, textSpan)
         {
         }
 

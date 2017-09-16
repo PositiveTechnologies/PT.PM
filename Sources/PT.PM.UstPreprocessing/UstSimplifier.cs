@@ -107,6 +107,17 @@ namespace PT.PM.UstPreprocessing
             return Visit((dynamic)literal);
         }
 
+        public override UstNode Visit(ArrayCreationExpression arrayCreationExpression)
+        {
+            if (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false)
+            {
+                string value = String.Concat(
+                    arrayCreationExpression.Initializers.OfType<StringLiteral>().Select(expr => expr.Text));
+                return new StringLiteral(value, arrayCreationExpression.TextSpan);
+            }
+            return VisitChildren(arrayCreationExpression);
+        }
+
         public override UstNode Visit(BinaryOperatorExpression binaryOperatorExpression)
         {
             Expression result = null;
@@ -349,7 +360,7 @@ namespace PT.PM.UstPreprocessing
             return VisitChildren(patternExpression);
         }
 
-        public UstNode Visit(PatternExpressionInsideExpression patternExpressionInsideExpression)
+        public UstNode Visit(PatternExpressionInsideNode patternExpressionInsideExpression)
         {
             return VisitChildren(patternExpressionInsideExpression);
         }
@@ -367,6 +378,11 @@ namespace PT.PM.UstPreprocessing
         public UstNode Visit(PatternIntLiteral patternIntLiteral)
         {
             return VisitChildren(patternIntLiteral);
+        }
+
+        public override UstNode Visit(MultichildExpression multichildExpression)
+        {
+            return VisitChildren(multichildExpression);
         }
 
         public UstNode Visit(PatternMultipleExpressions patternMultiExpressions)
@@ -397,6 +413,31 @@ namespace PT.PM.UstPreprocessing
         public UstNode Visit(PatternVarRef patternVarRef)
         {
             return VisitChildren(patternVarRef);
+        }
+
+        public UstNode Visit(PatternAnd patternAnd)
+        {
+            return VisitChildren(patternAnd);
+        }
+
+        public UstNode Visit(PatternNot patternNot)
+        {
+            return VisitChildren(patternNot);
+        }
+
+        public UstNode Visit(PatternClassDeclaration patternClassDeclaration)
+        {
+            return VisitChildren(patternClassDeclaration);
+        }
+
+        public UstNode Visit(PatternMethodDeclaration patternMethodDeclaration)
+        {
+            return VisitChildren(patternMethodDeclaration);
+        }
+
+        public UstNode Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration)
+        {
+            return VisitChildren(patternVarOrFieldDeclaration);
         }
 
         protected override UstNode VisitChildren(UstNode ustNode)

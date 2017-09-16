@@ -1,18 +1,17 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Exceptions;
+using PT.PM.JavaScriptParseTreeUst;
+using PT.PM.Matching;
 using PT.PM.Patterns;
 using PT.PM.Patterns.PatternsRepository;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System;
-using System.Threading.Tasks;
-using PT.PM.Matching;
 using System.Threading;
-using PT.PM.Common.Exceptions;
-using PT.PM.Patterns.Nodes;
-using PT.PM.JavaScriptParseTreeUst;
+using System.Threading.Tasks;
 
 namespace PT.PM
 {
@@ -24,6 +23,7 @@ namespace PT.PM
         protected ILogger logger = DummyLogger.Instance;
         protected int maxStackSize;
         protected Task filesCountTask;
+        protected Task convertPatternsTask;
 
         protected Language[] languages;
 
@@ -44,6 +44,8 @@ namespace PT.PM
         public bool IsIncludeIntermediateResult { get; set; }
 
         public bool IsIncludePreprocessing { get; set; } = true;
+
+        public bool IsAsyncPatternsConversion { get; set; } = true;
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
@@ -167,32 +169,33 @@ namespace PT.PM
             return result;
         }
 
-        protected Task GetConvertPatternsTask(TWorkflowResult workflowResult)
+        protected void StartConvertPatternsTaskIfRequired(TWorkflowResult workflowResult)
         {
-            Task convertPatternsTask = null;
-            if (stageHelper.IsPatterns || stageHelper.IsContainsMatch)
+            if (IsAsyncPatternsConversion)
             {
-                //convertPatternsTask = new Task(() =>
+                if (stageHelper.IsPatterns || stageHelper.IsContainsMatch)
                 {
-                    try
-                    {
-                        var stopwatch = Stopwatch.StartNew();
-                        IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                        UstPatternMatcher.Patterns = PatternConverter.Convert(patternDtos);
-                        stopwatch.Stop();
-                        workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(UstPatternMatcher.Patterns);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
-                    }
+                    convertPatternsTask = new Task(() => ConvertPatterns(workflowResult));
+                    convertPatternsTask.Start();
                 }
-                /*});
-                convertPatternsTask.Start();*/
             }
+        }
 
-            return convertPatternsTask;
+        protected void ConvertPatterns(TWorkflowResult workflowResult)
+        {
+            try
+            {
+                var stopwatch = Stopwatch.StartNew();
+                IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
+                UstPatternMatcher.Patterns = PatternConverter.Convert(patternDtos);
+                stopwatch.Stop();
+                workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
+                workflowResult.AddResultEntity(UstPatternMatcher.Patterns);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
+            }
         }
 
         protected static HashSet<Language> GetBaseLanguages(HashSet<Language> analyzedLanguages)

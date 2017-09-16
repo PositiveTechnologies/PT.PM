@@ -17,7 +17,7 @@ namespace PT.PM.UstPreprocessing.Tests
     public class UstPreprocessorTests
     {
         [Test]
-        public void Preprocess_CodeWithConstants_ConstantsFolded()
+        public void Preprocess_PhpCodeWithConstants_ConstantsFolded()
         {
             var sourceCodeRep = new MemoryCodeRepository(
                 "<?php\r\n" +
@@ -38,6 +38,25 @@ namespace PT.PM.UstPreprocessing.Tests
             Assert.IsTrue(logger.ContainsDebugMessagePart("42"));
             Assert.IsTrue(logger.ContainsDebugMessagePart("-3"));
             Assert.IsTrue(logger.ContainsDebugMessagePart("-3.1"));
+        }
+
+        [Test]
+        public void Preprocess_JavaCodeWithConstantCharArray_ArrayFolded()
+        {
+            var sourceCodeRep = new MemoryCodeRepository(
+                "class Wrapper {\r\n" +
+                "  public void init() {\r\n" +
+                "    char[] array = { 'n', 'o', 'n', 'e' };\r\n" +
+                "  }\r\n" +
+                "}"
+            );
+
+            var workflow = new Workflow(sourceCodeRep, Language.Java, stage: Stage.Preprocess);
+            workflow.IsIncludePreprocessing = true;
+            var ust = workflow.Process().Usts.First();
+
+            Assert.IsTrue(ust.DoesAnyDescendantMatchPredicate(
+                node => node is StringLiteral str && str.Text == "none"));
         }
 
         [Test]

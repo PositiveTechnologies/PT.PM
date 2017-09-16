@@ -18,7 +18,8 @@ namespace PT.PM.Common
             [TSql] = new LanguageInfo(TSql, ".sql", true, "T-SQL"),
             [Aspx] = new LanguageInfo(Aspx, new [] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new [] { CSharp }),
             [JavaScript] = new LanguageInfo(JavaScript, ".js", false, "JavaScript"),
-            [Html] = new LanguageInfo(Html, ".html", true, "HTML", new [] { JavaScript })
+            [Html] = new LanguageInfo(Html, ".html", true, "HTML", new [] { JavaScript }),
+            [Universal] = new LanguageInfo(Universal, ".ptpm", false, "PT.PM.Dsl")
         };
 
         public static readonly Language[] AllLanguages = new Language[]
