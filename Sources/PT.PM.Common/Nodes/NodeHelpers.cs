@@ -44,6 +44,18 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
+        public static BlockStatement ToBlockStatementIfRequired(this Statement statement)
+        {
+            if (statement is BlockStatement blockStatement)
+            {
+                return blockStatement;
+            }
+            else
+            {
+                return new BlockStatement(new Statement[] { statement });
+            }
+        }
+
         public static UstNode[] SelectAnalyzedNodes(this UstNode ustNode, Language language, HashSet<Language> analyzedLanguages)
         {
             UstNode[] result;
