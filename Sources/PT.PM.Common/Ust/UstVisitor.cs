@@ -415,7 +415,11 @@ namespace PT.PM.Common.Ust
             {
                 if (children != null)
                 {
-                    Visit((dynamic)children);
+                    T result = Visit((dynamic)children);
+                    if (ustNode.Children.Length == 1)
+                    {
+                        return result;
+                    }
                 }
             }
             return default(T);
