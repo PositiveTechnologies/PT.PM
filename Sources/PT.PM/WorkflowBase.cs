@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Nodes;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Patterns;
@@ -103,9 +104,9 @@ namespace PT.PM
             stageHelper = new StageHelper<TStage>(stage);
         }
 
-        protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        protected RootNode ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            ParseTree result = null;
+            RootNode result = null;
             var stopwatch = new Stopwatch();
             string file = fileName;
             if (stageHelper.IsContainsRead)
@@ -151,12 +152,13 @@ namespace PT.PM
                             javaScriptAntlrParser.JavaScriptType = JavaScriptType;
                         }
                     }
-                    result = parser.Parse(sourceCodeFile);
+                    ParseTree parseTree = parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
                     Logger.LogInfo($"File {fileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
+                    workflowResult.AddResultEntity(parseTree);
 
-                    var antlrParseTree = result as AntlrParseTree;
+                    var antlrParseTree = parseTree as AntlrParseTree;
                     if (antlrParseTree != null)
                     {
                         workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
@@ -164,6 +166,22 @@ namespace PT.PM
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
+
+                    if (stageHelper.IsContainsConvert)
+                    {
+                        stopwatch.Reset();
+
+                        var converter = ParserConverterFactory.CreateConverter(parseTree.SourceLanguage);
+                        converter.Logger = Logger;
+                        converter.AnalyzedLanguages = AnalyzedLanguages;
+                        result = converter.Convert(parseTree);
+                        stopwatch.Stop();
+                        Logger.LogInfo($"File {fileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
+                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(result, true);
+
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
                 }
             }
             return result;

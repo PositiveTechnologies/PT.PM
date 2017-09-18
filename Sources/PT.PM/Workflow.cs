@@ -118,59 +118,40 @@ namespace PT.PM
 
         private void ProcessFile(string fileName, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            ParseTree parseTree = null;
+            RootNode ust = null;
             try
             {
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
-                parseTree = ReadAndParse(fileName, workflowResult);
-                if (parseTree != null)
+                ust = ReadParseAndConvert(fileName, workflowResult);
+                if (ust != null && Stage >= Stage.Preprocess)
                 {
-                    workflowResult.AddResultEntity(parseTree);
-
-                    if (Stage >= Stage.Convert)
+                    Stopwatch stopwatch = new Stopwatch();
+                    if (IsIncludePreprocessing)
                     {
-                        var stopwatch = Stopwatch.StartNew();
-                        var converter = ParserConverterFactory.CreateConverter(parseTree.SourceLanguage);
-                        converter.Logger = Logger;
-                        converter.AnalyzedLanguages = AnalyzedLanguages;
-                        RootNode ust = converter.Convert(parseTree);
+                        var ustPreprocessor = new UstSimplifier() { Logger = logger };
+                        stopwatch.Restart();
+                        ust = ustPreprocessor.Preprocess(ust);
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {fileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
-                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(ust, true);
+                        Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
+                        workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(ust, false);
 
                         cancellationToken.ThrowIfCancellationRequested();
+                    }
 
-                        if (Stage >= Stage.Preprocess)
-                        {
-                            if (IsIncludePreprocessing)
-                            {
-                                var ustPreprocessor = new UstSimplifier() { Logger = logger };
-                                stopwatch.Restart();
-                                ust = ustPreprocessor.Preprocess(ust);
-                                stopwatch.Stop();
-                                Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
-                                workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
-                                workflowResult.AddResultEntity(ust, false);
+                    if (Stage >= Stage.Match)
+                    {
+                        WaitOrConverterPatterns(workflowResult);
 
-                                cancellationToken.ThrowIfCancellationRequested();
-                            }
+                        stopwatch.Restart();
+                        IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
+                        stopwatch.Stop();
+                        Logger.LogInfo($"File {fileName} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
+                        workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(matchingResults);
 
-                            if (Stage >= Stage.Match)
-                            {
-                                WaitOrConverterPatterns(workflowResult);
-
-                                stopwatch.Restart();
-                                IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
-                                stopwatch.Stop();
-                                Logger.LogInfo($"File {fileName} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
-                                workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
-                                workflowResult.AddResultEntity(matchingResults);
-
-                                cancellationToken.ThrowIfCancellationRequested();
-                            }
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
                 }
             }
@@ -190,7 +171,7 @@ namespace PT.PM
                 Logger.LogInfo(new ProgressEventArgs(progress, fileName));
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
 
-                if (parseTree == null)
+                if (ust == null)
                 {
                     Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
                 }
