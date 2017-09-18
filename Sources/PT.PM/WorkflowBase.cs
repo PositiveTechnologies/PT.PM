@@ -181,6 +181,18 @@ namespace PT.PM
             }
         }
 
+        protected void WaitOrConverterPatterns(TWorkflowResult result)
+        {
+            if (IsAsyncPatternsConversion)
+            {
+                convertPatternsTask.Wait();
+            }
+            else
+            {
+                ConvertPatterns(result);
+            }
+        }
+
         protected void ConvertPatterns(TWorkflowResult workflowResult)
         {
             try

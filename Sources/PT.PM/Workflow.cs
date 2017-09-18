@@ -198,17 +198,5 @@ namespace PT.PM
                 cancellationToken.ThrowIfCancellationRequested();
             }
         }
-
-        private void WaitOrConverterPatterns(WorkflowResult result)
-        {
-            if (IsAsyncPatternsConversion)
-            {
-                convertPatternsTask.Wait();
-            }
-            else
-            {
-                ConvertPatterns(result);
-            }
-        }
     }
 }

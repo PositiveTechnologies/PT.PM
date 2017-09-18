@@ -27,6 +27,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, List<TypeToken> baseTypes,
             IEnumerable<EntityDeclaration> typeMembers, TextSpan textSpan)
+            : base(name, textSpan)
         {
             Type = type;
             BaseTypes = baseTypes;
