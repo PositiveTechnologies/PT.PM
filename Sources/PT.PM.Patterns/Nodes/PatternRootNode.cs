@@ -15,7 +15,7 @@ namespace PT.PM.Patterns.Nodes
 
         public override NodeType NodeType => NodeType.PatternRootNode;
 
-        public string Key { get; set; }
+        public string Key { get; set; } = "";
 
         public string FilenameWildcard { get; set; }
 
@@ -39,7 +39,7 @@ namespace PT.PM.Patterns.Nodes
         public UstNodeSerializationFormat DataFormat { get; set; } = UstNodeSerializationFormat.Json;
 
         [JsonIgnore]
-        public string DebugInfo { get; set; }
+        public string DebugInfo { get; set; } = "";
 
         [JsonIgnore]
         public Regex FilenameWildcardRegex
@@ -95,7 +95,7 @@ namespace PT.PM.Patterns.Nodes
 
         public override string ToString()
         {
-            return DebugInfo;
+            return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
     }
 }

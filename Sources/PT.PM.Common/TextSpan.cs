@@ -1,6 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
-using System.Collections;
 
 namespace PT.PM.Common
 {
@@ -9,6 +7,8 @@ namespace PT.PM.Common
     /// </summary>
     public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>
     {
+        public readonly static TextSpan Empty = default(TextSpan);
+
         public TextSpan(int start, int length)
         {
             if (start < 0)
