@@ -3,8 +3,8 @@ using System.Linq;
 
 namespace PT.PM.Common.Nodes.Collections
 {
-    public abstract class CollectionNode<TUstNode> : UstNode
-        where TUstNode : UstNode
+    public abstract class CollectionNode<TUstNode> : Ust
+        where TUstNode : Ust
     {
         public List<TUstNode> Collection { get; set; }
 
@@ -26,9 +26,9 @@ namespace PT.PM.Common.Nodes.Collections
             Collection = new List<TUstNode>();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return Collection == null ? ArrayUtils<UstNode>.EmptyArray : Collection.ToArray();
+            return Collection == null ? ArrayUtils<Ust>.EmptyArray : Collection.ToArray();
         }
     }
 }

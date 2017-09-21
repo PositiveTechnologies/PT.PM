@@ -7,15 +7,15 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternMultipleExpressions : Expression
     {
-        public override NodeType NodeType => NodeType.PatternMultipleExpressions;
+        public override UstKind Kind => UstKind.PatternMultipleExpressions;
 
         public PatternMultipleExpressions()
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
         public override Expression[] GetArgs()
@@ -23,11 +23,11 @@ namespace PT.PM.Patterns.Nodes
             return new Expression[] { this };
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)other.NodeType;
+                return (int)other.Kind;
             }
 
             if (other is Expression)
@@ -36,7 +36,7 @@ namespace PT.PM.Patterns.Nodes
             }
             else
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
         }
 

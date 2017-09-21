@@ -6,18 +6,18 @@ using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes
 {
-    public abstract class UstNode : IComparable<UstNode>, IEquatable<UstNode>
+    public abstract class Ust : IComparable<Ust>, IEquatable<Ust>
     {
-        public abstract NodeType NodeType { get; }
+        public abstract UstKind Kind { get; }
 
         [JsonIgnore]
-        public RootNode Root { get; set; }
+        public RootUst Root { get; set; }
 
         [JsonIgnore]
-        public UstNode Parent { get; set; }
+        public Ust Parent { get; set; }
 
         [JsonIgnore]
-        public UstNode[] Children => GetChildren(); // TODO: optimized performance
+        public Ust[] Children => GetChildren(); // TODO: optimized performance
 
         [JsonIgnore]
         public virtual bool IsLiteral => false;
@@ -25,31 +25,31 @@ namespace PT.PM.Common.Nodes
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TextSpan TextSpan { get; set; }
 
-        protected UstNode(TextSpan textSpan)
+        protected Ust(TextSpan textSpan)
             : this()
         {
             TextSpan = textSpan;
         }
 
-        protected UstNode()
+        protected Ust()
         {
         }
 
-        public abstract UstNode[] GetChildren();
+        public abstract Ust[] GetChildren();
 
-        public bool Equals(UstNode other)
+        public bool Equals(Ust other)
         {
             return CompareTo(other) == 0;
         }
 
-        public virtual int CompareTo(UstNode other)
+        public virtual int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            var nodeTypeCompareResult = NodeType - other.NodeType;
+            var nodeTypeCompareResult = Kind - other.Kind;
             if (nodeTypeCompareResult != 0)
             {
                 return nodeTypeCompareResult;
@@ -58,7 +58,7 @@ namespace PT.PM.Common.Nodes
             return Children.CompareTo(other.Children);
         }
 
-        public bool DoesAnyDescendantMatchPredicate(Func<UstNode, bool> predicate)
+        public bool DoesAnyDescendantMatchPredicate(Func<Ust, bool> predicate)
         {
             if (predicate(this))
             {
@@ -74,7 +74,7 @@ namespace PT.PM.Common.Nodes
             return false;
         }
 
-        public bool DoesAllDescendantsMatchPredicate(Func<UstNode, bool> predicate)
+        public bool DoesAllDescendantsMatchPredicate(Func<Ust, bool> predicate)
         {
             if (!predicate(this))
             {
@@ -90,7 +90,7 @@ namespace PT.PM.Common.Nodes
             return true;
         }
 
-        public void ApplyActionToDescendants(Action<UstNode> action)
+        public void ApplyActionToDescendants(Action<Ust> action)
         {
             foreach (var child in Children)
             {
@@ -102,19 +102,19 @@ namespace PT.PM.Common.Nodes
             }
         }
 
-        public UstNode[] GetAllDescendants()
+        public Ust[] GetAllDescendants()
         {
             return GetAllDescendants(node => true);
         }
 
-        public UstNode[] GetAllDescendants(Func<UstNode, bool> predicate)
+        public Ust[] GetAllDescendants(Func<Ust, bool> predicate)
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             GetAllDescendants(result, predicate);
             return result.ToArray();
         }
 
-        protected void GetAllDescendants(List<UstNode> result, Func<UstNode, bool> predicate)
+        protected void GetAllDescendants(List<Ust> result, Func<Ust, bool> predicate)
         {
             if (predicate(this))
             {
@@ -140,7 +140,7 @@ namespace PT.PM.Common.Nodes
 
     public static class UstNodeHelper
     {
-        public static int CompareTo<T>(this IEnumerable<T> collection1, IEnumerable<T> collection2) where T : UstNode
+        public static int CompareTo<T>(this IEnumerable<T> collection1, IEnumerable<T> collection2) where T : Ust
         {
             var list1 = collection1 as IList<T> ?? new List<T>(collection1 ?? Enumerable.Empty<T>());
             var list2 = collection2 as IList<T> ?? new List<T>(collection2 ?? Enumerable.Empty<T>());
@@ -158,10 +158,10 @@ namespace PT.PM.Common.Nodes
                 {
                     if (list2[i] != null)
                     {
-                        return -(int)list2[i].NodeType;
+                        return -(int)list2[i].Kind;
                     }
                 }
-                else if (element.NodeType != NodeType.RootNode)
+                else if (element.Kind != UstKind.RootUst)
                 {
                     var elementCompareResult = element.CompareTo(list2[i]);
                     if (elementCompareResult != 0)

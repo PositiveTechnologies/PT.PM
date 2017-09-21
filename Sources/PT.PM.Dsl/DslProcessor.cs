@@ -55,7 +55,7 @@ namespace PT.PM.Dsl
             UstConverter = new DslUstConverter();
         }
 
-        public UstNode Deserialize(string data)
+        public Ust Deserialize(string data)
         {
             if (string.IsNullOrEmpty(data))
             {
@@ -67,17 +67,17 @@ namespace PT.PM.Dsl
             DslParser.PatternContext patternContext = Parser.Parse(data);
             UstConverter.Data = data;
 
-            PatternRootNode patternNode = UstConverter.Convert(patternContext);
+            PatternRootUst patternNode = UstConverter.Convert(patternContext);
             patternNode.Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
 
             var preprocessor = new UstSimplifier();
             preprocessor.Logger = Logger;
-            patternNode = (PatternRootNode)preprocessor.Visit(patternNode);
+            patternNode = (PatternRootUst)preprocessor.Visit(patternNode);
 
             return patternNode;
         }
 
-        public string Serialize(UstNode node)
+        public string Serialize(Ust node)
         {
             throw new NotImplementedException();
         }

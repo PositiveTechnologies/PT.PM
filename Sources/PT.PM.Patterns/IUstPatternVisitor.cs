@@ -4,7 +4,7 @@ namespace PT.PM.Patterns
 {
     public interface IUstPatternVisitor<out T>
     {
-        T Visit(PatternRootNode patternVars);
+        T Visit(PatternRootUst patternVars);
         T Visit(PatternBooleanLiteral patternBooleanLiteral);
         T Visit(PatternComment patternComment);
         T Visit(PatternExpression patternExpression);

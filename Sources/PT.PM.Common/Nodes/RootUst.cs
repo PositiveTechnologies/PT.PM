@@ -5,17 +5,17 @@ using System.Linq;
 
 namespace PT.PM.Common.Nodes
 {
-    public class RootNode : UstNode
+    public class RootUst : Ust
     {
         private Language[] sublanguges;
 
-        public override NodeType NodeType => NodeType.RootNode;
+        public override UstKind Kind => UstKind.RootUst;
 
         public virtual Language Language { get; }
 
         public SourceCodeFile SourceCodeFile { get; set; }
 
-        public UstNode[] Nodes { get; set; } = ArrayUtils<UstNode>.EmptyArray;
+        public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
 
         public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
 
@@ -23,7 +23,7 @@ namespace PT.PM.Common.Nodes
         public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
 
         [JsonIgnore]
-        public UstNode Node
+        public Ust Node
         {
             get => Nodes.FirstOrDefault();
             set => Nodes = new[] { value };
@@ -31,15 +31,15 @@ namespace PT.PM.Common.Nodes
 
         public int LineOffset { get; set; }
 
-        public RootNode(SourceCodeFile sourceCodeFile, Language language)
+        public RootUst(SourceCodeFile sourceCodeFile, Language language)
         {
             SourceCodeFile = sourceCodeFile ?? new SourceCodeFile();
             Language = language;
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Nodes);
             result.AddRange(Comments);
             return result.ToArray();
@@ -53,9 +53,9 @@ namespace PT.PM.Common.Nodes
         private Language[] GetSublangauges()
         {
             var result = new HashSet<Language>();
-            var descendants = GetAllDescendants(child => child.NodeType == NodeType.RootNode)
-                .Cast<RootNode>();
-            foreach (RootNode descendant in descendants)
+            var descendants = GetAllDescendants(child => child.Kind == UstKind.RootUst)
+                .Cast<RootUst>();
+            foreach (RootUst descendant in descendants)
             {
                 result.Add(descendant.Language);
             }

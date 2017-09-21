@@ -31,7 +31,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             var ust = workflowResults.Usts.First();
             bool result = ust.DoesAnyDescendantMatchPredicate(el =>
             {
-                bool isTypeDeclaration = el.NodeType == Common.Nodes.NodeType.TypeDeclaration;
+                bool isTypeDeclaration = el.Kind == Common.Nodes.UstKind.TypeDeclaration;
                 return isTypeDeclaration && ((TypeDeclaration)el).BaseTypes.Any(t => t.TypeText == "IDisposable");
             });
             Assert.IsTrue(result, "Ust doesn't contain type declaration node with IDisposable base type");

@@ -6,7 +6,7 @@ using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResult : MatchingResultBase<PatternRootNode>
+    public class MatchingResult : MatchingResultBase<PatternRootUst>
     {
         public SourceCodeFile SourceCodeFile => Nodes.FirstOrDefault()?.Root?.SourceCodeFile;
 
@@ -14,16 +14,16 @@ namespace PT.PM.Matching
 
         public MatchingResult()
         {
-            Nodes = new List<UstNode>();
+            Nodes = new List<Ust>();
         }
 
-        public MatchingResult(PatternRootNode pattern, UstNode node, TextSpan textSpan)
-            : this(pattern, new List<UstNode> { node })
+        public MatchingResult(PatternRootUst pattern, Ust node, TextSpan textSpan)
+            : this(pattern, new List<Ust> { node })
         {
             TextSpan = textSpan;
         }
 
-        public MatchingResult(PatternRootNode pattern, List<UstNode> nodes)
+        public MatchingResult(PatternRootUst pattern, List<Ust> nodes)
         {
             Pattern = pattern;
             Nodes = nodes;

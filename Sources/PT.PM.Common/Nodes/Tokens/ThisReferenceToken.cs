@@ -3,7 +3,7 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ThisReferenceToken : Token
     {
-        public override NodeType NodeType => NodeType.ThisReferenceToken;
+        public override UstKind Kind => UstKind.ThisReferenceToken;
 
         public ThisReferenceToken(TextSpan textSpan)
             : base(textSpan)

@@ -11,7 +11,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternTryCatchStatement : Statement
     {
-        public override NodeType NodeType => NodeType.PatternTryCatchStatement;
+        public override UstKind Kind => UstKind.PatternTryCatchStatement;
 
         public List<Token> ExceptionTypes { get; set; }
 
@@ -31,14 +31,14 @@ namespace PT.PM.Patterns.Nodes
             IsCatchBodyEmpty = isCatchBodyEmpty;
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternTryCatchStatement)
+            if (other.Kind == UstKind.PatternTryCatchStatement)
             {
                 var otherPatternTryCatch = (PatternTryCatchStatement)other;
                 int result = Convert.ToInt32(IsCatchBodyEmpty) - Convert.ToInt32(otherPatternTryCatch.IsCatchBodyEmpty);
@@ -50,9 +50,9 @@ namespace PT.PM.Patterns.Nodes
                 return ExceptionTypes.CompareTo(otherPatternTryCatch.ExceptionTypes);
             }
 
-            if (other.NodeType != NodeType.TryCatchStatement)
+            if (other.Kind != UstKind.TryCatchStatement)
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
 
             var otherTryCatch = (TryCatchStatement)other;
@@ -83,9 +83,9 @@ namespace PT.PM.Patterns.Nodes
             }
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
         public override string ToString()

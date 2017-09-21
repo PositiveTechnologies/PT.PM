@@ -22,9 +22,9 @@ namespace PT.PM.Common.Nodes.Tokens
         {
         }
 
-        public sealed override UstNode[] GetChildren()
+        public sealed override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
         public override Expression[] GetArgs()
@@ -32,7 +32,7 @@ namespace PT.PM.Common.Nodes.Tokens
             return new Expression[] { this };
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
@@ -44,7 +44,7 @@ namespace PT.PM.Common.Nodes.Tokens
                 return -1;
             }
 
-            var nodeTypeResult = NodeType - other.NodeType;
+            var nodeTypeResult = Kind - other.Kind;
             if (nodeTypeResult != 0)
             {
                 return nodeTypeResult;

@@ -5,7 +5,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class ModifierLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.ModifierLiteral;
+        public override UstKind Kind => UstKind.ModifierLiteral;
 
         [JsonIgnore]
         public Modifier Modifier { get; set; }
@@ -47,7 +47,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ModifierName = "";
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

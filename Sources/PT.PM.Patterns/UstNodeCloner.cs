@@ -8,7 +8,7 @@ namespace PT.PM.Patterns
 {
     public static class UstNodeCloner
     {
-        private static readonly JsonConverter astJsonConverter = new UstJsonConverter(typeof(UstNode), typeof(PatternVarDef));
+        private static readonly JsonConverter astJsonConverter = new UstJsonConverter(typeof(Ust), typeof(PatternVarDef));
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
         /// <summary>
@@ -16,10 +16,10 @@ namespace PT.PM.Patterns
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static UstNode Clone(this UstNode source)
+        public static Ust Clone(this Ust source)
         {
             var json = JsonConvert.SerializeObject(source, stringEnumConverter);
-            var result = JsonConvert.DeserializeObject<UstNode>(json, astJsonConverter);
+            var result = JsonConvert.DeserializeObject<Ust>(json, astJsonConverter);
             result.FillAscendants();
             return result;
         }

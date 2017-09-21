@@ -2,7 +2,7 @@
 {
     public class MemberReferenceExpression : Expression
     {
-        public override NodeType NodeType => NodeType.MemberReferenceExpression;
+        public override UstKind Kind => UstKind.MemberReferenceExpression;
 
         public Expression Target { get; set; }
 
@@ -19,9 +19,9 @@
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Target, Name };
+            return new Ust[] { Target, Name };
         }
 
         public override Expression[] GetArgs()

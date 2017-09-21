@@ -8,7 +8,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternComment : CommentLiteral, IRelativeLocationMatching
     {
-        public override NodeType NodeType => NodeType.PatternComment;
+        public override UstKind Kind => UstKind.PatternComment;
 
         [JsonIgnore]
         public Regex Regex { get; set; }
@@ -36,21 +36,21 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternComment)
+            if (other.Kind == UstKind.PatternComment)
             {
                 return Comment.CompareTo(((PatternComment)other).Comment);
             }
 
-            if (other.NodeType != NodeType.CommentLiteral)
+            if (other.Kind != UstKind.CommentLiteral)
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
 
             MatchedLocations = PatternHelper.MatchRegex(Regex, ((CommentLiteral)other).Comment);

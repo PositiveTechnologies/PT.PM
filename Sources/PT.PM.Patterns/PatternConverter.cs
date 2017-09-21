@@ -8,7 +8,7 @@ using PT.PM.Common.Nodes;
 
 namespace PT.PM.Patterns
 {
-    public class PatternConverter : IPatternConverter<PatternRootNode>
+    public class PatternConverter : IPatternConverter<PatternRootUst>
     {
         private ILogger logger { get; set; } = DummyLogger.Instance;
 
@@ -44,21 +44,21 @@ namespace PT.PM.Patterns
             }
         }
 
-        public PatternRootNode[] Convert(IEnumerable<PatternDto> patternsDto)
+        public PatternRootUst[] Convert(IEnumerable<PatternDto> patternsDto)
         {
-            var result = new List<PatternRootNode>(patternsDto.Count());
+            var result = new List<PatternRootUst>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
             {
                 var serializer = UstNodeSerializers[patternDto.DataFormat];
                 try
                 {
                     var node = serializer.Deserialize(patternDto.Value);
-                    PatternRootNode pattern = new PatternRootNode
+                    PatternRootUst pattern = new PatternRootUst
                     {
                         DataFormat = serializer.DataFormat,
                         Key = patternDto.Key,
                         Languages = patternDto.Languages,
-                        Node = node is PatternRootNode patternRootNode ? patternRootNode.Node : node,
+                        Node = node is PatternRootUst patternRootNode ? patternRootNode.Node : node,
                         DebugInfo = patternDto.Description,
                         FilenameWildcard = patternDto.FilenameWildcard
                     };
@@ -73,10 +73,10 @@ namespace PT.PM.Patterns
             return result.ToArray();
         }
 
-        public PatternDto[] ConvertBack(IEnumerable<PatternRootNode> patterns)
+        public PatternDto[] ConvertBack(IEnumerable<PatternRootUst> patterns)
         {
             var result = new List<PatternDto>();
-            foreach (PatternRootNode pattern in patterns)
+            foreach (PatternRootUst pattern in patterns)
             {
                 var serializer = UstNodeSerializers[pattern.DataFormat];
                 try
@@ -87,7 +87,7 @@ namespace PT.PM.Patterns
                         Key = pattern.Key,
                         Languages = pattern.Languages,
                         Value = serializer.Serialize(
-                              pattern is PatternRootNode patternNode
+                              pattern is PatternRootUst patternNode
                             ? patternNode.Node
                             : pattern),
                         Description = pattern.DebugInfo,

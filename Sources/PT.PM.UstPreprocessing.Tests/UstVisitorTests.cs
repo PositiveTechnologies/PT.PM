@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Ust;
 using PT.PM.Patterns;
 using PT.PM.TestUtils;
 using System;
@@ -31,10 +30,10 @@ namespace PT.PM.UstPreprocessing.Tests
         {
             WorkflowResult result = TestHelper.CheckFile("AllInOne.cs", Language.CSharp, Stage.Convert);
 
-            IEnumerable<UstNode> descendantsExceptFirst = result.Usts.First().GetAllDescendants().Skip(1);
+            IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().GetAllDescendants().Skip(1);
             foreach (var descendant in descendantsExceptFirst)
             {
-                if (!(descendant is RootNode))
+                if (!(descendant is RootUst))
                 {
                     Assert.IsNotNull(descendant.Parent);
                 }
@@ -44,7 +43,7 @@ namespace PT.PM.UstPreprocessing.Tests
         private static IEnumerable<Type> GetAssemblyUstNodeTypes(params Type[] types)
         {
             return types.SelectMany(type => Assembly.GetAssembly(type).GetTypes())
-                .Where(t => t.IsSubclassOf(typeof(UstNode)) && !t.IsAbstract);
+                .Where(t => t.IsSubclassOf(typeof(Ust)) && !t.IsAbstract);
         }
 
         private static void CheckVisitorMethods(Type visitorType)

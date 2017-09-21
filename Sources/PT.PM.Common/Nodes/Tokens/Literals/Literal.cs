@@ -2,7 +2,7 @@
 {
     public abstract class Literal : Token
     {
-        public override NodeType NodeType => NodeType.Literal;
+        public override UstKind Kind => UstKind.Literal;
 
         protected Literal(TextSpan textSpan)
             : base(textSpan)

@@ -8,7 +8,6 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Exceptions;
 using PT.PM.Patterns.Nodes;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Ust;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Reflection;
 using System.Collections;
@@ -18,24 +17,24 @@ using PT.PM.Common.Nodes.TypeMembers;
 
 namespace PT.PM.UstPreprocessing
 {
-    public class UstSimplifier : UstVisitor<UstNode>, IUstPatternVisitor<UstNode>
+    public class UstSimplifier : UstVisitor<Ust>, IUstPatternVisitor<Ust>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public RootNode Preprocess(RootNode ust)
+        public RootUst Preprocess(RootUst ust)
         {
-            var result = (RootNode)Visit((dynamic)ust);
+            var result = (RootUst)Visit((dynamic)ust);
             return result;
         }
 
-        public UstNode Preprocess(UstNode ustNode)
+        public Ust Preprocess(Ust ustNode)
         {
             return Visit((dynamic)ustNode);
         }
 
-        public override UstNode Visit(RootNode rootUstNode)
+        public override Ust Visit(RootUst rootUstNode)
         {
-            var newRoot = new RootNode(rootUstNode.SourceCodeFile, rootUstNode.Language);
+            var newRoot = new RootUst(rootUstNode.SourceCodeFile, rootUstNode.Language);
 
             newRoot.SourceCodeFile = rootUstNode.SourceCodeFile;
             newRoot.Nodes = rootUstNode.Nodes.Select(node => Visit(node)).ToArray();
@@ -45,9 +44,9 @@ namespace PT.PM.UstPreprocessing
             return newRoot;
         }
 
-        public UstNode Visit(PatternRootNode patternNode)
+        public Ust Visit(PatternRootUst patternNode)
         {
-            var newPattern = new PatternRootNode(patternNode.SourceCodeFile);
+            var newPattern = new PatternRootUst(patternNode.SourceCodeFile);
 
             newPattern.SourceCodeFile = patternNode.SourceCodeFile;
             newPattern.Nodes = patternNode.Nodes.Select(node => Visit(node)).ToArray();
@@ -62,7 +61,7 @@ namespace PT.PM.UstPreprocessing
             return newPattern;
         }
 
-        public override UstNode Visit(UstNode ustNode)
+        public override Ust Visit(Ust ustNode)
         {
             if (ustNode == null)
             {
@@ -71,7 +70,7 @@ namespace PT.PM.UstPreprocessing
             return Visit((dynamic)ustNode);
         }
 
-        public override UstNode Visit(EntityDeclaration entityDeclaration)
+        public override Ust Visit(EntityDeclaration entityDeclaration)
         {
             if (entityDeclaration == null)
             {
@@ -80,7 +79,7 @@ namespace PT.PM.UstPreprocessing
             return Visit((dynamic)entityDeclaration);
         }
 
-        public override UstNode Visit(Statement statement)
+        public override Ust Visit(Statement statement)
         {
             if (statement == null)
             {
@@ -89,7 +88,7 @@ namespace PT.PM.UstPreprocessing
             return Visit((dynamic)statement);
         }
 
-        public override UstNode Visit(Expression expression)
+        public override Ust Visit(Expression expression)
         {
             if (expression == null)
             {
@@ -98,7 +97,7 @@ namespace PT.PM.UstPreprocessing
             return Visit((dynamic)expression);
         }
 
-        public override UstNode Visit(Token literal)
+        public override Ust Visit(Token literal)
         {
             if (literal == null)
             {
@@ -107,7 +106,7 @@ namespace PT.PM.UstPreprocessing
             return Visit((dynamic)literal);
         }
 
-        public override UstNode Visit(ArrayCreationExpression arrayCreationExpression)
+        public override Ust Visit(ArrayCreationExpression arrayCreationExpression)
         {
             if (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false)
             {
@@ -118,15 +117,15 @@ namespace PT.PM.UstPreprocessing
             return VisitChildren(arrayCreationExpression);
         }
 
-        public override UstNode Visit(BinaryOperatorExpression binaryOperatorExpression)
+        public override Ust Visit(BinaryOperatorExpression binaryOperatorExpression)
         {
             Expression result = null;
             Expression leftExpression = Visit((dynamic)binaryOperatorExpression.Left);
             BinaryOperatorLiteral op = Visit((dynamic)binaryOperatorExpression.Operator);
             Expression rightExpression = Visit((dynamic)binaryOperatorExpression.Right);
 
-            if (leftExpression.NodeType == NodeType.StringLiteral &&
-                rightExpression.NodeType == NodeType.StringLiteral)
+            if (leftExpression.Kind == UstKind.StringLiteral &&
+                rightExpression.Kind == UstKind.StringLiteral)
             {
                 string leftValue = ((StringLiteral)leftExpression).Text;
                 string rightValue = ((StringLiteral)rightExpression).Text;
@@ -142,8 +141,8 @@ namespace PT.PM.UstPreprocessing
                     Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {result.TextSpan}");
                 }
             }
-            else if (leftExpression.NodeType == NodeType.IntLiteral &&
-                rightExpression.NodeType == NodeType.IntLiteral)
+            else if (leftExpression.Kind == UstKind.IntLiteral &&
+                rightExpression.Kind == UstKind.IntLiteral)
             {
                 long leftValue = ((IntLiteral)leftExpression).Value;
                 long rightValue = ((IntLiteral)rightExpression).Value;
@@ -215,7 +214,7 @@ namespace PT.PM.UstPreprocessing
         }
 
         // Unify Statement to BlockStatement.
-        public override UstNode Visit(IfElseStatement ifElseStatement)
+        public override Ust Visit(IfElseStatement ifElseStatement)
         {
             Expression condition = (Expression)Visit(ifElseStatement.Condition);
             BlockStatement trueStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.TrueStatement));
@@ -230,17 +229,17 @@ namespace PT.PM.UstPreprocessing
             return result;
         }
 
-        public override UstNode Visit(UnaryOperatorExpression unaryOperatorExpression)
+        public override Ust Visit(UnaryOperatorExpression unaryOperatorExpression)
         {
             UnaryOperatorLiteral op = unaryOperatorExpression.Operator;
             Expression ex = unaryOperatorExpression.Expression;
 
             if (op.UnaryOperator == UnaryOperator.Minus)
             {
-                if (ex.NodeType == NodeType.IntLiteral)
+                if (ex.Kind == UstKind.IntLiteral)
                 {
                     long intValue = ((IntLiteral)ex).Value;
-                    UstNode result = new IntLiteral
+                    Ust result = new IntLiteral
                     {
                         Value = -intValue,
                         Root = unaryOperatorExpression.Root,
@@ -250,10 +249,10 @@ namespace PT.PM.UstPreprocessing
                     return result;
                 }
 
-                if (ex.NodeType == NodeType.FloatLiteral)
+                if (ex.Kind == UstKind.FloatLiteral)
                 {
                     double doubleValue = ((FloatLiteral)ex).Value;
-                    UstNode result = new FloatLiteral
+                    Ust result = new FloatLiteral
                     {
                         Value = -doubleValue,
                         Root = unaryOperatorExpression.Root,
@@ -274,7 +273,7 @@ namespace PT.PM.UstPreprocessing
             {
                 result = null;
             }
-            else if (statement.NodeType == NodeType.BlockStatement)
+            else if (statement.Kind == UstKind.BlockStatement)
             {
                 result = (BlockStatement)statement;
             }
@@ -286,7 +285,7 @@ namespace PT.PM.UstPreprocessing
             return result;
         }
 
-        public UstNode Visit(PatternExpressions patternExpressions)
+        public Ust Visit(PatternExpressions patternExpressions)
         {
             // #* #* ... #* -> #*
             List<Expression> collection = patternExpressions.Collection
@@ -294,9 +293,9 @@ namespace PT.PM.UstPreprocessing
             int index = 0;
             while (index < collection.Count)
             {
-                if (collection[index].NodeType == NodeType.PatternMultipleExpressions &&
+                if (collection[index].Kind == UstKind.PatternMultipleExpressions &&
                     index + 1 < collection.Count &&
-                    collection[index + 1].NodeType == NodeType.PatternMultipleExpressions)
+                    collection[index + 1].Kind == UstKind.PatternMultipleExpressions)
                 {
                     collection.RemoveAt(index);
                 }
@@ -312,7 +311,7 @@ namespace PT.PM.UstPreprocessing
             return result;
         }
 
-        public UstNode Visit(PatternStatements patternStatements)
+        public Ust Visit(PatternStatements patternStatements)
         {
             // ... ... ... -> ...
             List<Statement> collection = patternStatements.Statements
@@ -320,9 +319,9 @@ namespace PT.PM.UstPreprocessing
             int index = 0;
             while (index < collection.Count)
             {
-                if (collection[index].NodeType == NodeType.PatternMultipleStatements &&
+                if (collection[index].Kind == UstKind.PatternMultipleStatements &&
                     index + 1 < collection.Count &&
-                    collection[index + 1].NodeType == NodeType.PatternMultipleStatements)
+                    collection[index + 1].Kind == UstKind.PatternMultipleStatements)
                 {
                     collection.RemoveAt(index);
                 }
@@ -338,109 +337,109 @@ namespace PT.PM.UstPreprocessing
             return result;
         }
 
-        public UstNode Visit(PatternVarDef patternVarDef)
+        public Ust Visit(PatternVarDef patternVarDef)
         {
             List<Expression> vars = patternVarDef.Values.Select(v => (Expression)Visit(v)).ToList();
             vars.Sort();
             return new PatternVarDef(patternVarDef.Id, vars, patternVarDef.TextSpan);
         }
 
-        public UstNode Visit(PatternBooleanLiteral patternBooleanLiteral)
+        public Ust Visit(PatternBooleanLiteral patternBooleanLiteral)
         {
             return VisitChildren(patternBooleanLiteral);
         }
 
-        public UstNode Visit(PatternComment patternComment)
+        public Ust Visit(PatternComment patternComment)
         {
             return VisitChildren(patternComment);
         }
 
-        public UstNode Visit(PatternExpression patternExpression)
+        public Ust Visit(PatternExpression patternExpression)
         {
             return VisitChildren(patternExpression);
         }
 
-        public UstNode Visit(PatternExpressionInsideNode patternExpressionInsideExpression)
+        public Ust Visit(PatternExpressionInsideNode patternExpressionInsideExpression)
         {
             return VisitChildren(patternExpressionInsideExpression);
         }
 
-        public UstNode Visit(PatternExpressionInsideStatement patternExpressionInsideStatement)
+        public Ust Visit(PatternExpressionInsideStatement patternExpressionInsideStatement)
         {
             return VisitChildren(patternExpressionInsideStatement);
         }
 
-        public UstNode Visit(PatternIdToken patternIdToken)
+        public Ust Visit(PatternIdToken patternIdToken)
         {
             return VisitChildren(patternIdToken);
         }
 
-        public UstNode Visit(PatternIntLiteral patternIntLiteral)
+        public Ust Visit(PatternIntLiteral patternIntLiteral)
         {
             return VisitChildren(patternIntLiteral);
         }
 
-        public override UstNode Visit(MultichildExpression multichildExpression)
+        public override Ust Visit(MultichildExpression multichildExpression)
         {
             return VisitChildren(multichildExpression);
         }
 
-        public UstNode Visit(PatternMultipleExpressions patternMultiExpressions)
+        public Ust Visit(PatternMultipleExpressions patternMultiExpressions)
         {
             return VisitChildren(patternMultiExpressions);
         }
 
-        public UstNode Visit(PatternMultipleStatements patternMultiStatements)
+        public Ust Visit(PatternMultipleStatements patternMultiStatements)
         {
             return VisitChildren(patternMultiStatements);
         }
 
-        public UstNode Visit(PatternStatement patternStatement)
+        public Ust Visit(PatternStatement patternStatement)
         {
             return VisitChildren(patternStatement);
         }
 
-        public UstNode Visit(PatternStringLiteral patternStringLiteral)
+        public Ust Visit(PatternStringLiteral patternStringLiteral)
         {
             return VisitChildren(patternStringLiteral);
         }
 
-        public UstNode Visit(PatternTryCatchStatement patternTryCatchStatement)
+        public Ust Visit(PatternTryCatchStatement patternTryCatchStatement)
         {
             return VisitChildren(patternTryCatchStatement);
         }
 
-        public UstNode Visit(PatternVarRef patternVarRef)
+        public Ust Visit(PatternVarRef patternVarRef)
         {
             return VisitChildren(patternVarRef);
         }
 
-        public UstNode Visit(PatternAnd patternAnd)
+        public Ust Visit(PatternAnd patternAnd)
         {
             return VisitChildren(patternAnd);
         }
 
-        public UstNode Visit(PatternNot patternNot)
+        public Ust Visit(PatternNot patternNot)
         {
             return VisitChildren(patternNot);
         }
 
-        public UstNode Visit(PatternClassDeclaration patternClassDeclaration)
+        public Ust Visit(PatternClassDeclaration patternClassDeclaration)
         {
             return VisitChildren(patternClassDeclaration);
         }
 
-        public UstNode Visit(PatternMethodDeclaration patternMethodDeclaration)
+        public Ust Visit(PatternMethodDeclaration patternMethodDeclaration)
         {
             return VisitChildren(patternMethodDeclaration);
         }
 
-        public UstNode Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration)
+        public Ust Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration)
         {
             return VisitChildren(patternVarOrFieldDeclaration);
         }
 
-        protected override UstNode VisitChildren(UstNode ustNode)
+        protected override Ust VisitChildren(Ust ustNode)
         {
             try
             {
@@ -452,7 +451,7 @@ namespace PT.PM.UstPreprocessing
                 Type type = ustNode.GetType();
                 PropertyInfo[] properties = ReflectionCache.GetClassProperties(type);
 
-                var result = (UstNode)Activator.CreateInstance(type);
+                var result = (Ust)Activator.CreateInstance(type);
                 foreach (PropertyInfo prop in properties)
                 {
                     Type propType = prop.PropertyType;
@@ -460,16 +459,16 @@ namespace PT.PM.UstPreprocessing
                     {
                         prop.SetValue(result, prop.GetValue(ustNode));
                     }
-                    else if (prop.Name == nameof(UstNode.Parent) || prop.Name == nameof(UstNode.Root))
+                    else if (prop.Name == nameof(Ust.Parent) || prop.Name == nameof(Ust.Root))
                     {
                         continue;
                     }
-                    else if (typeof(UstNode).IsAssignableFrom(propType))
+                    else if (typeof(Ust).IsAssignableFrom(propType))
                     {
-                        UstNode getValue = (UstNode)prop.GetValue(ustNode);
+                        Ust getValue = (Ust)prop.GetValue(ustNode);
                         if (getValue != null)
                         {
-                            UstNode setValue = Visit(getValue);
+                            Ust setValue = Visit(getValue);
                             prop.SetValue(result, setValue);
                         }
                     }
@@ -487,7 +486,7 @@ namespace PT.PM.UstPreprocessing
                             destCollection = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
                             foreach (object item in sourceCollection)
                             {
-                                var ustNodeItem = item as UstNode;
+                                var ustNodeItem = item as Ust;
                                 if (ustNodeItem != null)
                                 {
                                     var destUstNodeItem = Visit(ustNodeItem);

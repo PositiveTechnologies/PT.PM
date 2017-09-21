@@ -62,7 +62,7 @@ namespace PT.PM.UstPreprocessing.Tests
         [Test]
         public void Preprocess_MultiMultiPattern_RemovedDuplicates()
         {
-            UstNode patternWithDuplicateMultiStatementsExpressions = new PatternStatements
+            Ust patternWithDuplicateMultiStatementsExpressions = new PatternStatements
             {
                 Statements = new List<Statement>()
                 {
@@ -105,10 +105,10 @@ namespace PT.PM.UstPreprocessing.Tests
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
             UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
-            UstNode result = preprocessor.Preprocess(patternWithDuplicateMultiStatementsExpressions);
+            Ust result = preprocessor.Preprocess(patternWithDuplicateMultiStatementsExpressions);
 
-            Assert.AreEqual(1, result.GetAllDescendants().Count(child => child.NodeType == NodeType.PatternMultipleStatements));
-            Assert.AreEqual(1, result.GetAllDescendants().Count(child => child.NodeType == NodeType.PatternMultipleExpressions));
+            Assert.AreEqual(1, result.GetAllDescendants().Count(child => child.Kind == UstKind.PatternMultipleStatements));
+            Assert.AreEqual(1, result.GetAllDescendants().Count(child => child.Kind == UstKind.PatternMultipleExpressions));
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace PT.PM.UstPreprocessing.Tests
                 Id = "testVarDef",
                 Values = unsortedExpressions
             };
-            var patternVars = new PatternRootNode
+            var patternVars = new PatternRootUst
             {
                 Vars = new List<PatternVarDef>() { patternVarDef },
                 Node = new PatternVarRef(patternVarDef)
@@ -159,7 +159,7 @@ namespace PT.PM.UstPreprocessing.Tests
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
             UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
-            Expression[] resultSortedExpressions = ((PatternRootNode)preprocessor.Preprocess(patternVars))
+            Expression[] resultSortedExpressions = ((PatternRootUst)preprocessor.Preprocess(patternVars))
                 .Vars.First().Values.ToArray();
 
             Assert.AreEqual(expectedSortedExpressions.Count, resultSortedExpressions.Length);

@@ -23,7 +23,7 @@ namespace PT.PM.PatternEditor
 {
     public class MainWindowViewModel: ReactiveObject
     {
-        private JsonUstNodeSerializer jsonSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
+        private JsonUstNodeSerializer jsonSerializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef))
         {
             IncludeTextSpans = false,
             Indented = true,

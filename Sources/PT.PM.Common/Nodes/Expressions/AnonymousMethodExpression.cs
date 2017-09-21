@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class AnonymousMethodExpression : Expression
     {
-        public override NodeType NodeType => NodeType.AnonymousMethodExpression;
+        public override UstKind Kind => UstKind.AnonymousMethodExpression;
 
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
@@ -31,9 +31,9 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Parameters);
             result.Add(Body);
             return result.ToArray();

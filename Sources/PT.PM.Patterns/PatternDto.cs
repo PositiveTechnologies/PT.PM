@@ -47,7 +47,7 @@ namespace PT.PM.Patterns
         {
         }
 
-        public PatternDto(PatternRootNode pattern, UstNodeSerializationFormat dataFormat, string data)
+        public PatternDto(PatternRootUst pattern, UstNodeSerializationFormat dataFormat, string data)
         {
             Key = pattern.Key;
             Description = pattern.DebugInfo;

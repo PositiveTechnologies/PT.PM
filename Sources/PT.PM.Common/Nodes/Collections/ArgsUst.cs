@@ -4,26 +4,26 @@ using System.Linq;
 
 namespace PT.PM.Common.Nodes.Collections
 {
-    public class ArgsNode : CollectionNode<Expression>
+    public class ArgsUst : CollectionNode<Expression>
     {
-        public override NodeType NodeType => NodeType.ArgsNode;
+        public override UstKind Kind => UstKind.ArgsUst;
 
-        public ArgsNode(IEnumerable<Expression> args, TextSpan textSpan)
+        public ArgsUst(IEnumerable<Expression> args, TextSpan textSpan)
             : base(args, textSpan)
         {
         }
 
-        public ArgsNode(params Expression[] args)
+        public ArgsUst(params Expression[] args)
             : base(args.ToList())
         {
         }
 
-        public ArgsNode(List<Expression> args)
+        public ArgsUst(List<Expression> args)
             : base(args)
         {
         }
 
-        public ArgsNode()
+        public ArgsUst()
             : base()
         {
         }

@@ -35,7 +35,7 @@ namespace PT.PM
         {
         }
 
-        public MatchingResultDto(SourceCodeFile sourceCodeFile, TextSpan textSpan, PatternRootNode pattern)
+        public MatchingResultDto(SourceCodeFile sourceCodeFile, TextSpan textSpan, PatternRootUst pattern)
         {
             MatchedCode = sourceCodeFile.Code.Substring(textSpan.Start, textSpan.Length);
             int beginLine, beginColumn, endLine, endColumn;
@@ -58,7 +58,7 @@ namespace PT.PM
 
         public static MatchingResultDto CreateFromMatchingResult(MatchingResult matchingResult, ISourceCodeRepository sourceCodeRepository)
         {
-            var sourceCodeFile = matchingResult.Nodes.First() is RootNode rootNode
+            var sourceCodeFile = matchingResult.Nodes.First() is RootUst rootNode
                 ? rootNode.SourceCodeFile
                 : matchingResult.Nodes.First().Root.SourceCodeFile;
             var result = new MatchingResultDto(

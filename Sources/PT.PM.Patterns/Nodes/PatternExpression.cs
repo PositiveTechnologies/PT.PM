@@ -8,7 +8,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternExpression : Expression
     {
-        public override NodeType NodeType => NodeType.PatternExpression;
+        public override UstKind Kind => UstKind.PatternExpression;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Expression Expression { get; set; }
@@ -27,15 +27,15 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
             int compareResult;
-            if (other.NodeType == NodeType.PatternExpression)
+            if (other.Kind == UstKind.PatternExpression)
             {
                 var otherPatternExpression = (PatternExpression)other;
 
@@ -71,7 +71,7 @@ namespace PT.PM.Patterns.Nodes
 
             if (Expression == null)     // Any expression.
             {
-                return Not ? (int)NodeType : 0;
+                return Not ? (int)Kind : 0;
             }
 
             compareResult = Compare(other);
@@ -83,14 +83,14 @@ namespace PT.PM.Patterns.Nodes
             return compareResult;
         }
 
-        protected virtual int Compare(UstNode other)
+        protected virtual int Compare(Ust other)
         {
             return Expression.CompareTo(other);
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Expression };
+            return new Ust[] { Expression };
         }
 
         public override Expression[] GetArgs()

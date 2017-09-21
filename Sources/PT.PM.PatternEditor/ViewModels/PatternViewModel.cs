@@ -21,7 +21,7 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        private JsonUstNodeSerializer ustNodeJsonSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
+        private JsonUstNodeSerializer ustNodeJsonSerializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef))
         {
             IncludeTextSpans = false,
             Indented = true,
@@ -445,7 +445,7 @@ namespace PT.PM.PatternEditor
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
 
-                UstNode patternNode = null;
+                Ust patternNode = null;
                 try
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))

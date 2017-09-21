@@ -10,13 +10,13 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
-namespace PT.PM.Common.Ust
+namespace PT.PM.Common.Nodes
 {
     public interface IUstVisitor<out T>
     {
         #region Abstract
 
-        T Visit(UstNode ustNode);
+        T Visit(Nodes.Ust ustNode);
         T Visit(EntityDeclaration entityDeclaration);
         T Visit(Statement statement);
         T Visit(Expression expression);
@@ -26,8 +26,8 @@ namespace PT.PM.Common.Ust
 
         #region Collections
 
-        T Visit(ArgsNode argsNode);
-        T Visit(EntitiesNode entitiesNode);
+        T Visit(ArgsUst argsNode);
+        T Visit(EntitiesUst entitiesNode);
 
         #endregion
 
@@ -127,8 +127,8 @@ namespace PT.PM.Common.Ust
 
         #region Other
 
-        T Visit(RootNode fileNode);
-        T Visit(NotImplementedNode notImplementedNode);
+        T Visit(RootUst fileNode);
+        T Visit(NotImplementedUst notImplementedNode);
         T Visit(Collection collection);
 
         #endregion

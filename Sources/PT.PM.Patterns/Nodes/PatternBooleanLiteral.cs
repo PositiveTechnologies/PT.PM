@@ -11,7 +11,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternBooleanLiteral : BooleanLiteral
     {
-        public override NodeType NodeType => NodeType.PatternBooleanLiteral;
+        public override UstKind Kind => UstKind.PatternBooleanLiteral;
 
         public bool Any { get; set; }
 
@@ -26,21 +26,21 @@ namespace PT.PM.Patterns.Nodes
             Any = true;
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternBooleanLiteral)
+            if (other.Kind == UstKind.PatternBooleanLiteral)
             {
                 return Any == ((PatternBooleanLiteral)other).Any ? 0 : Value.CompareTo(((BooleanLiteral)other).Value);
             }
 
-            if (other.NodeType != NodeType.BooleanLiteral)
+            if (other.Kind != UstKind.BooleanLiteral)
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
 
             var result = Any ? 0 : Value.CompareTo(((BooleanLiteral)other).Value);

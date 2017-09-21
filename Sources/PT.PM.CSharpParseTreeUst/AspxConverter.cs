@@ -13,7 +13,7 @@ using PT.PM.Common.Nodes.Collections;
 
 namespace PT.PM.CSharpParseTreeUst
 {
-    public class AspxConverter : DepthFirstAspxWithoutCloseTagVisitor<UstNode>, IParseTreeToUstConverter
+    public class AspxConverter : DepthFirstAspxWithoutCloseTagVisitor<Ust>, IParseTreeToUstConverter
     {
         private Stack<bool> runAtServer = new Stack<bool>();
         private SourceCodeFile sourceCodeFile;
@@ -25,7 +25,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public RootNode ParentRoot { get; set; }
+        public RootUst ParentRoot { get; set; }
 
         public AspxConverter()
         {
@@ -35,22 +35,22 @@ namespace PT.PM.CSharpParseTreeUst
             runAtServer.Push(false);
         }
 
-        public RootNode Convert(ParseTree langParseTree)
+        public RootUst Convert(ParseTree langParseTree)
         {
-            RootNode result = null;
+            RootUst result = null;
 
             var aspxParseTree = (AspxParseTree)langParseTree;
             try
             {
                 sourceCodeFile = langParseTree.SourceCodeFile;
-                UstNode visited = aspxParseTree.Root.Accept(this);
-                if (visited is RootNode rootUstNode)
+                Ust visited = aspxParseTree.Root.Accept(this);
+                if (visited is RootUst rootUstNode)
                 {
                     result = rootUstNode;
                 }
                 else
                 {
-                    result = new RootNode(sourceCodeFile, Language);
+                    result = new RootUst(sourceCodeFile, Language);
                     result.Node = visited;
                 }
                 result.FillAscendants();
@@ -58,15 +58,15 @@ namespace PT.PM.CSharpParseTreeUst
             catch (Exception ex)
             {
                 Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile.FullPath, ex));
-                result = new RootNode(langParseTree.SourceCodeFile, Language);
+                result = new RootUst(langParseTree.SourceCodeFile, Language);
             }
 
             return result;
         }
 
-        public override UstNode Visit(AspxNode.Root node)
+        public override Ust Visit(AspxNode.Root node)
         {
-            var members = new List<UstNode>();
+            var members = new List<Ust>();
             foreach (var child in node.Children)
             {
                 var accepted = child.Accept(this);
@@ -84,15 +84,15 @@ namespace PT.PM.CSharpParseTreeUst
             return new Collection(members);
         }
 
-        public override UstNode Visit(AspxNode.HtmlTag node)
+        public override Ust Visit(AspxNode.HtmlTag node)
         {
             runAtServer.Push(node.Attributes.IsRunAtServer);
             namespaceDepth++;
 
-            var members = new List<UstNode>();
+            var members = new List<Ust>();
             foreach (var child in node.Children)
             {
-                UstNode accepted = child.Accept(this);
+                Ust accepted = child.Accept(this);
                 if (accepted != null)
                 {
                     members.Add(accepted);
@@ -110,7 +110,7 @@ namespace PT.PM.CSharpParseTreeUst
             return new Collection(members);
         }
 
-        public override UstNode Visit(AspxNode.AspxTag node)
+        public override Ust Visit(AspxNode.AspxTag node)
         {
             runAtServer.Push(node.Attributes.IsRunAtServer);
             var result = VisitChildren(node);
@@ -118,7 +118,7 @@ namespace PT.PM.CSharpParseTreeUst
             return result;
         }
 
-        public override UstNode Visit(AspxNode.AspxDirective node)
+        public override Ust Visit(AspxNode.AspxDirective node)
         {
             // TODO: implement AspxDirective processing.
             runAtServer.Push(node.Attributes.IsRunAtServer);
@@ -127,31 +127,31 @@ namespace PT.PM.CSharpParseTreeUst
             return result;
         }
 
-        public override UstNode Visit(AspxNode.DataBinding node)
+        public override Ust Visit(AspxNode.DataBinding node)
         {
             return VisitChildren(node);
         }
 
-        public override UstNode Visit(AspxNode.CodeRender node)
+        public override Ust Visit(AspxNode.CodeRender node)
         {
             return ParseAndConvert(node.Expression, node.Location);
         }
 
-        public override UstNode Visit(AspxNode.CodeRenderExpression node)
+        public override Ust Visit(AspxNode.CodeRenderExpression node)
         {
             string wrappedExpression = ResponseWriteWrappedString(node.Expression);
             return ParseExpressionAndConvert(wrappedExpression, node.Location.Start);
         }
 
-        public override UstNode Visit(AspxNode.CodeRenderEncode node)
+        public override Ust Visit(AspxNode.CodeRenderEncode node)
         {
             string wrappedExpression = HtmlEncodeWrappedString(node.Expression);
             return ParseExpressionAndConvert(wrappedExpression, node.Location.Start);
         }
 
-        public override UstNode Visit(AspxNode.Literal node)
+        public override Ust Visit(AspxNode.Literal node)
         {
-            UstNode result = null;
+            Ust result = null;
             if (!string.IsNullOrWhiteSpace(node.Text) && runAtServer.Peek())
             {
                 result = ParseAndConvert(node.Text, node.Location);
@@ -159,22 +159,22 @@ namespace PT.PM.CSharpParseTreeUst
             return result;
         }
 
-        private UstNode ParseAndConvert(string code, global::AspxParser.Location location)
+        private Ust ParseAndConvert(string code, global::AspxParser.Location location)
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
             var converter = new CSharpRoslynParseTreeConverter();
-            RootNode result = converter.Convert(new CSharpRoslynParseTree(tree) { SourceCodeFile = sourceCodeFile });
+            RootUst result = converter.Convert(new CSharpRoslynParseTree(tree) { SourceCodeFile = sourceCodeFile });
             result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(location.Start));
             return result;
         }
 
-        private UstNode ParseExpressionAndConvert(string expression, int offset)
+        private Ust ParseExpressionAndConvert(string expression, int offset)
         {
             ExpressionSyntax node = SyntaxFactory.ParseExpression(expression);
             var converter = new CSharpRoslynParseTreeConverter();
-            UstNode result = converter.Visit(node);
-            RootNode resultRoot =
-                result as RootNode ?? new RootNode(sourceCodeFile, Language.CSharp) { Node = result };
+            Ust result = converter.Visit(node);
+            RootUst resultRoot =
+                result as RootUst ?? new RootUst(sourceCodeFile, Language.CSharp) { Node = result };
             resultRoot.SourceCodeFile = sourceCodeFile;
             result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(offset));
             return result;

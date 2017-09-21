@@ -12,7 +12,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternMethodDeclaration : Expression
     {
-        public override NodeType NodeType => NodeType.PatternMethodDeclaration;
+        public override UstKind Kind => UstKind.PatternMethodDeclaration;
 
         public List<Token> Modifiers { get; set; }
 
@@ -20,7 +20,7 @@ namespace PT.PM.Patterns.Nodes
 
         public bool AnyBody { get; set; }
 
-        public UstNode Body { get; set; }
+        public Ust Body { get; set; }
 
         public PatternMethodDeclaration(List<Token> modifiers, Token name,
             PatternExpressionInsideNode body, TextSpan textSpan)
@@ -48,31 +48,31 @@ namespace PT.PM.Patterns.Nodes
             Modifiers = new List<Token>();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Modifiers);
             result.Add(Name);
             result.Add(Body);
             return result.ToArray();
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternMethodDeclaration)
+            if (other.Kind == UstKind.PatternMethodDeclaration)
             {
                 var otherPatternMethodDeclaration = (PatternMethodDeclaration)other;
                 return GetChildren().CompareTo(otherPatternMethodDeclaration.GetChildren());
             }
 
-            if (other.NodeType != NodeType.MethodDeclaration)
+            if (other.Kind != UstKind.MethodDeclaration)
             {
-                return NodeType.MethodDeclaration - other.NodeType;
+                return UstKind.MethodDeclaration - other.Kind;
             }
 
             var methodDeclaration = (MethodDeclaration)other;

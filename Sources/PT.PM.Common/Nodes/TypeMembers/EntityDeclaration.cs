@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
-    public abstract class EntityDeclaration : UstNode
+    public abstract class EntityDeclaration : Ust
     {
         public List<ModifierLiteral> Modifiers { get; set; }
 
@@ -20,9 +20,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             if (Modifiers != null)
                 result.AddRange(Modifiers);
             result.Add(Name);

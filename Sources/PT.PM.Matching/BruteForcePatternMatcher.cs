@@ -9,15 +9,15 @@ using System.Linq;
 
 namespace PT.PM.Matching
 {
-    public class BruteForcePatternMatcher : IUstPatternMatcher<RootNode, PatternRootNode, MatchingResult>
+    public class BruteForcePatternMatcher : IUstPatternMatcher<RootUst, PatternRootUst, MatchingResult>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public PatternRootNode[] Patterns { get; set; }
+        public PatternRootUst[] Patterns { get; set; }
 
         public bool IsIgnoreFilenameWildcards { get; set; }
 
-        public BruteForcePatternMatcher(PatternRootNode[] patterns)
+        public BruteForcePatternMatcher(PatternRootUst[] patterns)
         {
             Patterns = patterns;
         }
@@ -26,20 +26,20 @@ namespace PT.PM.Matching
         {
         }
 
-        public List<MatchingResult> Match(RootNode ust)
+        public List<MatchingResult> Match(RootUst ust)
         {
             if (ust.Nodes != null)
             {
                 try
                 {
                     var matchingResult = new List<MatchingResult>();
-                    IEnumerable<PatternRootNode> patterns = Patterns
+                    IEnumerable<PatternRootUst> patterns = Patterns
                         .Where(pattern => pattern.Languages.Any(patternLang => ust.Sublanguages.Contains(patternLang)));
                     if (!IsIgnoreFilenameWildcards)
                     {
                         patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceCodeFile.FullPath) ?? true);
                     }
-                    foreach (UstNode node in ust.Nodes)
+                    foreach (Ust node in ust.Nodes)
                     {
                         Traverse(node, patterns, matchingResult);
                     }
@@ -59,12 +59,12 @@ namespace PT.PM.Matching
             }
         }
 
-        private void Traverse(UstNode node, IEnumerable<PatternRootNode> patterns, List<MatchingResult> matchingResult)
+        private void Traverse(Ust node, IEnumerable<PatternRootUst> patterns, List<MatchingResult> matchingResult)
         {
             if (node == null)
                 return;
 
-            foreach (PatternRootNode pattern in patterns)
+            foreach (PatternRootUst pattern in patterns)
             {
                 if (pattern.Node.Equals(node))
                 {
@@ -78,23 +78,23 @@ namespace PT.PM.Matching
             }
         }
 
-        private void MatchComments(RootNode ust, List<MatchingResult> matchingResults, IEnumerable<PatternRootNode> patterns)
+        private void MatchComments(RootUst ust, List<MatchingResult> matchingResults, IEnumerable<PatternRootUst> patterns)
         {
-            PatternRootNode[] commentPatterns = patterns.Where(p =>
-                p.Node.NodeType == NodeType.PatternComment ||
-                (p.Node.NodeType == NodeType.PatternVarDef && ((PatternVarDef)p.Node).Values.Any(v => v.NodeType == NodeType.PatternComment))).ToArray();
+            PatternRootUst[] commentPatterns = patterns.Where(p =>
+                p.Node.Kind == UstKind.PatternComment ||
+                (p.Node.Kind == UstKind.PatternVarDef && ((PatternVarDef)p.Node).Values.Any(v => v.Kind == UstKind.PatternComment))).ToArray();
             foreach (CommentLiteral commentNode in ust.Comments)
             {
-                foreach (PatternRootNode commentPattern in commentPatterns)
+                foreach (PatternRootUst commentPattern in commentPatterns)
                 {
                     if (commentPattern.Node.Equals(commentNode))
                     {
                         PatternComment patternComment = null;
-                        if (commentPattern.Node.NodeType == NodeType.PatternComment)
+                        if (commentPattern.Node.Kind == UstKind.PatternComment)
                         {
                             patternComment = (PatternComment)commentPattern.Node;
                         }
-                        else if (commentPattern.Node.NodeType == NodeType.PatternVarDef)
+                        else if (commentPattern.Node.Kind == UstKind.PatternVarDef)
                         {
                             patternComment = (PatternComment)((PatternVarDef)commentPattern.Node).Value;
                         }
@@ -107,7 +107,7 @@ namespace PT.PM.Matching
             }
         }
 
-        private void AddMatchingResults(List<MatchingResult> matchingResults, PatternRootNode pattern, UstNode patternNode, UstNode codeNode)
+        private void AddMatchingResults(List<MatchingResult> matchingResults, PatternRootUst pattern, Ust patternNode, Ust codeNode)
         {
             var absoluteLocationPattern = patternNode as IAbsoluteLocationMatching;
             if (absoluteLocationPattern != null)
@@ -132,7 +132,7 @@ namespace PT.PM.Matching
             }
         }
 
-        private void AddMathingResult(List<MatchingResult> matchingResults, PatternRootNode pattern, UstNode codeNode, TextSpan textSpan)
+        private void AddMathingResult(List<MatchingResult> matchingResults, PatternRootUst pattern, Ust codeNode, TextSpan textSpan)
         {
             var matching = new MatchingResult(pattern, codeNode, textSpan);
             Logger.LogInfo(matching);

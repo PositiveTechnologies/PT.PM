@@ -104,9 +104,9 @@ namespace PT.PM
             stageHelper = new StageHelper<TStage>(stage);
         }
 
-        protected RootNode ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            RootNode result = null;
+            RootUst result = null;
             var stopwatch = new Stopwatch();
             string file = fileName;
             if (stageHelper.IsContainsRead)

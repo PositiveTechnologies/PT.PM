@@ -11,11 +11,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootNode> CreatePlSqlPatterns()
+        public IEnumerable<PatternRootUst> CreatePlSqlPatterns()
         {
-            var patterns = new List<PatternRootNode>();
+            var patterns = new List<PatternRootUst>();
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Dangerous Function",
@@ -31,7 +31,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
@@ -47,7 +47,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
@@ -59,7 +59,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Insecure Randomness",
@@ -80,7 +80,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Id = "cursor",
                 Values = new List<Expression>() { new PatternIdToken() }
             };
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: Cursor Snarfing",
@@ -112,7 +112,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                     Target = new IdToken("DBMS_SQL"),
                                     Name = new IdToken("CLOSE_CURSOR")
                                 },
-                                Arguments = new ArgsNode(new PatternVarRef(cursorVar))
+                                Arguments = new ArgsUst(new PatternVarRef(cursorVar))
                             }),
                             Not = true
                         }
@@ -125,7 +125,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Id = "file",
                 Values = new List<Expression>() { new PatternIdToken() }
             };
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: File Snarfing",
@@ -161,7 +161,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                     Target = new PatternIdToken("(?i)UTL_FILE"),
                                     Name = new PatternIdToken("(?i)FCLOSE")
                                 },
-                                Arguments = new ArgsNode(new PatternVarRef(fileVar))
+                                Arguments = new ArgsUst(new PatternVarRef(fileVar))
                             }),
                             Not = true
                         }

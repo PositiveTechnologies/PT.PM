@@ -10,7 +10,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternVarDef : Token
     {
-        public override NodeType NodeType => NodeType.PatternVarDef;
+        public override UstKind Kind => UstKind.PatternVarDef;
 
         public static PatternVarDef DefaultPatternVarDef => new PatternVarDef("default", new Expression[] { new PatternExpression() });
 
@@ -41,15 +41,15 @@ namespace PT.PM.Patterns.Nodes
             Values = values as List<Expression> ?? values.ToList();
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             Value = null;
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternVarDef)
+            if (other.Kind == UstKind.PatternVarDef)
             {
                 var otherPatternVarDef = (PatternVarDef)other;
                 /*var idCompareResult = Id.CompareTo(otherPatternVarDef.Id);

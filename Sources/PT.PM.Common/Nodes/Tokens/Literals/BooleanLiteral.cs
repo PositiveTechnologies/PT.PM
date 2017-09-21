@@ -2,7 +2,7 @@
 {
     public class BooleanLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.BooleanLiteral;
+        public override UstKind Kind => UstKind.BooleanLiteral;
 
         public bool Value { get; set; }
 
@@ -23,7 +23,7 @@
 
         public override string TextValue => Value.ToString();
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

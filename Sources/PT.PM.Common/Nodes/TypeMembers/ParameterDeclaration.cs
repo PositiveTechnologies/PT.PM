@@ -4,9 +4,9 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
-    public class ParameterDeclaration : UstNode
+    public class ParameterDeclaration : Ust
     {
-        public override NodeType NodeType => NodeType.ParameterDeclaration;
+        public override UstKind Kind => UstKind.ParameterDeclaration;
 
         public TypeToken Type { get; set; }
 
@@ -25,9 +25,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>{ Name };
+            var result = new List<Ust>{ Name };
             return result.ToArray();
         }
 

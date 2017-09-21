@@ -5,7 +5,7 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 {
     public class TryCatchStatement : Statement
     {
-        public override NodeType NodeType => NodeType.TryCatchStatement;
+        public override UstKind Kind => UstKind.TryCatchStatement;
 
         public BlockStatement TryBlock { get; set; }
 
@@ -23,9 +23,9 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(TryBlock);
             if (CatchClauses != null)
                 result.AddRange(CatchClauses);

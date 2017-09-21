@@ -3,9 +3,9 @@ using System;
 
 namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 {
-    public class CatchClause : UstNode
+    public class CatchClause : Ust
     {
-        public override NodeType NodeType => NodeType.CatchClause;
+        public override UstKind Kind => UstKind.CatchClause;
 
         public TypeToken Type { get; set; }
 
@@ -25,9 +25,9 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Type, VarName, Body};
+            return new Ust[] {Type, VarName, Body};
         }
 
         public override string ToString()

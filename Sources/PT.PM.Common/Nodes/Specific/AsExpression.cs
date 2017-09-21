@@ -5,7 +5,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class AsExpression : SpecificExpression
     {
-        public override NodeType NodeType => NodeType.AsExpression;
+        public override UstKind Kind => UstKind.AsExpression;
 
         public Expression Expression { get; set; }
 
@@ -22,9 +22,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Expression, Type };
+            return new Ust[] { Expression, Type };
         }
 
         public override Expression[] GetArgs()

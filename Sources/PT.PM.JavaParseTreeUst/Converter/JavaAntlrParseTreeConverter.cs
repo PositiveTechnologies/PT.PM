@@ -16,11 +16,11 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrParseTreeConverter : AntlrConverter, IJavaParserVisitor<UstNode>
+    public partial class JavaAntlrParseTreeConverter : AntlrConverter, IJavaParserVisitor<Ust>
     {
         public override Language Language => Language.Java;
 
-        public UstNode VisitCompilationUnit(JavaParser.CompilationUnitContext context)
+        public Ust VisitCompilationUnit(JavaParser.CompilationUnitContext context)
         {
             var packageDeclaration = context.packageDeclaration();
             EntityDeclaration[] typeDecs = context.typeDeclaration()
@@ -32,7 +32,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 .Where(importDec => importDec != null)
                 .ToArray();
 
-            var roots = new List<UstNode>(importDecs);
+            var roots = new List<Ust>(importDecs);
             if (packageDeclaration != null)
             {
                 var name = (StringLiteral)Visit(packageDeclaration.qualifiedName());
@@ -48,12 +48,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return root;
         }
 
-        public UstNode VisitPackageDeclaration(JavaParser.PackageDeclarationContext context)
+        public Ust VisitPackageDeclaration(JavaParser.PackageDeclarationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitImportDeclaration(JavaParser.ImportDeclarationContext context)
+        public Ust VisitImportDeclaration(JavaParser.ImportDeclarationContext context)
         {
             StringLiteral name = (StringLiteral)Visit(context.qualifiedName());
             TextSpan textSpan = context.GetTextSpan();
@@ -62,7 +62,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitTypeDeclaration(JavaParser.TypeDeclarationContext context)
+        public Ust VisitTypeDeclaration(JavaParser.TypeDeclarationContext context)
         {
             var child0Terminal = context.GetChild(0) as ITerminalNode;
             if (child0Terminal != null) // ignore ';'
@@ -80,7 +80,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitClassOrInterfaceModifier(JavaParser.ClassOrInterfaceModifierContext context)
+        public Ust VisitClassOrInterfaceModifier(JavaParser.ClassOrInterfaceModifierContext context)
         {
             JavaParser.AnnotationContext annotation = context.annotation();
             if (annotation != null)
@@ -90,7 +90,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return new ModifierLiteral(context.GetChild<ITerminalNode>(0).GetText(), context.GetTextSpan());
         }
 
-        public UstNode VisitClassDeclaration(JavaParser.ClassDeclarationContext context)
+        public Ust VisitClassDeclaration(JavaParser.ClassDeclarationContext context)
         {
             var typeTypeToken = new TypeTypeLiteral(TypeType.Class,
                 context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan());
@@ -115,12 +115,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitEnumDeclaration(JavaParser.EnumDeclarationContext context)
+        public Ust VisitEnumDeclaration(JavaParser.EnumDeclarationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitInterfaceDeclaration(JavaParser.InterfaceDeclarationContext context)
+        public Ust VisitInterfaceDeclaration(JavaParser.InterfaceDeclarationContext context)
         {
             var typeTypeToken = new TypeTypeLiteral(TypeType.Interface,
                 context.GetChild<ITerminalNode>(0).Symbol.GetTextSpan());
@@ -141,12 +141,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitAnnotationTypeDeclaration(JavaParser.AnnotationTypeDeclarationContext context)
+        public Ust VisitAnnotationTypeDeclaration(JavaParser.AnnotationTypeDeclarationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitClassOrInterfaceType(JavaParser.ClassOrInterfaceTypeContext context)
+        public Ust VisitClassOrInterfaceType(JavaParser.ClassOrInterfaceTypeContext context)
         {
             var id = (IdToken)Visit(context.IDENTIFIER(0));
             var typeArguments = context.typeArguments();
@@ -174,7 +174,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitTypeArguments(JavaParser.TypeArgumentsContext context)
+        public Ust VisitTypeArguments(JavaParser.TypeArgumentsContext context)
         {
             TypeToken[] typeArgs = context.typeArgument()
                 .Select(arg => (TypeToken)Visit(arg))
@@ -189,7 +189,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitTypeArgument(JavaParser.TypeArgumentContext context)
+        public Ust VisitTypeArgument(JavaParser.TypeArgumentContext context)
         {
             TypeToken result;
             if (context.typeType() != null)
@@ -203,7 +203,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitModifier([NotNull] JavaParser.ModifierContext context)
+        public Ust VisitModifier([NotNull] JavaParser.ModifierContext context)
         {
             if (context.classOrInterfaceModifier() != null)
             {
@@ -214,52 +214,52 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         #region Not implemented
 
-        public UstNode VisitClassBody(JavaParser.ClassBodyContext context)
+        public Ust VisitClassBody(JavaParser.ClassBodyContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitVariableModifier([NotNull] JavaParser.VariableModifierContext context)
+        public Ust VisitVariableModifier([NotNull] JavaParser.VariableModifierContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitTypeParameters([NotNull] JavaParser.TypeParametersContext context)
+        public Ust VisitTypeParameters([NotNull] JavaParser.TypeParametersContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitTypeParameter([NotNull] JavaParser.TypeParameterContext context)
+        public Ust VisitTypeParameter([NotNull] JavaParser.TypeParameterContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitTypeBound([NotNull] JavaParser.TypeBoundContext context)
+        public Ust VisitTypeBound([NotNull] JavaParser.TypeBoundContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitEnumConstants([NotNull] JavaParser.EnumConstantsContext context)
+        public Ust VisitEnumConstants([NotNull] JavaParser.EnumConstantsContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitEnumConstant([NotNull] JavaParser.EnumConstantContext context)
+        public Ust VisitEnumConstant([NotNull] JavaParser.EnumConstantContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitEnumBodyDeclarations([NotNull] JavaParser.EnumBodyDeclarationsContext context)
+        public Ust VisitEnumBodyDeclarations([NotNull] JavaParser.EnumBodyDeclarationsContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitInterfaceBody([NotNull] JavaParser.InterfaceBodyContext context)
+        public Ust VisitInterfaceBody([NotNull] JavaParser.InterfaceBodyContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitConstDeclaration([NotNull] JavaParser.ConstDeclarationContext context)
+        public Ust VisitConstDeclaration([NotNull] JavaParser.ConstDeclarationContext context)
         {
             var type = (TypeToken)Visit(context.typeType());
             var assignments = context.constantDeclarator()
@@ -267,7 +267,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return new FieldDeclaration(type, assignments, context.GetTextSpan());
         }
 
-        public UstNode VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)
+        public Ust VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)
         {
             return new AssignmentExpression(
                 (Expression)Visit(context.IDENTIFIER()),
@@ -275,107 +275,107 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 context.GetTextSpan());
         }
 
-        public UstNode VisitGenericInterfaceMethodDeclaration([NotNull] JavaParser.GenericInterfaceMethodDeclarationContext context)
+        public Ust VisitGenericInterfaceMethodDeclaration([NotNull] JavaParser.GenericInterfaceMethodDeclarationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitArrayInitializer([NotNull] JavaParser.ArrayInitializerContext context)
+        public Ust VisitArrayInitializer([NotNull] JavaParser.ArrayInitializerContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitLastFormalParameter([NotNull] JavaParser.LastFormalParameterContext context)
+        public Ust VisitLastFormalParameter([NotNull] JavaParser.LastFormalParameterContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitAnnotation([NotNull] JavaParser.AnnotationContext context)
+        public Ust VisitAnnotation([NotNull] JavaParser.AnnotationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitElementValuePairs([NotNull] JavaParser.ElementValuePairsContext context)
+        public Ust VisitElementValuePairs([NotNull] JavaParser.ElementValuePairsContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitElementValuePair([NotNull] JavaParser.ElementValuePairContext context)
+        public Ust VisitElementValuePair([NotNull] JavaParser.ElementValuePairContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitElementValue([NotNull] JavaParser.ElementValueContext context)
+        public Ust VisitElementValue([NotNull] JavaParser.ElementValueContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitElementValueArrayInitializer([NotNull] JavaParser.ElementValueArrayInitializerContext context)
+        public Ust VisitElementValueArrayInitializer([NotNull] JavaParser.ElementValueArrayInitializerContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitAnnotationTypeBody([NotNull] JavaParser.AnnotationTypeBodyContext context)
+        public Ust VisitAnnotationTypeBody([NotNull] JavaParser.AnnotationTypeBodyContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitAnnotationTypeElementDeclaration([NotNull] JavaParser.AnnotationTypeElementDeclarationContext context)
+        public Ust VisitAnnotationTypeElementDeclaration([NotNull] JavaParser.AnnotationTypeElementDeclarationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitAnnotationTypeElementRest([NotNull] JavaParser.AnnotationTypeElementRestContext context)
+        public Ust VisitAnnotationTypeElementRest([NotNull] JavaParser.AnnotationTypeElementRestContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitAnnotationMethodOrConstantRest([NotNull] JavaParser.AnnotationMethodOrConstantRestContext context)
+        public Ust VisitAnnotationMethodOrConstantRest([NotNull] JavaParser.AnnotationMethodOrConstantRestContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitAnnotationMethodRest([NotNull] JavaParser.AnnotationMethodRestContext context)
+        public Ust VisitAnnotationMethodRest([NotNull] JavaParser.AnnotationMethodRestContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitAnnotationConstantRest([NotNull] JavaParser.AnnotationConstantRestContext context)
+        public Ust VisitAnnotationConstantRest([NotNull] JavaParser.AnnotationConstantRestContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitDefaultValue([NotNull] JavaParser.DefaultValueContext context)
+        public Ust VisitDefaultValue([NotNull] JavaParser.DefaultValueContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitResourceSpecification([NotNull] JavaParser.ResourceSpecificationContext context)
+        public Ust VisitResourceSpecification([NotNull] JavaParser.ResourceSpecificationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitResources([NotNull] JavaParser.ResourcesContext context)
+        public Ust VisitResources([NotNull] JavaParser.ResourcesContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitEnhancedForControl([NotNull] JavaParser.EnhancedForControlContext context)
+        public Ust VisitEnhancedForControl([NotNull] JavaParser.EnhancedForControlContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitArrayCreatorRest([NotNull] JavaParser.ArrayCreatorRestContext context)
+        public Ust VisitArrayCreatorRest([NotNull] JavaParser.ArrayCreatorRestContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitClassCreatorRest([NotNull] JavaParser.ClassCreatorRestContext context)
+        public Ust VisitClassCreatorRest([NotNull] JavaParser.ClassCreatorRestContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitNonWildcardTypeArgumentsOrDiamond([NotNull] JavaParser.NonWildcardTypeArgumentsOrDiamondContext context)
+        public Ust VisitNonWildcardTypeArgumentsOrDiamond([NotNull] JavaParser.NonWildcardTypeArgumentsOrDiamondContext context)
         {
             return VisitChildren(context);
         }

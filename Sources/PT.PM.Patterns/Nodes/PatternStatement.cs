@@ -6,7 +6,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternStatement : Statement
     {
-        public override NodeType NodeType => NodeType.PatternStatement;
+        public override UstKind Kind => UstKind.PatternStatement;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Statement Statement { get; set; }
@@ -24,15 +24,15 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
             int compareResult;
-            if (other.NodeType == NodeType.PatternStatement)
+            if (other.Kind == UstKind.PatternStatement)
             {
                 var otherPatternStatement = (PatternStatement)other;
 
@@ -80,14 +80,14 @@ namespace PT.PM.Patterns.Nodes
             return compareResult;
         }
 
-        protected virtual int Compare(UstNode other)
+        protected virtual int Compare(Ust other)
         {
             return Statement.CompareTo(other);
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Statement };
+            return new Ust[] { Statement };
         }
 
         public override string ToString()

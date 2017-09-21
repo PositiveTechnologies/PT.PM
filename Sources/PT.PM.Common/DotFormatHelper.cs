@@ -16,7 +16,7 @@ namespace PT.PM.Common
             builder.AppendLine($"{startInd}->{endInd}" + (advanced == "" ? "" : " " + advanced) + ";");
         }
 
-        public static string GetNodeName(UstNode node)
+        public static string GetNodeName(Nodes.Ust node)
         {
             return TrimAndEscapeString(node.ToString());
         }

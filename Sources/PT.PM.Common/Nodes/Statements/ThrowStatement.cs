@@ -4,7 +4,7 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ThrowStatement : Statement
     {
-        public override NodeType NodeType => NodeType.ThrowStatement;
+        public override UstKind Kind => UstKind.ThrowStatement;
 
         public Expression ThrowExpression { get; set; }
 
@@ -18,9 +18,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {ThrowExpression};
+            return new Ust[] {ThrowExpression};
         }
 
         public override string ToString()

@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CSharpParameterDeclaration : ParameterDeclaration
     {
-        public override NodeType NodeType => NodeType.CSharpParameterDeclaration;
+        public override UstKind Kind => UstKind.CSharpParameterDeclaration;
 
         public ParameterModifierLiteral Modifier { get; set; }
 
@@ -24,9 +24,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             result.Add(Name);
             if (Modifier != null)

@@ -8,12 +8,12 @@ using Newtonsoft.Json.Converters;
 
 namespace PT.PM.Patterns.Nodes
 {
-    public class PatternRootNode : RootNode
+    public class PatternRootUst : RootUst
     {
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
-        public override NodeType NodeType => NodeType.PatternRootNode;
+        public override UstKind Kind => UstKind.PatternRootUst;
 
         public string Key { get; set; } = "";
 
@@ -57,7 +57,7 @@ namespace PT.PM.Patterns.Nodes
         [JsonIgnore]
         public List<PatternVarDef> Vars { get; set; } = new List<PatternVarDef>();
 
-        public PatternRootNode(string key, string debugInfo, IEnumerable<Language> languages, string filenameWildcard)
+        public PatternRootUst(string key, string debugInfo, IEnumerable<Language> languages, string filenameWildcard)
             : this(null)
         {
             Key = key;
@@ -66,28 +66,28 @@ namespace PT.PM.Patterns.Nodes
             FilenameWildcard = filenameWildcard;
         }
 
-        public PatternRootNode()
+        public PatternRootUst()
             : this(null)
         {
         }
 
-        public PatternRootNode(SourceCodeFile sourceCodeFile)
+        public PatternRootUst(SourceCodeFile sourceCodeFile)
             : base(sourceCodeFile, Language.Universal)
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Nodes);
             return result.ToArray();
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
-            if (other is PatternRootNode otherRoot)
+            if (other is PatternRootUst otherRoot)
             {
-                return UstNodeHelper.CompareTo<UstNode>(Nodes, otherRoot.Nodes);
+                return UstNodeHelper.CompareTo<Ust>(Nodes, otherRoot.Nodes);
             }
 
             return 1;

@@ -4,7 +4,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class FloatLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.FloatLiteral;
+        public override UstKind Kind => UstKind.FloatLiteral;
 
         public double Value { get; set; }
 
@@ -25,7 +25,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

@@ -2,7 +2,7 @@
 {
     public class ParameterModifierLiteral : Token
     {
-        public override NodeType NodeType => NodeType.ParameterModifierLiteral;
+        public override UstKind Kind => UstKind.ParameterModifierLiteral;
 
         public ParameterModifier Modifier { get; set; }
 
@@ -18,7 +18,7 @@
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

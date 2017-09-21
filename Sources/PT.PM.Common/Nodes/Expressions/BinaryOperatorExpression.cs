@@ -4,7 +4,7 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class BinaryOperatorExpression : Expression
     {
-        public override NodeType NodeType => NodeType.BinaryOperatorExpression;
+        public override UstKind Kind => UstKind.BinaryOperatorExpression;
 
         public Expression Left { get; set; }
 
@@ -24,9 +24,9 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Left, Operator, Right };
+            return new Ust[] { Left, Operator, Right };
         }
 
         public override Expression[] GetArgs()

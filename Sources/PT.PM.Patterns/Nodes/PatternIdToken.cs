@@ -8,7 +8,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternIdToken : IdToken, IRelativeLocationMatching
     {
-        public override NodeType NodeType => NodeType.PatternIdToken;
+        public override UstKind Kind => UstKind.PatternIdToken;
 
         [JsonIgnore]
         public Regex Regex { get; set; }
@@ -48,21 +48,21 @@ namespace PT.PM.Patterns.Nodes
 
         public override string TextValue => Regex.ToString();
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
                 return 1;
             }
 
-            if (other.NodeType == NodeType.PatternIdToken)
+            if (other.Kind == UstKind.PatternIdToken)
             {
                 return Id.CompareTo(((PatternIdToken)other).Id);
             }
 
             if (!typeof(Token).IsAssignableFrom(other.GetType()))
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
 
             var regex = other.Root.Language.IsCaseInsensitive()

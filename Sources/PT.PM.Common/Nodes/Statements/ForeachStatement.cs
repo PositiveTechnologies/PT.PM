@@ -6,7 +6,7 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ForeachStatement : Statement
     {
-        public override NodeType NodeType => NodeType.ForeachStatement;
+        public override UstKind Kind => UstKind.ForeachStatement;
 
         public TypeToken Type { get; set; }
 
@@ -30,9 +30,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             result.Add(VarName);
             result.Add(InExpression);

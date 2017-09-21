@@ -11,7 +11,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternClassDeclaration : Expression
     {
-        public override NodeType NodeType => NodeType.PatternClassDeclaration;
+        public override UstKind Kind => UstKind.PatternClassDeclaration;
 
         public List<Token> Modifiers { get; set; }
 
@@ -37,9 +37,9 @@ namespace PT.PM.Patterns.Nodes
             BaseTypes = new List<Token>();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Modifiers);
             result.Add(Name);
             result.AddRange(BaseTypes);
@@ -47,22 +47,22 @@ namespace PT.PM.Patterns.Nodes
             return result.ToArray();
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternClassDeclaration)
+            if (other.Kind == UstKind.PatternClassDeclaration)
             {
                 var otherPatternClassDeclaration = (PatternClassDeclaration)other;
                 return GetChildren().CompareTo(otherPatternClassDeclaration.GetChildren());
             }
 
-            if (other.NodeType != NodeType.TypeDeclaration)
+            if (other.Kind != UstKind.TypeDeclaration)
             {
-                return NodeType.TypeDeclaration - other.NodeType;
+                return UstKind.TypeDeclaration - other.Kind;
             }
 
             var typeDeclaration = (TypeDeclaration)other;
@@ -84,7 +84,7 @@ namespace PT.PM.Patterns.Nodes
 
             compareRes = BaseTypes.CompareSubset(typeDeclaration.BaseTypes);
 
-            var baseTypesToMatch = new List<UstNode>(BaseTypes);
+            var baseTypesToMatch = new List<Ust>(BaseTypes);
             if (compareRes != 0)
             {
                 return compareRes;

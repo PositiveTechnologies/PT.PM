@@ -4,7 +4,7 @@ namespace PT.PM.Common.Nodes.Tokens
 {
     public class BaseReferenceExpression : Expression
     {
-        public override NodeType NodeType => NodeType.BaseReferenceExpression;
+        public override UstKind Kind => UstKind.BaseReferenceExpression;
 
         public BaseReferenceExpression(TextSpan textSpan)
             : base(textSpan)
@@ -15,9 +15,9 @@ namespace PT.PM.Common.Nodes.Tokens
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
         public override Expression[] GetArgs()

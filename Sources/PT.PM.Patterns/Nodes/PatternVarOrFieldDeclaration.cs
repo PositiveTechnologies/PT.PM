@@ -11,7 +11,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternVarOrFieldDeclaration : Expression
     {
-        public override NodeType NodeType => NodeType.PatternVarOrFieldDeclaration;
+        public override UstKind Kind => UstKind.PatternVarOrFieldDeclaration;
 
         public bool LocalVariable { get; set; }
 
@@ -40,9 +40,9 @@ namespace PT.PM.Patterns.Nodes
             Modifiers = new List<Token>();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Modifiers);
             result.Add(Type);
             result.Add(Name);
@@ -50,30 +50,30 @@ namespace PT.PM.Patterns.Nodes
             return result.ToArray();
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternVarOrFieldDeclaration)
+            if (other.Kind == UstKind.PatternVarOrFieldDeclaration)
             {
                 var otherPatternVarOrFieldDeclaration = (PatternVarOrFieldDeclaration)other;
                 return GetChildren().CompareTo(otherPatternVarOrFieldDeclaration.GetChildren());
             }
 
-            if (other.NodeType == NodeType.FieldDeclaration)
+            if (other.Kind == UstKind.FieldDeclaration)
             {
                 return CompareToFieldDeclaration((FieldDeclaration)other);
             }
 
-            if (other.NodeType == NodeType.VariableDeclarationExpression)
+            if (other.Kind == UstKind.VariableDeclarationExpression)
             {
                 return CompareToVariableDeclaration((VariableDeclarationExpression)other);
             }
 
-            return (int)other.NodeType;
+            return (int)other.Kind;
         }
 
         public override string ToString()
@@ -85,7 +85,7 @@ namespace PT.PM.Patterns.Nodes
         {
             if (LocalVariable == true)
             {
-                return NodeType.VariableDeclarationExpression - fieldDeclaration.NodeType;
+                return UstKind.VariableDeclarationExpression - fieldDeclaration.Kind;
             }
 
             int compareRes = Modifiers.CompareSubset(fieldDeclaration.Modifiers);
@@ -115,7 +115,7 @@ namespace PT.PM.Patterns.Nodes
         {
             if (LocalVariable == false)
             {
-                return NodeType.FieldDeclaration - variableDeclaration.NodeType;
+                return UstKind.FieldDeclaration - variableDeclaration.Kind;
             }
 
             if (Modifiers.Count() != 0)

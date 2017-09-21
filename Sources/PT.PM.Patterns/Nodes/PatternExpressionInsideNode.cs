@@ -7,7 +7,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternExpressionInsideNode : Expression
     {
-        public override NodeType NodeType => NodeType.PatternExpressionInsideNode;
+        public override UstKind Kind => UstKind.PatternExpressionInsideNode;
 
         public Expression Expression { get; set; }
 
@@ -21,14 +21,14 @@ namespace PT.PM.Patterns.Nodes
             Expression = expression;
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternExpressionInsideNode)
+            if (other.Kind == UstKind.PatternExpressionInsideNode)
             {
                 return CompareExpression(((PatternExpressionInsideNode)other).Expression);
             }
@@ -36,7 +36,7 @@ namespace PT.PM.Patterns.Nodes
             return other.DoesAnyDescendantMatchPredicate(ustNode => CompareExpression(ustNode) == 0) ? 0 : -1;
         }
 
-        protected int CompareExpression(UstNode other)
+        protected int CompareExpression(Ust other)
         {
             if (Expression == null)
             {
@@ -49,9 +49,9 @@ namespace PT.PM.Patterns.Nodes
             return Expression.CompareTo(other);
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Expression };
+            return new Ust[] { Expression };
         }
 
         public override string ToString()

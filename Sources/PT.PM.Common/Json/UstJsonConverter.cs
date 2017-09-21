@@ -12,15 +12,15 @@ namespace PT.PM.Common
     public class UstJsonConverter : JsonConverter
     {
         private static ICollection<Assembly> cachedAssemblies = new HashSet<Assembly>();
-        private static IDictionary<NodeType, Type> nodeTypes = new ConcurrentDictionary<NodeType, Type>();
+        private static IDictionary<UstKind, Type> nodeTypes = new ConcurrentDictionary<UstKind, Type>();
         private static readonly object assemblyLock = new object();
 
         public UstJsonConverter(params Type[] ustNodeAssemblyTypes)
         {
             var types = ustNodeAssemblyTypes == null || ustNodeAssemblyTypes.Length == 0
-                ? new[] { typeof(UstNode) } : ustNodeAssemblyTypes;
+                ? new[] { typeof(Ust) } : ustNodeAssemblyTypes;
 
-            IEnumerable<KeyValuePair<NodeType, Type>> keyValuePairs = types.SelectMany(type =>
+            IEnumerable<KeyValuePair<UstKind, Type>> keyValuePairs = types.SelectMany(type =>
             {
                 Assembly assembly = Assembly.GetAssembly(type);
                 lock (assemblyLock)
@@ -36,8 +36,8 @@ namespace PT.PM.Common
                     }
                 }
             })
-            .Where(t => t.IsSubclassOf(typeof(UstNode)) && !t.IsAbstract)
-            .Select(t => new KeyValuePair<NodeType, Type>((NodeType)Enum.Parse(typeof(NodeType), t.Name), t));
+            .Where(t => t.IsSubclassOf(typeof(Ust)) && !t.IsAbstract)
+            .Select(t => new KeyValuePair<UstKind, Type>((UstKind)Enum.Parse(typeof(UstKind), t.Name), t));
 
             foreach (var keyValuePair in keyValuePairs)
             {
@@ -47,7 +47,7 @@ namespace PT.PM.Common
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(UstNode) || objectType.IsSubclassOf(typeof(UstNode));
+            return objectType == typeof(Ust) || objectType.IsSubclassOf(typeof(Ust));
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
@@ -58,10 +58,10 @@ namespace PT.PM.Common
                 JObject jObject = JObject.Load(reader);
 
                 object target = null;
-                if (objectType == typeof(UstNode) || objectType.IsSubclassOf(typeof(UstNode)))
+                if (objectType == typeof(Ust) || objectType.IsSubclassOf(typeof(Ust)))
                 {
-                    var obj = jObject[nameof(NodeType)];
-                    var nodeType = (NodeType) Enum.Parse(typeof (NodeType), obj.ToString());
+                    var obj = jObject[nameof(Ust.Kind)];
+                    var nodeType = (UstKind)Enum.Parse(typeof (UstKind), obj.ToString());
                     target = Activator.CreateInstance(nodeTypes[nodeType]);
                 }
                 else

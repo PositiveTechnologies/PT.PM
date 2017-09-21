@@ -5,7 +5,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternIntLiteral : IntLiteral
     {
-        public override NodeType NodeType => NodeType.PatternIntLiteral;
+        public override UstKind Kind => UstKind.PatternIntLiteral;
 
         public long MinValue { get; set; }
 
@@ -27,22 +27,22 @@ namespace PT.PM.Patterns.Nodes
             MaxValue = maxValue;
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternIntLiteral)
+            if (other.Kind == UstKind.PatternIntLiteral)
             {
                 var otherPatternIntLiteral = (PatternIntLiteral)other;
                 return MinValue == otherPatternIntLiteral.MinValue && MaxValue == otherPatternIntLiteral.MaxValue ? 0 : 1;
             }
 
-            if (other.NodeType != NodeType.IntLiteral)
+            if (other.Kind != UstKind.IntLiteral)
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
 
             long otherValue = ((IntLiteral)other).Value;

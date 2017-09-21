@@ -18,7 +18,7 @@ namespace PT.PM.SqlParseTreeUst
 {
     public partial class TSqlAntlrConverter
     {
-        public override UstNode VisitTerminal(ITerminalNode node)
+        public override Ust VisitTerminal(ITerminalNode node)
         {
             return ExtractLiteral(node.Symbol);
         }
@@ -28,7 +28,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             return new InvocationExpression(
                 new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan()),
-                new ArgsNode(expression), context.GetTextSpan());
+                new ArgsUst(expression), context.GetTextSpan());
         }
 
         private InvocationExpression CreateSpecialInvocation(ITerminalNode name,
@@ -36,7 +36,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             return new InvocationExpression(
                 new IdToken(name.Symbol.Text.ToLowerInvariant(), name.GetTextSpan()),
-                new ArgsNode(expressions), context.GetTextSpan());
+                new ArgsUst(expressions), context.GetTextSpan());
         }
 
         private Statement[] GetStatements(TSqlParser.Sql_clausesContext context)
@@ -53,16 +53,16 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        private ArgsNode GetArgsNode(TSqlParser.Expression_listContext context)
+        private ArgsUst GetArgsNode(TSqlParser.Expression_listContext context)
         {
-            ArgsNode result;
+            ArgsUst result;
             if (context != null)
             {
-                result = new ArgsNode(context.expression().Select(expr => (Expression)Visit(expr)).ToArray());
+                result = new ArgsUst(context.expression().Select(expr => (Expression)Visit(expr)).ToArray());
             }
             else
             {
-                result = new ArgsNode();
+                result = new ArgsUst();
             }
             return result;
         }

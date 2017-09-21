@@ -8,7 +8,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternStringLiteral : StringLiteral, IRelativeLocationMatching
     {
-        public override NodeType NodeType => NodeType.PatternStringLiteral;
+        public override UstKind Kind => UstKind.PatternStringLiteral;
 
         [JsonIgnore]
         public Regex Regex { get; set; }
@@ -44,21 +44,21 @@ namespace PT.PM.Patterns.Nodes
 
         public override string TextValue => Regex.ToString();
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternStringLiteral)
+            if (other.Kind == UstKind.PatternStringLiteral)
             {
                 return Text.CompareTo(((PatternStringLiteral)other).Text);
             }
 
-            if (other.NodeType != NodeType.StringLiteral)
+            if (other.Kind != UstKind.StringLiteral)
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
 
             MatchedLocations = PatternHelper.MatchRegex(Regex, ((StringLiteral)other).Text, isString: true);

@@ -6,7 +6,7 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ArrayCreationExpression : Expression
     {
-        public override NodeType NodeType => NodeType.ArrayCreationExpression;
+        public override UstKind Kind => UstKind.ArrayCreationExpression;
 
         public TypeToken Type { get; set; }
 
@@ -29,9 +29,9 @@ namespace PT.PM.Common.Nodes.Expressions
             Initializers = new List<Expression>();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             if (Sizes != null)
             {
@@ -51,14 +51,14 @@ namespace PT.PM.Common.Nodes.Expressions
             return result.ToArray();
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            var nodeTypeCompareResult = NodeType - other.NodeType;
+            var nodeTypeCompareResult = Kind - other.Kind;
             if (nodeTypeCompareResult != 0)
             {
                 return nodeTypeCompareResult;

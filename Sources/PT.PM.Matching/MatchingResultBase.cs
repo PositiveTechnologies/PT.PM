@@ -8,6 +8,6 @@ namespace PT.PM.Matching
     {
         public TPattern Pattern { get; set; }
 
-        public List<UstNode> Nodes { get; set; }
+        public List<Ust> Nodes { get; set; }
     }
 }

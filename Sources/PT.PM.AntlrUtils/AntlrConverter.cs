@@ -13,14 +13,14 @@ using System.Linq;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrConverter : IParseTreeToUstConverter, IParseTreeVisitor<UstNode>, ILoggable
+    public abstract class AntlrConverter : IParseTreeToUstConverter, IParseTreeVisitor<Ust>, ILoggable
     {
         protected static readonly Regex RegexHexLiteral = new Regex(@"^0[xX]([a-fA-F0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
         protected static readonly Regex RegexOctalLiteral = new Regex(@"^0([0-7]+)([uUlL]{0,2})$", RegexOptions.Compiled);
         protected static readonly Regex RegexBinaryLiteral = new Regex(@"^0[bB]([01]+)([uUlL]{0,2})$", RegexOptions.Compiled);
         protected static readonly Regex RegexDecimalLiteral = new Regex(@"^([0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
 
-        protected RootNode root;
+        protected RootUst root;
 
         public abstract Language Language { get; }
 
@@ -32,28 +32,28 @@ namespace PT.PM.AntlrUtils
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public RootNode ParentRoot { get; set; }
+        public RootUst ParentRoot { get; set; }
 
         public AntlrConverter()
         {
             AnalyzedLanguages = Language.GetSelfAndSublanguages();
         }
 
-        public RootNode Convert(ParseTree langParseTree)
+        public RootUst Convert(ParseTree langParseTree)
         {
             var antlrParseTree = (AntlrParseTree)langParseTree;
             ParserRuleContext tree = antlrParseTree.SyntaxTree;
             ICharStream inputStream = tree.start.InputStream ?? tree.stop?.InputStream;
             string filePath = inputStream != null ? inputStream.SourceName : "";
-            RootNode result = null;
+            RootUst result = null;
             if (tree != null && inputStream != null)
             {
                 try
                 {
                     Tokens = antlrParseTree.Tokens;
-                    root = new RootNode(langParseTree.SourceCodeFile, Language);
-                    UstNode visited = Visit(tree);
-                    if (visited is RootNode rootUstNode)
+                    root = new RootUst(langParseTree.SourceCodeFile, Language);
+                    Ust visited = Visit(tree);
+                    if (visited is RootUst rootUstNode)
                     {
                         result = rootUstNode;
                     }
@@ -70,21 +70,21 @@ namespace PT.PM.AntlrUtils
 
                     if (result == null)
                     {
-                        result = new RootNode(langParseTree.SourceCodeFile, Language);
+                        result = new RootUst(langParseTree.SourceCodeFile, Language);
                         result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
                     }
                 }
             }
             else
             {
-                result = new RootNode(langParseTree.SourceCodeFile, Language);
+                result = new RootUst(langParseTree.SourceCodeFile, Language);
                 result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
             }
             result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())).ToArray();
             return result;
         }
 
-        public UstNode Visit(IParseTree tree)
+        public Ust Visit(IParseTree tree)
         {
             try
             {
@@ -106,9 +106,9 @@ namespace PT.PM.AntlrUtils
             }
         }
 
-        public UstNode VisitChildren(IRuleNode node)
+        public Ust VisitChildren(IRuleNode node)
         {
-            UstNode result;
+            Ust result;
             if (node.ChildCount == 0)
             {
                 result = null;
@@ -142,7 +142,7 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-        public virtual UstNode VisitTerminal(ITerminalNode node)
+        public virtual Ust VisitTerminal(ITerminalNode node)
         {
             Token result;
             string nodeText = node.GetText();
@@ -171,7 +171,7 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-        public UstNode VisitErrorNode(IErrorNode node)
+        public Ust VisitErrorNode(IErrorNode node)
         {
             return DefaultResult;
         }
@@ -209,7 +209,7 @@ namespace PT.PM.AntlrUtils
             return null;
         }
 
-        protected UstNode VisitShouldNotBeVisited(IParseTree tree)
+        protected Ust VisitShouldNotBeVisited(IParseTree tree)
         {
             var parserRuleContext = tree as ParserRuleContext;
             string ruleName = "";
@@ -222,7 +222,7 @@ namespace PT.PM.AntlrUtils
             throw new ShouldNotBeVisitedException(ruleName);
         }
 
-        protected UstNode DefaultResult
+        protected Ust DefaultResult
         {
             get
             {

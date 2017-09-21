@@ -69,7 +69,7 @@
     <Compile Include="Nodes\PatternMultipleStatements.cs" />
     <Compile Include="Nodes\PatternStringLiteral.cs" />
     <Compile Include="Nodes\PatternTryCatchStatement.cs" />
-    <Compile Include="Nodes\PatternRootNode.cs" />
+    <Compile Include="Nodes\PatternRootUst.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\CSharpPatterns.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\DefaultPatternRepository.cs" />
     <Compile Include="PatternsRepository\DefaultPatternRepository\JavaPatterns.cs" />

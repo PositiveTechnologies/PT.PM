@@ -9,7 +9,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
 {
     public class TypeDeclaration : EntityDeclaration
     {
-        public override NodeType NodeType => NodeType.TypeDeclaration;
+        public override UstKind Kind => UstKind.TypeDeclaration;
 
         public TypeTypeLiteral Type { get; set; }
 
@@ -38,9 +38,9 @@ namespace PT.PM.Common.Nodes.GeneralScope
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(base.GetChildren());
             result.Add(Type);
             result.AddRange(BaseTypes);

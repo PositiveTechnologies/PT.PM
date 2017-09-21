@@ -45,7 +45,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ">>=",
         };
 
-        public override NodeType NodeType => NodeType.BinaryOperatorLiteral;
+        public override UstKind Kind => UstKind.BinaryOperatorLiteral;
 
         public override string TextValue => BinaryOperator.ToString();
 
@@ -77,7 +77,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

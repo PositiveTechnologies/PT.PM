@@ -17,7 +17,7 @@ using PT.PM.UstPreprocessing;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<RootNode, Stage, WorkflowResult, PatternRootNode, MatchingResult>
+    public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRootUst, MatchingResult>
     {
         public Workflow()
             : this(null, LanguageExt.AllLanguages)
@@ -43,7 +43,7 @@ namespace PT.PM
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
             UstPatternMatcher = new BruteForcePatternMatcher();
-            IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
+            IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef));
             IUstNodeSerializer dslNodeSerializer = new DslProcessor();
             PatternConverter = new PatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
             Stage = stage;
@@ -118,7 +118,7 @@ namespace PT.PM
 
         private void ProcessFile(string fileName, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            RootNode ust = null;
+            RootUst ust = null;
             try
             {
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));

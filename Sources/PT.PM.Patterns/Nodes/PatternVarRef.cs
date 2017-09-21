@@ -11,7 +11,7 @@ namespace PT.PM.Patterns.Nodes
     {
         private PatternVarDef patternVar = PatternVarDef.DefaultPatternVarDef;
 
-        public override NodeType NodeType => NodeType.PatternVarRef;
+        public override UstKind Kind => UstKind.PatternVarRef;
 
         public override string Id
         {
@@ -45,7 +45,7 @@ namespace PT.PM.Patterns.Nodes
         public int PatternVarIndex { get; set; }
 
         [JsonIgnore]
-        public UstNode CurrentValue { get; set; } = PatternVarDef.DefaultPatternVarDef.Values[0];
+        public Ust CurrentValue { get; set; } = PatternVarDef.DefaultPatternVarDef.Values[0];
 
         [JsonIgnore]
         internal bool PinValueAssigned { get; private set; }
@@ -69,15 +69,15 @@ namespace PT.PM.Patterns.Nodes
             PatternVar = patternVar;
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             PinValueAssigned = false;
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternVarRef)
+            if (other.Kind == UstKind.PatternVarRef)
             {
                 return VarId.CompareTo(((PatternVarRef)other).VarId);
             }

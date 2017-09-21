@@ -10,7 +10,7 @@ namespace PT.PM.UstPreprocessing.Tests
 {
     public static class SampleTree
     {
-        public static UstNode Init()
+        public static Ust Init()
         {
             var result = new BlockStatement
             {
@@ -38,7 +38,7 @@ namespace PT.PM.UstPreprocessing.Tests
                                 },
                                 Name = new IdToken("c"),
                             },
-                            Arguments = new ArgsNode(new Expression[]
+                            Arguments = new ArgsUst(new Expression[]
                             {
                                 new BooleanLiteral(true),
                                 new StringLiteral("asdf"),
@@ -91,7 +91,7 @@ namespace PT.PM.UstPreprocessing.Tests
                                 Expression = new InvocationExpression
                                 {
                                     Target = new IdToken("print"),
-                                    Arguments = new ArgsNode()
+                                    Arguments = new ArgsUst()
                                 }
                             },
                             FalseStatement = null

@@ -6,87 +6,87 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
     public partial class CSharpRoslynParseTreeConverter
     {
-        public override UstNode VisitBadDirectiveTrivia(BadDirectiveTriviaSyntax node)
+        public override Ust VisitBadDirectiveTrivia(BadDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitDefineDirectiveTrivia(DefineDirectiveTriviaSyntax node)
+        public override Ust VisitDefineDirectiveTrivia(DefineDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node)
+        public override Ust VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitElifDirectiveTrivia(ElifDirectiveTriviaSyntax node)
+        public override Ust VisitElifDirectiveTrivia(ElifDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitElseDirectiveTrivia(ElseDirectiveTriviaSyntax node)
+        public override Ust VisitElseDirectiveTrivia(ElseDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitEndIfDirectiveTrivia(EndIfDirectiveTriviaSyntax node)
+        public override Ust VisitEndIfDirectiveTrivia(EndIfDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
+        public override Ust VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitErrorDirectiveTrivia(ErrorDirectiveTriviaSyntax node)
+        public override Ust VisitErrorDirectiveTrivia(ErrorDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitIfDirectiveTrivia(IfDirectiveTriviaSyntax node)
+        public override Ust VisitIfDirectiveTrivia(IfDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitLineDirectiveTrivia(LineDirectiveTriviaSyntax node)
+        public override Ust VisitLineDirectiveTrivia(LineDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitPragmaChecksumDirectiveTrivia(PragmaChecksumDirectiveTriviaSyntax node)
+        public override Ust VisitPragmaChecksumDirectiveTrivia(PragmaChecksumDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitPragmaWarningDirectiveTrivia(PragmaWarningDirectiveTriviaSyntax node)
+        public override Ust VisitPragmaWarningDirectiveTrivia(PragmaWarningDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitReferenceDirectiveTrivia(ReferenceDirectiveTriviaSyntax node)
+        public override Ust VisitReferenceDirectiveTrivia(ReferenceDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax node)
+        public override Ust VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitSkippedTokensTrivia(SkippedTokensTriviaSyntax node)
+        public override Ust VisitSkippedTokensTrivia(SkippedTokensTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitUndefDirectiveTrivia(UndefDirectiveTriviaSyntax node)
+        public override Ust VisitUndefDirectiveTrivia(UndefDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitWarningDirectiveTrivia(WarningDirectiveTriviaSyntax node)
+        public override Ust VisitWarningDirectiveTrivia(WarningDirectiveTriviaSyntax node)
         {
             throw new InvalidOperationException();
         }

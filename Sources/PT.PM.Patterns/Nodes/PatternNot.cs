@@ -7,7 +7,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternNot : Expression
     {
-        public override NodeType NodeType => NodeType.PatternNot;
+        public override UstKind Kind => UstKind.PatternNot;
 
         public Expression Expression { get; set; }
 
@@ -21,19 +21,19 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Expression };
+            return new Ust[] { Expression };
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternNot)
+            if (other.Kind == UstKind.PatternNot)
             {
                 var otherPatternNot = (PatternNot)other;
                 return Expression.CompareTo(otherPatternNot.Expression);

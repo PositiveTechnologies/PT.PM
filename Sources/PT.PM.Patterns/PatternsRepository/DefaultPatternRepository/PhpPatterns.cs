@@ -12,11 +12,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootNode> CreatePhpPatterns()
+        public IEnumerable<PatternRootUst> CreatePhpPatterns()
         {
-            var patterns = new List<PatternRootNode>();
+            var patterns = new List<PatternRootUst>();
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedPasswordIn_mysql_connect. Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
@@ -24,7 +24,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new InvocationExpression
                 {
                     Target = new PatternIdToken("(?i)^mysql_connect$"),
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>()
                         {
@@ -36,7 +36,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureRandomness. Standard pseudorandom number generators cannot withstand cryptographic attacks.",
@@ -48,7 +48,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyPermissiveCORSPolicyg. The program defines an overly permissive Cross-Origin Resource Sharing (CORS) policy.",
@@ -56,11 +56,11 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new InvocationExpression
                 {
                     Target = new PatternIdToken("(?i)^header$"),
-                    Arguments = new ArgsNode(new[] { new PatternStringLiteral(@"Access-Control-Allow-Origin:\s*\*") })
+                    Arguments = new ArgsUst(new[] { new PatternStringLiteral(@"Access-Control-Allow-Origin:\s*\*") })
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InadequateRSAPadding. Public key RSA encryption is performed without using OAEP padding, thereby making the encryption weak.",
@@ -68,7 +68,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new IdToken("OPENSSL_NO_PADDING")
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "BrokenRiskyCryptographicAlgorithm. Weak Encryption: Broken or Risky Cryptographic Algorithm.",
@@ -76,7 +76,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new IdToken("MCRYPT_DES")
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash. Weak cryptographic hashes cannot guarantee data integrity and should not be used in security-critical contexts.",
@@ -88,7 +88,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "ExcessiveSessionTimeout. An overly long session timeout gives attackers more time to potentially compromise user accounts.",
@@ -100,7 +100,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new IdToken("Configure"),
                         Name = new PatternIdToken("write")
                     },
-                    Arguments = new ArgsNode(new[]
+                    Arguments = new ArgsUst(new[]
                     {
                         new StringLiteral("Security.level"),
                         new StringLiteral("low")
@@ -108,7 +108,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "DebugInformation. A CakePHP debug level of 1 or greater can cause sensitive data to be logged.",
@@ -120,7 +120,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new IdToken("Configure"),
                         Name = new IdToken("write")
                     },
-                    Arguments = new ArgsNode(new List<Expression>()
+                    Arguments = new ArgsUst(new List<Expression>()
                     {
                         new StringLiteral("debug"),
                         new PatternIntLiteral(1, 9)
@@ -128,7 +128,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SystemInformationLeak. Revealing system data or debugging information helps an adversary learn about the system and form a plan of attack.",
@@ -140,7 +140,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHashHardcodedSalt. A hardcoded salt may compromise system security in a way that cannot be easily remedied.",
@@ -148,7 +148,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new InvocationExpression
                 {
                     Target = new PatternIdToken("(?i)crypt"),
-                    Arguments = new ArgsNode(new List<Expression>()
+                    Arguments = new ArgsUst(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternStringLiteral()
@@ -170,7 +170,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     new PatternStringLiteral()
                 }
             };
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "KeyManagementNullEncryptionKey. Null encryption keys may compromise system security in a way that cannot be easily remedied.",
@@ -199,7 +199,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 Right =  new ObjectCreateExpression
                                 {
                                     Type = new TypeToken("Zend_Filter_Encrypt"),
-                                    Arguments = new ArgsNode
+                                    Arguments = new ArgsUst
                                     {
                                         Collection = new List<Expression>() { new PatternVarRef(encryptKeyVarName) }
                                     }
@@ -210,7 +210,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "KeyManagementNullEncryptionKey",
@@ -219,7 +219,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new ObjectCreateExpression
                 {
                     Type = new TypeToken("Zend_Filter_Encrypt"),
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>() { new PatternVarRef(encryptKeyVarValue) }
                     }
@@ -227,7 +227,7 @@ namespace PT.PM.Patterns.PatternsRepository
             });
 
             // TODO: Union this next pattern.
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityOverlyBroadPath. A cookie with an overly broad path can be accessed through other applications on the same domain.",
@@ -235,7 +235,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new InvocationExpression
                 {
                     Target = new PatternIdToken("(?i)setcookie"),
-                    Arguments = new ArgsNode(new List<Expression>()
+                    Arguments = new ArgsUst(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternExpression(),
@@ -248,7 +248,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityOverlyBroadDomain. A cookie with an overly broad domain opens an application to attacks through other applications.",
@@ -256,7 +256,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new InvocationExpression
                 {
                     Target = new PatternIdToken("(?i)setcookie"),
-                    Arguments = new ArgsNode(new List<Expression>()
+                    Arguments = new ArgsUst(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternExpression(),
@@ -269,7 +269,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityHTTPOnlyNotSet. The program creates a cookie, but fails to set the HttpOnly flag to true.",
@@ -277,7 +277,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new InvocationExpression
                 {
                     Target = new PatternIdToken("(?i)setcookie"),
-                    Arguments = new ArgsNode(new List<Expression>()
+                    Arguments = new ArgsUst(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternExpression(),
@@ -289,7 +289,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityCookieNotSentOverSSL. The program creates a cookie without setting the secure flag to true.",
@@ -297,7 +297,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new InvocationExpression
                 {
                     Target = new PatternIdToken("(?i)setcookie"),
-                    Arguments = new ArgsNode(new List<Expression>()
+                    Arguments = new ArgsUst(new List<Expression>()
                     {
                         new PatternExpression(),
                         new PatternExpression(),

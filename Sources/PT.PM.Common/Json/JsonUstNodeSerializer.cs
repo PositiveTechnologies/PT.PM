@@ -27,20 +27,20 @@ namespace PT.PM.Common
             stringEnumConverter = new StringEnumConverter();
         }
 
-        public UstNode Deserialize(string data)
+        public Ust Deserialize(string data)
         {
-            var result = JsonConvert.DeserializeObject<UstNode>(data, astJsonConverter, stringEnumConverter);
+            var result = JsonConvert.DeserializeObject<Ust>(data, astJsonConverter, stringEnumConverter);
             result.FillAscendants();
             return result;
         }
 
-        public string Serialize(UstNode node)
+        public string Serialize(Ust node)
         {
             JsonSerializerSettings jsonSettings = PrepareSettings();
             return JsonConvert.SerializeObject(node, Indented ? Formatting.Indented : Formatting.None, jsonSettings);
         }
 
-        public string Serialize(IEnumerable<UstNode> nodes)
+        public string Serialize(IEnumerable<Ust> nodes)
         {
             JsonSerializerSettings jsonSettings = PrepareSettings();
             return JsonConvert.SerializeObject(nodes, Indented ? Formatting.Indented : Formatting.None, jsonSettings);

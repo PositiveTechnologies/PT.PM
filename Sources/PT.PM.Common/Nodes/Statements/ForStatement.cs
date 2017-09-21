@@ -7,7 +7,7 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ForStatement : Statement
     {
-        public override NodeType NodeType => NodeType.ForStatement;
+        public override UstKind Kind => UstKind.ForStatement;
 
         public List<Statement> Initializers { get; set; } = new List<Statement>();
 
@@ -31,9 +31,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Initializers);
             result.Add(Condition);
             result.AddRange(Iterators);

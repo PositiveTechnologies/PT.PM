@@ -8,7 +8,7 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternAnd : Expression
     {
-        public override NodeType NodeType => NodeType.PatternAnd;
+        public override UstKind Kind => UstKind.PatternAnd;
 
         public List<Expression> Expressions { get; set; }
 
@@ -27,19 +27,19 @@ namespace PT.PM.Patterns.Nodes
             Expressions = new List<Expression>();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
             return Expressions.ToArray();
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)Kind;
             }
 
-            if (other.NodeType == NodeType.PatternAnd)
+            if (other.Kind == UstKind.PatternAnd)
             {
                 var otherPatternAnd = (PatternAnd)other;
                 return GetChildren().CompareTo(otherPatternAnd.GetChildren());

@@ -6,22 +6,22 @@ namespace PT.PM.Patterns.Nodes
 {
     public class PatternMultipleStatements : Statement
     {
-        public override NodeType NodeType => NodeType.PatternMultipleStatements;
+        public override UstKind Kind => UstKind.PatternMultipleStatements;
 
         public PatternMultipleStatements()
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)other.NodeType;
+                return (int)other.Kind;
             }
 
             if (other is Statement)
@@ -30,7 +30,7 @@ namespace PT.PM.Patterns.Nodes
             }
             else
             {
-                return NodeType - other.NodeType;
+                return Kind - other.Kind;
             }
         }
 

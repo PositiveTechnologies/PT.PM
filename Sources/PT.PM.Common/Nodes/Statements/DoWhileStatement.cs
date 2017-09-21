@@ -5,7 +5,7 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class DoWhileStatement : Statement
     {
-        public override NodeType NodeType => NodeType.DoWhileStatement;
+        public override UstKind Kind => UstKind.DoWhileStatement;
 
         public Statement EmbeddedStatement { get; set; }
 
@@ -22,9 +22,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode> {EmbeddedStatement, Condition};
+            var result = new List<Ust> {EmbeddedStatement, Condition};
             return result.ToArray();
         }
     }

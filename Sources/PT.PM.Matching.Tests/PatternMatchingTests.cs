@@ -26,7 +26,7 @@ namespace PT.PM.Matching.Tests
         public void Init()
         {
             patternsConverter = new PatternConverter(
-                new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
+                new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef)));
             patternsRep = new MemoryPatternsRepository();
             sourceCodeRep = new MemoryCodeRepository(
                 "<?php \n" +
@@ -59,9 +59,9 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternExpressionsInCalls(string patternData, params int[] matchMethodNumbers)
         {
             var processor = new DslProcessor();
-            var patternNode = (PatternRootNode)processor.Deserialize(patternData);
+            var patternNode = (PatternRootUst)processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootUst>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
@@ -80,9 +80,9 @@ namespace PT.PM.Matching.Tests
             Assert.Ignore("Won't be supported in future versions of PT.PM");
 
             var processor = new DslProcessor();
-            var patternNode = (PatternRootNode)processor.Deserialize(patternData);
+            var patternNode = (PatternRootUst)processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootUst>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();
@@ -95,9 +95,9 @@ namespace PT.PM.Matching.Tests
         public void Match_PasswordCheckInsideStatement(string patternData)
         {
             var processor = new DslProcessor();
-            var patternNode = (PatternRootNode)processor.Deserialize(patternData);
+            var patternNode = (PatternRootUst)processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootUst>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository);
             patternsRep.Clear();

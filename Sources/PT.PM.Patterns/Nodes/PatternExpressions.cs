@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace PT.PM.Patterns.Nodes
 {
-    public class PatternExpressions : ArgsNode, IAbsoluteLocationMatching
+    public class PatternExpressions : ArgsUst, IAbsoluteLocationMatching
     {
         private HashSet<PatternVarDef> pinnedPatternVarDefs = new HashSet<PatternVarDef>();
 
-        public override NodeType NodeType => NodeType.PatternExpressions;
+        public override UstKind Kind => UstKind.PatternExpressions;
 
         public TextSpan MatchedLocation { get; set; }
 
@@ -25,19 +25,19 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
                 return 1;
             }
 
-            if (other.NodeType == NodeType.PatternExpressions)
+            if (other.Kind == UstKind.PatternExpressions)
             {
                 return base.CompareTo(other);
             }
 
-            var result = NodeType.ArgsNode - other.NodeType;
+            var result = UstKind.ArgsUst - other.Kind;
             if (result != 0)
             {
                 return result;
@@ -47,10 +47,10 @@ namespace PT.PM.Patterns.Nodes
                 return 0;
             }
 
-            List<Expression> otherExpressions = ((ArgsNode)other).Collection;
+            List<Expression> otherExpressions = ((ArgsUst)other).Collection;
 
             bool includeNegative = Collection.Count(item =>
-                item.NodeType == NodeType.PatternExpression && ((PatternExpression)item).Not) > 0;
+                item.Kind == UstKind.PatternExpression && ((PatternExpression)item).Not) > 0;
             // TODO: not all cases work correctly.
             bool match = Match(otherExpressions);
 
@@ -72,11 +72,11 @@ namespace PT.PM.Patterns.Nodes
 
             if (Collection.Count > 0)
             {
-                if (otherExpressions.Count != 0 || (Collection.Count == 1 && Collection[0].NodeType == NodeType.PatternMultipleExpressions))
+                if (otherExpressions.Count != 0 || (Collection.Count == 1 && Collection[0].Kind == UstKind.PatternMultipleExpressions))
                 {
                     while (i < otherExpressions.Count)
                     {
-                        if (Collection[nextStateIndex].NodeType == NodeType.PatternMultipleExpressions)
+                        if (Collection[nextStateIndex].Kind == UstKind.PatternMultipleExpressions)
                         {
                             matched = true;
                             lastMatchIndex = i;
@@ -114,7 +114,7 @@ namespace PT.PM.Patterns.Nodes
 
                         if (nextStateIndex == Collection.Count)
                         {
-                            if (Collection[nextStateIndex - 1].NodeType == NodeType.PatternMultipleExpressions)
+                            if (Collection[nextStateIndex - 1].Kind == UstKind.PatternMultipleExpressions)
                             {
                                 lastMatchIndex = otherExpressions.Count - 1;
                             }
@@ -130,7 +130,7 @@ namespace PT.PM.Patterns.Nodes
                 lastMatchIndex = -1; // Match if function without arguments.
             }
 
-            if (nextStateIndex < Collection.Count && Collection[nextStateIndex].NodeType == NodeType.PatternMultipleExpressions)
+            if (nextStateIndex < Collection.Count && Collection[nextStateIndex].Kind == UstKind.PatternMultipleExpressions)
             {
                 nextStateIndex++;
             }
@@ -161,7 +161,7 @@ namespace PT.PM.Patterns.Nodes
             }
 
             IEnumerable<PatternVarDef> patternVarDefs = Collection[nextStateIndex]
-                .GetAllDescendants(child => child != null && child.NodeType == NodeType.PatternVarRef && ((PatternVarRef)child).PinValueAssigned)
+                .GetAllDescendants(child => child != null && child.Kind == UstKind.PatternVarRef && ((PatternVarRef)child).PinValueAssigned)
                 .Select(child => ((PatternVarRef)child).PatternVar);
             foreach (var patternVarDef in patternVarDefs)
                 pinnedPatternVarDefs.Add(patternVarDef);

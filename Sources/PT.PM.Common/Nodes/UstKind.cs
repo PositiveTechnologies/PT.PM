@@ -1,8 +1,8 @@
 ﻿namespace PT.PM.Common.Nodes
 {
-    public enum NodeType
+    public enum UstKind
     {
-        RootNode = 500,
+        RootUst = 500,
 
         // Global Scope
         Attribute = 400,
@@ -128,19 +128,19 @@
 
         // Collection
         Collection,
-        ArgsNode,
-        EntitiesNode,
+        ArgsUst,
+        EntitiesUst,
 
         // Artificial
         MultichildExpression,
         StatementDeclaration,
         TypeDeclarationStatement,
         WrapperStatement,
-        NotImplementedNode,
+        NotImplementedUst,
         WrapperExpression,
 
         // Patterns
-        PatternRootNode = 600,
+        PatternRootUst = 600,
         PatternAnd,
         PatternNot,
         PatternVarDef,

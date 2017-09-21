@@ -10,7 +10,7 @@ namespace PT.PM.Patterns.Nodes
     {
         private HashSet<PatternVarDef> pinnedPatternVarDefs;
 
-        public override NodeType NodeType => NodeType.PatternStatements;
+        public override UstKind Kind => UstKind.PatternStatements;
 
         public TextSpan MatchedLocation { get; set; }
 
@@ -24,19 +24,19 @@ namespace PT.PM.Patterns.Nodes
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
                 return 1;
             }
 
-            if (other.NodeType == NodeType.PatternStatements)
+            if (other.Kind == UstKind.PatternStatements)
             {
                 return base.CompareTo(other);
             }
             
-            int result = NodeType.BlockStatement - other.NodeType;
+            int result = UstKind.BlockStatement - other.Kind;
 
             if (result != 0)
             {
@@ -120,7 +120,7 @@ namespace PT.PM.Patterns.Nodes
                     }
                 }
 
-                if (nextStateIndex == -1 || (nextStateIndex < Statements.Count && Statements[nextStateIndex].NodeType == NodeType.PatternMultipleStatements))
+                if (nextStateIndex == -1 || (nextStateIndex < Statements.Count && Statements[nextStateIndex].Kind == UstKind.PatternMultipleStatements))
                 {
                     nextStateIndex += 1;
                     if (nextStateIndex < Statements.Count)
@@ -211,7 +211,7 @@ namespace PT.PM.Patterns.Nodes
             }
 
             IEnumerable<PatternVarDef> patternVarDefs = Statements[nextStateIndex]
-                .GetAllDescendants(child => child != null && child.NodeType == NodeType.PatternVarRef && ((PatternVarRef)child).PinValueAssigned)
+                .GetAllDescendants(child => child != null && child.Kind == UstKind.PatternVarRef && ((PatternVarRef)child).PinValueAssigned)
                 .Select(child => ((PatternVarRef)child).PatternVar);
             foreach (var patternVarDef in patternVarDefs)
                 pinnedPatternVarDefs.Add(patternVarDef);

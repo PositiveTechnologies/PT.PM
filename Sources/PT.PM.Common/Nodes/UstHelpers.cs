@@ -7,7 +7,7 @@ namespace PT.PM.Common.Nodes
 {
     public static class NodeHelper
     {
-        public static Statement ToStatementIfRequired(this UstNode node)
+        public static Statement ToStatementIfRequired(this Ust node)
         {
             Statement result = node as Statement;
             if (result == null)
@@ -29,7 +29,7 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static Expression ToExpressionIfRequired(this UstNode node)
+        public static Expression ToExpressionIfRequired(this Ust node)
         {
             if (node == null)
             {
@@ -56,41 +56,41 @@ namespace PT.PM.Common.Nodes
             }
         }
 
-        public static UstNode[] SelectAnalyzedNodes(this UstNode ustNode, Language language, HashSet<Language> analyzedLanguages)
+        public static Ust[] SelectAnalyzedNodes(this Ust ustNode, Language language, HashSet<Language> analyzedLanguages)
         {
-            UstNode[] result;
+            Ust[] result;
             if (analyzedLanguages.Contains(language))
             {
-                result = new UstNode[] { ustNode };
+                result = new Ust[] { ustNode };
             }
             else
             {
                 result = ustNode.GetAllDescendants(
-                    node => node is RootNode rootUstNode && analyzedLanguages.Contains(rootUstNode.Language))
-                    .Cast<RootNode>()
+                    node => node is RootUst rootUstNode && analyzedLanguages.Contains(rootUstNode.Language))
+                    .Cast<RootUst>()
                     .ToArray();
             }
             return result;
         }
 
-        public static void FillAscendants(this UstNode ustNode)
+        public static void FillAscendants(this Ust ustNode)
         {
             if (ustNode == null)
             {
                 return;
             }
 
-            FillAscendantsHelper(ustNode, ustNode as RootNode);
+            FillAscendantsHelper(ustNode, ustNode as RootUst);
 
-            void FillAscendantsHelper(UstNode node, RootNode root)
+            void FillAscendantsHelper(Ust node, RootUst root)
             {
-                foreach (UstNode child in node.Children)
+                foreach (Ust child in node.Children)
                 {
                     if (child != null)
                     {
                         child.Parent = node;
                         child.Root = root;
-                        if (child is RootNode rootUstChild)
+                        if (child is RootUst rootUstChild)
                         {
                             FillAscendants(rootUstChild);
                         }

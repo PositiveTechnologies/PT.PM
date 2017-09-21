@@ -9,7 +9,7 @@ namespace PT.PM.Patterns.Nodes
     {
         private Expression expression;
 
-        public override NodeType NodeType => NodeType.PatternExpressionInsideStatement;
+        public override UstKind Kind => UstKind.PatternExpressionInsideStatement;
 
         [JsonIgnore]
         public Expression Expression
@@ -39,14 +39,14 @@ namespace PT.PM.Patterns.Nodes
             Expression = expression;
         }
 
-        protected override int Compare(UstNode other)
+        protected override int Compare(Ust other)
         {
             return other.DoesAnyDescendantMatchPredicate(ustNode => Expression.Equals(ustNode)) ? 0 : 1;
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Expression };
+            return new Ust[] { Expression };
         }
 
         public override string ToString()

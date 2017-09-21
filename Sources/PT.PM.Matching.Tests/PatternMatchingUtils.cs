@@ -29,12 +29,12 @@ namespace PT.PM.Matching.Tests
             };
 
             var processor = new DslProcessor();
-            var patternNode = (PatternRootNode)processor.Deserialize(pattern);
+            var patternNode = (PatternRootUst)processor.Deserialize(pattern);
             patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageExt.AllPatternLanguages);
             patternNode.DebugInfo = pattern;
             var patternsConverter = new PatternConverter(
-                new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
+                new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef)));
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootUst>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)
                 .OrderBy(r => r.PatternKey)

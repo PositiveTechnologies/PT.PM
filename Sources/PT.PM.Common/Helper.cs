@@ -19,7 +19,7 @@ namespace PT.PM.Common
             return formattedJson;
         }
 
-        public static TextSpan GetTextSpan(this IEnumerable<UstNode> nodes)
+        public static TextSpan GetTextSpan(this IEnumerable<Nodes.Ust> nodes)
         {
             if (nodes.Count() == 0)
             {

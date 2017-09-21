@@ -11,11 +11,11 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 
-namespace PT.PM.Common.Ust
+namespace PT.PM.Common.Nodes
 {
     public class UstVisitor<T> : IUstVisitor<T>
     {
-        public virtual T Visit(UstNode ustNode)
+        public virtual T Visit(Ust ustNode)
         {
             if (ustNode == null)
             {
@@ -60,12 +60,12 @@ namespace PT.PM.Common.Ust
             return Visit((dynamic)literal);
         }
 
-        public virtual T Visit(ArgsNode argsNode)
+        public virtual T Visit(ArgsUst argsNode)
         {
             return VisitChildren(argsNode);
         }
 
-        public virtual T Visit(EntitiesNode entitiesNode)
+        public virtual T Visit(EntitiesUst entitiesNode)
         {
             return VisitChildren(entitiesNode);
         }
@@ -390,12 +390,12 @@ namespace PT.PM.Common.Ust
             return VisitChildren(statementDeclaration);
         }
 
-        public virtual T Visit(RootNode fileNode)
+        public virtual T Visit(RootUst fileNode)
         {
             return VisitChildren(fileNode);
         }
 
-        public virtual T Visit(NotImplementedNode notImplementedNode)
+        public virtual T Visit(NotImplementedUst notImplementedNode)
         {
             return VisitChildren(notImplementedNode);
         }
@@ -405,7 +405,7 @@ namespace PT.PM.Common.Ust
             return VisitChildren(collection);
         }
 
-        protected virtual T VisitChildren(UstNode ustNode)
+        protected virtual T VisitChildren(Nodes.Ust ustNode)
         {
             if (ustNode == null)
             {

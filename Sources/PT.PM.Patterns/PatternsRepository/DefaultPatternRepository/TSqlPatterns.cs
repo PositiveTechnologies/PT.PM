@@ -10,11 +10,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootNode> CreateTSqlPatterns()
+        public IEnumerable<PatternRootUst> CreateTSqlPatterns()
         {
-            var patterns = new List<PatternRootNode>();
+            var patterns = new List<PatternRootUst>();
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Dangerous Function",
@@ -26,7 +26,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Insecure Randomness",
@@ -38,7 +38,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
@@ -57,7 +57,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Id = "cursor",
                 Values = new List<Expression>() { new PatternIdToken() }
             };
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: Cursor Snarfing",
@@ -72,7 +72,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Statement = new ExpressionStatement(new InvocationExpression
                             {
                                 Target = new PatternIdToken("(?i)^declare_cursor$"),
-                                Arguments = new ArgsNode(new PatternVarRef(cursorVar), new PatternMultipleExpressions())
+                                Arguments = new ArgsUst(new PatternVarRef(cursorVar), new PatternMultipleExpressions())
                             })
                         },
                         new PatternExpressionInsideStatement
@@ -80,7 +80,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Statement = new ExpressionStatement(new InvocationExpression
                             {
                                 Target = new PatternIdToken("(?i)^deallocate$"),
-                                Arguments = new ArgsNode(new PatternVarRef(cursorVar))
+                                Arguments = new ArgsUst(new PatternVarRef(cursorVar))
                             }),
                             Not = true
                         }

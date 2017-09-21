@@ -4,7 +4,7 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class UnsafeStatement : SpecificStatement
     {
-        public override NodeType NodeType => NodeType.UnsafeStatement;
+        public override UstKind Kind => UstKind.UnsafeStatement;
 
         public BlockStatement Body { get; set; }
 
@@ -18,9 +18,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Body};
+            return new Ust[] {Body};
         }
     }
 }

@@ -2,16 +2,16 @@
 
 namespace PT.PM.Common.Nodes.Collections
 {
-    public class Collection : CollectionNode<UstNode>
+    public class Collection : CollectionNode<Ust>
     {
-        public override NodeType NodeType => NodeType.Collection;
+        public override UstKind Kind => UstKind.Collection;
 
         public Collection()
             : base()
         {
         }
 
-        public Collection(IEnumerable<UstNode> collection)
+        public Collection(IEnumerable<Ust> collection)
             : base(collection)
         {
         }

@@ -13,7 +13,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
     public partial class CSharpRoslynParseTreeConverter
     {
-        public override UstNode VisitBlock(BlockSyntax node)
+        public override Ust VisitBlock(BlockSyntax node)
         {
             var statements = node.Statements.Select(s => (Statement)VisitAndReturnNullIfError(s))
                 .ToList();
@@ -21,7 +21,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
+        public override Ust VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
         {
             var type = ConvertType(base.Visit(node.Declaration.Type));
             AssignmentExpression[] variables = 
@@ -33,25 +33,25 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitBreakStatement(BreakStatementSyntax node)
+        public override Ust VisitBreakStatement(BreakStatementSyntax node)
         {
             var result = new BreakStatement(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitCheckedStatement(CheckedStatementSyntax node)
+        public override Ust VisitCheckedStatement(CheckedStatementSyntax node)
         {
             var result = (BlockStatement)VisitBlock(node.Block);
             return result;
         }
 
-        public override UstNode VisitContinueStatement(ContinueStatementSyntax node)
+        public override Ust VisitContinueStatement(ContinueStatementSyntax node)
         {
             var result = new ContinueStatement(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitDoStatement(DoStatementSyntax node)
+        public override Ust VisitDoStatement(DoStatementSyntax node)
         {
             var embedded = (Statement)base.Visit(node.Statement);
             var condition = (Expression)base.Visit(node.Condition);
@@ -64,20 +64,20 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitEmptyStatement(EmptyStatementSyntax node)
+        public override Ust VisitEmptyStatement(EmptyStatementSyntax node)
         {
             var result = new EmptyStatement(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitExpressionStatement(ExpressionStatementSyntax node)
+        public override Ust VisitExpressionStatement(ExpressionStatementSyntax node)
         {
             var expression = (Expression)base.Visit(node.Expression);
             var result = new ExpressionStatement(expression, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitFixedStatement(FixedStatementSyntax node)
+        public override Ust VisitFixedStatement(FixedStatementSyntax node)
         {
             var statements = new List<Statement>();
 
@@ -89,7 +89,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitForEachStatement(ForEachStatementSyntax node)
+        public override Ust VisitForEachStatement(ForEachStatementSyntax node)
         {
             var type = ConvertType(base.Visit(node.Type));
             var var = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan());
@@ -100,7 +100,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitForStatement(ForStatementSyntax node)
+        public override Ust VisitForStatement(ForStatementSyntax node)
         {
             Statement[] initializers = node.Declaration != null ?
                 new Statement[]
@@ -122,14 +122,14 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitGotoStatement(GotoStatementSyntax node)
+        public override Ust VisitGotoStatement(GotoStatementSyntax node)
         {
             return new GotoStatement(
                 new IdToken("label", node.GetTextSpan()),
                 node.GetTextSpan()); // TODO implement;
         }
         
-        public override UstNode VisitIfStatement(IfStatementSyntax node)
+        public override Ust VisitIfStatement(IfStatementSyntax node)
         {
             var condition = (Expression) base.Visit(node.Condition);
             Statement trueStatement = (Statement)base.Visit(node.Statement);
@@ -147,7 +147,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitLabeledStatement(LabeledStatementSyntax node)
+        public override Ust VisitLabeledStatement(LabeledStatementSyntax node)
         {
             return new EmptyStatement(node.GetTextSpan());
         }
@@ -157,7 +157,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public override UstNode VisitLockStatement(LockStatementSyntax node)
+        public override Ust VisitLockStatement(LockStatementSyntax node)
         {
             var statements = new List<Statement>();
 
@@ -170,7 +170,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitReturnStatement(ReturnStatementSyntax node)
+        public override Ust VisitReturnStatement(ReturnStatementSyntax node)
         {
             var expression = (Expression) base.Visit(node.Expression);
             var result = new ReturnStatement(expression, node.GetTextSpan());
@@ -179,7 +179,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #region Switch
 
-        public override UstNode VisitSwitchStatement(SwitchStatementSyntax node)
+        public override Ust VisitSwitchStatement(SwitchStatementSyntax node)
         {
             var expression = (Expression) base.Visit(node.Expression);
             var sections = node.Sections.Select(s => (SwitchSection) VisitAndReturnNullIfError(s))
@@ -192,7 +192,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitSwitchSection(SwitchSectionSyntax node)
+        public override Ust VisitSwitchSection(SwitchSectionSyntax node)
         {
             var caseLabels = node.Labels.Select(s => (Expression)VisitAndReturnNullIfError(s)).ToArray();
             var statements = node.Statements.Select(s => (Statement)VisitAndReturnNullIfError(s)).ToArray();
@@ -204,20 +204,20 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitCaseSwitchLabel(CaseSwitchLabelSyntax node)
+        public override Ust VisitCaseSwitchLabel(CaseSwitchLabelSyntax node)
         {
             var result = (Expression) base.Visit(node.Value);
             return result;
         }
 
-        public override UstNode VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
+        public override Ust VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
         {
             return null;
         }
 
         #endregion
 
-        public override UstNode VisitThrowStatement(ThrowStatementSyntax node)
+        public override Ust VisitThrowStatement(ThrowStatementSyntax node)
         {
             var throwEpression = (Expression) base.Visit(node.Expression);
             var result = new ThrowStatement(throwEpression, node.GetTextSpan());
@@ -226,7 +226,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #region Try Catch Finally
 
-        public override UstNode VisitTryStatement(TryStatementSyntax node)
+        public override Ust VisitTryStatement(TryStatementSyntax node)
         {
             var tryBlock = (BlockStatement)VisitBlock(node.Block);
             var catchClauses = node.Catches.Select(c => (CatchClause)VisitAndReturnNullIfError(c))
@@ -243,7 +243,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitCatchClause(CatchClauseSyntax node)
+        public override Ust VisitCatchClause(CatchClauseSyntax node)
         {
             TypeToken typeToken;
             IdToken varName;
@@ -267,17 +267,17 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitCatchDeclaration(CatchDeclarationSyntax node)
+        public override Ust VisitCatchDeclaration(CatchDeclarationSyntax node)
         {
             return base.VisitCatchDeclaration(node);
         }
 
-        public override UstNode VisitCatchFilterClause(CatchFilterClauseSyntax node)
+        public override Ust VisitCatchFilterClause(CatchFilterClauseSyntax node)
         {
             throw new NotSupportedException();
         }
 
-        public override UstNode VisitFinallyClause(FinallyClauseSyntax node)
+        public override Ust VisitFinallyClause(FinallyClauseSyntax node)
         {
             var result = (BlockStatement)VisitBlock(node.Block);
             return result;
@@ -285,7 +285,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #endregion
 
-        public override UstNode VisitUnsafeStatement(UnsafeStatementSyntax node)
+        public override Ust VisitUnsafeStatement(UnsafeStatementSyntax node)
         {
             var result = (BlockStatement)VisitBlock(node.Block);
             return result;
@@ -296,7 +296,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public override UstNode VisitUsingStatement(UsingStatementSyntax node)
+        public override Ust VisitUsingStatement(UsingStatementSyntax node)
         {
             var statements = new List<Statement>();
             Statement resourceAcquisition;
@@ -317,7 +317,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitWhileStatement(WhileStatementSyntax node)
+        public override Ust VisitWhileStatement(WhileStatementSyntax node)
         {
             var condition = (Expression)base.Visit(node.Condition);
             var embedded = (Statement)base.Visit(node.Statement);
@@ -326,14 +326,14 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitYieldStatement(YieldStatementSyntax node)
+        public override Ust VisitYieldStatement(YieldStatementSyntax node)
         {
             var expression = (Expression)base.Visit(node.Expression);
             var result = new ReturnStatement(expression, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitVariableDeclaration(VariableDeclarationSyntax node)
+        public override Ust VisitVariableDeclaration(VariableDeclarationSyntax node)
         {
             var typeToken = ConvertType(base.Visit(node.Type));
             AssignmentExpression[] vars = node

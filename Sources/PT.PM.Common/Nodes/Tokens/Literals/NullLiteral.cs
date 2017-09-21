@@ -2,7 +2,7 @@
 {
     public class NullLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.NullLiteral;
+        public override UstKind Kind => UstKind.NullLiteral;
 
         public NullLiteral(TextSpan textSpan)
             : base(textSpan)

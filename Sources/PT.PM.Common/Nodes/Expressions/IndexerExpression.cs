@@ -5,13 +5,13 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class IndexerExpression : Expression
     {
-        public override NodeType NodeType => NodeType.IndexerExpression;
+        public override UstKind Kind => UstKind.IndexerExpression;
 
         public Expression Target { get; set; }
 
-        public ArgsNode Arguments { get; set; }
+        public ArgsUst Arguments { get; set; }
 
-        public IndexerExpression(Expression target, ArgsNode args, TextSpan textSpan)
+        public IndexerExpression(Expression target, ArgsUst args, TextSpan textSpan)
             : base(textSpan)
         {
             Target = target;
@@ -22,9 +22,9 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Target, Arguments };
+            return new Ust[] { Target, Arguments };
         }
 
         public override Expression[] GetArgs()

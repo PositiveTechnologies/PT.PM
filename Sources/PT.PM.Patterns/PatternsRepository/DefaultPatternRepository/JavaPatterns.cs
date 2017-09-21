@@ -15,11 +15,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootNode> CreateJavaPatterns()
+        public IEnumerable<PatternRootUst> CreateJavaPatterns()
         {
-            var patterns = new List<PatternRootNode>();
+            var patterns = new List<PatternRootUst>();
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InadequateRsaPadding. Weak Encryption: Inadequate RSA Padding. ",
@@ -39,11 +39,11 @@ namespace PT.PM.Patterns.PatternsRepository
                             }
                         }
                     },
-                    Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral("^RSA/NONE/NoPadding$") })
+                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral("^RSA/NONE/NoPadding$") })
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicAlgorithm. Weak Encryption: Broken or Risky Cryptographic Algorithm" +
@@ -64,11 +64,11 @@ namespace PT.PM.Patterns.PatternsRepository
                             }
                         }
                     },
-                    Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral(@"DES") })
+                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral(@"DES") })
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyBroadPath. Cookie Security: Overly Broad Path.",
@@ -80,11 +80,11 @@ namespace PT.PM.Patterns.PatternsRepository
                         Name = new IdToken("setPath"),
                         Target = new PatternIdToken(@"[cC]ookie")
                     },
-                    Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral { Text = "^/?$" } })
+                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral { Text = "^/?$" } })
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyBroadDomain Cookie Security: Overly Broad Domain.",
@@ -96,11 +96,11 @@ namespace PT.PM.Patterns.PatternsRepository
                         Name = new IdToken("setDomain"),
                         Target = new PatternIdToken { Id = @"[cC]ookie" }
                     },
-                    Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral(@"^.?[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-]+$") })
+                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral(@"^.?[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-]+$") })
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PoorSeeding.",
@@ -112,11 +112,11 @@ namespace PT.PM.Patterns.PatternsRepository
                         Name = new IdToken("setSeed"),
                         Target = new PatternExpression()
                     },
-                    Arguments = new ArgsNode(new List<Expression>() { new PatternIntLiteral() })
+                    Arguments = new ArgsUst(new List<Expression>() { new PatternIntLiteral() })
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash.",
@@ -128,11 +128,11 @@ namespace PT.PM.Patterns.PatternsRepository
                         Name = new IdToken("getInstance"),
                         Target = new IdToken("MessageDigest")
                     },
-                    Arguments = new ArgsNode(new List<Expression>() { new PatternStringLiteral("MD5|SHA-1") })
+                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral("MD5|SHA-1") })
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AndroidPermissionCheck. Often Misused: Android Permission Check.",
@@ -148,7 +148,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AndroidHostnameVerificationDisabled. Insecure SSL: Android Hostname Verification Disabled.",
@@ -171,14 +171,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SAXReaderExternalEntity",
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>()
                         {
@@ -191,20 +191,20 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new ObjectCreateExpression
                         {
                             Type = new TypeToken { TypeText = "SAXReader" },
-                            Arguments = new ArgsNode()
+                            Arguments = new ArgsUst()
                         }
                     }
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "XmlExternalEntity",
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>()
                         {
@@ -217,20 +217,20 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new ObjectCreateExpression
                         {
                             Type = new TypeToken { TypeText = "XMLUtil" },
-                            Arguments = new ArgsNode()
+                            Arguments = new ArgsUst()
                         }
                     }
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "StickyBroadcast. Android Bad Practices: Sticky Broadcast.",
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>() { new PatternExpression() }
                     },
@@ -242,14 +242,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SendStickyBroadcastAsUser. Android Bad Practices: Sticky Broadcast.",
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>() { new PatternExpression(), new PatternExpression() }
                     },
@@ -262,14 +262,14 @@ namespace PT.PM.Patterns.PatternsRepository
             });
 
             // TODO: implement "createSocket"
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureSSL. Insecure SSL: Android Socket.",
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>()
                         {
@@ -285,14 +285,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedSalt. Weak Cryptographic Hash: Hardcoded Salt.",
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>() {
                             new PatternExpression(),
@@ -307,7 +307,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "MissingReceiverPermission. The program sends a broadcast without specifying the receiver permission. " +
@@ -315,7 +315,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>() {
                             new PatternExpression()
@@ -329,7 +329,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "MissingBroadcasterPermission. The program registers a receiver without specifying the broadcaster permission. " +
@@ -339,7 +339,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new InvocationExpression
                 {
-                    Arguments = new ArgsNode
+                    Arguments = new ArgsUst
                     {
                         Collection = new List<Expression>() {
                             new PatternExpression(),
@@ -359,7 +359,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Id = "cookie",
                 Values = new List<Expression>() { new PatternIdToken() }
             };
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieNotSentOverSSL. Cookie Security: Cookie not Sent Over SSL. ",
@@ -390,7 +390,7 @@ namespace PT.PM.Patterns.PatternsRepository
 
                         new PatternStatement(new ExpressionStatement(new InvocationExpression
                         {
-                            Arguments = new ArgsNode
+                            Arguments = new ArgsUst
                             {
                                 Collection = new List<Expression>() { new BooleanLiteral { Value = true } }
                             },
@@ -405,7 +405,7 @@ namespace PT.PM.Patterns.PatternsRepository
 
                         new ExpressionStatement(new InvocationExpression
                         {
-                            Arguments = new ArgsNode
+                            Arguments = new ArgsUst
                             {
                                 Collection = new List<Expression>() { new PatternVarRef(cookieVar) }
                             },
@@ -419,7 +419,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Use of NullPointerException Catch to Detect NULL Pointer Dereference",
@@ -431,7 +431,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "UsingCloneWithoutCloneable. Using clone method without implementing Clonable",
@@ -463,7 +463,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "ExtendingSecurityManagerWithoutFinal. Class extending SecurityManager is not final",
@@ -494,7 +494,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "ImproperValidationEmptyMethod. Improper Certificate Validation (Empty method)",
@@ -513,7 +513,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootNode
+            patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PoorLoggingPractice. Declare logger not static or final",
