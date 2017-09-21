@@ -1,14 +1,15 @@
-﻿using PT.PM.AntlrUtils;
-using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using PT.PM.AntlrUtils;
+using PT.PM.Common;
+using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Nodes;
+using PT.PM.JavaScriptParseTreeUst;
+using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
+using PT.PM.Matching.PatternsRepository;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -17,7 +18,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using PT.PM.JavaScriptParseTreeUst;
 
 namespace PT.PM.PatternEditor
 {

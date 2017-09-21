@@ -6,6 +6,7 @@ using PT.PM.TestUtils;
 using PT.PM.Patterns;
 using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
+using PT.PM.Matching.PatternsRepository;
 
 namespace PT.PM.Matching.Tests
 {

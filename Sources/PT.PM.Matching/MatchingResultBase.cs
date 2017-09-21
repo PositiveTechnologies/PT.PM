@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common.Nodes;
-using PT.PM.Patterns.Nodes;
+using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 
 namespace PT.PM.Matching

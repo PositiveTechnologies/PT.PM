@@ -1,6 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
-using PT.PM.Patterns.Nodes;
+using PT.PM.Matching.Patterns;
 
 namespace PT.PM
 {

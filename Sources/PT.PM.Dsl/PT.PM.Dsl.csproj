@@ -67,17 +67,13 @@
       <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
       <Name>PT.PM.AntlrUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
-      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
-      <Name>PT.PM.UstPreprocessing</Name>
+    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
+      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
+      <Name>PT.PM.Matching</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
-      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
-      <Name>PT.PM.Patterns</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj">
       <Project>{0292ce45-bba4-46b8-ade4-3c39162c1f46}</Project>

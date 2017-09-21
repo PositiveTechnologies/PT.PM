@@ -2,9 +2,8 @@
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
+using PT.PM.Matching.Patterns;
+using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
 using System.Linq;
 

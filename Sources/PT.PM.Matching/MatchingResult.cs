@@ -2,7 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using System.Collections.Generic;
-using PT.PM.Patterns.Nodes;
+using PT.PM.Matching.Patterns;
 
 namespace PT.PM.Matching
 {

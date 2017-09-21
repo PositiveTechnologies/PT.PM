@@ -64,6 +64,10 @@
       <Project>{349b2aef-fa81-401f-a8bd-c53ee7231544}</Project>
       <Name>PT.PM.Cli</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
+      <Project>{9215DF23-07BE-49AA-90A0-ED1C542C388C}</Project>
+      <Name>PT.PM.Matching</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
       <Name>PT.PM.Patterns</Name>

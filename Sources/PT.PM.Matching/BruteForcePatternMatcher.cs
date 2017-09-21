@@ -2,7 +2,7 @@
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using PT.PM.Patterns.Nodes;
+using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;

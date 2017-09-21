@@ -1,12 +1,11 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
-using PT.PM.TestUtils;
 using PT.PM.Dsl;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
-using NUnit.Framework;
+using PT.PM.Matching.Patterns;
+using PT.PM.Matching.PatternsRepository;
+using PT.PM.TestUtils;
 using System;
 using System.Collections.Generic;
 using System.IO;

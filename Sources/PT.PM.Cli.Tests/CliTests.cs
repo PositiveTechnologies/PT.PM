@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PT.PM.Matching;
 
 namespace PT.PM.Cli.Tests
 {

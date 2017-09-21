@@ -1,14 +1,14 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
-using PT.PM.TestUtils;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
+using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
 using PT.PM.Patterns.PatternsRepository;
-using NUnit.Framework;
+using PT.PM.TestUtils;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace PT.PM.Dsl.Tests
 {

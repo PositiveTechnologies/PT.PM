@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Matching;
-using PT.PM.Patterns.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Threading;

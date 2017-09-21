@@ -6,7 +6,6 @@ using Antlr4.Runtime.Misc;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.AntlrUtils;
-using PT.PM.Patterns.Nodes;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Tokens;
 using Antlr4.Runtime.Tree;
@@ -14,6 +13,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Matching.Patterns;
 
 namespace PT.PM.Dsl
 {

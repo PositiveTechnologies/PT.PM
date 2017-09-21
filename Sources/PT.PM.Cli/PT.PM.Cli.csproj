@@ -95,10 +95,6 @@
       <Project>{2B5519C9-4566-4743-A14A-66234299CDB8}</Project>
       <Name>PT.PM.AntlrUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
-      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
-      <Name>PT.PM.UstPreprocessing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>

@@ -1,13 +1,13 @@
-﻿using PT.PM.Common;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Dsl;
-using PT.PM.Patterns.Nodes;
-using NUnit.Framework;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json;
-using PT.PM.Patterns;
+using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 
 namespace PT.PM.Tests

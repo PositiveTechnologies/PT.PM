@@ -1,11 +1,10 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using System;
-using System.Linq;
-using PT.PM.Patterns.Nodes;
-using PT.PM.UstPreprocessing;
-using System.Collections.Generic;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Nodes;
+using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
+using System;
+using System.Collections.Generic;
 
 namespace PT.PM.Dsl
 {
