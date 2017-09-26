@@ -1,0 +1,61 @@
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Tokens.Literals;
+
+namespace PT.PM.Matching.Patterns
+{
+    public class PatternIntRangeLiteral : PatternBase
+    {
+        public long MinValue { get; set; }
+
+        public long MaxValue { get; set; }
+
+        public PatternIntRangeLiteral()
+            : this(long.MinValue, long.MaxValue)
+        {
+        }
+
+        public PatternIntRangeLiteral(long value, TextSpan textSpan = default(TextSpan))
+            : this(value, value, textSpan)
+        {
+        }
+
+        public PatternIntRangeLiteral(long minValue, long maxValue, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
+        {
+            MinValue = minValue;
+            MaxValue = maxValue;
+        }
+
+        public override Ust[] GetChildren() => ArrayUtils<Expression>.EmptyArray;
+
+        public override string ToString()
+        {
+            if (MinValue == MaxValue)
+            {
+                return MinValue.ToString();
+            }
+
+            return $"{(MinValue == long.MinValue ? "-(∞" : "[" + MinValue.ToString())}"
+                  + ".."
+                  + $"{(MaxValue == long.MaxValue ? "∞)" : MaxValue.ToString() + ")")}";
+        }
+
+        public override bool Match(Ust ust, MatchingContext context)
+        {
+            if (ust?.Kind != UstKind.IntLiteral)
+            {
+                return false;
+            }
+
+            long otherValue = ((IntLiteral)ust).Value;
+            if (otherValue >= MinValue || otherValue < MaxValue)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+}

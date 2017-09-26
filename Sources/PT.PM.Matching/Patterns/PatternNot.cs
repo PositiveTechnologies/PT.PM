@@ -1,51 +1,35 @@
-﻿using System;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternNot : Expression
+    public class PatternNot : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternNot;
-
-        public Expression Expression { get; set; }
-
-        public PatternNot(Expression expression, TextSpan textSpan) :
-            base(textSpan)
-        {
-            Expression = expression;
-        }
+        public PatternBase Expression { get; set; }
 
         public PatternNot()
         {
         }
 
-        public override Ust[] GetChildren()
+        public PatternNot(PatternBase expression, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
         {
-            return new Ust[] { Expression };
+            Expression = expression;
         }
 
-        public override int CompareTo(Ust other)
+        public override Ust[] GetChildren() => new Ust[] { Expression };
+
+        public override string ToString() => $"<~>{Expression}";
+
+        public override bool Match(Ust ust, MatchingContext context)
         {
-            if (other == null)
+            if (ust == null)
             {
-                return (int)Kind;
+                return false;
             }
 
-            if (other.Kind == UstKind.PatternNot)
-            {
-                var otherPatternNot = (PatternNot)other;
-                return Expression.CompareTo(otherPatternNot.Expression);
-            }
-
-            int compareRes = Expression.CompareTo(other);
-            return compareRes == 0 ? -1 : 0;
-        }
-
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Expression };
+            bool match = !Expression.Match(ust, context);
+            return match;
         }
     }
 }

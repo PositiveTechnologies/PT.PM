@@ -1,58 +1,24 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common;
-using System;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternExpressionInsideNode : Expression
+    public class PatternExpressionInsideNode : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternExpressionInsideNode;
-
-        public Expression Expression { get; set; }
+        public PatternBase Expression { get; set; }
 
         public PatternExpressionInsideNode()
         {
         }
 
-        public PatternExpressionInsideNode(Expression expression, TextSpan textSpan)
+        public PatternExpressionInsideNode(PatternBase expression, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Expression = expression;
         }
 
-        public override int CompareTo(Ust other)
-        {
-            if (other == null)
-            {
-                return (int)Kind;
-            }
-
-            if (other.Kind == UstKind.PatternExpressionInsideNode)
-            {
-                return CompareExpression(((PatternExpressionInsideNode)other).Expression);
-            }
-
-            return other.DoesAnyDescendantMatchPredicate(ustNode => CompareExpression(ustNode) == 0) ? 0 : -1;
-        }
-
-        protected int CompareExpression(Ust other)
-        {
-            if (Expression == null)
-            {
-                if (other == null)
-                {
-                    return 0;
-                }
-                return -other.CompareTo(null);
-            }
-            return Expression.CompareTo(other);
-        }
-
-        public override Ust[] GetChildren()
-        {
-            return new Ust[] { Expression };
-        }
+        public override Ust[] GetChildren() => new Ust[] { Expression };
 
         public override string ToString()
         {
@@ -61,12 +27,30 @@ namespace PT.PM.Matching.Patterns
                 return "#*";
             }
 
-            return "#* " + Expression.ToString() + " #*";
+            return "<{ " + Expression.ToString() + " }>";
         }
 
-        public override Expression[] GetArgs()
+        public override bool Match(Ust ust, MatchingContext context)
         {
-            return new Expression[] { Expression };
+            if (ust == null)
+            {
+                return false;
+            }
+
+            return ust.DoesAnyDescendantMatchPredicate(ustNode => MatchExpression(ustNode, context));
+        }
+
+        protected bool MatchExpression(Ust other, MatchingContext context)
+        {
+            if (Expression == null)
+            {
+                if (other == null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return Expression.Match(other, context);
         }
     }
 }

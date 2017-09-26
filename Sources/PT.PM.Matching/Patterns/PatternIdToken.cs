@@ -1,75 +1,60 @@
-﻿using System.Text.RegularExpressions;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
-using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdToken : IdToken, IRelativeLocationMatching
+    public class PatternIdToken : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternIdToken;
+        private string id = "";
+        private Regex caseInsensitiveRegex;
 
-        [JsonIgnore]
-        public Regex Regex { get; set; }
-
-        [JsonIgnore]
-        public Regex CaseInsensitiveRegex { get; set; }
-
-        public TextSpan[] MatchedLocations { get; set; }
-
-        public override string Id
+        public string Id
         {
             get
             {
-                return Regex.ToString();
+                return id;
             }
             set
             {
-                Regex = new Regex(value, RegexOptions.Compiled);
-                CaseInsensitiveRegex = value.StartsWith("(?i)") ? Regex : new Regex(value, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                id = value;
+                caseInsensitiveRegex = new Regex(value, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
-        }
-
-        public PatternIdToken(string regexId, TextSpan textSpan)
-            : base(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, textSpan)
-        {
-        }
-
-        public PatternIdToken(string regexId)
-            : base(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, default(TextSpan))
-        {
         }
 
         public PatternIdToken()
-            : base(@"\w+", default(TextSpan))
         {
         }
 
-        public override string TextValue => Regex.ToString();
-
-        public override int CompareTo(Ust other)
+        public PatternIdToken(string id, TextSpan textSpan = default(TextSpan))
         {
-            if (other == null)
+            Id = id;
+            TextSpan = textSpan;
+        }
+
+        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
+
+        public override string ToString() => Id;
+
+        public override bool Match(Ust ust, MatchingContext context)
+        {
+            var token = ust as Token;
+            if (token != null)
             {
-                return 1;
+                return false;
             }
 
-            if (other.Kind == UstKind.PatternIdToken)
+            string tokenText = token.TextValue;
+            if (ust.Root.Language.IsCaseInsensitive())
             {
-                return Id.CompareTo(((PatternIdToken)other).Id);
+                TextSpan[] matchedLocations = caseInsensitiveRegex.MatchRegex(tokenText, true);
+                return matchedLocations.Length > 0;
             }
-
-            if (!typeof(Token).IsAssignableFrom(other.GetType()))
+            else
             {
-                return Kind - other.Kind;
+                return id.Equals(tokenText);
             }
-
-            var regex = other.Root.Language.IsCaseInsensitive()
-                ? CaseInsensitiveRegex
-                : Regex;
-            MatchedLocations = PatternHelper.MatchRegex(regex, ((Token)other).TextValue, true);
-            return MatchedLocations.Length == 0 ? 1 : 0;
         }
     }
 }

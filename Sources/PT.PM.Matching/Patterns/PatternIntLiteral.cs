@@ -1,81 +1,42 @@
-﻿using PT.PM.Common.Nodes;
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntLiteral : IntLiteral
+    public class PatternIntLiteral : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternIntLiteral;
-
-        public long MinValue { get; set; }
-
-        public long MaxValue { get; set; }
+        public long Value { get; set; }
 
         public PatternIntLiteral()
-            : this(long.MinValue, long.MaxValue)
         {
         }
 
-        public PatternIntLiteral(long value)
-            : this(value, value)
+        public PatternIntLiteral(long value, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
         {
+            Value = value;
         }
 
-        public PatternIntLiteral(long minValue, long maxValue)
+        public override Ust[] GetChildren() => ArrayUtils<Expression>.EmptyArray;
+
+        public override string ToString() => Value.ToString();
+
+        public override bool Match(Ust ust, MatchingContext context)
         {
-            MinValue = minValue;
-            MaxValue = maxValue;
-        }
-
-        public override int CompareTo(Ust other)
-        {
-            if (other == null)
+            if (ust?.Kind != UstKind.IntLiteral)
             {
-                return (int)Kind;
+                return false;
             }
 
-            if (other.Kind == UstKind.PatternIntLiteral)
+            long otherValue = ((IntLiteral)ust).Value;
+            if (otherValue.Equals(Value))
             {
-                var otherPatternIntLiteral = (PatternIntLiteral)other;
-                return MinValue == otherPatternIntLiteral.MinValue && MaxValue == otherPatternIntLiteral.MaxValue ? 0 : 1;
+                return true;
             }
 
-            if (other.Kind != UstKind.IntLiteral)
-            {
-                return Kind - other.Kind;
-            }
-
-            long otherValue = ((IntLiteral)other).Value;
-            int result;
-            if (otherValue < MinValue)
-            {
-                result = 1;
-            }
-            else if (otherValue >= MaxValue)
-            {
-                result = -1;
-            }
-            else
-            {
-                result = 0;
-            }
-
-            return result;
-        }
-
-        public override string TextValue
-        {
-            get
-            {
-                if (MinValue == MaxValue)
-                {
-                    return MinValue.ToString();
-                }
-
-                return $"{(MinValue == long.MinValue ? "-(∞" : "[" + MinValue.ToString())}"
-                      + ".."
-                      + $"{(MaxValue == long.MaxValue ? "∞)" : MaxValue.ToString() + ")")}";
-            }
+            return false;
         }
     }
 }

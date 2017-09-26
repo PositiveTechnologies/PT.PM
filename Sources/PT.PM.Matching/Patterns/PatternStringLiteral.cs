@@ -1,68 +1,41 @@
-﻿using Newtonsoft.Json;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStringLiteral : StringLiteral, IRelativeLocationMatching
+    public class PatternStringLiteral : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternStringLiteral;
-
-        [JsonIgnore]
-        public Regex Regex { get; set; }
-
-        public TextSpan[] MatchedLocations { get; set; }
-
-        public override string Text
-        {
-            get
-            {
-                return Regex.ToString();
-            }
-            set
-            {
-                Regex = new Regex(value, RegexOptions.Compiled);
-            }
-        }
-
-        public PatternStringLiteral(string regexString, TextSpan textSpan)
-            : base(regexString, textSpan)
-        {
-        }
-
-        public PatternStringLiteral(string regexString)
-            : base(regexString, default(TextSpan))
-        {
-        }
+        public string String { get; set; } = "";
 
         public PatternStringLiteral()
-            : base(@".*", default(TextSpan))
         {
         }
 
-        public override string TextValue => Regex.ToString();
-
-        public override int CompareTo(Ust other)
+        public PatternStringLiteral(string @string, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
         {
-            if (other == null)
+            String = @string;
+        }
+
+        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
+
+        public override string ToString() => String;
+
+        public override bool Match(Ust ust, MatchingContext context)
+        {
+            if (ust?.Kind != UstKind.StringLiteral)
             {
-                return (int)Kind;
+                return false;
             }
 
-            if (other.Kind == UstKind.PatternStringLiteral)
+            var stringLiteral = (StringLiteral)ust;
+            bool match = String.Equals(stringLiteral.Text);
+            if (match)
             {
-                return Text.CompareTo(((PatternStringLiteral)other).Text);
+                context.AddLocation(ust.TextSpan);
             }
-
-            if (other.Kind != UstKind.StringLiteral)
-            {
-                return Kind - other.Kind;
-            }
-
-            MatchedLocations = PatternHelper.MatchRegex(Regex, ((StringLiteral)other).Text, isString: true);
-            return MatchedLocations.Length == 0 ? 1 : 0;
+            return match;
         }
     }
 }

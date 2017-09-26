@@ -1,50 +1,52 @@
-﻿using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens;
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBooleanLiteral : BooleanLiteral
+    public class PatternBooleanLiteral : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternBooleanLiteral;
+        public bool Value { get; set; }
 
-        public bool Any { get; set; }
+        public bool Any { get; set; } = true;
 
-        public PatternBooleanLiteral(bool? value = null)
+        public PatternBooleanLiteral()
+        {
+        }
+
+        public PatternBooleanLiteral(bool? value = null, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
         {
             Any = value == null;
             Value = value.Value;
         }
 
-        public PatternBooleanLiteral()
+        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
+
+        public override string ToString()
         {
-            Any = true;
+            if (Any)
+            {
+                return "True <|> False";
+            }
+
+            return Value.ToString();
         }
 
-        public override int CompareTo(Ust other)
+        public override bool Match(Ust ust, MatchingContext context)
         {
-            if (other == null)
+            if (ust?.Kind != UstKind.BooleanLiteral)
             {
-                return (int)Kind;
+                return false;
             }
 
-            if (other.Kind == UstKind.PatternBooleanLiteral)
+            bool otherValue = ((BooleanLiteral)ust).Value;
+            if (Any || Value.Equals(otherValue))
             {
-                return Any == ((PatternBooleanLiteral)other).Any ? 0 : Value.CompareTo(((BooleanLiteral)other).Value);
+                return true;
             }
 
-            if (other.Kind != UstKind.BooleanLiteral)
-            {
-                return Kind - other.Kind;
-            }
-
-            var result = Any ? 0 : Value.CompareTo(((BooleanLiteral)other).Value);
-            return result;
+            return false;
         }
     }
 }

@@ -6,38 +6,38 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAnd : PatternBase
+    public class PatternOr : PatternBase
     {
         public List<PatternBase> Expressions { get; set; }
 
-        public PatternAnd(IEnumerable<PatternBase> expressions, TextSpan textSpan) :
-            base(textSpan)
+        public PatternOr()
+        {
+            Expressions = new List<PatternBase>();
+        }
+
+        public PatternOr(IEnumerable<PatternBase> expressions, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
         {
             Expressions = expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
-        public PatternAnd()
-        {
-            Expressions = new List<PatternBase>();
-        }
-
         public override Ust[] GetChildren() => Expressions.ToArray();
 
-        public override string ToString() => $"({(string.Join(" <&> ", Expressions))})";
+        public override string ToString() => $"({(string.Join(" <|> ", Expressions))})";
 
         public override bool Match(Ust ust, MatchingContext context)
         {
             foreach (PatternBase expression in Expressions)
             {
                 bool match = expression.Match(ust, context);
-                if (!match)
+                if (match)
                 {
-                    return false;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
     }
 }

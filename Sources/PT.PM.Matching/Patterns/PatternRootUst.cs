@@ -5,15 +5,15 @@ using System;
 using PT.PM.Common;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Converters;
+using System.Linq;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternRootUst : RootUst
+    public class PatternRootUst : RootUst, IPatternUst
     {
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
-
-        public override UstKind Kind => UstKind.PatternRootUst;
 
         public string Key { get; set; } = "";
 
@@ -36,7 +36,7 @@ namespace PT.PM.Matching.Patterns
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public UstNodeSerializationFormat DataFormat { get; set; } = UstNodeSerializationFormat.Json;
+        public UstFormat DataFormat { get; set; } = UstFormat.Json;
 
         [JsonIgnore]
         public string DebugInfo { get; set; } = "";
@@ -53,9 +53,6 @@ namespace PT.PM.Matching.Patterns
                 return pathWildcardRegex;
             }
         }
-
-        [JsonIgnore]
-        public List<PatternVarDef> Vars { get; set; } = new List<PatternVarDef>();
 
         public PatternRootUst(string key, string debugInfo, IEnumerable<Language> languages, string filenameWildcard)
             : this(null)
@@ -76,26 +73,61 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public override Ust[] GetChildren()
-        {
-            var result = new List<Ust>();
-            result.AddRange(Nodes);
-            return result.ToArray();
-        }
-
-        public override int CompareTo(Ust other)
-        {
-            if (other is PatternRootUst otherRoot)
-            {
-                return UstNodeHelper.CompareTo<Ust>(Nodes, otherRoot.Nodes);
-            }
-
-            return 1;
-        }
+        public override Ust[] GetChildren() => Nodes;
 
         public override string ToString()
         {
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
+        }
+
+        public bool Match(Ust ust, MatchingContext context)
+        {
+            if (ust?.Kind != UstKind.RootUst)
+            {
+                return false;
+            }
+
+            var patternUst = (IPatternUst)Node;
+            var rootUst = (RootUst)ust;
+
+            if (patternUst is PatternComment ||
+               (patternUst is PatternOr && ((PatternOr)patternUst).Expressions.Any(v => v is PatternComment)))
+            {
+                foreach (CommentLiteral commentNode in rootUst.Comments)
+                {
+                    MatchAndAddResult(patternUst, commentNode, context);
+                }
+            }
+            else
+            {
+                TraverseChildren(patternUst, rootUst, context);
+            }
+
+            return context.Results.Count > 0;
+        }
+
+        private static void TraverseChildren(IPatternUst patternUst, Ust ust, MatchingContext context)
+        {
+            MatchAndAddResult(patternUst, ust, context);
+
+            if (ust != null)
+            {
+                foreach (Ust child in ust.Children)
+                {
+                    TraverseChildren(patternUst, child, context);
+                }
+            }
+        }
+
+        private static void MatchAndAddResult(IPatternUst patternUst, Ust ust, MatchingContext context)
+        {
+            if (patternUst.Match(ust, context))
+            {
+                var matching = new MatchingResult(ust.Root, context.PatternUst, context.Locations);
+                context.Logger.LogInfo(matching);
+                context.Results.Add(matching);
+                context.Locations.Clear();
+            }
         }
     }
 }

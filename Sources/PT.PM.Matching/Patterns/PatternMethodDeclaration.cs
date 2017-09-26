@@ -1,8 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
 using System.Collections.Generic;
@@ -10,42 +8,42 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternMethodDeclaration : Expression
+    public class PatternMethodDeclaration : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternMethodDeclaration;
-
-        public List<Token> Modifiers { get; set; }
-
-        public Token Name { get; set; }
-
         public bool AnyBody { get; set; }
 
-        public Ust Body { get; set; }
+        public List<PatternBase> Modifiers { get; set; }
 
-        public PatternMethodDeclaration(List<Token> modifiers, Token name,
-            PatternExpressionInsideNode body, TextSpan textSpan)
+        public PatternBase Name { get; set; }
+
+        public PatternBase Body { get; set; }
+
+        public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name,
+            PatternBase body, TextSpan textSpan)
             : base(textSpan)
         {
-            Modifiers = modifiers;
+            Modifiers = modifiers?.ToList()
+                ?? new List<PatternBase>();
             Name = name;
             AnyBody = false;
-            Body = body ?? throw new ArgumentNullException("body should not be null");
+            Body = body ?? throw new ArgumentNullException(nameof(body));
         }
 
-        public PatternMethodDeclaration(List<Token> modifiers, Token name, bool anyBody,
-            TextSpan textSpan) : base(textSpan)
+        public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody,
+            TextSpan textSpan)
+            : base(textSpan)
         {
-            initFields(modifiers, name, anyBody);
+            InitFields(modifiers, name, anyBody);
         }
 
-        public PatternMethodDeclaration(List<Token> modifiers, Token name, bool anyBody)
+        public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)
         {
-            initFields(modifiers, name, anyBody);
+            InitFields(modifiers, name, anyBody);
         }
 
         public PatternMethodDeclaration()
         {
-            Modifiers = new List<Token>();
+            Modifiers = new List<PatternBase>();
         }
 
         public override Ust[] GetChildren()
@@ -57,57 +55,6 @@ namespace PT.PM.Matching.Patterns
             return result.ToArray();
         }
 
-        public override int CompareTo(Ust other)
-        {
-            if (other == null)
-            {
-                return (int)Kind;
-            }
-
-            if (other.Kind == UstKind.PatternMethodDeclaration)
-            {
-                var otherPatternMethodDeclaration = (PatternMethodDeclaration)other;
-                return GetChildren().CompareTo(otherPatternMethodDeclaration.GetChildren());
-            }
-
-            if (other.Kind != UstKind.MethodDeclaration)
-            {
-                return UstKind.MethodDeclaration - other.Kind;
-            }
-
-            var methodDeclaration = (MethodDeclaration)other;
-
-            int compareRes = Modifiers.CompareSubset(methodDeclaration.Modifiers);
-            if (compareRes != 0)
-            {
-                return compareRes;
-            }
-
-            compareRes = Name.CompareTo(methodDeclaration.Name);
-            if (compareRes != 0)
-            {
-                return compareRes;
-            }
-
-            if (!AnyBody)
-            {
-                if (Body != null)
-                {
-                    compareRes = Body.CompareTo(methodDeclaration.Body);
-                    if (compareRes != 0)
-                    {
-                        return compareRes;
-                    }
-                }
-                else if (methodDeclaration.Body != null)
-                {
-                    return -methodDeclaration.Body.CompareTo(Body);
-                }
-            }
-
-            return 0;
-        }
-
         public override string ToString()
         {
             var result = $"{string.Join(", ", Modifiers)} {Name}() ";
@@ -116,9 +63,49 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        private void initFields(List<Token> modifiers, Token name, bool anyBody)
+        public override bool Match(Ust ust, MatchingContext context)
         {
-            Modifiers = modifiers;
+            if (ust?.Kind != UstKind.MethodDeclaration)
+            {
+                return false;
+            }
+
+            var methodDeclaration = (MethodDeclaration)ust;
+
+            bool match = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
+            if (!match)
+            {
+                return match;
+            }
+
+            match = Name.Match(methodDeclaration.Name, context);
+            if (!match)
+            {
+                return match;
+            }
+
+            if (!AnyBody)
+            {
+                if (Body != null)
+                {
+                    match = Body.Match(methodDeclaration.Body, context);
+                    if (!match)
+                    {
+                        return match;
+                    }
+                }
+                else if (methodDeclaration.Body != null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void InitFields(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)
+        {
+            Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
             Name = name;
             AnyBody = anyBody;
             if (anyBody)
@@ -127,13 +114,8 @@ namespace PT.PM.Matching.Patterns
             }
             else
             {
-                Body = new BlockStatement(Enumerable.Empty<Statement>());
+                Body = new PatternStatements();
             }
-        }
-
-        public override Expression[] GetArgs()
-        {
-            return ArrayUtils<Expression>.EmptyArray;
         }
     }
 }

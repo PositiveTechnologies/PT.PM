@@ -1,35 +1,30 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternVarOrFieldDeclaration : Expression
+    public class PatternVarOrFieldDeclaration : PatternBase
     {
-        public override UstKind Kind => UstKind.PatternVarOrFieldDeclaration;
-
         public bool LocalVariable { get; set; }
 
-        public List<Token> Modifiers { get; set; }
+        public List<PatternBase> Modifiers { get; set; }
 
-        public Token Type { get; set; }
+        public PatternBase Type { get; set; }
 
-        // It has Expression type for backward compatibility
-        public Expression Name { get; set; }
+        public PatternBase Name { get; set; }
 
-        public Expression Right { get; set; }
+        public PatternBase Right { get; set; }
 
-        public PatternVarOrFieldDeclaration(bool localVariable, List<Token> modifiers,
-            Token type, Expression name, TextSpan textSpan)
+        public PatternVarOrFieldDeclaration(bool localVariable, IEnumerable<PatternBase> modifiers,
+            PatternBase type, PatternBase name, TextSpan textSpan)
             : base(textSpan)
         {
             LocalVariable = localVariable;
-            Modifiers = modifiers;
+            Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
             Type = type;
             Name = name;
             Right = null;
@@ -37,7 +32,7 @@ namespace PT.PM.Matching.Patterns
 
         public PatternVarOrFieldDeclaration()
         {
-            Modifiers = new List<Token>();
+            Modifiers = new List<PatternBase>();
         }
 
         public override Ust[] GetChildren()
@@ -50,105 +45,92 @@ namespace PT.PM.Matching.Patterns
             return result.ToArray();
         }
 
-        public override int CompareTo(Ust other)
+        public override string ToString() => $"{string.Join(", ", Modifiers)} {Type} {Name}";
+
+        public override bool Match(Ust ust, MatchingContext context)
         {
-            if (other == null)
+            if (ust == null)
             {
-                return (int)Kind;
+                return false;
             }
 
-            if (other.Kind == UstKind.PatternVarOrFieldDeclaration)
+            if (ust.Kind == UstKind.FieldDeclaration)
             {
-                var otherPatternVarOrFieldDeclaration = (PatternVarOrFieldDeclaration)other;
-                return GetChildren().CompareTo(otherPatternVarOrFieldDeclaration.GetChildren());
+                return MatchFieldDeclaration((FieldDeclaration)ust, context);
             }
 
-            if (other.Kind == UstKind.FieldDeclaration)
+            if (ust.Kind == UstKind.VariableDeclarationExpression)
             {
-                return CompareToFieldDeclaration((FieldDeclaration)other);
+                return MatchVariableDeclaration((VariableDeclarationExpression)ust, context);
             }
 
-            if (other.Kind == UstKind.VariableDeclarationExpression)
-            {
-                return CompareToVariableDeclaration((VariableDeclarationExpression)other);
-            }
-
-            return (int)other.Kind;
+            return false;
         }
 
-        public override string ToString()
-        {
-            return $"{string.Join(", ", Modifiers)} {Type} {Name}";
-        }
-
-        private int CompareToFieldDeclaration(FieldDeclaration fieldDeclaration)
+        private bool MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchingContext context)
         {
             if (LocalVariable == true)
             {
-                return UstKind.VariableDeclarationExpression - fieldDeclaration.Kind;
+                return false;
             }
 
-            int compareRes = Modifiers.CompareSubset(fieldDeclaration.Modifiers);
-            if (compareRes != 0)
+            bool match = Modifiers.MatchSubset(fieldDeclaration.Modifiers, context);
+            if (!match)
             {
-                return compareRes;
+                return match;
             }
 
-            compareRes = Type.CompareTo(fieldDeclaration.Type);
-            if (compareRes != 0)
+            match = Type.Equals(fieldDeclaration.Type);
+            if (!match)
             {
-                return compareRes;
+                return match;
             }
 
             if (fieldDeclaration.Variables.Count() != 1)
             {
-                return 1 - fieldDeclaration.Variables.Count();
+                return false;
             }
 
             var assigment = fieldDeclaration.Variables.First();
-            compareRes = Name.CompareTo(assigment.Left);
+            match = ((IPatternUst)Name).Match(assigment.Left, context);
 
-            return compareRes;
+            return match;
         }
 
-        private int CompareToVariableDeclaration(VariableDeclarationExpression variableDeclaration)
+        private bool MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchingContext context)
         {
             if (LocalVariable == false)
             {
-                return UstKind.FieldDeclaration - variableDeclaration.Kind;
+                return false;
             }
 
             if (Modifiers.Count() != 0)
             {
-                return Modifiers.Count();
+                return false;
             }
 
-            int compareRes = Type.CompareTo(variableDeclaration.Type);
-            if (compareRes != 0)
+            bool match = Type.Match(variableDeclaration.Type, context);
+            if (!match)
             {
-                return compareRes;
+                return match;
             }
 
-            var matchedVarsNum = variableDeclaration.Variables.Where(v =>
+            var matchedVarsNumber = variableDeclaration.Variables.Where(v =>
             {
-                compareRes = Name.CompareTo(v.Left);
-                if (compareRes != 0)
+                match = Name.Match(v.Left, context);
+                if (!match)
                 {
-                    return false;
+                    return match;
                 }
-                return (Right?.CompareTo(v.Right) ?? 0) == 0;
+                return Right?.Match(v.Right, context) ?? true;
             }).Count();
 
-            if (matchedVarsNum == 0)
+            if (matchedVarsNumber == 0)
             {
-                return variableDeclaration.Variables.Count() == 0 ? -1 : variableDeclaration.Variables.Count();
+                return false;
             }
-            return 0;
-        }
 
-        public override Expression[] GetArgs()
-        {
-            return ArrayUtils<Expression>.EmptyArray;
+            return true;
         }
     }
 }
