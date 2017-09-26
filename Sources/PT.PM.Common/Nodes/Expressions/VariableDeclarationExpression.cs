@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class VariableDeclarationExpression : Expression
     {
-        public override UstKind Kind => UstKind.VariableDeclarationExpression;
-
         public TypeToken Type { get; set; }
 
         public List<AssignmentExpression> Variables { get; set; }

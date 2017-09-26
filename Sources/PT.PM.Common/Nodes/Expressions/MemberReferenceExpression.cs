@@ -2,8 +2,6 @@
 {
     public class MemberReferenceExpression : Expression
     {
-        public override UstKind Kind => UstKind.MemberReferenceExpression;
-
         public Expression Target { get; set; }
 
         public Expression Name { get; set; }

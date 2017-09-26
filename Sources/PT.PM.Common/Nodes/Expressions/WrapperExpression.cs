@@ -2,8 +2,6 @@
 {
     public class WrapperExpression : Expression
     {
-        public override UstKind Kind => UstKind.WrapperExpression;
-
         public Ust Node { get; set; }
 
         public WrapperExpression(Ust node, TextSpan textSpan)

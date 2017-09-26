@@ -8,8 +8,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class AnonymousMethodExpression : Expression
     {
-        public override UstKind Kind => UstKind.AnonymousMethodExpression;
-
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
         public BlockStatement Body { get; set; }

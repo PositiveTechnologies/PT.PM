@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.GeneralScope
 {
     public class UsingDeclaration : Ust
     {
-        public override UstKind Kind => UstKind.UsingDeclaration;
-
         public StringLiteral Name { get; set; }
 
         public UsingDeclaration(StringLiteral name, TextSpan textSpan)

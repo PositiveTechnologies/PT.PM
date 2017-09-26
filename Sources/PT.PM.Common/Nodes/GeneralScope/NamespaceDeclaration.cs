@@ -7,8 +7,6 @@ namespace PT.PM.Common.Nodes.GeneralScope
 {
     public class NamespaceDeclaration : Ust
     {
-        public override UstKind Kind => UstKind.NamespaceDeclaration;
-
         public StringLiteral Name { get; set; }
 
         public List<Ust> Members { get; set; }

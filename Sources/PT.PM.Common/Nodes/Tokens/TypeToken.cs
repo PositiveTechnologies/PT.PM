@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Tokens
 {
     public class TypeToken : Token
     {
-        public override UstKind Kind => UstKind.TypeToken;
-
         public string TypeText { get; set; }
 
         public override string TextValue => TypeText;

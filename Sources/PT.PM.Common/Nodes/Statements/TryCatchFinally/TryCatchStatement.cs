@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 {
     public class TryCatchStatement : Statement
     {
-        public override UstKind Kind => UstKind.TryCatchStatement;
-
         public BlockStatement TryBlock { get; set; }
 
         public List<CatchClause> CatchClauses { get; set; }

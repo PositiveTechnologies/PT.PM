@@ -8,8 +8,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class FixedStatement : SpecificStatement
     {
-        public override UstKind Kind => UstKind.FixedStatement;
-
         public TypeToken Type { get; set; }
 
         public List<AssignmentExpression> Variables { get; set; }

@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class StringLiteral : Literal
     {
-        public override UstKind Kind => UstKind.StringLiteral;
-
         public override string TextValue => Text;
 
         public virtual string Text { get; set; }

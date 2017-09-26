@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class ParameterDeclaration : Ust
     {
-        public override UstKind Kind => UstKind.ParameterDeclaration;
-
         public TypeToken Type { get; set; }
 
         public IdToken Name { get; set; }

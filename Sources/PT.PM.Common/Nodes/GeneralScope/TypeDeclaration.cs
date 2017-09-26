@@ -9,8 +9,6 @@ namespace PT.PM.Common.Nodes.GeneralScope
 {
     public class TypeDeclaration : EntityDeclaration
     {
-        public override UstKind Kind => UstKind.TypeDeclaration;
-
         public TypeTypeLiteral Type { get; set; }
 
         public List<TypeToken> BaseTypes { get; set; }

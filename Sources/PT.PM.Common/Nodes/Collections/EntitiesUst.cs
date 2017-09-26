@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Collections
 {
     public class EntitiesUst : CollectionNode<EntityDeclaration>
     {
-        public override UstKind Kind => UstKind.EntitiesUst;
-
         public EntitiesUst(List<EntityDeclaration> entities, TextSpan textSpan)
             : base(entities, textSpan)
         {

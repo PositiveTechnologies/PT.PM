@@ -2,8 +2,6 @@
 {
     public class TypeTypeLiteral : Token
     {
-        public override UstKind Kind => UstKind.TypeTypeLiteral;
-
         public TypeType TypeType { get; set; }
 
         public override string TextValue => TypeType.ToString();

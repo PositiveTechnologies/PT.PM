@@ -2,8 +2,6 @@
 {
     public class NotImplementedUst : Ust
     {
-        public override UstKind Kind => UstKind.NotImplementedUst;
-
         public NotImplementedUst(TextSpan textSpan)
             : base(textSpan)
         {

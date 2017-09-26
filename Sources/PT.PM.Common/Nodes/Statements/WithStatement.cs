@@ -9,8 +9,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class WithStatement : Statement
     {
-        public override UstKind Kind => UstKind.WithStatement;
-
         public Ust WithNode { get; set; }
 
         public Statement Body { get; set; }

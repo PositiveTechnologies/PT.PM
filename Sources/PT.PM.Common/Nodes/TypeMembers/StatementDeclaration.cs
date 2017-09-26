@@ -10,8 +10,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class StatementDeclaration : EntityDeclaration
     {
-        public override UstKind Kind => UstKind.StatementDeclaration;
-
         public Statement Statement { get; set; }
 
         public StatementDeclaration(Statement statement, TextSpan textSpan)

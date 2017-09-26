@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class DoWhileStatement : Statement
     {
-        public override UstKind Kind => UstKind.DoWhileStatement;
-
         public Statement EmbeddedStatement { get; set; }
 
         public Expression Condition { get; set; }

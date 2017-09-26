@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class CastExpression : Expression
     {
-        public override UstKind Kind => UstKind.CastExpression;
-
         public TypeToken Type { get; set; }
 
         public Expression Expression { get; set; }

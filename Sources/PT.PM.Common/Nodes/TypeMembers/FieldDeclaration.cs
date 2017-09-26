@@ -7,8 +7,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class FieldDeclaration : EntityDeclaration
     {
-        public override UstKind Kind => UstKind.FieldDeclaration;
-
         public TypeToken Type { get; set; }
 
         public List<AssignmentExpression> Variables { get; set; }

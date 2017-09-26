@@ -3,8 +3,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ContinueStatement : Statement
     {
-        public override UstKind Kind => UstKind.ContinueStatement;
-
         public Expression Expression { get; set; }
 
         public ContinueStatement(TextSpan textSpan)

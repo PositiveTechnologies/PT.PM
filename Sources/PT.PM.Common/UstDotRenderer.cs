@@ -55,7 +55,7 @@ namespace PT.PM.Common
 
             foreach (var child in node.Children)
             {
-                if (child != null && child.Kind != UstKind.RootUst)
+                if (child != null && !(child is RootUst))
                 {
                     currentIndex++;
                     edgesString.AppendEdge(index, currentIndex);

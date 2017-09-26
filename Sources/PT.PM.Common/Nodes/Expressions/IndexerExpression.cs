@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class IndexerExpression : Expression
     {
-        public override UstKind Kind => UstKind.IndexerExpression;
-
         public Expression Target { get; set; }
 
         public ArgsUst Arguments { get; set; }

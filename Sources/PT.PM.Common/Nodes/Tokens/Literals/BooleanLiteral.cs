@@ -2,8 +2,6 @@
 {
     public class BooleanLiteral : Literal
     {
-        public override UstKind Kind => UstKind.BooleanLiteral;
-
         public bool Value { get; set; }
 
         public BooleanLiteral(bool value)

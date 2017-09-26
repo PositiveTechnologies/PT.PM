@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ObjectCreateExpression : Expression
     {
-        public override UstKind Kind => UstKind.ObjectCreateExpression;
-
         public Token Type { get; set; }
 
         public ArgsUst Arguments { get; set; }

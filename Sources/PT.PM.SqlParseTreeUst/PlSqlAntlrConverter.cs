@@ -504,8 +504,8 @@ namespace PT.PM.SqlParseTreeUst
             }
             var body = (BlockStatement)Visit(context.seq_of_statements());
             if (body.Statements.Count == 1 &&
-                body.Statements[0].Kind == UstKind.ExpressionStatement &&
-                ((ExpressionStatement)body.Statements[0]).Expression.Kind == UstKind.NullLiteral)
+                body.Statements[0] is ExpressionStatement expressionStatement &&
+                expressionStatement.Expression is NullLiteral)
             {
                 body = new BlockStatement(new Statement[0], context.seq_of_statements().GetTextSpan());
             }

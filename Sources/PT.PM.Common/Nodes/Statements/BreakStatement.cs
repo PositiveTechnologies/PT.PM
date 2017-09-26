@@ -3,8 +3,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class BreakStatement : Statement
     {
-        public override UstKind Kind => UstKind.BreakStatement;
-
         public Expression Expression  { get; set; }
 
         public BreakStatement(TextSpan textSpan)

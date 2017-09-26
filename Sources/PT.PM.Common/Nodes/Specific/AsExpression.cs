@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class AsExpression : SpecificExpression
     {
-        public override UstKind Kind => UstKind.AsExpression;
-
         public Expression Expression { get; set; }
 
         public TypeToken Type { get; set; }

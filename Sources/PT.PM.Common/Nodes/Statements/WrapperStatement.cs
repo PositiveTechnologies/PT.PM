@@ -2,8 +2,6 @@
 {
     public class WrapperStatement : Statement
     {
-        public override UstKind Kind => UstKind.WrapperStatement;
-
         public Ust Node { get; set; }
 
         public WrapperStatement(Ust node)

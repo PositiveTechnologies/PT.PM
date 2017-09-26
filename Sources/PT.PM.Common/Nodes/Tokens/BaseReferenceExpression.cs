@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Tokens
 {
     public class BaseReferenceExpression : Expression
     {
-        public override UstKind Kind => UstKind.BaseReferenceExpression;
-
         public BaseReferenceExpression(TextSpan textSpan)
             : base(textSpan)
         {

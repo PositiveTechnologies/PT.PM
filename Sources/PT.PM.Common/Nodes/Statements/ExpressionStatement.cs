@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ExpressionStatement : Statement
     {
-        public override UstKind Kind => UstKind.ExpressionStatement;
-
         public Expression Expression { get; set; }
 
         public ExpressionStatement()

@@ -23,9 +23,6 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             { "++", UnaryOperator.PostIncrement},
             { "--", UnaryOperator.PostDecrement},
         };
-
-        public override UstKind Kind => UstKind.UnaryOperatorLiteral;
-
         public override string TextValue => UnaryOperator.ToString();
 
         public UnaryOperator UnaryOperator { get; set; }

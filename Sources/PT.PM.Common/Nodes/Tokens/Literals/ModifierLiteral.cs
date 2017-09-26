@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class ModifierLiteral : Literal
     {
-        public override UstKind Kind => UstKind.ModifierLiteral;
-
         [JsonIgnore]
         public Modifier Modifier { get; set; }
 

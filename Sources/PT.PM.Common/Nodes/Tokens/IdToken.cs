@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Tokens
 {
     public class IdToken : Token
     {
-        public override UstKind Kind => UstKind.IdToken;
-
         public virtual string Id { get; set; }
 
         public override string TextValue => Id;

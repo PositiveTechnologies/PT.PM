@@ -312,7 +312,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     int dimensions = (arrayCreatorRest.ChildCount - 1) / 2; // number of square bracket pairs
                     var sizes = Enumerable.Range(0, dimensions).Select(
                         _ => new IntLiteral(0, createdName.GetTextSpan())).ToList<Expression>();
-                    var initializers = initializer.Expressions.Where(el => el.Kind != UstKind.IdToken);
+                    var initializers = initializer.Expressions.Where(el => !(el is IdToken));
                     result = new ArrayCreationExpression(
                         new TypeToken(createdName.GetText(), createdName.GetTextSpan()), sizes,
                         initializers, context.GetTextSpan());

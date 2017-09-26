@@ -8,9 +8,6 @@ namespace PT.PM.Common.Nodes
     public class RootUst : Ust
     {
         private Language[] sublanguges;
-
-        public override UstKind Kind => UstKind.RootUst;
-
         public virtual Language Language { get; }
 
         public SourceCodeFile SourceCodeFile { get; set; }
@@ -53,7 +50,7 @@ namespace PT.PM.Common.Nodes
         private Language[] GetSublangauges()
         {
             var result = new HashSet<Language>();
-            var descendants = GetAllDescendants(child => child.Kind == UstKind.RootUst)
+            var descendants = GetAllDescendants(child => child is RootUst)
                 .Cast<RootUst>();
             foreach (RootUst descendant in descendants)
             {

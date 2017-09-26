@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ConditionalExpression : Expression
     {
-        public override UstKind Kind => UstKind.ConditionalExpression;
-
         public Expression Condition { get; set; }
 
         public Expression TrueExpression { get; set; }

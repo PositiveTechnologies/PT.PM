@@ -2,8 +2,6 @@
 {
     public class AssignmentExpression : Expression
     {
-        public override UstKind Kind => UstKind.AssignmentExpression;
-
         public Expression Left { get; set; }
 
         public Expression Right { get; set; }

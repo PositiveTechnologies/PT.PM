@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class IfElseStatement : Statement
     {
-        public override UstKind Kind => UstKind.IfElseStatement;
-
         public Expression Condition { get; set; }
 
         public Statement TrueStatement { get; set; }

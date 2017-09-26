@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class WhileStatement : Statement
     {
-        public override UstKind Kind => UstKind.WhileStatement;
-
         public Expression Condition { get; set; }
 
         public Statement Embedded { get; set; }

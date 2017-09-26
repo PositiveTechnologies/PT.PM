@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ForeachStatement : Statement
     {
-        public override UstKind Kind => UstKind.ForeachStatement;
-
         public TypeToken Type { get; set; }
 
         public IdToken VarName { get; set; }

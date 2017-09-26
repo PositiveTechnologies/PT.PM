@@ -44,9 +44,6 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             "<<=",
             ">>=",
         };
-
-        public override UstKind Kind => UstKind.BinaryOperatorLiteral;
-
         public override string TextValue => BinaryOperator.ToString();
 
         public BinaryOperator BinaryOperator { get; set; }

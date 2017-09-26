@@ -2,8 +2,6 @@
 {
     public class EmptyStatement : Statement
     {
-        public override UstKind Kind => UstKind.EmptyStatement;
-
         public EmptyStatement(TextSpan textSpan)
             : base(textSpan)
         {

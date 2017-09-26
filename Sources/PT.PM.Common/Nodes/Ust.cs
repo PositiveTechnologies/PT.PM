@@ -7,7 +7,8 @@ namespace PT.PM.Common.Nodes
 {
     public abstract class Ust : IComparable<Ust>, IEquatable<Ust>
     {
-        public abstract UstKind Kind { get; }
+        [JsonIgnore]
+        public int Kind => GetType().GetHashCode();
 
         [JsonIgnore]
         public RootUst Root { get; set; }
@@ -45,7 +46,7 @@ namespace PT.PM.Common.Nodes
         {
             if (other == null)
             {
-                return (int)Kind;
+                return Kind;
             }
 
             var nodeTypeCompareResult = Kind - other.Kind;

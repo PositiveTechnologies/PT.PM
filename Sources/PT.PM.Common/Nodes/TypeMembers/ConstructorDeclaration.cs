@@ -7,8 +7,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class ConstructorDeclaration : EntityDeclaration
     {
-        public override UstKind Kind => UstKind.ConstructorDeclaration;
-
         public List<ParameterDeclaration> Args { get; set; }
 
         public BlockStatement Body { get; set; }

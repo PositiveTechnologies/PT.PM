@@ -9,8 +9,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class TypeDeclarationStatement : Statement
     {
-        public override UstKind Kind => UstKind.TypeDeclarationStatement;
-
         public TypeDeclaration TypeDeclaration { get;set; }
 
         public TypeDeclarationStatement()

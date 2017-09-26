@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements.Switch
 {
     public class SwitchSection : Ust
     {
-        public override UstKind Kind => UstKind.SwitchSection;
-
         public List<Expression> CaseLabels { get; set; }
 
         public List<Statement> Statements { get; set; }

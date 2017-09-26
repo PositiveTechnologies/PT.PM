@@ -2,8 +2,6 @@
 {
     public class NullLiteral : Literal
     {
-        public override UstKind Kind => UstKind.NullLiteral;
-
         public NullLiteral(TextSpan textSpan)
             : base(textSpan)
         {

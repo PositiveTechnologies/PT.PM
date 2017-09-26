@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 {
     public class CatchClause : Ust
     {
-        public override UstKind Kind => UstKind.CatchClause;
-
         public TypeToken Type { get; set; }
 
         public IdToken VarName { get; set; }

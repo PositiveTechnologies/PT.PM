@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class FloatLiteral : Literal
     {
-        public override UstKind Kind => UstKind.FloatLiteral;
-
         public double Value { get; set; }
 
         public override string TextValue => Value.ToString(CultureInfo.InvariantCulture);

@@ -53,14 +53,14 @@ namespace PT.PM.Matching.Patterns
                 return context;
             }
 
-            if (ust.Kind == UstKind.FieldDeclaration)
+            if (ust is FieldDeclaration fieldDeclaration)
             {
-                return MatchFieldDeclaration((FieldDeclaration)ust, context);
+                return MatchFieldDeclaration(fieldDeclaration, context);
             }
 
-            if (ust.Kind == UstKind.VariableDeclarationExpression)
+            if (ust is VariableDeclarationExpression variableDeclarationExpression)
             {
-                return MatchVariableDeclaration((VariableDeclarationExpression)ust, context);
+                return MatchVariableDeclaration(variableDeclarationExpression, context);
             }
 
             return context.Fail();

@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class LockStatement : SpecificStatement
     {
-        public override UstKind Kind => UstKind.LockStatement;
-
         public Expression Lock { get; set; }
 
         public Statement Embedded { get; set; }

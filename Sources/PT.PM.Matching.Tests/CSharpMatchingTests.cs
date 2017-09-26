@@ -52,7 +52,7 @@ namespace PT.PM.Matching.Tests
             IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
             var patternDtos = patternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains(Language.CSharp)).ToArray();
-            foreach (var dto in patternDtos)
+            foreach (PatternDto dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }

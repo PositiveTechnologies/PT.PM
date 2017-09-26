@@ -133,10 +133,10 @@ namespace PT.PM.Common.Nodes
                 {
                     if (list2[i] != null)
                     {
-                        return -(int)list2[i].Kind;
+                        return -list2[i].Kind;
                     }
                 }
-                else if (element.Kind != UstKind.RootUst)
+                else if (!(element is RootUst))
                 {
                     var elementCompareResult = element.CompareTo(list2[i]);
                     if (elementCompareResult != 0)

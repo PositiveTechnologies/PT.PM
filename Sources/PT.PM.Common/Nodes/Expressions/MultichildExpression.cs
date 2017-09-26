@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class MultichildExpression : Expression
     {
-        public override UstKind Kind => UstKind.MultichildExpression;
-
         public List<Expression> Expressions { get; set; }
 
         public MultichildExpression(IEnumerable<Expression> children, TextSpan textSpan)

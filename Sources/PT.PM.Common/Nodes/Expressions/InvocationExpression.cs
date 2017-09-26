@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class InvocationExpression : Expression
     {
-        public override UstKind Kind => UstKind.InvocationExpression;
-
         public Expression Target { get; set; }
 
         public ArgsUst Arguments { get; set; }

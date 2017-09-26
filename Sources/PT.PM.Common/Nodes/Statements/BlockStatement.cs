@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class BlockStatement : Statement
     {
-        public override UstKind Kind => UstKind.BlockStatement;
-
         public List<Statement> Statements { get; set; } = new List<Statement>();
 
         public BlockStatement(IEnumerable<Statement> statements)

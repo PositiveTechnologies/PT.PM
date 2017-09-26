@@ -8,8 +8,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CSharpParameterDeclaration : ParameterDeclaration
     {
-        public override UstKind Kind => UstKind.CSharpParameterDeclaration;
-
         public ParameterModifierLiteral Modifier { get; set; }
 
         public Expression DefaultExpression { get; set; }

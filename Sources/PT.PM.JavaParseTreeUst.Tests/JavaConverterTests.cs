@@ -117,10 +117,10 @@ namespace PT.PM.JavaParseTreeUst.Tests
         {
             var workflowResults = TestUtility.CheckFile(fileName, Language.Java, Stage.Convert);
             var ust = workflowResults.Usts.First();
-            bool result = ust.DoesAnyDescendantMatchPredicate(el =>
+            bool result = ust.DoesAnyDescendantMatchPredicate(descendant =>
             {
-                bool isTypeDeclaration = el.Kind == Common.Nodes.UstKind.TypeDeclaration;
-                return isTypeDeclaration && ((TypeDeclaration)el).BaseTypes.Any(t => t.TypeText == "Runnable");
+                return descendant is TypeDeclaration typeDeclaration &&
+                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "Runnable");
             });
             Assert.IsTrue(result, "Ust doesn't contain type declaration node with Runnable base type");
         }

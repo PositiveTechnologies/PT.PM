@@ -8,8 +8,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class MethodDeclaration : EntityDeclaration
     {
-        public override UstKind Kind => UstKind.MethodDeclaration;
-
         public TypeToken ReturnType { get; set; }
 
         public List<ParameterDeclaration> Parameters { get; set; }

@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ArrayCreationExpression : Expression
     {
-        public override UstKind Kind => UstKind.ArrayCreationExpression;
-
         public TypeToken Type { get; set; }
 
         public List<Expression> Sizes { get; set; }

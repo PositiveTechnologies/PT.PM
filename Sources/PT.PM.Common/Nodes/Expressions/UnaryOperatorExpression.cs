@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class UnaryOperatorExpression : Expression
     {
-        public override UstKind Kind => UstKind.UnaryOperatorExpression;
-
         public UnaryOperatorLiteral Operator { get; set; }
 
         public Expression Expression { get; set; }

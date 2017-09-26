@@ -2,8 +2,6 @@
 {
     public class ParameterModifierLiteral : Token
     {
-        public override UstKind Kind => UstKind.ParameterModifierLiteral;
-
         public ParameterModifier Modifier { get; set; }
 
         public override string TextValue => Modifier.ToString();

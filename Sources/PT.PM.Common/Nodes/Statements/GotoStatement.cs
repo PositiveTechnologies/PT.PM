@@ -10,8 +10,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class GotoStatement : Statement
     {
-        public override UstKind Kind => UstKind.GotoStatement;
-
         public Expression Id { get; set; }
 
         public GotoStatement()

@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CheckedExpression : SpecificExpression
     {
-        public override UstKind Kind => UstKind.CheckedExpression;
-
         public Expression Expression { get; set; }
 
         public CheckedExpression(Expression checkedExpression, TextSpan textSpan)

@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ThrowStatement : Statement
     {
-        public override UstKind Kind => UstKind.ThrowStatement;
-
         public Expression ThrowExpression { get; set; }
 
         public ThrowStatement(Expression throwExpression, TextSpan textSpan)

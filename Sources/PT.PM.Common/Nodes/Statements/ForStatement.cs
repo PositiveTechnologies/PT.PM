@@ -7,8 +7,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ForStatement : Statement
     {
-        public override UstKind Kind => UstKind.ForStatement;
-
         public List<Statement> Initializers { get; set; } = new List<Statement>();
 
         public Expression Condition { get; set; }

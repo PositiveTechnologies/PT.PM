@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Collections
 {
     public class ArgsUst : CollectionNode<Expression>
     {
-        public override UstKind Kind => UstKind.ArgsUst;
-
         public ArgsUst(IEnumerable<Expression> args, TextSpan textSpan)
             : base(args, textSpan)
         {

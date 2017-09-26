@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ReturnStatement : Statement
     {
-        public override UstKind Kind => UstKind.ReturnStatement;
-
         public Expression Return { get; set; }
 
         public ReturnStatement(Expression returnExpression, TextSpan textSpan)

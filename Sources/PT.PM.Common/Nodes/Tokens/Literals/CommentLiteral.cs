@@ -2,8 +2,6 @@
 {
     public class CommentLiteral : Literal
     {
-        public override UstKind Kind => UstKind.CommentLiteral;
-
         public virtual string Comment { get; set; }
 
         public override string TextValue => Comment;

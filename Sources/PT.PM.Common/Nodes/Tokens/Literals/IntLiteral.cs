@@ -2,8 +2,6 @@
 {
     public class IntLiteral : Literal
     {
-        public override UstKind Kind => UstKind.IntLiteral;
-
         public long Value { get; set; }
 
         public override string TextValue => Value.ToString();
