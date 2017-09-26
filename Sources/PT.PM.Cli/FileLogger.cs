@@ -75,7 +75,7 @@ namespace PT.PM.Cli
                 var matchingResult = infoObj as MatchingResult;
                 if (matchingResult != null)
                 {
-                    var matchingResultDto = MatchingResultDto.CreateFromMatchingResult(matchingResult, SourceCodeRepository);
+                    var matchingResultDto = new MatchingResultDto(matchingResult);
                     matchingResultDto.MatchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
                     var json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
                     MatchLogger.Info(json);

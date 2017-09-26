@@ -40,7 +40,7 @@ namespace PT.PM.Matching.Patterns
             if (ust is BooleanLiteral booleanLiteral &&
                 (Any || Value.Equals(booleanLiteral.Value)))
             {
-                match = context.AddLocation(ust.TextSpan);
+                match = context.AddUst(ust);
             }
             else
             {

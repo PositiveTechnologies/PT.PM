@@ -385,7 +385,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 (
                     new PatternClassDeclaration
                     {
-                        Body = new PatternExpressionInsideNode
+                        Body = new PatternExpressionInside
                         {
                             Expression = new PatternMethodDeclaration
                             {
@@ -444,7 +444,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         new PatternIdRegexToken("X509TrustManager|SSLSocketFactory")
                     },
-                    Body = new PatternExpressionInsideNode
+                    Body = new PatternExpressionInside
                     {
                         Expression = new PatternMethodDeclaration(
                             Enumerable.Empty<PatternBase>().ToList(), new PatternIdRegexToken(".+"), false)

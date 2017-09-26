@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using PT.PM.Patterns;
+using System.Collections.Generic;
 
 namespace PT.PM.Matching.Tests
 {
@@ -69,10 +70,8 @@ namespace PT.PM.Matching.Tests
 
             var workflow = new Workflow(sourceCodeRep, Language.JavaScript, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults
-                .ToDto(workflow.SourceCodeRepository)
-                .OrderBy(r => r.PatternKey)
-                .ToArray();
+            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
+                .ToDto().OrderBy(r => r.PatternKey);
             PatternDto[] patternDtos = patternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains(Language.JavaScript)).ToArray();
             foreach (var dto in patternDtos)

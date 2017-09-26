@@ -7,6 +7,7 @@ using PT.PM.Patterns;
 using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
 using PT.PM.Matching.PatternsRepository;
+using System.Collections.Generic;
 
 namespace PT.PM.Matching.Tests
 {
@@ -48,7 +49,7 @@ namespace PT.PM.Matching.Tests
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, patternsRepository);
-            MatchingResultDto[] matchingResults = workflow.Process().MatchingResults.ToDto(workflow.SourceCodeRepository);
+            IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
             var patternDtos = patternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains(Language.CSharp)).ToArray();
             foreach (var dto in patternDtos)
@@ -63,10 +64,10 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.aspx");
             var sourceCodeRep = new FileCodeRepository(path);
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, patternsRepository);
-            MatchingResultDto[] matchingResults = workflow.Process().MatchingResults.ToDto(workflow.SourceCodeRepository);
+            IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
 
-            Assert.IsTrue(matchingResults[0].MatchedCode.Contains("Password"));
-            Assert.IsTrue(matchingResults[1].MatchedCode.Contains("try"));
+            Assert.IsTrue(matchingResults.ElementAt(0).MatchedCode.Contains("Password"));
+            Assert.IsTrue(matchingResults.ElementAt(1).MatchedCode.Contains("try"));
         }
 
         [Test]
@@ -75,10 +76,10 @@ namespace PT.PM.Matching.Tests
             var hardcodedPassRepository = new DslPatternRepository("<[(?i)password]> = <[\"\\w*\"]>", Language.CSharp);
             var sourceCodeRep = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, "HardcodedPassword.aspx"));
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, hardcodedPassRepository);
-            MatchingResultDto[] matchingResults = workflow.Process().MatchingResults.ToDto(workflow.SourceCodeRepository);
+            IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
 
-            Assert.IsTrue(matchingResults[0].MatchedCode.Contains("password = \"hardcoded\""));
-            Assert.IsTrue(matchingResults[1].MatchedCode.Contains("PASSWORD = \"hardcoded\""));
+            Assert.IsTrue(matchingResults.ElementAt(0).MatchedCode.Contains("password = \"hardcoded\""));
+            Assert.IsTrue(matchingResults.ElementAt(1).MatchedCode.Contains("PASSWORD = \"hardcoded\""));
         }
     }
 }

@@ -110,7 +110,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { PlSql },
                 Node = new PatternStatements
                 (
-                    new PatternExpressionInsideNode
+                    new PatternExpressionInside
                     (
                         new PatternAssignmentExpression
                         {
@@ -127,7 +127,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         }
                     ),
 
-                    new PatternExpressionInsideNode
+                    new PatternExpressionInside
                     (
                         new PatternNot
                         (

@@ -27,7 +27,7 @@ namespace PT.PM.Matching.Patterns
             MatchingContext match;
             if (ust is StringLiteral stringLiteral && String.Equals(stringLiteral.Text))
             {
-                match = context.AddLocation(ust.TextSpan);
+                match = context.AddUst(ust);
             }
             else
             {

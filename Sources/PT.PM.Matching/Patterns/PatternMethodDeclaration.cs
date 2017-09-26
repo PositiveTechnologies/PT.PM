@@ -102,7 +102,7 @@ namespace PT.PM.Matching.Patterns
                 match = context.Fail();
             }
 
-            return match;
+            return match.AddUstIfSuccess(ust);
         }
 
         private void InitFields(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)

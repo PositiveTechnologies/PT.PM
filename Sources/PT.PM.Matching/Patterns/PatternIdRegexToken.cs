@@ -50,9 +50,15 @@ namespace PT.PM.Matching.Patterns
                 Regex regex = ust.Root.Language.IsCaseInsensitive()
                     ? caseInsensitiveRegex
                     : this.regex;
-                match = context.AddLocations(regex
-                    .MatchRegex(token.TextValue, true)
-                    .Select(textSpan => textSpan.AddOffset(ust.TextSpan.Start)));
+                TextSpan[] matchedLocations = regex.MatchRegex(token.TextValue, true);
+                if (matchedLocations.Length > 0)
+                {
+                    match = context.AddUst(ust);
+                }
+                else
+                {
+                    match = context.Fail();
+                }
             }
             else
             {

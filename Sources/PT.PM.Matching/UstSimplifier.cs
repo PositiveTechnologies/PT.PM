@@ -200,28 +200,14 @@ namespace PT.PM.Matching
             {
                 result = new BinaryOperatorExpression(leftExpression, op, rightExpression,
                     new TextSpan(binaryOperatorExpression.TextSpan));
-                leftExpression.Parent = result;
-                rightExpression.Parent = result;
-                op.Parent = result;
             }
 
             return result;
         }
 
-        // Unify Statement to BlockStatement.
         public override Ust Visit(IfElseStatement ifElseStatement)
         {
-            Expression condition = (Expression)Visit(ifElseStatement.Condition);
-            BlockStatement trueStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.TrueStatement));
-            BlockStatement falseStatement = ConvertToBlockStatement((Statement)Visit(ifElseStatement.FalseStatement));
-            var result = new IfElseStatement(condition, trueStatement, ifElseStatement.TextSpan);
-            result.Condition.Parent = result;
-            result.TrueStatement.Parent = result;
-            if (result.FalseStatement != null)
-            {
-                result.FalseStatement.Parent = result;
-            }
-            return result;
+            return VisitChildren(ifElseStatement);
         }
 
         public override Ust Visit(UnaryOperatorExpression unaryOperatorExpression)
@@ -259,25 +245,6 @@ namespace PT.PM.Matching
             }
 
             return VisitChildren(unaryOperatorExpression);
-        }
-
-        private BlockStatement ConvertToBlockStatement(Statement statement)
-        {
-            BlockStatement result;
-            if (statement == null)
-            {
-                result = null;
-            }
-            else if (statement.Kind == UstKind.BlockStatement)
-            {
-                result = (BlockStatement)statement;
-            }
-            else
-            {
-                result = new BlockStatement(new Statement[] { statement }, statement.TextSpan);
-                statement.Parent = result;
-            }
-            return result;
         }
 
         public Ust Visit(PatternArgs patternExpressions)
@@ -330,7 +297,7 @@ namespace PT.PM.Matching
             return VisitChildren(patternAnyExpression);
         }
 
-        public Ust Visit(PatternExpressionInsideNode patternExpressionInsideExpression)
+        public Ust Visit(PatternExpressionInside patternExpressionInsideExpression)
         {
             return VisitChildren(patternExpressionInsideExpression);
         }
@@ -398,6 +365,66 @@ namespace PT.PM.Matching
         public Ust Visit(PatternVar patternVar)
         {
             return VisitChildren(patternVar);
+        }
+
+        public Ust Visit(PatternAnonymousMethodExpression patternAnonymousMethodExpression)
+        {
+            return VisitChildren(patternAnonymousMethodExpression);
+        }
+
+        public Ust Visit(PatternAssignmentExpression patternAssignmentExpression)
+        {
+            return VisitChildren(patternAssignmentExpression);
+        }
+
+        public Ust Visit(PatternBaseReferenceExpression patternBaseReferenceExpression)
+        {
+            return VisitChildren(patternBaseReferenceExpression);
+        }
+
+        public Ust Visit(PatternBinaryOperatorExpression patternBinaryOperatorExpression)
+        {
+            return VisitChildren(patternBinaryOperatorExpression);
+        }
+
+        public Ust Visit(PatternIndexerExpression patternIndexerExpression)
+        {
+            return VisitChildren(patternIndexerExpression);
+        }
+
+        public Ust Visit(PatternIntLiteral patternIntLiteral)
+        {
+            return VisitChildren(patternIntLiteral);
+        }
+
+        public Ust Visit(PatternInvocationExpression patternInvocationExpression)
+        {
+            return VisitChildren(patternInvocationExpression);
+        }
+
+        public Ust Visit(PatternMemberReferenceExpression patternMemberReferenceExpression)
+        {
+            return VisitChildren(patternMemberReferenceExpression);
+        }
+
+        public Ust Visit(PatternNullLiteral patternNullLiteral)
+        {
+            return VisitChildren(patternNullLiteral);
+        }
+
+        public Ust Visit(PatternObjectCreateExpression patternObjectCreateExpression)
+        {
+            return VisitChildren(patternObjectCreateExpression);
+        }
+
+        public Ust Visit(PatternParameterDeclaration patternParameterDeclaration)
+        {
+            return VisitChildren(patternParameterDeclaration);
+        }
+
+        public Ust Visit(PatternStringLiteral patternStringLiteral)
+        {
+            return VisitChildren(patternStringLiteral);
         }
 
         protected override Ust VisitChildren(Ust ustNode)

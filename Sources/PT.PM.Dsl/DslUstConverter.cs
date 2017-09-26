@@ -102,7 +102,7 @@ namespace PT.PM.Dsl
             }
             else
             {
-                result = new PatternExpressionInsideNode(result, context.GetTextSpan());
+                result = new PatternExpressionInside(result, context.GetTextSpan());
                 if (context.PatternNot() != null)
                 {
                     result = new PatternNot(result);
@@ -170,11 +170,11 @@ namespace PT.PM.Dsl
                 name = (PatternBase)VisitLiteralOrPatternId(context.name);
             }
 
-            PatternExpressionInsideNode body = null;
+            PatternExpressionInside body = null;
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                body = (PatternExpressionInsideNode)VisitArbitraryDepthExpression(arbitraryDepthExpression);
+                body = (PatternExpressionInside)VisitArbitraryDepthExpression(arbitraryDepthExpression);
             }
 
             return new PatternClassDeclaration(modifiers, name, baseTypes, body, context.GetTextSpan());
@@ -188,7 +188,7 @@ namespace PT.PM.Dsl
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                var body = (PatternExpressionInsideNode)VisitArbitraryDepthExpression(arbitraryDepthExpression);
+                var body = (PatternExpressionInside)VisitArbitraryDepthExpression(arbitraryDepthExpression);
                 result = new PatternMethodDeclaration(modifiers, name, body, context.GetTextSpan());
             }
             else if (context.Ellipsis() != null)
@@ -339,7 +339,7 @@ namespace PT.PM.Dsl
 
         public IPatternUst VisitArbitraryDepthExpression([NotNull] DslParser.ArbitraryDepthExpressionContext context)
         {
-            return new PatternExpressionInsideNode(
+            return new PatternExpressionInside(
                 (PatternBase)VisitExpression(context.expression()), context.GetTextSpan());
         }
 
@@ -452,23 +452,31 @@ namespace PT.PM.Dsl
 
         public IPatternUst VisitPatternLiterals([NotNull] DslParser.PatternLiteralsContext context)
         {
-            string id = context.PatternVar().GetText().Substring(1);
-
             IEnumerable<PatternBase> values = context.patternNotLiteral()
                 .Select(literal => (PatternBase)VisitPatternNotLiteral(literal));
+            var patternOr = new PatternOr(values, values.GetTextSpan());
 
-            if (values.Count() > 0 && patternVars.TryGetValue(id, out PatternVar existedPatternVar))
+            PatternBase result;
+            if (context.PatternVar() != null)
             {
-                var lcTextSpan = new LineColumnTextSpan(existedPatternVar.TextSpan, Data);
-                throw new ConversionException(
-                        $"DSL Error: PatternVar {id} with the same Id already defined earlier at {lcTextSpan}")
+                string id = context.PatternVar().GetText().Substring(1);
+                if (values.Count() > 0 && patternVars.TryGetValue(id, out PatternVar existedPatternVar))
                 {
-                    TextSpan = context.PatternVar().GetTextSpan()
-                };
+                    var lcTextSpan = new LineColumnTextSpan(existedPatternVar.TextSpan, Data);
+                    throw new ConversionException(
+                            $"DSL Error: PatternVar {id} with the same Id already defined earlier at {lcTextSpan}")
+                    {
+                        TextSpan = context.PatternVar().GetTextSpan()
+                    };
+                }
+                var patternVar = new PatternVar(id, context.GetTextSpan());
+                patternVar.Value = patternOr;
+                result = patternVar;
             }
-
-            var result = new PatternVar(id, context.GetTextSpan());
-            result.Value = new PatternOr(values, values.GetTextSpan());
+            else
+            {
+                result = patternOr;
+            }
 
             return result;
         }

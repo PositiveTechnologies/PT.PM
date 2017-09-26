@@ -135,6 +135,10 @@ namespace PT.PM.Matching.Patterns
         {
             if (patternUst.Match(ust, context).Success)
             {
+                if (context.Locations.Count == 0)
+                {
+                    context.Locations.Add(ust.TextSpan);
+                }
                 var matching = new MatchingResult(ust.Root, context.PatternUst, context.Locations);
                 context.Logger.LogInfo(matching);
                 context.Results.Add(matching);

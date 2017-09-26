@@ -129,7 +129,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            return context;
+            return context.AddUstIfSuccess(variableDeclaration);
         }
     }
 }

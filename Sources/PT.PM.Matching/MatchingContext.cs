@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,16 +36,28 @@ namespace PT.PM.Matching
             Results = results;
         }
 
-        public MatchingContext AddLocation(TextSpan textSpan)
+        public MatchingContext AddUstIfSuccess(Ust ust)
         {
-            if (textSpan.IsEmpty)
+            if (Success && (ust.IsTerminal || IncludeNonterminalTextSpans))
+            {
+                Locations.Add(ust.TextSpan);
+            }
+            return this;
+        }
+
+        public MatchingContext AddUst(Ust ust)
+        {
+            if (ust.TextSpan.IsEmpty)
             {
                 Success = false;
             }
             else
             {
                 Success = true;
-                Locations.Add(textSpan);
+                if (ust.IsTerminal || IncludeNonterminalTextSpans)
+                {
+                    Locations.Add(ust.TextSpan);
+                }
             }
             return this;
         }

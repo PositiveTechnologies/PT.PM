@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching
@@ -44,6 +45,13 @@ namespace PT.PM.Matching
             if (isQuoted)
                 startIndex += 1; // TODO: Fix location in UST node.
             return new TextSpan(startIndex, match.Length);
+        }
+
+        public static IEnumerable<MatchingResultDto> ToDto(this IEnumerable<MatchingResult> matchingResults)
+        {
+            return matchingResults
+                .Where(result => result != null)
+                .Select(result => new MatchingResultDto(result));
         }
     }
 }

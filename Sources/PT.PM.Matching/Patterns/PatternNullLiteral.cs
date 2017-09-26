@@ -23,7 +23,7 @@ namespace PT.PM.Matching.Patterns
         {
             if (ust is NullLiteral)
             {
-                return context;
+                return context.AddUst(ust);
             }
             else
             {

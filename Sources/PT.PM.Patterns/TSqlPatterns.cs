@@ -58,7 +58,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { TSql },
                 Node = new PatternStatements
                 (
-                    new PatternExpressionInsideNode
+                    new PatternExpressionInside
                     {
                         Expression = new PatternInvocationExpression
                         {
@@ -66,7 +66,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             Arguments = new PatternArgs(new PatternVar("cursor"), new PatternMultipleExpressions())
                         }
                     },
-                    new PatternExpressionInsideNode
+                    new PatternExpressionInside
                     {
                         Expression = new PatternNot(new PatternInvocationExpression
                         {

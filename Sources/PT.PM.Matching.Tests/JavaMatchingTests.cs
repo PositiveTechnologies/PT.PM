@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Linq;
 using PT.PM.Matching.PatternsRepository;
+using System.Collections.Generic;
 
 namespace PT.PM.Matching.Tests
 {
@@ -28,9 +29,9 @@ namespace PT.PM.Matching.Tests
 
             var workflow = new Workflow(sourceCodeRep, Language.Java, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)
-                .OrderBy(r => r.PatternKey)
-                .ToArray();
+            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
+                .ToDto()
+                .OrderBy(r => r.PatternKey);
             var patternDtos = patternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains(Language.Java)).ToArray();
             foreach (var dto in patternDtos)

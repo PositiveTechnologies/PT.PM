@@ -32,7 +32,7 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            var blockStatement = (BlockStatement)ust;
+            var blockStatement = ust as BlockStatement;
             if (blockStatement == null)
             {
                 return context.Fail();

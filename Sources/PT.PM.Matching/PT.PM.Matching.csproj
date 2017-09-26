@@ -38,6 +38,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MatchingResultDto.cs" />
     <Compile Include="PatternMatcher.cs" />
     <Compile Include="DslPatternRepository.cs" />
     <Compile Include="IPatternConverter.cs" />
@@ -62,7 +63,7 @@
     <Compile Include="Patterns\PatternClassDeclaration.cs" />
     <Compile Include="Patterns\PatternComment.cs" />
     <Compile Include="PatternDeclarationUtils.cs" />
-    <Compile Include="Patterns\PatternExpressionInsideNode.cs" />
+    <Compile Include="Patterns\PatternExpressionInside.cs" />
     <Compile Include="Patterns\PatternArgs.cs" />
     <Compile Include="Patterns\PatternIdToken.cs" />
     <Compile Include="Patterns\PatternIdRegexToken.cs" />

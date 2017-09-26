@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Tokens
         [JsonIgnore]
         public abstract string TextValue { get; }
 
-        public override bool IsLiteral => true;
+        public override bool IsTerminal => true;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Expression Expression { get; set; }
@@ -39,7 +39,7 @@ namespace PT.PM.Common.Nodes.Tokens
                 return 1;
             }
 
-            if (!other.IsLiteral)
+            if (!other.IsTerminal)
             {
                 return -1;
             }

@@ -35,7 +35,7 @@ namespace PT.PM.Matching.Tests
                 new JsonUstSerializer());
             patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootUst>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto()
                 .OrderBy(r => r.PatternKey)
                 .ToArray();
 

@@ -49,7 +49,7 @@ namespace PT.PM.Matching.Patterns
             if (ust is IntLiteral intLiteral && 
                 (intLiteral.Value >= MinValue || intLiteral.Value < MaxValue))
             {
-                match = context.AddLocation(ust.TextSpan);
+                match = context.AddUst(ust);
             }
             else
             {

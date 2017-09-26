@@ -19,7 +19,7 @@ namespace PT.PM.Common.Nodes
         public Ust[] Children => GetChildren(); // TODO: optimized performance
 
         [JsonIgnore]
-        public virtual bool IsLiteral => false;
+        public virtual bool IsTerminal => false;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TextSpan TextSpan { get; set; }

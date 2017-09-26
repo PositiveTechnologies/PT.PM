@@ -42,13 +42,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions.cs" />
     <Compile Include="LanguageDetector.cs" />
     <Compile Include="MessageEventArgs.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="ParserConverterFactory.cs" />
     <Compile Include="ParserLanguageDetector.cs" />
-    <Compile Include="MatchingResultDto.cs" />
     <Compile Include="ParserUnit.cs" />
     <Compile Include="Stage.cs" />
     <Compile Include="StageHelper.cs" />

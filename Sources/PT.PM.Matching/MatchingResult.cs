@@ -20,7 +20,7 @@ namespace PT.PM.Matching
         {
             RootUst = rootUst;
             Pattern = pattern;
-            textSpans = textSpans.ToArray();
+            TextSpans = textSpans.ToArray();
         }
 
         public override string ToString()

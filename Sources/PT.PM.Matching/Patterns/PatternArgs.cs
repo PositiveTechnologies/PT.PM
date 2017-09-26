@@ -37,17 +37,20 @@ namespace PT.PM.Matching.Patterns
                 List<Expression> otherArgs = argsUst.Collection;
 
                 match = context;
-                if (Args.Count != otherArgs.Count)
+                if (Args.Count != 1 || !(Args[0] is PatternMultipleExpressions))
                 {
-                    return match.Fail();
-                }
-
-                for (int i = 0; i < Args.Count; i++)
-                {
-                    match = Args[i].Match(otherArgs[i], match);
-                    if (!match.Success)
+                    if (Args.Count != otherArgs.Count)
                     {
-                        return match;
+                        return match.Fail();
+                    }
+
+                    for (int i = 0; i < Args.Count; i++)
+                    {
+                        match = Args[i].Match(otherArgs[i], match);
+                        if (!match.Success)
+                        {
+                            return match;
+                        }
                     }
                 }
             }
@@ -56,7 +59,7 @@ namespace PT.PM.Matching.Patterns
                 match = context.Fail();
             }
 
-            return match;
+            return match.AddUstIfSuccess(ust);
         }
     }
 }

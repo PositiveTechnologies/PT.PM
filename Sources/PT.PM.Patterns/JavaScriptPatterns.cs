@@ -27,7 +27,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Body = new PatternStatements
                         (
-                            new PatternExpressionInsideNode
+                            new PatternExpressionInside
                             (
                                 new PatternOr
                                 (

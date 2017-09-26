@@ -12,6 +12,7 @@ using PT.PM.Matching.Patterns;
 using PT.PM.Matching.PatternsRepository;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -245,8 +246,8 @@ namespace PT.PM.PatternEditor
             {
                 var matchingResult = matchingResultWrapper.MatchingResult;
                 sourceCodeTextBox.Focus();
-                sourceCodeTextBox.SelectionStart = sourceCodeTextBox.Text.LineColumnToLinear(matchingResult.BeginLine, matchingResult.BeginColumn);
-                sourceCodeTextBox.SelectionEnd = sourceCodeTextBox.Text.LineColumnToLinear(matchingResult.EndLine, matchingResult.EndColumn);
+                sourceCodeTextBox.SelectionStart = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.BeginLine, matchingResult.BeginColumn);
+                sourceCodeTextBox.SelectionEnd = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.EndLine, matchingResult.EndColumn);
                 sourceCodeTextBox.CaretIndex = sourceCodeTextBox.SelectionEnd;
             }
         }
@@ -557,9 +558,7 @@ namespace PT.PM.PatternEditor
                 workflow.JavaScriptType = JavaScriptType;
             }
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults
-                .ToDto(workflow.SourceCodeRepository)
-                .ToArray();
+            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
 
             if (IsDeveloperMode)
             {
@@ -567,7 +566,7 @@ namespace PT.PM.PatternEditor
                 if (antlrParseTree?.SyntaxTree != null)
                 {
                     var antlrParser = ((AntlrParser)ParserConverterFactory.CreateParser(antlrParseTree.SourceLanguage)).InitParser(null);
-                    string tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
+                    string tokensString = antlrParseTree.Tokens.GetTokensString(antlrParser.Vocabulary, onlyDefaultChannel: true);
                     string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
 
                     Tokens = tokensString;
@@ -602,7 +601,7 @@ namespace PT.PM.PatternEditor
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 MatchingResults.Clear();
-                foreach (var matchingResult in matchingResults)
+                foreach (MatchingResultDto matchingResult in matchingResults)
                 {
                     MatchingResults.Add(new MathingResultDtoWrapper(matchingResult));
                 }

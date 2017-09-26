@@ -29,7 +29,7 @@ namespace PT.PM.Matching.Patterns
 
             if (ust is IntLiteral intLiteral && intLiteral.Value == Value)
             {
-                match = context.AddLocation(ust.TextSpan);
+                match = context.AddUst(ust);
             }
             else
             {

@@ -14,7 +14,7 @@ namespace PT.PM.Matching.Patterns
 
         public List<PatternBase> BaseTypes { get; set; }
 
-        public PatternExpressionInsideNode Body { get; set; }
+        public PatternExpressionInside Body { get; set; }
 
         public PatternClassDeclaration()
         {
@@ -24,7 +24,7 @@ namespace PT.PM.Matching.Patterns
 
         public PatternClassDeclaration(IEnumerable<PatternBase> modifiers,
             PatternBase name, IEnumerable<PatternBase> baseTypes,
-            PatternExpressionInsideNode body, TextSpan textSpan = default(TextSpan))
+            PatternExpressionInside body, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
@@ -97,7 +97,7 @@ namespace PT.PM.Matching.Patterns
                 match = context.Fail();
             }
 
-            return match;
+            return match.AddUstIfSuccess(ust);
         }
     }
 }

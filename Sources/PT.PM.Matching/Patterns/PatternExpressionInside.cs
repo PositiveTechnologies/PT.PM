@@ -4,15 +4,15 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternExpressionInsideNode : PatternBase
+    public class PatternExpressionInside : PatternBase
     {
         public PatternBase Expression { get; set; }
 
-        public PatternExpressionInsideNode()
+        public PatternExpressionInside()
         {
         }
 
-        public PatternExpressionInsideNode(PatternBase expression, TextSpan textSpan = default(TextSpan))
+        public PatternExpressionInside(PatternBase expression, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Expression = expression;
@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Patterns
             }
 
             var result = ust.DoesAnyDescendantMatchPredicate(ustNode => MatchExpression(ustNode, context).Success);
-            return context.Change(result);
+            return context.Change(result).AddUstIfSuccess(ust);
         }
 
         protected MatchingContext MatchExpression(Ust other, MatchingContext context)
