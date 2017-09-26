@@ -31,18 +31,16 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => regex.ToString();
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.StringLiteral)
             {
-                return false;
+                return context.Fail();
             }
 
             TextSpan[] matchedLocations = regex.MatchRegex(((StringLiteral)ust).Text, isQuoted: true);
-            context.Locations.AddRange(matchedLocations
-                .Select(location => location.AddOffset(ust.TextSpan.Start)));
-
-            return matchedLocations.Length > 0;
+            return context.AddLocations(
+                matchedLocations.Select(location => location.AddOffset(ust.TextSpan.Start)));
         }
     }
 }

@@ -310,7 +310,7 @@ namespace PT.PM.Matching
 
         public Ust Visit(PatternOr patternOr)
         {
-            List<PatternBase> vars = patternOr.Expressions.Select(v => (PatternBase)Visit(v)).ToList();
+            List<PatternBase> vars = patternOr.Alternatives.Select(v => (PatternBase)Visit(v)).ToList();
             vars.Sort();
             return new PatternOr(vars, patternOr.TextSpan);
         }

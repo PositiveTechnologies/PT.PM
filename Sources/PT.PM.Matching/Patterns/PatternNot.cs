@@ -21,15 +21,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"<~>{Expression}";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust == null)
             {
-                return false;
+                return context.Fail();
             }
 
-            bool match = !Expression.Match(ust, context);
-            return match;
+            MatchingContext match = Expression.Match(ust, context);
+            return match.Change(!match.Success);
         }
     }
 }

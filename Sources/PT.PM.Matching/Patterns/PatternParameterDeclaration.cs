@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
@@ -31,15 +32,23 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.ParameterDeclaration)
             {
-                return false;
+                return context.Fail();
             }
 
-            return Type.Match(ust, context) &&
-                   Name.Match(ust, context);
+            var parameterDeclaration = (ParameterDeclaration)ust;
+
+            MatchingContext match = Type.Match(parameterDeclaration.Type, context);
+            if (!match.Success)
+            {
+                return match;
+            }
+
+            match = Name.Match(parameterDeclaration.Name, match);
+            return match;
         }
     }
 }

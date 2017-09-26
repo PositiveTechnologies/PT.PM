@@ -80,18 +80,25 @@ namespace PT.PM.Matching.Patterns
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
 
-        public bool Match(Ust ust, MatchingContext context)
+        public List<MatchingResult> Match(Ust ust)
+        {
+            var context = new MatchingContext(this);
+            context = Match(ust, context);
+            return context.Results;
+        }
+
+        public MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.RootUst)
             {
-                return false;
+                return context.Fail();
             }
 
             var patternUst = (IPatternUst)Node;
             var rootUst = (RootUst)ust;
 
             if (patternUst is PatternComment ||
-               (patternUst is PatternOr && ((PatternOr)patternUst).Expressions.Any(v => v is PatternComment)))
+               (patternUst is PatternOr && ((PatternOr)patternUst).Alternatives.Any(v => v is PatternComment)))
             {
                 foreach (CommentLiteral commentNode in rootUst.Comments)
                 {
@@ -103,7 +110,7 @@ namespace PT.PM.Matching.Patterns
                 TraverseChildren(patternUst, rootUst, context);
             }
 
-            return context.Results.Count > 0;
+            return context;
         }
 
         private static void TraverseChildren(IPatternUst patternUst, Ust ust, MatchingContext context)
@@ -121,13 +128,13 @@ namespace PT.PM.Matching.Patterns
 
         private static void MatchAndAddResult(IPatternUst patternUst, Ust ust, MatchingContext context)
         {
-            if (patternUst.Match(ust, context))
+            if (patternUst.Match(ust, context).Success)
             {
                 var matching = new MatchingResult(ust.Root, context.PatternUst, context.Locations);
                 context.Logger.LogInfo(matching);
                 context.Results.Add(matching);
-                context.Locations.Clear();
             }
+            context.Locations.Clear();
         }
     }
 }

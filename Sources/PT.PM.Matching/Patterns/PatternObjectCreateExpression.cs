@@ -33,16 +33,22 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"new {Type}({Arguments})";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.ObjectCreateExpression)
             {
-                return false;
+                return context.Fail();
             }
 
             var objectCreateExpression = (ObjectCreateExpression)ust;
-            return Type.Match(objectCreateExpression.Type, context) &&
-                   Arguments.Match(objectCreateExpression.Arguments, context);
+            MatchingContext match = Type.Match(objectCreateExpression.Type, context);
+            if (!match.Success)
+            {
+                return match;
+            }
+
+            match = Arguments.Match(objectCreateExpression.Arguments, match);
+            return match;
         }
     }
 }

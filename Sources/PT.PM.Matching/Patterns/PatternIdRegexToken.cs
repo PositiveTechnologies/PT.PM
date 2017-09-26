@@ -41,11 +41,11 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Id;
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (!(ust is Token))
             {
-                return false;
+                return context.Fail();
             }
 
             Regex regex = ust.Root.Language.IsCaseInsensitive()
@@ -53,7 +53,7 @@ namespace PT.PM.Matching.Patterns
                 : this.regex;
             TextSpan[] matchedLocations = regex.MatchRegex(((Token)ust).TextValue, true);
 
-            return matchedLocations.Length > 0;
+            return context.AddLocations(matchedLocations);
         }
     }
 }

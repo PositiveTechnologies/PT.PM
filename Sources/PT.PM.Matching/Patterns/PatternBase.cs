@@ -12,6 +12,6 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public abstract bool Match(Ust ust, MatchingContext context);
+        public abstract MatchingContext Match(Ust ust, MatchingContext context);
     }
 }

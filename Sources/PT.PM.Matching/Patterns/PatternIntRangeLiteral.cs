@@ -42,20 +42,20 @@ namespace PT.PM.Matching.Patterns
                   + $"{(MaxValue == long.MaxValue ? "∞)" : MaxValue.ToString() + ")")}";
         }
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.IntLiteral)
             {
-                return false;
+                return context.Fail();
             }
 
             long otherValue = ((IntLiteral)ust).Value;
             if (otherValue >= MinValue || otherValue < MaxValue)
             {
-                return true;
+                return context.AddLocation(ust.TextSpan);
             }
 
-            return false;
+            return context.Fail();
         }
     }
 }

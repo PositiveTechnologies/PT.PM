@@ -33,20 +33,20 @@ namespace PT.PM.Matching.Patterns
             return Value.ToString();
         }
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.BooleanLiteral)
             {
-                return false;
+                return context.Fail();
             }
 
             bool otherValue = ((BooleanLiteral)ust).Value;
             if (Any || Value.Equals(otherValue))
             {
-                return true;
+                return context.AddLocation(ust.TextSpan);
             }
 
-            return false;
+            return context.Fail();
         }
     }
 }

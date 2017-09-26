@@ -18,14 +18,14 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "base";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.BaseReferenceExpression)
             {
-                return false;
+                return context.Fail();
             }
 
-            return true;
+            return context;
         }
     }
 }

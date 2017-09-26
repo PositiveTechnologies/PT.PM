@@ -55,16 +55,16 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.TypeDeclaration)
             {
-                return false;
+                return context.Fail();
             }
 
             var typeDeclaration = (TypeDeclaration)ust;
-            bool match = Modifiers.MatchSubset(typeDeclaration.Modifiers, context);
-            if (!match)
+            MatchingContext match = Modifiers.MatchSubset(typeDeclaration.Modifiers, context);
+            if (!match.Success)
             {
                 return match;
             }
@@ -72,7 +72,7 @@ namespace PT.PM.Matching.Patterns
             if (Name != null)
             {
                 match = Name.Match(typeDeclaration.Name, context);
-                if (!match)
+                if (!match.Success)
                 {
                     return match;
                 }
@@ -81,20 +81,20 @@ namespace PT.PM.Matching.Patterns
             match = BaseTypes.MatchSubset(typeDeclaration.BaseTypes, context);
 
             var baseTypesToMatch = new List<Ust>(BaseTypes);
-            if (!match)
+            if (!match.Success)
             {
                 return match;
             }
 
             if (Body != null)
             {
-                if (!typeDeclaration.TypeMembers.Any(m => Body.Match(m, context)))
+                if (!typeDeclaration.TypeMembers.Any(m => Body.Match(m, context).Success))
                 {
-                    return false;
+                    return match.Fail();
                 }
             }
 
-            return true;
+            return match;
         }
     }
 }

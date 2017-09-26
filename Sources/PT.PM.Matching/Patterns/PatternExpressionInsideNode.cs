@@ -30,25 +30,26 @@ namespace PT.PM.Matching.Patterns
             return "<{ " + Expression.ToString() + " }>";
         }
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust == null)
             {
-                return false;
+                return context.Fail();
             }
 
-            return ust.DoesAnyDescendantMatchPredicate(ustNode => MatchExpression(ustNode, context));
+            var result = ust.DoesAnyDescendantMatchPredicate(ustNode => MatchExpression(ustNode, context).Success);
+            return context.Change(result);
         }
 
-        protected bool MatchExpression(Ust other, MatchingContext context)
+        protected MatchingContext MatchExpression(Ust other, MatchingContext context)
         {
             if (Expression == null)
             {
                 if (other == null)
                 {
-                    return true;
+                    return context;
                 }
-                return false;
+                return context.Fail();
             }
             return Expression.Match(other, context);
         }

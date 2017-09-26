@@ -37,24 +37,24 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Id;
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             var token = ust as Token;
             if (token != null)
             {
-                return false;
+                string tokenText = token.TextValue;
+                if (ust.Root.Language.IsCaseInsensitive())
+                {
+                    TextSpan[] matchedLocations = caseInsensitiveRegex.MatchRegex(tokenText, true);
+                    return context.AddLocations(matchedLocations);
+                }
+                else if (id.Equals(tokenText))
+                {
+                    return context.AddLocation(ust.TextSpan);
+                }
             }
 
-            string tokenText = token.TextValue;
-            if (ust.Root.Language.IsCaseInsensitive())
-            {
-                TextSpan[] matchedLocations = caseInsensitiveRegex.MatchRegex(tokenText, true);
-                return matchedLocations.Length > 0;
-            }
-            else
-            {
-                return id.Equals(tokenText);
-            }
+            return context.Fail();
         }
     }
 }

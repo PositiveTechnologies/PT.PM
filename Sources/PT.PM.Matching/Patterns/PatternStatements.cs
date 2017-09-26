@@ -30,19 +30,19 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(";\n", Statements);
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.BlockStatement)
             {
-                return false;
+                return context.Fail();
             }
 
             if (Statements == null)
             {
-                return true;
+                return context;
             }
 
-            IList<Statement> otherStatements = ((Common.Nodes.Statements.BlockStatement)ust).Statements;
+            IList<Statement> otherStatements = ((BlockStatement)ust).Statements;
 
             throw new NotImplementedException();
         }

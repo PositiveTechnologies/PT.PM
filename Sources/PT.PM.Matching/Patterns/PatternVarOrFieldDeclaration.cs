@@ -46,11 +46,11 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{string.Join(", ", Modifiers)} {Type} {Name}";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust == null)
             {
-                return false;
+                return context;
             }
 
             if (ust.Kind == UstKind.FieldDeclaration)
@@ -63,73 +63,73 @@ namespace PT.PM.Matching.Patterns
                 return MatchVariableDeclaration((VariableDeclarationExpression)ust, context);
             }
 
-            return false;
+            return context.Fail();
         }
 
-        private bool MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchingContext context)
+        private MatchingContext MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchingContext context)
         {
             if (LocalVariable == true)
             {
-                return false;
+                return context.Fail();
             }
 
-            bool match = Modifiers.MatchSubset(fieldDeclaration.Modifiers, context);
-            if (!match)
+            MatchingContext match = Modifiers.MatchSubset(fieldDeclaration.Modifiers, context);
+            if (!match.Success)
             {
                 return match;
             }
 
-            match = Type.Equals(fieldDeclaration.Type);
-            if (!match)
+            match = Type.Match(fieldDeclaration.Type, match);
+            if (!match.Success)
             {
                 return match;
             }
 
             if (fieldDeclaration.Variables.Count() != 1)
             {
-                return false;
+                return match.Fail();
             }
 
             var assigment = fieldDeclaration.Variables.First();
-            match = ((IPatternUst)Name).Match(assigment.Left, context);
+            match = ((IPatternUst)Name).Match(assigment.Left, match);
 
             return match;
         }
 
-        private bool MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchingContext context)
+        private MatchingContext MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchingContext context)
         {
             if (LocalVariable == false)
             {
-                return false;
+                return context.Fail();
             }
 
             if (Modifiers.Count() != 0)
             {
-                return false;
+                return context.Fail();
             }
 
-            bool match = Type.Match(variableDeclaration.Type, context);
-            if (!match)
+            MatchingContext match = Type.Match(variableDeclaration.Type, context);
+            if (!match.Success)
             {
                 return match;
             }
 
             var matchedVarsNumber = variableDeclaration.Variables.Where(v =>
             {
-                match = Name.Match(v.Left, context);
-                if (!match)
+                match = Name.Match(v.Left, match);
+                if (!match.Success)
                 {
-                    return match;
+                    return false;
                 }
-                return Right?.Match(v.Right, context) ?? true;
+                return Right?.Match(v.Right, match).Success ?? true;
             }).Count();
 
             if (matchedVarsNumber == 0)
             {
-                return false;
+                return context.Fail();
             }
 
-            return true;
+            return context;
         }
     }
 }

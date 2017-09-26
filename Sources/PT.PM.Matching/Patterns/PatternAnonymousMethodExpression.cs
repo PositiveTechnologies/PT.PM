@@ -32,33 +32,31 @@ namespace PT.PM.Matching.Patterns
             return result.ToArray();
         }
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.AnonymousMethodExpression)
             {
-                return false;
+                return context.Fail();
             }
 
             var anonymousMethodExpression = (AnonymousMethodExpression)ust;
             if (Parameters.Count != anonymousMethodExpression.Parameters.Count)
             {
-                return false;
+                return context.Fail();
             }
 
+            MatchingContext match = context;
             for (int i = 0; i < Parameters.Count; i++)
             {
-                if (!Parameters[i].Match(anonymousMethodExpression.Parameters[i], context))
+                match = Parameters[i].Match(anonymousMethodExpression.Parameters[i], match);
+                if (!match.Success)
                 {
-                    return false;
+                    return match;
                 }
             }
 
-            if (!Body.Match(anonymousMethodExpression.Body, context))
-            {
-                return false;
-            }
-
-            return true;
+            match = Body.Match(anonymousMethodExpression.Body, match);
+            return match;
         }
     }
 }

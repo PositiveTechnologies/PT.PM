@@ -29,16 +29,23 @@ namespace PT.PM.Matching.Patterns
             return Right == null ? Left.ToString() : $"{Left} = {Right}";
         }
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.AssignmentExpression)
             {
-                return false;
+                return context.Fail();
             }
 
             var assignmentExpression = (AssignmentExpression)ust;
-            return Left.Match(assignmentExpression.Left, context) &&
-                   Right.Match(assignmentExpression.Right, context);
+
+            MatchingContext match = context;
+            match = Left.Match(assignmentExpression.Left, match);
+            if (match.Success)
+            {
+                match = Right.Match(assignmentExpression.Right, match);
+            }
+
+            return match;
         }
     }
 }

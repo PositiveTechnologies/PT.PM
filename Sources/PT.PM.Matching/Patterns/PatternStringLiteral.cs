@@ -22,20 +22,20 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => String;
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.StringLiteral)
             {
-                return false;
+                return context.Fail();
             }
 
             var stringLiteral = (StringLiteral)ust;
-            bool match = String.Equals(stringLiteral.Text);
-            if (match)
+            if (String.Equals(stringLiteral.Text))
             {
                 context.AddLocation(ust.TextSpan);
             }
-            return match;
+
+            return context.Fail();
         }
     }
 }

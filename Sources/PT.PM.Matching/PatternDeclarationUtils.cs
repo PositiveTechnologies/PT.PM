@@ -7,7 +7,7 @@ namespace PT.PM.Matching
 {
     public static class PatternDeclarationUtils
     {
-        public static bool MatchSubset<T>(this IEnumerable<IPatternUst> collection1, IEnumerable<T> collection2, MatchingContext context)
+        public static MatchingContext MatchSubset<T>(this IEnumerable<IPatternUst> collection1, IEnumerable<T> collection2, MatchingContext context)
             where T : Ust
         {
             var sublistToMatch = new List<IPatternUst>(collection1 ?? Enumerable.Empty<IPatternUst>());
@@ -15,10 +15,10 @@ namespace PT.PM.Matching
 
             foreach (T element in list)
             {
-                sublistToMatch.Remove(sublistToMatch.Find(m => m.Match(element, context)));
+                sublistToMatch.Remove(sublistToMatch.Find(m => m.Match(element, context).Success));
             }
 
-            return false;
+            return context.Fail();
         }
     }
 }

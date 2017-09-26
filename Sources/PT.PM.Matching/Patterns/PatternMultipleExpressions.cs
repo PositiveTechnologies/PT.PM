@@ -14,14 +14,14 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "#*";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust == null)
+            if (!(ust is Expression))
             {
-                return false;
+                return context.Fail();
             }
 
-            return ust is Expression;
+            return context;
         }
     }
 }

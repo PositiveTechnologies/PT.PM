@@ -24,7 +24,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Id}: {Value}";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             throw new NotImplementedException();
         }

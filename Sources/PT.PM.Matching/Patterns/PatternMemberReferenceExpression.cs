@@ -26,16 +26,22 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}.{Name}";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.MemberReferenceExpression)
             {
-                return false;
+                return context.Fail();
             }
 
             var memberRef = (MemberReferenceExpression)ust;
-            return Target.Match(memberRef.Target, context) &&
-                     Name.Match(memberRef.Name, context);
+            MatchingContext match = Target.Match(memberRef.Target, context);
+            if (!match.Success)
+            {
+                return match;
+            }
+
+            match = Name.Match(memberRef.Name, match);
+            return match;
         }
     }
 }

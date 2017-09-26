@@ -8,42 +8,52 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternOr : PatternBase
     {
-        public List<PatternBase> Expressions { get; set; }
+        public List<PatternBase> Alternatives { get; set; }
 
         public PatternOr()
         {
-            Expressions = new List<PatternBase>();
+            Alternatives = new List<PatternBase>();
         }
 
         public PatternOr(IEnumerable<PatternBase> expressions, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Expressions = expressions?.ToList()
+            Alternatives = expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
         public PatternOr(params PatternBase[] expressions)
         {
-            Expressions = expressions?.ToList()
+            Alternatives = expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
-        public override Ust[] GetChildren() => Expressions.ToArray();
+        public override Ust[] GetChildren() => Alternatives.ToArray();
 
-        public override string ToString() => $"({(string.Join(" <|> ", Expressions))})";
+        public override string ToString() => $"({(string.Join(" <|> ", Alternatives))})";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            foreach (PatternBase expression in Expressions)
+            var textSpans = new List<TextSpan>();
+            foreach (PatternBase expression in Alternatives)
             {
-                bool match = expression.Match(ust, context);
-                if (match)
+                var newContext = new MatchingContext(context.PatternUst)
                 {
-                    return true;
+                    Logger = context.Logger,
+                    FindAllAlternatives = context.FindAllAlternatives
+                };
+                MatchingContext match = expression.Match(ust, newContext);
+                if (match.Success)
+                {
+                    textSpans.AddRange(match.Locations);
+                    if (!context.FindAllAlternatives)
+                    {
+                        break;
+                    }
                 }
             }
 
-            return false;
+            return context.AddLocations(textSpans);
         }
     }
 }

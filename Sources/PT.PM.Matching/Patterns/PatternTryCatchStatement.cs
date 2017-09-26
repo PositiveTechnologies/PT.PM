@@ -33,29 +33,31 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"try catch {{ }}";
 
-        public bool Match(Ust ust, MatchingContext context)
+        public MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.TryCatchStatement)
             {
-                return false;
+                return context.Fail();
             }
 
             var otherTryCatch = (TryCatchStatement)ust;
             if (otherTryCatch.CatchClauses == null)
             {
-                return false;
+                return context.Fail();
             }
             else
             {
-                return otherTryCatch.CatchClauses.Any(catchClause =>
+                bool result = otherTryCatch.CatchClauses.Any(catchClause =>
                 {
                     if (IsCatchBodyEmpty && catchClause.Body.Statements.Any())
                     {
                         return false;
                     }
 
-                    return !ExceptionTypes.Any() || ExceptionTypes.Any(type => type.CompareTo(catchClause.Type) == 0);
+                    return !ExceptionTypes.Any() || ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
                 });
+
+                return context.Change(result);
             }
         }
     }

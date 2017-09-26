@@ -19,9 +19,14 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "#";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            return ust is Expression;
+            if (!(ust is Expression))
+            {
+                return context.Fail();
+            }
+
+            return context;
         }
     }
 }

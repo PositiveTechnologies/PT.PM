@@ -4,6 +4,6 @@ namespace PT.PM.Matching.Patterns
 {
     public interface IPatternUst
     {
-        bool Match(Ust ust, MatchingContext context);
+        MatchingContext Match(Ust ust, MatchingContext context);
     }
 }

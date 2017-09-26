@@ -63,23 +63,23 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.MethodDeclaration)
             {
-                return false;
+                return context.Fail();
             }
 
             var methodDeclaration = (MethodDeclaration)ust;
 
-            bool match = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
-            if (!match)
+            MatchingContext match = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
+            if (!match.Success)
             {
                 return match;
             }
 
-            match = Name.Match(methodDeclaration.Name, context);
-            if (!match)
+            match = Name.Match(methodDeclaration.Name, match);
+            if (!match.Success)
             {
                 return match;
             }
@@ -89,18 +89,18 @@ namespace PT.PM.Matching.Patterns
                 if (Body != null)
                 {
                     match = Body.Match(methodDeclaration.Body, context);
-                    if (!match)
+                    if (!match.Success)
                     {
                         return match;
                     }
                 }
                 else if (methodDeclaration.Body != null)
                 {
-                    return false;
+                    return match.Fail();
                 }
             }
 
-            return true;
+            return match;
         }
 
         private void InitFields(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)

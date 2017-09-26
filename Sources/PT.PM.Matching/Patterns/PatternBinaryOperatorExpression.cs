@@ -30,17 +30,31 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Left} {Operator} {Right}";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.BinaryOperatorExpression)
             {
-                return false;
+                return context.Fail();
             }
 
             var binaryOperatorExpression = (BinaryOperatorExpression)ust;
-            return Left.Match(binaryOperatorExpression.Left, context) &&
-                   Operator.Equals(binaryOperatorExpression.Operator) &&
-                   Right.Match(binaryOperatorExpression.Right, context);
+
+            MatchingContext match = context;
+
+            match = Left.Match(binaryOperatorExpression.Left, match);
+            if (!match.Success)
+            {
+                return match;
+            }
+
+            if (!Operator.Equals(binaryOperatorExpression.Operator))
+            {
+                return match.Fail();
+            }
+
+            match = Right.Match(binaryOperatorExpression.Right, match);
+
+            return match;
         }
     }
 }

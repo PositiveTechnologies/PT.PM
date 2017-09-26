@@ -30,18 +30,19 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"({(string.Join(" <&> ", Expressions))})";
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
+            MatchingContext match = context;
             foreach (PatternBase expression in Expressions)
             {
-                bool match = expression.Match(ust, context);
-                if (!match)
+                match = expression.Match(ust, context);
+                if (match.Success)
                 {
-                    return false;
+                    break;
                 }
             }
 
-            return true;
+            return match;
         }
     }
 }

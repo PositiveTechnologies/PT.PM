@@ -39,9 +39,8 @@ namespace PT.PM.Matching
                 var result = new List<MatchingResult>();
                 foreach (PatternRootUst pattern in patterns)
                 {
-                    var context = new MatchingContext(pattern);
-                    pattern.Match(ust, context);
-                    result.AddRange(context.Results);
+                    var results = pattern.Match(ust);
+                    result.AddRange(results);
                 }
 
                 return result;

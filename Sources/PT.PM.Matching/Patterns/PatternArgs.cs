@@ -28,30 +28,31 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(", ", Args);
 
-        public override bool Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust?.Kind != UstKind.ArgsUst)
             {
-                return false;
+                return context.Fail();
             }
 
             List<Expression> otherArgs = ((ArgsUst)ust).Collection;
 
             if (Args.Count != otherArgs.Count)
             {
-                return false;
+                return context.Fail();
             }
 
+            MatchingContext match = context;
             for (int i = 0; i < Args.Count; i++)
             {
-                bool match = Args[i].Match(otherArgs[i], context);
-                if (!match)
+                match = Args[i].Match(otherArgs[i], match);
+                if (!match.Success)
                 {
-                    return match;
+                    break;
                 }
             }
 
-            return true;
+            return match;
         }
     }
 }
