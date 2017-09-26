@@ -1,35 +1,34 @@
-﻿using System;
-using PT.PM.Common.Nodes;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using PT.PM.Common.Nodes;
 using System.Collections.Generic;
 
 namespace PT.PM.Common
 {
-    public class JsonUstNodeSerializer : IUstNodeSerializer
+    public class JsonUstSerializer : IUstSerializer
     {
-        private readonly UstJsonConverter astJsonConverter;
+        private readonly UstJsonConverter defaultUstJsonConverter;
         private readonly JsonConverter stringEnumConverter;
 
         public bool IncludeTextSpans { get; set; } = true;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public UstNodeSerializationFormat DataFormat => UstNodeSerializationFormat.Json;
+        public UstFormat DataFormat => UstFormat.Json;
 
         public bool Indented { get; set; } = false;
 
         public bool ExcludeNulls { get; set; } = true;
 
-        public JsonUstNodeSerializer(params Type[] ustNodeAssemblyTypes)
+        public JsonUstSerializer()
         {
-            astJsonConverter = new UstJsonConverter(ustNodeAssemblyTypes);
+            defaultUstJsonConverter = new UstJsonConverter();
             stringEnumConverter = new StringEnumConverter();
         }
 
         public Ust Deserialize(string data)
         {
-            var result = JsonConvert.DeserializeObject<Ust>(data, astJsonConverter, stringEnumConverter);
+            var result = JsonConvert.DeserializeObject<Ust>(data, defaultUstJsonConverter, stringEnumConverter);
             result.FillAscendants();
             return result;
         }
@@ -48,16 +47,15 @@ namespace PT.PM.Common
 
         private JsonSerializerSettings PrepareSettings()
         {
-            var converters = new List<JsonConverter>() { stringEnumConverter };
+            var ustJsonConverter = new UstJsonConverter { IncludeTextSpans = IncludeTextSpans };
             var jsonSettings = new JsonSerializerSettings()
             {
-                Converters = converters
+                Converters = new List<JsonConverter>() { stringEnumConverter, ustJsonConverter }
             };
             if (ExcludeNulls)
             {
                 jsonSettings.NullValueHandling = NullValueHandling.Ignore;
             }
-            jsonSettings.ContractResolver = new TextSpanResolver() { Ignore = !IncludeTextSpans };
             return jsonSettings;
         }
     }

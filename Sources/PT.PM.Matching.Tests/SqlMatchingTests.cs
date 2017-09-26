@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Tests
 
         private void Match_TestPatternsSql_MatchedAllDefault(Language language, string patternsFileName)
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, patternsFileName.NormDirSeparator());
+            var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, language, patternsRepository);

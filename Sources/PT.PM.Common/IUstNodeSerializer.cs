@@ -2,10 +2,10 @@
 
 namespace PT.PM.Common
 {
-    public interface IUstNodeSerializer
+    public interface IUstSerializer
     {
         ILogger Logger { get; set; }
-        UstNodeSerializationFormat DataFormat { get; }
+        UstFormat DataFormat { get; }
         Ust Deserialize(string data);
         string Serialize(Nodes.Ust node);
     }

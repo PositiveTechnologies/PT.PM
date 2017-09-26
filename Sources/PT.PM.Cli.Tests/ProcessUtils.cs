@@ -2,7 +2,7 @@
 
 namespace PT.PM.Cli.Tests
 {
-    public class ProcessHelpers
+    public class ProcessUtils
     {
         public static ProcessExecutionResult SetupHiddenProcessAndStart(string fileName, string arguments, string workingDirectory = ".", bool waitForExit = true)
         {

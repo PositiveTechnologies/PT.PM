@@ -10,7 +10,7 @@ using Antlr4.Runtime.Misc;
 
 namespace PT.PM.AntlrUtils
 {
-    public static class AntlrHelper
+    public static class AntlrUtils
     {
         private const int IndentSize = 2;
         private const int MaxTokenValueLength = 16;
@@ -124,8 +124,8 @@ namespace PT.PM.AntlrUtils
             }
         }
 
-        public static void LogConversionError(Exception ex, ParserRuleContext context,
-            string currentFileName, string currentFileData, ILogger logger)
+        public static void LogConversionError(this ILogger logger, Exception ex,
+            ParserRuleContext context, string currentFileName, string currentFileData)
         {
             StackTrace stackTrace = new StackTrace(ex, true);
             int frameNumber = 0;
@@ -147,7 +147,7 @@ namespace PT.PM.AntlrUtils
             var textSpan = context.GetTextSpan();
             string exceptionText;
             int sourceCodeLine, sourceCodeColumn;
-            TextHelper.LinearToLineColumn(textSpan.Start, currentFileData, out sourceCodeLine, out sourceCodeColumn);
+            textSpan.Start.ToLineColumn(currentFileData, out sourceCodeLine, out sourceCodeColumn);
             if (fileName != null)
             {
                 exceptionText = $"{ex.Message} at method \"{methodName}\" {line}:{column} at position {sourceCodeLine}:{sourceCodeColumn} in source file";

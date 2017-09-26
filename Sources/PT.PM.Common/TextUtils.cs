@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace PT.PM.Common
 {
-    public static class TextHelper
+    public static class TextUtils
     {
         private const int StartLine = 1;
         private const int StartColumn = 1;
@@ -18,42 +17,36 @@ namespace PT.PM.Common
             int currentColumn = StartColumn;
 
             int i = 0;
-            try
+            while (currentLine != line || currentLine == line && currentColumn != column)
             {
-                while (currentLine != line || currentLine == line && currentColumn != column)
+                // General line endings:
+                //  Windows: '\r\n'
+                //  Mac (OS 9-): '\r'
+                //  Mac (OS 10+): '\n'
+                //  Unix/Linux: '\n'
+
+                switch (text[i])
                 {
-                    // General line endings:
-                    //  Windows: '\r\n'
-                    //  Mac (OS 9-): '\r'
-                    //  Mac (OS 10+): '\n'
-                    //  Unix/Linux: '\n'
+                    case '\r':
+                        currentLine++;
+                        currentColumn = StartColumn;
+                        if (i + 1 < text.Length && text[i + 1] == '\n')
+                        {
+                            i++;
+                        }
+                        break;
 
-                    switch (text[i])
-                    {
-                        case '\r':
-                            currentLine++;
-                            currentColumn = StartColumn;
-                            if (i + 1 < text.Length && text[i + 1] == '\n')
-                            {
-                                i++;
-                            }
-                            break;
+                    case '\n':
+                        currentLine++;
+                        currentColumn = StartColumn;
+                        break;
 
-                        case '\n':
-                            currentLine++;
-                            currentColumn = StartColumn;
-                            break;
-
-                        default:
-                            currentColumn++;
-                            break;
-                    }
-
-                    i++;
+                    default:
+                        currentColumn++;
+                        break;
                 }
-            }
-            catch
-            {
+
+                i++;
             }
 
             return i;
@@ -61,11 +54,11 @@ namespace PT.PM.Common
 
         public static void ToLineColumn(this TextSpan textSpan, string text, out int startLine, out int startColumn, out int endLine, out int endColumn)
         {
-            LinearToLineColumn(textSpan.Start, text, out startLine, out startColumn);
-            LinearToLineColumn(textSpan.End, text, out endLine, out endColumn);
+            textSpan.Start.ToLineColumn(text, out startLine, out startColumn);
+            textSpan.End.ToLineColumn(text, out endLine, out endColumn);
         }
 
-        public static void LinearToLineColumn(int index, string text, out int line, out int column)
+        public static void ToLineColumn(this int index, string text, out int line, out int column)
         {
             line = StartLine;
             column = StartColumn;
@@ -97,7 +90,7 @@ namespace PT.PM.Common
             }
         }
 
-        public static int GetLinesCount(string text)
+        public static int GetLinesCount(this string text)
         {
             int result = 1;
             int length = text.Length;

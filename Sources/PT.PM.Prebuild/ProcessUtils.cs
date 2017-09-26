@@ -2,7 +2,7 @@
 
 namespace PT.PM.Prebuild
 {
-    public class ProcessHelpers
+    public class ProcessUtils
     {
         public static Process SetupHiddenProcessAndStart(string fileName, string arguments, string workingDirectory,
             DataReceivedEventHandler errorDataReceived, DataReceivedEventHandler outputDataReceived)

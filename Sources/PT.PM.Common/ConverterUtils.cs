@@ -5,7 +5,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common
 {
-    public static class ConverterHelper
+    public static class ConverterUtils
     {
         public static AssignmentExpression ConvertToAssignmentExpression(
              Expression left, BinaryOperator op, TextSpan opSpan, Expression right, TextSpan textSpan)

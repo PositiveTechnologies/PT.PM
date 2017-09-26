@@ -45,7 +45,7 @@ namespace PT.PM.CSharpParseTreeUst
                         if (diagnostic.Severity == DiagnosticSeverity.Error &&
                             diagnostic.Id != "CS1029")
                         {
-                            var textSpan = RoslynHelper.ConvertTextSpan(diagnostic.Location);
+                            var textSpan = diagnostic.Location.ToTextSpan();
                             Logger.LogError(new ParsingException(filePath, message: diagnostic.ToString())
                             {
                                 TextSpan = textSpan

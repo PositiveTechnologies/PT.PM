@@ -201,7 +201,7 @@ namespace PT.PM.Cli
 
         private static void DumpUst(bool isIndentedUst, bool isIncludeTextSpansInUst, WorkflowResult workflowResult)
         {
-            var serializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef))
+            var serializer = new JsonUstSerializer()
             {
                 Indented = isIndentedUst,
                 IncludeTextSpans = isIncludeTextSpansInUst

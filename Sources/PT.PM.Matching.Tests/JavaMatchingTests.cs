@@ -23,7 +23,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsJava_MatchedAllDefault()
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.java");
+            var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.java");
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, Language.Java, patternsRepository);

@@ -30,7 +30,7 @@ namespace PT.PM
         }
 
         public MatchingResultDto(MatchingResult result)
-            : this(result.SourceCodeFile, result.Nodes.Last().TextSpan, result.Pattern)
+            : this(result.SourceCodeFile, result.TextSpan, result.Pattern)
         {
         }
 
@@ -57,11 +57,8 @@ namespace PT.PM
 
         public static MatchingResultDto CreateFromMatchingResult(MatchingResult matchingResult, ISourceCodeRepository sourceCodeRepository)
         {
-            var sourceCodeFile = matchingResult.Nodes.First() is RootUst rootNode
-                ? rootNode.SourceCodeFile
-                : matchingResult.Nodes.First().Root.SourceCodeFile;
             var result = new MatchingResultDto(
-                sourceCodeFile,
+                matchingResult.RootUst.SourceCodeFile,
                 matchingResult.TextSpan,
                 matchingResult.Pattern);
             return result;

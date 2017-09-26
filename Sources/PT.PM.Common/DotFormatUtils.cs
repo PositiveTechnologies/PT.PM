@@ -1,13 +1,9 @@
 ﻿using PT.PM.Common.Nodes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Common
 {
-    public static class DotFormatHelper
+    public static class DotFormatUtils
     {
         private const int TrimLength = 20;
 
@@ -16,7 +12,7 @@ namespace PT.PM.Common
             builder.AppendLine($"{startInd}->{endInd}" + (advanced == "" ? "" : " " + advanced) + ";");
         }
 
-        public static string GetNodeName(Nodes.Ust node)
+        public static string GetNodeName(Ust node)
         {
             return TrimAndEscapeString(node.ToString());
         }

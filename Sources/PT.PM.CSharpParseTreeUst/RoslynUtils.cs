@@ -3,29 +3,29 @@ using Microsoft.CodeAnalysis;
 
 namespace PT.PM.CSharpParseTreeUst
 {
-    public static class RoslynHelper
+    public static class RoslynUtils
     {
         public static TextSpan GetTextSpan(this SyntaxNodeOrToken node)
         {
-            return ConvertTextSpan(node.GetLocation());
+            return ToTextSpan(node.GetLocation());
         }
 
         public static TextSpan GetTextSpan(this SyntaxTrivia node)
         {
-            return ConvertTextSpan(node.GetLocation());
+            return ToTextSpan(node.GetLocation());
         }
 
         public static TextSpan GetTextSpan(this SyntaxToken node)
         {
-            return ConvertTextSpan(node.GetLocation());
+            return ToTextSpan(node.GetLocation());
         }
 
         public static TextSpan GetTextSpan(this SyntaxNode node)
         {
-            return ConvertTextSpan(node.GetLocation());
+            return ToTextSpan(node.GetLocation());
         }
 
-        internal static TextSpan ConvertTextSpan(Location location)
+        internal static TextSpan ToTextSpan(this Location location)
         {
             var lineSpan = location.GetLineSpan();
             var startLineColumnPos = lineSpan.StartLinePosition;

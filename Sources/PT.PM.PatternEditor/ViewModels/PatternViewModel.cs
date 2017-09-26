@@ -7,7 +7,6 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
 using PT.PM.Matching;
-using PT.PM.Matching.Patterns;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,7 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        private JsonUstNodeSerializer ustNodeJsonSerializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef))
+        private JsonUstSerializer ustNodeJsonSerializer = new JsonUstSerializer
         {
             IncludeTextSpans = false,
             Indented = true,
@@ -510,7 +509,7 @@ namespace PT.PM.PatternEditor
         private void UpdatePatternCaretIndex(int caretIndex)
         {
             int line, column;
-            TextHelper.LinearToLineColumn(caretIndex, patternTextBox.Text, out line, out column);
+            caretIndex.ToLineColumn(patternTextBox.Text, out line, out column);
             PatternTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(PatternTextBoxPosition)));
         }

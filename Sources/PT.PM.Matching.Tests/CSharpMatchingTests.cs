@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Tests
         public void Match_WebGoatNET_Matched()
         {
             string projectKey = "WebGoat.NET-1c6cab";
-            WorkflowResult workflowResult = TestHelper.CheckProject(
+            WorkflowResult workflowResult = TestUtility.CheckProject(
                 TestProjects.CSharpProjects.Single(p => p.Key == projectKey), Language.CSharp, Stage.Match);
 
             Assert.AreEqual(13, workflowResult.MatchingResults.Count);
@@ -44,7 +44,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsCSharp_MatchedAllDefault()
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.cs");
+            var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.cs");
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, patternsRepository);
@@ -60,7 +60,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsAspx_MatchedExpected()
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.aspx");
+            var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.aspx");
             var sourceCodeRep = new FileCodeRepository(path);
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, patternsRepository);
             MatchingResultDto[] matchingResults = workflow.Process().MatchingResults.ToDto(workflow.SourceCodeRepository);
@@ -73,7 +73,7 @@ namespace PT.PM.Matching.Tests
         public void Match_HardcodedPasswordAspx_WithoutException()
         {
             var hardcodedPassRepository = new DslPatternRepository("<[(?i)password]> = <[\"\\w*\"]>", Language.CSharp);
-            var sourceCodeRep = new FileCodeRepository(Path.Combine(TestHelper.TestsDataPath, "HardcodedPassword.aspx"));
+            var sourceCodeRep = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, "HardcodedPassword.aspx"));
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, hardcodedPassRepository);
             MatchingResultDto[] matchingResults = workflow.Process().MatchingResults.ToDto(workflow.SourceCodeRepository);
 

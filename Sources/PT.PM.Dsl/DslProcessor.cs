@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace PT.PM.Dsl
 {
-    public class DslProcessor : IUstNodeSerializer
+    public class DslProcessor : IUstSerializer
     {
         private ILogger logger = DummyLogger.Instance;
 
@@ -46,7 +46,7 @@ namespace PT.PM.Dsl
         }
 
 
-        public UstNodeSerializationFormat DataFormat => UstNodeSerializationFormat.Dsl;
+        public UstFormat DataFormat => UstFormat.Dsl;
 
         public DslProcessor()
         {

@@ -132,7 +132,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
         {
-            var type = new TypeToken(Helper.Prefix + "object", node.NewKeyword.GetTextSpan());
+            var type = new TypeToken(CommonUtils.Prefix + "object", node.NewKeyword.GetTextSpan());
             var sizes = node.Commas.Select(c => new IntLiteral(0, c.GetTextSpan())).ToList();
             sizes.Add(new IntLiteral(0, node.CloseBracketToken.GetTextSpan()));
 
@@ -162,7 +162,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             else
             {
                 var op = BinaryOperatorLiteral.TextBinaryOperator[opText.Remove(opText.Length - 1)];
-                result = ConverterHelper.ConvertToAssignmentExpression(left, op,
+                result = ConverterUtils.ConvertToAssignmentExpression(left, op,
                     node.OperatorToken.GetTextSpan(), right,
                     node.GetTextSpan());
             }
@@ -366,7 +366,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitImplicitElementAccess(ImplicitElementAccessSyntax node)
         {
             var args = (ArgsUst)VisitBracketedArgumentList(node.ArgumentList);
-            var target = new IdToken(Helper.Prefix + "index_initializer", default(TextSpan));
+            var target = new IdToken(CommonUtils.Prefix + "index_initializer", default(TextSpan));
             var result = new IndexerExpression(target, args, node.GetTextSpan());
             return result;
         }

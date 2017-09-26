@@ -1,33 +1,33 @@
-﻿using System;
-using System.Linq;
-using PT.PM.AntlrUtils;
-using PT.PM.Common.Nodes;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using PT.PM.Common.Nodes.GeneralScope;
-using PT.PM.Common.Nodes.Tokens;
-using System.Collections.Generic;
-using PT.PM.Common.Nodes.Statements;
+using PT.PM.AntlrUtils;
+using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common;
+using PT.PM.Common.Nodes.GeneralScope;
+using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
-using PT.PM.Common.Nodes.TypeMembers;
-using Antlr4.Runtime.Misc;
-using PT.PM.JavaScriptParseTreeUst;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.JavaScriptParseTreeUst;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PT.PM.PhpParseTreeUst
 {
     public partial class PhpAntlrParseTreeConverter : AntlrConverter, IPhpParserVisitor<Ust>
     {
-        protected const string namespacePrefix = Helper.Prefix + "ns";
-        protected const string elementNamespacePrefix = Helper.Prefix + "elemNs";
-        protected const string contentNamespacePrefix = Helper.Prefix + "contentNs";
-        protected const string attrNamespacePrefix = Helper.Prefix + "attrNs";
-        protected const string inlineHtmlNamespacePrefix = Helper.Prefix + "inlineHtml";
+        protected const string namespacePrefix = CommonUtils.Prefix + "ns";
+        protected const string elementNamespacePrefix = CommonUtils.Prefix + "elemNs";
+        protected const string contentNamespacePrefix = CommonUtils.Prefix + "contentNs";
+        protected const string attrNamespacePrefix = CommonUtils.Prefix + "attrNs";
+        protected const string inlineHtmlNamespacePrefix = CommonUtils.Prefix + "inlineHtml";
 
         protected int jsStartCodeInd = 0;
         protected int namespaceDepth;
@@ -178,7 +178,7 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitPhpBlock(PhpParser.PhpBlockContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
-            var namespaceName = new StringLiteral(Helper.Prefix + "default", textSpan);
+            var namespaceName = new StringLiteral(CommonUtils.Prefix + "default", textSpan);
             UsingDeclaration[] usingDeclarations = context.importStatement()
                 .Select(importStatement => (UsingDeclaration)Visit(importStatement))
                 .Where(stmt => stmt != null)
@@ -251,7 +251,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                name = new StringLiteral(Helper.Prefix + "unnamed", default(TextSpan));
+                name = new StringLiteral(CommonUtils.Prefix + "unnamed", default(TextSpan));
             }
 
             Ust[] members = context.namespaceStatement()
@@ -1148,7 +1148,7 @@ namespace PT.PM.PhpParseTreeUst
                         binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[binaryOperatorText.Remove(binaryOperatorText.Length - 1)];
                     }
 
-                    result = ConverterHelper.ConvertToAssignmentExpression(left, binaryOperator, operatorTerminal.GetTextSpan(),
+                    result = ConverterUtils.ConvertToAssignmentExpression(left, binaryOperator, operatorTerminal.GetTextSpan(),
                         right, context.GetTextSpan());
                 }
             }
@@ -1797,7 +1797,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                result = new IdToken(Helper.Prefix + "expressionId", context.GetTextSpan());
+                result = new IdToken(CommonUtils.Prefix + "expressionId", context.GetTextSpan());
                 exprs.Insert(0, (Expression)Visit(context.expression()));
             }
 

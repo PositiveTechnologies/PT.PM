@@ -9,7 +9,7 @@ using PT.PM.Common;
 
 namespace PT.PM.TestUtils
 {
-    public static class TestHelper
+    public static class TestUtility
     {
         public const string GithubUrlPrefix = "https://github.com/";
         public const string TooLongTestDurationMessage = "Too long test duration.";
@@ -36,7 +36,7 @@ namespace PT.PM.TestUtils
             false;
 #endif
 
-        static TestHelper()
+        static TestUtility()
         {
             GetRepositoryDirectory();
 
@@ -48,8 +48,8 @@ namespace PT.PM.TestUtils
             {
                 Directory.CreateDirectory(TestsOutputPath);
             }
-            GraphvizPath = Helper.IsRunningOnLinux ? "dot" : Path.Combine(repositoryDirectory, GraphvizPath).NormDirSeparator();
-            SevenZipPath = Helper.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
+            GraphvizPath = CommonUtils.IsRunningOnLinux ? "dot" : Path.Combine(repositoryDirectory, GraphvizPath).NormDirSeparator();
+            SevenZipPath = CommonUtils.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
         public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage,

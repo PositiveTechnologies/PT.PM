@@ -7,7 +7,7 @@ namespace PT.PM.TestUtils
 {
     public class GraphvizGraph
     {
-        public string GraphvizPath { get; set; } = TestHelper.GraphvizPath;
+        public string GraphvizPath { get; set; } = TestUtility.GraphvizPath;
 
         public string DotGraph { get; set; }
 

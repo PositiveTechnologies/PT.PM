@@ -3,8 +3,6 @@ using Newtonsoft.Json.Converters;
 using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Statements;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
@@ -28,35 +26,31 @@ namespace PT.PM.Tests
         [Test]
         public void JsonSerialize_PatternWithVar_JsonEqualsToDsl()
         {
-            var pwdVar = new PatternVarDef { Id = "pwd", Values = new List<Expression>() { new PatternIdToken("password") } };
             var patternNode = new PatternRootUst
             {
-                Vars = new List<PatternVarDef>() { pwdVar },
-                Node = new PatternStatements(
-                     new ExpressionStatement
-                     {
-                         Expression = new AssignmentExpression
-                         {
-                             Left = new PatternVarRef(pwdVar),
-                             Right = new PatternExpression()
-                         }
-                     },
-                     new PatternMultipleStatements(),
-                     new ExpressionStatement
-                     {
-                         Expression = new InvocationExpression
-                         {
-                             Target = new PatternExpression(),
-                             Arguments = new PatternExpressions(
-                                 new PatternMultipleExpressions(),
-                                 new PatternVarRef(pwdVar),
-                                 new PatternMultipleExpressions())
-                         }
-                     }
-                )
+                Node = new PatternStatements
+                {
+                    Statements = new List<PatternBase>
+                    {
+                        new PatternAssignmentExpression
+                        {
+                             Left = new PatternVar("pwd") { Value = new PatternIdRegexToken("password") },
+                             Right = new PatternAnyExpression()
+                        },
+
+                        new PatternInvocationExpression
+                        {
+                            Target = new PatternAnyExpression(),
+                            Arguments = new PatternArgs(
+                                new PatternMultipleExpressions(),
+                                new PatternVar("pwd"),
+                                new PatternMultipleExpressions())
+                        }
+                    }
+                }
             };
 
-            var jsonSerializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef));
+            var jsonSerializer = new JsonUstSerializer();
             jsonSerializer.Indented = true;
             jsonSerializer.IncludeTextSpans = false;
 

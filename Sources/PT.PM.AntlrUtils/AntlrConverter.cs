@@ -100,7 +100,7 @@ namespace PT.PM.AntlrUtils
                 var parserRuleContext = tree as ParserRuleContext;
                 if (parserRuleContext != null)
                 {
-                    AntlrHelper.LogConversionError(ex, parserRuleContext, root.SourceCodeFile.FullPath, root.SourceCodeFile.Code, Logger);
+                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile.FullPath, root.SourceCodeFile.Code);
                 }
                 return DefaultResult;
             }

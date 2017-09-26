@@ -132,7 +132,7 @@ namespace PT.PM.AntlrUtils
                     long lexerTimeSpanTicks = stopwatch.ElapsedTicks;
 
 #if DEBUG
-                    var codeTokensStr = AntlrHelper.GetTokensString(tokens, Vocabulary, onlyDefaultChannel: false);
+                    var codeTokensStr = tokens.GetTokensString(Vocabulary, onlyDefaultChannel: false);
 #endif
                     ClearCacheIfRequired(lexer.Interpreter, lexerLock, ClearCacheLexerFilesCount);
 

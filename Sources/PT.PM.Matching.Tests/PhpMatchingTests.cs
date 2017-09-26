@@ -24,7 +24,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsPhp_MatchedAllDefault()
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.php");
+            var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.php");
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, Language.Php, patternsRepository);

@@ -16,7 +16,7 @@ namespace PT.PM.TestUtils
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    FileName = TestHelper.SevenZipPath,
+                    FileName = TestUtility.SevenZipPath,
                     Arguments = "x \"" + zipPath + "\" -o\"" + extractPath + "\" -y"
                 };
                 Process process = Process.Start(processStartInfo);

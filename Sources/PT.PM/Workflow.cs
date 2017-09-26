@@ -41,10 +41,10 @@ namespace PT.PM
         {
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
-            UstPatternMatcher = new BruteForcePatternMatcher();
-            IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef));
-            IUstNodeSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new PatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            UstPatternMatcher = new PatternMatcher();
+            IUstSerializer jsonNodeSerializer = new JsonUstSerializer();
+            IUstSerializer dslNodeSerializer = new DslProcessor();
+            PatternConverter = new PatternConverter(new IUstSerializer[] { jsonNodeSerializer, dslNodeSerializer });
             Stage = stage;
             ThreadCount = 1;
         }

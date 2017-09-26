@@ -23,7 +23,7 @@ namespace PT.PM.PatternEditor
 {
     public class MainWindowViewModel: ReactiveObject
     {
-        private JsonUstNodeSerializer jsonSerializer = new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef))
+        private JsonUstSerializer jsonSerializer = new JsonUstSerializer
         {
             IncludeTextSpans = false,
             Indented = true,
@@ -233,7 +233,7 @@ namespace PT.PM.PatternEditor
 
         private void UpdateSourceCodeCaretIndex(int caretIndex)
         {
-            TextHelper.LinearToLineColumn(caretIndex, sourceCodeTextBox.Text, out int line, out int column);
+            caretIndex.ToLineColumn(sourceCodeTextBox.Text, out int line, out int column);
             SourceCodeTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition)));
         }
@@ -245,8 +245,8 @@ namespace PT.PM.PatternEditor
             {
                 var matchingResult = matchingResultWrapper.MatchingResult;
                 sourceCodeTextBox.Focus();
-                sourceCodeTextBox.SelectionStart = TextHelper.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.BeginLine, matchingResult.BeginColumn);
-                sourceCodeTextBox.SelectionEnd = TextHelper.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.EndLine, matchingResult.EndColumn);
+                sourceCodeTextBox.SelectionStart = sourceCodeTextBox.Text.LineColumnToLinear(matchingResult.BeginLine, matchingResult.BeginColumn);
+                sourceCodeTextBox.SelectionEnd = sourceCodeTextBox.Text.LineColumnToLinear(matchingResult.EndLine, matchingResult.EndColumn);
                 sourceCodeTextBox.CaretIndex = sourceCodeTextBox.SelectionEnd;
             }
         }

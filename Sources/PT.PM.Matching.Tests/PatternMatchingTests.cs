@@ -24,8 +24,7 @@ namespace PT.PM.Matching.Tests
         [SetUp]
         public void Init()
         {
-            patternsConverter = new PatternConverter(
-                new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef)));
+            patternsConverter = new PatternConverter(new JsonUstSerializer());
             patternsRep = new MemoryPatternsRepository();
             sourceCodeRep = new MemoryCodeRepository(
                 "<?php \n" +
@@ -108,7 +107,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_PatternWithNegation_CorrectCount()
         {
-            var code = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "XxeSample.java"));
+            var code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
             var pattern = "new XMLUtil().parse(<[~\".*\"]>)";
 
             var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Language.Java);

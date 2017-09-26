@@ -32,7 +32,7 @@ namespace PT.PM.Matching.Tests
             patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageExt.AllPatternLanguages);
             patternNode.DebugInfo = pattern;
             var patternsConverter = new PatternConverter(
-                new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef)));
+                new JsonUstSerializer());
             patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootUst>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)

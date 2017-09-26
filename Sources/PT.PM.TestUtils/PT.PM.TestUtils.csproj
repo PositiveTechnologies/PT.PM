@@ -51,7 +51,7 @@
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
-    <Compile Include="TestHelper.cs" />
+    <Compile Include="TestUtility.cs" />
     <Compile Include="TestProject.cs" />
     <Compile Include="TestProjects.cs" />
     <Compile Include="ZipAtUrlCachedCodeRepository.cs" />

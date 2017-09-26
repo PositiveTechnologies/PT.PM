@@ -28,7 +28,7 @@ namespace PT.PM.Tests
         [Test]
         public void Check_AllDescendants_HaveParentsAfterConvert()
         {
-            WorkflowResult result = TestHelper.CheckFile("AllInOne.cs", Language.CSharp, Stage.Convert);
+            WorkflowResult result = TestUtility.CheckFile("AllInOne.cs", Language.CSharp, Stage.Convert);
 
             IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().GetAllDescendants().Skip(1);
             foreach (var descendant in descendantsExceptFirst)

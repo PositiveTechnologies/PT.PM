@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PT.PM.Common.Exceptions
 {
-    public static class ExceptionHelper
+    public static class ExceptionUtils
     {
         public static string GetPrettyErrorMessage(this Exception ex, FileNameType fileNameType = FileNameType.None)
         {

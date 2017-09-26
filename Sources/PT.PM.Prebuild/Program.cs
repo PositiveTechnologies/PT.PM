@@ -180,7 +180,7 @@ namespace PT.PM.Prebuild
             GenerateStatus result = GenerateStatus.NotGenerated;
             if (generate)
             {
-                if (!ProcessHelpers.IsProcessCanBeExecuted("java"))
+                if (!ProcessUtils.IsProcessCanBeExecuted("java"))
                 {
                     Console.WriteLine("java is not installed or java path is not specified.");
                     return GenerateStatus.Error;

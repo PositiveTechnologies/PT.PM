@@ -1,14 +1,11 @@
-﻿using PT.PM.Common.Nodes;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Newtonsoft.Json;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
+using System;
 
 namespace PT.PM.Common
 {
-    public static class Helper
+    public static class CommonUtils
     {
         public const string Prefix = "pt.pm_";
 
@@ -17,18 +14,6 @@ namespace PT.PM.Common
             dynamic parsedJson = JsonConvert.DeserializeObject(json);
             string formattedJson = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
             return formattedJson;
-        }
-
-        public static TextSpan GetTextSpan(this IEnumerable<Nodes.Ust> nodes)
-        {
-            if (nodes.Count() == 0)
-            {
-                return default(TextSpan);
-            }
-            else
-            {
-                return nodes.First().TextSpan.Union(nodes.Last().TextSpan);
-            }
         }
 
         public static bool TryConvertToInt64(this string value, int fromBase, out long result)

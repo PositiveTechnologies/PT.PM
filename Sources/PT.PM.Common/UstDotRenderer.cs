@@ -33,7 +33,7 @@ namespace PT.PM.Common
         private void RenderNode(Nodes.Ust node)
         {
             int index = currentIndex;
-            vertexesString.Append(index + " [label=\"" + DotFormatHelper.GetNodeName(node) + "\"");
+            vertexesString.Append(index + " [label=\"" + DotFormatUtils.GetNodeName(node) + "\"");
             
             if (node is Token)
             {

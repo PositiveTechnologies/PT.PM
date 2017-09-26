@@ -11,7 +11,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         [TestCase("JavaScript-Style-Guide-v14.0.0")]
         public void Parse_JavaScriptProject_WithoutErrors(string projectKey)
         {
-            TestHelper.CheckProject(TestProjects.JavaScriptProjects
+            TestUtility.CheckProject(TestProjects.JavaScriptProjects
                 .Single(p => p.Key == projectKey), Language.JavaScript, Stage.Parse);
         }
     }

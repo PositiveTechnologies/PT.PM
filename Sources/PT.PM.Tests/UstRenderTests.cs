@@ -13,7 +13,7 @@ namespace PT.PM.Tests
         [TestCase("TaintPoc.cs.txt")]
         public void Render_Ust_PngGraph(string fileName)
         {
-            var codeRepository = new FileCodeRepository(Path.Combine(TestHelper.TestsDataPath, fileName));
+            var codeRepository = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, fileName));
 
             var language = (Language)LanguageExt.GetLanguageFromFileName(fileName);
             var workflow = new Workflow(codeRepository, language);
@@ -24,7 +24,7 @@ namespace PT.PM.Tests
             var dotString = astSerializer.Render(workflowResult.Usts.First());
 
             fileName = fileName.Replace(".txt", "") + ".ust";
-            TestHelper.RenderGraphvizGraph(TestHelper.CombineWithOutputDir(fileName), dotString);
+            TestUtility.RenderGraphvizGraph(TestUtility.CombineWithOutputDir(fileName), dotString);
         }
     }
 }

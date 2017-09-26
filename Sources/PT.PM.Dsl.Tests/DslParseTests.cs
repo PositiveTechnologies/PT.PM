@@ -22,7 +22,7 @@ namespace PT.PM.Dsl.Tests
         public void Init()
         {
             patternsRepository = new DefaultPatternRepository();
-            var patternsConverter = new PatternConverter(new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef)));
+            var patternsConverter = new PatternConverter(new JsonUstSerializer());
             patterns = patternsConverter.Convert(patternsRepository.GetAll());
         }
 
@@ -47,7 +47,7 @@ namespace PT.PM.Dsl.Tests
         [TestCase(@"PoorLoggingPractice.ptpm")]
         public void Process_Dsl_EqualsToHardcoded(string fileName)
         {
-            var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
+            var data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger, PatternExpressionInsideStatement = false };
             PatternRootUst result = (PatternRootUst)processor.Deserialize(data);
@@ -69,7 +69,7 @@ namespace PT.PM.Dsl.Tests
         [TestCase(@"Range.ptpm")]
         public void Parse_Dsl_WithoutErrors(string fileName)
         {
-            var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
+            var data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger };
             Ust result = processor.Deserialize(data);

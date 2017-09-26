@@ -11,13 +11,13 @@ namespace PT.PM.SqlParseTreeUst.Tests
         [Test]
         public void Parse_PlSqlFiles_WithoutErrors()
         {
-            TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "PlSql"), Language.PlSql, Stage.Parse);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "PlSql"), Language.PlSql, Stage.Parse);
         }
 
         [Test]
         public void Parse_TSqlSyntax_WithoutErrors()
         {
-            TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "TSql"), Language.TSql, Stage.Parse);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "TSql"), Language.TSql, Stage.Parse);
         }
     }
 }

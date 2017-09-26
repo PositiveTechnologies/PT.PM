@@ -32,7 +32,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_JavaScriptAndPhpPatternInsidePhp_MatchedExpected()
         {
-            string code = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
+            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
             MatchingResultDto[] matchingResults = PatternMatchingUtils.GetMatchings(code, "#.innerHTML=<[\"\"]>", Language.JavaScript);
             Assert.AreEqual(1, matchingResults.Length);
         }
@@ -40,7 +40,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_JavaScriptAndPhpPatternInsidePhp_MatchCorrectPatternDependsOnLanguage()
         {
-            string code = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
+            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
             MatchingResultDto[] matchingResults;
 
             matchingResults = PatternMatchingUtils.GetMatchings(code, "#.innerHTML=<[\"\"]>",
@@ -63,7 +63,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsJavaScript_MatchedAllDefault()
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.js");
+            var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.js");
             var sourceCodeRep = new FileCodeRepository(path);
             var patternsRepository = new DefaultPatternRepository();
 
@@ -84,7 +84,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_PhpInJsInPhp_CorrectMatching()
         {
-            string code = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "php-js-php.php"));
+            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "php-js-php.php"));
             var matchingResults = PatternMatchingUtils.GetMatchings(code, "<[GLOBALS|frame_content]>",
                 new[] { Language.Php, Language.JavaScript },
                 new[] { Language.Php, Language.JavaScript });
