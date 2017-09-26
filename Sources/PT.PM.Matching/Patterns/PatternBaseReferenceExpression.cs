@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -20,7 +21,7 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.BaseReferenceExpression)
+            if (!(ust is BaseReferenceExpression))
             {
                 return context.Fail();
             }

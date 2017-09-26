@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
@@ -43,17 +44,21 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (!(ust is Token))
+            MatchingContext match;
+            if (ust is Token token)
             {
-                return context.Fail();
+                Regex regex = ust.Root.Language.IsCaseInsensitive()
+                    ? caseInsensitiveRegex
+                    : this.regex;
+                match = context.AddLocations(regex
+                    .MatchRegex(token.TextValue, true)
+                    .Select(textSpan => textSpan.AddOffset(ust.TextSpan.Start)));
             }
-
-            Regex regex = ust.Root.Language.IsCaseInsensitive()
-                ? caseInsensitiveRegex
-                : this.regex;
-            TextSpan[] matchedLocations = regex.MatchRegex(((Token)ust).TextValue, true);
-
-            return context.AddLocations(matchedLocations);
+            else
+            {
+                match = context.Fail();
+            }
+            return match;
         }
     }
 }

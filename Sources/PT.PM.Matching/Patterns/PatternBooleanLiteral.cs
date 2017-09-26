@@ -35,18 +35,19 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.BooleanLiteral)
+            MatchingContext match;
+
+            if (ust is BooleanLiteral booleanLiteral &&
+                (Any || Value.Equals(booleanLiteral.Value)))
             {
-                return context.Fail();
+                match = context.AddLocation(ust.TextSpan);
+            }
+            else
+            {
+                match = context.Fail();
             }
 
-            bool otherValue = ((BooleanLiteral)ust).Value;
-            if (Any || Value.Equals(otherValue))
-            {
-                return context.AddLocation(ust.TextSpan);
-            }
-
-            return context.Fail();
+            return match;
         }
     }
 }

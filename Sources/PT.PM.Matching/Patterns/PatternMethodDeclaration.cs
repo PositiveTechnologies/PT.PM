@@ -65,39 +65,41 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.MethodDeclaration)
-            {
-                return context.Fail();
-            }
+            MatchingContext match;
 
-            var methodDeclaration = (MethodDeclaration)ust;
-
-            MatchingContext match = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
-            if (!match.Success)
+            if (ust is MethodDeclaration methodDeclaration)
             {
-                return match;
-            }
-
-            match = Name.Match(methodDeclaration.Name, match);
-            if (!match.Success)
-            {
-                return match;
-            }
-
-            if (!AnyBody)
-            {
-                if (Body != null)
+                match = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
+                if (!match.Success)
                 {
-                    match = Body.Match(methodDeclaration.Body, context);
-                    if (!match.Success)
+                    return match;
+                }
+
+                match = Name.Match(methodDeclaration.Name, match);
+                if (!match.Success)
+                {
+                    return match;
+                }
+
+                if (!AnyBody)
+                {
+                    if (Body != null)
                     {
-                        return match;
+                        match = Body.Match(methodDeclaration.Body, match);
+                        if (!match.Success)
+                        {
+                            return match;
+                        }
+                    }
+                    else if (methodDeclaration.Body != null)
+                    {
+                        return match.Fail();
                     }
                 }
-                else if (methodDeclaration.Body != null)
-                {
-                    return match.Fail();
-                }
+            }
+            else
+            {
+                match = context.Fail();
             }
 
             return match;

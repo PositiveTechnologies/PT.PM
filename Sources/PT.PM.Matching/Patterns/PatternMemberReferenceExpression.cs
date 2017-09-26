@@ -28,19 +28,21 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.MemberReferenceExpression)
+            MatchingContext match;
+            if (ust is MemberReferenceExpression memberRef)
             {
-                return context.Fail();
-            }
+                match = Target.Match(memberRef.Target, context);
+                if (!match.Success)
+                {
+                    return match;
+                }
 
-            var memberRef = (MemberReferenceExpression)ust;
-            MatchingContext match = Target.Match(memberRef.Target, context);
-            if (!match.Success)
+                match = Name.Match(memberRef.Name, match);
+            }
+            else
             {
-                return match;
+                match = context.Fail();
             }
-
-            match = Name.Match(memberRef.Name, match);
             return match;
         }
     }

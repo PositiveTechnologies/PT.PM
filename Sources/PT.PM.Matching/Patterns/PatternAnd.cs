@@ -33,12 +33,13 @@ namespace PT.PM.Matching.Patterns
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             MatchingContext match = context;
+
             foreach (PatternBase expression in Expressions)
             {
-                match = expression.Match(ust, context);
-                if (match.Success)
+                match = expression.Match(ust, match);
+                if (!match.Success)
                 {
-                    break;
+                    return match;
                 }
             }
 

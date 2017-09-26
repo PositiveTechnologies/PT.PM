@@ -114,7 +114,7 @@ namespace PT.PM.Matching.Patterns
                 return match;
             }
 
-            var matchedVarsNumber = variableDeclaration.Variables.Where(v =>
+            int matchedVarsCount = variableDeclaration.Variables.Where(v =>
             {
                 match = Name.Match(v.Left, match);
                 if (!match.Success)
@@ -124,7 +124,7 @@ namespace PT.PM.Matching.Patterns
                 return Right?.Match(v.Right, match).Success ?? true;
             }).Count();
 
-            if (matchedVarsNumber == 0)
+            if (matchedVarsCount == 0)
             {
                 return context.Fail();
             }

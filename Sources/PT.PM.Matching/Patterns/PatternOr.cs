@@ -35,6 +35,7 @@ namespace PT.PM.Matching.Patterns
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             var textSpans = new List<TextSpan>();
+
             foreach (PatternBase expression in Alternatives)
             {
                 var newContext = new MatchingContext(context.PatternUst)

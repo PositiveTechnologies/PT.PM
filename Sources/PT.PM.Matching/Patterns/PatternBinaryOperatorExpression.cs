@@ -32,27 +32,27 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.BinaryOperatorExpression)
+            MatchingContext match;
+
+            if (ust is BinaryOperatorExpression binaryOperatorExpression)
             {
-                return context.Fail();
+                match = Left.Match(binaryOperatorExpression.Left, context);
+                if (!match.Success)
+                {
+                    return match;
+                }
+
+                if (!Operator.Equals(binaryOperatorExpression.Operator))
+                {
+                    return match.Fail();
+                }
+
+                match = Right.Match(binaryOperatorExpression.Right, match);
             }
-
-            var binaryOperatorExpression = (BinaryOperatorExpression)ust;
-
-            MatchingContext match = context;
-
-            match = Left.Match(binaryOperatorExpression.Left, match);
-            if (!match.Success)
+            else
             {
-                return match;
+                match = context.Fail();
             }
-
-            if (!Operator.Equals(binaryOperatorExpression.Operator))
-            {
-                return match.Fail();
-            }
-
-            match = Right.Match(binaryOperatorExpression.Right, match);
 
             return match;
         }

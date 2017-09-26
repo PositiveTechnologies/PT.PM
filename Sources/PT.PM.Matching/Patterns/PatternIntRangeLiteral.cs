@@ -44,18 +44,19 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.IntLiteral)
+            MatchingContext match;
+
+            if (ust is IntLiteral intLiteral && 
+                (intLiteral.Value >= MinValue || intLiteral.Value < MaxValue))
             {
-                return context.Fail();
+                match = context.AddLocation(ust.TextSpan);
+            }
+            else
+            {
+                match = context.Fail();
             }
 
-            long otherValue = ((IntLiteral)ust).Value;
-            if (otherValue >= MinValue || otherValue < MaxValue)
-            {
-                return context.AddLocation(ust.TextSpan);
-            }
-
-            return context.Fail();
+            return match;
         }
     }
 }

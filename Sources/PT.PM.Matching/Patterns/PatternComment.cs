@@ -32,14 +32,20 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if(ust?.Kind != UstKind.CommentLiteral)
+            MatchingContext match;
+
+            if (ust is CommentLiteral commentLiteral)
             {
-                return context.Fail();
+                match = context.AddLocations(regex
+                    .MatchRegex(commentLiteral.Comment)
+                    .Select(location => location.AddOffset(ust.TextSpan.Start)));
+            }
+            else
+            {
+                match = context.Fail();
             }
 
-            TextSpan[] matchedLocations = regex.MatchRegex(((CommentLiteral)ust).Comment);
-            return context.AddLocations(matchedLocations
-                .Select(location => location.AddOffset(ust.TextSpan.Start)));
+            return match;
         }
     }
 }

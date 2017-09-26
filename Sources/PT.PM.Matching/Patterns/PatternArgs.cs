@@ -30,26 +30,30 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.ArgsUst)
-            {
-                return context.Fail();
-            }
+            MatchingContext match;
 
-            List<Expression> otherArgs = ((ArgsUst)ust).Collection;
-
-            if (Args.Count != otherArgs.Count)
+            if (ust is ArgsUst argsUst)
             {
-                return context.Fail();
-            }
+                List<Expression> otherArgs = argsUst.Collection;
 
-            MatchingContext match = context;
-            for (int i = 0; i < Args.Count; i++)
-            {
-                match = Args[i].Match(otherArgs[i], match);
-                if (!match.Success)
+                match = context;
+                if (Args.Count != otherArgs.Count)
                 {
-                    break;
+                    return match.Fail();
                 }
+
+                for (int i = 0; i < Args.Count; i++)
+                {
+                    match = Args[i].Match(otherArgs[i], match);
+                    if (!match.Success)
+                    {
+                        return match;
+                    }
+                }
+            }
+            else
+            {
+                match = context.Fail();
             }
 
             return match;

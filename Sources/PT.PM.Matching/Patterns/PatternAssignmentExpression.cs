@@ -31,18 +31,19 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.AssignmentExpression)
+            MatchingContext match;
+
+            if (ust is AssignmentExpression assign)
             {
-                return context.Fail();
+                match = Left.Match(assign.Left, context);
+                if (match.Success)
+                {
+                    match = Right.Match(assign.Right, match);
+                }
             }
-
-            var assignmentExpression = (AssignmentExpression)ust;
-
-            MatchingContext match = context;
-            match = Left.Match(assignmentExpression.Left, match);
-            if (match.Success)
+            else
             {
-                match = Right.Match(assignmentExpression.Right, match);
+                match = context.Fail();
             }
 
             return match;

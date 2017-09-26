@@ -89,25 +89,30 @@ namespace PT.PM.Matching.Patterns
 
         public MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.RootUst)
-            {
-                return context.Fail();
-            }
+            MatchingContext match;
 
-            var patternUst = (IPatternUst)Node;
-            var rootUst = (RootUst)ust;
-
-            if (patternUst is PatternComment ||
-               (patternUst is PatternOr && ((PatternOr)patternUst).Alternatives.Any(v => v is PatternComment)))
+            if (ust is RootUst rootUst)
             {
-                foreach (CommentLiteral commentNode in rootUst.Comments)
+                var patternUst = (IPatternUst)Node;
+
+                if (patternUst is PatternComment ||
+                   (patternUst is PatternOr && ((PatternOr)patternUst).Alternatives.Any(v => v is PatternComment)))
                 {
-                    MatchAndAddResult(patternUst, commentNode, context);
+                    foreach (CommentLiteral commentNode in rootUst.Comments)
+                    {
+                        MatchAndAddResult(patternUst, commentNode, context);
+                    }
                 }
+                else
+                {
+                    TraverseChildren(patternUst, rootUst, context);
+                }
+
+                match = context;
             }
             else
             {
-                TraverseChildren(patternUst, rootUst, context);
+                match = context.Fail();
             }
 
             return context;

@@ -35,30 +35,36 @@ namespace PT.PM.Matching.Patterns
 
         public MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.TryCatchStatement)
-            {
-                return context.Fail();
-            }
+            MatchingContext match;
 
-            var otherTryCatch = (TryCatchStatement)ust;
-            if (otherTryCatch.CatchClauses == null)
+            if (ust is TryCatchStatement tryCatchStatement)
             {
-                return context.Fail();
+                if (tryCatchStatement.CatchClauses == null)
+                {
+                    match = context.Fail();
+                }
+                else
+                {
+                    bool result = tryCatchStatement.CatchClauses.Any(catchClause =>
+                    {
+                        if (IsCatchBodyEmpty && catchClause.Body.Statements.Any())
+                        {
+                            return false;
+                        }
+
+                        return !ExceptionTypes.Any() ||
+                            ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
+                    });
+
+                    match = context.Change(result);
+                }
             }
             else
             {
-                bool result = otherTryCatch.CatchClauses.Any(catchClause =>
-                {
-                    if (IsCatchBodyEmpty && catchClause.Body.Statements.Any())
-                    {
-                        return false;
-                    }
-
-                    return !ExceptionTypes.Any() || ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
-                });
-
-                return context.Change(result);
+                match = context.Fail();
             }
+
+            return match;
         }
     }
 }

@@ -33,14 +33,18 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.StringLiteral)
+            MatchingContext match;
+            if (ust is StringLiteral stringLiteral)
             {
-                return context.Fail();
+                match = context.AddLocations(regex
+                    .MatchRegex(stringLiteral.Text, isQuoted: true)
+                    .Select(location => location.AddOffset(ust.TextSpan.Start)));
             }
-
-            TextSpan[] matchedLocations = regex.MatchRegex(((StringLiteral)ust).Text, isQuoted: true);
-            return context.AddLocations(
-                matchedLocations.Select(location => location.AddOffset(ust.TextSpan.Start)));
+            else
+            {
+                match = context.Fail();
+            }
+            return match;
         }
     }
 }

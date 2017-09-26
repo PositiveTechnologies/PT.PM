@@ -32,7 +32,8 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.BlockStatement)
+            var blockStatement = (BlockStatement)ust;
+            if (blockStatement == null)
             {
                 return context.Fail();
             }
@@ -42,7 +43,7 @@ namespace PT.PM.Matching.Patterns
                 return context;
             }
 
-            IList<Statement> otherStatements = ((BlockStatement)ust).Statements;
+            IList<Statement> otherStatements = blockStatement.Statements;
 
             throw new NotImplementedException();
         }

@@ -34,20 +34,21 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.ParameterDeclaration)
+            MatchingContext match;
+            if (ust is ParameterDeclaration parameterDeclaration)
             {
-                return context.Fail();
+                match = Type.Match(parameterDeclaration.Type, context);
+                if (!match.Success)
+                {
+                    return match;
+                }
+
+                match = Name.Match(parameterDeclaration.Name, match);
             }
-
-            var parameterDeclaration = (ParameterDeclaration)ust;
-
-            MatchingContext match = Type.Match(parameterDeclaration.Type, context);
-            if (!match.Success)
+            else
             {
-                return match;
+                match = context.Fail();
             }
-
-            match = Name.Match(parameterDeclaration.Name, match);
             return match;
         }
     }

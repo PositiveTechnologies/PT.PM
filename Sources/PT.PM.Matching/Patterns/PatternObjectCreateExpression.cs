@@ -35,19 +35,23 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust?.Kind != UstKind.ObjectCreateExpression)
+            MatchingContext match;
+
+            if (ust is ObjectCreateExpression objectCreateExpression)
             {
-                return context.Fail();
+                match = Type.Match(objectCreateExpression.Type, context);
+                if (!match.Success)
+                {
+                    return match;
+                }
+
+                match = Arguments.Match(objectCreateExpression.Arguments, match);
+            }
+            else
+            {
+                match = context.Fail();
             }
 
-            var objectCreateExpression = (ObjectCreateExpression)ust;
-            MatchingContext match = Type.Match(objectCreateExpression.Type, context);
-            if (!match.Success)
-            {
-                return match;
-            }
-
-            match = Arguments.Match(objectCreateExpression.Arguments, match);
             return match;
         }
     }
