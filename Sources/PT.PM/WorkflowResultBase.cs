@@ -142,7 +142,7 @@ namespace PT.PM
             AddEntities(this.matchingResults, matchingResults);
         }
 
-        public void AddResultEntity(TPattern[] patterns)
+        public void AddResultEntity(IEnumerable<TPattern> patterns)
         {
             AddEntities(this.patterns, patterns);
         }

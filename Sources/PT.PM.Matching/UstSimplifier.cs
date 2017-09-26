@@ -52,10 +52,6 @@ namespace PT.PM.Matching
             newPattern.Comments = patternNode.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
             newPattern.Languages = new HashSet<Language>(patternNode.Languages);
 
-            List<PatternVarDef> vars = patternNode.Vars.Select(v => (PatternVarDef)Visit(v)).ToList();
-            vars.Sort();
-            newPattern.Vars = vars;
-
             newPattern.FillAscendants();
             return newPattern;
         }
@@ -284,63 +280,39 @@ namespace PT.PM.Matching
             return result;
         }
 
-        public Ust Visit(PatternExpressions patternExpressions)
+        public Ust Visit(PatternArgs patternExpressions)
         {
             // #* #* ... #* -> #*
-            List<Expression> collection = patternExpressions.Collection
-                .Select(item => (Expression)Visit(item)).ToList();
+            List<PatternBase> args = patternExpressions.Args
+                .Select(item => (PatternBase)Visit(item)).ToList();
             int index = 0;
-            while (index < collection.Count)
+            while (index < args.Count)
             {
-                if (collection[index].Kind == UstKind.PatternMultipleExpressions &&
-                    index + 1 < collection.Count &&
-                    collection[index + 1].Kind == UstKind.PatternMultipleExpressions)
+                if (args[index] is PatternMultipleExpressions &&
+                    index + 1 < args.Count &&
+                    args[index + 1] is PatternMultipleExpressions)
                 {
-                    collection.RemoveAt(index);
+                    args.RemoveAt(index);
                 }
                 else
                 {
                     index++;
                 }
             }
-            var result = new PatternExpressions
-            {
-                Collection = new List<Expression>(collection)
-            };
+            var result = new PatternArgs(args);
             return result;
         }
 
         public Ust Visit(PatternStatements patternStatements)
         {
-            // ... ... ... -> ...
-            List<Statement> collection = patternStatements.Statements
-                .Select(item => (Statement)Visit(item)).ToList();
-            int index = 0;
-            while (index < collection.Count)
-            {
-                if (collection[index].Kind == UstKind.PatternMultipleStatements &&
-                    index + 1 < collection.Count &&
-                    collection[index + 1].Kind == UstKind.PatternMultipleStatements)
-                {
-                    collection.RemoveAt(index);
-                }
-                else
-                {
-                    index++;
-                }
-            }
-            var result = new PatternStatements
-            {
-                Statements = new List<Statement>(collection)
-            };
-            return result;
+            return VisitChildren(patternStatements);
         }
 
-        public Ust Visit(PatternVarDef patternVarDef)
+        public Ust Visit(PatternOr patternOr)
         {
-            List<Expression> vars = patternVarDef.Values.Select(v => (Expression)Visit(v)).ToList();
+            List<PatternBase> vars = patternOr.Expressions.Select(v => (PatternBase)Visit(v)).ToList();
             vars.Sort();
-            return new PatternVarDef(patternVarDef.Id, vars, patternVarDef.TextSpan);
+            return new PatternOr(vars, patternOr.TextSpan);
         }
 
         public Ust Visit(PatternBooleanLiteral patternBooleanLiteral)
@@ -353,9 +325,9 @@ namespace PT.PM.Matching
             return VisitChildren(patternComment);
         }
 
-        public Ust Visit(PatternExpression patternExpression)
+        public Ust Visit(PatternAnyExpression patternAnyExpression)
         {
-            return VisitChildren(patternExpression);
+            return VisitChildren(patternAnyExpression);
         }
 
         public Ust Visit(PatternExpressionInsideNode patternExpressionInsideExpression)
@@ -363,17 +335,17 @@ namespace PT.PM.Matching
             return VisitChildren(patternExpressionInsideExpression);
         }
 
-        public Ust Visit(PatternExpressionInsideStatement patternExpressionInsideStatement)
-        {
-            return VisitChildren(patternExpressionInsideStatement);
-        }
-
         public Ust Visit(PatternIdToken patternIdToken)
         {
             return VisitChildren(patternIdToken);
         }
 
-        public Ust Visit(PatternIntLiteral patternIntLiteral)
+        public Ust Visit(PatternIdRegexToken patternIdToken)
+        {
+            return VisitChildren(patternIdToken);
+        }
+
+        public Ust Visit(PatternIntRangeLiteral patternIntLiteral)
         {
             return VisitChildren(patternIntLiteral);
         }
@@ -388,17 +360,7 @@ namespace PT.PM.Matching
             return VisitChildren(patternMultiExpressions);
         }
 
-        public Ust Visit(PatternMultipleStatements patternMultiStatements)
-        {
-            return VisitChildren(patternMultiStatements);
-        }
-
-        public Ust Visit(PatternStatement patternStatement)
-        {
-            return VisitChildren(patternStatement);
-        }
-
-        public Ust Visit(PatternStringLiteral patternStringLiteral)
+        public Ust Visit(PatternStringRegexLiteral patternStringLiteral)
         {
             return VisitChildren(patternStringLiteral);
         }
@@ -406,11 +368,6 @@ namespace PT.PM.Matching
         public Ust Visit(PatternTryCatchStatement patternTryCatchStatement)
         {
             return VisitChildren(patternTryCatchStatement);
-        }
-
-        public Ust Visit(PatternVarRef patternVarRef)
-        {
-            return VisitChildren(patternVarRef);
         }
 
         public Ust Visit(PatternAnd patternAnd)
@@ -436,6 +393,11 @@ namespace PT.PM.Matching
         public Ust Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration)
         {
             return VisitChildren(patternVarOrFieldDeclaration);
+        }
+
+        public Ust Visit(PatternVar patternVar)
+        {
+            return VisitChildren(patternVar);
         }
 
         protected override Ust VisitChildren(Ust ustNode)
@@ -470,10 +432,6 @@ namespace PT.PM.Matching
                             Ust setValue = Visit(getValue);
                             prop.SetValue(result, setValue);
                         }
-                    }
-                    else if (prop.Name.StartsWith(nameof(IAbsoluteLocationMatching.MatchedLocation)))
-                    {
-                        // ignore matched locations.
                     }
                     else if (propType.GetInterfaces().Contains(typeof(IEnumerable)))
                     {

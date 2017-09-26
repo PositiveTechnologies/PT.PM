@@ -28,16 +28,16 @@ namespace PT.PM.Matching
             }
         }
 
-        public Dictionary<UstNodeSerializationFormat, IUstNodeSerializer> UstNodeSerializers { get; set; }
+        public Dictionary<UstFormat, IUstSerializer> UstNodeSerializers { get; set; }
 
-        public PatternConverter(IUstNodeSerializer serializer)
+        public PatternConverter(IUstSerializer serializer)
             : this(new[] { serializer })
         {
         }
 
-        public PatternConverter(IEnumerable<IUstNodeSerializer> serializers)
+        public PatternConverter(IEnumerable<IUstSerializer> serializers)
         {
-            UstNodeSerializers = new Dictionary<UstNodeSerializationFormat, IUstNodeSerializer>();
+            UstNodeSerializers = new Dictionary<UstFormat, IUstSerializer>();
             foreach (var serializer in serializers)
             {
                 UstNodeSerializers[serializer.DataFormat] = serializer;

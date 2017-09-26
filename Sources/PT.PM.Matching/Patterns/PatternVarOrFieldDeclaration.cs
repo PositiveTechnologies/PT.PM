@@ -11,7 +11,7 @@ namespace PT.PM.Matching.Patterns
     {
         public bool LocalVariable { get; set; }
 
-        public List<PatternBase> Modifiers { get; set; }
+        public List<PatternBase> Modifiers { get; set; } = new List<PatternBase>();
 
         public PatternBase Type { get; set; }
 
@@ -32,7 +32,6 @@ namespace PT.PM.Matching.Patterns
 
         public PatternVarOrFieldDeclaration()
         {
-            Modifiers = new List<PatternBase>();
         }
 
         public override Ust[] GetChildren()
