@@ -22,6 +22,12 @@ namespace PT.PM.Matching.Patterns
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
+        public PatternOr(params PatternBase[] expressions)
+        {
+            Expressions = expressions?.ToList()
+                ?? throw new ArgumentNullException(nameof(expressions));
+        }
+
         public override Ust[] GetChildren() => Expressions.ToArray();
 
         public override string ToString() => $"({(string.Join(" <|> ", Expressions))})";

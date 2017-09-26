@@ -17,7 +17,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "Play 1 possible XSS",
                 Languages = new HashSet<Language>() { Html },
                 FilenameWildcard = "**/app/views/*.html",
-                Node = new PatternStringLiteral("&{\\w+}")
+                Node = new PatternStringRegexLiteral("&{\\w+}")
             });
 
             patterns.Add(new PatternRootUst
@@ -26,7 +26,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "Play 2 possible XSS",
                 Languages = new HashSet<Language>() { Html },
                 FilenameWildcard = "**/app/views/*.html",
-                Node = new PatternStringLiteral("@Html\\(\\w+\\)")
+                Node = new PatternStringRegexLiteral("@Html\\(\\w+\\)")
             });
 
             return patterns;

@@ -1,7 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using static PT.PM.Common.Language;
@@ -19,84 +16,68 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AttributesCodeInsideElementEvent",
                 Languages = new HashSet<Language>() { JavaScript },
-                Node = new AssignmentExpression
+                Node = new PatternAssignmentExpression
                 {
-                    Left = new MemberReferenceExpression
+                    Left = new PatternMemberReferenceExpression
                     {
-                        Target = new PatternExpression(),
-                        Name = new PatternIdToken("^on")
+                        Target = new PatternAnyExpression(),
+                        Name = new PatternIdRegexToken("^on")
                     },
-                    Right = new AnonymousMethodExpression
+                    Right = new PatternAnonymousMethodExpression
                     {
                         Body = new PatternStatements
-                        {
-                            Statements = new List<Statement>
-                            {
-                                new ExpressionStatement
-                                {
-                                    Expression = new PatternExpressionInsideNode
+                        (
+                            new PatternExpressionInsideNode
+                            (
+                                new PatternOr
+                                (
+                                    new PatternMemberReferenceExpression
                                     {
-                                        Expression = new PatternVarDef
+                                        Target = new PatternIdToken("document"),
+                                        Name = new PatternIdRegexToken("^(URL|referrer|cookie)$")
+                                    },
+
+                                    new PatternOr
+                                    (
+                                        new PatternMemberReferenceExpression
                                         {
-                                            Id = "pt.pm_var_2",
-                                            Values = new List<Expression>()
+                                            Target = new PatternMemberReferenceExpression
                                             {
-                                                new MemberReferenceExpression
+                                                Target = new PatternIdToken("document"),
+                                                Name = new PatternIdToken("location")
+                                            },
+                                            Name = new PatternIdRegexToken("^(pathname|href|search|hash)$")
+                                        },
+
+                                        new PatternOr
+                                        (
+                                            new PatternMemberReferenceExpression
+                                            {
+                                                Target = new PatternIdToken("window"),
+                                                Name = new PatternIdToken("name")
+                                            },
+                                            new PatternMemberReferenceExpression
+                                            {
+                                                Target = new PatternMemberReferenceExpression
                                                 {
-                                                    Target = new IdToken("document"),
-                                                    Name = new PatternIdToken("^(URL|referrer|cookie)$")
-                                                },
-                                                new PatternVarDef
-                                                {
-                                                    Id = "pt.pm_var_1",
-                                                    Values = new List<Expression>()
+                                                    Target = new PatternMemberReferenceExpression
                                                     {
-                                                        new MemberReferenceExpression
+                                                        Target = new PatternMemberReferenceExpression
                                                         {
-                                                            Target = new MemberReferenceExpression
-                                                            {
-                                                                Target = new IdToken("document"),
-                                                                Name = new IdToken("location")
-                                                            },
-                                                            Name = new PatternIdToken("^(pathname|href|search|hash)$")
+                                                            Target = new PatternIdToken("window"),
+                                                            Name = new PatternIdRegexToken("^(top|frames)$")
                                                         },
-                                                        new PatternVarDef
-                                                        {
-                                                            Id = "pt.pm_var_0",
-                                                            Values = new List<Expression>()
-                                                            {
-                                                                new MemberReferenceExpression
-                                                                {
-                                                                    Target = new IdToken("window"),
-                                                                    Name = new IdToken("name")
-                                                                },
-                                                                new MemberReferenceExpression
-                                                                {
-                                                                    Target = new MemberReferenceExpression
-                                                                    {
-                                                                        Target = new MemberReferenceExpression
-                                                                        {
-                                                                            Target = new MemberReferenceExpression
-                                                                            {
-                                                                                Target = new IdToken("window"),
-                                                                                Name = new PatternIdToken("^(top|frames)$")
-                                                                            },
-                                                                            Name = new IdToken("document")
-                                                                        },
-                                                                        Name = new PatternIdToken()
-                                                                    },
-                                                                    Name = new PatternIdToken()
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                                        Name = new PatternIdToken("document")
+                                                    },
+                                                    Name = new PatternIdRegexToken()
+                                                },
+                                                Name = new PatternIdRegexToken()
                                             }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                                        )
+                                    )
+                                )
+                            )
+                        )
                     }
                 }
             });

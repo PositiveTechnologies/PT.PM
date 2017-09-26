@@ -1,9 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes.Collections;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,22 +17,22 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InadequateRsaPadding. Weak Encryption: Inadequate RSA Padding. ",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new IdToken("getInstance"),
-                        Target = new MemberReferenceExpression
+                        Name = new PatternIdToken("getInstance"),
+                        Target = new PatternMemberReferenceExpression
                         {
-                            Name = new IdToken("Cipher"),
-                            Target = new MemberReferenceExpression
+                            Name = new PatternIdToken("Cipher"),
+                            Target = new PatternMemberReferenceExpression
                             {
-                                Name = new IdToken("crypto"),
-                                Target = new IdToken("javax")
+                                Name = new PatternIdToken("crypto"),
+                                Target = new PatternIdToken("javax")
                             }
                         }
                     },
-                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral("^RSA/NONE/NoPadding$") })
+                    Arguments = new PatternArgs(new PatternStringRegexLiteral("^RSA/NONE/NoPadding$"))
                 }
             });
 
@@ -47,22 +42,22 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "WeakCryptographicAlgorithm. Weak Encryption: Broken or Risky Cryptographic Algorithm" +
                     "https://cwe.mitre.org/data/definitions/327.html",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new IdToken("getInstance"),
-                        Target = new MemberReferenceExpression
+                        Name = new PatternIdToken("getInstance"),
+                        Target = new PatternMemberReferenceExpression
                         {
-                            Name = new IdToken("Cipher"),
-                            Target = new MemberReferenceExpression
+                            Name = new PatternIdToken("Cipher"),
+                            Target = new PatternMemberReferenceExpression
                             {
-                                Name = new IdToken("crypto"),
-                                Target = new IdToken("javax")
+                                Name = new PatternIdToken("crypto"),
+                                Target = new PatternIdToken("javax")
                             }
                         }
                     },
-                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral(@"DES") })
+                    Arguments = new PatternArgs(new PatternStringRegexLiteral(@"DES"))
                 }
             });
 
@@ -71,14 +66,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyBroadPath. Cookie Security: Overly Broad Path.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new IdToken("setPath"),
-                        Target = new PatternIdToken(@"[cC]ookie")
+                        Name = new PatternIdToken("setPath"),
+                        Target = new PatternIdRegexToken(@"[cC]ookie")
                     },
-                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral { Text = "^/?$" } })
+                    Arguments = new PatternArgs(new PatternStringRegexLiteral { Regex = "^/?$" })
                 }
             });
 
@@ -87,14 +82,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyBroadDomain Cookie Security: Overly Broad Domain.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new IdToken("setDomain"),
-                        Target = new PatternIdToken { Id = @"[cC]ookie" }
+                        Name = new PatternIdToken("setDomain"),
+                        Target = new PatternIdRegexToken("[cC]ookie")
                     },
-                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral(@"^.?[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-]+$") })
+                    Arguments = new PatternArgs(new PatternStringRegexLiteral(@"^.?[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-]+$"))
                 }
             });
 
@@ -103,14 +98,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PoorSeeding.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new IdToken("setSeed"),
-                        Target = new PatternExpression()
+                        Name = new PatternIdToken("setSeed"),
+                        Target = new PatternAnyExpression()
                     },
-                    Arguments = new ArgsUst(new List<Expression>() { new PatternIntLiteral() })
+                    Arguments = new PatternArgs(new PatternIntRangeLiteral())
                 }
             });
 
@@ -119,14 +114,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new IdToken("getInstance"),
-                        Target = new IdToken("MessageDigest")
+                        Name = new PatternIdToken("getInstance"),
+                        Target = new PatternIdToken("MessageDigest")
                     },
-                    Arguments = new ArgsUst(new List<Expression>() { new PatternStringLiteral("MD5|SHA-1") })
+                    Arguments = new PatternArgs(new PatternStringRegexLiteral("MD5|SHA-1"))
                 }
             });
 
@@ -135,14 +130,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AndroidPermissionCheck. Often Misused: Android Permission Check.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new PatternIdToken("^(checkCallingOrSelfPermission|checkCallingOrSelfUriPermission)$"),
-                        Target = new PatternExpression()
+                        Name = new PatternIdRegexToken("^(checkCallingOrSelfPermission|checkCallingOrSelfUriPermission)$"),
+                        Target = new PatternAnyExpression()
                     },
-                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
+                    Arguments = new PatternArgs(new PatternMultipleExpressions())
                 }
             });
 
@@ -151,22 +146,19 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AndroidHostnameVerificationDisabled. Insecure SSL: Android Hostname Verification Disabled.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new PatternVarDef
-                {
-                    Values = new List<Expression>()
+                Node = new PatternOr
+                (
+                    new PatternMemberReferenceExpression
                     {
-                        new MemberReferenceExpression
-                        {
-                            Name = new IdToken("ALLOW_ALL_HOSTNAME_VERIFIER"),
-                            Target = new IdToken("SSLSocketFactory")
-                        },
-                        new ObjectCreateExpression
-                        {
-                            Type = new TypeToken { TypeText = "AllowAllHostnameVerifier" },
-                            Arguments = new PatternExpressions(new PatternMultipleExpressions())
-                        }
+                        Name = new PatternIdToken("ALLOW_ALL_HOSTNAME_VERIFIER"),
+                        Target = new PatternIdToken("SSLSocketFactory")
+                    },
+                    new PatternObjectCreateExpression
+                    {
+                        Type = new PatternIdToken("AllowAllHostnameVerifier"),
+                        Arguments = new PatternArgs(new PatternMultipleExpressions())
                     }
-                }
+                )
             });
 
             patterns.Add(new PatternRootUst
@@ -174,22 +166,16 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SAXReaderExternalEntity",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs(new PatternNot(new PatternStringRegexLiteral())),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>()
+                        Name = new PatternIdToken("read"),
+                        Target = new PatternObjectCreateExpression
                         {
-                            new PatternExpression(new PatternStringLiteral(), true)
-                        }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken("read"),
-                        Target = new ObjectCreateExpression
-                        {
-                            Type = new TypeToken { TypeText = "SAXReader" },
-                            Arguments = new ArgsUst()
+                            Type = new PatternIdToken("SAXReader"),
+                            Arguments = new PatternArgs()
                         }
                     }
                 }
@@ -200,22 +186,16 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "XmlExternalEntity",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs(new PatternNot(new PatternStringRegexLiteral())),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>()
+                        Name = new PatternIdToken("parse"),
+                        Target = new PatternObjectCreateExpression
                         {
-                            new PatternExpression(new PatternStringLiteral(), true)
-                        }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken("parse"),
-                        Target = new ObjectCreateExpression
-                        {
-                            Type = new TypeToken { TypeText = "XMLUtil" },
-                            Arguments = new ArgsUst()
+                            Type = new PatternIdToken("XMLUtil"),
+                            Arguments = new PatternArgs()
                         }
                     }
                 }
@@ -226,16 +206,13 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "StickyBroadcast. Android Bad Practices: Sticky Broadcast.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs(new PatternAnyExpression()),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>() { new PatternExpression() }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken("sendStickyBroadcast"),
-                        Target = new PatternExpression()
+                        Name = new PatternIdToken("sendStickyBroadcast"),
+                        Target = new PatternAnyExpression()
                     }
                 }
             });
@@ -245,16 +222,17 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SendStickyBroadcastAsUser. Android Bad Practices: Sticky Broadcast.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs
+                    (
+                        new PatternAnyExpression(),
+                        new PatternAnyExpression()
+                    ),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>() { new PatternExpression(), new PatternExpression() }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken("sendStickyBroadcastAsUser"),
-                        Target = new PatternExpression()
+                        Name = new PatternIdToken("sendStickyBroadcastAsUser"),
+                        Target = new PatternAnyExpression()
                     }
                 }
             });
@@ -265,20 +243,17 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureSSL. Insecure SSL: Android Socket.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs
+                    (
+                        new PatternAnyExpression(),
+                        new PatternAnyExpression()
+                    ),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>()
-                        {
-                            new PatternExpression(),
-                            new PatternExpression()
-                        }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken { Id = "getInsecure" },
-                        Target = new PatternExpression()
+                        Name = new PatternIdToken { Id = "getInsecure" },
+                        Target = new PatternAnyExpression()
                     }
                 }
             });
@@ -288,19 +263,17 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedSalt. Weak Cryptographic Hash: Hardcoded Salt.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs
+                    (
+                        new PatternAnyExpression(),
+                        new PatternStringRegexLiteral()
+                    ),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>() {
-                            new PatternExpression(),
-                            new PatternStringLiteral()
-                        }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken { Id = "hash" },
-                        Target = new PatternExpression()
+                        Name = new PatternIdToken { Id = "hash" },
+                        Target = new PatternAnyExpression()
                     }
                 }
             });
@@ -309,20 +282,15 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "MissingReceiverPermission. The program sends a broadcast without specifying the receiver permission. " +
-                              "Broadcasts sent without the receiver permission are accessible to any receiver. If these broadcasts contain sensitive data or reach a malicious receiver, the application may be compromised.",
+                            "Broadcasts sent without the receiver permission are accessible to any receiver. If these broadcasts contain sensitive data or reach a malicious receiver, the application may be compromised.",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs(new PatternAnyExpression()),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>() {
-                            new PatternExpression()
-                        }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken { Id = "sendBroadcast" },
-                        Target = new PatternExpression()
+                        Name = new PatternIdToken { Id = "sendBroadcast" },
+                        Target = new PatternAnyExpression()
                     }
                 }
             });
@@ -335,86 +303,65 @@ namespace PT.PM.Patterns.PatternsRepository
                     "If these messages contain malicious data or come from a malicious broadcaster, the application may be compromised. " +
                     "Use this form: public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler)",
                 Languages = new HashSet<Language>() { Java },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Arguments = new ArgsUst
+                    Arguments = new PatternArgs
+                    (
+                        new PatternAnyExpression(),
+                        new PatternAnyExpression()
+                    ),
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Collection = new List<Expression>() {
-                            new PatternExpression(),
-                            new PatternExpression()
-                        }
-                    },
-                    Target = new MemberReferenceExpression
-                    {
-                        Name = new IdToken { Id = "registerReceiver" },
-                        Target = new PatternExpression()
+                        Name = new PatternIdToken { Id = "registerReceiver" },
+                        Target = new PatternAnyExpression()
                     }
                 }
             });
 
-            var cookieVar = new PatternVarDef
-            {
-                Id = "cookie",
-                Values = new List<Expression>() { new PatternIdToken() }
-            };
             patterns.Add(new PatternRootUst
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "CookieNotSentOverSSL. Cookie Security: Cookie not Sent Over SSL. ",
+                DebugInfo = "CookieNotSentOverSSL. Cookie Security: Cookie not Sent Over SSL.",
                 Languages = new HashSet<Language>() { Java },
-                Vars = new List<PatternVarDef> { cookieVar },
                 Node = new PatternStatements
-                {
-                    Statements = new List<Statement>()
+                (
+                    new PatternVarOrFieldDeclaration
                     {
-                        new ExpressionStatement(new VariableDeclarationExpression
+                        Type = new PatternIdToken("Cookie"),
+                        Right = new PatternAssignmentExpression
                         {
-                            Type = new TypeToken() { TypeText = "Cookie" },
-                            Variables = new List<AssignmentExpression>
+                            Left = new PatternVar("cookie"),
+                            Right = new PatternObjectCreateExpression
                             {
-                                new AssignmentExpression
-                                {
-                                    Left = new PatternVarRef(cookieVar),
-                                    Right = new ObjectCreateExpression
-                                    {
-                                        Type = new TypeToken { TypeText = "Cookie" },
-                                        Arguments = new PatternExpressions(new PatternMultipleExpressions())
-                                    },
-                                }
-                            }
-                        }),
-
-                        new PatternMultipleStatements(),
-
-                        new PatternStatement(new ExpressionStatement(new InvocationExpression
-                        {
-                            Arguments = new ArgsUst
-                            {
-                                Collection = new List<Expression>() { new BooleanLiteral { Value = true } }
+                                Type = new PatternIdToken("Cookie"),
+                                Arguments = new PatternArgs(new PatternMultipleExpressions())
                             },
-                            Target = new MemberReferenceExpression
-                            {
-                                Name = new IdToken { Id = "setSecure" },
-                                Target = new PatternVarRef(cookieVar)
-                            }
-                        }), true),
+                        }
+                    },
 
-                        new PatternMultipleStatements(),
-
-                        new ExpressionStatement(new InvocationExpression
+                    new PatternNot
+                    (
+                        new PatternInvocationExpression
                         {
-                            Arguments = new ArgsUst
+                            Arguments = new PatternArgs(new PatternBooleanLiteral(true)),
+                            Target = new PatternMemberReferenceExpression
                             {
-                                Collection = new List<Expression>() { new PatternVarRef(cookieVar) }
-                            },
-                            Target = new MemberReferenceExpression
-                            {
-                                Name = new IdToken { Id = "addCookie" },
-                                Target = new PatternExpression()
+                                Name = new PatternIdToken("setSecure"),
+                                Target = new PatternVar("cookie")
                             }
-                        })
+                        }
+                    ),
+
+                    new PatternInvocationExpression
+                    {
+                        Arguments = new PatternArgs(new PatternVar("cookie")),
+                        Target = new PatternMemberReferenceExpression
+                        {
+                            Name = new PatternIdToken("addCookie"),
+                            Target = new PatternAnyExpression()
+                        }
                     }
-                }
+                )
             });
 
             patterns.Add(new PatternRootUst
@@ -424,7 +371,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternTryCatchStatement
                 {
-                    ExceptionTypes = new List<Token> { new TypeToken("NullPointerException") },
+                    ExceptionTypes = new List<PatternBase> { new PatternIdToken("NullPointerException") },
                     IsCatchBodyEmpty = false
                 }
             });
@@ -435,30 +382,27 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "UsingCloneWithoutCloneable. Using clone method without implementing Clonable",
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
-                {
-                    Expressions = new List<Expression>
+                (
+                    new PatternClassDeclaration
                     {
-                        new PatternClassDeclaration
+                        Body = new PatternExpressionInsideNode
                         {
-                            Body = new PatternExpressionInsideNode
+                            Expression = new PatternMethodDeclaration
                             {
-                                Expression = new PatternMethodDeclaration
-                                {
-                                    Name = new IdToken("clone"),
-                                    AnyBody = true
-                                }
-                            }
-                        },
-
-                        new PatternNot
-                        {
-                            Expression = new PatternClassDeclaration
-                            {
-                                BaseTypes = new List<Token>{ new TypeToken("Cloneable") }
+                                Name = new PatternIdToken("clone"),
+                                AnyBody = true
                             }
                         }
-                    }
-                }
+                    },
+
+                    new PatternNot
+                    (
+                        new PatternClassDeclaration
+                        {
+                            BaseTypes = new List<PatternBase>{ new PatternIdToken("Cloneable") }
+                        }
+                    )
+                )
             });
 
             patterns.Add(new PatternRootUst
@@ -467,29 +411,26 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "ExtendingSecurityManagerWithoutFinal. Class extending SecurityManager is not final",
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
-                {
-                    Expressions = new List<Expression>
+                (
+                    new PatternClassDeclaration
                     {
+                        BaseTypes = new List<PatternBase>
+                        {
+                            new PatternIdRegexToken("SecurityManager")
+                        }
+                    },
+
+                    new PatternNot
+                    (
                         new PatternClassDeclaration
                         {
-                            BaseTypes = new List<Token>
+                            Modifiers = new List<PatternBase>
                             {
-                                new PatternIdToken("SecurityManager")
-                            }
-                        },
-
-                        new PatternNot
-                        {
-                            Expression = new PatternClassDeclaration
-                            {
-                                Modifiers = new List<Token>
-                                {
-                                    new PatternIdToken("final")
-                                }
+                                new PatternIdRegexToken("final")
                             }
                         }
-                    }
-                }
+                    )
+                )
             });
 
             patterns.Add(new PatternRootUst
@@ -499,14 +440,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternClassDeclaration
                 {
-                    BaseTypes = new List<Token>
+                    BaseTypes = new List<PatternBase>
                     {
-                        new PatternIdToken("X509TrustManager|SSLSocketFactory")
+                        new PatternIdRegexToken("X509TrustManager|SSLSocketFactory")
                     },
                     Body = new PatternExpressionInsideNode
                     {
                         Expression = new PatternMethodDeclaration(
-                            Enumerable.Empty<Token>().ToList(), new PatternIdToken(".+"), false)
+                            Enumerable.Empty<PatternBase>().ToList(), new PatternIdRegexToken(".+"), false)
                     }
                 }
             });
@@ -517,32 +458,29 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "PoorLoggingPractice. Declare logger not static or final",
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
-                {
-                    Expressions = new List<Expression>
+                (
+                    new PatternVarOrFieldDeclaration
                     {
+                        LocalVariable = false,
+                        Modifiers = new List<PatternBase>(),
+                        Type = new PatternIdRegexToken("[Ll]og"),
+                        Name = new PatternIdRegexToken(".+")
+                    },
+                    new PatternNot
+                    (
                         new PatternVarOrFieldDeclaration
                         {
                             LocalVariable = false,
-                            Modifiers = new List<Token>(),
-                            Type = new PatternIdToken("[Ll]og"),
-                            Name = new PatternIdToken(".+")
-                        },
-                        new PatternNot
-                        {
-                            Expression = new PatternVarOrFieldDeclaration
+                            Modifiers = new List<PatternBase>
                             {
-                                LocalVariable = false,
-                                Modifiers = new List<Token>
-                                {
-                                    new PatternIdToken("static"),
-                                    new PatternIdToken("final")
-                                },
-                                Type = new PatternIdToken("[Ll]og"),
-                                Name = new PatternIdToken(".+")
-                            }
+                                new PatternIdRegexToken("static"),
+                                new PatternIdRegexToken("final")
+                            },
+                            Type = new PatternIdRegexToken("[Ll]og"),
+                            Name = new PatternIdRegexToken(".+")
                         }
-                    }
-                }
+                    )
+                )
             });
 
             return patterns;

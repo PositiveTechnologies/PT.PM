@@ -1,6 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using static PT.PM.Common.Language;
@@ -18,26 +16,26 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash",
                 Languages = new HashSet<Language>() { CSharp },
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new MemberReferenceExpression
+                    Target = new PatternMemberReferenceExpression
                     {
-                        Name = new IdToken("Create"),
-                        Target = new MemberReferenceExpression
+                        Name = new PatternIdToken("Create"),
+                        Target = new PatternMemberReferenceExpression
                         {
-                            Name = new IdToken("MD5"),
-                            Target = new MemberReferenceExpression
+                            Name = new PatternIdToken("MD5"),
+                            Target = new PatternMemberReferenceExpression
                             {
-                                Name = new IdToken("Cryptography"),
-                                Target = new MemberReferenceExpression
+                                Name = new PatternIdToken("Cryptography"),
+                                Target = new PatternMemberReferenceExpression
                                 {
-                                    Name = new IdToken("Security"),
-                                    Target = new IdToken("System")
+                                    Name = new PatternIdToken("Security"),
+                                    Target = new PatternIdToken("System")
                                 }
                             }
                         }
                     },
-                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
+                    Arguments = new PatternArgs(new PatternMultipleExpressions())
                 }
             });
 
@@ -48,10 +46,11 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { CSharp },
                 Node = new PatternTryCatchStatement
                 {
-                    ExceptionTypes = new List<Token> {
-                            new TypeToken("NullReferenceException"),
-                            new TypeToken("System.NullReferenceException")
-                        },
+                    ExceptionTypes = new List<PatternBase>
+                    {
+                        new PatternIdToken("NullReferenceException"),
+                        new PatternIdToken("System.NullReferenceException")
+                    },
                     IsCatchBodyEmpty = false
                 }
             });

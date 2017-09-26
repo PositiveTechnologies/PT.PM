@@ -15,7 +15,13 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternStatements(IEnumerable<PatternBase> statements)
+        public PatternStatements(IEnumerable<PatternBase> statements, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
+        {
+            Statements = statements?.ToList() ?? new List<PatternBase>();
+        }
+
+        public PatternStatements(params PatternBase[] statements)
         {
             Statements = statements?.ToList() ?? new List<PatternBase>();
         }

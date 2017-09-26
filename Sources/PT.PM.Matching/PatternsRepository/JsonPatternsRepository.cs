@@ -18,13 +18,13 @@ namespace PT.PM.Matching.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            var languageFlagsConverter = new PatternJsonSafeConverter
+            var patternJsonSafeConverter = new PatternJsonSafeConverter
             {
                 Logger = Logger
             };
 
             List<PatternDto> patternDtos = JsonConvert
-                .DeserializeObject<List<PatternDto>>(patternsData, stringEnumConverter, languageFlagsConverter);
+                .DeserializeObject<List<PatternDto>>(patternsData, stringEnumConverter, patternJsonSafeConverter);
 
             var result = new List<PatternDto>();
             foreach (var patternDto in patternDtos)

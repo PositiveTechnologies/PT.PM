@@ -1,6 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Matching;
@@ -41,7 +39,7 @@ namespace PT.PM.Patterns.PatternsRepository
             var htmpPatterns = CreateHtmlPatterns();
             patterns.AddRange(htmpPatterns);
 
-            var patternsConverter = new PatternConverter(new JsonUstNodeSerializer(typeof(Ust), typeof(PatternVarDef)));
+            var patternsConverter = new PatternConverter(new JsonUstSerializer());
 
             List<PatternDto> result = patternsConverter.ConvertBack(patterns.ToArray()).ToList();
             return result;
@@ -56,63 +54,44 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedPassword",
                 Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
-                Node = new PatternVarDef
-                {
-                    Values = new List<Expression>()
+                Node = new PatternOr
+                (
+                    new PatternAssignmentExpression
                     {
-                        new AssignmentExpression
-                        {
-                            Left = new PatternVarDef
+                        Left = new PatternOr
+                        (
+                            new PatternMemberReferenceExpression
                             {
-                                Id = "MemberReferenceOrLiteral",
-                                Values = new List<Expression>
-                                {
-                                    new MemberReferenceExpression
-                                    {
-                                        Target = new PatternExpression(),
-                                        Name = new PatternIdToken(@"(?i)(password|pwd)")
-                                    },
-                                    new PatternIdToken(@"(?i)(password|pwd)")
-                                }
+                                Target = new PatternAnyExpression(),
+                                Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
                             },
-                            Right = new PatternVarDef
+                            new PatternIdRegexToken(@"(?i)(password|pwd)")
+                        ),
+                        Right = new PatternOr
+                        (
+                            new PatternNullLiteral(),
+                            new PatternStringRegexLiteral()
+                        )
+                    },
+                    new PatternBinaryOperatorExpression
+                    {
+                        Left = new PatternOr
+                        (
+                            new PatternMemberReferenceExpression
                             {
-                                Id = "PasswordValue",
-                                Values = new List<Expression>
-                                {
-                                    new NullLiteral(),
-                                    new PatternStringLiteral(),
-                                }
-                            }
-                        },
-                        new BinaryOperatorExpression
-                        {
-                            Left = new PatternVarDef
-                            {
-                                Id = "MemberReferenceOrLiteral",
-                                Values = new List<Expression>
-                                {
-                                    new MemberReferenceExpression
-                                    {
-                                        Target = new PatternExpression(),
-                                        Name = new PatternIdToken(@"(?i)(password|pwd)")
-                                    },
-                                    new PatternIdToken(@"(?i)(password|pwd)")
-                                }
+                                Target = new PatternAnyExpression(),
+                                Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
                             },
-                            Operator = new BinaryOperatorLiteral { BinaryOperator = BinaryOperator.Equal },
-                            Right = new PatternVarDef
-                            {
-                                Id = "PasswordValue",
-                                Values = new List<Expression>
-                                {
-                                    new NullLiteral(),
-                                    new PatternStringLiteral(),
-                                }
-                            }
-                        }
+                            new PatternIdRegexToken(@"(?i)(password|pwd)")
+                        ),
+                        Operator = new BinaryOperatorLiteral(BinaryOperator.Equal),
+                        Right = new PatternOr
+                        (
+                            new PatternNullLiteral(),
+                            new PatternStringRegexLiteral()
+                        )
                     }
-                }
+                )
             });
 
             patterns.Add(new PatternRootUst
@@ -120,7 +99,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureTransport",
                 Languages = new HashSet<Language>(LanguageExt.AllGplPatternLanguages),
-                Node = new PatternStringLiteral(@"^http://[\w@][\w.:@]+/?[\w\.?=%&=\-@/$,]*$")
+                Node = new PatternStringRegexLiteral(@"^http://[\w@][\w.:@]+/?[\w\.?=%&=\-@/$,]*$")
             });
 
             patterns.Add(new PatternRootUst
@@ -128,10 +107,10 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureRandomness",
                 Languages = new HashSet<Language>() { CSharp, Java },
-                Node = new ObjectCreateExpression
+                Node = new PatternObjectCreateExpression
                 {
-                    Type = new TypeToken { TypeText = "Random" },
-                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
+                    Type = new PatternIdToken("Random"),
+                    Arguments = new PatternArgs(new PatternMultipleExpressions())
                 }
             });
 
@@ -140,20 +119,11 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PasswordInComment. Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
                 Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
-                Node = new PatternVarDef
-                {
-                    Values = new List<Expression>
-                        {
-                            new PatternComment
-                            {
-                                Comment = "(?i)(password|pwd)\\s*=\\s*[\"\\w]+"
-                            },
-                            new PatternComment
-                            {
-                                Comment = "(?i)default password"
-                            }
-                        }
-                }
+                Node = new PatternOr
+                (
+                    new PatternComment("(?i)(password|pwd)\\s*=\\s*[\"\\w]+"),
+                    new PatternComment("(?i)default password")
+                )
             });
 
             patterns.Add(new PatternRootUst
@@ -169,25 +139,21 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Erroneous Null Comparison",
                 Languages = new HashSet<Language>(LanguageExt.AllSqlPatternLanguages),
-                Node = new PatternVarDef
-                {
-                    Id = "compare_with_null",
-                    Values = new List<Expression>
+                Node = new PatternOr
+                (
+                    new PatternBinaryOperatorExpression
                     {
-                         new BinaryOperatorExpression
-                         {
-                             Left = new PatternExpression(),
-                             Operator = new BinaryOperatorLiteral { BinaryOperator = BinaryOperator.Equal },
-                             Right = new NullLiteral()
-                         },
-                         new BinaryOperatorExpression
-                         {
-                             Left = new PatternExpression(),
-                             Operator = new BinaryOperatorLiteral { BinaryOperator = BinaryOperator.NotEqual },
-                             Right = new NullLiteral()
-                         }
+                        Left = new PatternAnyExpression(),
+                        Operator = new BinaryOperatorLiteral(BinaryOperator.Equal),
+                        Right = new PatternNullLiteral()
                     },
-                }
+                    new PatternBinaryOperatorExpression
+                    {
+                        Left = new PatternAnyExpression(),
+                        Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual),
+                        Right = new PatternNullLiteral()
+                    }
+                )
             });
 
             patterns.Add(new PatternRootUst
@@ -195,15 +161,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Privilege Management: Overly Broad Grant",
                 Languages = new HashSet<Language>(LanguageExt.AllSqlPatternLanguages),
-                Node = new InvocationExpression
+                Node = new PatternInvocationExpression
                 {
-                    Target = new IdToken("grant_all"),
-                    Arguments = new PatternExpressions(new PatternMultipleExpressions())
+                    Target = new PatternIdToken("grant_all"),
+                    Arguments = new PatternArgs(new PatternMultipleExpressions())
                 }
             });
 
             return patterns;
         }
     }
-
 }
