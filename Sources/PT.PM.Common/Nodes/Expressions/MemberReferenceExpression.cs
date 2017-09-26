@@ -8,6 +8,10 @@
 
         public Expression Name { get; set; }
 
+        public MemberReferenceExpression()
+        {
+        }
+
         public MemberReferenceExpression(Expression target, Expression name, TextSpan textSpan)
             : base(textSpan)
         {
@@ -15,19 +19,9 @@
             Name = name;
         }
 
-        public MemberReferenceExpression()
-        {
-        }
+        public override Ust[] GetChildren() => new Ust[] { Target, Name };
 
-        public override Ust[] GetChildren()
-        {
-            return new Ust[] { Target, Name };
-        }
-
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Target, Name };
-        }
+        public override Expression[] GetArgs() => new Expression[] { Target, Name };
 
         public override string ToString()
         {

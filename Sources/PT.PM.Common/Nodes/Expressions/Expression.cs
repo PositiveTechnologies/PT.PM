@@ -2,6 +2,8 @@
 {
     public abstract class Expression : Ust
     {
+        public override UstKind Kind => UstKind.Expression;
+
         protected Expression(TextSpan textSpan)
             : base(textSpan)
         {

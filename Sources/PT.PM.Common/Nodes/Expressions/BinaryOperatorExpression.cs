@@ -12,6 +12,10 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public Expression Right { get; set; }
 
+        public BinaryOperatorExpression()
+        {
+        }
+
         public BinaryOperatorExpression(Expression left, BinaryOperatorLiteral op, Expression right, TextSpan textSpan)
             : base(textSpan)
         {
@@ -20,23 +24,10 @@ namespace PT.PM.Common.Nodes.Expressions
             Right = right;
         }
 
-        public BinaryOperatorExpression()
-        {
-        }
+        public override Ust[] GetChildren() => new Ust[] { Left, Operator, Right };
 
-        public override Ust[] GetChildren()
-        {
-            return new Ust[] { Left, Operator, Right };
-        }
+        public override Expression[] GetArgs() => new Expression[] { Left, Operator, Right };
 
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Left, Operator, Right };
-        }
-
-        public override string ToString()
-        {
-            return $"{Left} {Operator} {Right}";
-        }
+        public override string ToString() => $"{Left} {Operator} {Right}";
     }
 }

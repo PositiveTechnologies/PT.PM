@@ -38,7 +38,8 @@
         VariableInitializer,
 
         // Body
-        BlockStatement = 200,
+        Statement = 200,
+        BlockStatement,
         BreakStatement,
         ContinueStatement,
         DoWhileStatement,
@@ -65,7 +66,8 @@
         YieldReturnStatement,
 
         // Expression
-        AnonymousMethodExpression = 100,
+        Expression = 100,
+        AnonymousMethodExpression,
         AnonymousTypeCreateExpression,
         ArrayCreationExpression,
         ArrayInitializerExpression,
@@ -139,29 +141,7 @@
         NotImplementedUst,
         WrapperExpression,
 
-        // Patterns
-        PatternRootUst = 600,
-        PatternAnd,
-        PatternNot,
-        PatternVarDef,
-        PatternVarRef,
-        PatternStringLiteral,
-        PatternIdToken,
-        PatternIntLiteral,
-        PatternBooleanLiteral,
-        PatternExpressions,
-        PatternExpression,
-        PatternExpressionInsideNode,
-        PatternExpressionInsideStatement,
-        PatternStatement,
-        PatternMultipleExpressions,
-        PatternMultipleStatements,
-        PatternStatements,
-        PatternComment,
-        PatternClassDeclaration,
-        PatternMethodDeclaration,
-        PatternVarOrFieldDeclaration,
-        PatternIfElseStatement,
-        PatternTryCatchStatement,
+        // Pattern
+        Pattern
     }
 }

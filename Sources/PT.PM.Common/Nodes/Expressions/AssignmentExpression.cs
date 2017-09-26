@@ -19,15 +19,9 @@
         {
         }
 
-        public override Ust[] GetChildren()
-        {
-            return new Ust[] { Left, Right };
-        }
+        public override Ust[] GetChildren() => new Ust[] { Left, Right };
 
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Left, Right };
-        }
+        public override Expression[] GetArgs() => new Expression[] { Left, Right };
 
         public override string ToString()
         {

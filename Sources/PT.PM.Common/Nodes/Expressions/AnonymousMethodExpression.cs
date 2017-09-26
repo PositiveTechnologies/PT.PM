@@ -14,9 +14,10 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public BlockStatement Body { get; set; }
 
-        public override Expression[] GetArgs()
+        public override Expression[] GetArgs() => new Expression[0];
+
+        public AnonymousMethodExpression()
         {
-            return new Expression[0];
         }
 
         public AnonymousMethodExpression(IEnumerable<ParameterDeclaration> parameters, BlockStatement body,
@@ -25,10 +26,6 @@ namespace PT.PM.Common.Nodes.Expressions
         {
             Parameters = parameters as List<ParameterDeclaration> ?? parameters.ToList();
             Body = body;
-        }
-
-        public AnonymousMethodExpression()
-        {
         }
 
         public override Ust[] GetChildren()

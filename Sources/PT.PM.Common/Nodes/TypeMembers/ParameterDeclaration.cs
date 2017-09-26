@@ -14,15 +14,15 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public Expression Initializer { get; set; }
 
-        public ParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan)
+        public ParameterDeclaration()
+        {
+        }
+
+        public ParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Type = type;
             Name = name;
-        }
-
-        public ParameterDeclaration()
-        {
         }
 
         public override Ust[] GetChildren()
@@ -31,9 +31,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
             return result.ToArray();
         }
 
-        public override string ToString()
-        {
-            return Type != null ? $"{Type} {Name}" : Name.ToString();
-        }
+        public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
     }
 }

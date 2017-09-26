@@ -11,15 +11,15 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public ArgsUst Arguments { get; set; }
 
+        public InvocationExpression()
+        {
+        }
+
         public InvocationExpression(Expression target, ArgsUst arguments, TextSpan textSpan)
             : base(textSpan)
         {
             Target = target;
             Arguments = arguments;
-        }
-
-        public InvocationExpression()
-        {
         }
 
         public int GetIndexOfArg(Ust ustNode)

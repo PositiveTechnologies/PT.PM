@@ -49,9 +49,6 @@ namespace PT.PM.Common.Nodes.Expressions
             return result.ToArray();
         }
 
-        public override string ToString()
-        {
-            return $"new {Type}({string.Join(", ", Arguments)})";
-        }
+        public override string ToString() => $"new {Type}({string.Join(", ", Arguments)})";
     }
 }
