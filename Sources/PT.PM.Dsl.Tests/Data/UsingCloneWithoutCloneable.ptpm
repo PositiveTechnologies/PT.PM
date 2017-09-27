@@ -1,1 +1,1 @@
-(class { <{ clone() {...} }> }) <&> (<~>(class : Cloneable {}))
+(class { <{ clone() {...} }> }) <&> (<~> (class : Cloneable {}))

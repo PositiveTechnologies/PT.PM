@@ -383,6 +383,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
                 (
+                    new PatternNot
+                    (
+                        new PatternClassDeclaration
+                        {
+                            BaseTypes = new List<PatternBase> { new PatternIdToken("Cloneable") }
+                        }
+                    ),
+
                     new PatternClassDeclaration
                     {
                         Body = new PatternExpressionInside
@@ -393,15 +401,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 AnyBody = true
                             }
                         }
-                    },
-
-                    new PatternNot
-                    (
-                        new PatternClassDeclaration
-                        {
-                            BaseTypes = new List<PatternBase>{ new PatternIdToken("Cloneable") }
-                        }
-                    )
+                    }
                 )
             });
 
@@ -412,24 +412,24 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
                 (
-                    new PatternClassDeclaration
-                    {
-                        BaseTypes = new List<PatternBase>
-                        {
-                            new PatternIdRegexToken("SecurityManager")
-                        }
-                    },
-
                     new PatternNot
                     (
                         new PatternClassDeclaration
                         {
                             Modifiers = new List<PatternBase>
                             {
-                                new PatternIdRegexToken("final")
+                                new PatternIdToken("final")
                             }
                         }
-                    )
+                    ),
+
+                    new PatternClassDeclaration
+                    {
+                        BaseTypes = new List<PatternBase>
+                        {
+                            new PatternIdToken("SecurityManager")
+                        }
+                    }
                 )
             });
 
@@ -473,8 +473,8 @@ namespace PT.PM.Patterns.PatternsRepository
                             LocalVariable = false,
                             Modifiers = new List<PatternBase>
                             {
-                                new PatternIdRegexToken("static"),
-                                new PatternIdRegexToken("final")
+                                new PatternIdToken("static"),
+                                new PatternIdToken("final")
                             },
                             Type = new PatternIdRegexToken("[Ll]og"),
                             Name = new PatternIdRegexToken(".+")

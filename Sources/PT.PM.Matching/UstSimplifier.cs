@@ -119,14 +119,12 @@ namespace PT.PM.Matching
             BinaryOperatorLiteral op = Visit((dynamic)binaryOperatorExpression.Operator);
             Expression rightExpression = Visit((dynamic)binaryOperatorExpression.Right);
 
-            if (leftExpression.Kind == UstKind.StringLiteral &&
-                rightExpression.Kind == UstKind.StringLiteral)
+            if (leftExpression is StringLiteral leftString &&
+                rightExpression is StringLiteral rightString)
             {
-                string leftValue = ((StringLiteral)leftExpression).Text;
-                string rightValue = ((StringLiteral)rightExpression).Text;
                 if (op.BinaryOperator == BinaryOperator.Plus)
                 {
-                    string resultText = leftValue + rightValue;
+                    string resultText = leftString.Text + rightString.Text;
                     result = new StringLiteral
                     {
                         Text = resultText,
@@ -136,11 +134,11 @@ namespace PT.PM.Matching
                     Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {result.TextSpan}");
                 }
             }
-            else if (leftExpression.Kind == UstKind.IntLiteral &&
-                rightExpression.Kind == UstKind.IntLiteral)
+            else if (leftExpression is IntLiteral leftInt &&
+                     rightExpression is IntLiteral rightInt)
             {
-                long leftValue = ((IntLiteral)leftExpression).Value;
-                long rightValue = ((IntLiteral)rightExpression).Value;
+                long leftValue = leftInt.Value;
+                long rightValue = rightInt.Value;
                 long resultValue = 0;
                 bool folded = true;
                 try
@@ -213,31 +211,31 @@ namespace PT.PM.Matching
         public override Ust Visit(UnaryOperatorExpression unaryOperatorExpression)
         {
             UnaryOperatorLiteral op = unaryOperatorExpression.Operator;
-            Expression ex = unaryOperatorExpression.Expression;
+            Expression expression = unaryOperatorExpression.Expression;
 
             if (op.UnaryOperator == UnaryOperator.Minus)
             {
-                if (ex.Kind == UstKind.IntLiteral)
+                if (expression is IntLiteral intLiteral)
                 {
-                    long intValue = ((IntLiteral)ex).Value;
+                    long intValue = intLiteral.Value;
                     Ust result = new IntLiteral
                     {
                         Value = -intValue,
                         Root = unaryOperatorExpression.Root,
-                        TextSpan = op.TextSpan.Union(ex.TextSpan)
+                        TextSpan = op.TextSpan.Union(expression.TextSpan)
                     };
                     Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-intValue} at {result.TextSpan}");
                     return result;
                 }
 
-                if (ex.Kind == UstKind.FloatLiteral)
+                if (expression is FloatLiteral floatLiteral)
                 {
-                    double doubleValue = ((FloatLiteral)ex).Value;
+                    double doubleValue = floatLiteral.Value;
                     Ust result = new FloatLiteral
                     {
                         Value = -doubleValue,
                         Root = unaryOperatorExpression.Root,
-                        TextSpan = op.TextSpan.Union(ex.TextSpan)
+                        TextSpan = op.TextSpan.Union(expression.TextSpan)
                     };
                     Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-doubleValue} at {result.TextSpan}");
                     return result;
@@ -277,9 +275,15 @@ namespace PT.PM.Matching
 
         public Ust Visit(PatternOr patternOr)
         {
-            List<PatternBase> vars = patternOr.Alternatives.Select(v => (PatternBase)Visit(v)).ToList();
-            vars.Sort();
-            return new PatternOr(vars, patternOr.TextSpan);
+            if (patternOr.Alternatives.Count == 1)
+            {
+                return Visit(patternOr.Alternatives[0]);
+            }
+
+            IEnumerable<PatternBase> exprs = patternOr.Alternatives
+                .Select(e => (PatternBase)Visit(e))
+                .OrderBy(e => e);
+            return new PatternOr(exprs, patternOr.TextSpan);
         }
 
         public Ust Visit(PatternBooleanLiteral patternBooleanLiteral)
@@ -307,14 +311,38 @@ namespace PT.PM.Matching
             return VisitChildren(patternIdToken);
         }
 
-        public Ust Visit(PatternIdRegexToken patternIdToken)
+        public Ust Visit(PatternIdRegexToken patternIdRegexToken)
         {
-            return VisitChildren(patternIdToken);
+            if (patternIdRegexToken.Id.All(
+                c => char.IsLetterOrDigit(c) || c == '_'))
+            {
+                return new PatternIdToken(
+                    patternIdRegexToken.Id,
+                    patternIdRegexToken.TextSpan);
+            }
+            else
+            {
+                return new PatternIdRegexToken(
+                    patternIdRegexToken.Id,
+                    patternIdRegexToken.TextSpan);
+            }
         }
 
         public Ust Visit(PatternIntRangeLiteral patternIntLiteral)
         {
-            return VisitChildren(patternIntLiteral);
+            if (patternIntLiteral.MinValue == patternIntLiteral.MaxValue)
+            {
+                return new PatternIntLiteral(
+                    patternIntLiteral.MinValue,
+                    patternIntLiteral.TextSpan);
+            }
+            else
+            {
+                return new PatternIntRangeLiteral(
+                    patternIntLiteral.MinValue,
+                    patternIntLiteral.MaxValue,
+                    patternIntLiteral.TextSpan);
+            }
         }
 
         public override Ust Visit(MultichildExpression multichildExpression)
@@ -339,7 +367,15 @@ namespace PT.PM.Matching
 
         public Ust Visit(PatternAnd patternAnd)
         {
-            return VisitChildren(patternAnd);
+            if (patternAnd.Expressions.Count == 1)
+            {
+                return Visit(patternAnd.Expressions[0]);
+            }
+
+            IEnumerable<PatternBase> exprs = patternAnd.Expressions
+                .Select(e => (PatternBase)Visit(e))
+                .OrderBy(e => e);
+            return new PatternAnd(exprs, patternAnd.TextSpan);
         }
 
         public Ust Visit(PatternNot patternNot)

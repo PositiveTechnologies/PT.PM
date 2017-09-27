@@ -63,7 +63,7 @@ namespace PT.PM.Dsl.Tests
                 Assert.Inconclusive($"Pattern {patternName} does not exists in DefaultPatternRepository");
             }
 
-            Assert.IsTrue(result.Equals(defaultPattern));
+            Assert.AreEqual(defaultPattern, result);
         }
 
         [TestCase("Range.ptpm")]
