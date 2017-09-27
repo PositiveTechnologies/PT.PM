@@ -27,24 +27,24 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
             if (ust is IndexerExpression invocationExpression)
             {
-                match = Target.Match(invocationExpression.Target, context);
-                if (!match.Success)
+                newContext = Target.Match(invocationExpression.Target, context);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
 
-                match = Arguments.Match(invocationExpression.Arguments, match);
+                newContext = Arguments.Match(invocationExpression.Arguments, newContext);
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }

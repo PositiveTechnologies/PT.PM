@@ -35,13 +35,13 @@ namespace PT.PM.Matching.Patterns
 
         public MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
             if (ust is TryCatchStatement tryCatchStatement)
             {
                 if (tryCatchStatement.CatchClauses == null)
                 {
-                    match = context.Fail();
+                    newContext = context.Fail();
                 }
                 else
                 {
@@ -56,15 +56,15 @@ namespace PT.PM.Matching.Patterns
                             ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
                     });
 
-                    match = context.Change(result);
+                    newContext = context.Change(result);
                 }
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }

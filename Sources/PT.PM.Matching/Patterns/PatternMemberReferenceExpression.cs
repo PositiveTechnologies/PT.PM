@@ -28,22 +28,22 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
             if (ust is MemberReferenceExpression memberRef)
             {
-                match = Target.Match(memberRef.Target, context);
-                if (!match.Success)
+                newContext = Target.Match(memberRef.Target, context);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
 
-                match = Name.Match(memberRef.Name, match);
+                newContext = Name.Match(memberRef.Name, newContext);
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }

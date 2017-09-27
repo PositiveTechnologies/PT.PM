@@ -89,7 +89,7 @@ namespace PT.PM.Matching.Patterns
 
         public MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
             if (ust is RootUst rootUst)
             {
@@ -108,11 +108,11 @@ namespace PT.PM.Matching.Patterns
                     TraverseChildren(patternUst, rootUst, context);
                 }
 
-                match = context;
+                newContext = context;
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
             return context;

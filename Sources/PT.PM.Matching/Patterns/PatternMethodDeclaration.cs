@@ -65,44 +65,44 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
             if (ust is MethodDeclaration methodDeclaration)
             {
-                match = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
-                if (!match.Success)
+                newContext = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
 
-                match = Name.Match(methodDeclaration.Name, match);
-                if (!match.Success)
+                newContext = Name.Match(methodDeclaration.Name, newContext);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
 
                 if (!AnyBody)
                 {
                     if (Body != null)
                     {
-                        match = Body.Match(methodDeclaration.Body, match);
-                        if (!match.Success)
+                        newContext = Body.Match(methodDeclaration.Body, newContext);
+                        if (!newContext.Success)
                         {
-                            return match;
+                            return newContext;
                         }
                     }
                     else if (methodDeclaration.Body != null)
                     {
-                        return match.Fail();
+                        return newContext.Fail();
                     }
                 }
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
 
         private void InitFields(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)

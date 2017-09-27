@@ -34,22 +34,24 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
+
             if (ust is ParameterDeclaration parameterDeclaration)
             {
-                match = Type.Match(parameterDeclaration.Type, context);
-                if (!match.Success)
+                newContext = Type.Match(parameterDeclaration.Type, context);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
 
-                match = Name.Match(parameterDeclaration.Name, match);
+                newContext = Name.Match(parameterDeclaration.Name, newContext);
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
-            return match.AddUstIfSuccess(ust);
+
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }

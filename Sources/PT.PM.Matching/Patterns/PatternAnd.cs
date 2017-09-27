@@ -32,18 +32,18 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match = context;
+            MatchingContext newContext = context;
 
             foreach (PatternBase expression in Expressions)
             {
-                match = expression.Match(ust, match);
-                if (!match.Success)
+                newContext = expression.Match(ust, newContext);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
             }
 
-            return match;
+            return newContext;
         }
     }
 }

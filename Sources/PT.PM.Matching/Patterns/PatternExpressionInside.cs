@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Patterns
             }
 
             var result = ust.DoesAnyDescendantMatchPredicate(ustNode => MatchExpression(ustNode, context).Success);
-            return context.Change(result).AddUstIfSuccess(ust);
+            return context.Change(result).AddMatchIfSuccess(ust);
         }
 
         protected MatchingContext MatchExpression(Ust other, MatchingContext context)

@@ -31,22 +31,22 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
             if (ust is AssignmentExpression assign)
             {
-                match = Left.Match(assign.Left, context);
-                if (match.Success)
+                newContext = Left.Match(assign.Left, context);
+                if (newContext.Success)
                 {
-                    match = Right.Match(assign.Right, match);
+                    newContext = Right.Match(assign.Right, newContext);
                 }
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }

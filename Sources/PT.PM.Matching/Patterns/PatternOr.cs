@@ -38,12 +38,12 @@ namespace PT.PM.Matching.Patterns
 
             foreach (PatternBase expression in Alternatives)
             {
-                var newContext = new MatchingContext(context.PatternUst)
+                var alternativeContext = new MatchingContext(context.PatternUst)
                 {
                     Logger = context.Logger,
                     FindAllAlternatives = context.FindAllAlternatives
                 };
-                MatchingContext match = expression.Match(ust, newContext);
+                MatchingContext match = expression.Match(ust, alternativeContext);
                 if (match.Success)
                 {
                     textSpans.AddRange(match.Locations);
@@ -54,7 +54,7 @@ namespace PT.PM.Matching.Patterns
                 }
             }
 
-            return context.AddLocations(textSpans);
+            return context.AddMatches(textSpans);
         }
     }
 }

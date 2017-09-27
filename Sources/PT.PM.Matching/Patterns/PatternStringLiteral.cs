@@ -24,16 +24,18 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
+
             if (ust is StringLiteral stringLiteral && String.Equals(stringLiteral.Text))
             {
-                match = context.AddUst(ust);
+                newContext = context.AddMatch(ust);
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
-            return match;
+
+            return newContext;
         }
     }
 }

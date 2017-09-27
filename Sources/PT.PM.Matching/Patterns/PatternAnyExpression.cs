@@ -26,7 +26,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            return context.AddUst(ust);
+            return context.AddMatch(ust);
         }
     }
 }

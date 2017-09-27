@@ -28,8 +28,8 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            MatchingContext match = Expression.Match(ust, context);
-            return match.Change(!match.Success);
+            MatchingContext newContext = Expression.Match(ust, context);
+            return newContext.Change(!newContext.Success);
         }
     }
 }

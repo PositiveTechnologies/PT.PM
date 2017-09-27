@@ -33,18 +33,18 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
             if (ust is StringLiteral stringLiteral)
             {
-                match = context.AddLocations(regex
+                newContext = context.AddMatches(regex
                     .MatchRegex(stringLiteral.Text, isQuoted: true)
                     .Select(location => location.AddOffset(ust.TextSpan.Start)));
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
-            return match;
+            return newContext;
         }
     }
 }

@@ -73,27 +73,27 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            MatchingContext match = Modifiers.MatchSubset(fieldDeclaration.Modifiers, context);
-            if (!match.Success)
+            MatchingContext newContext = Modifiers.MatchSubset(fieldDeclaration.Modifiers, context);
+            if (!newContext.Success)
             {
-                return match;
+                return newContext;
             }
 
-            match = Type.Match(fieldDeclaration.Type, match);
-            if (!match.Success)
+            newContext = Type.Match(fieldDeclaration.Type, newContext);
+            if (!newContext.Success)
             {
-                return match;
+                return newContext;
             }
 
             if (fieldDeclaration.Variables.Count() != 1)
             {
-                return match.Fail();
+                return newContext.Fail();
             }
 
             var assigment = fieldDeclaration.Variables.First();
-            match = ((IPatternUst)Name).Match(assigment.Left, match);
+            newContext = ((IPatternUst)Name).Match(assigment.Left, newContext);
 
-            return match;
+            return newContext;
         }
 
         private MatchingContext MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchingContext context)
@@ -108,20 +108,20 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            MatchingContext match = Type.Match(variableDeclaration.Type, context);
-            if (!match.Success)
+            MatchingContext newContext = Type.Match(variableDeclaration.Type, context);
+            if (!newContext.Success)
             {
-                return match;
+                return newContext;
             }
 
             int matchedVarsCount = variableDeclaration.Variables.Where(v =>
             {
-                match = Name.Match(v.Left, match);
-                if (!match.Success)
+                newContext = Name.Match(v.Left, newContext);
+                if (!newContext.Success)
                 {
                     return false;
                 }
-                return Right?.Match(v.Right, match).Success ?? true;
+                return Right?.Match(v.Right, newContext).Success ?? true;
             }).Count();
 
             if (matchedVarsCount == 0)
@@ -129,7 +129,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            return context.AddUstIfSuccess(variableDeclaration);
+            return context.AddMatchIfSuccess(variableDeclaration);
         }
     }
 }

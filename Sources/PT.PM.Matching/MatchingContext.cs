@@ -36,7 +36,7 @@ namespace PT.PM.Matching
             Results = results;
         }
 
-        public MatchingContext AddUstIfSuccess(Ust ust)
+        public MatchingContext AddMatchIfSuccess(Ust ust)
         {
             if (Success && (ust.IsTerminal || IncludeNonterminalTextSpans))
             {
@@ -45,7 +45,7 @@ namespace PT.PM.Matching
             return this;
         }
 
-        public MatchingContext AddUst(Ust ust)
+        public MatchingContext AddMatch(Ust ust)
         {
             if (ust.TextSpan.IsEmpty)
             {
@@ -62,7 +62,7 @@ namespace PT.PM.Matching
             return this;
         }
 
-        public MatchingContext AddLocations(IEnumerable<TextSpan> textSpans)
+        public MatchingContext AddMatches(IEnumerable<TextSpan> textSpans)
         {
             Success = textSpans.Count() > 0;
             Locations.AddRange(textSpans);

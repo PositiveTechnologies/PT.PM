@@ -34,32 +34,32 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
             if (ust is AnonymousMethodExpression anonymousMethod)
             {
-                match = context;
+                newContext = context;
                 if (Parameters.Count != anonymousMethod.Parameters.Count)
                 {
-                    return match.Fail();
+                    return newContext.Fail();
                 }
 
                 for (int i = 0; i < Parameters.Count; i++)
                 {
-                    match = Parameters[i].Match(anonymousMethod.Parameters[i], match);
-                    if (!match.Success)
+                    newContext = Parameters[i].Match(anonymousMethod.Parameters[i], newContext);
+                    if (!newContext.Success)
                     {
-                        return match;
+                        return newContext;
                     }
                 }
 
-                match = Body.Match(anonymousMethod.Body, match);
+                newContext = Body.Match(anonymousMethod.Body, newContext);
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }

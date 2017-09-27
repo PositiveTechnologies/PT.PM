@@ -35,19 +35,19 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
             if (ust is BooleanLiteral booleanLiteral &&
                 (Any || Value.Equals(booleanLiteral.Value)))
             {
-                match = context.AddUst(ust);
+                newContext = context.AddMatch(ust);
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match;
+            return newContext;
         }
     }
 }

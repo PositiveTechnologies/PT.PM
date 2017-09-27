@@ -28,21 +28,21 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
             if (ust is InvocationExpression invocation)
             {
-                match = Target.Match(invocation.Target, context);
-                if (!match.Success)
+                newContext = Target.Match(invocation.Target, context);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
-                match = Arguments.Match(invocation.Arguments, match);
+                newContext = Arguments.Match(invocation.Arguments, newContext);
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }

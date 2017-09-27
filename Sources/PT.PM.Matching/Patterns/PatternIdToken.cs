@@ -39,10 +39,9 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
-            var token = ust as Token;
-            if (token != null)
+            if (ust is Token token)
             {
                 string tokenText = token.TextValue;
                 if (ust.Root.Language.IsCaseInsensitive())
@@ -50,28 +49,28 @@ namespace PT.PM.Matching.Patterns
                     TextSpan[] matchedLocations = caseInsensitiveRegex.MatchRegex(tokenText, true);
                     if (matchedLocations.Length > 0)
                     {
-                        match = context.AddUst(ust);
+                        newContext = context.AddMatch(ust);
                     }
                     else
                     {
-                        match = context.Fail();
+                        newContext = context.Fail();
                     }
                 }
                 else if (id.Equals(tokenText))
                 {
-                    match = context.AddUst(ust);
+                    newContext = context.AddMatch(ust);
                 }
                 else
                 {
-                    match = context.Fail();
+                    newContext = context.Fail();
                 }
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match;
+            return newContext;
         }
     }
 }

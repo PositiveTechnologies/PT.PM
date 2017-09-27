@@ -57,47 +57,47 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            MatchingContext match;
+            MatchingContext newContext;
 
             if (ust is TypeDeclaration typeDeclaration)
             {
-                match = Modifiers.MatchSubset(typeDeclaration.Modifiers, context);
-                if (!match.Success)
+                newContext = Modifiers.MatchSubset(typeDeclaration.Modifiers, context);
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
 
                 if (Name != null)
                 {
-                    match = Name.Match(typeDeclaration.Name, match);
-                    if (!match.Success)
+                    newContext = Name.Match(typeDeclaration.Name, newContext);
+                    if (!newContext.Success)
                     {
-                        return match;
+                        return newContext;
                     }
                 }
 
-                match = BaseTypes.MatchSubset(typeDeclaration.BaseTypes, match);
+                newContext = BaseTypes.MatchSubset(typeDeclaration.BaseTypes, newContext);
 
                 var baseTypesToMatch = new List<Ust>(BaseTypes);
-                if (!match.Success)
+                if (!newContext.Success)
                 {
-                    return match;
+                    return newContext;
                 }
 
                 if (Body != null)
                 {
-                    if (!typeDeclaration.TypeMembers.Any(m => Body.Match(m, match).Success))
+                    if (!typeDeclaration.TypeMembers.Any(m => Body.Match(m, newContext).Success))
                     {
-                        return match.Fail();
+                        return newContext.Fail();
                     }
                 }
             }
             else
             {
-                match = context.Fail();
+                newContext = context.Fail();
             }
 
-            return match.AddUstIfSuccess(ust);
+            return newContext.AddMatchIfSuccess(ust);
         }
     }
 }
