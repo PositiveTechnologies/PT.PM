@@ -81,6 +81,10 @@ namespace PT.PM.Cli
                     MatchLogger.Info(json);
                     LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
                 }
+                else
+                {
+                    LogInfo(infoObj.ToString());
+                }
             }
         }
 

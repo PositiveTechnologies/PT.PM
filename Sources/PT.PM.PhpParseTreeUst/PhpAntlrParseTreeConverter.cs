@@ -1148,8 +1148,8 @@ namespace PT.PM.PhpParseTreeUst
                         binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[binaryOperatorText.Remove(binaryOperatorText.Length - 1)];
                     }
 
-                    result = ConverterHelper.ConvertToAssignmentExpression(left, binaryOperator, operatorTerminal.GetTextSpan(),
-                        right, context.GetTextSpan());
+                    // TODO: implement assignment + operator
+                    result = new AssignmentExpression(left, right, context.GetTextSpan());
                 }
             }
             else

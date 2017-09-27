@@ -7,27 +7,6 @@ namespace PT.PM.Common.Nodes
 {
     public static class NodeHelper
     {
-        public static Statement ToStatementIfRequired(this UstNode node)
-        {
-            Statement result = node as Statement;
-            if (result == null)
-            {
-                Expression expr = node as Expression;
-                if (expr != null)
-                {
-                    result = new ExpressionStatement(expr);
-                }
-                else if (node != null)
-                {
-                    result = new WrapperStatement(node);
-                }
-                else
-                {
-                    result = null;
-                }
-            }
-            return result;
-        }
 
         public static Expression ToExpressionIfRequired(this UstNode node)
         {
@@ -44,16 +23,34 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static BlockStatement ToBlockStatementIfRequired(this Statement statement)
+        public static BlockStatement ToBlockStatementIfRequired(this UstNode ust)
         {
-            if (statement is BlockStatement blockStatement)
+            if (ust is BlockStatement blockStatement)
             {
                 return blockStatement;
             }
             else
             {
-                return new BlockStatement(new Statement[] { statement });
+                return new BlockStatement(new Statement[] { ust.ToStatementIfRequired() });
             }
+        }
+
+        public static Statement ToStatementIfRequired(this UstNode node)
+        {
+            Statement result = node as Statement;
+            if (result == null)
+            {
+                Expression expr = node as Expression;
+                if (expr != null)
+                {
+                    result = new ExpressionStatement(expr);
+                }
+                else if (node != null)
+                {
+                    result = new WrapperStatement(node);
+                }
+            }
+            return result;
         }
 
         public static UstNode[] SelectAnalyzedNodes(this UstNode ustNode, Language language, HashSet<Language> analyzedLanguages)
