@@ -148,8 +148,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
                                     op = BinaryOperatorLiteral.TextBinaryOperator[text.Remove(text.Length - 1)];
                                 }
 
-                                result = ConverterUtils.ConvertToAssignmentExpression(left, op, child1Terminal.GetTextSpan(), right,
-                                    context.GetTextSpan());
+                                // TODO: implement assignment + operator
+                                result = new AssignmentExpression(left, right, context.GetTextSpan());
                             }
                             else
                             {

@@ -162,9 +162,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             else
             {
                 var op = BinaryOperatorLiteral.TextBinaryOperator[opText.Remove(opText.Length - 1)];
-                result = ConverterUtils.ConvertToAssignmentExpression(left, op,
-                    node.OperatorToken.GetTextSpan(), right,
-                    node.GetTextSpan());
+                // TODO: implement assignment + operator
+                result = new AssignmentExpression(left, right, node.GetTextSpan());
             }
 
             return result;

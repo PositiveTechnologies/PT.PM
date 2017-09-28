@@ -59,7 +59,6 @@
     <Compile Include="TextUtils.cs" />
     <Compile Include="UstDotRenderer.cs" />
     <Compile Include="CodeRepository\MemoryCodeRepository.cs" />
-    <Compile Include="ConverterUtils.cs" />
     <Compile Include="DotFormatUtils.cs" />
     <Compile Include="Exceptions\PreprocessingException.cs" />
     <Compile Include="Json\UstJsonConverter.cs" />
