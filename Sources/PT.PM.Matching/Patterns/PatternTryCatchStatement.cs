@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternTryCatchStatement : Statement, IPatternUst
+    public class PatternTryCatchStatement : PatternBase
     {
         public List<PatternBase> ExceptionTypes { get; set; }
 
@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"try catch {{ }}";
 
-        public MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             MatchingContext newContext;
 

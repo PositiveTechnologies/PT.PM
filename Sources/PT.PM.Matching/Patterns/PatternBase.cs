@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public abstract class PatternBase : Ust, IPatternUst
+    public abstract class PatternBase : Ust
     {
         protected PatternBase(TextSpan textSpan = default(TextSpan))
             : base(textSpan)

@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternRootUst : RootUst, IPatternUst, ILoggable
+    public class PatternRootUst : RootUst, ILoggable
     {
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
@@ -94,7 +94,7 @@ namespace PT.PM.Matching.Patterns
 
             if (ust is RootUst rootUst)
             {
-                var patternUst = (IPatternUst)Node;
+                var patternUst = (PatternBase)Node;
 
                 if (patternUst is PatternCommentRegex ||
                    (patternUst is PatternOr && ((PatternOr)patternUst).Alternatives.Any(v => v is PatternCommentRegex)))
@@ -119,7 +119,7 @@ namespace PT.PM.Matching.Patterns
             return context;
         }
 
-        private static void TraverseChildren(IPatternUst patternUst, Ust ust, MatchingContext context)
+        private static void TraverseChildren(PatternBase patternUst, Ust ust, MatchingContext context)
         {
             MatchAndAddResult(patternUst, ust, context);
 
@@ -132,7 +132,7 @@ namespace PT.PM.Matching.Patterns
             }
         }
 
-        private static void MatchAndAddResult(IPatternUst patternUst, Ust ust, MatchingContext context)
+        private static void MatchAndAddResult(PatternBase patternUst, Ust ust, MatchingContext context)
         {
             if (patternUst.Match(ust, context).Success)
             {

@@ -2,7 +2,6 @@
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
-using System;
 
 namespace PT.PM.Matching.Patterns
 {
