@@ -313,19 +313,29 @@ namespace PT.PM.Matching
 
         public Ust Visit(PatternIdRegexToken patternIdRegexToken)
         {
-            if (patternIdRegexToken.Id.All(
-                c => char.IsLetterOrDigit(c) || c == '_'))
+            string regexString = patternIdRegexToken.IdRegex.ToString();
+
+            if (regexString.StartsWith("(?i)"))
             {
-                return new PatternIdToken(
-                    patternIdRegexToken.Id,
-                    patternIdRegexToken.TextSpan);
+                regexString = regexString.Substring("(?i)".Length);
+                Regex newRegex = new Regex(
+                    string.IsNullOrEmpty(regexString) ? @"\w+" : regexString,
+                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                return new PatternIdRegexToken(newRegex, patternIdRegexToken.TextSpan);
             }
-            else
+
+            if (regexString.StartsWith("^") && regexString.EndsWith("$"))
             {
-                return new PatternIdRegexToken(
-                    patternIdRegexToken.Id,
-                    patternIdRegexToken.TextSpan);
+                string newRegexString = regexString.Substring(1, regexString.Length - 2);
+                if (newRegexString.All(c => char.IsLetterOrDigit(c) || c == '_'))
+                {
+                    return new PatternIdToken(
+                        newRegexString,
+                        patternIdRegexToken.TextSpan);
+                }
             }
+
+            return new PatternIdRegexToken(regexString, patternIdRegexToken.TextSpan);
         }
 
         public Ust Visit(PatternIntRangeLiteral patternIntLiteral)

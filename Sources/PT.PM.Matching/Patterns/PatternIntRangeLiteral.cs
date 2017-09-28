@@ -47,7 +47,7 @@ namespace PT.PM.Matching.Patterns
             MatchingContext newContext;
 
             if (ust is IntLiteral intLiteral && 
-                (intLiteral.Value >= MinValue || intLiteral.Value < MaxValue))
+                (intLiteral.Value >= MinValue && intLiteral.Value < MaxValue))
             {
                 newContext = context.AddMatch(ust);
             }

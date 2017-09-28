@@ -1,19 +1,21 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes;
-using Newtonsoft.Json;
-using System;
+﻿using Newtonsoft.Json;
 using PT.PM.Common;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json.Converters;
-using System.Linq;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternRootUst : RootUst, IPatternUst
+    public class PatternRootUst : RootUst, IPatternUst, ILoggable
     {
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
+
+        [JsonIgnore]
+        public ILogger Logger { get; set; }
 
         public string Key { get; set; } = "";
 
@@ -35,7 +37,6 @@ namespace PT.PM.Matching.Patterns
             }
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public UstFormat DataFormat { get; set; } = UstFormat.Json;
 
         [JsonIgnore]
@@ -82,7 +83,7 @@ namespace PT.PM.Matching.Patterns
 
         public List<MatchingResult> Match(Ust ust)
         {
-            var context = new MatchingContext(this);
+            var context = new MatchingContext(this) { Logger = Logger };
             context = Match(ust, context);
             return context.Results;
         }

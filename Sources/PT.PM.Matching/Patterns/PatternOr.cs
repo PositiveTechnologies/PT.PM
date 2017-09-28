@@ -34,19 +34,20 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            var textSpans = new List<TextSpan>();
+            var matchedTextSpans = new List<TextSpan>();
 
             foreach (PatternBase expression in Alternatives)
             {
-                var alternativeContext = new MatchingContext(context.PatternUst)
+                var altContext = new MatchingContext(context.PatternUst)
                 {
                     Logger = context.Logger,
-                    FindAllAlternatives = context.FindAllAlternatives
+                    FindAllAlternatives = context.FindAllAlternatives,
+                    IncludeNonterminalTextSpans = context.IncludeNonterminalTextSpans
                 };
-                MatchingContext match = expression.Match(ust, alternativeContext);
+                MatchingContext match = expression.Match(ust, altContext);
                 if (match.Success)
                 {
-                    textSpans.AddRange(match.Locations);
+                    matchedTextSpans.AddRange(match.Locations);
                     if (!context.FindAllAlternatives)
                     {
                         break;
@@ -54,7 +55,7 @@ namespace PT.PM.Matching.Patterns
                 }
             }
 
-            return context.AddMatches(textSpans);
+            return context.AddMatches(matchedTextSpans);
         }
     }
 }

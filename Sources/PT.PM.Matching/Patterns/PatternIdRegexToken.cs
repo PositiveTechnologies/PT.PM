@@ -11,18 +11,17 @@ namespace PT.PM.Matching.Patterns
         private Regex regex;
         private Regex caseInsensitiveRegex;
 
-        public string Id
+        public Regex IdRegex
         {
             get
             {
-                return regex.ToString();
+                return regex;
             }
             set
             {
-                regex = new Regex(value, RegexOptions.Compiled);
-                caseInsensitiveRegex = value.StartsWith("(?i)")
-                    ? regex
-                    : new Regex(value, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                regex = value;
+                caseInsensitiveRegex = new Regex(value.ToString(),
+                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
         }
 
@@ -32,14 +31,27 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternIdRegexToken(string regexId, TextSpan textSpan = default(TextSpan))
+            : this(new Regex(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, RegexOptions.Compiled), textSpan)
+        {
+        }
+
+        public PatternIdRegexToken(Regex regex, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Id = string.IsNullOrEmpty(regexId) ? @"\w+" : regexId;
+            IdRegex = regex;
         }
 
         public override Ust[] GetChildren() => ArrayUtils<Expression>.EmptyArray;
 
-        public override string ToString() => Id;
+        public override string ToString()
+        {
+            var regexString = regex.ToString();
+            if (regex.Options.HasFlag(RegexOptions.IgnoreCase) && !regexString.StartsWith("(?i)"))
+            {
+                regexString += "(?i)";
+            }
+            return regexString;
+        }
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {

@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,20 +21,15 @@ namespace PT.PM.Matching
 
         public List<MatchingResult> Results { get; } = new List<MatchingResult>();
 
+        public Dictionary<string, IdToken> Vars { get; } = new Dictionary<string, IdToken>();
+
         public bool Success { get; private set; } = true;
 
-        public MatchingContext(PatternRootUst patternUst)
+        public MatchingContext(PatternRootUst patternUst, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
-        }
-
-        public MatchingContext(PatternRootUst patternUst,
-            List<TextSpan> locations,
-            List<MatchingResult> results)
-        {
-            PatternUst = patternUst;
-            Locations = locations;
-            Results = results;
+            if (vars != null)
+                Vars = vars;
         }
 
         public MatchingContext AddMatchIfSuccess(Ust ust)
@@ -79,6 +75,12 @@ namespace PT.PM.Matching
         {
             Success = success;
             return this;
+        }
+
+        public override string ToString()
+        {
+            string vars = string.Join(", ", Vars.Select(v => $"{v.Key}: {v.Value}"));
+            return $"Status: {Success}; Vars: {vars}";
         }
     }
 }

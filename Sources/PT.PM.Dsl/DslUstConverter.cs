@@ -639,7 +639,7 @@ namespace PT.PM.Dsl
             {
                 if (context.Id() != null)
                 {
-                    return new PatternIdRegexToken(context.Id().GetText(), context.GetTextSpan());
+                    return new PatternIdToken(context.Id().GetText(), context.GetTextSpan());
                 }
                 else
                 {
