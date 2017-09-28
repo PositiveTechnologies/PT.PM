@@ -40,7 +40,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
             var patternWithErrorsLogger = new LoggerMessageCounter();
             TestUtility.CheckFile("PatternsWithParseErrors.java", Language.Java, Stage.Match, patternWithErrorsLogger, true);
 
-            Assert.AreEqual(1, patternWithErrorsLogger.InfoMessageCount - patternsLogger.InfoMessageCount);
+            Assert.AreEqual(0, patternWithErrorsLogger.InfoMessageCount - patternsLogger.InfoMessageCount);
         }
 
         [Test]

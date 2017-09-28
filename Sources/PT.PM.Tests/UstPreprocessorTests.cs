@@ -83,7 +83,7 @@ namespace PT.PM.Tests
                     new PatternVarOrFieldDeclaration
                     {
                         Type = new PatternIdToken("int"),
-                        Right = new PatternAssignmentExpression
+                        Assignment = new PatternAssignmentExpression
                         {
                             Left = new PatternIdToken("a"),
                             Right = new PatternIntLiteral(42)

@@ -1,13 +1,12 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.TestUtils;
+using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
-using NUnit.Framework;
+using PT.PM.TestUtils;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PT.PM.Patterns;
-using PT.PM.Matching.PatternsRepository;
-using System.Collections.Generic;
 
 namespace PT.PM.Matching.Tests
 {
@@ -39,8 +38,14 @@ namespace PT.PM.Matching.Tests
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
-            Assert.AreEqual(1, matchingResults.Count(r => r.MatchedCode.Contains("Configure::write") && r.MatchedCode.Contains("3")));
-            Assert.AreEqual(0, matchingResults.Count(r => r.MatchedCode.Contains("Configure::write") && r.MatchedCode.Contains("50")));
+            Assert.AreEqual(1, matchingResults.Count(r =>
+                r.MatchedCode.Contains("Configure") &&
+                r.MatchedCode.Contains("write") &&
+                r.MatchedCode.Contains("3")));
+            Assert.AreEqual(0, matchingResults.Count(r => 
+                r.MatchedCode.Contains("Configure") &&
+                r.MatchedCode.Contains("write") &&
+                r.MatchedCode.Contains("50")));
         }
     }
 }

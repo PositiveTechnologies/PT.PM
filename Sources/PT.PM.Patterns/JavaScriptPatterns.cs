@@ -23,62 +23,56 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new PatternAnyExpression(),
                         Name = new PatternIdRegexToken("^on")
                     },
-                    Right = new PatternAnonymousMethodExpression
-                    {
-                        Body = new PatternStatements
+                    Right = new PatternArbitraryDepthExpression
+                    (
+                        new PatternOr
                         (
-                            new PatternExpressionInside
+                            new PatternMemberReferenceExpression
+                            {
+                                Target = new PatternIdToken("document"),
+                                Name = new PatternIdRegexToken("^(URL|referrer|cookie)$")
+                            },
+
+                            new PatternOr
                             (
+                                new PatternMemberReferenceExpression
+                                {
+                                    Target = new PatternMemberReferenceExpression
+                                    {
+                                        Target = new PatternIdToken("document"),
+                                        Name = new PatternIdToken("location")
+                                    },
+                                    Name = new PatternIdRegexToken("^(pathname|href|search|hash)$")
+                                },
+
                                 new PatternOr
                                 (
                                     new PatternMemberReferenceExpression
                                     {
-                                        Target = new PatternIdToken("document"),
-                                        Name = new PatternIdRegexToken("^(URL|referrer|cookie)$")
+                                        Target = new PatternIdToken("window"),
+                                        Name = new PatternIdToken("name")
                                     },
-
-                                    new PatternOr
-                                    (
-                                        new PatternMemberReferenceExpression
+                                    new PatternMemberReferenceExpression
+                                    {
+                                        Target = new PatternMemberReferenceExpression
                                         {
                                             Target = new PatternMemberReferenceExpression
                                             {
-                                                Target = new PatternIdToken("document"),
-                                                Name = new PatternIdToken("location")
-                                            },
-                                            Name = new PatternIdRegexToken("^(pathname|href|search|hash)$")
-                                        },
-
-                                        new PatternOr
-                                        (
-                                            new PatternMemberReferenceExpression
-                                            {
-                                                Target = new PatternIdToken("window"),
-                                                Name = new PatternIdToken("name")
-                                            },
-                                            new PatternMemberReferenceExpression
-                                            {
                                                 Target = new PatternMemberReferenceExpression
                                                 {
-                                                    Target = new PatternMemberReferenceExpression
-                                                    {
-                                                        Target = new PatternMemberReferenceExpression
-                                                        {
-                                                            Target = new PatternIdToken("window"),
-                                                            Name = new PatternIdRegexToken("^(top|frames)$")
-                                                        },
-                                                        Name = new PatternIdToken("document")
-                                                    },
-                                                    Name = new PatternIdRegexToken()
+                                                    Target = new PatternIdToken("window"),
+                                                    Name = new PatternIdRegexToken("^(top|frames)$")
                                                 },
-                                                Name = new PatternIdRegexToken()
-                                            }
-                                        )
-                                    )
+                                                Name = new PatternIdToken("document")
+                                            },
+                                            Name = new PatternIdRegexToken()
+                                        },
+                                        Name = new PatternIdRegexToken()
+                                    }
                                 )
                             )
                         )
-                    }
+                    )
                 }
             });
 

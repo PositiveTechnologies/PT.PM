@@ -67,7 +67,8 @@ namespace PT.PM.Matching.Tests
             IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
 
             Assert.IsTrue(matchingResults.ElementAt(0).MatchedCode.Contains("Password"));
-            Assert.IsTrue(matchingResults.ElementAt(1).MatchedCode.Contains("try"));
+            Assert.IsTrue(matchingResults.ElementAt(1).MatchedCode.Contains("Random"));
+            Assert.IsTrue(matchingResults.ElementAt(2).MatchedCode.Contains("try"));
         }
 
         [Test]
@@ -78,8 +79,11 @@ namespace PT.PM.Matching.Tests
             var workflow = new Workflow(sourceCodeRep, Language.CSharp, hardcodedPassRepository);
             IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
 
-            Assert.IsTrue(matchingResults.ElementAt(0).MatchedCode.Contains("password = \"hardcoded\""));
-            Assert.IsTrue(matchingResults.ElementAt(1).MatchedCode.Contains("PASSWORD = \"hardcoded\""));
+            string matching = matchingResults.ElementAt(0).MatchedCode;
+            Assert.IsTrue(matching.Contains("password") && matching.Contains("hardcoded"));
+
+            matching = matchingResults.ElementAt(1).MatchedCode;
+            Assert.IsTrue(matching.Contains("PASSWORD") && matching.Contains("hardcoded"));
         }
     }
 }

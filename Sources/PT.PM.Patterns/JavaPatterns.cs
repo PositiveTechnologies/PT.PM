@@ -73,7 +73,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Name = new PatternIdToken("setPath"),
                         Target = new PatternIdRegexToken(@"[cC]ookie")
                     },
-                    Arguments = new PatternArgs(new PatternStringRegexLiteral { Regex = "^/?$" })
+                    Arguments = new PatternArgs(new PatternStringRegexLiteral("^/?$"))
                 }
             });
 
@@ -252,7 +252,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     ),
                     Target = new PatternMemberReferenceExpression
                     {
-                        Name = new PatternIdToken { Id = "getInsecure" },
+                        Name = new PatternIdToken("getInsecure"),
                         Target = new PatternAnyExpression()
                     }
                 }
@@ -272,7 +272,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     ),
                     Target = new PatternMemberReferenceExpression
                     {
-                        Name = new PatternIdToken { Id = "hash" },
+                        Name = new PatternIdToken("hash"),
                         Target = new PatternAnyExpression()
                     }
                 }
@@ -289,7 +289,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Arguments = new PatternArgs(new PatternAnyExpression()),
                     Target = new PatternMemberReferenceExpression
                     {
-                        Name = new PatternIdToken { Id = "sendBroadcast" },
+                        Name = new PatternIdToken("sendBroadcast"),
                         Target = new PatternAnyExpression()
                     }
                 }
@@ -312,7 +312,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     ),
                     Target = new PatternMemberReferenceExpression
                     {
-                        Name = new PatternIdToken { Id = "registerReceiver" },
+                        Name = new PatternIdToken("registerReceiver"),
                         Target = new PatternAnyExpression()
                     }
                 }
@@ -327,8 +327,9 @@ namespace PT.PM.Patterns.PatternsRepository
                 (
                     new PatternVarOrFieldDeclaration
                     {
+                        LocalVariable = true,
                         Type = new PatternIdToken("Cookie"),
-                        Right = new PatternAssignmentExpression
+                        Assignment = new PatternAssignmentExpression
                         {
                             Left = new PatternVar("cookie"),
                             Right = new PatternObjectCreateExpression
@@ -339,7 +340,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         }
                     },
 
-                    new PatternNot
+                    /*new PatternNot
                     (
                         new PatternInvocationExpression
                         {
@@ -350,7 +351,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 Target = new PatternVar("cookie")
                             }
                         }
-                    ),
+                    ),*/
 
                     new PatternInvocationExpression
                     {
@@ -393,7 +394,7 @@ namespace PT.PM.Patterns.PatternsRepository
 
                     new PatternClassDeclaration
                     {
-                        Body = new PatternExpressionInside
+                        Body = new PatternArbitraryDepthExpression
                         {
                             Expression = new PatternMethodDeclaration
                             {
@@ -444,7 +445,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         new PatternIdRegexToken("X509TrustManager|SSLSocketFactory")
                     },
-                    Body = new PatternExpressionInside
+                    Body = new PatternArbitraryDepthExpression
                     {
                         Expression = new PatternMethodDeclaration(
                             Enumerable.Empty<PatternBase>().ToList(), new PatternIdRegexToken(".+"), false)
@@ -464,7 +465,10 @@ namespace PT.PM.Patterns.PatternsRepository
                         LocalVariable = false,
                         Modifiers = new List<PatternBase>(),
                         Type = new PatternIdRegexToken("[Ll]og"),
-                        Name = new PatternIdRegexToken(".+")
+                        Assignment = new PatternAssignmentExpression(
+                            new PatternIdRegexToken(),
+                            null
+                        )
                     },
                     new PatternNot
                     (
@@ -477,7 +481,10 @@ namespace PT.PM.Patterns.PatternsRepository
                                 new PatternIdToken("final")
                             },
                             Type = new PatternIdRegexToken("[Ll]og"),
-                            Name = new PatternIdRegexToken(".+")
+                            Assignment = new PatternAssignmentExpression(
+                                new PatternIdRegexToken(),
+                                null
+                            )
                         }
                     )
                 )

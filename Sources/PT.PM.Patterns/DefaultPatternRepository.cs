@@ -121,8 +121,8 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
                 Node = new PatternOr
                 (
-                    new PatternComment("(?i)(password|pwd)\\s*=\\s*[\"\\w]+"),
-                    new PatternComment("(?i)default password")
+                    new PatternCommentRegex("(?i)(password|pwd)\\s*=\\s*[\"\\w]+"),
+                    new PatternCommentRegex("(?i)default password")
                 )
             });
 

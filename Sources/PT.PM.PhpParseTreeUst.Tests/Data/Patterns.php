@@ -6,7 +6,7 @@
     $storedPassword = NULL;
 
     if (($temp = getPassword()) != NULL) {
-      $storedPassword = $temp;
+        $storedPassword = $temp;
     }
 
     if(strcmp($storedPassword,$userPassword) == 0) {
