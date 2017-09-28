@@ -51,7 +51,8 @@ namespace PT.PM.Common
             PropertyInfo[] properties = type.GetClassProperties();
             foreach (PropertyInfo prop in properties)
             {
-                bool ignore = !IncludeTextSpans && prop.Name == nameof(Ust.TextSpan);
+                bool ignore = prop.Name == nameof(Ust.TextSpan) &&
+                    (((TextSpan)prop.GetValue(value)).IsEmpty || !IncludeTextSpans);
                 if (prop.CanWrite &&
                     !ignore &&
                     prop.Name != nameof(Ust.Root) && prop.Name != nameof(Ust.Parent))
