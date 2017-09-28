@@ -28,7 +28,7 @@ namespace PT.PM.Common.Nodes.Collections
 
         public override string ToString()
         {
-            return "(" + string.Join(", ", Collection) + ")";
+            return string.Join(", ", Collection);
         }
     }
 }

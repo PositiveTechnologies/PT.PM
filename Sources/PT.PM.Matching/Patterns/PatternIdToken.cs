@@ -46,8 +46,8 @@ namespace PT.PM.Matching.Patterns
                 string tokenText = token.TextValue;
                 if (ust.Root.Language.IsCaseInsensitive())
                 {
-                    TextSpan[] matchedLocations = caseInsensitiveRegex.MatchRegex(tokenText, true);
-                    if (matchedLocations.Length > 0)
+                    TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan(tokenText);
+                    if (!textSpan.IsEmpty)
                     {
                         newContext = context.AddMatch(ust);
                     }

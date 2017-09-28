@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
         public virtual string Text { get; set; }
 
+        public int EscapeCharsLength { get; set; } = 1;
+
         public StringLiteral(string text, TextSpan textSpan)
             : base(textSpan)
         {

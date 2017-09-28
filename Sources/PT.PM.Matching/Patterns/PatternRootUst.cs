@@ -96,8 +96,8 @@ namespace PT.PM.Matching.Patterns
             {
                 var patternUst = (IPatternUst)Node;
 
-                if (patternUst is PatternComment ||
-                   (patternUst is PatternOr && ((PatternOr)patternUst).Alternatives.Any(v => v is PatternComment)))
+                if (patternUst is PatternCommentRegex ||
+                   (patternUst is PatternOr && ((PatternOr)patternUst).Alternatives.Any(v => v is PatternCommentRegex)))
                 {
                     foreach (CommentLiteral commentNode in rootUst.Comments)
                     {

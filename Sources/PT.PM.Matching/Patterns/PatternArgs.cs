@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternArgs : PatternBase, IPatternUst
+    public class PatternArgs : PatternBase
     {
         public List<PatternBase> Args { get; set; } = new List<PatternBase>();
 

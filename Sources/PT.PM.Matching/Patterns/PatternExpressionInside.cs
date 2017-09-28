@@ -4,15 +4,15 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternExpressionInside : PatternBase
+    public class PatternArbitraryDepthExpression : PatternBase
     {
         public PatternBase Expression { get; set; }
 
-        public PatternExpressionInside()
+        public PatternArbitraryDepthExpression()
         {
         }
 
-        public PatternExpressionInside(PatternBase expression, TextSpan textSpan = default(TextSpan))
+        public PatternArbitraryDepthExpression(PatternBase expression, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Expression = expression;

@@ -7,43 +7,25 @@ namespace PT.PM.Matching
 {
     public static class PatternUtils
     {
-        public static TextSpan[] MatchRegex(this Regex patternRegex, string text, bool returnSingle = false, bool isQuoted = false)
+        public static TextSpan[] MatchRegex(this Regex patternRegex, string text, int escapeCharsLength = 0)
         {
-            if (returnSingle)
+            MatchCollection matches = patternRegex.Matches(text);
+            var result = new List<TextSpan>(matches.Count);
+            foreach (Match match in matches)
             {
-                Match match = patternRegex.Match(text);
-                var textSpan = match.GetTextSpan(isQuoted);
+                TextSpan textSpan = match.GetTextSpan(text, escapeCharsLength);
                 if (!textSpan.IsEmpty)
-                {
-                    return new TextSpan[] { textSpan };
-                }
-                else
-                {
-                    return ArrayUtils<TextSpan>.EmptyArray;
-                }
+                    result.Add(textSpan);
             }
-            else
-            {
-                MatchCollection matches = patternRegex.Matches(text);
-                var result = new List<TextSpan>(matches.Count);
-                foreach (Match match in matches)
-                {
-                    var textSpan = match.GetTextSpan(isQuoted);
-                    if (!textSpan.IsEmpty)
-                        result.Add(textSpan);
-                }
-                return result.ToArray();
-            }
+            return result.ToArray();
         }
 
-        public static TextSpan GetTextSpan(this Match match, bool isQuoted)
+        public static TextSpan GetTextSpan(this Match match, string text, int escapeCharsLength = 0)
         {
             if (!match.Success || match.Length == 0)
                 return TextSpan.Empty;
 
-            int startIndex = match.Index;
-            if (isQuoted)
-                startIndex += 1; // TODO: Fix location in UST node.
+            int startIndex = match.Index + escapeCharsLength;
             return new TextSpan(startIndex, match.Length);
         }
 

@@ -25,6 +25,21 @@ namespace PT.PM.Matching
 
         public bool Success { get; private set; } = true;
 
+        public static MatchingContext CreateWithInputParamsAndVars(MatchingContext context)
+        {
+            return CreateWithInputParams(context, context.Vars);
+        }
+
+        public static MatchingContext CreateWithInputParams(MatchingContext context, Dictionary<string, IdToken> vars = null)
+        {
+            return new MatchingContext(context.PatternUst, vars)
+            {
+                Logger = context.Logger,
+                FindAllAlternatives = context.FindAllAlternatives,
+                IncludeNonterminalTextSpans = context.IncludeNonterminalTextSpans,
+            };
+        }
+
         public MatchingContext(PatternRootUst patternUst, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;

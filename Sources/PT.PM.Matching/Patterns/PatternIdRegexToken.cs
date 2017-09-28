@@ -62,8 +62,9 @@ namespace PT.PM.Matching.Patterns
                 Regex regex = ust.Root.Language.IsCaseInsensitive()
                     ? caseInsensitiveRegex
                     : this.regex;
-                TextSpan[] matchedLocations = regex.MatchRegex(token.TextValue, true);
-                if (matchedLocations.Length > 0)
+                string tokenText = token.TextValue;
+                TextSpan textSpan = regex.Match(tokenText).GetTextSpan(tokenText);
+                if (!textSpan.IsEmpty)
                 {
                     newContext = context.AddMatch(ust);
                 }

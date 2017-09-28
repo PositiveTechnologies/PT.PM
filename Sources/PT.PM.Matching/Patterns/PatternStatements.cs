@@ -63,17 +63,12 @@ namespace PT.PM.Matching.Patterns
                 .ToArray();
 
             var matchedTextSpans = new List<TextSpan>();
-            var vars = new Dictionary<string, IdToken>();
             int patternStatementInd = 0;
             bool success = false;
+            MatchingContext newContext = MatchingContext.CreateWithInputParams(context);
             for (int i = 0; i < expressions.Length; i++)
             {
-                MatchingContext newContext = new MatchingContext(context.PatternUst, vars)
-                {
-                    Logger = context.Logger,
-                    FindAllAlternatives = context.FindAllAlternatives,
-                    IncludeNonterminalTextSpans = context.IncludeNonterminalTextSpans
-                };
+                newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);
                 newContext = Statements[patternStatementInd].Match(expressions[i], newContext);
                 if (newContext.Success)
                 {

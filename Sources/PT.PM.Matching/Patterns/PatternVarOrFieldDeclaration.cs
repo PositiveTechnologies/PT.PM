@@ -15,19 +15,16 @@ namespace PT.PM.Matching.Patterns
 
         public PatternBase Type { get; set; }
 
-        public PatternBase Name { get; set; }
-
-        public PatternBase Right { get; set; }
+        public PatternAssignmentExpression Assignment { get; set; }
 
         public PatternVarOrFieldDeclaration(bool localVariable, IEnumerable<PatternBase> modifiers,
-            PatternBase type, PatternBase name, TextSpan textSpan)
+            PatternBase type, PatternAssignmentExpression assignment, TextSpan textSpan)
             : base(textSpan)
         {
             LocalVariable = localVariable;
             Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
             Type = type;
-            Name = name;
-            Right = null;
+            Assignment = assignment;
         }
 
         public PatternVarOrFieldDeclaration()
@@ -39,20 +36,14 @@ namespace PT.PM.Matching.Patterns
             var result = new List<Ust>();
             result.AddRange(Modifiers);
             result.Add(Type);
-            result.Add(Name);
-            result.Add(Right);
+            result.Add(Assignment);
             return result.ToArray();
         }
 
-        public override string ToString() => $"{string.Join(", ", Modifiers)} {Type} {Name}";
+        public override string ToString() => $"{string.Join(", ", Modifiers)} {Type} {Assignment}";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust == null)
-            {
-                return context;
-            }
-
             if (ust is FieldDeclaration fieldDeclaration)
             {
                 return MatchFieldDeclaration(fieldDeclaration, context);
@@ -68,7 +59,7 @@ namespace PT.PM.Matching.Patterns
 
         private MatchingContext MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchingContext context)
         {
-            if (LocalVariable == true)
+            if (LocalVariable == true || fieldDeclaration.Variables.Count() != 1)
             {
                 return context.Fail();
             }
@@ -85,25 +76,14 @@ namespace PT.PM.Matching.Patterns
                 return newContext;
             }
 
-            if (fieldDeclaration.Variables.Count() != 1)
-            {
-                return newContext.Fail();
-            }
-
-            var assigment = fieldDeclaration.Variables.First();
-            newContext = ((IPatternUst)Name).Match(assigment.Left, newContext);
+            newContext = EnumerateVarsOrFiels(fieldDeclaration.Variables, newContext);
 
             return newContext;
         }
 
         private MatchingContext MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchingContext context)
         {
-            if (LocalVariable == false)
-            {
-                return context.Fail();
-            }
-
-            if (Modifiers.Count() != 0)
+            if (LocalVariable == false || Modifiers.Count() != 0)
             {
                 return context.Fail();
             }
@@ -114,22 +94,28 @@ namespace PT.PM.Matching.Patterns
                 return newContext;
             }
 
-            int matchedVarsCount = variableDeclaration.Variables.Where(v =>
+            newContext = EnumerateVarsOrFiels(variableDeclaration.Variables, newContext);
+
+            return newContext;
+        }
+
+        private MatchingContext EnumerateVarsOrFiels(List<AssignmentExpression> variables, MatchingContext context)
+        {
+            var matchedTextSpans = new List<TextSpan>();
+            foreach (AssignmentExpression variable in variables)
             {
-                newContext = Name.Match(v.Left, newContext);
-                if (!newContext.Success)
+                var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
+                MatchingContext match = Assignment.Match(variable, altContext);
+                if (match.Success)
                 {
-                    return false;
+                    matchedTextSpans.AddRange(match.Locations);
+                    if (!context.FindAllAlternatives)
+                    {
+                        break;
+                    }
                 }
-                return Right?.Match(v.Right, newContext).Success ?? true;
-            }).Count();
-
-            if (matchedVarsCount == 0)
-            {
-                return context.Fail();
             }
-
-            return context.AddMatchIfSuccess(variableDeclaration);
+            return context.AddMatches(matchedTextSpans);
         }
     }
 }

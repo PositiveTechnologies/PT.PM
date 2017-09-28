@@ -71,8 +71,8 @@ namespace PT.PM.Dsl
             }
             else
             {
-                IEnumerable<PatternComment> patternComments = context.PatternString().Select(literal =>
-                    new PatternComment(RemoveQuotes(literal.GetText()), literal.GetTextSpan()));
+                IEnumerable<PatternCommentRegex> patternComments = context.PatternString().Select(literal =>
+                    new PatternCommentRegex(RemoveQuotes(literal.GetText()), literal.GetTextSpan()));
                 if (patternComments.Count() == 1)
                 {
                     result = patternComments.ElementAt(0);
@@ -102,7 +102,7 @@ namespace PT.PM.Dsl
             }
             else
             {
-                result = new PatternExpressionInside(result, context.GetTextSpan());
+                result = new PatternArbitraryDepthExpression(result, context.GetTextSpan());
                 if (context.PatternNot() != null)
                 {
                     result = new PatternNot(result);
@@ -170,11 +170,11 @@ namespace PT.PM.Dsl
                 name = (PatternBase)VisitLiteralOrPatternId(context.name);
             }
 
-            PatternExpressionInside body = null;
+            PatternArbitraryDepthExpression body = null;
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                body = (PatternExpressionInside)VisitArbitraryDepthExpression(arbitraryDepthExpression);
+                body = (PatternArbitraryDepthExpression)VisitArbitraryDepthExpression(arbitraryDepthExpression);
             }
 
             return new PatternClassDeclaration(modifiers, name, baseTypes, body, context.GetTextSpan());
@@ -188,7 +188,7 @@ namespace PT.PM.Dsl
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                var body = (PatternExpressionInside)VisitArbitraryDepthExpression(arbitraryDepthExpression);
+                var body = (PatternArbitraryDepthExpression)VisitArbitraryDepthExpression(arbitraryDepthExpression);
                 result = new PatternMethodDeclaration(modifiers, name, body, context.GetTextSpan());
             }
             else if (context.Ellipsis() != null)
@@ -212,7 +212,8 @@ namespace PT.PM.Dsl
                 new PatternIdToken(typeLiteralOrPatternId.ToString(), typeLiteralOrPatternId.TextSpan);
             var name = (PatternBase)VisitVariableName(context.variableName());
             IEnumerable<PatternBase> modifiers = ProcessLiteralsOrPatternIds(context._modifiers);
-            var result = new PatternVarOrFieldDeclaration(localVariable, modifiers, type, name, context.GetTextSpan());
+            var assignment = new PatternAssignmentExpression(name, null, name.TextSpan);
+            var result = new PatternVarOrFieldDeclaration(localVariable, modifiers, type, assignment, context.GetTextSpan());
             return result;
         }
 
@@ -274,7 +275,7 @@ namespace PT.PM.Dsl
             var right = (PatternBase)VisitExpression(context.expression(1));
             if (left is PatternVarOrFieldDeclaration declaration)
             {
-                declaration.Right = right;
+                declaration.Assignment.Right = right;
                 result = declaration;
             }
             else
@@ -307,9 +308,7 @@ namespace PT.PM.Dsl
 
         public IPatternUst VisitFunctionExpression([NotNull] DslParser.FunctionExpressionContext context)
         {
-            var body = new PatternStatements(
-                new PatternBase[] { (PatternBase)VisitExpression(context.expression()) });
-            return new PatternAnonymousMethodExpression(Enumerable.Empty<PatternParameterDeclaration>(), body, context.GetTextSpan());
+            return VisitExpression(context.expression()); // TODO: remove FunctionExpression from DSL.
         }
 
         public IPatternUst VisitPatternLiteralExpression(DslParser.PatternLiteralExpressionContext context)
@@ -339,7 +338,7 @@ namespace PT.PM.Dsl
 
         public IPatternUst VisitArbitraryDepthExpression([NotNull] DslParser.ArbitraryDepthExpressionContext context)
         {
-            return new PatternExpressionInside(
+            return new PatternArbitraryDepthExpression(
                 (PatternBase)VisitExpression(context.expression()), context.GetTextSpan());
         }
 

@@ -6,29 +6,29 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternComment : PatternBase
+    public class PatternCommentRegex : PatternBase
     {
-        private Regex regex;
+        public Regex CommentRegex { get; set; }
 
-        public string Comment
-        {
-            get => regex.ToString();
-            set => regex = new Regex(value, RegexOptions.Compiled);
-        }
-
-        public PatternComment()
+        public PatternCommentRegex()
+            : this("")
         {
         }
 
-        public PatternComment(string comment, TextSpan textSpan = default(TextSpan))
+        public PatternCommentRegex(string comment, TextSpan textSpan = default(TextSpan))
+            : this(new Regex(string.IsNullOrEmpty(comment) ? ".*" : comment, RegexOptions.Compiled), textSpan)
+        {
+        }
+
+        public PatternCommentRegex(Regex commentRegex, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Comment = comment;
+            CommentRegex = commentRegex;
         }
 
         public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
 
-        public override string ToString() => $"</*{Comment}*/>";
+        public override string ToString() => $"</*{CommentRegex}*/>";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
@@ -36,7 +36,7 @@ namespace PT.PM.Matching.Patterns
 
             if (ust is CommentLiteral commentLiteral)
             {
-                newContext = context.AddMatches(regex
+                newContext = context.AddMatches(CommentRegex
                     .MatchRegex(commentLiteral.Comment)
                     .Select(location => location.AddOffset(ust.TextSpan.Start)));
             }

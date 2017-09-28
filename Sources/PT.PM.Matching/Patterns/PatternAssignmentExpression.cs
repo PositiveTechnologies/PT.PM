@@ -38,7 +38,15 @@ namespace PT.PM.Matching.Patterns
                 newContext = Left.Match(assign.Left, context);
                 if (newContext.Success)
                 {
-                    newContext = Right.Match(assign.Right, newContext);
+                    if (Right != null && assign.Right != null)
+                    {
+                        newContext = Right.Match(assign.Right, newContext);
+                    }
+                    else if ((Right != null && assign.Right == null) ||
+                             (Right == null && assign.Right != null))
+                    {
+                        newContext = newContext.Fail();
+                    }
                 }
             }
             else

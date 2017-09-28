@@ -36,15 +36,10 @@ namespace PT.PM.Matching.Patterns
         {
             var matchedTextSpans = new List<TextSpan>();
 
-            foreach (PatternBase expression in Alternatives)
+            foreach (PatternBase alt in Alternatives)
             {
-                var altContext = new MatchingContext(context.PatternUst)
-                {
-                    Logger = context.Logger,
-                    FindAllAlternatives = context.FindAllAlternatives,
-                    IncludeNonterminalTextSpans = context.IncludeNonterminalTextSpans
-                };
-                MatchingContext match = expression.Match(ust, altContext);
+                var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
+                MatchingContext match = alt.Match(ust, altContext);
                 if (match.Success)
                 {
                     matchedTextSpans.AddRange(match.Locations);

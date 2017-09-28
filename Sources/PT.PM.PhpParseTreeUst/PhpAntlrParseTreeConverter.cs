@@ -91,7 +91,13 @@ namespace PT.PM.PhpParseTreeUst
             }
 
             var result = AnalyzedLanguages.Contains(Language.Html)
-                ? new RootUst(root.SourceCodeFile, Language.Html) { Node = new StringLiteral(text.ToString(), context.GetTextSpan()) }
+                ? new RootUst(root.SourceCodeFile, Language.Html)
+                  {
+                    Node = new StringLiteral(text.ToString(), context.GetTextSpan())
+                    {
+                      EscapeCharsLength = 0
+                    }
+                  }
                 : null;
             return result;
         }

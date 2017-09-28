@@ -51,7 +51,6 @@
     <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
     <Compile Include="PatternsRepository\IPatternsRepository.cs" />
     <Compile Include="PatternsRepository\JsonPatternsRepository.cs" />
-    <Compile Include="Patterns\PatternAnonymousMethodExpression.cs" />
     <Compile Include="Patterns\PatternBaseReferenceExpression.cs" />
     <Compile Include="Patterns\IPatternUst.cs" />
     <Compile Include="Patterns\PatternAssignmentExpression.cs" />
@@ -61,7 +60,7 @@
     <Compile Include="Patterns\PatternBinaryOperatorExpression.cs" />
     <Compile Include="Patterns\PatternBooleanLiteral.cs" />
     <Compile Include="Patterns\PatternClassDeclaration.cs" />
-    <Compile Include="Patterns\PatternComment.cs" />
+    <Compile Include="Patterns\PatternCommentRegex.cs" />
     <Compile Include="PatternDeclarationUtils.cs" />
     <Compile Include="Patterns\PatternExpressionInside.cs" />
     <Compile Include="Patterns\PatternArgs.cs" />

@@ -291,7 +291,7 @@ namespace PT.PM.Matching
             return VisitChildren(patternBooleanLiteral);
         }
 
-        public Ust Visit(PatternComment patternComment)
+        public Ust Visit(PatternCommentRegex patternComment)
         {
             return VisitChildren(patternComment);
         }
@@ -301,9 +301,9 @@ namespace PT.PM.Matching
             return VisitChildren(patternAnyExpression);
         }
 
-        public Ust Visit(PatternExpressionInside patternExpressionInsideExpression)
+        public Ust Visit(PatternArbitraryDepthExpression patternArbitraryDepthExpression)
         {
-            return VisitChildren(patternExpressionInsideExpression);
+            return VisitChildren(patternArbitraryDepthExpression);
         }
 
         public Ust Visit(PatternIdToken patternIdToken)
@@ -413,11 +413,6 @@ namespace PT.PM.Matching
             return VisitChildren(patternVar);
         }
 
-        public Ust Visit(PatternAnonymousMethodExpression patternAnonymousMethodExpression)
-        {
-            return VisitChildren(patternAnonymousMethodExpression);
-        }
-
         public Ust Visit(PatternAssignmentExpression patternAssignmentExpression)
         {
             return VisitChildren(patternAssignmentExpression);
@@ -489,7 +484,7 @@ namespace PT.PM.Matching
                 foreach (PropertyInfo prop in properties)
                 {
                     Type propType = prop.PropertyType;
-                    if (propType.IsValueType || propType == typeof(string))
+                    if (propType.IsValueType || propType == typeof(string) || propType == typeof(Regex))
                     {
                         prop.SetValue(result, prop.GetValue(ustNode));
                     }
@@ -529,10 +524,6 @@ namespace PT.PM.Matching
                             }
                         }
                         prop.SetValue(result, destCollection);
-                    }
-                    else if (propType == typeof(Regex))
-                    {
-                        continue;
                     }
                     else
                     {
