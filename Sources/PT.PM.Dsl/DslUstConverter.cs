@@ -448,7 +448,7 @@ namespace PT.PM.Dsl
         public PatternBase VisitPatternLiterals([NotNull] DslParser.PatternLiteralsContext context)
         {
             IEnumerable<PatternBase> values = context.patternNotLiteral()
-                .Select(literal => (PatternBase)VisitPatternNotLiteral(literal));
+                .Select(literal => VisitPatternNotLiteral(literal));
             var patternOr = new PatternOr(values, values.GetTextSpan());
 
             PatternBase result;
@@ -465,6 +465,7 @@ namespace PT.PM.Dsl
                     };
                 }
                 var patternVar = new PatternVar(id, context.GetTextSpan());
+                patternVars[id] = patternVar;
                 patternVar.Value = patternOr;
                 result = patternVar;
             }

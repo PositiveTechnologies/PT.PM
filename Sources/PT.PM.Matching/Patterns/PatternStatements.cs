@@ -30,7 +30,7 @@ namespace PT.PM.Matching.Patterns
             Statements = statements?.ToList() ?? new List<PatternBase>();
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
+        public override Ust[] GetChildren() => Statements.ToArray();
 
         public override string ToString() => string.Join(";\n", Statements);
 
