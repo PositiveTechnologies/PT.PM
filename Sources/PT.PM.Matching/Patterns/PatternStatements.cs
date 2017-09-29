@@ -40,7 +40,8 @@ namespace PT.PM.Matching.Patterns
             if (blockStatement == null ||
                 (!(blockStatement.Parent is MethodDeclaration) &&
                  !(blockStatement.Parent is ConstructorDeclaration) &&
-                 !(blockStatement.Parent is NamespaceDeclaration)))
+                 !(blockStatement.Parent is NamespaceDeclaration) &&
+                 !(blockStatement.Parent is RootUst)))
             {
                 return context.Fail();
             }
@@ -65,7 +66,7 @@ namespace PT.PM.Matching.Patterns
             var matchedTextSpans = new List<TextSpan>();
             int patternStatementInd = 0;
             bool success = false;
-            MatchingContext newContext = MatchingContext.CreateWithInputParams(context);
+            MatchingContext newContext = MatchingContext.CreateWithInputParamsAndVars(context);
             for (int i = 0; i < expressions.Length; i++)
             {
                 newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);

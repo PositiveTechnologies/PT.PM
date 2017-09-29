@@ -56,23 +56,6 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
                 Node = new PatternOr
                 (
-                    new PatternAssignmentExpression
-                    {
-                        Left = new PatternOr
-                        (
-                            new PatternMemberReferenceExpression
-                            {
-                                Target = new PatternAnyExpression(),
-                                Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
-                            },
-                            new PatternIdRegexToken(@"(?i)(password|pwd)")
-                        ),
-                        Right = new PatternOr
-                        (
-                            new PatternNullLiteral(),
-                            new PatternStringRegexLiteral()
-                        )
-                    },
                     new PatternBinaryOperatorExpression
                     {
                         Left = new PatternOr
@@ -85,6 +68,23 @@ namespace PT.PM.Patterns.PatternsRepository
                             new PatternIdRegexToken(@"(?i)(password|pwd)")
                         ),
                         Operator = new BinaryOperatorLiteral(BinaryOperator.Equal),
+                        Right = new PatternOr
+                        (
+                            new PatternNullLiteral(),
+                            new PatternStringRegexLiteral()
+                        )
+                    },
+                    new PatternAssignmentExpression
+                    {
+                        Left = new PatternOr
+                        (
+                            new PatternMemberReferenceExpression
+                            {
+                                Target = new PatternAnyExpression(),
+                                Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
+                            },
+                            new PatternIdRegexToken(@"(?i)(password|pwd)")
+                        ),
                         Right = new PatternOr
                         (
                             new PatternNullLiteral(),

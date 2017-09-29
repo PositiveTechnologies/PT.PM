@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes
     public abstract class Ust : IComparable<Ust>, IEquatable<Ust>
     {
         [JsonIgnore]
-        public int Kind => GetType().GetHashCode();
+        public int Kind => GetType().Name.GetHashCode();
 
         [JsonIgnore]
         public RootUst Root { get; set; }

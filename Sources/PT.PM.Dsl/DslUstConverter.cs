@@ -449,7 +449,11 @@ namespace PT.PM.Dsl
         {
             IEnumerable<PatternBase> values = context.patternNotLiteral()
                 .Select(literal => VisitPatternNotLiteral(literal));
-            var patternOr = new PatternOr(values, values.GetTextSpan());
+            var patternOr = values.Count() > 1
+                ? new PatternOr(values, values.GetTextSpan())
+                : values.Count() == 1
+                ? values.First()
+                : new PatternIdRegexToken();
 
             PatternBase result;
             if (context.PatternVar() != null)

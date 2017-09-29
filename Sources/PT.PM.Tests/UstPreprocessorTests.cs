@@ -102,13 +102,8 @@ namespace PT.PM.Tests
         [Test]
         public void Sort_PatternVars_CorrectOrder()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed unit-test on mono (Linux)");
-            }
-
-            var unsortedExpressions = new List<PatternBase>()
-            {
+            var unsorted = new PatternOr
+            (
                 new PatternStringLiteral("42"),
                 new PatternIntLiteral(100),
                 new PatternIntLiteral(42),
@@ -118,45 +113,36 @@ namespace PT.PM.Tests
                 new PatternStringLiteral("Hello World!"),
                 new PatternIdToken("testId"),
                 new PatternIdToken("42"),
-                new PatternNot(new PatternStringLiteral("42")),
-            };
-            var expectedSortedExpressions = new List<PatternBase>
-            {
-                new PatternStringLiteral("42"),
-                new PatternStringLiteral("Hello World!"),
-                new PatternIdToken("42"),
+                new PatternNot(new PatternStringLiteral("42"))
+            );
+            var expectedSorted = new PatternOr
+            (
                 new PatternIdToken("testId"),
-                new PatternIntLiteral(0),
-                new PatternIntLiteral(42),
+                new PatternIdToken("42"),
+                new PatternNot(new PatternStringLiteral("42")),
+                new PatternNot(new PatternStringLiteral("42")),
                 new PatternIntLiteral(100),
+                new PatternIntLiteral(42),
+                new PatternIntLiteral(0),
                 new PatternStringLiteral("42"),
-                new PatternNot(new PatternStringLiteral("42")),
-                new PatternNot(new PatternStringLiteral("42")),
-            };
-            var patternVarDef = new PatternVar
-            {
-                Id = "testVarDef",
-                Value = new PatternOr(unsortedExpressions)
-            };
-            var patternVars = new PatternRootUst
-            {
-                Node = patternVarDef
-            };
+                new PatternStringLiteral("42"),
+                new PatternStringLiteral("Hello World!")
+            );
 
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
             UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
-            Assert.Inconclusive();
 
-            /*Expression[] resultSortedExpressions = ((PatternRootUst)preprocessor.Preprocess(patternVars))
-                .Vars.First().Values.ToArray();
+            var actualPattern = (PatternOr)preprocessor.Preprocess(unsorted);
+            List<PatternBase> actualAlternatives = actualPattern.Alternatives;
+            List<PatternBase> expectedAlternatives = expectedSorted.Alternatives;
 
-            Assert.AreEqual(expectedSortedExpressions.Count, resultSortedExpressions.Length);
-            for (int i = 0; i < expectedSortedExpressions.Count; i++)
+            Assert.AreEqual(expectedAlternatives.Count, actualAlternatives.Count);
+            for (int i = 0; i < expectedAlternatives.Count; i++)
             {
-                Assert.IsTrue(expectedSortedExpressions[i].Equals(resultSortedExpressions[i]),
-                    $"Not equal at {i} index: expected {expectedSortedExpressions[i]} not equals to {resultSortedExpressions[i]}");
-            }*/
+                Assert.IsTrue(expectedAlternatives[i].Equals(actualAlternatives[i]),
+                    $"Not equal at {i} index: expected {expectedAlternatives[i]} not equals to {actualAlternatives[i]}");
+            }
         }
     }
 }

@@ -78,7 +78,6 @@ namespace PT.PM.Matching.Patterns
 
                 newContext = BaseTypes.MatchSubset(typeDeclaration.BaseTypes, newContext);
 
-                var baseTypesToMatch = new List<Ust>(BaseTypes);
                 if (!newContext.Success)
                 {
                     return newContext;

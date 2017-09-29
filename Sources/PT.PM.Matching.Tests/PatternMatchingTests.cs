@@ -75,8 +75,6 @@ namespace PT.PM.Matching.Tests
         [TestCase("<[@pwd:username]> = #; ... #(#*, <[@pwd]>, #*);")]
         public void Match_PatternVarWithRegex(string patternData)
         {
-            Assert.Ignore("Won't be supported in future versions of PT.PM");
-
             var processor = new DslProcessor();
             var patternNode = (PatternRootUst)processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
