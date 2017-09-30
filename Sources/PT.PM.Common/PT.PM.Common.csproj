@@ -49,6 +49,7 @@
     <Compile Include="Nodes\IUstVisitor.cs" />
     <Compile Include="Reflection\PropertyEnumerator.cs" />
     <Compile Include="TextTruncater.cs" />
+    <Compile Include="UstLinq.cs" />
     <Compile Include="UstRefComparer.cs" />
     <Compile Include="Nodes\UstVisitor.cs" />
     <Compile Include="WildcardConverter.cs" />

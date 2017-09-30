@@ -56,7 +56,7 @@ namespace PT.PM.Tests
             workflow.IsIncludePreprocessing = true;
             var ust = workflow.Process().Usts.First();
 
-            Assert.IsTrue(ust.DoesAnyDescendantMatchPredicate(
+            Assert.IsTrue(ust.AnyDescendant(
                 node => node is StringLiteral str && str.Text == "none"));
         }
 
@@ -96,7 +96,7 @@ namespace PT.PM.Tests
             var normalizer = new PatternNormalizer() { Logger = logger };
             Ust result = normalizer.Visit(input);
 
-            Assert.AreEqual(1, result.GetAllDescendants().Count(child => child is PatternMultipleExpressions));
+            Assert.AreEqual(1, result.WhereDescendants().Count(child => child is PatternMultipleExpressions));
         }
 
         [Test]

@@ -31,7 +31,7 @@ namespace PT.PM.Tests
         {
             WorkflowResult result = TestUtility.CheckFile("AllInOne.cs", Language.CSharp, Stage.Convert);
 
-            IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().GetAllDescendants().Skip(1);
+            IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().WhereDescendants().Skip(1);
             foreach (var descendant in descendantsExceptFirst)
             {
                 if (!(descendant is RootUst))

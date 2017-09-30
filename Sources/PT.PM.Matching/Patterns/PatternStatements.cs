@@ -57,7 +57,7 @@ namespace PT.PM.Matching.Patterns
                     !(statement is WrapperStatement));
             Expression[] expressions = statements.SelectMany(statement =>
                 statement
-                .GetAllDescendants(descendant =>
+                .WhereDescendants(descendant =>
                     descendant is Expression expressionDescendant &&
                     !(expressionDescendant is Token)))
                 .Cast<Expression>()

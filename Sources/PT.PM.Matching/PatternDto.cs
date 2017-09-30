@@ -1,10 +1,9 @@
-﻿using PT.PM.Common;
-using Newtonsoft.Json;
-using System.Linq;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using PT.PM.Common;
 using System;
 using System.Collections.Generic;
-using PT.PM.Matching.Patterns;
+using System.Linq;
 
 namespace PT.PM.Matching
 {

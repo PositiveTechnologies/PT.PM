@@ -65,7 +65,7 @@ namespace PT.PM.Common.Nodes
             }
             else
             {
-                result = ustNode.GetAllDescendants(
+                result = ustNode.WhereDescendants(
                     node => node is RootUst rootUstNode && analyzedLanguages.Contains(rootUstNode.Language))
                     .Cast<RootUst>()
                     .ToArray();

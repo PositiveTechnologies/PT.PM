@@ -29,7 +29,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         {
             var workflowResults = TestUtility.CheckFile(fileName, Language.CSharp, Stage.Convert);
             var ust = workflowResults.Usts.First();
-            bool result = ust.DoesAnyDescendantMatchPredicate(descendant =>
+            bool result = ust.AnyDescendant(descendant =>
             {
                 return descendant is TypeDeclaration typeDeclaration &&
                        typeDeclaration.BaseTypes.Any(type => type.TypeText == "IDisposable");

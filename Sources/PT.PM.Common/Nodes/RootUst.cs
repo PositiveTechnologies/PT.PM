@@ -50,7 +50,7 @@ namespace PT.PM.Common.Nodes
         private Language[] GetSublangauges()
         {
             var result = new HashSet<Language>();
-            var descendants = GetAllDescendants(child => child is RootUst)
+            var descendants = this.WhereDescendants(child => child is RootUst)
                 .Cast<RootUst>();
             foreach (RootUst descendant in descendants)
             {
