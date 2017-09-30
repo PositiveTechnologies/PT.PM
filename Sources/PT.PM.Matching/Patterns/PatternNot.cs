@@ -29,7 +29,14 @@ namespace PT.PM.Matching.Patterns
             }
 
             MatchingContext newContext = Expression.Match(ust, context);
-            return newContext.Change(!newContext.Success);
+            if (newContext.Success)
+            {
+                return newContext.Fail();
+            }
+            else
+            {
+                return newContext.AddMatch(ust);
+            }
         }
     }
 }

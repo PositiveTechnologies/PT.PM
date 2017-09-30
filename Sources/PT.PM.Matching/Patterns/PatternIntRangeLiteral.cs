@@ -37,9 +37,9 @@ namespace PT.PM.Matching.Patterns
                 return MinValue.ToString();
             }
 
-            return $"{(MinValue == long.MinValue ? "-(∞" : "[" + MinValue.ToString())}"
-                  + ".."
-                  + $"{(MaxValue == long.MaxValue ? "∞)" : MaxValue.ToString() + ")")}";
+            string lowerBound = MinValue == long.MinValue ? "" : MinValue.ToString();
+            string upperBound = MaxValue == long.MaxValue ? "" : MaxValue.ToString();
+            return $"<({lowerBound}..{upperBound})>";
         }
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

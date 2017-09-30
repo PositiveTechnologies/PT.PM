@@ -20,7 +20,7 @@ namespace PT.PM.Matching.Patterns
 
         public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
 
-        public override string ToString() => String;
+        public override string ToString() => '"' + String + '"';
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {

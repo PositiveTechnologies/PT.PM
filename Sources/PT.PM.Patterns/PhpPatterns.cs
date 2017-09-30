@@ -150,8 +150,8 @@ namespace PT.PM.Patterns.PatternsRepository
 
             var patternNullOrString = new PatternOr
             (
-                new PatternNullLiteral(),
-                new PatternStringRegexLiteral()
+                new PatternStringRegexLiteral(),
+                new PatternNullLiteral()
             );
 
             patterns.Add(new PatternRootUst

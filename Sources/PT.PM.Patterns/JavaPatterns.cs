@@ -148,15 +148,15 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternOr
                 (
-                    new PatternMemberReferenceExpression
-                    {
-                        Name = new PatternIdToken("ALLOW_ALL_HOSTNAME_VERIFIER"),
-                        Target = new PatternIdToken("SSLSocketFactory")
-                    },
                     new PatternObjectCreateExpression
                     {
                         Type = new PatternIdToken("AllowAllHostnameVerifier"),
                         Arguments = new PatternArgs(new PatternMultipleExpressions())
+                    },
+                    new PatternMemberReferenceExpression
+                    {
+                        Name = new PatternIdToken("ALLOW_ALL_HOSTNAME_VERIFIER"),
+                        Target = new PatternIdToken("SSLSocketFactory")
                     }
                 )
             });
@@ -384,14 +384,6 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
                 (
-                    new PatternNot
-                    (
-                        new PatternClassDeclaration
-                        {
-                            BaseTypes = new List<PatternBase> { new PatternIdToken("Cloneable") }
-                        }
-                    ),
-
                     new PatternClassDeclaration
                     {
                         Body = new PatternArbitraryDepthExpression
@@ -402,7 +394,15 @@ namespace PT.PM.Patterns.PatternsRepository
                                 AnyBody = true
                             }
                         }
-                    }
+                    },
+
+                    new PatternNot
+                    (
+                        new PatternClassDeclaration
+                        {
+                            BaseTypes = new List<PatternBase> { new PatternIdToken("Cloneable") }
+                        }
+                    )
                 )
             });
 
@@ -413,6 +413,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
                 (
+                    new PatternClassDeclaration
+                    {
+                        BaseTypes = new List<PatternBase>
+                        {
+                            new PatternIdToken("SecurityManager")
+                        }
+                    },
+
                     new PatternNot
                     (
                         new PatternClassDeclaration
@@ -422,15 +430,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 new PatternIdToken("final")
                             }
                         }
-                    ),
-
-                    new PatternClassDeclaration
-                    {
-                        BaseTypes = new List<PatternBase>
-                        {
-                            new PatternIdToken("SecurityManager")
-                        }
-                    }
+                    )
                 )
             });
 
@@ -460,16 +460,6 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternAnd
                 (
-                    new PatternVarOrFieldDeclaration
-                    {
-                        LocalVariable = false,
-                        Modifiers = new List<PatternBase>(),
-                        Type = new PatternIdRegexToken("[Ll]og"),
-                        Assignment = new PatternAssignmentExpression(
-                            new PatternIdRegexToken(),
-                            null
-                        )
-                    },
                     new PatternNot
                     (
                         new PatternVarOrFieldDeclaration
@@ -486,7 +476,17 @@ namespace PT.PM.Patterns.PatternsRepository
                                 null
                             )
                         }
-                    )
+                    ),
+                    new PatternVarOrFieldDeclaration
+                    {
+                        LocalVariable = false,
+                        Modifiers = new List<PatternBase>(),
+                        Type = new PatternIdRegexToken("[Ll]og"),
+                        Assignment = new PatternAssignmentExpression(
+                            new PatternIdRegexToken(),
+                            null
+                        )
+                    }
                 )
             });
 

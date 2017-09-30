@@ -89,11 +89,14 @@ namespace PT.PM.Matching.Patterns
 
                 if (argInd != args.Count || patternArgInd != Args.Count)
                 {
-                    newContext = newContext.Fail();
+                    newContext = context.Fail();
                 }
                 else
                 {
-                    newContext = newContext.AddMatches(matchedTextSpans);
+                    if (matchedTextSpans.Count > 0)
+                    {
+                        newContext = context.AddMatches(matchedTextSpans);
+                    }
                 }
             }
             else

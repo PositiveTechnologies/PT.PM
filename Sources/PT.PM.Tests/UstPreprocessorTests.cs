@@ -119,14 +119,14 @@ namespace PT.PM.Tests
             (
                 new PatternIdToken("testId"),
                 new PatternIdToken("42"),
+                new PatternStringLiteral("42"),
+                new PatternStringLiteral("42"),
+                new PatternStringLiteral("Hello World!"),
                 new PatternNot(new PatternStringLiteral("42")),
                 new PatternNot(new PatternStringLiteral("42")),
                 new PatternIntLiteral(100),
                 new PatternIntLiteral(42),
-                new PatternIntLiteral(0),
-                new PatternStringLiteral("42"),
-                new PatternStringLiteral("42"),
-                new PatternStringLiteral("Hello World!")
+                new PatternIntLiteral(0)
             );
 
             var logger = new LoggerMessageCounter();

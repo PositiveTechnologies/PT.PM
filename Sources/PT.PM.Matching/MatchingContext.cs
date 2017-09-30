@@ -86,6 +86,12 @@ namespace PT.PM.Matching
             return this;
         }
 
+        public MatchingContext MakeSuccess()
+        {
+            Success = true;
+            return this;
+        }
+
         public MatchingContext Change(bool success)
         {
             Success = success;
@@ -95,7 +101,11 @@ namespace PT.PM.Matching
         public override string ToString()
         {
             string vars = string.Join(", ", Vars.Select(v => $"{v.Key}: {v.Value}"));
-            return $"Status: {Success}; Vars: {vars}";
+            if (vars != "")
+            {
+                vars = "; Vars: " + vars;
+            }
+            return $"Status: {Success}{vars}";
         }
     }
 }

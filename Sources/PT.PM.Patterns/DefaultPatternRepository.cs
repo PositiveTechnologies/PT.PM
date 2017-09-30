@@ -60,35 +60,35 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Left = new PatternOr
                         (
+                            new PatternIdRegexToken(@"(?i)(password|pwd)"),
                             new PatternMemberReferenceExpression
                             {
                                 Target = new PatternAnyExpression(),
                                 Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
-                            },
-                            new PatternIdRegexToken(@"(?i)(password|pwd)")
+                            }
                         ),
                         Operator = new BinaryOperatorLiteral(BinaryOperator.Equal),
                         Right = new PatternOr
                         (
-                            new PatternNullLiteral(),
-                            new PatternStringRegexLiteral()
+                            new PatternStringRegexLiteral(),
+                            new PatternNullLiteral()
                         )
                     },
                     new PatternAssignmentExpression
                     {
                         Left = new PatternOr
                         (
+                            new PatternIdRegexToken(@"(?i)(password|pwd)"),
                             new PatternMemberReferenceExpression
                             {
                                 Target = new PatternAnyExpression(),
                                 Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
-                            },
-                            new PatternIdRegexToken(@"(?i)(password|pwd)")
+                            }
                         ),
                         Right = new PatternOr
                         (
-                            new PatternNullLiteral(),
-                            new PatternStringRegexLiteral()
+                            new PatternStringRegexLiteral(),
+                            new PatternNullLiteral()
                         )
                     }
                 )

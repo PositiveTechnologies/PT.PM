@@ -23,7 +23,20 @@ namespace PT.PM.Matching.Patterns
 
         public override Ust[] GetChildren() => new Ust[] { Value };
 
-        public override string ToString() => $"{Id}: {Value}";
+        public override string ToString()
+        {
+            string valueString = "";
+            if (Parent is AssignmentExpression parentAssignment &&
+                ReferenceEquals(this, parentAssignment.Left))
+            {
+                if (!(Value is PatternIdRegexToken patternIdRegexToken && patternIdRegexToken.Any))
+                {
+                    valueString = ": " + Value.ToString();
+                }
+            }
+
+            return Id + valueString;
+        }
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
@@ -32,7 +45,8 @@ namespace PT.PM.Matching.Patterns
             if (ust is IdToken idToken)
             {
                 newContext = context;
-                if (ust.Parent is AssignmentExpression)
+                if (ust.Parent is AssignmentExpression parentAssignment &&
+                    ReferenceEquals(ust, parentAssignment.Left))
                 {
                     if (Value != null)
                     {

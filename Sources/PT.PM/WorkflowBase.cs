@@ -6,8 +6,6 @@ using PT.PM.Common.Nodes;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
-using PT.PM.Patterns;
-using PT.PM.Patterns.PatternsRepository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

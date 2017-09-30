@@ -27,24 +27,8 @@ namespace PT.PM.Patterns.PatternsRepository
                     (
                         new PatternOr
                         (
-                            new PatternMemberReferenceExpression
-                            {
-                                Target = new PatternIdToken("document"),
-                                Name = new PatternIdRegexToken("^(URL|referrer|cookie)$")
-                            },
-
                             new PatternOr
                             (
-                                new PatternMemberReferenceExpression
-                                {
-                                    Target = new PatternMemberReferenceExpression
-                                    {
-                                        Target = new PatternIdToken("document"),
-                                        Name = new PatternIdToken("location")
-                                    },
-                                    Name = new PatternIdRegexToken("^(pathname|href|search|hash)$")
-                                },
-
                                 new PatternOr
                                 (
                                     new PatternMemberReferenceExpression
@@ -69,8 +53,24 @@ namespace PT.PM.Patterns.PatternsRepository
                                         },
                                         Name = new PatternIdRegexToken()
                                     }
-                                )
-                            )
+                                ),
+
+                                new PatternMemberReferenceExpression
+                                {
+                                    Target = new PatternMemberReferenceExpression
+                                    {
+                                        Target = new PatternIdToken("document"),
+                                        Name = new PatternIdToken("location")
+                                    },
+                                    Name = new PatternIdRegexToken("^(pathname|href|search|hash)$")
+                                }
+                            ),
+
+                            new PatternMemberReferenceExpression
+                            {
+                                Target = new PatternIdToken("document"),
+                                Name = new PatternIdRegexToken("^(URL|referrer|cookie)$")
+                            }
                         )
                     )
                 }

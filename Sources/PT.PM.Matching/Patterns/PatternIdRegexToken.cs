@@ -41,6 +41,8 @@ namespace PT.PM.Matching.Patterns
             IdRegex = regex;
         }
 
+        public bool Any => regex.ToString() == @"\w+";
+
         public override Ust[] GetChildren() => ArrayUtils<Expression>.EmptyArray;
 
         public override string ToString()
@@ -50,7 +52,7 @@ namespace PT.PM.Matching.Patterns
             {
                 regexString += "(?i)";
             }
-            return regexString;
+            return $"<[{regexString}]>";
         }
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

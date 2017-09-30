@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PT.PM.Common.Nodes;
+﻿using PT.PM.Common.Nodes;
 using PT.PM.Matching.Patterns;
-using PT.PM.Common;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Matching
 {
@@ -16,7 +15,7 @@ namespace PT.PM.Matching
 
             if (sublistToMatch.Count == 0 && list.Count == 0)
             {
-                return context.Change(true);
+                return context.MakeSuccess();
             }
 
             var matches = new List<Ust>(list.Count);
