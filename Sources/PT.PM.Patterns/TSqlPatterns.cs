@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using static PT.PM.Common.Language;
@@ -49,32 +50,6 @@ namespace PT.PM.Patterns.PatternsRepository
                         new PatternMultipleExpressions()
                     )
                 }
-            });
-
-            patterns.Add(new PatternRootUst
-            {
-                Key = patternIdGenerator.NextId(),
-                DebugInfo = "Unreleased Resource: Cursor Snarfing",
-                Languages = new HashSet<Language>() { TSql },
-                Node = new PatternStatements
-                (
-                    new PatternArbitraryDepthExpression
-                    {
-                        Expression = new PatternInvocationExpression
-                        {
-                            Target = new PatternIdRegexToken("(?i)^declare_cursor$"),
-                            Arguments = new PatternArgs(new PatternVar("cursor"), new PatternMultipleExpressions())
-                        }
-                    },
-                    new PatternArbitraryDepthExpression
-                    {
-                        Expression = new PatternNot(new PatternInvocationExpression
-                        {
-                            Target = new PatternIdRegexToken("(?i)^deallocate$"),
-                            Arguments = new PatternArgs(new PatternVar("cursor"))
-                        })
-                    }
-                )
             });
 
             return patterns;

@@ -1,8 +1,6 @@
 ﻿using Fclp;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
-using PT.PM.Matching.Patterns;
 using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
 using System;

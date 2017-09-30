@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,8 +17,6 @@ namespace PT.PM.Matching
         public bool IncludeNonterminalTextSpans { get; set; } = false;
 
         public List<TextSpan> Locations { get; } = new List<TextSpan>();
-
-        public List<MatchingResult> Results { get; } = new List<MatchingResult>();
 
         public Dictionary<string, IdToken> Vars { get; } = new Dictionary<string, IdToken>();
 

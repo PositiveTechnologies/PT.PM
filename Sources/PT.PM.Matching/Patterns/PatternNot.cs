@@ -1,25 +1,26 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
+using System;
 
 namespace PT.PM.Matching.Patterns
 {
     public class PatternNot : PatternBase
     {
-        public PatternBase Expression { get; set; }
+        public PatternBase Pattern { get; set; } = PatternAny.Instance;
 
         public PatternNot()
         {
         }
 
-        public PatternNot(PatternBase expression, TextSpan textSpan = default(TextSpan))
+        public PatternNot(PatternBase pattern, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Expression = expression;
+            Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
         }
 
-        public override Ust[] GetChildren() => new Ust[] { Expression };
+        public override Ust[] GetChildren() => new Ust[] { Pattern };
 
-        public override string ToString() => $"<~>{Expression}";
+        public override string ToString() => $"<~>{Pattern}";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
@@ -28,7 +29,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            MatchingContext newContext = Expression.Match(ust, context);
+            MatchingContext newContext = Pattern.Match(ust, context);
             if (newContext.Success)
             {
                 return newContext.Fail();

@@ -22,13 +22,13 @@ namespace PT.PM.Matching
 
         public RootUst Preprocess(RootUst ust)
         {
-            var result = (RootUst)Visit((dynamic)ust);
+            var result = (RootUst)Preprocess((Ust)ust);
             return result;
         }
 
         public Ust Preprocess(Ust ustNode)
         {
-            return Visit((dynamic)ustNode);
+            return Visit(ustNode);
         }
 
         public override Ust Visit(RootUst rootUstNode)
@@ -115,9 +115,9 @@ namespace PT.PM.Matching
         public override Ust Visit(BinaryOperatorExpression binaryOperatorExpression)
         {
             Expression result = null;
-            Expression leftExpression = Visit((dynamic)binaryOperatorExpression.Left);
-            BinaryOperatorLiteral op = Visit((dynamic)binaryOperatorExpression.Operator);
-            Expression rightExpression = Visit((dynamic)binaryOperatorExpression.Right);
+            Expression leftExpression = (Expression)Visit(binaryOperatorExpression.Left);
+            BinaryOperatorLiteral op = (BinaryOperatorLiteral)Visit(binaryOperatorExpression.Operator);
+            Expression rightExpression = (Expression)Visit(binaryOperatorExpression.Right);
 
             if (leftExpression is StringLiteral leftString &&
                 rightExpression is StringLiteral rightString)
@@ -275,12 +275,12 @@ namespace PT.PM.Matching
 
         public Ust Visit(PatternOr patternOr)
         {
-            if (patternOr.Alternatives.Count == 1)
+            if (patternOr.Patterns.Count == 1)
             {
-                return Visit(patternOr.Alternatives[0]);
+                return Visit(patternOr.Patterns[0]);
             }
 
-            IEnumerable<PatternBase> exprs = patternOr.Alternatives
+            IEnumerable<PatternBase> exprs = patternOr.Patterns
                 .Select(e => (PatternBase)Visit(e))
                 .OrderBy(e => e);
             return new PatternOr(exprs, patternOr.TextSpan);
@@ -301,7 +301,7 @@ namespace PT.PM.Matching
             return VisitChildren(patternAnyExpression);
         }
 
-        public Ust Visit(PatternArbitraryDepthExpression patternArbitraryDepthExpression)
+        public Ust Visit(PatternArbitraryDepth patternArbitraryDepthExpression)
         {
             return VisitChildren(patternArbitraryDepthExpression);
         }
@@ -377,12 +377,12 @@ namespace PT.PM.Matching
 
         public Ust Visit(PatternAnd patternAnd)
         {
-            if (patternAnd.Expressions.Count == 1)
+            if (patternAnd.Patterns.Count == 1)
             {
-                return Visit(patternAnd.Expressions[0]);
+                return Visit(patternAnd.Patterns[0]);
             }
 
-            IEnumerable<PatternBase> exprs = patternAnd.Expressions
+            IEnumerable<PatternBase> exprs = patternAnd.Patterns
                 .Select(e => (PatternBase)Visit(e))
                 .OrderBy(e => e);
             return new PatternAnd(exprs, patternAnd.TextSpan);
@@ -390,6 +390,11 @@ namespace PT.PM.Matching
 
         public Ust Visit(PatternNot patternNot)
         {
+            if (patternNot.Pattern is PatternNot innerPatternNot)
+            {
+                return Visit(innerPatternNot.Pattern);
+            }
+
             return VisitChildren(patternNot);
         }
 

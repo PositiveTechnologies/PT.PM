@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using static PT.PM.Common.Language;
@@ -23,7 +24,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new PatternAnyExpression(),
                         Name = new PatternIdRegexToken("^on")
                     },
-                    Right = new PatternArbitraryDepthExpression
+                    Right = new PatternArbitraryDepth
                     (
                         new PatternOr
                         (

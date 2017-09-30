@@ -33,10 +33,10 @@ namespace PT.PM.Matching
             MatchedCode = string.Join(" ", matchingResult.TextSpans
                 .Select(textSpan => code.Substring(textSpan.Start, textSpan.Length)));
 
-            TextSpan lastTextSpan = matchingResult.TextSpans.Last();
-            int beginLine, beginColumn, endLine, endColumn;
+            TextSpan lastTextSpan = matchingResult.TextSpans.Union();
             lastTextSpan.ToLineColumn(sourceCodeFile.Code,
-                out beginLine, out beginColumn, out endLine, out endColumn);
+                out int beginLine, out int beginColumn,
+                out int endLine, out int endColumn);
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;

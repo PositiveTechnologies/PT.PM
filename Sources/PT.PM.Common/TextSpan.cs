@@ -77,7 +77,7 @@ namespace PT.PM.Common
             int unionStart = Math.Min(Start, span.Start);
             int unionEnd = Math.Max(End, span.End);
 
-            return TextSpan.FromBounds(unionStart, unionEnd);
+            return FromBounds(unionStart, unionEnd);
         }
 
         public TextSpan AddOffset(int offset)

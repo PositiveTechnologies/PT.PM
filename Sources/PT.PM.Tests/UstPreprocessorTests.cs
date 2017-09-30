@@ -134,8 +134,8 @@ namespace PT.PM.Tests
             UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
 
             var actualPattern = (PatternOr)preprocessor.Preprocess(unsorted);
-            List<PatternBase> actualAlternatives = actualPattern.Alternatives;
-            List<PatternBase> expectedAlternatives = expectedSorted.Alternatives;
+            List<PatternBase> actualAlternatives = actualPattern.Patterns;
+            List<PatternBase> expectedAlternatives = expectedSorted.Patterns;
 
             Assert.AreEqual(expectedAlternatives.Count, actualAlternatives.Count);
             for (int i = 0; i < expectedAlternatives.Count; i++)

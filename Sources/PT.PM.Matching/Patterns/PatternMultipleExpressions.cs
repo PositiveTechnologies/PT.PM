@@ -10,6 +10,11 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
+        public PatternMultipleExpressions(TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
+        {
+        }
+
         public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
 
         public override string ToString() => "#*";

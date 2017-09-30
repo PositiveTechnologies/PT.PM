@@ -8,7 +8,7 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternAnd : PatternBase
     {
-        public List<PatternBase> Expressions { get; set; } = new List<PatternBase>();
+        public List<PatternBase> Patterns { get; set; } = new List<PatternBase>();
 
         public PatternAnd()
         {
@@ -17,24 +17,24 @@ namespace PT.PM.Matching.Patterns
         public PatternAnd(IEnumerable<PatternBase> expressions, TextSpan textSpan) :
             base(textSpan)
         {
-            Expressions = expressions?.ToList()
+            Patterns = expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
         public PatternAnd(params PatternBase[] expressions)
         {
-            Expressions = expressions.ToList();
+            Patterns = expressions.ToList();
         }
 
-        public override Ust[] GetChildren() => Expressions.ToArray();
+        public override Ust[] GetChildren() => Patterns.ToArray();
 
-        public override string ToString() => $"({(string.Join(" <&> ", Expressions))})";
+        public override string ToString() => $"({(string.Join(" <&> ", Patterns))})";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             MatchingContext newContext = context;
 
-            foreach (PatternBase expression in Expressions)
+            foreach (PatternBase expression in Patterns)
             {
                 newContext = expression.Match(ust, newContext);
                 if (!newContext.Success)

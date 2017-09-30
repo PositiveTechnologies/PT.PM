@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
-using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +15,13 @@ namespace PT.PM.Matching
 
         public bool IsIgnoreFilenameWildcards { get; set; }
 
+        public PatternMatcher()
+        {
+        }
+
         public PatternMatcher(IEnumerable<PatternRootUst> patterns)
         {
             Patterns = patterns;
-        }
-
-        public PatternMatcher()
-        {
         }
 
         public List<MatchingResult> Match(RootUst ust)

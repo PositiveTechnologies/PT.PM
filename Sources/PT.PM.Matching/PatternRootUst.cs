@@ -2,12 +2,13 @@
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace PT.PM.Matching.Patterns
+namespace PT.PM.Matching
 {
     public class PatternRootUst : RootUst, ILoggable
     {
@@ -84,55 +85,44 @@ namespace PT.PM.Matching.Patterns
         public List<MatchingResult> Match(Ust ust)
         {
             var context = new MatchingContext(this) { Logger = Logger };
-            context = Match(ust, context);
-            return context.Results;
-        }
-
-        public MatchingContext Match(Ust ust, MatchingContext context)
-        {
-            MatchingContext newContext;
+            var results = new List<MatchingResult>();
 
             if (ust is RootUst rootUst)
             {
                 var patternUst = (PatternBase)Node;
 
                 if (patternUst is PatternCommentRegex ||
-                   (patternUst is PatternOr && ((PatternOr)patternUst).Alternatives.Any(v => v is PatternCommentRegex)))
+                   (patternUst is PatternOr patternOr && patternOr.Patterns.Any(v => v is PatternCommentRegex)))
                 {
                     foreach (CommentLiteral commentNode in rootUst.Comments)
                     {
-                        MatchAndAddResult(patternUst, commentNode, context);
+                        MatchAndAddResult(patternUst, commentNode, context, results);
                     }
                 }
                 else
                 {
-                    TraverseChildren(patternUst, rootUst, context);
+                    TraverseChildren(patternUst, rootUst, context, results);
                 }
-
-                newContext = context;
-            }
-            else
-            {
-                newContext = context.Fail();
             }
 
-            return context;
+            return results;
         }
 
-        private static void TraverseChildren(PatternBase patternUst, Ust ust, MatchingContext context)
+        private static void TraverseChildren(PatternBase patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
         {
-            MatchAndAddResult(patternUst, ust, context);
+            MatchAndAddResult(patternUst, ust, context, results);
 
             if (ust != null)
             {
                 foreach (Ust child in ust.Children)
                 {
-                    TraverseChildren(patternUst, child, context);
+                    TraverseChildren(patternUst, child, context, results);
                 }
             }
         }
 
-        private static void MatchAndAddResult(PatternBase patternUst, Ust ust, MatchingContext context)
+        private static void MatchAndAddResult(
+            PatternBase patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
         {
             if (patternUst.Match(ust, context).Success)
             {
@@ -141,8 +131,8 @@ namespace PT.PM.Matching.Patterns
                     context.Locations.Add(ust.TextSpan);
                 }
                 var matching = new MatchingResult(ust.Root, context.PatternUst, context.Locations);
+                results.Add(matching);
                 context.Logger.LogInfo(matching);
-                context.Results.Add(matching);
             }
             context.Locations.Clear();
         }

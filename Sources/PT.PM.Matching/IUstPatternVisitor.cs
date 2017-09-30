@@ -13,7 +13,7 @@ namespace PT.PM.Matching
         T Visit(PatternBooleanLiteral patternBooleanLiteral);
         T Visit(PatternClassDeclaration patternClassDeclaration);
         T Visit(PatternCommentRegex patternCommentRegex);
-        T Visit(PatternArbitraryDepthExpression patternArbitraryDepthExpression);
+        T Visit(PatternArbitraryDepth patternArbitraryDepth);
         T Visit(PatternIdRegexToken patternIdRegexToken);
         T Visit(PatternIdToken patternIdToken);
         T Visit(PatternIndexerExpression patternIndexerExpression);

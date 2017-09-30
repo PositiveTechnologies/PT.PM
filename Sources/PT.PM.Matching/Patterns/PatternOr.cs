@@ -8,35 +8,35 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternOr : PatternBase
     {
-        public List<PatternBase> Alternatives { get; set; }
+        public List<PatternBase> Patterns { get; set; }
 
         public PatternOr()
         {
-            Alternatives = new List<PatternBase>();
+            Patterns = new List<PatternBase>();
         }
 
-        public PatternOr(IEnumerable<PatternBase> expressions, TextSpan textSpan = default(TextSpan))
+        public PatternOr(IEnumerable<PatternBase> patterns, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Alternatives = expressions?.ToList()
-                ?? throw new ArgumentNullException(nameof(expressions));
+            Patterns = patterns?.ToList()
+                ?? throw new ArgumentNullException(nameof(patterns));
         }
 
         public PatternOr(params PatternBase[] expressions)
         {
-            Alternatives = expressions?.ToList()
+            Patterns = expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
-        public override Ust[] GetChildren() => Alternatives.ToArray();
+        public override Ust[] GetChildren() => Patterns.ToArray();
 
-        public override string ToString() => $"({(string.Join(" <|> ", Alternatives))})";
+        public override string ToString() => $"({(string.Join(" <|> ", Patterns))})";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             var matchedTextSpans = new List<TextSpan>();
 
-            foreach (PatternBase alt in Alternatives)
+            foreach (PatternBase alt in Patterns)
             {
                 var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
                 MatchingContext match = alt.Match(ust, altContext);

@@ -5,6 +5,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
@@ -98,7 +99,7 @@ namespace PT.PM.Dsl
             }
             else
             {
-                result = new PatternArbitraryDepthExpression(result, context.GetTextSpan());
+                result = new PatternArbitraryDepth(result, context.GetTextSpan());
                 if (context.PatternNot() != null)
                 {
                     result = new PatternNot(result);
@@ -166,11 +167,11 @@ namespace PT.PM.Dsl
                 name = (PatternBase)VisitLiteralOrPatternId(context.name);
             }
 
-            PatternArbitraryDepthExpression body = null;
+            PatternArbitraryDepth body = null;
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                body = (PatternArbitraryDepthExpression)VisitArbitraryDepthExpression(arbitraryDepthExpression);
+                body = (PatternArbitraryDepth)VisitArbitraryDepthExpression(arbitraryDepthExpression);
             }
 
             return new PatternClassDeclaration(modifiers, name, baseTypes, body, context.GetTextSpan());
@@ -184,7 +185,7 @@ namespace PT.PM.Dsl
             var arbitraryDepthExpression = context.arbitraryDepthExpression();
             if (arbitraryDepthExpression != null)
             {
-                var body = (PatternArbitraryDepthExpression)VisitArbitraryDepthExpression(arbitraryDepthExpression);
+                var body = (PatternArbitraryDepth)VisitArbitraryDepthExpression(arbitraryDepthExpression);
                 result = new PatternMethodDeclaration(modifiers, name, body, context.GetTextSpan());
             }
             else if (context.Ellipsis() != null)
@@ -334,7 +335,7 @@ namespace PT.PM.Dsl
 
         public PatternBase VisitArbitraryDepthExpression([NotNull] DslParser.ArbitraryDepthExpressionContext context)
         {
-            return new PatternArbitraryDepthExpression(
+            return new PatternArbitraryDepth(
                 (PatternBase)VisitExpression(context.expression()), context.GetTextSpan());
         }
 

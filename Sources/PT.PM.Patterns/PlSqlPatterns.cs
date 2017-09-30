@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using static PT.PM.Common.Language;
@@ -110,7 +111,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { PlSql },
                 Node = new PatternStatements
                 (
-                    new PatternArbitraryDepthExpression
+                    new PatternArbitraryDepth
                     (
                         new PatternAssignmentExpression
                         {
@@ -127,7 +128,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         }
                     ),
 
-                    new PatternArbitraryDepthExpression
+                    new PatternArbitraryDepth
                     (
                         new PatternNot
                         (

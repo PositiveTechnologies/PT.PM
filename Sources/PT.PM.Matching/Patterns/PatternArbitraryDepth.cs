@@ -1,33 +1,32 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternArbitraryDepthExpression : PatternBase
+    public class PatternArbitraryDepth : PatternBase
     {
-        public PatternBase Expression { get; set; }
+        public PatternBase Pattern { get; set; }
 
-        public PatternArbitraryDepthExpression()
+        public PatternArbitraryDepth()
         {
         }
 
-        public PatternArbitraryDepthExpression(PatternBase expression, TextSpan textSpan = default(TextSpan))
+        public PatternArbitraryDepth(PatternBase pattern, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Expression = expression;
+            Pattern = pattern;
         }
 
-        public override Ust[] GetChildren() => new Ust[] { Expression };
+        public override Ust[] GetChildren() => new Ust[] { Pattern };
 
         public override string ToString()
         {
-            if (Expression == null)
+            if (Pattern == null)
             {
                 return "#*";
             }
 
-            return "<{ " + Expression.ToString() + " }>";
+            return "<{ " + Pattern.ToString() + " }>";
         }
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
@@ -43,7 +42,7 @@ namespace PT.PM.Matching.Patterns
 
         protected MatchingContext MatchExpression(Ust other, MatchingContext context)
         {
-            if (Expression == null)
+            if (Pattern == null)
             {
                 if (other == null)
                 {
@@ -51,7 +50,7 @@ namespace PT.PM.Matching.Patterns
                 }
                 return context.Fail();
             }
-            return Expression.Match(other, context);
+            return Pattern.Match(other, context);
         }
     }
 }

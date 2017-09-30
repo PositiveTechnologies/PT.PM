@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace PT.PM.Common
 {
@@ -133,6 +136,26 @@ namespace PT.PM.Common
         public static string NormDirSeparator(this string path)
         {
             return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+        }
+
+        public static TextSpan Union(this IEnumerable<TextSpan> textSpans)
+        {
+            if (textSpans.Count() == 0)
+            {
+                return TextSpan.Empty;
+            }
+
+            var resultTextSpan = textSpans.First();
+            if (textSpans.Count() == 1)
+            {
+                return resultTextSpan;
+            }
+
+            foreach (TextSpan textSpan in textSpans.Skip(1))
+            {
+                resultTextSpan = resultTextSpan.Union(textSpan);
+            }
+            return resultTextSpan;
         }
     }
 }

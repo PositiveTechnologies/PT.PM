@@ -14,7 +14,7 @@ namespace PT.PM.Matching.Patterns
 
         public List<PatternBase> BaseTypes { get; set; }
 
-        public PatternArbitraryDepthExpression Body { get; set; }
+        public PatternArbitraryDepth Body { get; set; }
 
         public PatternClassDeclaration()
         {
@@ -24,7 +24,7 @@ namespace PT.PM.Matching.Patterns
 
         public PatternClassDeclaration(IEnumerable<PatternBase> modifiers,
             PatternBase name, IEnumerable<PatternBase> baseTypes,
-            PatternArbitraryDepthExpression body, TextSpan textSpan = default(TextSpan))
+            PatternArbitraryDepth body, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Modifiers = modifiers?.ToList() ?? new List<PatternBase>();

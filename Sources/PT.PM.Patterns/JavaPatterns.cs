@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 using System.Linq;
@@ -386,9 +387,9 @@ namespace PT.PM.Patterns.PatternsRepository
                 (
                     new PatternClassDeclaration
                     {
-                        Body = new PatternArbitraryDepthExpression
+                        Body = new PatternArbitraryDepth
                         {
-                            Expression = new PatternMethodDeclaration
+                            Pattern = new PatternMethodDeclaration
                             {
                                 Name = new PatternIdToken("clone"),
                                 AnyBody = true
@@ -445,9 +446,9 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         new PatternIdRegexToken("X509TrustManager|SSLSocketFactory")
                     },
-                    Body = new PatternArbitraryDepthExpression
+                    Body = new PatternArbitraryDepth
                     {
-                        Expression = new PatternMethodDeclaration(
+                        Pattern = new PatternMethodDeclaration(
                             Enumerable.Empty<PatternBase>().ToList(), new PatternIdRegexToken(".+"), false)
                     }
                 }
