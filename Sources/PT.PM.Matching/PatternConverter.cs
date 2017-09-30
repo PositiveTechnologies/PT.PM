@@ -28,7 +28,7 @@ namespace PT.PM.Matching
             }
         }
 
-        public Dictionary<UstFormat, IUstSerializer> UstNodeSerializers { get; set; }
+        public Dictionary<UstSerializeFormat, IUstSerializer> UstNodeSerializers { get; set; }
 
         public PatternConverter(IUstSerializer serializer)
             : this(new[] { serializer })
@@ -37,7 +37,7 @@ namespace PT.PM.Matching
 
         public PatternConverter(IEnumerable<IUstSerializer> serializers)
         {
-            UstNodeSerializers = new Dictionary<UstFormat, IUstSerializer>();
+            UstNodeSerializers = new Dictionary<UstSerializeFormat, IUstSerializer>();
             foreach (var serializer in serializers)
             {
                 UstNodeSerializers[serializer.DataFormat] = serializer;

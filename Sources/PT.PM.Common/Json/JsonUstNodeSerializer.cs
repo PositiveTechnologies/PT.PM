@@ -14,7 +14,7 @@ namespace PT.PM.Common
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public UstFormat DataFormat => UstFormat.Json;
+        public UstSerializeFormat DataFormat => UstSerializeFormat.Json;
 
         public bool Indented { get; set; } = false;
 

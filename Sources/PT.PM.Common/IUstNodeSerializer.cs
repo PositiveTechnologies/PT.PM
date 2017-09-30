@@ -5,8 +5,8 @@ namespace PT.PM.Common
     public interface IUstSerializer
     {
         ILogger Logger { get; set; }
-        UstFormat DataFormat { get; }
+        UstSerializeFormat DataFormat { get; }
         Ust Deserialize(string data);
-        string Serialize(Nodes.Ust node);
+        string Serialize(Ust node);
     }
 }

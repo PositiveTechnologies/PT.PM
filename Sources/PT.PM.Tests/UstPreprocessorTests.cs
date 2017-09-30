@@ -63,7 +63,7 @@ namespace PT.PM.Tests
         [Test]
         public void Preprocess_MultiMultiPattern_RemovedDuplicates()
         {
-            Ust patternWithDuplicateMultiStatementsExpressions = new PatternStatements
+            var input = new PatternStatements
             {
                 Statements = new List<PatternBase>()
                 {
@@ -93,8 +93,8 @@ namespace PT.PM.Tests
             };
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
-            UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
-            Ust result = preprocessor.Preprocess(patternWithDuplicateMultiStatementsExpressions);
+            var normalizer = new PatternNormalizer() { Logger = logger };
+            Ust result = normalizer.Visit(input);
 
             Assert.AreEqual(1, result.GetAllDescendants().Count(child => child is PatternMultipleExpressions));
         }
@@ -131,9 +131,9 @@ namespace PT.PM.Tests
 
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
-            UstSimplifier preprocessor = new UstSimplifier() { Logger = logger };
+            var normalizer = new PatternNormalizer() { Logger = logger };
 
-            var actualPattern = (PatternOr)preprocessor.Preprocess(unsorted);
+            var actualPattern = (PatternOr)normalizer.Visit(unsorted);
             List<PatternBase> actualAlternatives = actualPattern.Patterns;
             List<PatternBase> expectedAlternatives = expectedSorted.Patterns;
 

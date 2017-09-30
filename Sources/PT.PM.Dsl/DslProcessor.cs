@@ -2,7 +2,6 @@
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Matching;
-using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 
@@ -46,7 +45,7 @@ namespace PT.PM.Dsl
         }
 
 
-        public UstFormat DataFormat => UstFormat.Dsl;
+        public UstSerializeFormat DataFormat => UstSerializeFormat.Dsl;
 
         public DslProcessor()
         {
@@ -69,9 +68,9 @@ namespace PT.PM.Dsl
             PatternRootUst patternNode = UstConverter.Convert(patternContext);
             patternNode.Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
 
-            var preprocessor = new UstSimplifier();
+            var preprocessor = new PatternNormalizer();
             preprocessor.Logger = Logger;
-            patternNode = (PatternRootUst)preprocessor.Visit(patternNode);
+            patternNode = preprocessor.Normalize(patternNode);
 
             return patternNode;
         }

@@ -47,6 +47,7 @@
     <Compile Include="MatchingResult.cs" />
     <Compile Include="MatchingResultBase.cs" />
     <Compile Include="MatchingContext.cs" />
+    <Compile Include="PatternNormalizer.cs" />
     <Compile Include="PatternsRepository\MemoryPatternsRepository.cs" />
     <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
     <Compile Include="PatternsRepository\IPatternsRepository.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Patterns\PatternAnd.cs" />
     <Compile Include="Patterns\PatternAnyExpression.cs" />
     <Compile Include="Patterns\PatternBinaryOperatorExpression.cs" />
+    <Compile Include="Patterns\PatternBinaryOperatorLiteral.cs" />
     <Compile Include="Patterns\PatternBooleanLiteral.cs" />
     <Compile Include="Patterns\PatternClassDeclaration.cs" />
     <Compile Include="Patterns\PatternCommentRegex.cs" />
@@ -95,7 +97,6 @@
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
     <Compile Include="UstNodeCloner.cs" />
-    <Compile Include="UstSimplifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">

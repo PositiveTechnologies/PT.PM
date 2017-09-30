@@ -1,6 +1,4 @@
-﻿using System;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Collections;
+﻿using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Specific;
@@ -22,42 +20,6 @@ namespace PT.PM.Common.Nodes
                 return default(T);
             }
             return Visit((dynamic)ustNode);
-        }
-
-        public virtual T Visit(EntityDeclaration entityDeclaration)
-        {
-            if (entityDeclaration == null)
-            {
-                return default(T);
-            }
-            return Visit((dynamic)entityDeclaration);
-        }
-
-        public virtual T Visit(Statement statement)
-        {
-            if (statement == null)
-            {
-                return default(T);
-            }
-            return Visit((dynamic)statement);
-        }
-
-        public virtual T Visit(Expression expression)
-        {
-            if (expression == null)
-            {
-                return default(T);
-            }
-            return Visit((dynamic)expression);
-        }
-
-        public virtual T Visit(Token literal)
-        {
-            if (literal == null)
-            {
-                return default(T);
-            }
-            return Visit((dynamic)literal);
         }
 
         public virtual T Visit(ArgsUst argsNode)

@@ -1,14 +1,13 @@
-﻿using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Collections;
+﻿using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Specific;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
-using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.TypeMembers;
 
 namespace PT.PM.Common.Nodes
 {
@@ -16,11 +15,7 @@ namespace PT.PM.Common.Nodes
     {
         #region Abstract
 
-        T Visit(Nodes.Ust ustNode);
-        T Visit(EntityDeclaration entityDeclaration);
-        T Visit(Statement statement);
-        T Visit(Expression expression);
-        T Visit(Token literal);
+        T Visit(Ust ust);
 
         #endregion
 

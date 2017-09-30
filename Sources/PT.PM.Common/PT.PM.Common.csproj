@@ -47,8 +47,9 @@
     <Compile Include="Exceptions\ReadException.cs" />
     <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Nodes\IUstVisitor.cs" />
+    <Compile Include="Reflection\PropertyEnumerator.cs" />
     <Compile Include="TextTruncater.cs" />
-    <Compile Include="UstNodeRefComparer.cs" />
+    <Compile Include="UstRefComparer.cs" />
     <Compile Include="Nodes\UstVisitor.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
@@ -62,7 +63,7 @@
     <Compile Include="DotFormatUtils.cs" />
     <Compile Include="Exceptions\PreprocessingException.cs" />
     <Compile Include="Json\UstJsonConverter.cs" />
-    <Compile Include="UstNodeSerializationFormat.cs" />
+    <Compile Include="UstSerializeFormat.cs" />
     <Compile Include="CodeRepository\FileCodeRepository.cs" />
     <Compile Include="CodeRepository\FilesAggregatorCodeRepository.cs" />
     <Compile Include="Exceptions\ConversionException.cs" />
@@ -143,7 +144,7 @@
     <Compile Include="Nodes\TypeMembers\StatementDeclaration.cs" />
     <Compile Include="Nodes\TypeMembers\ParameterDeclaration.cs" />
     <Compile Include="Exceptions\ParsingException.cs" />
-    <Compile Include="ReflectionCache.cs" />
+    <Compile Include="Reflection\ReflectionCache.cs" />
     <Compile Include="TextSpan.cs" />
     <Compile Include="Nodes\Tokens\Token.cs" />
     <Compile Include="Nodes\Tokens\BinaryOperator.cs" />

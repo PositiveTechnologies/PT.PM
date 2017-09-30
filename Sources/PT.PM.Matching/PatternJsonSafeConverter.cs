@@ -44,7 +44,7 @@ namespace PT.PM.Matching
                 Description = (string)jObject[nameof(PatternDto.Description)] ?? "",
             };
             var dataFormatString = (string)jObject[nameof(PatternDto.DataFormat)];
-            UstFormat format;
+            UstSerializeFormat format;
             if (dataFormatString != null && Enum.TryParse(dataFormatString, out format))
             {
                 result.DataFormat = format;

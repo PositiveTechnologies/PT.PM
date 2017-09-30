@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -9,7 +8,7 @@ namespace PT.PM.Matching.Patterns
     {
         public PatternBase Left { get; set; }
 
-        public BinaryOperatorLiteral Operator { get; set; }
+        public PatternBinaryOperatorLiteral Operator { get; set; }
 
         public PatternBase Right { get; set; }
 
@@ -17,7 +16,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternBinaryOperatorExpression(PatternBase left, BinaryOperatorLiteral op, PatternBase right,
+        public PatternBinaryOperatorExpression(PatternBase left, PatternBinaryOperatorLiteral op, PatternBase right,
             TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
@@ -42,9 +41,10 @@ namespace PT.PM.Matching.Patterns
                     return newContext;
                 }
 
-                if (!Operator.Equals(binaryOperatorExpression.Operator))
+                newContext = Operator.Match(binaryOperatorExpression.Operator, newContext);
+                if (!newContext.Success)
                 {
-                    return newContext.Fail();
+                    return newContext;
                 }
 
                 newContext = Right.Match(binaryOperatorExpression.Right, newContext);

@@ -1,6 +1,6 @@
 ﻿namespace PT.PM.Common
 {
-    public enum UstFormat
+    public enum UstSerializeFormat
     {
         Binary,
         Json,

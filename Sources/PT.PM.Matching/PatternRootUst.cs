@@ -38,7 +38,7 @@ namespace PT.PM.Matching
             }
         }
 
-        public UstFormat DataFormat { get; set; } = UstFormat.Json;
+        public UstSerializeFormat DataFormat { get; set; } = UstSerializeFormat.Json;
 
         [JsonIgnore]
         public string DebugInfo { get; set; } = "";

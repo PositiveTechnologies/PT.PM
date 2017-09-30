@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace PT.PM.Common
+namespace PT.PM.Common.Reflection
 {
     public static class ReflectionCache
     {

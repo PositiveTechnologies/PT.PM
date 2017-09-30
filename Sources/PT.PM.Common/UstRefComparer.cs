@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace PT.PM.Common
 {
-    public class UstNodeRefComparer : IEqualityComparer<Nodes.Ust>
+    public class UstRefComparer : IEqualityComparer<Ust>
     {
-        public static UstNodeRefComparer Instance = new UstNodeRefComparer();
+        public static UstRefComparer Instance = new UstRefComparer();
 
         public bool Equals(Nodes.Ust x, Nodes.Ust y)
         {

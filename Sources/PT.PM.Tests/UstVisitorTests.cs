@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
 using PT.PM.TestUtils;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,13 @@ namespace PT.PM.Tests
         [Test]
         public void Check_IUstVisitor_AllVisitMethodsExists()
         {
-            CheckVisitorMethods(typeof(IUstVisitor<>));
+            CheckVisitorMethods(typeof(IUstVisitor<>), typeof(Ust));
         }
 
         [Test]
         public void Check_IUstPatternVisitor_AllVisitMethodsExists()
         {
-            CheckVisitorMethods(typeof(IUstPatternVisitor<>));
+            CheckVisitorMethods(typeof(IUstPatternVisitor<>), typeof(PatternBase));
         }
 
         [Test]
@@ -40,16 +41,10 @@ namespace PT.PM.Tests
             }
         }
 
-        private static IEnumerable<Type> GetAssemblyUstNodeTypes(params Type[] types)
-        {
-            return types.SelectMany(type => Assembly.GetAssembly(type).GetTypes())
-                .Where(t => t.IsSubclassOf(typeof(Ust)) && !t.IsAbstract);
-        }
-
-        private static void CheckVisitorMethods(Type visitorType)
+        private static void CheckVisitorMethods(Type visitorType, Type baseClass)
         {
             MethodInfo[] iUstVisitorMethods = visitorType.GetMethods();
-            IEnumerable<Type> allUstNodeTypes = GetAssemblyUstNodeTypes(visitorType);
+            IEnumerable<Type> allUstNodeTypes = GetAssemblyUstNodeTypes(visitorType, baseClass);
             foreach (Type type in allUstNodeTypes)
             {
                 Assert.IsTrue(iUstVisitorMethods
@@ -60,6 +55,13 @@ namespace PT.PM.Tests
                     }) != null,
                     $"Visitor for Type {type} is not exists");
             }
+        }
+
+        private static IEnumerable<Type> GetAssemblyUstNodeTypes(Type visitorType, Type baseClass)
+        {
+            return Assembly.GetAssembly(visitorType)
+                .GetTypes()
+                .Where(t => t.IsSubclassOf(baseClass) && !t.IsAbstract);
         }
     }
 }

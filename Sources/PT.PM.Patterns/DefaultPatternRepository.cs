@@ -67,7 +67,7 @@ namespace PT.PM.Patterns.PatternsRepository
                                 Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
                             }
                         ),
-                        Operator = new BinaryOperatorLiteral(BinaryOperator.Equal),
+                        Operator = new PatternBinaryOperatorLiteral(BinaryOperator.Equal),
                         Right = new PatternOr
                         (
                             new PatternStringRegexLiteral(),
@@ -144,13 +144,13 @@ namespace PT.PM.Patterns.PatternsRepository
                     new PatternBinaryOperatorExpression
                     {
                         Left = new PatternAnyExpression(),
-                        Operator = new BinaryOperatorLiteral(BinaryOperator.Equal),
+                        Operator = new PatternBinaryOperatorLiteral(BinaryOperator.Equal),
                         Right = new PatternNullLiteral()
                     },
                     new PatternBinaryOperatorExpression
                     {
                         Left = new PatternAnyExpression(),
-                        Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual),
+                        Operator = new PatternBinaryOperatorLiteral(BinaryOperator.NotEqual),
                         Right = new PatternNullLiteral()
                     }
                 )

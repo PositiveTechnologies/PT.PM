@@ -4,12 +4,15 @@ namespace PT.PM.Matching
 {
     public interface IUstPatternVisitor<out T>
     {
+        T Visit(PatternBase patternBase);
         T Visit(PatternAnd patternAnd);
+        T Visit(PatternAny patternAny);
         T Visit(PatternAnyExpression patternAnyExpression);
         T Visit(PatternArgs patternArgs);
         T Visit(PatternAssignmentExpression patternAssignmentExpression);
         T Visit(PatternBaseReferenceExpression patternBaseReferenceExpression);
         T Visit(PatternBinaryOperatorExpression patternBinaryOperatorExpression);
+        T Visit(PatternBinaryOperatorLiteral patternBinaryOperatorLiteral);
         T Visit(PatternBooleanLiteral patternBooleanLiteral);
         T Visit(PatternClassDeclaration patternClassDeclaration);
         T Visit(PatternCommentRegex patternCommentRegex);
@@ -28,7 +31,6 @@ namespace PT.PM.Matching
         T Visit(PatternObjectCreateExpression patternObjectCreateExpression);
         T Visit(PatternOr patternOr);
         T Visit(PatternParameterDeclaration patternParameterDeclaration);
-        T Visit(PatternRootUst patternRootUst);
         T Visit(PatternStatements patternStatements);
         T Visit(PatternStringLiteral patternStringLiteral);
         T Visit(PatternStringRegexLiteral patternStringRegexLiteral);

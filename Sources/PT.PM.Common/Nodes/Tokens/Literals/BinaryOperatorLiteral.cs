@@ -44,6 +44,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             "<<=",
             ">>=",
         };
+
         public override string TextValue => BinaryOperator.ToString();
 
         public BinaryOperator BinaryOperator { get; set; }
