@@ -6,8 +6,6 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternBaseReferenceExpression : PatternBase
     {
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public PatternBaseReferenceExpression()
         {
         }

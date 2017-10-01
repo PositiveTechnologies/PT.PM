@@ -10,8 +10,6 @@ namespace PT.PM.Matching.Patterns
 
         public PatternArgs Arguments { get; set; }
 
-        public override Ust[] GetChildren() => new Ust[] { Target, Arguments };
-
         public PatternInvocationExpression()
         {
         }

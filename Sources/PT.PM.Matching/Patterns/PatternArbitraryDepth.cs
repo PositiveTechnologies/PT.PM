@@ -17,8 +17,6 @@ namespace PT.PM.Matching.Patterns
             Pattern = pattern;
         }
 
-        public override Ust[] GetChildren() => new Ust[] { Pattern };
-
         public override string ToString()
         {
             if (Pattern == null)

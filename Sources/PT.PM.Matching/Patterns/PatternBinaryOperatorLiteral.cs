@@ -31,8 +31,6 @@ namespace PT.PM.Matching.Patterns
             BinaryOperator = op;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override string ToString() =>
             BinaryOperatorLiteral.TextBinaryOperator.FirstOrDefault(pair => pair.Value == BinaryOperator).Key;
 

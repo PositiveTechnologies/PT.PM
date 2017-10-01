@@ -21,12 +21,10 @@ namespace PT.PM.Matching.Patterns
 
         public PatternBase Value { get; set; } = new PatternIdRegexToken();
 
-        public override Ust[] GetChildren() => new Ust[] { Value };
-
         public override string ToString()
         {
             string valueString = "";
-            if (Parent is AssignmentExpression parentAssignment &&
+            if (Parent is PatternAssignmentExpression parentAssignment &&
                 ReferenceEquals(this, parentAssignment.Left))
             {
                 if (!(Value is PatternIdRegexToken patternIdRegexToken && patternIdRegexToken.Any))

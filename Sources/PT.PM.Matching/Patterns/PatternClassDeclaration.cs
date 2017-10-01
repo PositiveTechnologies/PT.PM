@@ -33,16 +33,6 @@ namespace PT.PM.Matching.Patterns
             Body = body;
         }
 
-        public override Ust[] GetChildren()
-        {
-            var result = new List<Ust>();
-            result.AddRange(Modifiers);
-            result.Add(Name);
-            result.AddRange(BaseTypes);
-            result.Add(Body);
-            return result.ToArray();
-        }
-
         public override string ToString()
         {
             var result = $"{string.Join(", ", Modifiers)} class {Name} ";

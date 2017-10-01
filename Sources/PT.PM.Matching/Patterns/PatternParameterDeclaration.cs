@@ -24,12 +24,6 @@ namespace PT.PM.Matching.Patterns
             Name = name;
         }
 
-        public override Ust[] GetChildren()
-        {
-            var result = new List<Ust> { Name };
-            return result.ToArray();
-        }
-
         public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

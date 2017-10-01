@@ -43,8 +43,6 @@ namespace PT.PM.Matching.Patterns
 
         public bool Any => regex.ToString() == @"\w+";
 
-        public override Ust[] GetChildren() => ArrayUtils<Expression>.EmptyArray;
-
         public override string ToString()
         {
             var regexString = regex.ToString();

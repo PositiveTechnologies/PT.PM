@@ -22,8 +22,6 @@ namespace PT.PM.Matching.Patterns
             Name = name;
         }
 
-        public override Ust[] GetChildren() => new Ust[] { Target, Name };
-
         public override string ToString() => $"{Target}.{Name}";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

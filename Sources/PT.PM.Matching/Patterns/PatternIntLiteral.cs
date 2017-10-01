@@ -19,8 +19,6 @@ namespace PT.PM.Matching.Patterns
             Value = value;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Expression>.EmptyArray;
-
         public override string ToString() => Value.ToString();
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

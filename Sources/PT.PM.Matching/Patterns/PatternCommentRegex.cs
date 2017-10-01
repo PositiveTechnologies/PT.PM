@@ -26,8 +26,6 @@ namespace PT.PM.Matching.Patterns
             CommentRegex = commentRegex;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override string ToString() => $"</*{CommentRegex}*/>";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

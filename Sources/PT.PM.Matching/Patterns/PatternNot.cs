@@ -18,8 +18,6 @@ namespace PT.PM.Matching.Patterns
             Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
         }
 
-        public override Ust[] GetChildren() => new Ust[] { Pattern };
-
         public override string ToString() => $"<~>{Pattern}";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

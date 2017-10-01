@@ -21,8 +21,6 @@ namespace PT.PM.Matching.Patterns
             Value = value.Value;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override string ToString()
         {
             if (Any)

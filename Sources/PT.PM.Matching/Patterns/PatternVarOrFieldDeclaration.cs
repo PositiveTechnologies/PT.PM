@@ -17,6 +17,10 @@ namespace PT.PM.Matching.Patterns
 
         public PatternAssignmentExpression Assignment { get; set; }
 
+        public PatternVarOrFieldDeclaration()
+        {
+        }
+
         public PatternVarOrFieldDeclaration(bool localVariable, IEnumerable<PatternBase> modifiers,
             PatternBase type, PatternAssignmentExpression assignment, TextSpan textSpan)
             : base(textSpan)
@@ -25,19 +29,6 @@ namespace PT.PM.Matching.Patterns
             Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
             Type = type;
             Assignment = assignment;
-        }
-
-        public PatternVarOrFieldDeclaration()
-        {
-        }
-
-        public override Ust[] GetChildren()
-        {
-            var result = new List<Ust>();
-            result.AddRange(Modifiers);
-            result.Add(Type);
-            result.Add(Assignment);
-            return result.ToArray();
         }
 
         public override string ToString() => $"{string.Join(", ", Modifiers)} {Type} {Assignment}";

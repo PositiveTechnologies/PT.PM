@@ -25,8 +25,6 @@ namespace PT.PM.Matching.Patterns
             Args = args.ToList();
         }
 
-        public override Ust[] GetChildren() => Args.ToArray();
-
         public override string ToString() => string.Join(", ", Args);
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

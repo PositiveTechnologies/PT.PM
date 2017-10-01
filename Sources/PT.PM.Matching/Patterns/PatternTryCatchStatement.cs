@@ -29,8 +29,6 @@ namespace PT.PM.Matching.Patterns
             IsCatchBodyEmpty = isCatchBodyEmpty;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override string ToString() => $"try catch {{ }}";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

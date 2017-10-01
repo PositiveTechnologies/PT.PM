@@ -46,15 +46,6 @@ namespace PT.PM.Matching.Patterns
             Modifiers = new List<PatternBase>();
         }
 
-        public override Ust[] GetChildren()
-        {
-            var result = new List<Ust>();
-            result.AddRange(Modifiers);
-            result.Add(Name);
-            result.Add(Body);
-            return result.ToArray();
-        }
-
         public override string ToString()
         {
             var result = $"{string.Join(", ", Modifiers)} {Name}() ";

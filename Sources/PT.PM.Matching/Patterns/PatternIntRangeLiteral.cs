@@ -1,6 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
@@ -27,8 +26,6 @@ namespace PT.PM.Matching.Patterns
             MinValue = minValue;
             MaxValue = maxValue;
         }
-
-        public override Ust[] GetChildren() => ArrayUtils<Expression>.EmptyArray;
 
         public override string ToString()
         {

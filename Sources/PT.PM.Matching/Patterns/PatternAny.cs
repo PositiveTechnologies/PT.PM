@@ -7,8 +7,6 @@ namespace PT.PM.Matching.Patterns
     {
         public static PatternAny Instance = new PatternAny();
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             if (ust == null)

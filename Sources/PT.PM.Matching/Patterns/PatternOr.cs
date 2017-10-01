@@ -28,8 +28,6 @@ namespace PT.PM.Matching.Patterns
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
-        public override Ust[] GetChildren() => Patterns.ToArray();
-
         public override string ToString() => $"({(string.Join(" <|> ", Patterns))})";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

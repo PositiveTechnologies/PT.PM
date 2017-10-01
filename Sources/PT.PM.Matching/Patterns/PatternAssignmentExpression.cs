@@ -22,8 +22,6 @@ namespace PT.PM.Matching.Patterns
             Right = right;
         }
 
-        public override Ust[] GetChildren() => new Ust[] { Left, Right };
-
         public override string ToString()
         {
             return Right == null ? Left.ToString() : $"{Left} = {Right}";

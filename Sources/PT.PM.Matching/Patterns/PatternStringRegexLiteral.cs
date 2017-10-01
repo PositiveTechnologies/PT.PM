@@ -26,8 +26,6 @@ namespace PT.PM.Matching.Patterns
             StringRegex = regex;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override string ToString() => $@"<""{StringRegex}"">";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

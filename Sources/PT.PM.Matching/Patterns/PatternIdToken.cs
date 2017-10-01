@@ -33,8 +33,6 @@ namespace PT.PM.Matching.Patterns
             TextSpan = textSpan;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override string ToString() => Id;
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

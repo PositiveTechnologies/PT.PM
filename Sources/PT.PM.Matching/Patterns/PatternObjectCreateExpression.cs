@@ -22,14 +22,6 @@ namespace PT.PM.Matching.Patterns
             Arguments = args;
         }
 
-        public override Ust[] GetChildren()
-        {
-            var result = new List<Ust>();
-            result.Add(Type);
-            result.Add(Arguments);
-            return result.ToArray();
-        }
-
         public override string ToString() => $"new {Type}({Arguments})";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

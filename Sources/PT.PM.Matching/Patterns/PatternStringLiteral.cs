@@ -18,8 +18,6 @@ namespace PT.PM.Matching.Patterns
             String = @string;
         }
 
-        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
-
         public override string ToString() => '"' + String + '"';
 
         public override MatchingContext Match(Ust ust, MatchingContext context)

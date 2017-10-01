@@ -25,8 +25,6 @@ namespace PT.PM.Matching.Patterns
             Right = right;
         }
 
-        public override Ust[] GetChildren() => new Ust[] { Left, Operator, Right };
-
         public override string ToString() => $"{Left} {Operator} {Right}";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
