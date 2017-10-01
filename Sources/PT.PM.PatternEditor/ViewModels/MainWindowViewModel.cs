@@ -29,7 +29,7 @@ namespace PT.PM.PatternEditor
         {
             IncludeTextSpans = false,
             Indented = true,
-            ExcludeNulls = true
+            ExcludeDefaults = true
         };
 
         private Window window;

@@ -14,8 +14,6 @@ namespace PT.PM.Common.Json
 
         public bool Indented { get; set; } = false;
 
-        public bool ExcludeNulls { get; set; } = true;
-
         public bool ExcludeDefaults { get; set; } = true;
 
         protected abstract JsonConverterBase CreateConverterBase();
@@ -41,20 +39,17 @@ namespace PT.PM.Common.Json
 
         private JsonSerializerSettings PrepareSettings()
         {
-            JsonConverterBase baseJsonConverter = CreateConverterBase();
-            baseJsonConverter.IncludeTextSpans = IncludeTextSpans;
+            JsonConverterBase jsonConverterBase = CreateConverterBase();
+            jsonConverterBase.IncludeTextSpans = IncludeTextSpans;
+            jsonConverterBase.ExcludeDefaults = ExcludeDefaults;
             var jsonSettings = new JsonSerializerSettings
             {
-                Converters = new List<JsonConverter>() { stringEnumConverter, baseJsonConverter }
+                Converters = new List<JsonConverter>
+                {
+                    stringEnumConverter,
+                    jsonConverterBase
+                }
             };
-            if (ExcludeNulls)
-            {
-                jsonSettings.NullValueHandling = NullValueHandling.Ignore;
-            }
-            if (ExcludeDefaults)
-            {
-                jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-            }
             return jsonSettings;
         }
     }

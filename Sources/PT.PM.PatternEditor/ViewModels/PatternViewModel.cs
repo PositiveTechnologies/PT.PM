@@ -4,9 +4,10 @@ using Avalonia.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PT.PM.Common;
-using PT.PM.Common.Nodes;
+using PT.PM.Common.Json;
 using PT.PM.Dsl;
 using PT.PM.Matching;
+using PT.PM.Matching.Json;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,17 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        private JsonUstSerializer ustNodeJsonSerializer = new JsonUstSerializer
+        private JsonUstSerializer jsonUstSerializer = new JsonUstSerializer
         {
             IncludeTextSpans = false,
+            ExcludeDefaults = true,
+            Indented = true
+        };
+        private JsonPatternSerializer jsonPatternSerializer = new JsonPatternSerializer
+        {
+            IncludeTextSpans = false,
+            ExcludeDefaults = true,
             Indented = true,
-            ExcludeNulls = true
         };
         private static JsonConverter[] jsonConverters = new JsonConverter[] { new StringEnumConverter() };
 
@@ -444,7 +451,7 @@ namespace PT.PM.PatternEditor
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
 
-                Ust patternNode = null;
+                PatternRoot patternNode = null;
                 try
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
@@ -462,7 +469,7 @@ namespace PT.PM.PatternEditor
                     PatternErrorsText = "";
                     if (IsDeveloperMode && patternNode != null)
                     {
-                        PatternJson = ustNodeJsonSerializer.Serialize(patternNode);
+                        PatternJson = jsonPatternSerializer.Serialize(patternNode);
                         File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Pattern UST.json"), PatternJson);
                     }
                 }
