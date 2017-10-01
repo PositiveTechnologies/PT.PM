@@ -11,6 +11,7 @@ namespace PT.PM.Matching.Patterns
         public BinaryOperator BinaryOperator { get; set; }
 
         public PatternBinaryOperatorLiteral()
+            : this(BinaryOperator.Equal)
         {
         }
 

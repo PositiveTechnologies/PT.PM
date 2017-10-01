@@ -1,6 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,6 @@ namespace PT.PM.Matching.Patterns
         public PatternTryCatchStatement()
         {
             ExceptionTypes = new List<PatternBase>();
-            IsCatchBodyEmpty = true;
         }
 
         public PatternTryCatchStatement(IEnumerable<PatternBase> exceptionTypes, bool isCatchBodyEmpty,
@@ -62,7 +60,7 @@ namespace PT.PM.Matching.Patterns
                 newContext = context.Fail();
             }
 
-            return newContext.AddMatchIfSuccess(ust);
+            return newContext.AddUstIfSuccess(ust);
         }
     }
 }

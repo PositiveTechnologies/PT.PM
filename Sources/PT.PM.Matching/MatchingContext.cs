@@ -44,7 +44,7 @@ namespace PT.PM.Matching
                 Vars = vars;
         }
 
-        public MatchingContext AddMatchIfSuccess(Ust ust)
+        public MatchingContext AddUstIfSuccess(Ust ust)
         {
             if (Success && (ust.IsTerminal || IncludeNonterminalTextSpans))
             {
@@ -55,24 +55,17 @@ namespace PT.PM.Matching
 
         public MatchingContext AddMatch(Ust ust)
         {
-            if (ust.TextSpan.IsEmpty)
+            Success = true;
+            if (!ust.TextSpan.IsEmpty && (ust.IsTerminal || IncludeNonterminalTextSpans))
             {
-                Success = false;
-            }
-            else
-            {
-                Success = true;
-                if (ust.IsTerminal || IncludeNonterminalTextSpans)
-                {
-                    Locations.Add(ust.TextSpan);
-                }
+                Locations.Add(ust.TextSpan);
             }
             return this;
         }
 
         public MatchingContext AddMatches(IEnumerable<TextSpan> textSpans)
         {
-            Success = textSpans.Count() > 0;
+            Success = true;
             Locations.AddRange(textSpans);
             return this;
         }

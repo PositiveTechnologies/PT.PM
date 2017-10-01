@@ -1,6 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
 using System.Collections.Generic;
@@ -18,6 +17,11 @@ namespace PT.PM.Matching.Patterns
 
         public PatternBase Body { get; set; }
 
+        public PatternMethodDeclaration()
+        {
+            Modifiers = new List<PatternBase>();
+        }
+
         public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name,
             PatternBase body, TextSpan textSpan)
             : base(textSpan)
@@ -25,7 +29,6 @@ namespace PT.PM.Matching.Patterns
             Modifiers = modifiers?.ToList()
                 ?? new List<PatternBase>();
             Name = name;
-            AnyBody = false;
             Body = body ?? throw new ArgumentNullException(nameof(body));
         }
 
@@ -39,11 +42,6 @@ namespace PT.PM.Matching.Patterns
         public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)
         {
             InitFields(modifiers, name, anyBody);
-        }
-
-        public PatternMethodDeclaration()
-        {
-            Modifiers = new List<PatternBase>();
         }
 
         public override string ToString()
@@ -93,7 +91,7 @@ namespace PT.PM.Matching.Patterns
                 newContext = context.Fail();
             }
 
-            return newContext.AddMatchIfSuccess(ust);
+            return newContext.AddUstIfSuccess(ust);
         }
 
         private void InitFields(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)

@@ -93,12 +93,15 @@ namespace PT.PM.Matching.Patterns
         private MatchingContext EnumerateVarsOrFiels(List<AssignmentExpression> variables, MatchingContext context)
         {
             var matchedTextSpans = new List<TextSpan>();
+
+            bool success = false;
             foreach (AssignmentExpression variable in variables)
             {
                 var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
                 MatchingContext match = Assignment.Match(variable, altContext);
                 if (match.Success)
                 {
+                    success = true;
                     matchedTextSpans.AddRange(match.Locations);
                     if (!context.FindAllAlternatives)
                     {
@@ -106,7 +109,16 @@ namespace PT.PM.Matching.Patterns
                     }
                 }
             }
-            return context.AddMatches(matchedTextSpans);
+
+            if (success)
+            {
+                context = context.AddMatches(matchedTextSpans);
+            }
+            else
+            {
+                context = context.Fail();
+            }
+            return context;
         }
     }
 }

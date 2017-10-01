@@ -47,7 +47,7 @@ namespace PT.PM.Matching
 
             foreach (Ust match in matches)
             {
-                context.AddMatch(match);
+                context = context.AddMatch(match);
             }
 
             return context;

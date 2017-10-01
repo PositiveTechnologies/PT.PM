@@ -43,7 +43,7 @@ namespace PT.PM.Matching.Patterns
                 newContext = context.Fail();
             }
 
-            return newContext.AddMatchIfSuccess(ust);
+            return newContext.AddUstIfSuccess(ust);
         }
     }
 }

@@ -91,10 +91,7 @@ namespace PT.PM.Matching.Patterns
                 }
                 else
                 {
-                    if (matchedTextSpans.Count > 0)
-                    {
-                        newContext = context.AddMatches(matchedTextSpans);
-                    }
+                    newContext = context.AddMatches(matchedTextSpans);
                 }
             }
             else
@@ -102,7 +99,7 @@ namespace PT.PM.Matching.Patterns
                 newContext = context.Fail();
             }
 
-            return newContext.AddMatchIfSuccess(ust);
+            return newContext.AddUstIfSuccess(ust);
         }
     }
 }

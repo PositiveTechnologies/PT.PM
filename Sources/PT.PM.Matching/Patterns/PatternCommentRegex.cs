@@ -1,6 +1,8 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -34,9 +36,17 @@ namespace PT.PM.Matching.Patterns
 
             if (ust is CommentLiteral commentLiteral)
             {
-                newContext = context.AddMatches(CommentRegex
+                IEnumerable<TextSpan> matches = CommentRegex
                     .MatchRegex(commentLiteral.Comment)
-                    .Select(location => location.AddOffset(ust.TextSpan.Start)));
+                    .Select(location => location.AddOffset(ust.TextSpan.Start));
+                if (matches.Count() > 0)
+                {
+                    newContext = context.AddMatches(matches);
+                }
+                else
+                {
+                    newContext = context.Fail();
+                }
             }
             else
             {

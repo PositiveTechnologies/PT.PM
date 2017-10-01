@@ -94,9 +94,11 @@ namespace PT.PM.Tests
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
             var normalizer = new PatternNormalizer() { Logger = logger };
-            Ust result = normalizer.Visit(input);
+            PatternBase result = normalizer.Visit(input);
 
-            Assert.AreEqual(1, result.WhereDescendants().Count(child => child is PatternMultipleExpressions));
+            var statements = ((PatternStatements)result).Statements;
+            var invocation = (PatternInvocationExpression)statements.ElementAt(0);
+            Assert.AreEqual(1, invocation.Arguments.Args.Count(child => child is PatternMultipleExpressions));
         }
 
         [Test]
@@ -117,16 +119,16 @@ namespace PT.PM.Tests
             );
             var expectedSorted = new PatternOr
             (
-                new PatternIdToken("testId"),
                 new PatternIdToken("42"),
+                new PatternIdToken("testId"),
                 new PatternStringLiteral("42"),
                 new PatternStringLiteral("42"),
                 new PatternStringLiteral("Hello World!"),
                 new PatternNot(new PatternStringLiteral("42")),
                 new PatternNot(new PatternStringLiteral("42")),
-                new PatternIntLiteral(100),
+                new PatternIntLiteral(0),
                 new PatternIntLiteral(42),
-                new PatternIntLiteral(0)
+                new PatternIntLiteral(100)
             );
 
             var logger = new LoggerMessageCounter();

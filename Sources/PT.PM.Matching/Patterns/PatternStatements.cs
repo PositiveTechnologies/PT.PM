@@ -63,8 +63,8 @@ namespace PT.PM.Matching.Patterns
 
             var matchedTextSpans = new List<TextSpan>();
             int patternStatementInd = 0;
-            bool success = false;
             MatchingContext newContext = MatchingContext.CreateWithInputParamsAndVars(context);
+            bool success = false;
             for (int i = 0; i < expressions.Length; i++)
             {
                 newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);
@@ -88,9 +88,15 @@ namespace PT.PM.Matching.Patterns
                 }
             }
 
-            return success
-                ? context.AddMatches(matchedTextSpans)
-                : context.Fail();
+            if (success)
+            {
+                context = context.AddMatches(matchedTextSpans);
+            }
+            else
+            {
+                context = context.Fail();
+            }
+            return context;
         }
     }
 }

@@ -7,9 +7,10 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternVar : PatternBase
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = "";
 
         public PatternVar()
+            : this("")
         {
         }
 

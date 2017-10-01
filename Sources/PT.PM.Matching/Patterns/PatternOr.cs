@@ -34,12 +34,14 @@ namespace PT.PM.Matching.Patterns
         {
             var matchedTextSpans = new List<TextSpan>();
 
+            bool success = false;
             foreach (PatternBase alt in Patterns)
             {
                 var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
                 MatchingContext match = alt.Match(ust, altContext);
                 if (match.Success)
                 {
+                    success = true;
                     matchedTextSpans.AddRange(match.Locations);
                     if (!context.FindAllAlternatives)
                     {
@@ -48,7 +50,15 @@ namespace PT.PM.Matching.Patterns
                 }
             }
 
-            return context.AddMatches(matchedTextSpans);
+            if (success)
+            {
+                context = context.AddMatches(matchedTextSpans);
+            }
+            else
+            {
+                context = context.Fail();
+            }
+            return context;
         }
     }
 }

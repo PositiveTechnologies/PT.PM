@@ -24,6 +24,7 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternIdToken()
+            : this("")
         {
         }
 

@@ -6,9 +6,7 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternBooleanLiteral : PatternBase
     {
-        public bool Value { get; set; }
-
-        public bool Any { get; set; } = true;
+        public bool? Boolean { get; set; }
 
         public PatternBooleanLiteral()
         {
@@ -17,18 +15,17 @@ namespace PT.PM.Matching.Patterns
         public PatternBooleanLiteral(bool? value = null, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Any = value == null;
-            Value = value.Value;
+            Boolean = value;
         }
 
         public override string ToString()
         {
-            if (Any)
+            if (Boolean == null)
             {
                 return "True <|> False";
             }
 
-            return Value.ToString();
+            return Boolean.ToString();
         }
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
@@ -36,7 +33,7 @@ namespace PT.PM.Matching.Patterns
             MatchingContext newContext;
 
             if (ust is BooleanLiteral booleanLiteral &&
-                (Any || Value.Equals(booleanLiteral.Value)))
+                (Boolean == null || Boolean.Value.Equals(booleanLiteral.Value)))
             {
                 newContext = context.AddMatch(ust);
             }

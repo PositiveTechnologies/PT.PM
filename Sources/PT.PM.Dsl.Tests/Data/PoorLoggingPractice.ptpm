@@ -1,1 +1,1 @@
-(field <[ [Ll]og ]> <[ .+ ]>) <&> (<~>(field static final <[ [Ll]og ]> <[ .+ ]>))
+(field <[ [Ll]og ]> <[ \w+ ]>) <&> (<~>(field static final <[ [Ll]og ]> <[ \w+ ]>))

@@ -131,7 +131,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Poor Error Handling: Empty Default Exception Handler",
                 Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
-                Node = new PatternTryCatchStatement()
+                Node = new PatternTryCatchStatement { IsCatchBodyEmpty = true }
             });
 
             patterns.Add(new PatternRoot
