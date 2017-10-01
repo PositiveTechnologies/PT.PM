@@ -8,11 +8,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootUst> CreateJavaScriptPatterns()
+        public IEnumerable<PatternRoot> CreateJavaScriptPatterns()
         {
-            var patterns = new List<PatternRootUst>();
+            var patterns = new List<PatternRoot>();
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AttributesCodeInsideElementEvent",

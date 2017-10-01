@@ -8,7 +8,7 @@ namespace PT.PM.Matching
 {
     public class MatchingContext : ILoggable
     {
-        public PatternRootUst PatternUst { get; }
+        public PatternRoot PatternUst { get; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -37,7 +37,7 @@ namespace PT.PM.Matching
             };
         }
 
-        public MatchingContext(PatternRootUst patternUst, Dictionary<string, IdToken> vars = null)
+        public MatchingContext(PatternRoot patternUst, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
             if (vars != null)

@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace PT.PM.Matching
 {
-    public class PatternMatcher : IUstPatternMatcher<RootUst, PatternRootUst, MatchingResult>
+    public class PatternMatcher : IUstPatternMatcher<RootUst, PatternRoot, MatchingResult>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public IEnumerable<PatternRootUst> Patterns { get; set; }
+        public IEnumerable<PatternRoot> Patterns { get; set; }
 
         public bool IsIgnoreFilenameWildcards { get; set; }
 
@@ -19,7 +19,7 @@ namespace PT.PM.Matching
         {
         }
 
-        public PatternMatcher(IEnumerable<PatternRootUst> patterns)
+        public PatternMatcher(IEnumerable<PatternRoot> patterns)
         {
             Patterns = patterns;
         }
@@ -28,7 +28,7 @@ namespace PT.PM.Matching
         {
             try
             {
-                IEnumerable<PatternRootUst> patterns = Patterns
+                IEnumerable<PatternRoot> patterns = Patterns
                     .Where(pattern => pattern.Languages.Any(patternLang => ust.Sublanguages.Contains(patternLang)));
                 if (!IsIgnoreFilenameWildcards)
                 {
@@ -36,7 +36,7 @@ namespace PT.PM.Matching
                 }
 
                 var result = new List<MatchingResult>();
-                foreach (PatternRootUst pattern in patterns)
+                foreach (PatternRoot pattern in patterns)
                 {
                     pattern.Logger = Logger;
                     var results = pattern.Match(ust);

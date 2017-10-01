@@ -8,11 +8,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootUst> CreateHtmlPatterns()
+        public IEnumerable<PatternRoot> CreateHtmlPatterns()
         {
-            var patterns = new List<PatternRootUst>();
+            var patterns = new List<PatternRoot>();
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 1 possible XSS",
@@ -21,7 +21,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new PatternStringRegexLiteral("&{\\w+}")
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 2 possible XSS",

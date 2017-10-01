@@ -13,7 +13,7 @@ namespace PT.PM.Common
         private StringBuilder edgesString;
         private int currentIndex;
 
-        public string Render(Nodes.Ust node)
+        public string Render(Ust node)
         {
             edgesString = new StringBuilder();
             vertexesString = new StringBuilder();

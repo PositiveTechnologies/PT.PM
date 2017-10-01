@@ -20,7 +20,7 @@ namespace PT.PM.Patterns.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            var patterns = new List<PatternRootUst>();
+            var patterns = new List<PatternRoot>();
 
             var commonPatterns = CreateCommonPatterns();
             patterns.AddRange(commonPatterns);
@@ -39,17 +39,17 @@ namespace PT.PM.Patterns.PatternsRepository
             var htmpPatterns = CreateHtmlPatterns();
             patterns.AddRange(htmpPatterns);
 
-            var patternsConverter = new PatternConverter(new JsonUstSerializer());
+            var patternsConverter = new PatternConverter();
 
             List<PatternDto> result = patternsConverter.ConvertBack(patterns.ToArray()).ToList();
             return result;
         }
 
-        protected IEnumerable<PatternRootUst> CreateCommonPatterns()
+        protected IEnumerable<PatternRoot> CreateCommonPatterns()
         {
-            var patterns = new List<PatternRootUst>();
+            var patterns = new List<PatternRoot>();
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedPassword",
@@ -94,7 +94,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 )
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureTransport",
@@ -102,7 +102,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new PatternStringRegexLiteral(@"^http://[\w@][\w.:@]+/?[\w\.?=%&=\-@/$,]*$")
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureRandomness",
@@ -114,7 +114,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PasswordInComment. Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
@@ -126,7 +126,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 )
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Poor Error Handling: Empty Default Exception Handler",
@@ -134,7 +134,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Node = new PatternTryCatchStatement()
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Erroneous Null Comparison",
@@ -156,7 +156,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 )
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Privilege Management: Overly Broad Grant",

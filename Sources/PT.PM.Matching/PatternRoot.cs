@@ -10,17 +10,30 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching
 {
-    public class PatternRootUst : RootUst, ILoggable
+    public class PatternRoot : ILoggable
     {
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
-        [JsonIgnore]
         public ILogger Logger { get; set; }
 
         public string Key { get; set; } = "";
 
-        public string FilenameWildcard { get; set; }
+        public string FilenameWildcard { get; set; } = "";
+
+        public Regex FilenameWildcardRegex
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(FilenameWildcard) && pathWildcardRegex == null)
+                {
+                    pathWildcardRegex = new WildcardConverter().Convert(FilenameWildcard);
+                }
+                return pathWildcardRegex;
+            }
+        }
+
+        public SourceCodeFile SourceCodeFile { get; set; }
 
         public HashSet<Language> Languages
         {
@@ -38,44 +51,21 @@ namespace PT.PM.Matching
             }
         }
 
-        public UstSerializeFormat DataFormat { get; set; } = UstSerializeFormat.Json;
+        public string DataFormat { get; set; } = "";
 
         [JsonIgnore]
         public string DebugInfo { get; set; } = "";
 
-        [JsonIgnore]
-        public Regex FilenameWildcardRegex
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(FilenameWildcard) && pathWildcardRegex == null)
-                {
-                    pathWildcardRegex = new WildcardConverter().Convert(FilenameWildcard);
-                }
-                return pathWildcardRegex;
-            }
-        }
+        public PatternBase Node { get; set; } = PatternAny.Instance;
 
-        public PatternRootUst(string key, string debugInfo, IEnumerable<Language> languages, string filenameWildcard)
-            : this(null)
-        {
-            Key = key;
-            DebugInfo = debugInfo;
-            Languages = new HashSet<Language>(languages);
-            FilenameWildcard = filenameWildcard;
-        }
-
-        public PatternRootUst()
-            : this(null)
+        public PatternRoot()
         {
         }
 
-        public PatternRootUst(SourceCodeFile sourceCodeFile)
-            : base(sourceCodeFile, Language.Universal)
+        public PatternRoot(PatternBase node)
         {
+            Node = node ?? throw new ArgumentNullException(nameof(node));
         }
-
-        public override Ust[] GetChildren() => Nodes;
 
         public override string ToString()
         {
@@ -89,19 +79,17 @@ namespace PT.PM.Matching
 
             if (ust is RootUst rootUst)
             {
-                var patternUst = (PatternBase)Node;
-
-                if (patternUst is PatternCommentRegex ||
-                   (patternUst is PatternOr patternOr && patternOr.Patterns.Any(v => v is PatternCommentRegex)))
+                if (Node is PatternCommentRegex ||
+                   (Node is PatternOr patternOr && patternOr.Patterns.Any(v => v is PatternCommentRegex)))
                 {
                     foreach (CommentLiteral commentNode in rootUst.Comments)
                     {
-                        MatchAndAddResult(patternUst, commentNode, context, results);
+                        MatchAndAddResult(Node, commentNode, context, results);
                     }
                 }
                 else
                 {
-                    TraverseChildren(patternUst, rootUst, context, results);
+                    TraverseChildren(Node, rootUst, context, results);
                 }
             }
 

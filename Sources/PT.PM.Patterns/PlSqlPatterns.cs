@@ -8,11 +8,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootUst> CreatePlSqlPatterns()
+        public IEnumerable<PatternRoot> CreatePlSqlPatterns()
         {
-            var patterns = new List<PatternRootUst>();
+            var patterns = new List<PatternRoot>();
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Dangerous Function",
@@ -28,7 +28,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
@@ -44,7 +44,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
@@ -56,7 +56,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Insecure Randomness",
@@ -72,7 +72,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: Cursor Snarfing",
@@ -104,7 +104,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 )
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: File Snarfing",

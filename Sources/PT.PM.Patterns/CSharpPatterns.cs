@@ -8,11 +8,11 @@ namespace PT.PM.Patterns.PatternsRepository
 {
     public partial class DefaultPatternRepository
     {
-        public IEnumerable<PatternRootUst> CreateCSharpPatterns()
+        public IEnumerable<PatternRoot> CreateCSharpPatterns()
         {
-            var patterns = new List<PatternRootUst>();
+            var patterns = new List<PatternRoot>();
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash",
@@ -40,7 +40,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
-            patterns.Add(new PatternRootUst
+            patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Use of NullReferenceException Catch to Detect NULL Pointer Dereference",

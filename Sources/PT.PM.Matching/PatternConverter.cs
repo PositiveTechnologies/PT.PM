@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common;
-using PT.PM.Matching.Patterns;
-using System;
+﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using System.Linq;
 using PT.PM.Common.Nodes;
+using PT.PM.Matching.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Matching
 {
-    public class PatternConverter : IPatternConverter<PatternRootUst>
+    public class PatternConverter : IPatternConverter<PatternRoot>
     {
         private ILogger logger { get; set; } = DummyLogger.Instance;
 
@@ -21,48 +21,56 @@ namespace PT.PM.Matching
             set
             {
                 logger = value;
-                foreach (var serializer in UstNodeSerializers)
+                foreach (IPatternSerializer serializer in Serializers)
                 {
-                    serializer.Value.Logger = logger;
+                    serializer.Logger = logger;
                 }
             }
         }
 
-        public Dictionary<UstSerializeFormat, IUstSerializer> UstNodeSerializers { get; set; }
+        public List<IPatternSerializer> Serializers { get; set; }
 
-        public PatternConverter(IUstSerializer serializer)
-            : this(new[] { serializer })
+        public PatternConverter()
         {
-        }
-
-        public PatternConverter(IEnumerable<IUstSerializer> serializers)
-        {
-            UstNodeSerializers = new Dictionary<UstSerializeFormat, IUstSerializer>();
-            foreach (var serializer in serializers)
+            Serializers = new List<IPatternSerializer>
             {
-                UstNodeSerializers[serializer.DataFormat] = serializer;
-            }
+                new JsonPatternSerializer()
+            };
         }
 
-        public PatternRootUst[] Convert(IEnumerable<PatternDto> patternsDto)
+        public PatternConverter(params IPatternSerializer[] serializers)
         {
-            var result = new List<PatternRootUst>(patternsDto.Count());
+            Serializers = serializers.ToList();
+        }
+
+        public PatternConverter(IEnumerable<IPatternSerializer> serializers)
+        {
+            Serializers = serializers.ToList();
+        }
+
+        public PatternRoot[] Convert(IEnumerable<PatternDto> patternsDto)
+        {
+            var result = new List<PatternRoot>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
             {
-                var serializer = UstNodeSerializers[patternDto.DataFormat];
+                IPatternSerializer serializer = Serializers.FirstOrDefault(s => s.Format == patternDto.DataFormat)
+                    ?? Serializers.First();
+                if (serializer == null)
+                {
+                    Logger.LogError(new ConversionException("", null, $"Serializer for {patternDto.DataFormat} has not been found", true));
+                    continue;
+                }
+
                 try
                 {
-                    var node = serializer.Deserialize(patternDto.Value);
-                    PatternRootUst pattern = new PatternRootUst
-                    {
-                        DataFormat = serializer.DataFormat,
-                        Key = patternDto.Key,
-                        Languages = patternDto.Languages,
-                        Node = node is PatternRootUst patternRootNode ? patternRootNode.Node : node,
-                        DebugInfo = patternDto.Description,
-                        FilenameWildcard = patternDto.FilenameWildcard
-                    };
-                    pattern.FillAscendants();
+                    PatternRoot pattern = serializer.Deserialize(patternDto.Value);
+
+                    pattern.DataFormat = serializer.Format;
+                    pattern.Key = patternDto.Key;
+                    pattern.Languages = patternDto.Languages;
+                    pattern.DebugInfo = patternDto.Description;
+                    pattern.FilenameWildcard = patternDto.FilenameWildcard;
+
                     result.Add(pattern);
                 }
                 catch (Exception ex)
@@ -73,23 +81,22 @@ namespace PT.PM.Matching
             return result.ToArray();
         }
 
-        public PatternDto[] ConvertBack(IEnumerable<PatternRootUst> patterns)
+        public PatternDto[] ConvertBack(IEnumerable<PatternRoot> patterns)
         {
             var result = new List<PatternDto>();
-            foreach (PatternRootUst pattern in patterns)
+            foreach (PatternRoot pattern in patterns)
             {
-                var serializer = UstNodeSerializers[pattern.DataFormat];
+                IPatternSerializer serializer = Serializers.FirstOrDefault(s => s.Format == pattern.DataFormat)
+                    ?? Serializers.First();
                 try
                 {
+                    string serialized = serializer.Serialize(pattern);
                     PatternDto patternDto = new PatternDto
                     {
                         DataFormat = pattern.DataFormat,
                         Key = pattern.Key,
                         Languages = pattern.Languages,
-                        Value = serializer.Serialize(
-                              pattern is PatternRootUst patternNode
-                            ? patternNode.Node
-                            : pattern),
+                        Value = serialized,
                         Description = pattern.DebugInfo,
                         FilenameWildcard = pattern.FilenameWildcard
                     };

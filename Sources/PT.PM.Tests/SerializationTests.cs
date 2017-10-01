@@ -5,6 +5,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
 using PT.PM.Matching;
+using PT.PM.Matching.Json;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
 
@@ -26,7 +27,7 @@ namespace PT.PM.Tests
         [Test]
         public void JsonSerialize_PatternWithVar_JsonEqualsToDsl()
         {
-            var patternNode = new PatternRootUst
+            var patternNode = new PatternRoot
             {
                 Node = new PatternStatements
                 {
@@ -50,18 +51,20 @@ namespace PT.PM.Tests
                 }
             };
 
-            var jsonSerializer = new JsonUstSerializer();
-            jsonSerializer.Indented = true;
-            jsonSerializer.IncludeTextSpans = false;
+            var jsonSerializer = new JsonPatternSerializer
+            {
+                Indented = true,
+                IncludeTextSpans = false
+            };
 
             string json = jsonSerializer.Serialize(patternNode);
-            Ust nodeFromJson = jsonSerializer.Deserialize(json);
+            PatternRoot nodeFromJson = jsonSerializer.Deserialize(json);
 
             var dslSeializer = new DslProcessor() { PatternExpressionInsideStatement = false };
             var nodeFromDsl = dslSeializer.Deserialize("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);");
 
-            Assert.IsTrue(nodeFromJson.Equals(patternNode));
-            Assert.IsTrue(nodeFromJson.Equals(nodeFromDsl));
+            Assert.IsTrue(nodeFromJson.Node.Equals(patternNode.Node));
+            Assert.IsTrue(nodeFromJson.Node.Equals(nodeFromDsl.Node));
         }
 
         [Test]

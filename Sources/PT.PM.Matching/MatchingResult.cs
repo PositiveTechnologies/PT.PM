@@ -6,7 +6,7 @@ using PT.PM.Matching.Patterns;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResult : MatchingResultBase<PatternRootUst>
+    public class MatchingResult : MatchingResultBase<PatternRoot>
     {
         public SourceCodeFile SourceCodeFile => RootUst.SourceCodeFile;
 
@@ -16,7 +16,7 @@ namespace PT.PM.Matching
         {
         }
 
-        public MatchingResult(RootUst rootUst, PatternRootUst pattern, IEnumerable<TextSpan> textSpans)
+        public MatchingResult(RootUst rootUst, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
             RootUst = rootUst;
             Pattern = pattern;
