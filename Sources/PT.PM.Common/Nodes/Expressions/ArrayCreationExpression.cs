@@ -53,10 +53,10 @@ namespace PT.PM.Common.Nodes.Expressions
         {
             if (other == null)
             {
-                return (int)Kind;
+                return (int)KindId;
             }
 
-            var nodeTypeCompareResult = Kind - other.Kind;
+            var nodeTypeCompareResult = KindId - other.KindId;
             if (nodeTypeCompareResult != 0)
             {
                 return nodeTypeCompareResult;

@@ -1,5 +1,4 @@
-﻿using PT.PM.Common.Nodes;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,38 +7,42 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Common.Reflection
 {
-    public class PropertyEnumerator<T>
+    public class PropertyVisitor<TInput, TOutput>
     {
         public HashSet<string> IgnoredProperties = new HashSet<string>();
 
-        public T Clone(T node, Func<T, T> visit)
+        public virtual bool Clone => false;
+
+        public TOutput VisitProperties(TInput node, Func<TInput, TOutput> visit)
         {
             if (node == null)
             {
-                return default(T);
+                return default(TOutput);
             }
 
             Type type = node.GetType();
             PropertyInfo[] properties = ReflectionCache.GetClassProperties(type);
 
-            var result = (T)Activator.CreateInstance(type);
+            TOutput result = Clone ? (TOutput)Activator.CreateInstance(type) : default(TOutput);
             foreach (PropertyInfo prop in properties)
             {
                 Type propType = prop.PropertyType;
-                if (propType.IsValueType || propType == typeof(string) || propType == typeof(Regex))
-                {
-                    prop.SetValue(result, prop.GetValue(node));
-                }
-                else if (IgnoredProperties.Contains(prop.Name))
+                if (IgnoredProperties.Contains(prop.Name))
                 {
                     continue;
                 }
-                else if (typeof(T).IsAssignableFrom(propType))
+                else if (propType.IsValueType || propType == typeof(string) || propType == typeof(Regex))
                 {
-                    var getValue = (T)prop.GetValue(node);
-                    if (getValue != null)
+                    if (Clone)
                     {
-                        T setValue = visit(getValue);
+                        prop.SetValue(result, prop.GetValue(node));
+                    }
+                }
+                else if (typeof(TInput).IsAssignableFrom(propType))
+                {
+                    TOutput setValue = visit((TInput)prop.GetValue(node));
+                    if (Clone)
+                    {
                         prop.SetValue(result, setValue);
                     }
                 }
@@ -53,18 +56,19 @@ namespace PT.PM.Common.Reflection
                         destCollection = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
                         foreach (object item in sourceCollection)
                         {
-                            if (item is T ustNodeItem)
+                            object destItem = item is TInput sourceItem
+                                ? visit(sourceItem)
+                                : item;
+                            if (Clone)
                             {
-                                var destUstNodeItem = visit(ustNodeItem);
-                                destCollection.Add(destUstNodeItem);
-                            }
-                            else
-                            {
-                                destCollection.Add(item);
+                                destCollection.Add(destItem);
                             }
                         }
                     }
-                    prop.SetValue(result, destCollection);
+                    if (Clone)
+                    {
+                        prop.SetValue(result, destCollection);
+                    }
                 }
                 else
                 {

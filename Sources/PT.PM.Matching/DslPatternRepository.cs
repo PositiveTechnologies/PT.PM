@@ -28,7 +28,7 @@ namespace PT.PM.Matching
                 {
                     Key = "temp",
                     Languages = languages,
-                    DataFormat = UstSerializeFormat.Dsl,
+                    DataFormat = "Dsl",
                     Value = patternData
                 }
             };

@@ -26,15 +26,16 @@ namespace PT.PM.Dsl
 
         public string Data { get; set; }
 
-        public PatternRootUst Convert(DslParser.PatternContext pattern)
+        public PatternRoot Convert(DslParser.PatternContext pattern)
         {
             try
             {
                 patternVars = new Dictionary<string, PatternVar>();
-                var result = new PatternRootUst();
+                var result = new PatternRoot();
                 result.Node = VisitPattern(pattern);
                 result.Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
-                result.FillAscendants();
+                var ascendantsFiller = new PatternAscendantsFiller(result);
+                ascendantsFiller.FillAscendants();
                 return result;
             }
             catch (Exception ex)
@@ -443,7 +444,7 @@ namespace PT.PM.Dsl
             IEnumerable<PatternBase> values = context.patternNotLiteral()
                 .Select(literal => VisitPatternNotLiteral(literal));
             var patternOr = values.Count() > 1
-                ? new PatternOr(values, values.GetTextSpan())
+                ? new PatternOr(values)
                 : values.Count() == 1
                 ? values.First()
                 : new PatternIdRegexToken();

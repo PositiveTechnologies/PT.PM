@@ -8,7 +8,8 @@ namespace PT.PM.Common.Nodes
     public class RootUst : Ust
     {
         private Language[] sublanguges;
-        public virtual Language Language { get; }
+
+        public Language Language { get; }
 
         public SourceCodeFile SourceCodeFile { get; set; }
 

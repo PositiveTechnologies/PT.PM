@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PT.PM.Matching
+namespace PT.PM.Matching.Json
 {
     public class PatternJsonSafeConverter: JsonConverter, ILoggable
     {
@@ -42,13 +42,8 @@ namespace PT.PM.Matching
                 Value = (string)jObject[nameof(PatternDto.Value)] ?? "",
                 CweId = (string)jObject[nameof(PatternDto.CweId)] ?? "",
                 Description = (string)jObject[nameof(PatternDto.Description)] ?? "",
+                DataFormat = (string)jObject[nameof(PatternDto.DataFormat)]
             };
-            var dataFormatString = (string)jObject[nameof(PatternDto.DataFormat)];
-            UstSerializeFormat format;
-            if (dataFormatString != null && Enum.TryParse(dataFormatString, out format))
-            {
-                result.DataFormat = format;
-            }
 
             return result;
         }

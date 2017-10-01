@@ -362,23 +362,23 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(notImplementedNode);
         }
 
-        public T Visit(Collection collection)
+        public virtual T Visit(Collection collection)
         {
             return VisitChildren(collection);
         }
 
-        protected virtual T VisitChildren(Nodes.Ust ustNode)
+        protected virtual T VisitChildren(Ust ust)
         {
-            if (ustNode == null)
+            if (ust == null)
             {
                 return default(T);
             }
-            foreach (var children in ustNode.Children)
+            foreach (var children in ust.Children)
             {
                 if (children != null)
                 {
                     T result = Visit((dynamic)children);
-                    if (ustNode.Children.Length == 1)
+                    if (ust.Children.Length == 1)
                     {
                         return result;
                     }

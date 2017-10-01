@@ -5,7 +5,7 @@ namespace PT.PM.Matching
 {
     public interface IPatternConverter<TPattern> : ILoggable
     {
-        Dictionary<UstSerializeFormat, IUstSerializer> UstNodeSerializers { get; set; }
+        List<IPatternSerializer> Serializers { get; set; }
 
         TPattern[] Convert(IEnumerable<PatternDto> patternDtos);
 

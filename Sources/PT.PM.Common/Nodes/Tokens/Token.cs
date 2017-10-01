@@ -44,7 +44,7 @@ namespace PT.PM.Common.Nodes.Tokens
                 return -1;
             }
 
-            var nodeTypeResult = Kind - other.Kind;
+            var nodeTypeResult = KindId - other.KindId;
             if (nodeTypeResult != 0)
             {
                 return nodeTypeResult;

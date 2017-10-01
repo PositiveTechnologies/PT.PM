@@ -3,7 +3,7 @@ using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
 using PT.PM.Matching;
-using PT.PM.Matching.Patterns;
+using PT.PM.Matching.Json;
 using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
 using System;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRootUst, MatchingResult>
+    public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchingResult>
     {
         public Workflow()
             : this(null, LanguageExt.AllLanguages)
@@ -42,9 +42,9 @@ namespace PT.PM
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
             UstPatternMatcher = new PatternMatcher();
-            IUstSerializer jsonNodeSerializer = new JsonUstSerializer();
-            IUstSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new PatternConverter(new IUstSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();
+            IPatternSerializer dslNodeSerializer = new DslProcessor();
+            PatternConverter = new PatternConverter(new IPatternSerializer[] { jsonNodeSerializer, dslNodeSerializer });
             Stage = stage;
             ThreadCount = 1;
         }

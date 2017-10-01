@@ -1,6 +1,7 @@
 ﻿using Fclp;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Json;
 using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
 using System;
@@ -199,7 +200,7 @@ namespace PT.PM.Cli
 
         private static void DumpUst(bool isIndentedUst, bool isIncludeTextSpansInUst, WorkflowResult workflowResult)
         {
-            var serializer = new JsonUstSerializer()
+            var serializer = new JsonUstSerializer
             {
                 Indented = isIndentedUst,
                 IncludeTextSpans = isIncludeTextSpansInUst

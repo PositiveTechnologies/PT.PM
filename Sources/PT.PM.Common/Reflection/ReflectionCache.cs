@@ -12,7 +12,7 @@ namespace PT.PM.Common.Reflection
         private static ConcurrentDictionary<Type, PropertyInfo[]> ustNodeProperties
             = new ConcurrentDictionary<Type, PropertyInfo[]>();
 
-        internal static Lazy<Dictionary<string, Type>> UstKindFullClassName =
+        public static Lazy<Dictionary<string, Type>> UstKindFullClassName =
             new Lazy<Dictionary<string, Type>>(() =>
             {
                 var result = new Dictionary<string, Type>();
@@ -22,7 +22,8 @@ namespace PT.PM.Common.Reflection
                     if (assemblyName.StartsWith("PT.PM") && !assemblyName.EndsWith(".Tests"))
                     {
                         foreach (Type type in assembly.GetTypes()
-                            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(Ust))))
+                            .Where(myType => myType.IsClass && !myType.IsAbstract &&
+                            myType.GetInterfaces().Contains(typeof(IUst))))
                         {
                             result.Add(type.Name, type);
                         }

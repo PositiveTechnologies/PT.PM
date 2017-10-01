@@ -31,8 +31,7 @@ namespace PT.PM.Matching
             }
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
-        public UstSerializeFormat DataFormat { get; set; } = UstSerializeFormat.Dsl;
+        public string DataFormat { get; set; } = "";
 
         public string Value { get; set; } = "";
 
@@ -44,17 +43,6 @@ namespace PT.PM.Matching
 
         public PatternDto()
         {
-        }
-
-        public PatternDto(PatternRootUst pattern, UstSerializeFormat dataFormat, string data)
-        {
-            Key = pattern.Key;
-            Description = pattern.DebugInfo;
-            Languages = pattern.Languages;
-            FilenameWildcard = pattern.FilenameWildcard;
-
-            DataFormat = dataFormat;
-            Value = data;
         }
 
         public override string ToString()

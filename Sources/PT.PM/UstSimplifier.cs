@@ -13,7 +13,7 @@ namespace PT.PM.Matching
 {
     public class UstSimplifier : UstVisitor<Ust>, ILoggable
     {
-        private static PropertyEnumerator<Ust> propertyEnumerator = new PropertyEnumerator<Ust>
+        private static PropertyCloner<Ust> propertyEnumerator = new PropertyCloner<Ust>
         {
             IgnoredProperties = new HashSet<string>() { nameof(Ust.Parent), nameof(Ust.Root) }
         };
@@ -195,7 +195,7 @@ namespace PT.PM.Matching
         {
             try
             {
-                return propertyEnumerator.Clone(ust, Visit);
+                return propertyEnumerator.VisitProperties(ust, Visit);
             }
             catch (Exception ex)
             {
