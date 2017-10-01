@@ -2,7 +2,7 @@
 
 namespace PT.PM.Matching
 {
-    public interface IUstPatternVisitor<out T>
+    public interface IPatternVisitor<out T>
     {
         T Visit(PatternBase patternBase);
         T Visit(PatternAnd patternAnd);

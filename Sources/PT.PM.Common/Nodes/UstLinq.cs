@@ -43,13 +43,16 @@ namespace PT.PM.Common
 
             void GetDescendants(Ust localResult)
             {
-                if (predicate == null || predicate(localResult))
+                if (localResult != null)
                 {
-                    result.Add(localResult);
-                }
-                foreach (Ust child in localResult.Children)
-                {
-                    GetDescendants(child);
+                    if (predicate == null || predicate(localResult))
+                    {
+                        result.Add(localResult);
+                    }
+                    foreach (Ust child in localResult.Children)
+                    {
+                        GetDescendants(child);
+                    }
                 }
             }
 

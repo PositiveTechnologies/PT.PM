@@ -10,28 +10,32 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching
 {
-    public class PatternNormalizer : IUstPatternVisitor<PatternBase>, ILoggable
+    public class PatternNormalizer : PatternVisitor<PatternBase>, ILoggable
     {
-        private static PropertyEnumerator<PatternBase> propertyEnumerator = new PropertyEnumerator<PatternBase>
+        private static PropertyCloner<PatternBase> propertyEnumerator = new PropertyCloner<PatternBase>
         {
             IgnoredProperties = new HashSet<string>() { nameof(Ust.Parent), nameof(Ust.Root) }
         };
 
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public PatternRootUst Normalize(PatternRootUst patternUst)
+        public PatternRoot Normalize(PatternRoot pattern)
         {
-            var newPattern = new PatternRootUst(patternUst.SourceCodeFile);
-
-            newPattern.SourceCodeFile = patternUst.SourceCodeFile;
-            newPattern.Nodes = patternUst.Nodes.Select(node => Visit((PatternBase)node)).ToArray();
-            newPattern.Languages = new HashSet<Language>(patternUst.Languages);
-
-            newPattern.FillAscendants();
+            var newPattern = new PatternRoot
+            {
+                Logger = pattern.Logger,
+                Key = pattern.Key,
+                FilenameWildcard = pattern.FilenameWildcard,
+                SourceCodeFile = pattern.SourceCodeFile,
+                Languages = new HashSet<Language>(pattern.Languages),
+                DataFormat = pattern.DataFormat,
+                DebugInfo = pattern.DebugInfo,
+                Node = Visit(pattern.Node),
+            };
+            var ascendantsFiller = new PatternAscendantsFiller(newPattern);
+            ascendantsFiller.FillAscendants();
             return newPattern;
         }
 
-        public PatternBase Visit(PatternBase patternBase)
+        public override PatternBase Visit(PatternBase patternBase)
         {
             if (patternBase == null)
             {
@@ -40,7 +44,7 @@ namespace PT.PM.Matching
             return Visit((dynamic)patternBase);
         }
 
-        public PatternBase Visit(PatternArgs patternExpressions)
+        public override PatternBase Visit(PatternArgs patternExpressions)
         {
             // #* #* ... #* -> #*
             List<PatternBase> args = patternExpressions.Args
@@ -63,12 +67,7 @@ namespace PT.PM.Matching
             return result;
         }
 
-        public PatternBase Visit(PatternStatements patternStatements)
-        {
-            return VisitChildren(patternStatements);
-        }
-
-        public PatternBase Visit(PatternOr patternOr)
+        public override PatternBase Visit(PatternOr patternOr)
         {
             if (patternOr.Patterns.Count == 1)
             {
@@ -81,32 +80,7 @@ namespace PT.PM.Matching
             return new PatternOr(exprs, patternOr.TextSpan);
         }
 
-        public PatternBase Visit(PatternBooleanLiteral patternBooleanLiteral)
-        {
-            return VisitChildren(patternBooleanLiteral);
-        }
-
-        public PatternBase Visit(PatternCommentRegex patternComment)
-        {
-            return VisitChildren(patternComment);
-        }
-
-        public PatternBase Visit(PatternAnyExpression patternAnyExpression)
-        {
-            return VisitChildren(patternAnyExpression);
-        }
-
-        public PatternBase Visit(PatternArbitraryDepth patternArbitraryDepthExpression)
-        {
-            return VisitChildren(patternArbitraryDepthExpression);
-        }
-
-        public PatternBase Visit(PatternIdToken patternIdToken)
-        {
-            return VisitChildren(patternIdToken);
-        }
-
-        public PatternBase Visit(PatternIdRegexToken patternIdRegexToken)
+        public override PatternBase Visit(PatternIdRegexToken patternIdRegexToken)
         {
             string regexString = patternIdRegexToken.IdRegex.ToString();
 
@@ -133,7 +107,7 @@ namespace PT.PM.Matching
             return new PatternIdRegexToken(regexString, patternIdRegexToken.TextSpan);
         }
 
-        public PatternBase Visit(PatternIntRangeLiteral patternIntLiteral)
+        public override PatternBase Visit(PatternIntRangeLiteral patternIntLiteral)
         {
             if (patternIntLiteral.MinValue == patternIntLiteral.MaxValue)
             {
@@ -150,22 +124,7 @@ namespace PT.PM.Matching
             }
         }
 
-        public PatternBase Visit(PatternMultipleExpressions patternMultiExpressions)
-        {
-            return VisitChildren(patternMultiExpressions);
-        }
-
-        public PatternBase Visit(PatternStringRegexLiteral patternStringLiteral)
-        {
-            return VisitChildren(patternStringLiteral);
-        }
-
-        public PatternBase Visit(PatternTryCatchStatement patternTryCatchStatement)
-        {
-            return VisitChildren(patternTryCatchStatement);
-        }
-
-        public PatternBase Visit(PatternAnd patternAnd)
+        public override PatternBase Visit(PatternAnd patternAnd)
         {
             if (patternAnd.Patterns.Count == 1)
             {
@@ -173,17 +132,12 @@ namespace PT.PM.Matching
             }
 
             IEnumerable<PatternBase> exprs = patternAnd.Patterns
-                .Select(e => (PatternBase)Visit(e))
+                .Select(e => Visit(e))
                 .OrderBy(e => e);
             return new PatternAnd(exprs, patternAnd.TextSpan);
         }
 
-        public PatternBase Visit(PatternAny patternAny)
-        {
-            return VisitChildren(patternAny);
-        }
-
-        public PatternBase Visit(PatternNot patternNot)
+        public override PatternBase Visit(PatternNot patternNot)
         {
             if (patternNot.Pattern is PatternNot innerPatternNot)
             {
@@ -193,91 +147,11 @@ namespace PT.PM.Matching
             return VisitChildren(patternNot);
         }
 
-        public PatternBase Visit(PatternClassDeclaration patternClassDeclaration)
-        {
-            return VisitChildren(patternClassDeclaration);
-        }
-
-        public PatternBase Visit(PatternMethodDeclaration patternMethodDeclaration)
-        {
-            return VisitChildren(patternMethodDeclaration);
-        }
-
-        public PatternBase Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration)
-        {
-            return VisitChildren(patternVarOrFieldDeclaration);
-        }
-
-        public PatternBase Visit(PatternVar patternVar)
-        {
-            return VisitChildren(patternVar);
-        }
-
-        public PatternBase Visit(PatternAssignmentExpression patternAssignmentExpression)
-        {
-            return VisitChildren(patternAssignmentExpression);
-        }
-
-        public PatternBase Visit(PatternBaseReferenceExpression patternBaseReferenceExpression)
-        {
-            return VisitChildren(patternBaseReferenceExpression);
-        }
-
-        public PatternBase Visit(PatternBinaryOperatorExpression patternBinaryOperatorExpression)
-        {
-            return VisitChildren(patternBinaryOperatorExpression);
-        }
-
-        public PatternBase Visit(PatternBinaryOperatorLiteral patternBinaryOperatorLiteral)
-        {
-            return VisitChildren(patternBinaryOperatorLiteral);
-        }
-
-        public PatternBase Visit(PatternIndexerExpression patternIndexerExpression)
-        {
-            return VisitChildren(patternIndexerExpression);
-        }
-
-        public PatternBase Visit(PatternIntLiteral patternIntLiteral)
-        {
-            return VisitChildren(patternIntLiteral);
-        }
-
-        public PatternBase Visit(PatternInvocationExpression patternInvocationExpression)
-        {
-            return VisitChildren(patternInvocationExpression);
-        }
-
-        public PatternBase Visit(PatternMemberReferenceExpression patternMemberReferenceExpression)
-        {
-            return VisitChildren(patternMemberReferenceExpression);
-        }
-
-        public PatternBase Visit(PatternNullLiteral patternNullLiteral)
-        {
-            return VisitChildren(patternNullLiteral);
-        }
-
-        public PatternBase Visit(PatternObjectCreateExpression patternObjectCreateExpression)
-        {
-            return VisitChildren(patternObjectCreateExpression);
-        }
-
-        public PatternBase Visit(PatternParameterDeclaration patternParameterDeclaration)
-        {
-            return VisitChildren(patternParameterDeclaration);
-        }
-
-        public PatternBase Visit(PatternStringLiteral patternStringLiteral)
-        {
-            return VisitChildren(patternStringLiteral);
-        }
-
-        public PatternBase VisitChildren(PatternBase patternBase)
+        protected override PatternBase VisitChildren(PatternBase patternBase)
         {
             try
             {
-                return propertyEnumerator.Clone(patternBase, Visit);
+                return propertyEnumerator.VisitProperties(patternBase, Visit);
             }
             catch (Exception ex)
             {

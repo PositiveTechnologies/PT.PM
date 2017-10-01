@@ -6,7 +6,7 @@ namespace PT.PM.Common
     /// <summary>
     /// Source: Roslyn, http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis/Text/TextSpan.cs
     /// </summary>
-    public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>
+    public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
         public readonly static TextSpan Empty = default(TextSpan);
 
@@ -125,6 +125,15 @@ namespace PT.PM.Common
         public override string ToString()
         {
             return $"[{Start}..{End})"; 
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is TextSpan otherTextSpan)
+            {
+                return CompareTo(otherTextSpan);
+            }
+            return 1;
         }
 
         public int CompareTo(TextSpan other)

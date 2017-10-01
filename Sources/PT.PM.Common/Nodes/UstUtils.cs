@@ -80,9 +80,9 @@ namespace PT.PM.Common.Nodes
                 return;
             }
 
-            FillAscendantsHelper(ustNode, ustNode as RootUst);
+            FillAscendantsLocal(ustNode, ustNode as RootUst);
 
-            void FillAscendantsHelper(Ust node, RootUst root)
+            void FillAscendantsLocal(Ust node, RootUst root)
             {
                 foreach (Ust child in node.Children)
                 {
@@ -96,7 +96,7 @@ namespace PT.PM.Common.Nodes
                         }
                         else
                         {
-                            FillAscendantsHelper(child, root);
+                            FillAscendantsLocal(child, root);
                         }
                     }
                 }
@@ -133,7 +133,7 @@ namespace PT.PM.Common.Nodes
                 {
                     if (list2[i] != null)
                     {
-                        return -list2[i].Kind;
+                        return -list2[i].KindId;
                     }
                 }
                 else if (!(element is RootUst))
