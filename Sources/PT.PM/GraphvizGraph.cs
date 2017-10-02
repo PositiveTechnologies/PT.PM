@@ -1,19 +1,29 @@
-﻿using System;
+﻿using PT.PM.Common;
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 
-namespace PT.PM.TestUtils
+namespace PT.PM
 {
     public class GraphvizGraph
     {
-        public string GraphvizPath { get; set; } = TestHelper.GraphvizPath;
+        public static string GraphvizPath { get; set; }
 
         public string DotGraph { get; set; }
 
-        public bool SaveDot { get; set; } = true;
+        public bool SaveDot { get; set; } = false;
 
         public GraphvizOutputFormat OutputFormat { get; set; }
+
+        static GraphvizGraph()
+        {
+            string executingAssemblyPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            GraphvizPath = Helper.IsRunningOnLinux
+                ? "dot"
+                : Path.Combine(executingAssemblyPath, "Graphviz", "dot.exe");
+        }
 
         public GraphvizGraph(string dotGraph)
         {
@@ -35,7 +45,7 @@ namespace PT.PM.TestUtils
                 if (!Enum.TryParse(ext, true, out outputFormat))
                 {
                     outputFormat = GraphvizOutputFormat.Png;
-                    imagePath = imagePath + "." + outputFormat.ToString().ToLowerInvariant();
+                    imagePath = $"{imagePath}.{outputFormat.ToString().ToLowerInvariant()}";
                     appendExt = true;
                 }
             }
@@ -44,7 +54,7 @@ namespace PT.PM.TestUtils
                 string outputFormatString = OutputFormat.ToString().ToLowerInvariant();
                 if (!filePath.EndsWith(outputFormatString))
                 {
-                    imagePath = imagePath + "." + outputFormatString;
+                    imagePath = $"{imagePath}.{outputFormatString}";
                     appendExt = true;
                 }
             }

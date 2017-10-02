@@ -201,14 +201,6 @@ namespace PT.PM.TestUtils
 
         public static string ConvertToValidMutexName(string name) => name.Replace('/', ' ').Replace('\\', ' ');
 
-        public static string CombineWithOutputDir(string fileName) => Path.Combine(TestsOutputPath, fileName);
-
-        public static void RenderGraphvizGraph(string filePath, string dotGraph)
-        {
-            var graph = new GraphvizGraph(dotGraph) { GraphvizPath = GraphvizPath };
-            graph.Dump(filePath);
-        }
-
         /// <summary>
         /// Returns path to the current source code file.
         /// </summary>

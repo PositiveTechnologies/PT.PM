@@ -93,7 +93,11 @@ namespace PT.PM
 
         public HashSet<Language> AnalyzedLanguages { get; set; } = new HashSet<Language>(LanguageExt.AllLanguages);
 
-        public HashSet<Language> BaseLanguages { get; set; }
+        public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageExt.AllLanguages);
+
+        public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
+
+        public string DumpDir { get; set; } = "";
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 

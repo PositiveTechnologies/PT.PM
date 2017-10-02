@@ -1,4 +1,4 @@
-﻿namespace PT.PM.TestUtils
+﻿namespace PT.PM
 {
     public enum GraphvizOutputFormat
     {

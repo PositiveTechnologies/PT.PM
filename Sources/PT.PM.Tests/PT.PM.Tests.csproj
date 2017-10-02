@@ -43,7 +43,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UstRenderTests.cs" />
     <Compile Include="TextTests.cs" />
     <Content Include="Data\TaintPoc.cs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

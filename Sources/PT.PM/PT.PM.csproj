@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="GraphvizGraph.cs" />
+    <Compile Include="GraphvizOutputFormat.cs" />
     <Compile Include="LanguageDetector.cs" />
     <Compile Include="MessageEventArgs.cs" />
     <Compile Include="MessageType.cs" />

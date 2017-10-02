@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Matching;
-using PT.PM.Patterns.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -46,6 +45,8 @@ namespace PT.PM
         public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
 
         public IReadOnlyList<Language> BaseLanguages { get; set; }
+
+        public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
         public int ThreadCount { get; private set; }
 
