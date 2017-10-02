@@ -2,7 +2,7 @@
 using PT.PM.Common;
 using PT.PM.PhpParseTreeUst;
 
-namespace PT.PM.UstParsing
+namespace PT.PM.PhpParseTreeUst
 {
     public class PhpAntlrParseTree : AntlrParseTree
     {

@@ -7,8 +7,6 @@ namespace PT.PM.Common
 {
     public static class LanguageExt
     {
-        private static readonly char[] LanguageSeparators = new char[] { ',', ' ', '\t', '\r', '\n' };
-
         public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>()
         {
             [CSharp] = new LanguageInfo(CSharp, ".cs", false, "C#", haveAntlrParser: false),
@@ -103,28 +101,6 @@ namespace PT.PM.Common
             else
             {
                 return result.Key;
-            }
-        }
-
-        public static Language[] ParseLanguages(string str)
-        {
-            if (!string.IsNullOrEmpty(str))
-            {
-                var resultLanguages = new List<Language>();
-                string[] languageStrings = str.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string languageString in languageStrings)
-                {
-                    Language language;
-                    if (Enum.TryParse(languageString, true, out language))
-                    {
-                        resultLanguages.Add(language);
-                    }
-                }
-                return resultLanguages.ToArray();
-            }
-            else
-            {
-                return AllPatternLanguages;
             }
         }
     }

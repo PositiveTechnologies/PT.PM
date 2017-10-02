@@ -4,7 +4,7 @@ using PT.PM.PhpParseTreeUst;
 using Antlr4.Runtime;
 using System.IO;
 
-namespace PT.PM.UstParsing
+namespace PT.PM.PhpParseTreeUst
 {
     public class PhpAntlrParser : AntlrParser
     {

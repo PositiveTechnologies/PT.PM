@@ -10,6 +10,7 @@ namespace PT.PM.Common
 {
     public static class Helper
     {
+        private static readonly char[] Separators = new char[] { ',', ' ', '\t', '\r', '\n' };
         public const string Prefix = "pt.pm_";
 
         public static string FormatJson(string json)
@@ -55,9 +56,31 @@ namespace PT.PM.Common
             }
         }
 
-        static public bool TryCheckIdTokenValue(Expression expr, string value)
+        public static bool TryCheckIdTokenValue(Expression expr, string value)
         {
             return expr is IdToken idToken && idToken.TextValue == value;
+        }
+
+        public static TEnum[] ParseCollection<TEnum>(this string str)
+            where TEnum : struct
+        {
+            if (!string.IsNullOrEmpty(str))
+            {
+                var collection = new List<TEnum>();
+                string[] strings = str.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string elemString in strings)
+                {
+                    if (Enum.TryParse(elemString, true, out TEnum element))
+                    {
+                        collection.Add(element);
+                    }
+                }
+                return collection.ToArray();
+            }
+            else
+            {
+                return ArrayUtils<TEnum>.EmptyArray;
+            }
         }
     }
 }

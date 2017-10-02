@@ -2,7 +2,6 @@
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Matching;
-using PT.PM.Patterns;
 using PT.PM.Patterns.Nodes;
 using System.Linq;
 

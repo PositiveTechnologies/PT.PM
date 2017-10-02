@@ -12,14 +12,15 @@ namespace PT.PM.Common.CodeRepository
 
         public string Code { get; set; }
 
-        public MemoryCodeRepository(string code)
+        public MemoryCodeRepository(string code, string fileName = "")
         {
             Code = code;
+            Path = fileName;
         }
 
         public IEnumerable<string> GetFileNames()
         {
-            return new string[] { "Source Code" };
+            return new string[] { Path };
         }
 
         public string GetFullPath(string relativePath)

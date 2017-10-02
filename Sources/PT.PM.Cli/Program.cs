@@ -102,7 +102,11 @@ namespace PT.PM.Cli
                         stage = Stage.Patterns;
                     }
 
-                    var languages = LanguageExt.ParseLanguages(languagesString);
+                    Language[] languages = languagesString.ParseCollection<Language>();
+                    if (!languages.Any())
+                    {
+                        languages = LanguageExt.AllLanguages;
+                    }
                     ISourceCodeRepository sourceCodeRepository;
                     if (Directory.Exists(fileName))
                     {

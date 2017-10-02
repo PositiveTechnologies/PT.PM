@@ -6,7 +6,6 @@ using PT.PM.JavaParseTreeUst.Converter;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.PhpParseTreeUst;
 using PT.PM.SqlParseTreeUst;
-using PT.PM.UstParsing;
 using System;
 
 namespace PT.PM
