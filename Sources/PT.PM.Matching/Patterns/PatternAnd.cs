@@ -37,11 +37,11 @@ namespace PT.PM.Matching.Patterns
                 newContext = expression.Match(ust, newContext);
                 if (!newContext.Success)
                 {
-                    return newContext;
+                    return newContext.Fail();
                 }
             }
 
-            return newContext;
+            return newContext.AddMatch(ust);
         }
     }
 }

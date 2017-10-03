@@ -32,6 +32,7 @@ namespace PT.PM.Matching.Patterns
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             MatchingContext newContext;
+
             if (ust is StringLiteral stringLiteral)
             {
                 IEnumerable<TextSpan> matches = StringRegex
@@ -50,6 +51,7 @@ namespace PT.PM.Matching.Patterns
             {
                 newContext = context.Fail();
             }
+
             return newContext;
         }
     }

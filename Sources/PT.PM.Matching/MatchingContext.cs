@@ -20,7 +20,9 @@ namespace PT.PM.Matching
 
         public Dictionary<string, IdToken> Vars { get; } = new Dictionary<string, IdToken>();
 
-        public bool Success { get; private set; } = true;
+        public bool Success { get; private set; }
+
+        public bool IgnoreLocations { get; set; }
 
         public static MatchingContext CreateWithInputParamsAndVars(MatchingContext context)
         {
@@ -51,7 +53,8 @@ namespace PT.PM.Matching
 
         public MatchingContext AddUstIfSuccess(Ust ust)
         {
-            if (Success && (ust.IsTerminal || IncludeNonterminalTextSpans))
+            if (Success && 
+                !IgnoreLocations && (ust.IsTerminal || IncludeNonterminalTextSpans))
             {
                 Locations.Add(ust.TextSpan);
             }
@@ -61,7 +64,8 @@ namespace PT.PM.Matching
         public MatchingContext AddMatch(Ust ust)
         {
             Success = true;
-            if (!ust.TextSpan.IsEmpty && (ust.IsTerminal || IncludeNonterminalTextSpans))
+            if (!IgnoreLocations &&
+                !ust.TextSpan.IsEmpty && (ust.IsTerminal || IncludeNonterminalTextSpans))
             {
                 Locations.Add(ust.TextSpan);
             }
@@ -71,7 +75,10 @@ namespace PT.PM.Matching
         public MatchingContext AddMatches(IEnumerable<TextSpan> textSpans)
         {
             Success = true;
-            Locations.AddRange(textSpans);
+            if (!IgnoreLocations)
+            {
+                Locations.AddRange(textSpans);
+            }
             return this;
         }
 

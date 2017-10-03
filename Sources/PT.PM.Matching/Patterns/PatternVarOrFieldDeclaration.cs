@@ -118,6 +118,7 @@ namespace PT.PM.Matching.Patterns
             {
                 context = context.Fail();
             }
+
             return context;
         }
     }

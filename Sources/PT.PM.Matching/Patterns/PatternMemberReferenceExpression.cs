@@ -27,6 +27,7 @@ namespace PT.PM.Matching.Patterns
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             MatchingContext newContext;
+
             if (ust is MemberReferenceExpression memberRef)
             {
                 newContext = Target.Match(memberRef.Target, context);
@@ -41,6 +42,7 @@ namespace PT.PM.Matching.Patterns
             {
                 newContext = context.Fail();
             }
+
             return newContext.AddUstIfSuccess(ust);
         }
     }

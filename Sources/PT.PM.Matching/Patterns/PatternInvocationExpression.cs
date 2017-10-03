@@ -39,6 +39,7 @@ namespace PT.PM.Matching.Patterns
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             MatchingContext newContext;
+
             if (ust is InvocationExpression invocation)
             {
                 newContext = Target.Match(invocation.Target, context);
@@ -52,6 +53,7 @@ namespace PT.PM.Matching.Patterns
             {
                 newContext = context.Fail();
             }
+
             return newContext.AddUstIfSuccess(ust);
         }
     }
