@@ -30,11 +30,6 @@ namespace PT.PM.Matching.Patterns
             TextSpan = textSpan;
         }
 
-        public MatchingContext Match(Ust ust)
-        {
-            return Match(ust, new MatchingContext(Root));
-        }
-
         public abstract MatchingContext Match(Ust ust, MatchingContext context);
 
         public bool Equals(PatternUst other)
