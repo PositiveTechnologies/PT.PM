@@ -32,6 +32,11 @@ namespace PT.PM
 
         public void Dump(string filePath)
         {
+            if (!File.Exists(GraphvizPath))
+            {
+                throw new Exception($"dot.exe has not been found at {GraphvizPath}");
+            }
+
             string ext = Path.GetExtension(filePath);
             if (ext.Length > 0)
             {
