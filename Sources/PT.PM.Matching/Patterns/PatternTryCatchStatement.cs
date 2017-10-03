@@ -7,18 +7,18 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternTryCatchStatement : PatternBase
+    public class PatternTryCatchStatement : PatternUst
     {
-        public List<PatternBase> ExceptionTypes { get; set; }
+        public List<PatternUst> ExceptionTypes { get; set; }
 
         public bool IsCatchBodyEmpty { get; set; }
 
         public PatternTryCatchStatement()
         {
-            ExceptionTypes = new List<PatternBase>();
+            ExceptionTypes = new List<PatternUst>();
         }
 
-        public PatternTryCatchStatement(IEnumerable<PatternBase> exceptionTypes, bool isCatchBodyEmpty,
+        public PatternTryCatchStatement(IEnumerable<PatternUst> exceptionTypes, bool isCatchBodyEmpty,
             TextSpan textSpan)
             : base(textSpan)
         {

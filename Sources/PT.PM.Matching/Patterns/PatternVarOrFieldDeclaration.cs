@@ -7,13 +7,13 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternVarOrFieldDeclaration : PatternBase
+    public class PatternVarOrFieldDeclaration : PatternUst
     {
         public bool LocalVariable { get; set; }
 
-        public List<PatternBase> Modifiers { get; set; } = new List<PatternBase>();
+        public List<PatternUst> Modifiers { get; set; } = new List<PatternUst>();
 
-        public PatternBase Type { get; set; }
+        public PatternUst Type { get; set; }
 
         public PatternAssignmentExpression Assignment { get; set; }
 
@@ -21,12 +21,12 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternVarOrFieldDeclaration(bool localVariable, IEnumerable<PatternBase> modifiers,
-            PatternBase type, PatternAssignmentExpression assignment, TextSpan textSpan)
+        public PatternVarOrFieldDeclaration(bool localVariable, IEnumerable<PatternUst> modifiers,
+            PatternUst type, PatternAssignmentExpression assignment, TextSpan textSpan)
             : base(textSpan)
         {
             LocalVariable = localVariable;
-            Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
+            Modifiers = modifiers?.ToList() ?? new List<PatternUst>();
             Type = type;
             Assignment = assignment;
         }

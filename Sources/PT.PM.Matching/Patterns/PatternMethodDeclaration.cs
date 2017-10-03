@@ -7,39 +7,39 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternMethodDeclaration : PatternBase
+    public class PatternMethodDeclaration : PatternUst
     {
         public bool AnyBody { get; set; }
 
-        public List<PatternBase> Modifiers { get; set; }
+        public List<PatternUst> Modifiers { get; set; }
 
-        public PatternBase Name { get; set; }
+        public PatternUst Name { get; set; }
 
-        public PatternBase Body { get; set; }
+        public PatternUst Body { get; set; }
 
         public PatternMethodDeclaration()
         {
-            Modifiers = new List<PatternBase>();
+            Modifiers = new List<PatternUst>();
         }
 
-        public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name,
-            PatternBase body, TextSpan textSpan)
+        public PatternMethodDeclaration(IEnumerable<PatternUst> modifiers, PatternUst name,
+            PatternUst body, TextSpan textSpan)
             : base(textSpan)
         {
             Modifiers = modifiers?.ToList()
-                ?? new List<PatternBase>();
+                ?? new List<PatternUst>();
             Name = name;
             Body = body ?? throw new ArgumentNullException(nameof(body));
         }
 
-        public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody,
+        public PatternMethodDeclaration(IEnumerable<PatternUst> modifiers, PatternUst name, bool anyBody,
             TextSpan textSpan)
             : base(textSpan)
         {
             InitFields(modifiers, name, anyBody);
         }
 
-        public PatternMethodDeclaration(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)
+        public PatternMethodDeclaration(IEnumerable<PatternUst> modifiers, PatternUst name, bool anyBody)
         {
             InitFields(modifiers, name, anyBody);
         }
@@ -94,9 +94,9 @@ namespace PT.PM.Matching.Patterns
             return newContext.AddUstIfSuccess(ust);
         }
 
-        private void InitFields(IEnumerable<PatternBase> modifiers, PatternBase name, bool anyBody)
+        private void InitFields(IEnumerable<PatternUst> modifiers, PatternUst name, bool anyBody)
         {
-            Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
+            Modifiers = modifiers?.ToList() ?? new List<PatternUst>();
             Name = name;
             AnyBody = anyBody;
             if (anyBody)

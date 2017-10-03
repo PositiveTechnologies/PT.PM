@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternObjectCreateExpression : PatternBase
+    public class PatternObjectCreateExpression : PatternUst
     {
-        public PatternBase Type { get; set; }
+        public PatternUst Type { get; set; }
 
         public PatternArgs Arguments { get; set; }
 
@@ -15,7 +15,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternObjectCreateExpression(PatternBase type, PatternArgs args, TextSpan textSpan = default(TextSpan))
+        public PatternObjectCreateExpression(PatternUst type, PatternArgs args, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Type = type;

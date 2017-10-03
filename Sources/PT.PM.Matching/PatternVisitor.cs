@@ -9,14 +9,14 @@ namespace PT.PM.Matching
 {
     public class PatternVisitor<T> : IPatternVisitor<T>, ILoggable
     {
-        private static PropertyVisitor<PatternBase, T> propertyEnumerator = new PropertyVisitor<PatternBase, T>
+        private static PropertyVisitor<PatternUst, T> propertyEnumerator = new PropertyVisitor<PatternUst, T>
         {
-            IgnoredProperties = new HashSet<string>() { nameof(PatternBase.Parent), nameof(PatternBase.Root) }
+            IgnoredProperties = new HashSet<string>() { nameof(PatternUst.Parent), nameof(PatternUst.Root) }
         };
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public virtual T Visit(PatternBase patternBase)
+        public virtual T Visit(PatternUst patternBase)
         {
             if (patternBase == null)
             {
@@ -190,7 +190,7 @@ namespace PT.PM.Matching
             return VisitChildren(patternVarOrFieldDeclaration);
         }
 
-        protected virtual T VisitChildren(PatternBase patternBase)
+        protected virtual T VisitChildren(PatternUst patternBase)
         {
             try
             {

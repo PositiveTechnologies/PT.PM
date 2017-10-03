@@ -14,8 +14,8 @@ namespace PT.PM.Matching.Json
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(PatternBase) ||
-                objectType.IsSubclassOf(typeof(PatternBase)) ||
+            return objectType == typeof(PatternUst) ||
+                objectType.IsSubclassOf(typeof(PatternUst)) ||
                 objectType == typeof(PatternRoot);
         }
 
@@ -48,10 +48,10 @@ namespace PT.PM.Matching.Json
                         FilenameWildcard = (string)jObject[nameof(PatternRoot.FilenameWildcard)] ?? "",
                         Languages = resultLanguages,
                         DataFormat = (string)jObject[nameof(PatternRoot.DataFormat)] ?? "",
-                        Node = jObject[nameof(PatternRoot.Node)].ToObject<PatternBase>(serializer)
+                        Node = jObject[nameof(PatternRoot.Node)].ToObject<PatternUst>(serializer)
                     };
                 }
-                else if (objectType == typeof(PatternBase) || objectType.IsSubclassOf(typeof(PatternBase)))
+                else if (objectType == typeof(PatternUst) || objectType.IsSubclassOf(typeof(PatternUst)))
                 {
                     var kind = (string)jObject[KindName];
                     var type = ReflectionCache.UstKindFullClassName.Value[kind];

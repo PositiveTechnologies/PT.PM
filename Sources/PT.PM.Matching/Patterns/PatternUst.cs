@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
 {
-    public abstract class PatternBase : IComparable<PatternBase>, IEquatable<PatternBase>, IUst<PatternBase, PatternRoot>, IUst
+    public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>, IUst<PatternUst, PatternRoot>, IUst
     {
-        private PropertyComparer<PatternBase> propertyComparer = new PropertyComparer<PatternBase>()
+        private PropertyComparer<PatternUst> propertyComparer = new PropertyComparer<PatternUst>()
         {
             IgnoredProperties = new HashSet<string>() { nameof(Parent), nameof(Root), nameof(TextSpan) }
         };
@@ -17,15 +17,15 @@ namespace PT.PM.Matching.Patterns
 
         public PatternRoot Root { get; set; }
 
-        public PatternBase Parent { get; set; }
+        public PatternUst Parent { get; set; }
 
         public TextSpan TextSpan { get; set; }
 
-        protected PatternBase()
+        protected PatternUst()
         {
         }
 
-        protected PatternBase(TextSpan textSpan = default(TextSpan))
+        protected PatternUst(TextSpan textSpan = default(TextSpan))
         {
             TextSpan = textSpan;
         }
@@ -37,12 +37,12 @@ namespace PT.PM.Matching.Patterns
 
         public abstract MatchingContext Match(Ust ust, MatchingContext context);
 
-        public bool Equals(PatternBase other)
+        public bool Equals(PatternUst other)
         {
             return CompareTo(other) == 0;
         }
 
-        public int CompareTo(PatternBase other)
+        public int CompareTo(PatternUst other)
         {
             return propertyComparer.Compare(this, other);
         }

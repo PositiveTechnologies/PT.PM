@@ -23,7 +23,7 @@ namespace PT.PM.Tests
         [Test]
         public void Check_IUstPatternVisitor_AllVisitMethodsExists()
         {
-            CheckVisitorMethods(typeof(IPatternVisitor<>), typeof(PatternBase));
+            CheckVisitorMethods(typeof(IPatternVisitor<>), typeof(PatternUst));
         }
 
         [Test]

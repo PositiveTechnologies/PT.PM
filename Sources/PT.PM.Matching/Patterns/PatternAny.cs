@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAny : PatternBase
+    public class PatternAny : PatternUst
     {
         public static PatternAny Instance = new PatternAny();
 

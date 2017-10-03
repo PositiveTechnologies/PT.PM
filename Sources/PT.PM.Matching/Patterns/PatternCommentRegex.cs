@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternCommentRegex : PatternBase
+    public class PatternCommentRegex : PatternUst
     {
         public Regex CommentRegex { get; set; }
 

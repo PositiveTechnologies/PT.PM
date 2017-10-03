@@ -4,7 +4,7 @@ namespace PT.PM.Matching
 {
     public interface IPatternVisitor<out T>
     {
-        T Visit(PatternBase patternBase);
+        T Visit(PatternUst patternBase);
         T Visit(PatternAnd patternAnd);
         T Visit(PatternAny patternAny);
         T Visit(PatternAnyExpression patternAnyExpression);

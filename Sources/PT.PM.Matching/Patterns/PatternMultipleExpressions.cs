@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternMultipleExpressions : PatternBase
+    public class PatternMultipleExpressions : PatternUst
     {
         public PatternMultipleExpressions()
         {

@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBooleanLiteral : PatternBase
+    public class PatternBooleanLiteral : PatternUst
     {
         public bool? Boolean { get; set; }
 

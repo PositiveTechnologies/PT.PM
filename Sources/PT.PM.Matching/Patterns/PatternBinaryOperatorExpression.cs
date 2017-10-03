@@ -4,19 +4,19 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBinaryOperatorExpression : PatternBase
+    public class PatternBinaryOperatorExpression : PatternUst
     {
-        public PatternBase Left { get; set; }
+        public PatternUst Left { get; set; }
 
         public PatternBinaryOperatorLiteral Operator { get; set; }
 
-        public PatternBase Right { get; set; }
+        public PatternUst Right { get; set; }
 
         public PatternBinaryOperatorExpression()
         {
         }
 
-        public PatternBinaryOperatorExpression(PatternBase left, PatternBinaryOperatorLiteral op, PatternBase right,
+        public PatternBinaryOperatorExpression(PatternUst left, PatternBinaryOperatorLiteral op, PatternUst right,
             TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {

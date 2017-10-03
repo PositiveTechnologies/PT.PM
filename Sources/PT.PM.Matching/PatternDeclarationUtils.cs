@@ -7,10 +7,10 @@ namespace PT.PM.Matching
 {
     public static class PatternDeclarationUtils
     {
-        public static MatchingContext MatchSubset<T>(this IEnumerable<PatternBase> collection1, IEnumerable<T> collection2, MatchingContext context)
+        public static MatchingContext MatchSubset<T>(this IEnumerable<PatternUst> collection1, IEnumerable<T> collection2, MatchingContext context)
             where T : Ust
         {
-            var sublistToMatch = new List<PatternBase>(collection1 ?? Enumerable.Empty<PatternBase>());
+            var sublistToMatch = new List<PatternUst>(collection1 ?? Enumerable.Empty<PatternUst>());
             var list = collection2 as IList<T> ?? new List<T>(collection2 ?? Enumerable.Empty<T>());
 
             if (sublistToMatch.Count == 0 && list.Count == 0)

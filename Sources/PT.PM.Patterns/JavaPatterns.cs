@@ -373,7 +373,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternTryCatchStatement
                 {
-                    ExceptionTypes = new List<PatternBase> { new PatternIdToken("NullPointerException") },
+                    ExceptionTypes = new List<PatternUst> { new PatternIdToken("NullPointerException") },
                     IsCatchBodyEmpty = false
                 }
             });
@@ -401,7 +401,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     (
                         new PatternClassDeclaration
                         {
-                            BaseTypes = new List<PatternBase> { new PatternIdToken("Cloneable") }
+                            BaseTypes = new List<PatternUst> { new PatternIdToken("Cloneable") }
                         }
                     )
                 )
@@ -416,7 +416,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 (
                     new PatternClassDeclaration
                     {
-                        BaseTypes = new List<PatternBase>
+                        BaseTypes = new List<PatternUst>
                         {
                             new PatternIdToken("SecurityManager")
                         }
@@ -426,7 +426,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     (
                         new PatternClassDeclaration
                         {
-                            Modifiers = new List<PatternBase>
+                            Modifiers = new List<PatternUst>
                             {
                                 new PatternIdToken("final")
                             }
@@ -442,14 +442,14 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java },
                 Node = new PatternClassDeclaration
                 {
-                    BaseTypes = new List<PatternBase>
+                    BaseTypes = new List<PatternUst>
                     {
                         new PatternIdRegexToken("X509TrustManager|SSLSocketFactory")
                     },
                     Body = new PatternArbitraryDepth
                     {
                         Pattern = new PatternMethodDeclaration(
-                            Enumerable.Empty<PatternBase>().ToList(), new PatternIdRegexToken(".+"), false)
+                            Enumerable.Empty<PatternUst>().ToList(), new PatternIdRegexToken(".+"), false)
                     }
                 }
             });
@@ -466,7 +466,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         new PatternVarOrFieldDeclaration
                         {
                             LocalVariable = false,
-                            Modifiers = new List<PatternBase>
+                            Modifiers = new List<PatternUst>
                             {
                                 new PatternIdToken("static"),
                                 new PatternIdToken("final")
@@ -481,7 +481,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     new PatternVarOrFieldDeclaration
                     {
                         LocalVariable = false,
-                        Modifiers = new List<PatternBase>(),
+                        Modifiers = new List<PatternUst>(),
                         Type = new PatternIdRegexToken("[Ll]og"),
                         Assignment = new PatternAssignmentExpression(
                             new PatternIdRegexToken(),

@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBaseReferenceToken : PatternBase
+    public class PatternBaseReferenceToken : PatternUst
     {
         public PatternBaseReferenceToken()
         {

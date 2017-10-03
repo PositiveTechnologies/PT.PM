@@ -65,7 +65,7 @@ namespace PT.PM.Tests
         {
             var input = new PatternStatements
             {
-                Statements = new List<PatternBase>()
+                Statements = new List<PatternUst>()
                 {
                     new PatternInvocationExpression
                     {
@@ -94,7 +94,7 @@ namespace PT.PM.Tests
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor();
             var normalizer = new PatternNormalizer() { Logger = logger };
-            PatternBase result = normalizer.Visit(input);
+            PatternUst result = normalizer.Visit(input);
 
             var statements = ((PatternStatements)result).Statements;
             var invocation = (PatternInvocationExpression)statements.ElementAt(0);
@@ -136,8 +136,8 @@ namespace PT.PM.Tests
             var normalizer = new PatternNormalizer() { Logger = logger };
 
             var actualPattern = (PatternOr)normalizer.Visit(unsorted);
-            List<PatternBase> actualAlternatives = actualPattern.Patterns;
-            List<PatternBase> expectedAlternatives = expectedSorted.Patterns;
+            List<PatternUst> actualAlternatives = actualPattern.Patterns;
+            List<PatternUst> expectedAlternatives = expectedSorted.Patterns;
 
             Assert.AreEqual(expectedAlternatives.Count, actualAlternatives.Count);
             for (int i = 0; i < expectedAlternatives.Count; i++)

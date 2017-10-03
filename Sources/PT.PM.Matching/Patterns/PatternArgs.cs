@@ -7,20 +7,20 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternArgs : PatternBase
+    public class PatternArgs : PatternUst
     {
-        public List<PatternBase> Args { get; set; } = new List<PatternBase>();
+        public List<PatternUst> Args { get; set; } = new List<PatternUst>();
 
         public PatternArgs()
         {
         }
 
-        public PatternArgs(params PatternBase[] args)
+        public PatternArgs(params PatternUst[] args)
         {
             Args = args.ToList();
         }
 
-        public PatternArgs(IEnumerable<PatternBase> args)
+        public PatternArgs(IEnumerable<PatternUst> args)
         {
             Args = args.ToList();
         }

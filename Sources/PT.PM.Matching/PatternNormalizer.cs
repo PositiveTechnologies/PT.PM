@@ -10,9 +10,9 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching
 {
-    public class PatternNormalizer : PatternVisitor<PatternBase>, ILoggable
+    public class PatternNormalizer : PatternVisitor<PatternUst>, ILoggable
     {
-        private static PropertyCloner<PatternBase> propertyEnumerator = new PropertyCloner<PatternBase>
+        private static PropertyCloner<PatternUst> propertyEnumerator = new PropertyCloner<PatternUst>
         {
             IgnoredProperties = new HashSet<string>() { nameof(Ust.Parent), nameof(Ust.Root) }
         };
@@ -35,11 +35,11 @@ namespace PT.PM.Matching
             return newPattern;
         }
 
-        public override PatternBase Visit(PatternArgs patternExpressions)
+        public override PatternUst Visit(PatternArgs patternExpressions)
         {
             // #* #* ... #* -> #*
-            List<PatternBase> args = patternExpressions.Args
-                .Select(item => (PatternBase)Visit(item)).ToList();
+            List<PatternUst> args = patternExpressions.Args
+                .Select(item => (PatternUst)Visit(item)).ToList();
             int index = 0;
             while (index < args.Count)
             {
@@ -58,20 +58,20 @@ namespace PT.PM.Matching
             return result;
         }
 
-        public override PatternBase Visit(PatternOr patternOr)
+        public override PatternUst Visit(PatternOr patternOr)
         {
             if (patternOr.Patterns.Count == 1)
             {
                 return Visit(patternOr.Patterns[0]);
             }
 
-            IEnumerable<PatternBase> exprs = patternOr.Patterns
+            IEnumerable<PatternUst> exprs = patternOr.Patterns
                 .Select(e => Visit(e))
                 .OrderBy(e => e);
             return new PatternOr(exprs, patternOr.TextSpan);
         }
 
-        public override PatternBase Visit(PatternIdRegexToken patternIdRegexToken)
+        public override PatternUst Visit(PatternIdRegexToken patternIdRegexToken)
         {
             string regexString = patternIdRegexToken.IdRegex.ToString();
 
@@ -98,7 +98,7 @@ namespace PT.PM.Matching
             return new PatternIdRegexToken(regexString, patternIdRegexToken.TextSpan);
         }
 
-        public override PatternBase Visit(PatternIntRangeLiteral patternIntLiteral)
+        public override PatternUst Visit(PatternIntRangeLiteral patternIntLiteral)
         {
             if (patternIntLiteral.MinValue == patternIntLiteral.MaxValue)
             {
@@ -115,20 +115,20 @@ namespace PT.PM.Matching
             }
         }
 
-        public override PatternBase Visit(PatternAnd patternAnd)
+        public override PatternUst Visit(PatternAnd patternAnd)
         {
             if (patternAnd.Patterns.Count == 1)
             {
                 return Visit(patternAnd.Patterns[0]);
             }
 
-            IEnumerable<PatternBase> exprs = patternAnd.Patterns
+            IEnumerable<PatternUst> exprs = patternAnd.Patterns
                 .Select(e => Visit(e))
                 .OrderBy(e => e);
             return new PatternAnd(exprs, patternAnd.TextSpan);
         }
 
-        public override PatternBase Visit(PatternNot patternNot)
+        public override PatternUst Visit(PatternNot patternNot)
         {
             if (patternNot.Pattern is PatternNot innerPatternNot)
             {
@@ -138,7 +138,7 @@ namespace PT.PM.Matching
             return VisitChildren(patternNot);
         }
 
-        protected override PatternBase VisitChildren(PatternBase patternBase)
+        protected override PatternUst VisitChildren(PatternUst patternBase)
         {
             try
             {

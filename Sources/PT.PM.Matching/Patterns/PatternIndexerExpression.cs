@@ -10,7 +10,7 @@ namespace PT.PM.Matching.Patterns
     {
         public override Type UstType => typeof(IndexerExpression);
 
-        public PatternBase Target { get; set; }
+        public PatternUst Target { get; set; }
 
         public PatternArgs Arguments { get; set; }
 
@@ -18,16 +18,16 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternIndexerExpression(PatternBase target, PatternArgs arguments, TextSpan textSpan = default(TextSpan))
+        public PatternIndexerExpression(PatternUst target, PatternArgs arguments, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Target = target;
             Arguments = arguments;
         }
 
-        public override PatternBase[] GetArgs()
+        public override PatternUst[] GetArgs()
         {
-            var result = new List<PatternBase>();
+            var result = new List<PatternUst>();
             result.Add(Target);
             result.AddRange(Arguments.Args);
             return result.ToArray();

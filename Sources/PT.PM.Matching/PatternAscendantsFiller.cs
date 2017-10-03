@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching
 {
-    public class PatternAscendantsFiller : PatternVisitor<PatternBase>
+    public class PatternAscendantsFiller : PatternVisitor<PatternUst>
     {
         private PatternRoot patternRoot;
-        private Stack<PatternBase> parents;
+        private Stack<PatternUst> parents;
 
         public PatternAscendantsFiller(PatternRoot patternRoot)
         {
             this.patternRoot = patternRoot;
-            parents = new Stack<PatternBase>();
+            parents = new Stack<PatternUst>();
         }
 
         public void FillAscendants()
@@ -19,7 +19,7 @@ namespace PT.PM.Matching
             Visit(patternRoot.Node);
         }
 
-        public override PatternBase Visit(PatternBase patternBase)
+        public override PatternUst Visit(PatternUst patternBase)
         {
             if (patternBase == null)
             {

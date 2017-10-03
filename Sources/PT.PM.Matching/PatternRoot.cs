@@ -56,13 +56,13 @@ namespace PT.PM.Matching
         [JsonIgnore]
         public string DebugInfo { get; set; } = "";
 
-        public PatternBase Node { get; set; } = PatternAny.Instance;
+        public PatternUst Node { get; set; } = PatternAny.Instance;
 
         public PatternRoot()
         {
         }
 
-        public PatternRoot(PatternBase node)
+        public PatternRoot(PatternUst node)
         {
             Node = node ?? throw new ArgumentNullException(nameof(node));
         }
@@ -96,7 +96,7 @@ namespace PT.PM.Matching
             return results;
         }
 
-        private static void TraverseChildren(PatternBase patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
+        private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
@@ -110,7 +110,7 @@ namespace PT.PM.Matching
         }
 
         private static void MatchAndAddResult(
-            PatternBase patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
+            PatternUst patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
         {
             if (patternUst.Match(ust, context).Success)
             {

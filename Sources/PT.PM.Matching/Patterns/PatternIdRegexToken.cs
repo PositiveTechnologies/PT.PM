@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdRegexToken : PatternBase
+    public class PatternIdRegexToken : PatternUst
     {
         private Regex regex;
         private Regex caseInsensitiveRegex;

@@ -6,22 +6,22 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAnd : PatternBase
+    public class PatternAnd : PatternUst
     {
-        public List<PatternBase> Patterns { get; set; } = new List<PatternBase>();
+        public List<PatternUst> Patterns { get; set; } = new List<PatternUst>();
 
         public PatternAnd()
         {
         }
 
-        public PatternAnd(IEnumerable<PatternBase> expressions, TextSpan textSpan) :
+        public PatternAnd(IEnumerable<PatternUst> expressions, TextSpan textSpan) :
             base(textSpan)
         {
             Patterns = expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
-        public PatternAnd(params PatternBase[] expressions)
+        public PatternAnd(params PatternUst[] expressions)
         {
             Patterns = expressions.ToList();
         }
@@ -32,7 +32,7 @@ namespace PT.PM.Matching.Patterns
         {
             MatchingContext newContext = context;
 
-            foreach (PatternBase expression in Patterns)
+            foreach (PatternUst expression in Patterns)
             {
                 newContext = expression.Match(ust, newContext);
                 if (!newContext.Success)

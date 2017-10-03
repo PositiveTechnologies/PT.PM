@@ -5,7 +5,7 @@ using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternVar : PatternBase
+    public class PatternVar : PatternUst
     {
         public string Id { get; set; } = "";
 
@@ -20,7 +20,7 @@ namespace PT.PM.Matching.Patterns
             Id = id;
         }
 
-        public PatternBase Value { get; set; } = new PatternIdRegexToken();
+        public PatternUst Value { get; set; } = new PatternIdRegexToken();
 
         public override string ToString()
         {

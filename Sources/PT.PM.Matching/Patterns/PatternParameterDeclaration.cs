@@ -5,19 +5,19 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternParameterDeclaration : PatternBase
+    public class PatternParameterDeclaration : PatternUst
     {
-        public PatternBase Type { get; set; }
+        public PatternUst Type { get; set; }
 
-        public PatternBase Name { get; set; }
+        public PatternUst Name { get; set; }
 
-        public PatternBase Initializer { get; set; }
+        public PatternUst Initializer { get; set; }
 
         public PatternParameterDeclaration()
         {
         }
 
-        public PatternParameterDeclaration(PatternBase type, PatternBase name, TextSpan textSpan = default(TextSpan))
+        public PatternParameterDeclaration(PatternUst type, PatternUst name, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Type = type;

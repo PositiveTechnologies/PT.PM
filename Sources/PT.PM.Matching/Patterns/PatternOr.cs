@@ -6,23 +6,23 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternOr : PatternBase
+    public class PatternOr : PatternUst
     {
-        public List<PatternBase> Patterns { get; set; }
+        public List<PatternUst> Patterns { get; set; }
 
         public PatternOr()
         {
-            Patterns = new List<PatternBase>();
+            Patterns = new List<PatternUst>();
         }
 
-        public PatternOr(IEnumerable<PatternBase> patterns, TextSpan textSpan = default(TextSpan))
+        public PatternOr(IEnumerable<PatternUst> patterns, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Patterns = patterns?.ToList()
                 ?? throw new ArgumentNullException(nameof(patterns));
         }
 
-        public PatternOr(params PatternBase[] expressions)
+        public PatternOr(params PatternUst[] expressions)
         {
             Patterns = expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
@@ -35,7 +35,7 @@ namespace PT.PM.Matching.Patterns
             var matchedTextSpans = new List<TextSpan>();
 
             bool success = false;
-            foreach (PatternBase alt in Patterns)
+            foreach (PatternUst alt in Patterns)
             {
                 var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
                 MatchingContext match = alt.Match(ust, altContext);

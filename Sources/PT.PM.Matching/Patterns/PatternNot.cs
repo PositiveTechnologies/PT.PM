@@ -4,15 +4,15 @@ using System;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternNot : PatternBase
+    public class PatternNot : PatternUst
     {
-        public PatternBase Pattern { get; set; } = PatternAny.Instance;
+        public PatternUst Pattern { get; set; } = PatternAny.Instance;
 
         public PatternNot()
         {
         }
 
-        public PatternNot(PatternBase pattern, TextSpan textSpan = default(TextSpan))
+        public PatternNot(PatternUst pattern, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));

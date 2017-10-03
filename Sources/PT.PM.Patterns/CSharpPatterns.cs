@@ -47,7 +47,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { CSharp },
                 Node = new PatternTryCatchStatement
                 {
-                    ExceptionTypes = new List<PatternBase>
+                    ExceptionTypes = new List<PatternUst>
                     {
                         new PatternIdToken("NullReferenceException"),
                         new PatternIdToken("System.NullReferenceException")

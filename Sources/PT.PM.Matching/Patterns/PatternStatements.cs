@@ -11,23 +11,23 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStatements : PatternBase
+    public class PatternStatements : PatternUst
     {
-        public List<PatternBase> Statements { get; set; } = new List<PatternBase>();
+        public List<PatternUst> Statements { get; set; } = new List<PatternUst>();
 
         public PatternStatements()
         {
         }
 
-        public PatternStatements(IEnumerable<PatternBase> statements, TextSpan textSpan = default(TextSpan))
+        public PatternStatements(IEnumerable<PatternUst> statements, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Statements = statements?.ToList() ?? new List<PatternBase>();
+            Statements = statements?.ToList() ?? new List<PatternUst>();
         }
 
-        public PatternStatements(params PatternBase[] statements)
+        public PatternStatements(params PatternUst[] statements)
         {
-            Statements = statements?.ToList() ?? new List<PatternBase>();
+            Statements = statements?.ToList() ?? new List<PatternUst>();
         }
 
         public override string ToString() => string.Join(";\n", Statements);

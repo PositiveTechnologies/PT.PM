@@ -5,7 +5,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntLiteral : PatternBase
+    public class PatternIntLiteral : PatternUst
     {
         public long Value { get; set; }
 

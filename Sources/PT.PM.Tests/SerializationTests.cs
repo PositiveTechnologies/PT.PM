@@ -31,7 +31,7 @@ namespace PT.PM.Tests
             {
                 Node = new PatternStatements
                 {
-                    Statements = new List<PatternBase>
+                    Statements = new List<PatternUst>
                     {
                         new PatternAssignmentExpression
                         {

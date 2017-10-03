@@ -4,17 +4,17 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAssignmentExpression : PatternBase
+    public class PatternAssignmentExpression : PatternUst
     {
-        public PatternBase Left { get; set; }
+        public PatternUst Left { get; set; }
 
-        public PatternBase Right { get; set; }
+        public PatternUst Right { get; set; }
 
         public PatternAssignmentExpression()
         {
         }
 
-        public PatternAssignmentExpression(PatternBase left, PatternBase right,
+        public PatternAssignmentExpression(PatternUst left, PatternUst right,
             TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {

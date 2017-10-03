@@ -3,15 +3,15 @@ using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternArbitraryDepth : PatternBase
+    public class PatternArbitraryDepth : PatternUst
     {
-        public PatternBase Pattern { get; set; }
+        public PatternUst Pattern { get; set; }
 
         public PatternArbitraryDepth()
         {
         }
 
-        public PatternArbitraryDepth(PatternBase pattern, TextSpan textSpan = default(TextSpan))
+        public PatternArbitraryDepth(PatternUst pattern, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Pattern = pattern;

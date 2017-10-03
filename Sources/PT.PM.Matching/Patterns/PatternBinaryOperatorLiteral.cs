@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBinaryOperatorLiteral : PatternBase
+    public class PatternBinaryOperatorLiteral : PatternUst
     {
         public BinaryOperator BinaryOperator { get; set; }
 

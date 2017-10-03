@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStringRegexLiteral : PatternBase
+    public class PatternStringRegexLiteral : PatternUst
     {
         public Regex StringRegex { get; set; }
 

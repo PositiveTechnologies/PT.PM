@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntRangeLiteral : PatternBase
+    public class PatternIntRangeLiteral : PatternUst
     {
         public long MinValue { get; set; }
 

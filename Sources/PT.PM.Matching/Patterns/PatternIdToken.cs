@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdToken : PatternBase
+    public class PatternIdToken : PatternUst
     {
         private string id = "";
         private Regex caseInsensitiveRegex;

@@ -6,30 +6,30 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternClassDeclaration : PatternBase
+    public class PatternClassDeclaration : PatternUst
     {
-        public List<PatternBase> Modifiers { get; set; }
+        public List<PatternUst> Modifiers { get; set; }
 
-        public PatternBase Name { get; set; }
+        public PatternUst Name { get; set; }
 
-        public List<PatternBase> BaseTypes { get; set; }
+        public List<PatternUst> BaseTypes { get; set; }
 
         public PatternArbitraryDepth Body { get; set; }
 
         public PatternClassDeclaration()
         {
-            Modifiers = new List<PatternBase>();
-            BaseTypes = new List<PatternBase>();
+            Modifiers = new List<PatternUst>();
+            BaseTypes = new List<PatternUst>();
         }
 
-        public PatternClassDeclaration(IEnumerable<PatternBase> modifiers,
-            PatternBase name, IEnumerable<PatternBase> baseTypes,
+        public PatternClassDeclaration(IEnumerable<PatternUst> modifiers,
+            PatternUst name, IEnumerable<PatternUst> baseTypes,
             PatternArbitraryDepth body, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Modifiers = modifiers?.ToList() ?? new List<PatternBase>();
+            Modifiers = modifiers?.ToList() ?? new List<PatternUst>();
             Name = name;
-            BaseTypes = baseTypes?.ToList() ?? new List<PatternBase>();
+            BaseTypes = baseTypes?.ToList() ?? new List<PatternUst>();
             Body = body;
         }
 
