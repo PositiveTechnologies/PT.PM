@@ -44,9 +44,9 @@ namespace PT.PM.CSharpParseTreeUst
             {
                 sourceCodeFile = langParseTree.SourceCodeFile;
                 Ust visited = aspxParseTree.Root.Accept(this);
-                if (visited is RootUst rootUstNode)
+                if (visited is RootUst rootUst)
                 {
-                    result = rootUstNode;
+                    result = rootUst;
                 }
                 else
                 {

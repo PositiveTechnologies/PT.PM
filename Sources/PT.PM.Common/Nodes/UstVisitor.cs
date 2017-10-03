@@ -47,7 +47,7 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(assignmentExpression);
         }
 
-        public virtual T Visit(BaseReferenceExpression baseReferenceExpression)
+        public virtual T Visit(BaseReferenceToken baseReferenceExpression)
         {
             return VisitChildren(baseReferenceExpression);
         }

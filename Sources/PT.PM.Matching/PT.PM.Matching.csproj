@@ -56,8 +56,9 @@
     <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
     <Compile Include="PatternsRepository\IPatternsRepository.cs" />
     <Compile Include="PatternsRepository\JsonPatternsRepository.cs" />
+    <Compile Include="Patterns\PatternExpression.cs" />
     <Compile Include="Patterns\PatternAny.cs" />
-    <Compile Include="Patterns\PatternBaseReferenceExpression.cs" />
+    <Compile Include="Patterns\PatternBaseReferenceToken.cs" />
     <Compile Include="Patterns\PatternAssignmentExpression.cs" />
     <Compile Include="Patterns\PatternBase.cs" />
     <Compile Include="Patterns\PatternAnd.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Patterns\PatternStatements.cs" />
     <Compile Include="Patterns\PatternStringLiteral.cs" />
     <Compile Include="Patterns\PatternStringRegexLiteral.cs" />
+    <Compile Include="Patterns\PatternThisReferenceToken.cs" />
     <Compile Include="Patterns\PatternTryCatchStatement.cs" />
     <Compile Include="Patterns\PatternVar.cs" />
     <Compile Include="Patterns\PatternVarOrFieldDeclaration.cs" />

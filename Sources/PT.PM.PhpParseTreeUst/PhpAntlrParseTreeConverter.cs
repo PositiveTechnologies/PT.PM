@@ -242,9 +242,9 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitUseDeclarationContent(PhpParser.UseDeclarationContentContext context)
         {
-            var namespaceNameListUstNode = (StringLiteral)Visit(context.namespaceNameList());
+            var namespaceNameListUst = (StringLiteral)Visit(context.namespaceNameList());
 
-            var result = new UsingDeclaration(namespaceNameListUstNode, context.GetTextSpan());
+            var result = new UsingDeclaration(namespaceNameListUst, context.GetTextSpan());
             return result;
         }
 
@@ -392,12 +392,12 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitInnerStatementList(PhpParser.InnerStatementListContext context)
         {
-            List<Statement> innerStatementUstNodes = context.innerStatement()
+            List<Statement> innerStatementUsts = context.innerStatement()
                 .Select(c => (Statement)Visit(c))
                 .Where(c => c != null)
                 .ToList();
 
-            var result = new BlockStatement(innerStatementUstNodes, 
+            var result = new BlockStatement(innerStatementUsts, 
                 context.innerStatement().Length > 0 ? context.GetTextSpan() : default(TextSpan));
             return result;
         }
@@ -469,9 +469,9 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitBlockStatement(PhpParser.BlockStatementContext context)
         {
-            var innerStatementListUstNode = (BlockStatement)Visit(context.innerStatementList());
+            var innerStatementListUst = (BlockStatement)Visit(context.innerStatementList());
 
-            var result = new BlockStatement(innerStatementListUstNode.Statements, context.GetTextSpan());
+            var result = new BlockStatement(innerStatementListUst.Statements, context.GetTextSpan());
             return result;
         }
 

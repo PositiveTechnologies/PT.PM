@@ -334,7 +334,7 @@ namespace PT.PM.Dsl
 
         public PatternBase VisitBaseReferenceExpression(DslParser.BaseReferenceExpressionContext context)
         {
-            return new PatternBaseReferenceExpression(context.GetTextSpan());
+            return new PatternBaseReferenceToken(context.GetTextSpan());
         }
 
         public PatternBase VisitVariableName(DslParser.VariableNameContext context)

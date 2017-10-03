@@ -88,7 +88,7 @@
     <Compile Include="Nodes\Expressions\AnonymousMethodExpression.cs" />
     <Compile Include="Nodes\Expressions\ArrayCreationExpression.cs" />
     <Compile Include="Nodes\Expressions\AssignmentExpression.cs" />
-    <Compile Include="Nodes\Tokens\BaseReferenceExpression.cs" />
+    <Compile Include="Nodes\Tokens\BaseReferenceToken.cs" />
     <Compile Include="Nodes\Expressions\BinaryOperatorExpression.cs" />
     <Compile Include="Nodes\Expressions\CastExpression.cs" />
     <Compile Include="Nodes\Expressions\ConditionalExpression.cs" />

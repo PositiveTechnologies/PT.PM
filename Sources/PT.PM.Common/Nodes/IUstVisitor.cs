@@ -31,7 +31,7 @@ namespace PT.PM.Common.Nodes
         T Visit(AnonymousMethodExpression anonymousMethodExpression);
         T Visit(ArrayCreationExpression arrayCreationExpression);
         T Visit(AssignmentExpression assignmentExpression);
-        T Visit(BaseReferenceExpression baseReferenceExpression);
+        T Visit(BaseReferenceToken baseReferenceExpression);
         T Visit(BinaryOperatorExpression binaryOperatorExpression);
         T Visit(CastExpression castExpression);
         T Visit(ConditionalExpression conditionalExpression);

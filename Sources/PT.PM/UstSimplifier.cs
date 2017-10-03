@@ -31,25 +31,16 @@ namespace PT.PM.Matching
             return Visit(ustNode);
         }
 
-        public override Ust Visit(RootUst rootUstNode)
+        public override Ust Visit(RootUst rootUst)
         {
-            var newRoot = new RootUst(rootUstNode.SourceCodeFile, rootUstNode.Language);
+            var newRoot = new RootUst(rootUst.SourceCodeFile, rootUst.Language);
 
-            newRoot.SourceCodeFile = rootUstNode.SourceCodeFile;
-            newRoot.Nodes = rootUstNode.Nodes.Select(node => Visit(node)).ToArray();
-            newRoot.Comments = rootUstNode.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
+            newRoot.SourceCodeFile = rootUst.SourceCodeFile;
+            newRoot.Nodes = rootUst.Nodes.Select(node => Visit(node)).ToArray();
+            newRoot.Comments = rootUst.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
 
             newRoot.FillAscendants();
             return newRoot;
-        }
-
-        public override Ust Visit(Ust ust)
-        {
-            if (ust == null)
-            {
-                return null;
-            }
-            return Visit((dynamic)ust);
         }
 
         public override Ust Visit(ArrayCreationExpression arrayCreationExpression)

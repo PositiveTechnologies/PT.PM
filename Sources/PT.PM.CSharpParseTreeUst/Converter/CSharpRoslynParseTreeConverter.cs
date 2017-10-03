@@ -44,9 +44,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 try
                 {
                     Ust visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
-                    if (visited is RootUst rootUstNode)
+                    if (visited is RootUst rootUst)
                     {
-                        result = rootUstNode;
+                        result = rootUst;
                     }
                     else
                     {

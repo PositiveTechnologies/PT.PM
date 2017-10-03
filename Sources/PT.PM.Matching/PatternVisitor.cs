@@ -50,7 +50,12 @@ namespace PT.PM.Matching
             return VisitChildren(patternAssignmentExpression);
         }
 
-        public virtual T Visit(PatternBaseReferenceExpression patternBaseReferenceExpression)
+        public virtual T Visit(PatternThisReferenceToken patternThisReferenceToken)
+        {
+            return VisitChildren(patternThisReferenceToken);
+        }
+
+        public virtual T Visit(PatternBaseReferenceToken patternBaseReferenceExpression)
         {
             return VisitChildren(patternBaseReferenceExpression);
         }

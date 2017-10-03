@@ -37,6 +37,11 @@ namespace PT.PM.Matching
             };
         }
 
+        public static implicit operator bool(MatchingContext context)
+        {
+            return context.Success;
+        }
+
         public MatchingContext(PatternRoot patternUst, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;

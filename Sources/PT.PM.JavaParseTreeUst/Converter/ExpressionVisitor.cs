@@ -202,7 +202,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         return result;
 
                     case JavaParser.SUPER:
-                        result = new BaseReferenceExpression(textSpan);
+                        result = new BaseReferenceToken(textSpan);
                         return result;
 
                     case JavaParser.VOID:

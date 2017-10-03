@@ -53,9 +53,9 @@ namespace PT.PM.AntlrUtils
                     Tokens = antlrParseTree.Tokens;
                     root = new RootUst(langParseTree.SourceCodeFile, Language);
                     Ust visited = Visit(tree);
-                    if (visited is RootUst rootUstNode)
+                    if (visited is RootUst rootUst)
                     {
-                        result = rootUstNode;
+                        result = rootUst;
                     }
                     else
                     {

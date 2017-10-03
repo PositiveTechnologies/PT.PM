@@ -171,7 +171,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitBaseExpression(BaseExpressionSyntax node)
         {
-            var result = new BaseReferenceExpression(node.GetTextSpan());
+            var result = new BaseReferenceToken(node.GetTextSpan());
             return result;
         }
 

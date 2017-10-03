@@ -2,14 +2,14 @@
 
 namespace PT.PM.Common.Nodes.Tokens
 {
-    public class BaseReferenceExpression : Expression
+    public class BaseReferenceToken : Expression
     {
-        public BaseReferenceExpression(TextSpan textSpan)
+        public BaseReferenceToken(TextSpan textSpan)
             : base(textSpan)
         {
         }
 
-        public BaseReferenceExpression()
+        public BaseReferenceToken()
         {
         }
 

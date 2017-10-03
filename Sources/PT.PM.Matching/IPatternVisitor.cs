@@ -10,7 +10,8 @@ namespace PT.PM.Matching
         T Visit(PatternAnyExpression patternAnyExpression);
         T Visit(PatternArgs patternArgs);
         T Visit(PatternAssignmentExpression patternAssignmentExpression);
-        T Visit(PatternBaseReferenceExpression patternBaseReferenceExpression);
+        T Visit(PatternThisReferenceToken patternThisReferenceToken);
+        T Visit(PatternBaseReferenceToken patternBaseReferenceToken);
         T Visit(PatternBinaryOperatorExpression patternBinaryOperatorExpression);
         T Visit(PatternBinaryOperatorLiteral patternBinaryOperatorLiteral);
         T Visit(PatternBooleanLiteral patternBooleanLiteral);

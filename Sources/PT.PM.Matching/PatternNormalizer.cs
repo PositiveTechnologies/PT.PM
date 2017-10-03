@@ -35,15 +35,6 @@ namespace PT.PM.Matching
             return newPattern;
         }
 
-        public override PatternBase Visit(PatternBase patternBase)
-        {
-            if (patternBase == null)
-            {
-                return null;
-            }
-            return Visit((dynamic)patternBase);
-        }
-
         public override PatternBase Visit(PatternArgs patternExpressions)
         {
             // #* #* ... #* -> #*

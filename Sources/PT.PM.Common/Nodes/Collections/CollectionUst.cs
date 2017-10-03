@@ -3,27 +3,27 @@ using System.Linq;
 
 namespace PT.PM.Common.Nodes.Collections
 {
-    public abstract class CollectionNode<TUstNode> : Ust
-        where TUstNode : Ust
+    public abstract class CollectionNode<TUst> : Ust
+        where TUst : Ust
     {
-        public List<TUstNode> Collection { get; set; }
+        public List<TUst> Collection { get; set; }
 
-        protected CollectionNode(IEnumerable<TUstNode> collection, TextSpan textSpan)
+        protected CollectionNode(IEnumerable<TUst> collection, TextSpan textSpan)
             : base(textSpan)
         {
-            Collection = collection as List<TUstNode> ?? collection.ToList();
+            Collection = collection as List<TUst> ?? collection.ToList();
         }
 
-        protected CollectionNode(IEnumerable<TUstNode> collection)
+        protected CollectionNode(IEnumerable<TUst> collection)
             : base()
         {
-            Collection = collection as List<TUstNode> ?? collection.ToList();
+            Collection = collection as List<TUst> ?? collection.ToList();
         }
 
         protected CollectionNode()
             : base()
         {
-            Collection = new List<TUstNode>();
+            Collection = new List<TUst>();
         }
 
         public override Ust[] GetChildren()

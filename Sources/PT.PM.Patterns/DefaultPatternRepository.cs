@@ -1,6 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using PT.PM.Matching.PatternsRepository;

@@ -4,13 +4,13 @@ using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBaseReferenceExpression : PatternBase
+    public class PatternBaseReferenceToken : PatternBase
     {
-        public PatternBaseReferenceExpression()
+        public PatternBaseReferenceToken()
         {
         }
 
-        public PatternBaseReferenceExpression(TextSpan textSpan)
+        public PatternBaseReferenceToken(TextSpan textSpan)
             : base(textSpan)
         {
         }
@@ -19,7 +19,7 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (!(ust is BaseReferenceExpression))
+            if (!(ust is BaseReferenceToken))
             {
                 return context.Fail();
             }

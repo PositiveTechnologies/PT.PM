@@ -44,7 +44,7 @@ namespace PT.PM
             UstPatternMatcher = new PatternMatcher();
             IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();
             IPatternSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new PatternConverter(new IPatternSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            PatternConverter = new PatternConverter(jsonNodeSerializer, dslNodeSerializer);
             Stage = stage;
             ThreadCount = 1;
         }

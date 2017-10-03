@@ -1,11 +1,15 @@
-﻿using PT.PM.Common;
+﻿using System;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
+using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIndexerExpression : PatternBase
+    public class PatternIndexerExpression : PatternExpression
     {
+        public override Type UstType => typeof(IndexerExpression);
+
         public PatternBase Target { get; set; }
 
         public PatternArgs Arguments { get; set; }
@@ -19,6 +23,14 @@ namespace PT.PM.Matching.Patterns
         {
             Target = target;
             Arguments = arguments;
+        }
+
+        public override PatternBase[] GetArgs()
+        {
+            var result = new List<PatternBase>();
+            result.Add(Target);
+            result.AddRange(Arguments.Args);
+            return result.ToArray();
         }
 
         public override string ToString() => $"{Target}[{Arguments}]";
