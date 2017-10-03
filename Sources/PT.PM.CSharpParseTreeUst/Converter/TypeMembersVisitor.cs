@@ -13,27 +13,27 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
     {
         #region Never invoked overrides (Implementation error if invoked)
 
-        public override UstNode VisitAccessorDeclaration(AccessorDeclarationSyntax node)
+        public override Ust VisitAccessorDeclaration(AccessorDeclarationSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitIndexerDeclaration(IndexerDeclarationSyntax node)
+        public override Ust VisitIndexerDeclaration(IndexerDeclarationSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitEventDeclaration(EventDeclarationSyntax node)
+        public override Ust VisitEventDeclaration(EventDeclarationSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitOperatorDeclaration(OperatorDeclarationSyntax node)
+        public override Ust VisitOperatorDeclaration(OperatorDeclarationSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        public override Ust VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             throw new InvalidOperationException();
         }
@@ -42,7 +42,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #region Constructor
 
-        public override UstNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        public override Ust VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             var typeName = ConvertId(node.Identifier);
             // TODO: fix with args node
@@ -58,19 +58,19 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitConstructorConstraint(ConstructorConstraintSyntax node)
+        public override Ust VisitConstructorConstraint(ConstructorConstraintSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitConstructorInitializer(ConstructorInitializerSyntax node)
+        public override Ust VisitConstructorInitializer(ConstructorInitializerSyntax node)
         {
             throw new InvalidOperationException();
         }
 
         #endregion
 
-        public override UstNode VisitDestructorDeclaration(DestructorDeclarationSyntax node)
+        public override Ust VisitDestructorDeclaration(DestructorDeclarationSyntax node)
         {
             var name = new IdToken(node.Identifier.ValueText + "_Destroy", node.Identifier.GetTextSpan());
             var body = (BlockStatement)VisitBlock(node.Body);
@@ -79,7 +79,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+        public override Ust VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
             var init = (Expression)base.Visit(node.EqualsValue != null ? node.EqualsValue.Value : null);
             AssignmentExpression[] vars = new[] { new AssignmentExpression(
@@ -92,7 +92,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitFieldDeclaration(FieldDeclarationSyntax node)
+        public override Ust VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
             var type = ConvertType(base.Visit(node.Declaration.Type));
             var varDelaraions = node.Declaration.Variables.Select(
@@ -106,7 +106,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitMethodDeclaration(MethodDeclarationSyntax node)
+        public override Ust VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             var id = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan());
 
@@ -143,7 +143,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitParameter(ParameterSyntax node)
+        public override Ust VisitParameter(ParameterSyntax node)
         {
             TypeToken type = ConvertType(base.Visit(node.Type));
             var id = ConvertId(node.Identifier);
@@ -151,7 +151,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
+        public override Ust VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
             var initializer = node.Initializer != null ? (Expression)base.Visit(node.Initializer.Value) : null;
 

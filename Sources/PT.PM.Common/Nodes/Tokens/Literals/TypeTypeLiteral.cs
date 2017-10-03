@@ -2,8 +2,6 @@
 {
     public class TypeTypeLiteral : Token
     {
-        public override NodeType NodeType => NodeType.TypeTypeLiteral;
-
         public TypeType TypeType { get; set; }
 
         public override string TextValue => TypeType.ToString();
@@ -18,7 +16,7 @@
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

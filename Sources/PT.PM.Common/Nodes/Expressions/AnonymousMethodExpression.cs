@@ -8,15 +8,14 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class AnonymousMethodExpression : Expression
     {
-        public override NodeType NodeType => NodeType.AnonymousMethodExpression;
-
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
         public BlockStatement Body { get; set; }
 
-        public override Expression[] GetArgs()
+        public override Expression[] GetArgs() => new Expression[0];
+
+        public AnonymousMethodExpression()
         {
-            return new Expression[0];
         }
 
         public AnonymousMethodExpression(IEnumerable<ParameterDeclaration> parameters, BlockStatement body,
@@ -27,13 +26,9 @@ namespace PT.PM.Common.Nodes.Expressions
             Body = body;
         }
 
-        public AnonymousMethodExpression()
+        public override Ust[] GetChildren()
         {
-        }
-
-        public override UstNode[] GetChildren()
-        {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Parameters);
             result.Add(Body);
             return result.ToArray();

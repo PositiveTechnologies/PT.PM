@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class VariableDeclarationExpression : Expression
     {
-        public override NodeType NodeType => NodeType.VariableDeclarationExpression;
-
         public TypeToken Type { get; set; }
 
         public List<AssignmentExpression> Variables { get; set; }
@@ -24,9 +22,9 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             result.AddRange(Variables);
             return result.ToArray();

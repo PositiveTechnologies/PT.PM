@@ -2,17 +2,15 @@
 {
     public class WrapperExpression : Expression
     {
-        public override NodeType NodeType => NodeType.WrapperExpression;
+        public Ust Node { get; set; }
 
-        public UstNode Node { get; set; }
-
-        public WrapperExpression(UstNode node, TextSpan textSpan)
+        public WrapperExpression(Ust node, TextSpan textSpan)
             : base(textSpan)
         {
             Node = node;
         }
 
-        public WrapperExpression(UstNode node)
+        public WrapperExpression(Ust node)
             : base(node.TextSpan)
         {
             Node = node;
@@ -22,9 +20,9 @@
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Node };
+            return new Ust[] { Node };
         }
 
         public override Expression[] GetArgs()

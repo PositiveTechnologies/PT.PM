@@ -10,8 +10,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class StatementDeclaration : EntityDeclaration
     {
-        public override NodeType NodeType => NodeType.StatementDeclaration;
-
         public Statement Statement { get; set; }
 
         public StatementDeclaration(Statement statement, TextSpan textSpan)
@@ -24,9 +22,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>(base.GetChildren());
+            var result = new List<Ust>(base.GetChildren());
             result.Add(Statement);
             return result.ToArray();
         }

@@ -2,10 +2,8 @@
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
-    public class UsingDeclaration : UstNode
+    public class UsingDeclaration : Ust
     {
-        public override NodeType NodeType => NodeType.UsingDeclaration;
-
         public StringLiteral Name { get; set; }
 
         public UsingDeclaration(StringLiteral name, TextSpan textSpan)
@@ -18,9 +16,9 @@ namespace PT.PM.Common.Nodes.GeneralScope
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Name};
+            return new Ust[] {Name};
         }
     }
 }

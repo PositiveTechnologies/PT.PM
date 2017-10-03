@@ -2,8 +2,6 @@
 {
     public abstract class Literal : Token
     {
-        public override NodeType NodeType => NodeType.Literal;
-
         protected Literal(TextSpan textSpan)
             : base(textSpan)
         {

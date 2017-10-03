@@ -2,17 +2,15 @@
 {
     public class WrapperStatement : Statement
     {
-        public override NodeType NodeType => NodeType.WrapperStatement;
+        public Ust Node { get; set; }
 
-        public UstNode Node { get; set; }
-
-        public WrapperStatement(UstNode node)
+        public WrapperStatement(Ust node)
             : base(node.TextSpan)
         {
             Node = node;
         }
 
-        public WrapperStatement(UstNode node, TextSpan textSpan)
+        public WrapperStatement(Ust node, TextSpan textSpan)
             : base(textSpan)
         {
             Node = node;
@@ -22,9 +20,9 @@
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Node };
+            return new Ust[] { Node };
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace PT.PM.Common.Nodes.Statements
+﻿using System;
+
+namespace PT.PM.Common.Nodes.Statements
 {
-    public abstract class Statement : UstNode
+    public abstract class Statement : Ust
     {
         protected Statement(TextSpan textSpan)
             : base(textSpan)

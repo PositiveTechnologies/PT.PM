@@ -8,8 +8,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class MethodDeclaration : EntityDeclaration
     {
-        public override NodeType NodeType => NodeType.MethodDeclaration;
-
         public TypeToken ReturnType { get; set; }
 
         public List<ParameterDeclaration> Parameters { get; set; }
@@ -38,9 +36,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>(base.GetChildren());
+            var result = new List<Ust>(base.GetChildren());
             result.Add(ReturnType);
             result.AddRange(Parameters);
             result.Add(Body);

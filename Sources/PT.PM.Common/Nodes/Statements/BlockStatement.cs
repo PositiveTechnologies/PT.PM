@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class BlockStatement : Statement
     {
-        public override NodeType NodeType => NodeType.BlockStatement;
-
         public List<Statement> Statements { get; set; } = new List<Statement>();
 
         public BlockStatement(IEnumerable<Statement> statements)
@@ -33,9 +31,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return Statements.Select(s => (UstNode) s).ToArray();
+            return Statements.Select(s => (Ust) s).ToArray();
         }
 
         public override string ToString()

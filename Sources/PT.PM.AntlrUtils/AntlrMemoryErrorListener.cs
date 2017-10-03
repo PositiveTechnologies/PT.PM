@@ -26,7 +26,7 @@ namespace PT.PM.AntlrUtils
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             var error = new AntlrLexerError(offendingSymbol, line, charPositionInLine, msg, e);
-            int start = TextHelper.LineColumnToLinear(FileData, line, charPositionInLine);
+            int start = TextUtils.LineColumnToLinear(FileData, line, charPositionInLine);
             string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
             Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }
@@ -35,7 +35,7 @@ namespace PT.PM.AntlrUtils
         {
             var error = new AntlrParserError(offendingSymbol, line, charPositionInLine, msg, e);
             string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
-            int start = TextHelper.LineColumnToLinear(FileData, line, charPositionInLine);
+            int start = TextUtils.LineColumnToLinear(FileData, line, charPositionInLine);
             Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }
 

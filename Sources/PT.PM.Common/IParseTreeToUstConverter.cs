@@ -9,8 +9,8 @@ namespace PT.PM.Common
 
         HashSet<Language> AnalyzedLanguages { get; set; }
 
-        RootNode ParentRoot { get; set; }
+        RootUst ParentRoot { get; set; }
 
-        RootNode Convert(ParseTree langParseTree);
+        RootUst Convert(ParseTree langParseTree);
     }
 }

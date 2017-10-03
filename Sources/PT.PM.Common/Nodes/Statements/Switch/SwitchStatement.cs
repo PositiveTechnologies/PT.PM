@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements.Switch
 {
     public class SwitchStatement : Statement
     {
-        public override NodeType NodeType => NodeType.SwitchStatement;
-
         public Expression Expression { get; set; }
 
         public List<SwitchSection> Sections { get; set; }
@@ -23,9 +21,9 @@ namespace PT.PM.Common.Nodes.Statements.Switch
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Expression);
             result.AddRange(Sections);
             return result.ToArray();

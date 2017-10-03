@@ -23,9 +23,6 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             { "++", UnaryOperator.PostIncrement},
             { "--", UnaryOperator.PostDecrement},
         };
-
-        public override NodeType NodeType => NodeType.UnaryOperatorLiteral;
-
         public override string TextValue => UnaryOperator.ToString();
 
         public UnaryOperator UnaryOperator { get; set; }
@@ -50,7 +47,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

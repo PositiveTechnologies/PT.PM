@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace PT.PM.Common
 {
     /// <summary>
     /// Source: Roslyn, http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis/Text/TextSpan.cs
     /// </summary>
-    public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>
+    public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
         public readonly static TextSpan Empty = default(TextSpan);
 
@@ -33,11 +34,13 @@ namespace PT.PM.Common
 
         public int Start { get; }
 
-        public int End => Start + Length;
-
         public int Length { get; }
 
-        public bool IsEmpty => this.Length == 0;
+        [JsonIgnore]
+        public int End => Start + Length;
+
+        [JsonIgnore]
+        public bool IsEmpty => Length == 0;
 
         public bool Contains(int position)
         {
@@ -74,7 +77,7 @@ namespace PT.PM.Common
             int unionStart = Math.Min(Start, span.Start);
             int unionEnd = Math.Max(End, span.End);
 
-            return TextSpan.FromBounds(unionStart, unionEnd);
+            return FromBounds(unionStart, unionEnd);
         }
 
         public TextSpan AddOffset(int offset)
@@ -89,8 +92,8 @@ namespace PT.PM.Common
 
         public static TextSpan FromTextAndLineColumn(string text, int startLine, int startColumn, int endLine, int endColumn)
         {
-            int start = TextHelper.LineColumnToLinear(text, startLine, startColumn);
-            int end = TextHelper.LineColumnToLinear(text, endLine, endColumn);
+            int start = TextUtils.LineColumnToLinear(text, startLine, startColumn);
+            int end = TextUtils.LineColumnToLinear(text, endLine, endColumn);
             return FromBounds(start, end);
         }
 
@@ -122,6 +125,15 @@ namespace PT.PM.Common
         public override string ToString()
         {
             return $"[{Start}..{End})"; 
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is TextSpan otherTextSpan)
+            {
+                return CompareTo(otherTextSpan);
+            }
+            return 1;
         }
 
         public int CompareTo(TextSpan other)

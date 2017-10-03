@@ -30,8 +30,8 @@ namespace PT.PM.Common
         public LineColumnTextSpan(TextSpan textSpan, string text)
         {
             int beginLine, beginColumn, endLine, endColumn;
-            TextHelper.LinearToLineColumn(textSpan.Start, text, out beginLine, out beginColumn);
-            TextHelper.LinearToLineColumn(textSpan.End, text, out endLine, out endColumn);
+            textSpan.Start.ToLineColumn(text, out beginLine, out beginColumn);
+            textSpan.End.ToLineColumn(text, out endLine, out endColumn);
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;

@@ -12,7 +12,7 @@ namespace PT.PM.Tests
         [Test]
         public void AggregateFiles_TestProject_CorrectCountAndRelativePaths()
         {
-            var repository = new FilesAggregatorCodeRepository(Path.Combine(TestHelper.TestsDataPath, "Test Project"), ".cs");
+            var repository = new FilesAggregatorCodeRepository(Path.Combine(TestUtility.TestsDataPath, "Test Project"), ".cs");
             var fileNames = repository.GetFileNames().Select(fileName => repository.ReadFile(fileName)).ToArray();
 
             Assert.AreEqual(7, fileNames.Length);

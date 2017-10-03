@@ -1,23 +1,22 @@
-﻿using System;
+﻿using PT.PM.Common;
+using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Nodes;
+using PT.PM.Dsl;
+using PT.PM.Matching;
+using PT.PM.Matching.Json;
+using PT.PM.Matching.PatternsRepository;
+using PT.PM.Patterns.PatternsRepository;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
-using PT.PM.Dsl;
-using PT.PM.Matching;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
-using PT.PM.UstPreprocessing;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<RootNode, Stage, WorkflowResult, PatternRootNode, MatchingResult>
+    public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchingResult>
     {
         public Workflow()
             : this(null, LanguageExt.AllLanguages)
@@ -42,10 +41,10 @@ namespace PT.PM
         {
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
-            UstPatternMatcher = new BruteForcePatternMatcher();
-            IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
-            IUstNodeSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new PatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            UstPatternMatcher = new PatternMatcher();
+            IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();
+            IPatternSerializer dslNodeSerializer = new DslProcessor();
+            PatternConverter = new PatternConverter(new IPatternSerializer[] { jsonNodeSerializer, dslNodeSerializer });
             Stage = stage;
             ThreadCount = 1;
         }
@@ -111,7 +110,7 @@ namespace PT.PM
 
         private void ProcessFile(string fileName, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            RootNode ust = null;
+            RootUst ust = null;
             try
             {
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));

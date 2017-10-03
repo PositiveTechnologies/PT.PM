@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class WhileStatement : Statement
     {
-        public override NodeType NodeType => NodeType.WhileStatement;
-
         public Expression Condition { get; set; }
 
         public Statement Embedded { get; set; }
@@ -23,9 +21,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Condition);
             result.Add(Embedded);
             return result.ToArray();

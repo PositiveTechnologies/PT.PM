@@ -4,30 +4,20 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ExpressionStatement : Statement
     {
-        public override NodeType NodeType => NodeType.ExpressionStatement;
-
         public Expression Expression { get; set; }
-
-        public ExpressionStatement(Expression expression, TextSpan textSpan)
-            : base(textSpan)
-        {
-            Expression = expression;
-        }
-
-        public ExpressionStatement(Expression expression)
-        {
-            Expression = expression;
-            TextSpan = expression.TextSpan;
-        }
 
         public ExpressionStatement()
         {
         }
 
-        public override UstNode[] GetChildren()
+        public ExpressionStatement(Expression expression, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
         {
-            return new UstNode[] {Expression};
+            Expression = expression;
+            TextSpan = textSpan == TextSpan.Empty ? expression.TextSpan : textSpan;
         }
+
+        public override Ust[] GetChildren() => new Ust[] { Expression };
 
         public override string ToString()
         {

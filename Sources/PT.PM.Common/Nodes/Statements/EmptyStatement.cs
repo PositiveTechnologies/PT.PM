@@ -2,8 +2,6 @@
 {
     public class EmptyStatement : Statement
     {
-        public override NodeType NodeType => NodeType.EmptyStatement;
-
         public EmptyStatement(TextSpan textSpan)
             : base(textSpan)
         {
@@ -13,9 +11,9 @@
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
         public override string ToString()

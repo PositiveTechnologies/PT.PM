@@ -5,24 +5,22 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class InvocationExpression : Expression
     {
-        public override NodeType NodeType => NodeType.InvocationExpression;
-
         public Expression Target { get; set; }
 
-        public ArgsNode Arguments { get; set; }
+        public ArgsUst Arguments { get; set; }
 
-        public InvocationExpression(Expression target, ArgsNode arguments, TextSpan textSpan)
+        public InvocationExpression()
+        {
+        }
+
+        public InvocationExpression(Expression target, ArgsUst arguments, TextSpan textSpan)
             : base(textSpan)
         {
             Target = target;
             Arguments = arguments;
         }
 
-        public InvocationExpression()
-        {
-        }
-
-        public int GetIndexOfArg(UstNode ustNode)
+        public int GetIndexOfArg(Ust ustNode)
         {
             if (ReferenceEquals(ustNode, Target))
                 return 0;
@@ -43,9 +41,9 @@ namespace PT.PM.Common.Nodes.Expressions
             return result.ToArray();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new UstNode[] { Target, Arguments };
+            var result = new Ust[] { Target, Arguments };
             return result;
         }
 

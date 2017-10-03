@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ReturnStatement : Statement
     {
-        public override NodeType NodeType => NodeType.ReturnStatement;
-
         public Expression Return { get; set; }
 
         public ReturnStatement(Expression returnExpression, TextSpan textSpan)
@@ -18,9 +16,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Return};
+            return new Ust[] {Return};
         }
 
         public override string ToString()

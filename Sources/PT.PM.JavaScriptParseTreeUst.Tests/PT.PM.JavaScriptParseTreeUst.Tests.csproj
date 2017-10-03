@@ -166,10 +166,6 @@
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
-      <Project>{6B3D2A76-9A11-4C40-97E1-18EA210376B2}</Project>
-      <Name>PT.PM.UstPreprocessing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0B10DBAE-C18D-4007-B799-0B3B1E00376E}</Project>
       <Name>PT.PM.Common</Name>

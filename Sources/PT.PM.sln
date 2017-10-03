@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM", "PT.PM\PT.PM.csproj", "{ECB44673-2FB0-49E1-811F-973E3FA4DD22}"
 EndProject
@@ -45,10 +45,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst", "PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj", "{8F34670A-B91D-460B-9D67-7A03F7194673}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst.Tests", "PT.PM.SqlParseTreeUst.Tests\PT.PM.SqlParseTreeUst.Tests.csproj", "{EEBBE595-2478-40B1-A147-7F44E40A2686}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.UstPreprocessing", "PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj", "{6B3D2A76-9A11-4C40-97E1-18EA210376B2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.UstPreprocessing.Tests", "PT.PM.UstPreprocessing.Tests\PT.PM.UstPreprocessing.Tests.csproj", "{43651FD8-2C13-4DE9-B424-5FDB91000625}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli.Tests", "PT.PM.Cli.Tests\PT.PM.Cli.Tests.csproj", "{836A5763-216D-4596-94B6-5F60E7F0655C}"
 EndProject
@@ -142,14 +138,6 @@ Global
 		{EEBBE595-2478-40B1-A147-7F44E40A2686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEBBE595-2478-40B1-A147-7F44E40A2686}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEBBE595-2478-40B1-A147-7F44E40A2686}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B3D2A76-9A11-4C40-97E1-18EA210376B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B3D2A76-9A11-4C40-97E1-18EA210376B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B3D2A76-9A11-4C40-97E1-18EA210376B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B3D2A76-9A11-4C40-97E1-18EA210376B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43651FD8-2C13-4DE9-B424-5FDB91000625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43651FD8-2C13-4DE9-B424-5FDB91000625}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43651FD8-2C13-4DE9-B424-5FDB91000625}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43651FD8-2C13-4DE9-B424-5FDB91000625}.Release|Any CPU.Build.0 = Release|Any CPU
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Release|Any CPU.ActiveCfg = Release|Any CPU

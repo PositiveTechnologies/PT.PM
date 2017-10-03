@@ -16,7 +16,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
     {
         #region Expression base
 
-        public UstNode VisitExpression(JavaParser.ExpressionContext context)
+        public Ust VisitExpression(JavaParser.ExpressionContext context)
         {
             var textSpan = context.GetTextSpan();
             var child0Terminal = context.GetChild(0) as ITerminalNode;
@@ -43,7 +43,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 }
             }
 
-            ArgsNode args;
+            ArgsUst args;
             var child1Terminal = context.GetChild(1) as ITerminalNode;
             if (child1Terminal != null)
             {
@@ -80,7 +80,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.LBRACK: // '['
                         target = (Expression)Visit(context.expression(0));
                         Expression expr = (Expression)Visit(context.expression(1));
-                        args = new ArgsNode(new Expression[] { expr }, expr.TextSpan);
+                        args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
 
                         result = new IndexerExpression(target, args, textSpan);
                         return result;
@@ -92,11 +92,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                         if (expressionList != null)
                         {
-                            args = (ArgsNode)Visit(expressionList);
+                            args = (ArgsUst)Visit(expressionList);
                         }
                         else
                         {
-                            args = new ArgsNode();
+                            args = new ArgsUst();
                         }
 
                         result = new InvocationExpression(target, args, textSpan);
@@ -184,7 +184,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return Visit(context.GetChild(0));
         }
 
-        public UstNode VisitPrimary(JavaParser.PrimaryContext context)
+        public Ust VisitPrimary(JavaParser.PrimaryContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
             var child0Terminal = context.GetChild(0) as ITerminalNode;
@@ -209,7 +209,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan());
                         var child0TerminalSpan = child0Terminal.GetTextSpan();
                         result = new InvocationExpression(id,
-                            new ArgsNode(new Expression[] { new NullLiteral(child0TerminalSpan) }, child0TerminalSpan),
+                            new ArgsUst(new Expression[] { new NullLiteral(child0TerminalSpan) }, child0TerminalSpan),
                             textSpan);
                         return result;
                 }
@@ -221,7 +221,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 var typeToken = (TypeToken)Visit(type);
                 var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan());
                 result = new InvocationExpression(id,
-                    new ArgsNode(new Expression[] { typeToken }, typeToken.TextSpan),
+                    new ArgsUst(new Expression[] { typeToken }, typeToken.TextSpan),
                     textSpan);
                 return result;
             }
@@ -237,28 +237,28 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return Visit(context.GetChild(0));
         }
 
-        public UstNode VisitMethodReference(JavaParser.MethodReferenceContext context)
+        public Ust VisitMethodReference(JavaParser.MethodReferenceContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitClassType(JavaParser.ClassTypeContext context)
+        public Ust VisitClassType(JavaParser.ClassTypeContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitParExpression(JavaParser.ParExpressionContext context)
+        public Ust VisitParExpression(JavaParser.ParExpressionContext context)
         {
             var result = (Expression)Visit(context.expression());
             return result;
         }
 
-        public UstNode VisitInnerCreator(JavaParser.InnerCreatorContext context)
+        public Ust VisitInnerCreator(JavaParser.InnerCreatorContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitNonWildcardTypeArguments(JavaParser.NonWildcardTypeArgumentsContext context)
+        public Ust VisitNonWildcardTypeArguments(JavaParser.NonWildcardTypeArgumentsContext context)
         {
             var type = (TypeToken)Visit(context.typeList());
             string resultType = context.GetChild<ITerminalNode>(0) + type.TypeText + context.GetChild<ITerminalNode>(1);
@@ -267,40 +267,40 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitSuperSuffix(JavaParser.SuperSuffixContext context)
+        public Ust VisitSuperSuffix(JavaParser.SuperSuffixContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitExplicitGenericInvocation(JavaParser.ExplicitGenericInvocationContext context)
+        public Ust VisitExplicitGenericInvocation(JavaParser.ExplicitGenericInvocationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitArguments(JavaParser.ArgumentsContext context)
+        public Ust VisitArguments(JavaParser.ArgumentsContext context)
         {
             JavaParser.ExpressionListContext expressionList = context.expressionList();
             if (expressionList != null)
             {
-                var result = (ArgsNode)Visit(expressionList);
+                var result = (ArgsUst)Visit(expressionList);
                 return result;
             }
             else
             {
-                return new ArgsNode();
+                return new ArgsUst();
             }
         }
 
-        public UstNode VisitExpressionList(JavaParser.ExpressionListContext context)
+        public Ust VisitExpressionList(JavaParser.ExpressionListContext context)
         {
             Expression[] exprs = context.expression().Select(expr => (Expression)Visit(expr)).ToArray();
-            var result = new ArgsNode(exprs, context.GetTextSpan());
+            var result = new ArgsUst(exprs, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitCreator(JavaParser.CreatorContext context)
+        public Ust VisitCreator(JavaParser.CreatorContext context)
         {
-            UstNode result;
+            Ust result;
             JavaParser.CreatedNameContext createdName = context.createdName();
             JavaParser.ArrayCreatorRestContext arrayCreatorRest = context.arrayCreatorRest();
             if (arrayCreatorRest != null)
@@ -312,7 +312,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     int dimensions = (arrayCreatorRest.ChildCount - 1) / 2; // number of square bracket pairs
                     var sizes = Enumerable.Range(0, dimensions).Select(
                         _ => new IntLiteral(0, createdName.GetTextSpan())).ToList<Expression>();
-                    var initializers = initializer.Expressions.Where(el => el.NodeType != NodeType.IdToken);
+                    var initializers = initializer.Expressions.Where(el => !(el is IdToken));
                     result = new ArrayCreationExpression(
                         new TypeToken(createdName.GetText(), createdName.GetTextSpan()), sizes,
                         initializers, context.GetTextSpan());
@@ -333,7 +333,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             else
             {
                 JavaParser.ClassCreatorRestContext classCreatorRest = context.classCreatorRest();
-                ArgsNode args = (ArgsNode)Visit(classCreatorRest?.arguments()) ?? new ArgsNode();
+                ArgsUst args = (ArgsUst)Visit(classCreatorRest?.arguments()) ?? new ArgsUst();
 
                 // TODO: add classBody
 
@@ -344,12 +344,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitCreatedName(JavaParser.CreatedNameContext context)
+        public Ust VisitCreatedName(JavaParser.CreatedNameContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitTypeArgumentsOrDiamond(JavaParser.TypeArgumentsOrDiamondContext context)
+        public Ust VisitTypeArgumentsOrDiamond(JavaParser.TypeArgumentsOrDiamondContext context)
         {
             JavaParser.TypeArgumentsContext typeArguments = context.typeArguments();
             TypeToken result;
@@ -364,7 +364,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitTypeTypeOrVoid(JavaParser.TypeTypeOrVoidContext context)
+        public Ust VisitTypeTypeOrVoid(JavaParser.TypeTypeOrVoidContext context)
         {
             if (context.typeType() != null)
             {
@@ -374,7 +374,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return new TypeToken("void", context.GetTextSpan());
         }
 
-        public UstNode VisitTypeType(JavaParser.TypeTypeContext context)
+        public Ust VisitTypeType(JavaParser.TypeTypeContext context)
         {
             var result = (TypeToken)Visit(context.GetChild(0));
             return result;
@@ -387,14 +387,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;*/
         }
 
-        public UstNode VisitExplicitGenericInvocationSuffix(JavaParser.ExplicitGenericInvocationSuffixContext context)
+        public Ust VisitExplicitGenericInvocationSuffix(JavaParser.ExplicitGenericInvocationSuffixContext context)
         {
             return VisitChildren(context);
         }
 
         #endregion
 
-        public UstNode VisitTypeList(JavaParser.TypeListContext context)
+        public Ust VisitTypeList(JavaParser.TypeListContext context)
         {
             var types = context.typeType().Select(t => ((TypeToken)Visit(t))?.TypeText)
                 .Where(t => t != null).ToArray();
@@ -403,7 +403,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitQualifiedName(JavaParser.QualifiedNameContext context)
+        public Ust VisitQualifiedName(JavaParser.QualifiedNameContext context)
         {
             string complexName = string.Join("", context.children.Select(c => c.ToString()).ToArray());
             TextSpan textSpan = context.GetTextSpan();
@@ -412,19 +412,19 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitQualifiedNameList(JavaParser.QualifiedNameListContext context)
+        public Ust VisitQualifiedNameList(JavaParser.QualifiedNameListContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitPrimitiveType(JavaParser.PrimitiveTypeContext context)
+        public Ust VisitPrimitiveType(JavaParser.PrimitiveTypeContext context)
         {
             var name = context.GetChild<ITerminalNode>(0).GetText();
             var result = new TypeToken(name, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitLiteral(JavaParser.LiteralContext context)
+        public Ust VisitLiteral(JavaParser.LiteralContext context)
         {
             var textSpan = context.GetTextSpan();
 
@@ -468,24 +468,24 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return VisitChildren(context);
         }
 
-        public UstNode VisitIntegerLiteral(JavaParser.IntegerLiteralContext context)
+        public Ust VisitIntegerLiteral(JavaParser.IntegerLiteralContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
             string text = context.GetText().Replace("_", "");
             return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan);
         }
 
-        public UstNode VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
+        public Ust VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
         {
             return VisitChildren(context).ToExpressionIfRequired();
         }
 
-        public UstNode VisitLambdaParameters(JavaParser.LambdaParametersContext context)
+        public Ust VisitLambdaParameters(JavaParser.LambdaParametersContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitLambdaBody(JavaParser.LambdaBodyContext context)
+        public Ust VisitLambdaBody(JavaParser.LambdaBodyContext context)
         {
             return Visit(context.GetChild(0));
         }

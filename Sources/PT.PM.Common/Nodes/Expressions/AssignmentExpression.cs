@@ -2,8 +2,6 @@
 {
     public class AssignmentExpression : Expression
     {
-        public override NodeType NodeType => NodeType.AssignmentExpression;
-
         public Expression Left { get; set; }
 
         public Expression Right { get; set; }
@@ -19,15 +17,9 @@
         {
         }
 
-        public override UstNode[] GetChildren()
-        {
-            return new UstNode[] { Left, Right };
-        }
+        public override Ust[] GetChildren() => new Ust[] { Left, Right };
 
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Left, Right };
-        }
+        public override Expression[] GetArgs() => new Expression[] { Left, Right };
 
         public override string ToString()
         {

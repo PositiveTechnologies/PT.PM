@@ -16,15 +16,15 @@ using PT.PM.Common.Exceptions;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class CSharpRoslynParseTreeConverter : CSharpSyntaxVisitor<UstNode>, IParseTreeToUstConverter
+    public partial class CSharpRoslynParseTreeConverter : CSharpSyntaxVisitor<Ust>, IParseTreeToUstConverter
     {
-        private RootNode root { get; set; }
+        private RootUst root { get; set; }
 
         public Language Language => Language.CSharp;
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
-        public RootNode ParentRoot { get; set; }
+        public RootUst ParentRoot { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -33,24 +33,24 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             AnalyzedLanguages = Language.GetSelfAndSublanguages();
         }
 
-        public RootNode Convert(ParseTree langParseTree)
+        public RootUst Convert(ParseTree langParseTree)
         {
             var roslynParseTree = (CSharpRoslynParseTree)langParseTree;
             SyntaxTree syntaxTree = roslynParseTree.SyntaxTree;
-            RootNode result;
+            RootUst result;
             if (syntaxTree != null)
             {
                 string filePath = syntaxTree.FilePath;
                 try
                 {
-                    UstNode visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
-                    if (visited is RootNode rootUstNode)
+                    Ust visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
+                    if (visited is RootUst rootUstNode)
                     {
                         result = rootUstNode;
                     }
                     else
                     {
-                        result = new RootNode(langParseTree.SourceCodeFile, Language);
+                        result = new RootUst(langParseTree.SourceCodeFile, Language);
                         result.Node = visited;
                     }
                     result.SourceCodeFile = langParseTree.SourceCodeFile;
@@ -61,20 +61,20 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 catch (Exception ex)
                 {
                     Logger.LogError(new ConversionException(filePath, ex));
-                    result = new RootNode(langParseTree.SourceCodeFile, Language);
+                    result = new RootUst(langParseTree.SourceCodeFile, Language);
                 }
             }
             else
             {
-                result = new RootNode(langParseTree.SourceCodeFile, Language);
+                result = new RootUst(langParseTree.SourceCodeFile, Language);
             }
 
             return result;
         }
 
-        public override UstNode Visit(SyntaxNode node)
+        public override Ust Visit(SyntaxNode node)
         {
-            var children = new List<UstNode>();
+            var children = new List<Ust>();
             foreach (SyntaxNode child in node.ChildNodes())
             {
                 var result = VisitAndReturnNullIfError(child);
@@ -86,30 +86,30 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (root == null)
             {
-                root = new RootNode(children.FirstOrDefault()?.Root?.SourceCodeFile, Language.CSharp);
+                root = new RootUst(children.FirstOrDefault()?.Root?.SourceCodeFile, Language.CSharp);
             }
             root.Nodes = children.ToArray();
             return root;
         }
 
-        public override UstNode DefaultVisit(SyntaxNode node)
+        public override Ust DefaultVisit(SyntaxNode node)
         {
             return null;
         }
 
-        public override UstNode VisitExternAliasDirective(ExternAliasDirectiveSyntax node)
+        public override Ust VisitExternAliasDirective(ExternAliasDirectiveSyntax node)
         {
             return null;
         }
 
-        public override UstNode VisitUsingDirective(UsingDirectiveSyntax node)
+        public override Ust VisitUsingDirective(UsingDirectiveSyntax node)
         {
             var nameSpan = node.Name.GetTextSpan();
             var name = new StringLiteral(node.Name.ToFullString(), nameSpan);
             return new UsingDeclaration(name, node.GetTextSpan());
         }
 
-        public override UstNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+        public override Ust VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
             var nameSpan = node.Name.GetTextSpan();
             var name = new StringLiteral(node.Name.ToFullString(), nameSpan);
@@ -123,12 +123,12 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitClassDeclaration(ClassDeclarationSyntax node)
+        public override Ust VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             return ConvertTypeDeclaration(node);
         }
 
-        public override UstNode VisitDelegateDeclaration(DelegateDeclarationSyntax node)
+        public override Ust VisitDelegateDeclaration(DelegateDeclarationSyntax node)
         {
             var typeType = ConvertTypeType(TypeType.Delegate);
             var typeTypeToken = new TypeTypeLiteral(typeType, node.DelegateKeyword.GetTextSpan());
@@ -137,17 +137,17 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitStructDeclaration(StructDeclarationSyntax node)
+        public override Ust VisitStructDeclaration(StructDeclarationSyntax node)
         {
             return ConvertTypeDeclaration(node);
         }
 
-        public override UstNode VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+        public override Ust VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             return ConvertTypeDeclaration(node);
         }
 
-        public override UstNode VisitEnumDeclaration(EnumDeclarationSyntax node)
+        public override Ust VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
             var type = ConvertTypeType(TypeType.Enum);
             var typeTypeToken = new TypeTypeLiteral(type, node.EnumKeyword.GetTextSpan());
@@ -158,13 +158,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitPredefinedType(PredefinedTypeSyntax node)
+        public override Ust VisitPredefinedType(PredefinedTypeSyntax node)
         {
             var result = new TypeToken(node.Keyword.ValueText, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitGenericName(GenericNameSyntax node)
+        public override Ust VisitGenericName(GenericNameSyntax node)
         {
             var typeName = string.Join("", node.DescendantTokens().Select(t => t.ValueText));
             var result = new TypeToken(typeName, node.GetTextSpan());
@@ -178,7 +178,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        protected UstNode ConvertTypeDeclaration(TypeDeclarationSyntax node)
+        protected Ust ConvertTypeDeclaration(TypeDeclarationSyntax node)
         {
             TypeType type;
             Enum.TryParse(node.Keyword.ValueText, true, out type);
@@ -334,7 +334,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return method;
         }
 
-        public override UstNode VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
+        public override Ust VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
         {
             List<AssignmentExpression> declarations = node.Declaration.Variables
                 .Select(var => (AssignmentExpression)VisitAndReturnNullIfError(var))
@@ -347,7 +347,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        protected UstNode ConvertBaseTypeDeclaration(
+        protected Ust ConvertBaseTypeDeclaration(
             BaseTypeDeclarationSyntax node,
             TypeTypeLiteral typeTypeToken,
             IEnumerable<EntityDeclaration> typeMembers)

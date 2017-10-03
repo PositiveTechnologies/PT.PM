@@ -2,11 +2,13 @@
 {
     public class MemberReferenceExpression : Expression
     {
-        public override NodeType NodeType => NodeType.MemberReferenceExpression;
-
         public Expression Target { get; set; }
 
         public Expression Name { get; set; }
+
+        public MemberReferenceExpression()
+        {
+        }
 
         public MemberReferenceExpression(Expression target, Expression name, TextSpan textSpan)
             : base(textSpan)
@@ -15,19 +17,9 @@
             Name = name;
         }
 
-        public MemberReferenceExpression()
-        {
-        }
+        public override Ust[] GetChildren() => new Ust[] { Target, Name };
 
-        public override UstNode[] GetChildren()
-        {
-            return new UstNode[] { Target, Name };
-        }
-
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Target, Name };
-        }
+        public override Expression[] GetArgs() => new Expression[] { Target, Name };
 
         public override string ToString()
         {

@@ -6,15 +6,13 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ObjectCreateExpression : Expression
     {
-        public override NodeType NodeType => NodeType.ObjectCreateExpression;
-
         public Token Type { get; set; }
 
-        public ArgsNode Arguments { get; set; }
+        public ArgsUst Arguments { get; set; }
 
         public List<Expression> Initializers { get; set; }
 
-        public ObjectCreateExpression(Token type, ArgsNode args, TextSpan textSpan)
+        public ObjectCreateExpression(Token type, ArgsUst args, TextSpan textSpan)
             : base(textSpan)
         {
             Type = type;
@@ -23,12 +21,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public ObjectCreateExpression()
         {
-            Arguments = new ArgsNode();
+            Arguments = new ArgsUst();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             result.Add(Arguments);
             if (Initializers != null)
@@ -49,9 +47,6 @@ namespace PT.PM.Common.Nodes.Expressions
             return result.ToArray();
         }
 
-        public override string ToString()
-        {
-            return $"new {Type}({string.Join(", ", Arguments)})";
-        }
+        public override string ToString() => $"new {Type}({string.Join(", ", Arguments)})";
     }
 }

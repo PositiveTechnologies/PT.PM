@@ -13,7 +13,7 @@ namespace PT.PM.Common
         private StringBuilder edgesString;
         private int currentIndex;
 
-        public string Render(UstNode node)
+        public string Render(Ust node)
         {
             edgesString = new StringBuilder();
             vertexesString = new StringBuilder();
@@ -30,10 +30,10 @@ namespace PT.PM.Common
             return graphString.ToString();
         }
 
-        private void RenderNode(UstNode node)
+        private void RenderNode(Nodes.Ust node)
         {
             int index = currentIndex;
-            vertexesString.Append(index + " [label=\"" + DotFormatHelper.GetNodeName(node) + "\"");
+            vertexesString.Append(index + " [label=\"" + DotFormatUtils.GetNodeName(node) + "\"");
             
             if (node is Token)
             {
@@ -47,7 +47,7 @@ namespace PT.PM.Common
             {
                 vertexesString.Append(", fillcolor=skyblue1, style=filled");
             }
-            else if (node is ArgsNode)
+            else if (node is ArgsUst)
             {
                 vertexesString.Append(", fillcolor=palegreen, style=filled");
             }
@@ -55,7 +55,7 @@ namespace PT.PM.Common
 
             foreach (var child in node.Children)
             {
-                if (child != null && child.NodeType != NodeType.RootNode)
+                if (child != null && !(child is RootUst))
                 {
                     currentIndex++;
                     edgesString.AppendEdge(index, currentIndex);

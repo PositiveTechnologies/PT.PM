@@ -7,8 +7,6 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class ConstructorDeclaration : EntityDeclaration
     {
-        public override NodeType NodeType => NodeType.ConstructorDeclaration;
-
         public List<ParameterDeclaration> Args { get; set; }
 
         public BlockStatement Body { get; set; }
@@ -25,9 +23,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>(base.GetChildren());
+            var result = new List<Ust>(base.GetChildren());
             result.AddRange(Args);
             result.Add(Body);
             return result.ToArray();

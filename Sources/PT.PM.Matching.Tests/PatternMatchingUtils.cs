@@ -2,9 +2,8 @@
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
+using PT.PM.Matching.Patterns;
+using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,14 +28,13 @@ namespace PT.PM.Matching.Tests
             };
 
             var processor = new DslProcessor();
-            var patternNode = (PatternRootNode)processor.Deserialize(pattern);
+            PatternRoot patternNode = processor.Deserialize(pattern);
             patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageExt.AllPatternLanguages);
             patternNode.DebugInfo = pattern;
-            var patternsConverter = new PatternConverter(
-                new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRootNode>() { patternNode }));
+            var patternsConverter = new PatternConverter();
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto()
                 .OrderBy(r => r.PatternKey)
                 .ToArray();
 

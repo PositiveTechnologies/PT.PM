@@ -20,7 +20,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
     {
         #region Anonymous
 
-        public override UstNode VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
+        public override Ust VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
         {
             var parameters = node.ParameterList == null ? new ParameterDeclaration[0] :
                 node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
@@ -44,7 +44,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public override UstNode VisitAnonymousObjectCreationExpression(AnonymousObjectCreationExpressionSyntax node)
+        public override Ust VisitAnonymousObjectCreationExpression(AnonymousObjectCreationExpressionSyntax node)
         {
             var typeToken = new TypeToken("Anonymous", node.OpenBraceToken.GetTextSpan());
             Expression[] args = node.Initializers.Select(init =>
@@ -65,26 +65,26 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     return null;
                 }
             }).ToArray();
-            var argsNode = new ArgsNode(args, node.GetTextSpan());
+            var argsNode = new ArgsUst(args, node.GetTextSpan());
 
             var result = new ObjectCreateExpression(typeToken, argsNode, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitAnonymousObjectMemberDeclarator(AnonymousObjectMemberDeclaratorSyntax node)
+        public override Ust VisitAnonymousObjectMemberDeclarator(AnonymousObjectMemberDeclaratorSyntax node)
         {
             return base.VisitAnonymousObjectMemberDeclarator(node);
         }
 
         #endregion
 
-        public override UstNode VisitArgument(ArgumentSyntax node)
+        public override Ust VisitArgument(ArgumentSyntax node)
         {
             var result = (Expression)base.Visit(node.Expression);
             return result;
         }
 
-        public override UstNode VisitArrowExpressionClause(ArrowExpressionClauseSyntax node)
+        public override Ust VisitArrowExpressionClause(ArrowExpressionClauseSyntax node)
         {
             var result = (Expression)base.Visit(node.Expression);
             return result;
@@ -92,7 +92,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #region Arrays
 
-        public override UstNode VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
+        public override Ust VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
         {
             var type = ConvertType(base.Visit(node.Type.ElementType));
             List<Expression> sizes = node.Type.RankSpecifiers
@@ -106,7 +106,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitStackAllocArrayCreationExpression(StackAllocArrayCreationExpressionSyntax node)
+        public override Ust VisitStackAllocArrayCreationExpression(StackAllocArrayCreationExpressionSyntax node)
         {
             var arrayTypeSyntax = (ArrayTypeSyntax)node.Type; // TODO: Fix it
             var type = (TypeToken)base.Visit(node.Type);
@@ -117,7 +117,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitArrayType(ArrayTypeSyntax node)
+        public override Ust VisitArrayType(ArrayTypeSyntax node)
         {
             var arrayType = node.ToString().Replace(",", "][");
             var result = new TypeToken(arrayType, node.GetTextSpan());
@@ -125,14 +125,14 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitArrayRankSpecifier(ArrayRankSpecifierSyntax node)
+        public override Ust VisitArrayRankSpecifier(ArrayRankSpecifierSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+        public override Ust VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
         {
-            var type = new TypeToken(Helper.Prefix + "object", node.NewKeyword.GetTextSpan());
+            var type = new TypeToken(CommonUtils.Prefix + "object", node.NewKeyword.GetTextSpan());
             var sizes = node.Commas.Select(c => new IntLiteral(0, c.GetTextSpan())).ToList();
             sizes.Add(new IntLiteral(0, node.CloseBracketToken.GetTextSpan()));
 
@@ -140,7 +140,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitOmittedArraySizeExpression(OmittedArraySizeExpressionSyntax node)
+        public override Ust VisitOmittedArraySizeExpression(OmittedArraySizeExpressionSyntax node)
         {
             var result = new IntLiteral(0, node.GetTextSpan());
             return result;
@@ -148,7 +148,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #endregion
 
-        public override UstNode VisitAssignmentExpression(AssignmentExpressionSyntax node)
+        public override Ust VisitAssignmentExpression(AssignmentExpressionSyntax node)
         {
             var left = (Expression)base.Visit(node.Left);
             var right = (Expression)base.Visit(node.Right);
@@ -169,13 +169,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitBaseExpression(BaseExpressionSyntax node)
+        public override Ust VisitBaseExpression(BaseExpressionSyntax node)
         {
             var result = new BaseReferenceExpression(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitBinaryExpression(BinaryExpressionSyntax node)
+        public override Ust VisitBinaryExpression(BinaryExpressionSyntax node)
         {
             if (node.OperatorToken.ValueText == "is") // x is y -> (y)x != null
             {
@@ -221,12 +221,12 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
         }
 
-        public override UstNode VisitEqualsValueClause(EqualsValueClauseSyntax node)
+        public override Ust VisitEqualsValueClause(EqualsValueClauseSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitCastExpression(CastExpressionSyntax node)
+        public override Ust VisitCastExpression(CastExpressionSyntax node)
         {
             var type = ConvertType(base.Visit(node.Type));
             var expression = (Expression)base.Visit(node.Expression);
@@ -235,12 +235,12 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitCheckedExpression(CheckedExpressionSyntax node)
+        public override Ust VisitCheckedExpression(CheckedExpressionSyntax node)
         {
             return base.Visit(node.Expression);
         }
 
-        public override UstNode VisitConditionalExpression(ConditionalExpressionSyntax node)
+        public override Ust VisitConditionalExpression(ConditionalExpressionSyntax node)
         {
             var condition = (Expression)base.Visit(node.Condition);
             var trueExpression = (Expression)base.Visit(node.WhenTrue);
@@ -255,18 +255,18 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax node)
+        public override Ust VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax node)
         {
-            UstNode ustNode = base.Visit(node.Expression);
+            Ust ustNode = base.Visit(node.Expression);
             Expression expression = ustNode as Expression;
             if (expression == null)
             {
-                expression = new MultichildExpression(((ArgsNode)ustNode).Collection, ustNode.TextSpan);
+                expression = new MultichildExpression(((ArgsUst)ustNode).Collection, ustNode.TextSpan);
             }
             Expression whenNotNullExpression;
             if (node.WhenNotNull is ElementBindingExpressionSyntax)
             {
-                var args = (ArgsNode)VisitElementBindingExpression((ElementBindingExpressionSyntax)node.WhenNotNull);
+                var args = (ArgsUst)VisitElementBindingExpression((ElementBindingExpressionSyntax)node.WhenNotNull);
                 whenNotNullExpression = new IndexerExpression(expression, args, args.TextSpan);
             }
             else
@@ -281,7 +281,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitDefaultExpression(DefaultExpressionSyntax node)
+        public override Ust VisitDefaultExpression(DefaultExpressionSyntax node)
         {
             var span = node.GetTextSpan();
             var typeName = node.Type.ToString();
@@ -309,7 +309,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
         }
 
-        public override UstNode VisitAliasQualifiedName(AliasQualifiedNameSyntax node)
+        public override Ust VisitAliasQualifiedName(AliasQualifiedNameSyntax node)
         {
             var alias = (IdToken)VisitIdentifierName(node.Alias);
             var name = (Token)base.Visit(node.Name);
@@ -318,13 +318,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitIdentifierName(IdentifierNameSyntax node)
+        public override Ust VisitIdentifierName(IdentifierNameSyntax node)
         {
             IdToken result = ConvertId(node.Identifier);
             return result;
         }
 
-        public override UstNode VisitQualifiedName(QualifiedNameSyntax node)
+        public override Ust VisitQualifiedName(QualifiedNameSyntax node)
         {
             var typeParts =
                 node.DescendantNodes()
@@ -335,58 +335,58 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitNullableType(NullableTypeSyntax node)
+        public override Ust VisitNullableType(NullableTypeSyntax node)
         {
             var result = new TypeToken(node.ElementType.ToString(), node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitPointerType(PointerTypeSyntax node)
+        public override Ust VisitPointerType(PointerTypeSyntax node)
         {
             var result = ConvertType(base.Visit(node.ElementType));
             return result;
         }
 
-        public override UstNode VisitElementAccessExpression(ElementAccessExpressionSyntax node)
+        public override Ust VisitElementAccessExpression(ElementAccessExpressionSyntax node)
         {
             var target = (Expression)base.Visit(node.Expression);
-            ArgsNode args = node.ArgumentList == null ? null : (ArgsNode)VisitBracketedArgumentList(node.ArgumentList);
+            ArgsUst args = node.ArgumentList == null ? null : (ArgsUst)VisitBracketedArgumentList(node.ArgumentList);
 
             var result = new IndexerExpression(target, args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitElementBindingExpression(ElementBindingExpressionSyntax node)
+        public override Ust VisitElementBindingExpression(ElementBindingExpressionSyntax node)
         {
-            ArgsNode args = node.ArgumentList == null ? null : (ArgsNode)VisitBracketedArgumentList(node.ArgumentList);
+            ArgsUst args = node.ArgumentList == null ? null : (ArgsUst)VisitBracketedArgumentList(node.ArgumentList);
             return args;
         }
 
-        public override UstNode VisitImplicitElementAccess(ImplicitElementAccessSyntax node)
+        public override Ust VisitImplicitElementAccess(ImplicitElementAccessSyntax node)
         {
-            var args = (ArgsNode)VisitBracketedArgumentList(node.ArgumentList);
-            var target = new IdToken(Helper.Prefix + "index_initializer", default(TextSpan));
+            var args = (ArgsUst)VisitBracketedArgumentList(node.ArgumentList);
+            var target = new IdToken(CommonUtils.Prefix + "index_initializer", default(TextSpan));
             var result = new IndexerExpression(target, args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitIndexerMemberCref(IndexerMemberCrefSyntax node)
+        public override Ust VisitIndexerMemberCref(IndexerMemberCrefSyntax node)
         {
             
             throw new NotImplementedException();
         }
 
-        public override UstNode VisitInvocationExpression(InvocationExpressionSyntax node)
+        public override Ust VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             var target = (Expression)base.Visit(node.Expression);
-            ArgsNode args = node.ArgumentList == null ? null : (ArgsNode)VisitArgumentList(node.ArgumentList);
+            ArgsUst args = node.ArgumentList == null ? null : (ArgsUst)VisitArgumentList(node.ArgumentList);
 
             var result = new InvocationExpression(target, args, node.GetTextSpan());
 
             return result;
         }
 
-        public override UstNode VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
+        public override Ust VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
         {
             ParameterDeclaration[] parameters = node.Parameter == null ? new ParameterDeclaration[0] :
                   new[] { (ParameterDeclaration)VisitParameter(node.Parameter) };
@@ -395,7 +395,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
+        public override Ust VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
         {
             ParameterDeclaration[] parameters = node.ParameterList == null ? new ParameterDeclaration[0] :
                  node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
@@ -405,7 +405,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        private UstNode GetAnonymousMethod(LambdaExpressionSyntax node, ParameterDeclaration[] parameters)
+        private Ust GetAnonymousMethod(LambdaExpressionSyntax node, ParameterDeclaration[] parameters)
         {
             var idNameSyntax = node.Body as IdentifierNameSyntax;
             Statement bodyStatement;
@@ -425,13 +425,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+        public override Ust VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
             var name = ConvertId(node.Name.Identifier);
             Expression result;
             if (node.Expression is ElementBindingExpressionSyntax)
             {
-                var args = (ArgsNode)VisitElementBindingExpression((ElementBindingExpressionSyntax)node.Expression);
+                var args = (ArgsUst)VisitElementBindingExpression((ElementBindingExpressionSyntax)node.Expression);
                 result = new IndexerExpression(name, args, args.TextSpan);
             }
             else
@@ -443,7 +443,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitMemberBindingExpression(MemberBindingExpressionSyntax node)
+        public override Ust VisitMemberBindingExpression(MemberBindingExpressionSyntax node)
         {
             var result = ConvertId(node.Name.Identifier);
             return result;
@@ -452,10 +452,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         // Named argument
         // Named expression
 
-        public override UstNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        public override Ust VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             var type = ConvertType(base.Visit(node.Type));
-            ArgsNode args = node.ArgumentList == null ? null : (ArgsNode)VisitArgumentList(node.ArgumentList);
+            ArgsUst args = node.ArgumentList == null ? null : (ArgsUst)VisitArgumentList(node.ArgumentList);
 
             var initializers = node.Initializer == null ? null : 
                 node.Initializer.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e))
@@ -471,7 +471,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitInitializerExpression(InitializerExpressionSyntax node)
+        public override Ust VisitInitializerExpression(InitializerExpressionSyntax node)
         {
             var children = node.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e))
                 .ToArray();
@@ -480,13 +480,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
+        public override Ust VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
         {
             var result = (Expression)base.Visit(node.Expression);
             return result;
         }
 
-        public override UstNode VisitLiteralExpression(LiteralExpressionSyntax node)
+        public override Ust VisitLiteralExpression(LiteralExpressionSyntax node)
         {
             var token = node.Token;
             var span = node.GetTextSpan();
@@ -533,7 +533,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #region Query
 
-        public override UstNode VisitQueryExpression(QueryExpressionSyntax node)
+        public override Ust VisitQueryExpression(QueryExpressionSyntax node)
         {
             var expressions = node.DescendantNodes().OfType<ExpressionSyntax>()
                 .Select(exp => (Expression)VisitAndReturnNullIfError(exp)).ToList();
@@ -542,84 +542,84 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitQueryBody(QueryBodySyntax node)
+        public override Ust VisitQueryBody(QueryBodySyntax node)
         {
             return VisitQueryBody(node);
         }
 
-        public override UstNode VisitQueryContinuation(QueryContinuationSyntax node)
+        public override Ust VisitQueryContinuation(QueryContinuationSyntax node)
         {
             return base.VisitQueryContinuation(node);
         }
 
         #endregion
 
-        public override UstNode VisitSizeOfExpression(SizeOfExpressionSyntax node)
+        public override Ust VisitSizeOfExpression(SizeOfExpressionSyntax node)
         {
             var result = new IntLiteral(0, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitThisExpression(ThisExpressionSyntax node)
+        public override Ust VisitThisExpression(ThisExpressionSyntax node)
         {
             var result = new ThisReferenceToken(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitTypeOfExpression(TypeOfExpressionSyntax node)
+        public override Ust VisitTypeOfExpression(TypeOfExpressionSyntax node)
         {
             IdToken id = ConvertId(node.Keyword);
             TypeToken type = ConvertType(base.Visit(node.Type));
-            ArgsNode args = new ArgsNode(new[] { type }, type.TextSpan);
+            ArgsUst args = new ArgsUst(new[] { type }, type.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitMakeRefExpression(MakeRefExpressionSyntax node)
+        public override Ust VisitMakeRefExpression(MakeRefExpressionSyntax node)
         {
             IdToken id = ConvertId(node.Keyword);
             Expression expr = (Expression)base.Visit(node.Expression);
-            ArgsNode args = new ArgsNode(new Expression[] { expr }, expr.TextSpan);
+            ArgsUst args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitRefTypeExpression(RefTypeExpressionSyntax node)
+        public override Ust VisitRefTypeExpression(RefTypeExpressionSyntax node)
         {
             IdToken id = ConvertId(node.Keyword);
             Expression expr = (Expression)base.Visit(node.Expression);
-            ArgsNode args = new ArgsNode(new Expression[] { expr }, expr.TextSpan);
+            ArgsUst args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitRefValueExpression(RefValueExpressionSyntax node)
+        public override Ust VisitRefValueExpression(RefValueExpressionSyntax node)
         {
             IdToken id = ConvertId(node.Keyword);
             TypeToken type = (TypeToken)base.Visit(node.Type);
             Expression expr = (Expression)base.Visit(node.Expression);
-            ArgsNode args = new ArgsNode(new Expression[] { expr, type }, expr.TextSpan);
+            ArgsUst args = new ArgsUst(new Expression[] { expr, type }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
+        public override Ust VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
         {
             var result = CreateUnaryOperatorExpression(true, node);
             return result;
         }
 
-        public override UstNode VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
+        public override Ust VisitPostfixUnaryExpression(PostfixUnaryExpressionSyntax node)
         {
             var result = CreateUnaryOperatorExpression(false, node);
             return result;
         }
 
-        public override UstNode VisitAwaitExpression(AwaitExpressionSyntax node)
+        public override Ust VisitAwaitExpression(AwaitExpressionSyntax node)
         {
             var result = (Expression)base.Visit(node.Expression);
             return result;
@@ -627,38 +627,38 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #region String Interpolation
 
-        public override UstNode VisitInterpolatedStringExpression(InterpolatedStringExpressionSyntax node)
+        public override Ust VisitInterpolatedStringExpression(InterpolatedStringExpressionSyntax node)
         {
             Expression[] expressions = node.Contents.Select(content => (Expression)VisitAndReturnNullIfError(content)).ToArray();
             var result = new MultichildExpression(expressions, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitInterpolation(InterpolationSyntax node)
+        public override Ust VisitInterpolation(InterpolationSyntax node)
         {
             var result = base.Visit(node.Expression);
             return result;
         }
 
-        public override UstNode VisitInterpolatedStringText(InterpolatedStringTextSyntax node)
+        public override Ust VisitInterpolatedStringText(InterpolatedStringTextSyntax node)
         {
             var result = new StringLiteral(node.ToString(), node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitInterpolationAlignmentClause(InterpolationAlignmentClauseSyntax node)
+        public override Ust VisitInterpolationAlignmentClause(InterpolationAlignmentClauseSyntax node)
         {
             return base.VisitInterpolationAlignmentClause(node);
         }
 
-        public override UstNode VisitInterpolationFormatClause(InterpolationFormatClauseSyntax node)
+        public override Ust VisitInterpolationFormatClause(InterpolationFormatClauseSyntax node)
         {
             return base.VisitInterpolationFormatClause(node);
         }
 
         #endregion
 
-        protected UstNode CreateBinaryOperatorExpression(BinaryExpressionSyntax node)
+        protected Ust CreateBinaryOperatorExpression(BinaryExpressionSyntax node)
         {
             var left = (Expression)base.Visit(node.Left);
             var op = new BinaryOperatorLiteral(node.OperatorToken.ValueText, node.OperatorToken.GetTextSpan());

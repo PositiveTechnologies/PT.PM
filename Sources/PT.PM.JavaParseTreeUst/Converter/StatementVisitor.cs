@@ -17,7 +17,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 {
     public partial class JavaAntlrParseTreeConverter
     {
-        public UstNode VisitBlock(JavaParser.BlockContext context)
+        public Ust VisitBlock(JavaParser.BlockContext context)
         {
             Statement[] statements = context.blockStatement()
                 .Select(s => (Statement)Visit(s))
@@ -27,7 +27,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitBlockStatement(JavaParser.BlockStatementContext context)
+        public Ust VisitBlockStatement(JavaParser.BlockStatementContext context)
         {
             Statement result;
 
@@ -56,7 +56,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return VisitChildren(context);
         }
 
-        public UstNode VisitLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext context)
+        public Ust VisitLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext context)
         {
             var type = (TypeToken)Visit(context.typeType());
             AssignmentExpression[] initializers = context.variableDeclarators().variableDeclarator()
@@ -67,13 +67,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 var expressions = multichildExpression.Expressions;
                 // is array?
-                if (Helper.TryCheckIdTokenValue(expressions.FirstOrDefault(), "{") &&
-                    Helper.TryCheckIdTokenValue(expressions.LastOrDefault(), "}"))
+                if (CommonUtils.TryCheckIdTokenValue(expressions.FirstOrDefault(), "{") &&
+                    CommonUtils.TryCheckIdTokenValue(expressions.LastOrDefault(), "}"))
                 {
                     int dimensions = multichildExpression.GetDepth(1);
                     var sizes = Enumerable.Range(0, dimensions).Select(
                         _ => new IntLiteral(0, type.TextSpan)).ToList<Expression>();
-                    var array_initializers = expressions.Where(el => el.NodeType != NodeType.IdToken);
+                    var array_initializers = expressions.Where(el => !(el is IdToken));
                     initializers.First().Right = new ArrayCreationExpression(
                         new TypeToken(type.TypeText, type.TextSpan), sizes,
                         array_initializers, multichildExpression.TextSpan);
@@ -84,7 +84,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitStatement(JavaParser.StatementContext context)
+        public Ust VisitStatement(JavaParser.StatementContext context)
         {
             var textSpan = context.GetTextSpan();
             Statement result;
@@ -264,7 +264,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitForControl(JavaParser.ForControlContext context)
+        public Ust VisitForControl(JavaParser.ForControlContext context)
         {
             JavaParser.EnhancedForControlContext forEach = context.enhancedForControl();
             if (forEach != null)
@@ -320,14 +320,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
         }
 
-        public UstNode VisitForInit(JavaParser.ForInitContext context)
+        public Ust VisitForInit(JavaParser.ForInitContext context)
         {
             return VisitChildren(context);
         }
 
         #region Switch
 
-        public UstNode VisitSwitchBlockStatementGroup(JavaParser.SwitchBlockStatementGroupContext context)
+        public Ust VisitSwitchBlockStatementGroup(JavaParser.SwitchBlockStatementGroupContext context)
         {
             Expression[] caseLabels = context.switchLabel().Select(label => (Expression)Visit(label))
                 .Where(l => l != null).ToArray();
@@ -338,7 +338,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitSwitchLabel(JavaParser.SwitchLabelContext context)
+        public Ust VisitSwitchLabel(JavaParser.SwitchLabelContext context)
         {
             var result = Visit(context.GetChild(0));
             return result;
@@ -348,7 +348,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         #region Try Catch Finally
 
-        public UstNode VisitCatchClause(JavaParser.CatchClauseContext context)
+        public Ust VisitCatchClause(JavaParser.CatchClauseContext context)
         {
             var type = (TypeToken)Visit(context.catchType());
             var id = (IdToken)Visit(context.IDENTIFIER());
@@ -358,7 +358,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitCatchType(JavaParser.CatchTypeContext context)
+        public Ust VisitCatchType(JavaParser.CatchTypeContext context)
         {
             string[] names = context.qualifiedName().Select(name => ((StringLiteral)Visit(name))?.Text)
                 .Where(n => n != null).ToArray();
@@ -367,13 +367,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;
         }
 
-        public UstNode VisitFinallyBlock(JavaParser.FinallyBlockContext context)
+        public Ust VisitFinallyBlock(JavaParser.FinallyBlockContext context)
         {
             var result = (BlockStatement)Visit(context.block());
             return result;
         }
 
-        public UstNode VisitResource(JavaParser.ResourceContext context)
+        public Ust VisitResource(JavaParser.ResourceContext context)
         {
             var type = (TypeToken)Visit(context.classOrInterfaceType());
             var id = (IdToken)Visit(context.variableDeclaratorId());

@@ -9,8 +9,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class TypeDeclarationStatement : Statement
     {
-        public override NodeType NodeType => NodeType.TypeDeclarationStatement;
-
         public TypeDeclaration TypeDeclaration { get;set; }
 
         public TypeDeclarationStatement()
@@ -23,7 +21,7 @@ namespace PT.PM.Common.Nodes.Statements
             TypeDeclaration = typeDeclaration;
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
             var result = new[] { TypeDeclaration };
             return result;

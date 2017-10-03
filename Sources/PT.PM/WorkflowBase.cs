@@ -5,8 +5,7 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
-using PT.PM.Patterns;
-using PT.PM.Patterns.PatternsRepository;
+using PT.PM.Matching.PatternsRepository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -108,9 +107,9 @@ namespace PT.PM
             stageHelper = new StageHelper<TStage>(stage);
         }
 
-        protected RootNode ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            RootNode result = null;
+            RootUst result = null;
             var stopwatch = new Stopwatch();
             string file = fileName;
             if (stageHelper.IsContainsRead)
@@ -128,7 +127,7 @@ namespace PT.PM
                 Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
 
                 workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-                workflowResult.AddProcessedLinesCount(TextHelper.GetLinesCount(sourceCodeFile.Code));
+                workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
                 workflowResult.AddReadTime(stopwatch.ElapsedTicks);
                 workflowResult.AddResultEntity(sourceCodeFile);
 

@@ -1,6 +1,6 @@
 ﻿namespace PT.PM.Common.Nodes.Expressions
 {
-    public abstract class Expression : UstNode
+    public abstract class Expression : Ust
     {
         protected Expression(TextSpan textSpan)
             : base(textSpan)

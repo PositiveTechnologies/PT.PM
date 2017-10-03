@@ -17,7 +17,7 @@ namespace PT.PM.PhpParseTreeUst
             var expression0 = (Expression)VisitExpression(expression);
             var result = new InvocationExpression(
                 new IdToken(specialMethodTerminal.GetText(), specialMethodTerminal.GetTextSpan()),
-                new ArgsNode(new List<Expression>() { expression0 }, expression.GetTextSpan()),
+                new ArgsUst(new List<Expression>() { expression0 }, expression.GetTextSpan()),
                 contextTextSpan);
             return result;
         }

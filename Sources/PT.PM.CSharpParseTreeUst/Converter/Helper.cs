@@ -22,7 +22,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return new ModifierLiteral(modifier, token.GetTextSpan());
         }
 
-        protected TypeToken ConvertType(UstNode node)
+        protected TypeToken ConvertType(Ust node)
         {
             var typeToken = node as TypeToken;
             if (typeToken != null)
@@ -35,7 +35,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return null;
         }
 
-        protected UstNode VisitAndReturnNullIfError(SyntaxNode node)
+        protected Ust VisitAndReturnNullIfError(SyntaxNode node)
         {
             try
             {

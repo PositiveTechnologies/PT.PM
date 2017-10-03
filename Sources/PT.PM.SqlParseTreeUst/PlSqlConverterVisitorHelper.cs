@@ -11,7 +11,7 @@ namespace PT.PM.SqlParseTreeUst
     public partial class PlSqlAntlrConverter
     {
         /// <returns><see cref="Token"/></returns>
-        public override UstNode VisitTerminal(ITerminalNode node)
+        public override Ust VisitTerminal(ITerminalNode node)
         {
             string text = node.GetText();
             TextSpan textSpan = node.GetTextSpan();

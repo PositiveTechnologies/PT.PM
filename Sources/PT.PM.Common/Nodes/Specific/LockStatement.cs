@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class LockStatement : SpecificStatement
     {
-        public override NodeType NodeType => NodeType.LockStatement;
-
         public Expression Lock { get; set; }
 
         public Statement Embedded { get; set; }
@@ -22,9 +20,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Lock, Embedded};
+            return new Ust[] {Lock, Embedded};
         }
     }
 }

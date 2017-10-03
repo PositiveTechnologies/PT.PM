@@ -2,8 +2,6 @@
 {
     public class CommentLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.CommentLiteral;
-
         public virtual string Comment { get; set; }
 
         public override string TextValue => Comment;

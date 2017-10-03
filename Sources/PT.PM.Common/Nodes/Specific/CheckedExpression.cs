@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CheckedExpression : SpecificExpression
     {
-        public override NodeType NodeType => NodeType.CheckedExpression;
-
         public Expression Expression { get; set; }
 
         public CheckedExpression(Expression checkedExpression, TextSpan textSpan)
@@ -20,9 +18,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Expression };
+            return new Ust[] { Expression };
         }
 
         public override Expression[] GetArgs()

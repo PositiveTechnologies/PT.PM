@@ -20,7 +20,7 @@ namespace PT.PM
         {
             string executingAssemblyPath = Path.Combine(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            GraphvizPath = Helper.IsRunningOnLinux
+            GraphvizPath = CommonUtils.IsRunningOnLinux
                 ? "dot"
                 : Path.Combine(executingAssemblyPath, "Graphviz", "dot.exe");
         }

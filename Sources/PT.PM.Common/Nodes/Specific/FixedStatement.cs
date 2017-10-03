@@ -8,8 +8,6 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class FixedStatement : SpecificStatement
     {
-        public override NodeType NodeType => NodeType.FixedStatement;
-
         public TypeToken Type { get; set; }
 
         public List<AssignmentExpression> Variables { get; set; }
@@ -28,9 +26,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Variables);
             result.Add(Embedded);
             return result.ToArray();

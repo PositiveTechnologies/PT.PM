@@ -136,7 +136,7 @@
     <Compile Include="Converter\StatementVisitor.cs" />
     <Compile Include="Converter\TriviaVisitor.cs" />
     <Compile Include="Converter\TypeMembersVisitor.cs" />
-    <Compile Include="RoslynHelper.cs" />
+    <Compile Include="RoslynUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">

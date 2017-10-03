@@ -2,8 +2,6 @@
 {
     public class IntLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.IntLiteral;
-
         public long Value { get; set; }
 
         public override string TextValue => Value.ToString();
@@ -23,7 +21,7 @@
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

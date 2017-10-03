@@ -95,7 +95,7 @@ patternLiterals
 patternNotLiteral
     : PatternNot? patternLiteral
     ;
-    
+
 patternLiteral
     : PatternString                                                                #PatternStringLiteral
     | patternId                                                                    #PatternIdToken

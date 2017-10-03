@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Tokens
         [JsonIgnore]
         public abstract string TextValue { get; }
 
-        public override bool IsLiteral => true;
+        public override bool IsTerminal => true;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Expression Expression { get; set; }
@@ -22,9 +22,9 @@ namespace PT.PM.Common.Nodes.Tokens
         {
         }
 
-        public sealed override UstNode[] GetChildren()
+        public sealed override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
         public override Expression[] GetArgs()
@@ -32,19 +32,19 @@ namespace PT.PM.Common.Nodes.Tokens
             return new Expression[] { this };
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
                 return 1;
             }
 
-            if (!other.IsLiteral)
+            if (!other.IsTerminal)
             {
                 return -1;
             }
 
-            var nodeTypeResult = NodeType - other.NodeType;
+            var nodeTypeResult = KindId - other.KindId;
             if (nodeTypeResult != 0)
             {
                 return nodeTypeResult;

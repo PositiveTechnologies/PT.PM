@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class MultichildExpression : Expression
     {
-        public override NodeType NodeType => NodeType.MultichildExpression;
-
         public List<Expression> Expressions { get; set; }
 
         public MultichildExpression(IEnumerable<Expression> children, TextSpan textSpan)
@@ -29,7 +27,7 @@ namespace PT.PM.Common.Nodes.Expressions
             }
         }
 
-        public MultichildExpression(TextSpan textSpan, RootNode fileNode, params Expression[] children)
+        public MultichildExpression(TextSpan textSpan, RootUst fileNode, params Expression[] children)
             : base(textSpan)
         {
             Expressions = children.ToList();
@@ -57,9 +55,9 @@ namespace PT.PM.Common.Nodes.Expressions
                     child.GetDepth(multichildExpressionArgNumber) : 0);
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>(Expressions);
+            var result = new List<Ust>(Expressions);
             return result.ToArray();
         }
 

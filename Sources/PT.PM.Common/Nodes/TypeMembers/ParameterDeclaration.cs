@@ -4,36 +4,31 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
-    public class ParameterDeclaration : UstNode
+    public class ParameterDeclaration : Ust
     {
-        public override NodeType NodeType => NodeType.ParameterDeclaration;
-
         public TypeToken Type { get; set; }
 
         public IdToken Name { get; set; }
 
         public Expression Initializer { get; set; }
 
-        public ParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan)
+        public ParameterDeclaration()
+        {
+        }
+
+        public ParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
             Type = type;
             Name = name;
         }
 
-        public ParameterDeclaration()
+        public override Ust[] GetChildren()
         {
-        }
-
-        public override UstNode[] GetChildren()
-        {
-            var result = new List<UstNode>{ Name };
+            var result = new List<Ust>{ Name };
             return result.ToArray();
         }
 
-        public override string ToString()
-        {
-            return Type != null ? $"{Type} {Name}" : Name.ToString();
-        }
+        public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
     }
 }

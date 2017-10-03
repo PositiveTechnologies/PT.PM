@@ -4,8 +4,6 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ConditionalExpression : Expression
     {
-        public override NodeType NodeType => NodeType.ConditionalExpression;
-
         public Expression Condition { get; set; }
 
         public Expression TrueExpression { get; set; }
@@ -25,9 +23,9 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Condition, TrueExpression, FalseExpression };
+            return new Ust[] { Condition, TrueExpression, FalseExpression };
         }
 
         public override Expression[] GetArgs()

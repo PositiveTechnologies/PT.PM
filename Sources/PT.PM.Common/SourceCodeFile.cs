@@ -26,8 +26,8 @@ namespace PT.PM.Common
             // TODO: replace with fast binary version.
             int beginLine, beginColumn;
             int endLine, endColumn;
-            TextHelper.LinearToLineColumn(textSpan.Start, Code, out beginLine, out beginColumn);
-            TextHelper.LinearToLineColumn(textSpan.End, Code, out endLine, out endColumn);
+            textSpan.Start.ToLineColumn(Code, out beginLine, out beginColumn);
+            textSpan.End.ToLineColumn(Code, out endLine, out endColumn);
             return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
         }
 

@@ -1,15 +1,15 @@
-﻿using PT.PM.Common;
+﻿using Fclp;
+using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Json;
+using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
-using Fclp;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using PT.PM.Common.Nodes;
-using PT.PM.Patterns.Nodes;
 
 namespace PT.PM.Cli
 {
@@ -204,7 +204,7 @@ namespace PT.PM.Cli
 
         private static void DumpUst(bool isIndentedUst, bool isIncludeTextSpansInUst, WorkflowResult workflowResult)
         {
-            var serializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
+            var serializer = new JsonUstSerializer
             {
                 Indented = isIndentedUst,
                 IncludeTextSpans = isIncludeTextSpansInUst

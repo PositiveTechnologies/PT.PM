@@ -13,7 +13,7 @@ namespace PT.PM
     {
         private List<SourceCodeFile> sourceCodeFiles = new List<SourceCodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
-        private List<RootNode> usts = new List<RootNode>();
+        private List<RootUst> usts = new List<RootUst>();
         private List<TPattern> patterns = new List<TPattern>();
         private List<TMatchingResult> matchingResults = new List<TMatchingResult>();
 
@@ -60,7 +60,7 @@ namespace PT.PM
 
         public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.Parse.ToString(), parseTrees);
 
-        public IReadOnlyList<RootNode> Usts
+        public IReadOnlyList<RootUst> Usts
         {
             get
             {
@@ -119,7 +119,7 @@ namespace PT.PM
             }
         }
 
-        public void AddResultEntity(RootNode ust, bool convert)
+        public void AddResultEntity(RootUst ust, bool convert)
         {
             if (IsIncludeIntermediateResult || (convert && stageExt.IsConvert) || (!convert && stageExt.IsPreprocess))
             {

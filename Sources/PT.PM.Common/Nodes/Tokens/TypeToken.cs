@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Tokens
 {
     public class TypeToken : Token
     {
-        public override NodeType NodeType => NodeType.TypeToken;
-
         public string TypeText { get; set; }
 
         public override string TextValue => TypeText;
@@ -31,7 +29,7 @@ namespace PT.PM.Common.Nodes.Tokens
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

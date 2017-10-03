@@ -20,14 +20,14 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
-            TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
+            TestUtility.CheckFile(fileName, Language.Java, Stage.Convert);
         }
 
         [Test]
         public void Convert_JavaWebGoat_WithoutErrors()
         {
             string projectKey = "WebGoat.Java-05a1f5";
-            TestHelper.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),
+            TestUtility.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),
                 Language.Java, Stage.Parse);
         }
 
@@ -35,12 +35,12 @@ namespace PT.PM.JavaParseTreeUst.Tests
         public void Convert_JavaPatternsWithErrors_MatchedResultsEqual()
         {
             var patternsLogger = new LoggerMessageCounter();
-            TestHelper.CheckFile("Patterns.java", Language.Java, Stage.Match, patternsLogger);
+            TestUtility.CheckFile("Patterns.java", Language.Java, Stage.Match, patternsLogger);
 
             var patternWithErrorsLogger = new LoggerMessageCounter();
-            TestHelper.CheckFile("PatternsWithParseErrors.java", Language.Java, Stage.Match, patternWithErrorsLogger, true);
+            TestUtility.CheckFile("PatternsWithParseErrors.java", Language.Java, Stage.Match, patternWithErrorsLogger, true);
 
-            Assert.AreEqual(1, patternWithErrorsLogger.InfoMessageCount - patternsLogger.InfoMessageCount);
+            Assert.AreEqual(0, patternWithErrorsLogger.InfoMessageCount - patternsLogger.InfoMessageCount);
         }
 
         [Test]
@@ -87,7 +87,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                     Initializers = data.Item1,
                     Sizes = data.Item2
                 };
-                bool exist = ust.DoesAnyDescendantMatchPredicate(node => node.Equals(arrayCreationExpression));
+                bool exist = ust.AnyDescendant(node => node.Equals(arrayCreationExpression));
                 Assert.IsTrue(exist, "Test failed on " + i + " iteration.");
             }
         }
@@ -108,19 +108,19 @@ namespace PT.PM.JavaParseTreeUst.Tests
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
 
-            Assert.IsTrue(ust.DoesAnyDescendantMatchPredicate(ustNode =>
+            Assert.IsTrue(ust.AnyDescendant(ustNode =>
                 ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
         }
 
         [TestCase("AllInOne.java")]
         public void Convert_Java_BaseTypesExist(string fileName)
         {
-            var workflowResults = TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
+            var workflowResults = TestUtility.CheckFile(fileName, Language.Java, Stage.Convert);
             var ust = workflowResults.Usts.First();
-            bool result = ust.DoesAnyDescendantMatchPredicate(el =>
+            bool result = ust.AnyDescendant(descendant =>
             {
-                bool isTypeDeclaration = el.NodeType == Common.Nodes.NodeType.TypeDeclaration;
-                return isTypeDeclaration && ((TypeDeclaration)el).BaseTypes.Any(t => t.TypeText == "Runnable");
+                return descendant is TypeDeclaration typeDeclaration &&
+                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "Runnable");
             });
             Assert.IsTrue(result, "Ust doesn't contain type declaration node with Runnable base type");
         }

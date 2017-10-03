@@ -1,33 +1,35 @@
-﻿using PT.PM.AntlrUtils;
-using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using PT.PM.AntlrUtils;
+using PT.PM.Common;
+using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Json;
+using PT.PM.Common.Nodes;
+using PT.PM.JavaScriptParseTreeUst;
+using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
+using PT.PM.Matching.PatternsRepository;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using PT.PM.JavaScriptParseTreeUst;
 
 namespace PT.PM.PatternEditor
 {
     public class MainWindowViewModel: ReactiveObject
     {
-        private JsonUstNodeSerializer jsonSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
+        private JsonUstSerializer jsonSerializer = new JsonUstSerializer
         {
             IncludeTextSpans = false,
             Indented = true,
-            ExcludeNulls = true
+            ExcludeDefaults = true
         };
 
         private Window window;
@@ -233,7 +235,7 @@ namespace PT.PM.PatternEditor
 
         private void UpdateSourceCodeCaretIndex(int caretIndex)
         {
-            TextHelper.LinearToLineColumn(caretIndex, sourceCodeTextBox.Text, out int line, out int column);
+            caretIndex.ToLineColumn(sourceCodeTextBox.Text, out int line, out int column);
             SourceCodeTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition)));
         }
@@ -245,8 +247,8 @@ namespace PT.PM.PatternEditor
             {
                 var matchingResult = matchingResultWrapper.MatchingResult;
                 sourceCodeTextBox.Focus();
-                sourceCodeTextBox.SelectionStart = TextHelper.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.BeginLine, matchingResult.BeginColumn);
-                sourceCodeTextBox.SelectionEnd = TextHelper.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.EndLine, matchingResult.EndColumn);
+                sourceCodeTextBox.SelectionStart = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.BeginLine, matchingResult.BeginColumn);
+                sourceCodeTextBox.SelectionEnd = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.EndLine, matchingResult.EndColumn);
                 sourceCodeTextBox.CaretIndex = sourceCodeTextBox.SelectionEnd;
             }
         }
@@ -557,9 +559,7 @@ namespace PT.PM.PatternEditor
                 workflow.JavaScriptType = JavaScriptType;
             }
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults
-                .ToDto(workflow.SourceCodeRepository)
-                .ToArray();
+            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
 
             if (IsDeveloperMode)
             {
@@ -567,7 +567,7 @@ namespace PT.PM.PatternEditor
                 if (antlrParseTree?.SyntaxTree != null)
                 {
                     var antlrParser = ((AntlrParser)ParserConverterFactory.CreateParser(antlrParseTree.SourceLanguage)).InitParser(null);
-                    string tokensString = AntlrHelper.GetTokensString(antlrParseTree.Tokens, antlrParser.Vocabulary, onlyDefaultChannel: true);
+                    string tokensString = antlrParseTree.Tokens.GetTokensString(antlrParser.Vocabulary, onlyDefaultChannel: true);
                     string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
 
                     Tokens = tokensString;
@@ -602,7 +602,7 @@ namespace PT.PM.PatternEditor
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 MatchingResults.Clear();
-                foreach (var matchingResult in matchingResults)
+                foreach (MatchingResultDto matchingResult in matchingResults)
                 {
                     MatchingResults.Add(new MathingResultDtoWrapper(matchingResult));
                 }

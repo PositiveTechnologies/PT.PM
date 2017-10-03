@@ -44,7 +44,7 @@
   <ItemGroup>
     <Compile Include="AntlrParseTree.cs" />
     <Compile Include="AntlrCaseInsensitiveInputStream.cs" />
-    <Compile Include="AntlrHelper.cs" />
+    <Compile Include="AntlrUtils.cs" />
     <Compile Include="AntlrMemoryErrorListener.cs" />
     <Compile Include="AntlrParser.cs" />
     <Compile Include="AntlrError.cs" />

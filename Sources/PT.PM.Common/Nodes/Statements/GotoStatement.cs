@@ -10,8 +10,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class GotoStatement : Statement
     {
-        public override NodeType NodeType => NodeType.GotoStatement;
-
         public Expression Id { get; set; }
 
         public GotoStatement()
@@ -24,9 +22,9 @@ namespace PT.PM.Common.Nodes.Statements
             Id = id;
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] { Id };
+            return new Ust[] { Id };
         }
 
         public override string ToString()
