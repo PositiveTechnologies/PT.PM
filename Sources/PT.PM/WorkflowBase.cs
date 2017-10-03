@@ -251,5 +251,14 @@ namespace PT.PM
             }
             return result;
         }
+
+        protected ParallelOptions PrepareParallelOptions(CancellationToken cancellationToken)
+        {
+            return new ParallelOptions
+            {
+                MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
+                CancellationToken = cancellationToken
+            };
+        }
     }
 }

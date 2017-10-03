@@ -53,6 +53,8 @@ namespace PT.PM
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ?? new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
             result.BaseLanguages = BaseLanguages.ToArray();
@@ -74,9 +76,6 @@ namespace PT.PM
                 {
                     if (ThreadCount == 1 || (fileNames is IList<string> fileNamesList && fileNamesList.Count == 1))
                     {
-                        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                        Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-
                         foreach (string fileName in fileNames)
                         {
                             ProcessFile(fileName, result, cancellationToken);
@@ -84,19 +83,13 @@ namespace PT.PM
                     }
                     else
                     {
-                        var parallelOptions = new ParallelOptions
-                        {
-                            MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
-                            CancellationToken = cancellationToken
-                        };
-
+                        var parallelOptions = PrepareParallelOptions(cancellationToken);
                         Parallel.ForEach(
                             fileNames,
                             parallelOptions,
                             fileName =>
                             {
                                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                                Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
                                 ProcessFile(fileName, result, parallelOptions.CancellationToken);
                             });
                     }

@@ -13,11 +13,11 @@ namespace PT.PM.Matching
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public PatternRootNode[] Patterns { get; set; }
+        public IEnumerable<PatternRootNode> Patterns { get; set; }
 
         public bool IsIgnoreFilenameWildcards { get; set; }
 
-        public BruteForcePatternMatcher(PatternRootNode[] patterns)
+        public BruteForcePatternMatcher(IEnumerable<PatternRootNode> patterns)
         {
             Patterns = patterns;
         }
