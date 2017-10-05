@@ -22,9 +22,9 @@ namespace PT.PM.AntlrUtils
 
         protected RootUst root;
 
-        public abstract Language Language { get; }
+        public abstract LanguageInfo Language { get; }
 
-        public HashSet<Language> AnalyzedLanguages { get; set; }
+        public HashSet<LanguageInfo> AnalyzedLanguages { get; set; }
 
         public IList<IToken> Tokens { get; set; }
 

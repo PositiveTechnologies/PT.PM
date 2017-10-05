@@ -1,14 +1,13 @@
-﻿using PT.PM.AntlrUtils;
+﻿using Antlr4.Runtime;
+using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.PhpParseTreeUst;
-using Antlr4.Runtime;
 using System.IO;
 
 namespace PT.PM.PhpParseTreeUst
 {
     public class PhpAntlrParser : AntlrParser
     {
-        public override Language Language => Language.Php;
+        public override LanguageInfo Language => Php.Language;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.lower;
 

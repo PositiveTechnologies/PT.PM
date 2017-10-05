@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +7,14 @@ namespace PT.PM.Matching
 {
     public class PatternDto
     {
-        private HashSet<Language> languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
+        private HashSet<string> languages = new HashSet<string>(
+            LanguageUtils.PatternLanguages.Values.Select(value => value.Key));
 
         public string Name { get; set; } = "";
 
         public string Key { get; set; } = "";
 
-        public HashSet<Language> Languages
+        public HashSet<string> Languages
         {
             get
             {
@@ -23,7 +22,7 @@ namespace PT.PM.Matching
             }
             set
             {
-                if (value.Contains(Language.Aspx))
+                if (value.Contains("Aspx"))
                 {
                     throw new ArgumentException($"Unable to create pattern for Aspx");
                 }
@@ -47,9 +46,9 @@ namespace PT.PM.Matching
 
         public override string ToString()
         {
-            var titles = LanguageExt.AllLanguages
-                .Where(lang => Languages.Contains(lang))
-                .Select(lang => LanguageExt.LanguageInfos[lang].Title);
+            var titles = LanguageUtils.Languages
+                .Where(lang => Languages.Contains(lang.Key))
+                .Select(lang => lang.Value.Title);
             return $"{Name} ({(string.Join(", ", titles))})";
         }
     }

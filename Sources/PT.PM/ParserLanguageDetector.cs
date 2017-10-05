@@ -13,25 +13,25 @@ namespace PT.PM
         private readonly static Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
         private readonly static Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
 
-        public override Language? Detect(string sourceCode, Language[] languages = null)
+        public override LanguageInfo Detect(string sourceCode, IEnumerable<LanguageInfo> languages = null)
         {
-            List<Language> langs = (languages ?? LanguageExt.AllLanguages).ToList();
+            List<LanguageInfo> langs = (languages ?? LanguageUtils.Languages.Values).ToList();
             // Any PHP file contains start tag.
             if (!sourceCode.Contains("<?"))
             {
-                langs.Remove(Language.Php);
+                langs.Remove(langs.FirstOrDefault(l => l.Key == "Php"));
             }
             // Aspx and html code contains at least one tag.
             if (!openTagRegex.IsMatch(sourceCode) || !closeTagRegex.IsMatch(sourceCode))
             {
-                langs.Remove(Language.Aspx);
-                langs.Remove(Language.Html);
+                langs.Remove(langs.FirstOrDefault(l => l.Key == "Aspx"));
+                langs.Remove(langs.FirstOrDefault(l => l.Key == "Html"));
             }
             var sourceCodeFile = new SourceCodeFile() { Code = sourceCode };
-            var parseUnits = new Queue<Tuple<Language, ParserUnit>>(langs.Count);
+            var parseUnits = new Queue<Tuple<LanguageInfo, ParserUnit>>(langs.Count);
 
             langs = langs
-                .GroupBy(l => ParserConverterFactory.CreateParser(l))
+                .GroupBy(l => l.CreateParser())
                 .Select(l => l.First())
                 .ToList();
 
@@ -40,10 +40,10 @@ namespace PT.PM
                 return langs[0];
             }
 
-            foreach (Language language in langs)
+            foreach (LanguageInfo language in langs)
             {
                 var logger = new LoggerMessageCounter();
-                ILanguageParser languageParser = ParserConverterFactory.CreateParser(language);
+                ILanguageParser languageParser = language.CreateParser();
 
                 var task = Task.Factory.StartNew(() =>
                 {
@@ -55,7 +55,7 @@ namespace PT.PM
             }
 
             int minErrorCount = int.MaxValue;
-            Language? resultWithMinErrors = null;
+            LanguageInfo resultWithMinErrors = null;
 
             // Check every parseUnit completion every 50 ms.
             while (parseUnits.Count > 0)
@@ -68,7 +68,7 @@ namespace PT.PM
                     continue;
                 }
 
-                if (pair.Item2.Logger.ErrorCount == 0 && pair.Item1 != Language.Aspx)
+                if (pair.Item2.Logger.ErrorCount == 0 && pair.Item1.Key != "Aspx")
                 {
                     return pair.Item1;
                 }

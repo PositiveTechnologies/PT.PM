@@ -1,6 +1,5 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
 using PT.PM.TestUtils;
-using NUnit.Framework;
 using System.Linq;
 
 namespace PT.PM.JavaScriptParseTreeUst.Tests
@@ -12,7 +11,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         public void Parse_JavaScriptProject_WithoutErrors(string projectKey)
         {
             TestUtility.CheckProject(TestProjects.JavaScriptProjects
-                .Single(p => p.Key == projectKey), Language.JavaScript, Stage.Parse);
+                .Single(p => p.Key == projectKey), JavaScript.Language, Stage.Parse);
         }
     }
 }

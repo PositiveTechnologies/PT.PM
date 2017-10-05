@@ -1,14 +1,12 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Dsl;
+using PT.PM.JavaParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
+using PT.PM.PhpParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,7 +27,7 @@ namespace PT.PM.Tests
                 "$b = -3.1;"
             );
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, Language.Php, stage: Stage.Preprocess);
+            var workflow = new Workflow(sourceCodeRep, Php.Language, stage: Stage.Preprocess);
             workflow.IsIncludePreprocessing = true;
             workflow.Logger = logger;
             workflow.Process();
@@ -52,7 +50,7 @@ namespace PT.PM.Tests
                 "}"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Language.Java, stage: Stage.Preprocess);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Preprocess);
             workflow.IsIncludePreprocessing = true;
             var ust = workflow.Process().Usts.First();
 

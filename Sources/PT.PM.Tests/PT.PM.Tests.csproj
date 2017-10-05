@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SampleTree.cs" />
+    <Compile Include="SetUp.cs" />
     <Compile Include="UstPreprocessorTests.cs" />
     <Compile Include="TextTests.cs" />
     <Compile Include="UstVisitorTests.cs" />
@@ -101,6 +102,10 @@
     <ProjectReference Include="..\PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj">
       <Project>{f5e3ce00-6854-4fa8-add2-0248df6d85db}</Project>
       <Name>PT.PM.JavaParseTreeUst</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj">
+      <Project>{98727837-F9FA-476C-B0B5-88845B53FDDF}</Project>
+      <Name>PT.PM.JavaScriptParseTreeUst</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
       <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>

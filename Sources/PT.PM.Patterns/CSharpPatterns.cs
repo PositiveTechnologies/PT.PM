@@ -1,8 +1,8 @@
 ﻿using PT.PM.Common;
+using PT.PM.CSharpParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
-using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
@@ -16,7 +16,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash",
-                Languages = new HashSet<Language>() { CSharp },
+                Languages = new HashSet<LanguageInfo>() { CSharp.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -44,7 +44,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Use of NullReferenceException Catch to Detect NULL Pointer Dereference",
-                Languages = new HashSet<Language>() { CSharp },
+                Languages = new HashSet<LanguageInfo>() { CSharp.Language },
                 Node = new PatternTryCatchStatement
                 {
                     ExceptionTypes = new List<PatternUst>

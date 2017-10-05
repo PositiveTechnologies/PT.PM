@@ -2,33 +2,39 @@
 {
     public class LanguageInfo
     {
-        public readonly Language Language;
+        public readonly string Key;
 
         public readonly string Title;
 
         public readonly string[] Extensions;
 
-        public readonly bool CaseInsensitive;
+        public readonly bool IsCaseInsensitive;
 
-        public readonly Language[] Sublanguages;
+        public readonly LanguageInfo[] Sublanguages;
 
         public readonly bool HaveAntlrParser;
 
-        public LanguageInfo(Language language, string extension, bool caseInsensitive, string title = null,
-            Language[] sublanguages = null, bool haveAntlrParser = true)
-            :this(language, new string[] { extension }, caseInsensitive, title, sublanguages, haveAntlrParser)
+        public readonly bool IsPattern;
+
+        public readonly bool IsSql;
+
+        public LanguageInfo(string language, string extension, bool caseInsensitive, string title = null,
+            LanguageInfo[] sublanguages = null, bool haveAntlrParser = true, bool isPattern = true, bool isSql = false)
+            :this(language, new string[] { extension }, caseInsensitive, title, sublanguages, haveAntlrParser, isPattern, isSql)
         {
         }
 
-        public LanguageInfo(Language language, string[] extensions, bool caseInsensitive, string title = null,
-            Language[] sublanguages = null, bool haveAntlrParser = true)
+        public LanguageInfo(string language, string[] extensions, bool caseInsensitive, string title = null,
+            LanguageInfo[] sublanguages = null, bool haveAntlrParser = true, bool isPattern = true, bool isSql = false)
         {
-            Language = language;
+            Key = language;
             Extensions = extensions;
-            CaseInsensitive = caseInsensitive;
-            Title = string.IsNullOrEmpty(title) ? Language.ToString() : title;
-            Sublanguages = sublanguages ?? ArrayUtils<Language>.EmptyArray;
+            IsCaseInsensitive = caseInsensitive;
+            Title = string.IsNullOrEmpty(title) ? Key.ToString() : title;
+            Sublanguages = sublanguages ?? ArrayUtils<LanguageInfo>.EmptyArray;
             HaveAntlrParser = haveAntlrParser;
+            IsPattern = isPattern;
+            IsSql = isSql;
         }
 
         public override string ToString() => Title;

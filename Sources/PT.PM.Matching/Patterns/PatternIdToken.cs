@@ -43,7 +43,7 @@ namespace PT.PM.Matching.Patterns
             if (ust is Token token)
             {
                 string tokenText = token.TextValue;
-                if (ust.Root.Language.IsCaseInsensitive())
+                if (ust.Root.Language.IsCaseInsensitive)
                 {
                     TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan(tokenText);
                     if (!textSpan.IsEmpty)

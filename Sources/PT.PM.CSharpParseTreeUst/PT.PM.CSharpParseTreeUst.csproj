@@ -120,9 +120,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aspx.cs" />
     <Compile Include="AspxParseTree.cs" />
     <Compile Include="AspxParser.cs" />
     <Compile Include="AspxConverter.cs" />
+    <Compile Include="CSharp.cs" />
     <Compile Include="CSharpRoslynParser.cs" />
     <Compile Include="CSharpRoslynParseTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

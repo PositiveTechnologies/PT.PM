@@ -47,12 +47,14 @@
     <Compile Include="Exceptions\ReadException.cs" />
     <Compile Include="Json\JsonBaseSerializer.cs" />
     <Compile Include="Json\JsonConverterBase.cs" />
+    <Compile Include="LanguageUtils.cs" />
     <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Nodes\IUst.cs" />
     <Compile Include="Nodes\IUstVisitor.cs" />
     <Compile Include="Reflection\PropertyCloner.cs" />
     <Compile Include="Reflection\PropertyComparer.cs" />
     <Compile Include="Reflection\PropertyVisitor.cs" />
+    <Compile Include="Reflection\ReflectionUtils.cs" />
     <Compile Include="TextTruncater.cs" />
     <Compile Include="Nodes\UstLinq.cs" />
     <Compile Include="Nodes\UstRefComparer.cs" />
@@ -79,7 +81,6 @@
     <Compile Include="CodeRepository\ISourceCodeRepository.cs" />
     <Compile Include="Json\JsonUstSerializer.cs" />
     <Compile Include="ParseTree.cs" />
-    <Compile Include="LanguageExt.cs" />
     <Compile Include="LanguageInfo.cs" />
     <Compile Include="LoggerMessageCounter.cs" />
     <Compile Include="Nodes\Collections\ArgsUst.cs" />
@@ -153,7 +154,6 @@
     <Compile Include="Nodes\Tokens\Token.cs" />
     <Compile Include="Nodes\Tokens\BinaryOperator.cs" />
     <Compile Include="ILogger.cs" />
-    <Compile Include="Language.cs" />
     <Compile Include="Nodes\RootUst.cs" />
     <Compile Include="Nodes\Tokens\TypeType.cs" />
     <Compile Include="Nodes\GeneralScope\TypeDeclaration.cs" />

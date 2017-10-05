@@ -50,6 +50,8 @@
     <Compile Include="Generated\PhpLexer.cs" />
     <Compile Include="Generated\PhpParser.cs" />
     <Compile Include="Generated\PhpParserVisitor.cs" />
+    <Compile Include="Html.cs" />
+    <Compile Include="Php.cs" />
     <Compile Include="PhpAntlrParseTreeConverter.cs" />
     <Compile Include="PhpAntlrParseTree.cs" />
     <Compile Include="PhpAntlrParser.cs" />

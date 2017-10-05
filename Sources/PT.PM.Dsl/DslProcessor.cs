@@ -34,7 +34,6 @@ namespace PT.PM.Dsl
             DslParser.PatternContext patternContext = parser.Parse(data);
 
             PatternRoot patternNode = converter.Convert(patternContext);
-            patternNode.Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
 
             var preprocessor = new PatternNormalizer() { Logger = Logger };
             patternNode = preprocessor.Normalize(patternNode);

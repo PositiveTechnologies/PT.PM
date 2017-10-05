@@ -3,8 +3,10 @@ using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
+using PT.PM.JavaParseTreeUst;
 using PT.PM.Matching.Patterns;
 using PT.PM.Matching.PatternsRepository;
+using PT.PM.PhpParseTreeUst;
 using PT.PM.TestUtils;
 using System;
 using System.Collections.Generic;
@@ -41,7 +43,7 @@ namespace PT.PM.Matching.Tests
                 "if ($password2->Length > 0) { }\n" +
                 "test_call_5(1, $password2, 2);"
             );
-            workflow = new Workflow(sourceCodeRep, Language.Php, patternsRep)
+            workflow = new Workflow(sourceCodeRep, Php.Language, patternsRep)
             {
                 Logger = new LoggerMessageCounter()
             };
@@ -57,7 +59,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternExpressionsInCalls(string patternData, params int[] matchMethodNumbers)
         {
             var processor = new DslProcessor();
-            var patternNode = (PatternRoot)processor.Deserialize(patternData);
+            PatternRoot patternNode = processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
             patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
@@ -108,7 +110,7 @@ namespace PT.PM.Matching.Tests
             var code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
             var pattern = "new XMLUtil().parse(<[~\".*\"]>)";
 
-            var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Language.Java);
+            var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Java.Language);
             Assert.AreEqual(4, matchingResults.Length);
         }
 
@@ -127,7 +129,7 @@ namespace PT.PM.Matching.Tests
                 "?>";
             var pattern = "Comment: <[ \"(?i)(password|pwd)\\s*(\\=|is|\\:)\" ]>";
 
-            var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Language.Php);
+            var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Php.Language);
 
             Assert.AreEqual(2, matchingResults[0].BeginLine);
             Assert.AreEqual(2, matchingResults[0].BeginColumn);
@@ -148,7 +150,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Create_PatternWithWrongLanguage_ThrowsException()
         {
-            Assert.Throws(typeof(ArgumentException), () => new PatternDto() { Languages = new HashSet<Language>() { Language.Aspx } });
+            Assert.Throws(typeof(ArgumentException), () => new PatternDto() { Languages = new HashSet<string>() { "Aspx" } });
         }
     }
 }

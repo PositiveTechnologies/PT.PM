@@ -137,6 +137,10 @@
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
       <Name>PT.PM.Patterns</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj">
+      <Project>{08FBC341-AC44-4CAE-AE71-9462F7885E3E}</Project>
+      <Name>PT.PM.PhpParseTreeUst</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>

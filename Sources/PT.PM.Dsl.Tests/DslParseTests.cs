@@ -3,6 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Matching;
 using PT.PM.Patterns.PatternsRepository;
+using PT.PM.PhpParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
@@ -49,9 +50,10 @@ namespace PT.PM.Dsl.Tests
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger, PatternExpressionInsideStatement = false };
             PatternRoot result = processor.Deserialize(data);
-            result.Languages = fileName == @"DebugInfo.ptpm"
-                ? new HashSet<Language>() { Language.Php }
-                : new HashSet<Language>(LanguageExt.AllPatternLanguages);
+            if (fileName == "DebugInfo.ptpm")
+            {
+                new HashSet<LanguageInfo>() { Php.Language };
+            }
             Assert.AreEqual(0, logger.ErrorCount);
 
             string patternName = Path.GetFileNameWithoutExtension(fileName);

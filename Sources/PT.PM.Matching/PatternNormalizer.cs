@@ -25,7 +25,7 @@ namespace PT.PM.Matching
                 Key = pattern.Key,
                 FilenameWildcard = pattern.FilenameWildcard,
                 SourceCodeFile = pattern.SourceCodeFile,
-                Languages = new HashSet<Language>(pattern.Languages),
+                Languages = new HashSet<LanguageInfo>(pattern.Languages),
                 DataFormat = pattern.DataFormat,
                 DebugInfo = pattern.DebugInfo,
                 Node = Visit(pattern.Node),

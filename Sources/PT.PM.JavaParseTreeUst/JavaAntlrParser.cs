@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.JavaParseTreeUst.Parser;
-using Antlr4.Runtime;
 
 namespace PT.PM.JavaParseTreeUst
 {
     public class JavaAntlrParser : AntlrParser
     {
-        public override Language Language => Language.Java;
+        public override LanguageInfo Language => Java.Language;
 
         public JavaAntlrParser()
         {

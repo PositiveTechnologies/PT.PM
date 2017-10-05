@@ -28,7 +28,8 @@ namespace PT.PM.TestUtils
 
         public string DownloadPath { get; set; } = TestUtility.TestsDownloadedPath;
 
-        public IEnumerable<string> Extensions { get; set; } = LanguageExt.AllExtensions;
+        public IEnumerable<string> Extensions { get; set; } =
+            LanguageUtils.Languages.SelectMany(lang => lang.Value.Extensions);
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 

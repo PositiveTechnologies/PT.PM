@@ -56,6 +56,7 @@
     <Compile Include="Generated\JavaScriptLexer.cs" />
     <Compile Include="Generated\JavaScriptParser.cs" />
     <Compile Include="Generated\JavaScriptParserVisitor.cs" />
+    <Compile Include="JavaScript.cs" />
     <Compile Include="JavaScriptAntlrUstConverterVisitorHelper.cs" />
     <Compile Include="JavaScriptAntlrParseTree.cs" />
     <Compile Include="JavaScriptAntlrParser.cs" />

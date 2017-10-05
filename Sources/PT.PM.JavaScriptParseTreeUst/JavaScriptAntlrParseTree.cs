@@ -6,7 +6,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public class JavaScriptAntlrParseTree: AntlrParseTree
     {
-        public override Language SourceLanguage => Language.JavaScript;
+        public override LanguageInfo SourceLanguage => JavaScript.Language;
 
         public JavaScriptAntlrParseTree()
         {

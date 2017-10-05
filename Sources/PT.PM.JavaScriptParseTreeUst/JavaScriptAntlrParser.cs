@@ -9,7 +9,7 @@ namespace PT.PM.JavaScriptParseTreeUst
     {
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
-        public override Language Language => Language.JavaScript;
+        public override LanguageInfo Language => JavaScript.Language;
 
         protected override int CommentsChannel => JavaScriptLexer.Hidden;
 

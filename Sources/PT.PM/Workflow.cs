@@ -19,11 +19,11 @@ namespace PT.PM
     public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchingResult>
     {
         public Workflow()
-            : this(null, LanguageExt.AllLanguages)
+            : this(null, LanguageUtils.Languages.Values)
         {
         }
 
-        public Workflow(ISourceCodeRepository sourceCodeRepository, Language language,
+        public Workflow(ISourceCodeRepository sourceCodeRepository, LanguageInfo language,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : this(sourceCodeRepository, new [] { language }, patternsRepository, stage)
         {
@@ -31,11 +31,11 @@ namespace PT.PM
 
         public Workflow(ISourceCodeRepository sourceCodeRepository,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            :this(sourceCodeRepository, LanguageExt.AllLanguages, patternsRepository, stage)
+            :this(sourceCodeRepository, LanguageUtils.Languages.Values, patternsRepository, stage)
         {
         }
 
-        public Workflow(ISourceCodeRepository sourceCodeRepository, IEnumerable<Language> languages,
+        public Workflow(ISourceCodeRepository sourceCodeRepository, IEnumerable<LanguageInfo> languages,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : base(stage, languages)
         {
@@ -55,7 +55,8 @@ namespace PT.PM
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
-            var result = workflowResult ?? new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
+            var result = workflowResult ??
+                new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
             result.BaseLanguages = BaseLanguages.ToArray();
 
             StartConvertPatternsTaskIfRequired(result);

@@ -25,7 +25,7 @@ namespace PT.PM
         protected Task filesCountTask;
         protected Task convertPatternsTask;
 
-        protected Language[] languages;
+        protected LanguageInfo[] languages;
 
         protected StageHelper<TStage> stageHelper;
 
@@ -90,9 +90,9 @@ namespace PT.PM
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        public HashSet<Language> AnalyzedLanguages { get; set; } = new HashSet<Language>(LanguageExt.AllLanguages);
+        public HashSet<LanguageInfo> AnalyzedLanguages { get; set; } = new HashSet<LanguageInfo>(LanguageUtils.Languages.Values);
 
-        public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageExt.AllLanguages);
+        public HashSet<LanguageInfo> BaseLanguages { get; set; } = new HashSet<LanguageInfo>(LanguageUtils.Languages.Values);
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
@@ -100,9 +100,9 @@ namespace PT.PM
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        public WorkflowBase(TStage stage, IEnumerable<Language> languages)
+        public WorkflowBase(TStage stage, IEnumerable<LanguageInfo> languages)
         {
-            AnalyzedLanguages = new HashSet<Language>(languages);
+            AnalyzedLanguages = new HashSet<LanguageInfo>(languages);
             Stage = stage;
             stageHelper = new StageHelper<TStage>(stage);
         }
@@ -137,13 +137,13 @@ namespace PT.PM
                 if (stageHelper.IsContainsParse)
                 {
                     stopwatch.Restart();
-                    Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages.ToArray());
+                    LanguageInfo detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
                     if (detectedLanguage == null)
                     {
                         Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");
                         return null;
                     }
-                    var parser = ParserConverterFactory.CreateParser((Language)detectedLanguage);
+                    var parser = detectedLanguage.CreateParser();
                     parser.Logger = Logger;
                     if (parser is AntlrParser antlrParser)
                     {
@@ -174,7 +174,7 @@ namespace PT.PM
                     {
                         stopwatch.Reset();
 
-                        var converter = ParserConverterFactory.CreateConverter(parseTree.SourceLanguage);
+                        var converter = detectedLanguage.CreateConverter();
                         converter.Logger = Logger;
                         converter.AnalyzedLanguages = AnalyzedLanguages;
                         result = converter.Convert(parseTree);
@@ -231,19 +231,19 @@ namespace PT.PM
             }
         }
 
-        protected static HashSet<Language> GetBaseLanguages(HashSet<Language> analyzedLanguages)
+        protected static HashSet<LanguageInfo> GetBaseLanguages(HashSet<LanguageInfo> analyzedLanguages)
         {
-            HashSet<Language> result = new HashSet<Language>();
-            foreach (Language language in analyzedLanguages)
+            HashSet<LanguageInfo> result = new HashSet<LanguageInfo>();
+            foreach (LanguageInfo language in analyzedLanguages)
             {
                 result.Add(language);
-                LanguageInfo superLangInfo = LanguageExt.LanguageInfos[language];
+                LanguageInfo superLangInfo = language;
                 do
                 {
-                    superLangInfo = LanguageExt.LanguageInfos.FirstOrDefault(l => l.Value.Sublanguages.Contains(superLangInfo.Language)).Value;
+                    superLangInfo = LanguageUtils.Languages.FirstOrDefault(l => l.Value.Sublanguages.Contains(superLangInfo)).Value;
                     if (superLangInfo != null)
                     {
-                        result.Add(superLangInfo.Language);
+                        result.Add(superLangInfo);
                     }
                 }
                 while (superLangInfo != null);

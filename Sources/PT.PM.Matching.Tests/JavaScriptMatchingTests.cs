@@ -1,13 +1,13 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
 using PT.PM.Common.CodeRepository;
-using PT.PM.TestUtils;
+using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Patterns.PatternsRepository;
-using NUnit.Framework;
+using PT.PM.PhpParseTreeUst;
+using PT.PM.TestUtils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PT.PM.Patterns;
-using System.Collections.Generic;
 
 namespace PT.PM.Matching.Tests
 {
@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Tests
             };
             foreach (var tuple in jsCodeAndPatterns)
             {
-                var matchingResults = PatternMatchingUtils.GetMatchings(tuple.Item1, tuple.Item2, Language.JavaScript);
+                var matchingResults = PatternMatchingUtils.GetMatchings(tuple.Item1, tuple.Item2, JavaScript.Language);
                 Assert.AreEqual(1, matchingResults.Length, tuple.Item2 + " doesn't match " + tuple.Item1);
             }
         }
@@ -34,7 +34,7 @@ namespace PT.PM.Matching.Tests
         public void Match_JavaScriptAndPhpPatternInsidePhp_MatchedExpected()
         {
             string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
-            MatchingResultDto[] matchingResults = PatternMatchingUtils.GetMatchings(code, "#.innerHTML=<[\"\"]>", Language.JavaScript);
+            MatchingResultDto[] matchingResults = PatternMatchingUtils.GetMatchings(code, "#.innerHTML=<[\"\"]>", JavaScript.Language);
             Assert.AreEqual(1, matchingResults.Length);
         }
 
@@ -45,19 +45,19 @@ namespace PT.PM.Matching.Tests
             MatchingResultDto[] matchingResults;
 
             matchingResults = PatternMatchingUtils.GetMatchings(code, "#.innerHTML=<[\"\"]>",
-                new[] { Language.JavaScript }, new[] { Language.JavaScript });
+                new[] { JavaScript.Language }, new[] { JavaScript.Language });
             Assert.AreEqual(1, matchingResults.Length);
 
             matchingResults = PatternMatchingUtils.GetMatchings(code, "<[password]> = null",
-                new[] { Language.Php }, new[] { Language.Php });
+                new[] { Php.Language }, new[] { Php.Language });
             Assert.AreEqual(1, matchingResults.Length);
 
             matchingResults = PatternMatchingUtils.GetMatchings(code, "#.innerHTML=<[\"\"]>",
-                new[] { Language.Php }, new[] { Language.JavaScript });
+                new[] { Php.Language }, new[] { JavaScript.Language });
             Assert.AreEqual(0, matchingResults.Length);
 
             matchingResults = PatternMatchingUtils.GetMatchings(code, "<[password]> = null",
-                new[] { Language.JavaScript }, new[] { Language.Php });
+                new[] { JavaScript.Language }, new[] { Php.Language });
             Assert.AreEqual(0, matchingResults.Length);
         }
 
@@ -68,12 +68,12 @@ namespace PT.PM.Matching.Tests
             var sourceCodeRep = new FileCodeRepository(path);
             var patternsRepository = new DefaultPatternRepository();
 
-            var workflow = new Workflow(sourceCodeRep, Language.JavaScript, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, JavaScript.Language, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto().OrderBy(r => r.PatternKey);
             PatternDto[] patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Contains(Language.JavaScript)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains("JavaScript")).ToArray();
             foreach (var dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
@@ -85,8 +85,8 @@ namespace PT.PM.Matching.Tests
         {
             string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "php-js-php.php"));
             var matchingResults = PatternMatchingUtils.GetMatchings(code, "<[GLOBALS|frame_content]>",
-                new[] { Language.Php, Language.JavaScript },
-                new[] { Language.Php, Language.JavaScript });
+                new[] { Php.Language, JavaScript.Language },
+                new[] { Php.Language, JavaScript.Language });
 
             Assert.AreEqual(3, matchingResults.Length);
             Assert.IsTrue(matchingResults[0].MatchedCode.Contains("GLOBAL"));

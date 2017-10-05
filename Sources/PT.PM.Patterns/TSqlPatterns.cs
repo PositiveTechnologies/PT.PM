@@ -1,8 +1,8 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
+using PT.PM.SqlParseTreeUst;
 using System.Collections.Generic;
-using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
@@ -16,7 +16,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Dangerous Function",
-                Languages = new HashSet<Language>() { TSql },
+                Languages = new HashSet<LanguageInfo>() { TSql.Language },
                 Node = new PatternInvocationExpression()
                 {
                     Target = new PatternIdRegexToken("xp_cmdshell"),
@@ -28,7 +28,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Insecure Randomness",
-                Languages = new HashSet<Language>() { TSql },
+                Languages = new HashSet<LanguageInfo>() { TSql.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)^rand$"),
@@ -40,7 +40,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
-                Languages = new HashSet<Language>() { TSql },
+                Languages = new HashSet<LanguageInfo>() { TSql.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)^HashBytes$"),

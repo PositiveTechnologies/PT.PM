@@ -154,6 +154,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj">
+      <Project>{98727837-f9fa-476c-b0b5-88845b53fddf}</Project>
+      <Name>PT.PM.JavaScriptParseTreeUst</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
       <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
       <Name>PT.PM.Matching</Name>

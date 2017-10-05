@@ -59,7 +59,7 @@ namespace PT.PM.Matching.Patterns
 
             if (ust is Token token)
             {
-                Regex regex = ust.Root.Language.IsCaseInsensitive()
+                Regex regex = ust.Root.Language.IsCaseInsensitive
                     ? caseInsensitiveRegex
                     : this.regex;
                 string tokenText = token.TextValue;

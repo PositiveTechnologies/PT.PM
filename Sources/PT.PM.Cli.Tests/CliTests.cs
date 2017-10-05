@@ -72,7 +72,7 @@ namespace PT.PM.Cli.Tests
 
             ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestUtility.TestsDataPath}\" " +
-                $"-l {Language.PlSql},{Language.TSql} " +
+                $"-l {"PlSql"},{"TSql"} " +
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not process php (csharp, java etc.) files.
@@ -81,7 +81,7 @@ namespace PT.PM.Cli.Tests
 
             result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestUtility.TestsDataPath}\" " +
-                $"-l {Language.PlSql} " +
+                $"-l {"PlSql"} " +
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not detect language for only one language.
@@ -97,7 +97,7 @@ namespace PT.PM.Cli.Tests
             }
 
             var patternTempFile = Path.GetTempFileName() + ".json";
-            File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(? i)password(?-i)] > = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
+            File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
             ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
                $"--stage {Stage.Patterns} " +
                $"--patterns {patternTempFile} " +

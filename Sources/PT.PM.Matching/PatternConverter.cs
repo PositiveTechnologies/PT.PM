@@ -66,7 +66,7 @@ namespace PT.PM.Matching
 
                     pattern.DataFormat = serializer.Format;
                     pattern.Key = patternDto.Key;
-                    pattern.Languages = patternDto.Languages;
+                    pattern.Languages = new HashSet<LanguageInfo>(patternDto.Languages.ToLanguages(Logger));
                     pattern.DebugInfo = patternDto.Description;
                     pattern.FilenameWildcard = patternDto.FilenameWildcard;
 
@@ -94,7 +94,7 @@ namespace PT.PM.Matching
                     {
                         DataFormat = pattern.DataFormat,
                         Key = pattern.Key,
-                        Languages = pattern.Languages,
+                        Languages = new HashSet<string>(pattern.Languages.Select(lang => lang.Key)),
                         Value = serialized,
                         Description = pattern.DebugInfo,
                         FilenameWildcard = pattern.FilenameWildcard

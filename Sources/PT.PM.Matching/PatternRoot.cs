@@ -12,7 +12,7 @@ namespace PT.PM.Matching
 {
     public class PatternRoot : ILoggable
     {
-        private HashSet<Language> languages = new HashSet<Language>();
+        private HashSet<LanguageInfo> languages = new HashSet<LanguageInfo>();
         private Regex pathWildcardRegex;
 
         public ILogger Logger { get; set; }
@@ -35,7 +35,7 @@ namespace PT.PM.Matching
 
         public SourceCodeFile SourceCodeFile { get; set; }
 
-        public HashSet<Language> Languages
+        public HashSet<LanguageInfo> Languages
         {
             get
             {
@@ -43,7 +43,7 @@ namespace PT.PM.Matching
             }
             set
             {
-                if (languages.Contains(Language.Aspx))
+                if (languages.Any(lang => lang.Key == "Aspx"))
                 {
                     throw new ArgumentException($"Unable to create pattern for Aspx");
                 }

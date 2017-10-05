@@ -1,23 +1,22 @@
 ﻿using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
-using PT.PM.Common;
 
 namespace PT.PM.Matching
 {
     public class DslPatternRepository : MemoryPatternsRepository
     {
         private string patternData;
-        private HashSet<Language> languages;
+        private HashSet<string> languages;
 
-        public DslPatternRepository(string patternData, Language language)
+        public DslPatternRepository(string patternData, string language)
             : this(patternData, new [] { language })
         {
         }
 
-        public DslPatternRepository(string patternData, IEnumerable<Language> languages)
+        public DslPatternRepository(string patternData, IEnumerable<string> languages)
         {
             this.patternData = patternData;
-            this.languages = new HashSet<Language>(languages);
+            this.languages = new HashSet<string>(languages);
         }
 
         protected override List<PatternDto> InitPatterns()

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
+using PT.PM.JavaParseTreeUst;
 
 namespace PT.PM.Matching.Tests
 {
@@ -27,13 +28,13 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.java");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Language.Java, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
             var patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Contains(Language.Java)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains("Java")).ToArray();
             foreach (var dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);

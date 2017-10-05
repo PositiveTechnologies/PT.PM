@@ -1,11 +1,14 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
+using PT.PM.CSharpParseTreeUst;
+using PT.PM.JavaParseTreeUst;
+using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using PT.PM.Matching.PatternsRepository;
+using PT.PM.PhpParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
-using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
@@ -52,7 +55,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedPassword",
-                Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
+                Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values),
                 Node = new PatternOr
                 (
                     new PatternBinaryOperatorExpression
@@ -97,7 +100,13 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureTransport",
-                Languages = new HashSet<Language>(LanguageExt.AllGplPatternLanguages),
+                Languages = new HashSet<LanguageInfo>
+                {
+                    CSharp.Language,
+                    Java.Language,
+                    Php.Language,
+                    JavaScript.Language
+                },
                 Node = new PatternStringRegexLiteral(@"^http://[\w@][\w.:@]+/?[\w\.?=%&=\-@/$,]*$")
             });
 
@@ -105,7 +114,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureRandomness",
-                Languages = new HashSet<Language>() { CSharp, Java },
+                Languages = new HashSet<LanguageInfo>() { CSharp.Language, Java.Language },
                 Node = new PatternObjectCreateExpression
                 {
                     Type = new PatternIdToken("Random"),
@@ -117,7 +126,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PasswordInComment. Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
-                Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
+                Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values),
                 Node = new PatternOr
                 (
                     new PatternCommentRegex("(?i)(password|pwd)\\s*=\\s*[\"\\w]+"),
@@ -129,7 +138,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Poor Error Handling: Empty Default Exception Handler",
-                Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages),
+                Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values),
                 Node = new PatternTryCatchStatement { IsCatchBodyEmpty = true }
             });
 
@@ -137,7 +146,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Erroneous Null Comparison",
-                Languages = new HashSet<Language>(LanguageExt.AllSqlPatternLanguages),
+                Languages = new HashSet<LanguageInfo>(LanguageUtils.SqlLanguages.Values),
                 Node = new PatternOr
                 (
                     new PatternBinaryOperatorExpression
@@ -159,7 +168,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Privilege Management: Overly Broad Grant",
-                Languages = new HashSet<Language>(LanguageExt.AllSqlPatternLanguages),
+                Languages = new HashSet<LanguageInfo>(LanguageUtils.SqlLanguages.Values),
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdToken("grant_all"),

@@ -7,7 +7,7 @@ namespace PT.PM.SqlParseTreeUst
 {
     public class TSqlAntlrParser : AntlrParser
     {
-        public override Language Language => Language.TSql;
+        public override LanguageInfo Language => TSql.Language;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.UPPER;
 

@@ -20,9 +20,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
     {
         private RootUst root { get; set; }
 
-        public Language Language => Language.CSharp;
+        public LanguageInfo Language => CSharp.Language;
 
-        public HashSet<Language> AnalyzedLanguages { get; set; }
+        public HashSet<LanguageInfo> AnalyzedLanguages { get; set; }
 
         public RootUst ParentRoot { get; set; }
 
@@ -86,7 +86,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (root == null)
             {
-                root = new RootUst(children.FirstOrDefault()?.Root?.SourceCodeFile, Language.CSharp);
+                root = new RootUst(children.FirstOrDefault()?.Root?.SourceCodeFile, CSharp.Language);
             }
             root.Nodes = children.ToArray();
             return root;

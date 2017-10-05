@@ -1,8 +1,8 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
+using PT.PM.PhpParseTreeUst;
 using System.Collections.Generic;
-using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
@@ -16,7 +16,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedPasswordIn_mysql_connect. Hardcoded passwords could compromise system security in a way that cannot be easily remedied.",
-                Languages = new HashSet<Language> { Php },
+                Languages = new HashSet<LanguageInfo> { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)^mysql_connect$"),
@@ -33,7 +33,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureRandomness. Standard pseudorandom number generators cannot withstand cryptographic attacks.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)^(mt_rand|rand|uniqid|shuffle|lcg_value)$"),
@@ -45,7 +45,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyPermissiveCORSPolicyg. The program defines an overly permissive Cross-Origin Resource Sharing (CORS) policy.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)^header$"),
@@ -57,7 +57,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InadequateRSAPadding. Public key RSA encryption is performed without using OAEP padding, thereby making the encryption weak.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternIdToken("OPENSSL_NO_PADDING")
             });
 
@@ -65,7 +65,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "BrokenRiskyCryptographicAlgorithm. Weak Encryption: Broken or Risky Cryptographic Algorithm.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternIdToken("MCRYPT_DES")
             });
 
@@ -73,7 +73,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash. Weak cryptographic hashes cannot guarantee data integrity and should not be used in security-critical contexts.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)^(md5|sha1)$"),
@@ -85,7 +85,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "ExcessiveSessionTimeout. An overly long session timeout gives attackers more time to potentially compromise user accounts.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -105,7 +105,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "DebugInformation. A CakePHP debug level of 1 or greater can cause sensitive data to be logged.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -125,7 +125,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SystemInformationLeak. Revealing system data or debugging information helps an adversary learn about the system and form a plan of attack.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)^(debug_print_backtrace|var_dump|debug_zval_dump|print_r|var_export|phpinfo|mysql_error)$"),
@@ -137,7 +137,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHashHardcodedSalt. A hardcoded salt may compromise system security in a way that cannot be easily remedied.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)crypt"),
@@ -159,7 +159,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "KeyManagementNullEncryptionKey. Null encryption keys may compromise system security in a way that cannot be easily remedied.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternStatements
                 (
                     new PatternAssignmentExpression
@@ -183,7 +183,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "KeyManagementNullEncryptionKey",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternObjectCreateExpression
                 {
                     Type = new PatternIdToken("Zend_Filter_Encrypt"),
@@ -196,7 +196,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityOverlyBroadPath. A cookie with an overly broad path can be accessed through other applications on the same domain.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)setcookie"),
@@ -217,7 +217,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityOverlyBroadDomain. A cookie with an overly broad domain opens an application to attacks through other applications.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)setcookie"),
@@ -238,7 +238,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityHTTPOnlyNotSet. The program creates a cookie, but fails to set the HttpOnly flag to true.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)setcookie"),
@@ -258,7 +258,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieSecurityCookieNotSentOverSSL. The program creates a cookie without setting the secure flag to true.",
-                Languages = new HashSet<Language>() { Php },
+                Languages = new HashSet<LanguageInfo>() { Php.Language },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("(?i)setcookie"),

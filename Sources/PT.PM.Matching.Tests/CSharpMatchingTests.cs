@@ -8,6 +8,7 @@ using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
 using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
+using PT.PM.CSharpParseTreeUst;
 
 namespace PT.PM.Matching.Tests
 {
@@ -27,7 +28,7 @@ namespace PT.PM.Matching.Tests
         {
             string projectKey = "WebGoat.NET-1c6cab";
             WorkflowResult workflowResult = TestUtility.CheckProject(
-                TestProjects.CSharpProjects.Single(p => p.Key == projectKey), Language.CSharp, Stage.Match);
+                TestProjects.CSharpProjects.Single(p => p.Key == projectKey), CSharp.Language, Stage.Match);
 
             Assert.AreEqual(13, workflowResult.MatchingResults.Count);
             Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
@@ -48,10 +49,10 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.cs");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Language.CSharp, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, CSharp.Language, patternsRepository);
             IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
             var patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Contains(Language.CSharp)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains("CSharp")).ToArray();
             foreach (PatternDto dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
@@ -63,7 +64,7 @@ namespace PT.PM.Matching.Tests
         {
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.aspx");
             var sourceCodeRep = new FileCodeRepository(path);
-            var workflow = new Workflow(sourceCodeRep, Language.CSharp, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, CSharp.Language, patternsRepository);
             IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
 
             Assert.IsTrue(matchingResults.ElementAt(0).MatchedCode.Contains("Password"));
@@ -74,9 +75,9 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_HardcodedPasswordAspx_WithoutException()
         {
-            var hardcodedPassRepository = new DslPatternRepository("<[(?i)password]> = <[\"\\w*\"]>", Language.CSharp);
+            var hardcodedPassRepository = new DslPatternRepository("<[(?i)password]> = <[\"\\w*\"]>", "CSharp");
             var sourceCodeRep = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, "HardcodedPassword.aspx"));
-            var workflow = new Workflow(sourceCodeRep, Language.CSharp, hardcodedPassRepository);
+            var workflow = new Workflow(sourceCodeRep, CSharp.Language, hardcodedPassRepository);
             IEnumerable<MatchingResultDto> matchingResults = workflow.Process().MatchingResults.ToDto();
 
             string matching = matchingResults.ElementAt(0).MatchedCode;

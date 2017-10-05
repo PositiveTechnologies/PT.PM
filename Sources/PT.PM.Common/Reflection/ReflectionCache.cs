@@ -18,8 +18,7 @@ namespace PT.PM.Common.Reflection
                 var result = new Dictionary<string, Type>();
                 foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    string assemblyName = assembly.GetName().Name;
-                    if (assemblyName.StartsWith("PT.PM") && !assemblyName.EndsWith(".Tests"))
+                    if (assembly.IsAssemblyActual())
                     {
                         foreach (Type type in assembly.GetTypes()
                             .Where(myType => myType.IsClass && !myType.IsAbstract &&

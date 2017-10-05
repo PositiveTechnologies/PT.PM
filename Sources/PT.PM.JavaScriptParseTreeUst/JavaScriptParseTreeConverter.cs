@@ -18,7 +18,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public partial class JavaScriptParseTreeConverter : AntlrConverter, IJavaScriptParserVisitor<Ust>
     {
-        public override Language Language => Language.JavaScript;
+        public override LanguageInfo Language => JavaScript.Language;
 
         public Ust VisitProgram([NotNull] JavaScriptParser.ProgramContext context)
         {

@@ -10,7 +10,7 @@ namespace PT.PM.CSharpParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language Language => Language.Aspx;
+        public LanguageInfo Language => Aspx.Language;
 
         public ParseTree Parse(SourceCodeFile sourceCodeFile)
         {

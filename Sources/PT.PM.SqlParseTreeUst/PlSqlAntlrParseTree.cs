@@ -6,7 +6,7 @@ namespace PT.PM.SqlParseTreeUst
 {
     public class PlSqlAntlrParseTree : AntlrParseTree
     {
-        public override Language SourceLanguage => Language.PlSql;
+        public override LanguageInfo SourceLanguage => PlSql.Language;
 
         public PlSqlAntlrParseTree()
         {

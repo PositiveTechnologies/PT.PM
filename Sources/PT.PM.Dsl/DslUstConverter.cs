@@ -20,8 +20,6 @@ namespace PT.PM.Dsl
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public HashSet<Language> Languages { get; set; }
-
         public bool PatternExpressionInsideStatement { get; set; } = true;
 
         public string Data { get; set; }
@@ -33,7 +31,7 @@ namespace PT.PM.Dsl
                 patternVars = new Dictionary<string, PatternVar>();
                 var result = new PatternRoot();
                 result.Node = VisitPattern(pattern);
-                result.Languages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
+                result.Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values);
                 var ascendantsFiller = new PatternAscendantsFiller(result);
                 ascendantsFiller.FillAscendants();
                 return result;

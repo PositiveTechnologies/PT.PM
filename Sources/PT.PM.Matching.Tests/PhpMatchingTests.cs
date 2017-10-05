@@ -3,6 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
+using PT.PM.PhpParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
@@ -27,13 +28,13 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.php");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Language.Php, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, Php.Language, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
             PatternDto[] patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Contains(Language.Php)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains("Php")).ToArray();
             foreach (var dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);

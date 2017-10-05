@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
+using PT.PM.CSharpParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using PT.PM.TestUtils;
@@ -29,7 +30,7 @@ namespace PT.PM.Tests
         [Test]
         public void Check_AllDescendants_HaveParentsAfterConvert()
         {
-            WorkflowResult result = TestUtility.CheckFile("AllInOne.cs", Language.CSharp, Stage.Convert);
+            WorkflowResult result = TestUtility.CheckFile("AllInOne.cs", CSharp.Language, Stage.Convert);
 
             IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().WhereDescendants().Skip(1);
             foreach (var descendant in descendantsExceptFirst)

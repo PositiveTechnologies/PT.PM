@@ -9,27 +9,27 @@ namespace PT.PM
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language? DetectIfRequired(string sourceCodeFileName)
+        public LanguageInfo DetectIfRequired(string sourceCodeFileName)
         {
             return DetectIfRequired(sourceCodeFileName, File.ReadAllText(sourceCodeFileName));
         }
 
-        public Language? DetectIfRequired(string sourceCodeFileName, string sourceCode, Language[] languages = null)
+        public LanguageInfo DetectIfRequired(string sourceCodeFileName, string sourceCode, IEnumerable<LanguageInfo> languages = null)
         {
-            Language? result = null;
-            if ((languages?.Length ?? 0) == 1)
+            LanguageInfo result = null;
+            if ((languages?.Count() ?? 0) == 1)
             {
-                result = languages[0];
+                result = languages.First();
             }
             else if (!string.IsNullOrEmpty(sourceCodeFileName))
             {
                 string[] extensions = GetExtensions(sourceCodeFileName);
-                Language[] finalLanguages = GetLanguagesIntersection(extensions, languages);
-                if (finalLanguages.Length == 1 || finalLanguages.Contains(Language.CSharp))
+                List<LanguageInfo> finalLanguages = GetLanguagesIntersection(extensions, languages);
+                if (finalLanguages.Count == 1 || finalLanguages.Any(final => final.Key == "CSharp"))
                 {
                     result = finalLanguages[0];
                 }
-                else if (finalLanguages.Length > 1)
+                else if (finalLanguages.Count > 1)
                 {
                     result = Detect(sourceCode, finalLanguages);
                     LogDetection(result, finalLanguages, sourceCodeFileName);
@@ -38,16 +38,16 @@ namespace PT.PM
             else
             {
                 result = Detect(sourceCode, languages);
-                LogDetection(result, languages ?? LanguageExt.AllLanguages, sourceCodeFileName);
+                LogDetection(result, languages ?? LanguageUtils.Languages.Values, sourceCodeFileName);
             }
             return result;
         }
 
-        public abstract Language? Detect(string sourceCode, Language[] languages = null);
+        public abstract LanguageInfo Detect(string sourceCode, IEnumerable<LanguageInfo> languages = null);
 
-        protected void LogDetection(Language? detectedLanguage, Language[] languages, string sourceCodeFileName)
+        protected void LogDetection(LanguageInfo detectedLanguage, IEnumerable<LanguageInfo> languages, string sourceCodeFileName)
         {
-            string languagesString = string.Join(", ", languages);
+            string languagesString = string.Join(", ", languages.Select(lang => lang.Title));
             if (detectedLanguage != null)
             {
                 Logger.LogDebug($"Language {detectedLanguage} (from {languagesString}) has been detected for file \"{sourceCodeFileName}\". ");
@@ -71,27 +71,27 @@ namespace PT.PM
             return result.ToArray();
         }
 
-        private static Language[] GetLanguagesIntersection(string[] extensions, Language[] languages)
+        private static List<LanguageInfo> GetLanguagesIntersection(string[] extensions, IEnumerable<LanguageInfo> languages)
         {
-            var result = new List<Language>();
+            var result = new List<LanguageInfo>();
             if (extensions.Length == 0)
             {
-                return languages ?? new Language[0];
+                return languages.ToList() ?? new List<LanguageInfo>();
             }
             foreach (var extension in extensions)
             {
                 var normalizedExtension = extension.ToLowerInvariant();
-                foreach (var languageInfo in LanguageExt.LanguageInfos)
+                foreach (LanguageInfo languageInfo in LanguageUtils.Languages.Values)
                 {
-                    var extensionIsFine = string.IsNullOrEmpty(normalizedExtension) || languageInfo.Value.Extensions.Contains(normalizedExtension);
-                    var languageIsFine = languages == null || languages.Contains(languageInfo.Key);
+                    var extensionIsFine = string.IsNullOrEmpty(normalizedExtension) || languageInfo.Extensions.Contains(normalizedExtension);
+                    var languageIsFine = languages == null || languages.Contains(languageInfo);
                     if (extensionIsFine && languageIsFine)
                     {
-                        result.Add(languageInfo.Key);
+                        result.Add(languageInfo);
                     }
                 }
             }
-            return result.ToArray();
+            return result;
         }
     }
 }

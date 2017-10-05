@@ -3,6 +3,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace PT.PM
@@ -33,18 +34,18 @@ namespace PT.PM
 
         protected StageHelper<TStage> stageExt;
 
-        public WorkflowResultBase(Language[] languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
+        public WorkflowResultBase(IEnumerable<LanguageInfo> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
         {
-            AnalyzedLanguages = languages;
+            AnalyzedLanguages = languages.ToList();
             ThreadCount = threadCount;
             Stage = stage;
             stageExt = new StageHelper<TStage>(stage);
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
-        public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
+        public IReadOnlyList<LanguageInfo> AnalyzedLanguages { get; private set; }
 
-        public IReadOnlyList<Language> BaseLanguages { get; set; }
+        public IReadOnlyList<LanguageInfo> BaseLanguages { get; set; }
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 

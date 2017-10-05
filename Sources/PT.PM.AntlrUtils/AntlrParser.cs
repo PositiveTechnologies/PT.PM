@@ -24,7 +24,7 @@ namespace PT.PM.AntlrUtils
 
         public Parser Parser { get; private set; }
 
-        public abstract Language Language { get; }
+        public abstract LanguageInfo Language { get; }
 
         public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
 
@@ -110,7 +110,7 @@ namespace PT.PM.AntlrUtils
                 {
                     var preprocessedText = PreprocessText(sourceCodeFile);
                     AntlrInputStream inputStream;
-                    if (Language.IsCaseInsensitive())
+                    if (Language.IsCaseInsensitive)
                     {
                         inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
                     }

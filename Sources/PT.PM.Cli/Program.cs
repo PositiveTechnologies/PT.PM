@@ -5,6 +5,7 @@ using PT.PM.Common.Json;
 using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -102,15 +103,20 @@ namespace PT.PM.Cli
                         stage = Stage.Patterns;
                     }
 
-                    Language[] languages = languagesString.ParseCollection<Language>();
-                    if (!languages.Any())
+                    IEnumerable<LanguageInfo> languages;
+                    if (!string.IsNullOrEmpty(languagesString))
                     {
-                        languages = LanguageExt.AllLanguages;
+                        languages = languagesString.Split(' ', ',', ';').ToLanguages(logger);
+                    }
+                    else
+                    {
+                        languages = LanguageUtils.Languages.Values;
                     }
                     ISourceCodeRepository sourceCodeRepository;
                     if (Directory.Exists(fileName))
                     {
-                        sourceCodeRepository = new FilesAggregatorCodeRepository(fileName, LanguageExt.GetExtensions(languages));
+                        sourceCodeRepository = new FilesAggregatorCodeRepository(fileName,
+                            languages.SelectMany(lang => lang.Extensions));
                     }
                     else
                     {

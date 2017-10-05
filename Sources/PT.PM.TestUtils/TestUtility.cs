@@ -52,10 +52,10 @@ namespace PT.PM.TestUtils
             SevenZipPath = CommonUtils.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
-        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage,
+        public static WorkflowResult CheckFile(string fileName, LanguageInfo language, Stage endStage,
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false)
         {
-            var codeRep = new FileCodeRepository(System.IO.Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
+            var codeRep = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, language, stage: endStage);
@@ -84,7 +84,7 @@ namespace PT.PM.TestUtils
             return workflowResult;
         }
 
-        public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
+        public static WorkflowResult CheckProject(TestProject testProject, LanguageInfo language, Stage endStage,
             decimal fileSuccessRatio = 1.0m)
         {
             var logger = new LoggerMessageCounter()
@@ -98,7 +98,7 @@ namespace PT.PM.TestUtils
                 {
                     codeRepository = new ZipAtUrlCachedCodeRepository(url, testProject.Key)
                     {
-                        Extensions = LanguageExt.GetExtensions(language),
+                        Extensions = language.Extensions,
                         IgnoredFiles = testProject.IgnoredFiles,
                         Logger = logger
                     };
@@ -146,11 +146,11 @@ namespace PT.PM.TestUtils
             return workflowResult;
         }
 
-        public static WorkflowResult CheckProject(string projectPath, Language language, Stage endStage)
+        public static WorkflowResult CheckProject(string projectPath, LanguageInfo language, Stage endStage)
         {
             var logger = new LoggerMessageCounter() { LogToConsole = false };
             var repository = new FilesAggregatorCodeRepository(
-                projectPath , LanguageExt.GetExtensions(language));
+                projectPath , language.Extensions);
             var workflow = new Workflow(repository, language, stage: endStage);
             workflow.Logger = logger;
             workflow.ThreadCount = 1;

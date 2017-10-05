@@ -41,7 +41,7 @@ namespace PT.PM.PatternEditor
         private TextBox logger;
 
         private PatternDto selectedPattern;
-        private HashSet<Language> oldLanguages;
+        private HashSet<string> oldLanguages;
         private string oldPattern;
         private GuiLogger patternLogger;
         private DslProcessor dslProcessor = new DslProcessor();
@@ -277,11 +277,11 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public HashSet<Language> Languages
+        public HashSet<string> Languages
         {
             get
             {
-                return SelectedPattern?.Languages ?? new HashSet<Language>();
+                return SelectedPattern?.Languages ?? new HashSet<string>();
             }
             set
             {
@@ -295,44 +295,44 @@ namespace PT.PM.PatternEditor
 
         public bool IsCSharpLanguage
         {
-            get { return SelectedPattern?.Languages.Contains(Language.CSharp) ?? false; }
-            set { ChangeLanguage(Language.CSharp, value); }
+            get { return SelectedPattern?.Languages.Contains("CSharp") ?? false; }
+            set { ChangeLanguage("CSharp", value); }
         }
 
         public bool IsJavaLanguage
         {
-            get { return SelectedPattern?.Languages.Contains(Language.Java) ?? false; }
-            set { ChangeLanguage(Language.Java, value); }
+            get { return SelectedPattern?.Languages.Contains("Java") ?? false; }
+            set { ChangeLanguage("Java", value); }
         }
 
         public bool IsPhpLanguage
         {
-            get { return SelectedPattern?.Languages.Contains(Language.Php) ?? false; }
-            set { ChangeLanguage(Language.Php, value); }
+            get { return SelectedPattern?.Languages.Contains("Php") ?? false; }
+            set { ChangeLanguage("Php", value); }
         }
 
         public bool IsPlSqlLanguage
         {
-            get { return SelectedPattern?.Languages.Contains(Language.PlSql) ?? false; }
-            set { ChangeLanguage(Language.PlSql, value); }
+            get { return SelectedPattern?.Languages.Contains("PlSql") ?? false; }
+            set { ChangeLanguage("PlSql", value); }
         }
 
         public bool IsTSqlLanguage
         {
-            get { return SelectedPattern?.Languages.Contains(Language.TSql) ?? false; }
-            set { ChangeLanguage(Language.TSql, value); }
+            get { return SelectedPattern?.Languages.Contains("TSql") ?? false; }
+            set { ChangeLanguage("TSql", value); }
         }
 
         public bool IsJavaScriptLanguage
         {
-            get { return SelectedPattern?.Languages.Contains(Language.JavaScript) ?? false; }
-            set { ChangeLanguage(Language.JavaScript, value); }
+            get { return SelectedPattern?.Languages.Contains("JavaScript") ?? false; }
+            set { ChangeLanguage("JavaScript", value); }
         }
 
         public bool IsHtmlLanguage
         {
-            get { return SelectedPattern?.Languages.Contains(Language.Html) ?? false; }
-            set { ChangeLanguage(Language.Html, value); }
+            get { return SelectedPattern?.Languages.Contains("Html") ?? false; }
+            set { ChangeLanguage("Html", value); }
         }
 
         public string Description
@@ -418,7 +418,7 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(IsDeveloperMode));
         }
 
-        private void ChangeLanguage(Language language, bool value)
+        private void ChangeLanguage(string language, bool value)
         {
             if (SelectedPattern != null)
             {

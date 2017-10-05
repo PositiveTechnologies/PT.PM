@@ -59,11 +59,13 @@
     <Compile Include="Generated\TSqlLexer.cs" />
     <Compile Include="Generated\TSqlParser.cs" />
     <Compile Include="Generated\TSqlParserVisitor.cs" />
+    <Compile Include="PlSql.cs" />
     <Compile Include="PlSqlAntlrConverter.cs" />
     <Compile Include="PlSqlConverterVisitorHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PlSqlAntlrParseTree.cs" />
     <Compile Include="PlSqlAntlrParser.cs" />
+    <Compile Include="TSql.cs" />
     <Compile Include="TSqlAntlrParseTree.cs" />
     <Compile Include="TSqlAntlrParser.cs" />
     <Compile Include="TSqlAntlrConverter.cs" />

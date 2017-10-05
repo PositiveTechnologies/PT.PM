@@ -3,13 +3,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.CSharpParseTreeUst.RoslynUstVisitor;
-using System.Collections.Generic;
-using System;
 using PT.PM.Common.Exceptions;
-using PT.PM.Common.Nodes.GeneralScope;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
+using PT.PM.CSharpParseTreeUst.RoslynUstVisitor;
+using System;
+using System.Collections.Generic;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -19,9 +18,9 @@ namespace PT.PM.CSharpParseTreeUst
         private SourceCodeFile sourceCodeFile;
         private int namespaceDepth;
 
-        public Language Language => Language.Aspx;
+        public LanguageInfo Language => Aspx.Language;
 
-        public HashSet<Language> AnalyzedLanguages { get; set; }
+        public HashSet<LanguageInfo> AnalyzedLanguages { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -174,7 +173,7 @@ namespace PT.PM.CSharpParseTreeUst
             var converter = new CSharpRoslynParseTreeConverter();
             Ust result = converter.Visit(node);
             RootUst resultRoot =
-                result as RootUst ?? new RootUst(sourceCodeFile, Language.CSharp) { Node = result };
+                result as RootUst ?? new RootUst(sourceCodeFile, CSharp.Language) { Node = result };
             resultRoot.SourceCodeFile = sourceCodeFile;
             result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(offset));
             return result;

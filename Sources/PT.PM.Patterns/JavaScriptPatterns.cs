@@ -1,8 +1,8 @@
 ﻿using PT.PM.Common;
+using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
-using static PT.PM.Common.Language;
 
 namespace PT.PM.Patterns.PatternsRepository
 {
@@ -16,7 +16,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AttributesCodeInsideElementEvent",
-                Languages = new HashSet<Language>() { JavaScript },
+                Languages = new HashSet<LanguageInfo>() { JavaScript.Language },
                 Node = new PatternAssignmentExpression
                 {
                     Left = new PatternMemberReferenceExpression

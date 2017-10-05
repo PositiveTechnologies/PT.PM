@@ -13,7 +13,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         [TestCase("ConvertError.cs")]
         public void Convert_CSharp_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Language.CSharp, Stage.Convert);
+            TestUtility.CheckFile(fileName, CSharp.Language, Stage.Convert);
         }
 
         [Test]
@@ -21,13 +21,13 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         {
             string projectKey = "WebGoat.NET-1c6cab";
             TestUtility.CheckProject(
-                TestProjects.CSharpProjects.Single(p => p.Key == projectKey), Language.CSharp, Stage.Convert);
+                TestProjects.CSharpProjects.Single(p => p.Key == projectKey), CSharp.Language, Stage.Convert);
         }
 
         [TestCase("AllInOne.cs")]
         public void Convert_CSharp_BaseTypesExist(string fileName)
         {
-            var workflowResults = TestUtility.CheckFile(fileName, Language.CSharp, Stage.Convert);
+            var workflowResults = TestUtility.CheckFile(fileName, CSharp.Language, Stage.Convert);
             var ust = workflowResults.Usts.First();
             bool result = ust.AnyDescendant(descendant =>
             {
