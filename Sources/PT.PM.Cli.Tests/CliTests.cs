@@ -72,7 +72,7 @@ namespace PT.PM.Cli.Tests
 
             ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestUtility.TestsDataPath}\" " +
-                $"-l {"PlSql"},{"TSql"} " +
+                $"-l PlSql,TSql " +
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not process php (csharp, java etc.) files.
@@ -81,7 +81,7 @@ namespace PT.PM.Cli.Tests
 
             result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestUtility.TestsDataPath}\" " +
-                $"-l {"PlSql"} " +
+                $"-l PlSql " +
                 $"--stage {Stage.Parse} --log-debugs");
 
             // Do not detect language for only one language.
@@ -103,7 +103,7 @@ namespace PT.PM.Cli.Tests
                $"--patterns {patternTempFile} " +
                $"--log-debugs --log-errors");
 
-            Assert.AreEqual("PatternNode \"1\" ignored because of it doesn't have target languages.", result.Output[2]);
+            Assert.AreEqual("PatternNode \"1\" doesn't have proper target languages.", result.Output[2]);
         }
 
         [Test]
@@ -138,6 +138,7 @@ namespace PT.PM.Cli.Tests
                 new PatternDto
                 {
                     Key = "1",
+                    DataFormat = "Dsl",
                     Value = "(?i)password(?-i)]> = <[\"\\w*\" || null]>"
                 }
             };

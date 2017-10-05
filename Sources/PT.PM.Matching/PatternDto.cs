@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,28 +6,11 @@ namespace PT.PM.Matching
 {
     public class PatternDto
     {
-        private HashSet<string> languages = new HashSet<string>(
-            LanguageUtils.PatternLanguages.Values.Select(value => value.Key));
-
         public string Name { get; set; } = "";
 
         public string Key { get; set; } = "";
 
-        public HashSet<string> Languages
-        {
-            get
-            {
-                return languages;
-            }
-            set
-            {
-                if (value.Contains("Aspx"))
-                {
-                    throw new ArgumentException($"Unable to create pattern for Aspx");
-                }
-                languages = value;
-            }
-        }
+        public HashSet<string> Languages { get; set; }
 
         public string DataFormat { get; set; } = "";
 

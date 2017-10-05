@@ -20,7 +20,7 @@ namespace PT.PM.Cli
 
         protected NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
 
-        protected NLog.Logger MatchLogger { get; } = NLog.LogManager.GetLogger("match");
+        protected NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
 
         protected TextTruncater ErrorTruncater { get; } = new TextTruncater { MaxMessageLength = 300, CutWords = false };
 

@@ -84,9 +84,9 @@
     <Content Include="..\PT.PM.ico">
       <Link>PT.PM.ico</Link>
     </Content>
-    <None Include="app.config" />
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
+    <None Include="App.config" />
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

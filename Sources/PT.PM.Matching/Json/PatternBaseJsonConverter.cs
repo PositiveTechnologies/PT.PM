@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Json
                         foreach (string value in languagesArray.Values<string>())
                         {
                             LanguageInfo language = LanguageUtils.Languages.Values.FirstOrDefault(
-                                    lang => string.Equals(lang.Key, value, StringComparison.InvariantCultureIgnoreCase));
+                                    lang => string.Equals(lang.Key, value, StringComparison.OrdinalIgnoreCase));
                             if (language != null)
                             {
                                 resultLanguages.Add(language);

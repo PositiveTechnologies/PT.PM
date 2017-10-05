@@ -26,6 +26,7 @@ namespace PT.PM.Common
             var subParsers = new Dictionary<LanguageInfo, Type>();
             var subConverters = new Dictionary<LanguageInfo, Type>();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var visitedAssemblies = new List<Assembly>();
 
             foreach (Assembly assembly in assemblies)
             {
@@ -33,7 +34,7 @@ namespace PT.PM.Common
 
                 void LoadAndProcessReferencedAssembly(Assembly localAssembly)
                 {
-                    ProcessAssembly(localAssembly, subParsers, subConverters);
+                    ProcessAssembly(localAssembly, subParsers, subConverters, visitedAssemblies);
                     if (!localAssembly.IsActual())
                     {
                         return;
@@ -48,7 +49,7 @@ namespace PT.PM.Common
                     }
                 }
 
-                ProcessAssembly(assembly, subParsers, subConverters);
+                ProcessAssembly(assembly, subParsers, subConverters, visitedAssemblies);
             }
 
             foreach (var subParser in subParsers)
@@ -69,12 +70,14 @@ namespace PT.PM.Common
         }
 
         private static void ProcessAssembly(Assembly assembly,
-            Dictionary<LanguageInfo, Type> subParsers, Dictionary<LanguageInfo, Type> subConverters)
+            Dictionary<LanguageInfo, Type> subParsers, Dictionary<LanguageInfo, Type> subConverters,
+            List<Assembly> visitedAssemblies)
         {
-            if (!assembly.IsActual())
+            if (!assembly.IsActual() || visitedAssemblies.Contains(assembly))
             {
                 return;
             }
+            visitedAssemblies.Add(assembly);
 
             foreach (Type type in assembly.GetTypes().Where(type => type.IsClass && !type.IsAbstract))
             {

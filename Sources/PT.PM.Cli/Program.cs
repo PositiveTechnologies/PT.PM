@@ -19,7 +19,6 @@ namespace PT.PM.Cli
         static void Main(string[] args)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             var parser = new FluentCommandLineParser();
 
             string fileName = "";

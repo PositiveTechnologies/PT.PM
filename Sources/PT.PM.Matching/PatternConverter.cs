@@ -52,7 +52,8 @@ namespace PT.PM.Matching
             var result = new List<PatternRoot>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
             {
-                IPatternSerializer serializer = Serializers.FirstOrDefault(s => s.Format == patternDto.DataFormat)
+                IPatternSerializer serializer = Serializers
+                    .FirstOrDefault(s => string.Equals(s.Format, patternDto.DataFormat, StringComparison.OrdinalIgnoreCase))
                     ?? Serializers.First();
                 if (serializer == null)
                 {
@@ -64,9 +65,18 @@ namespace PT.PM.Matching
                 {
                     PatternRoot pattern = serializer.Deserialize(patternDto.Value);
 
+                    var languages = patternDto.Languages.Count() == 0
+                        ? LanguageUtils.PatternLanguages.Values.ToList()
+                        : patternDto.Languages.ToLanguages(Logger);
+
+                    if (languages.Count == 0)
+                    {
+                        Logger.LogInfo($"PatternNode \"{patternDto.Key}\" doesn't have proper target languages.");
+                    }
+
                     pattern.DataFormat = serializer.Format;
                     pattern.Key = patternDto.Key;
-                    pattern.Languages = new HashSet<LanguageInfo>(patternDto.Languages.ToLanguages(Logger));
+                    pattern.Languages = new HashSet<LanguageInfo>(languages);
                     pattern.DebugInfo = patternDto.Description;
                     pattern.FilenameWildcard = patternDto.FilenameWildcard;
 

@@ -43,9 +43,10 @@ namespace PT.PM.Matching
             }
             set
             {
-                if (languages.Any(lang => lang.Key == "Aspx"))
+                LanguageInfo notPatternLang = value.FirstOrDefault(lang => !lang.IsPattern);
+                if (notPatternLang != null)
                 {
-                    throw new ArgumentException($"Unable to create pattern for Aspx");
+                    throw new ArgumentException($"Unable to create pattern for {notPatternLang.Title}");
                 }
                 languages = value;
             }
