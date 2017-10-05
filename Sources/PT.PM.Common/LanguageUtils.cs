@@ -23,44 +23,35 @@ namespace PT.PM.Common
             PatternLanguages = new Dictionary<string, LanguageInfo>();
             SqlLanguages = new Dictionary<string, LanguageInfo>();
 
-            var sublanguageParsers = new Dictionary<LanguageInfo, Type>();
-            var sublanguageConverters = new Dictionary<LanguageInfo, Type>();
+            var subParsers = new Dictionary<LanguageInfo, Type>();
+            var subConverters = new Dictionary<LanguageInfo, Type>();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Assembly assembly in assemblies)
             {
-                string assemblyName = assembly.GetName().Name;
-                if (assembly.IsAssemblyActual())
-                {
-                    foreach (Type type in assembly.GetTypes()
-                         .Where(type => type.IsClass && !type.IsAbstract))
-                    {
-                        var interfaces = type.GetInterfaces();
-                        if (interfaces.Contains(typeof(ILanguageParser)))
-                        {
-                            var parser = (ILanguageParser)Activator.CreateInstance(type);
-                            parsers.Add(parser.Language, parser.GetType());
-                            foreach (LanguageInfo sublanguage in parser.Language.Sublanguages)
-                            {
-                                sublanguageParsers.Add(sublanguage, type);
-                            }
+                LoadAndProcessReferencedAssembly(assembly);
 
-                            ProcessLanguage(new[] { parser.Language });
-                            ProcessLanguage(parser.Language.Sublanguages);
-                        }
-                        else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
+                void LoadAndProcessReferencedAssembly(Assembly localAssembly)
+                {
+                    ProcessAssembly(localAssembly, subParsers, subConverters);
+                    if (!localAssembly.IsActual())
+                    {
+                        return;
+                    }
+
+                    foreach (AssemblyName assemblyName in localAssembly.GetReferencedAssemblies())
+                    {
+                        if (!assemblies.Any(a => a.FullName == assemblyName.FullName))
                         {
-                            var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
-                            converters.Add(converter.Language, converter.GetType());
-                            foreach (LanguageInfo sublanguage in converter.Language.Sublanguages)
-                            {
-                                sublanguageConverters.Add(sublanguage, type);
-                            }
+                            LoadAndProcessReferencedAssembly(Assembly.Load(assemblyName));
                         }
                     }
                 }
+
+                ProcessAssembly(assembly, subParsers, subConverters);
             }
 
-            foreach (var subParser in sublanguageParsers)
+            foreach (var subParser in subParsers)
             {
                 if (!parsers.ContainsKey(subParser.Key))
                 {
@@ -68,11 +59,46 @@ namespace PT.PM.Common
                 }
             }
 
-            foreach (var subConverter in sublanguageConverters)
+            foreach (var subConverter in subConverters)
             {
                 if (!converters.ContainsKey(subConverter.Key))
                 {
                     converters.Add(subConverter.Key, subConverter.Value);
+                }
+            }
+        }
+
+        private static void ProcessAssembly(Assembly assembly,
+            Dictionary<LanguageInfo, Type> subParsers, Dictionary<LanguageInfo, Type> subConverters)
+        {
+            if (!assembly.IsActual())
+            {
+                return;
+            }
+
+            foreach (Type type in assembly.GetTypes().Where(type => type.IsClass && !type.IsAbstract))
+            {
+                var interfaces = type.GetInterfaces();
+                if (interfaces.Contains(typeof(ILanguageParser)))
+                {
+                    var parser = (ILanguageParser)Activator.CreateInstance(type);
+                    parsers.Add(parser.Language, parser.GetType());
+                    foreach (LanguageInfo sublanguage in parser.Language.Sublanguages)
+                    {
+                        subParsers.Add(sublanguage, type);
+                    }
+
+                    ProcessLanguage(new[] { parser.Language });
+                    ProcessLanguage(parser.Language.Sublanguages);
+                }
+                else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
+                {
+                    var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
+                    converters.Add(converter.Language, converter.GetType());
+                    foreach (LanguageInfo sublanguage in converter.Language.Sublanguages)
+                    {
+                        subConverters.Add(sublanguage, type);
+                    }
                 }
             }
         }
@@ -125,7 +151,7 @@ namespace PT.PM.Common
             {
                 LanguageInfo value;
                 if ((value = Languages.Values.FirstOrDefault(lang =>
-                    string.Equals(lang.Key, langStr, StringComparison.InvariantCultureIgnoreCase))) != null)
+                    string.Equals(lang.Key, langStr, StringComparison.OrdinalIgnoreCase))) != null)
                 {
                     result.Add(value);
                 }

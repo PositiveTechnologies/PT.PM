@@ -45,7 +45,6 @@
     <Compile Include="PatternMatchingTests.cs" />
     <Compile Include="PatternMatchingUtils.cs" />
     <Compile Include="PhpMatchingTests.cs" />
-    <Compile Include="SetUp.cs" />
     <Compile Include="SqlMatchingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">

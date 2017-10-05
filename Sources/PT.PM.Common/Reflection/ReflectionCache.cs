@@ -18,7 +18,7 @@ namespace PT.PM.Common.Reflection
                 var result = new Dictionary<string, Type>();
                 foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    if (assembly.IsAssemblyActual())
+                    if (assembly.IsActual())
                     {
                         foreach (Type type in assembly.GetTypes()
                             .Where(myType => myType.IsClass && !myType.IsAbstract &&

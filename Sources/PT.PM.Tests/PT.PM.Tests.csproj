@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SampleTree.cs" />
-    <Compile Include="SetUp.cs" />
     <Compile Include="UstPreprocessorTests.cs" />
     <Compile Include="TextTests.cs" />
     <Compile Include="UstVisitorTests.cs" />
