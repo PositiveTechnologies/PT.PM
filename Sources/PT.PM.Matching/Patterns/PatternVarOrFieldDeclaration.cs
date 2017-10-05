@@ -98,7 +98,15 @@ namespace PT.PM.Matching.Patterns
             foreach (AssignmentExpression variable in variables)
             {
                 var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
-                MatchingContext match = Assignment.Match(variable, altContext);
+                MatchingContext match;
+                if (Assignment.Right != null)
+                {
+                    match = Assignment.Match(variable, altContext);
+                }
+                else
+                {
+                    match = Assignment.Left.Match(variable.Left, altContext);
+                }
                 if (match.Success)
                 {
                     success = true;

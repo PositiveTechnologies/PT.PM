@@ -13,7 +13,7 @@ namespace PT.PM.Matching
             var sublistToMatch = new List<PatternUst>(collection1 ?? Enumerable.Empty<PatternUst>());
             var list = collection2 as IList<T> ?? new List<T>(collection2 ?? Enumerable.Empty<T>());
 
-            if (sublistToMatch.Count == 0 && list.Count == 0)
+            if (sublistToMatch.Count == 0)
             {
                 return context.MakeSuccess();
             }
@@ -39,10 +39,15 @@ namespace PT.PM.Matching
                     }
                 }
 
-                if (!newContext.Success)
+                if(!sublistToMatch.Any())
                 {
-                    return context.Fail();
+                    break;
                 }
+            }
+
+            if (sublistToMatch.Any())
+            {
+                return context.Fail();
             }
 
             foreach (Ust match in matches)
