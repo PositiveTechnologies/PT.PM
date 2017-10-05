@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Common.Reflection;
 using PT.PM.Matching.Patterns;
@@ -30,17 +31,27 @@ namespace PT.PM.Matching.Json
                 if (objectType == typeof(PatternRoot))
                 {
                     var languagesArray = (JArray)jObject[nameof(PatternDto.Languages)];
-                    HashSet<Language> resultLanguages;
+                    HashSet<LanguageInfo> resultLanguages;
                     if (languagesArray?.Count > 0)
                     {
-                        resultLanguages = new HashSet<Language>(languagesArray.Values<string>()
-                            .Select(value => Enum.TryParse(value, true, out Language language) ? (Language?)language : null)
-                            .Where(lang => lang != null)
-                            .Cast<Language>());
+                        resultLanguages = new HashSet<LanguageInfo>();
+                        foreach (string value in languagesArray.Values<string>())
+                        {
+                            LanguageInfo language = LanguageUtils.Languages.Values.FirstOrDefault(
+                                    lang => string.Equals(lang.Key, value, StringComparison.InvariantCultureIgnoreCase));
+                            if (language != null)
+                            {
+                                resultLanguages.Add(language);
+                            }
+                            else
+                            {
+                                Logger.LogError(new ConversionException("", message: $"Language \"{value}\" is not supported or wrong."));
+                            }
+                        }
                     }
                     else
                     {
-                        resultLanguages = new HashSet<Language>(LanguageExt.AllPatternLanguages);
+                        resultLanguages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values);
                     }
                     target = new PatternRoot
                     {
@@ -56,13 +67,13 @@ namespace PT.PM.Matching.Json
                     var kind = (string)jObject[KindName];
                     var type = ReflectionCache.UstKindFullClassName.Value[kind];
                     target = Activator.CreateInstance(type);
+                    serializer.Populate(jObject.CreateReader(), target);
                 }
                 else
                 {
                     throw new FormatException("Invalid JSON");
                 }
 
-                serializer.Populate(jObject.CreateReader(), target);
                 return target;
             }
 

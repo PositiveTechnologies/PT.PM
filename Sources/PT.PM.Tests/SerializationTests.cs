@@ -72,9 +72,8 @@ namespace PT.PM.Tests
         {
             var data = "[{\"Key\":\"96\",\"Value\":\"(<[expr]>.)?<[(?i)(password|pwd)]> = <[\\\"\\\\w*\\\"]>\"}]";
             var stringEnumConverter = new StringEnumConverter();
-            var languageFlagsConverter = new PatternJsonSafeConverter();
 
-            var patternDtos = JsonConvert.DeserializeObject<List<PatternDto>>(data, stringEnumConverter, languageFlagsConverter);
+            var patternDtos = JsonConvert.DeserializeObject<List<PatternDto>>(data, stringEnumConverter);
             Assert.AreEqual(1, patternDtos.Count);
         }
     }

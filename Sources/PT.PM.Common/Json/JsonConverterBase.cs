@@ -3,13 +3,17 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonConverterBase : JsonConverter
+    public abstract class JsonConverterBase : JsonConverter, ILoggable
     {
         protected const string KindName = "Kind";
+
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool IncludeTextSpans { get; set; } = false;
 
@@ -61,7 +65,10 @@ namespace PT.PM.Common.Json
                     object propVal = prop.GetValue(value, null);
                     if (propVal != null)
                     {
-                        jObject.Add(prop.Name, JToken.FromObject(propVal, serializer));
+                        object serializeObj = propVal is IEnumerable<LanguageInfo> languageInfos
+                            ? languageInfos.Select(lang => lang.Key)
+                            : propVal;
+                        jObject.Add(propName, JToken.FromObject(serializeObj, serializer));
                     }
                 }
             }
