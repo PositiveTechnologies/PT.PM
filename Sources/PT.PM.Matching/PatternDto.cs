@@ -10,7 +10,7 @@ namespace PT.PM.Matching
 
         public string Key { get; set; } = "";
 
-        public HashSet<string> Languages { get; set; }
+        public HashSet<string> Languages { get; set; } = new HashSet<string>();
 
         public string DataFormat { get; set; } = "";
 
@@ -28,10 +28,7 @@ namespace PT.PM.Matching
 
         public override string ToString()
         {
-            var titles = LanguageUtils.Languages
-                .Where(lang => Languages.Contains(lang.Key))
-                .Select(lang => lang.Value.Title);
-            return $"{Name} ({(string.Join(", ", titles))})";
+            return $"{Name} ({(string.Join(", ", Languages))})";
         }
     }
 }

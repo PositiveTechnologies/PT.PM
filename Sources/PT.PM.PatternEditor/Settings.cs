@@ -42,7 +42,7 @@ namespace PT.PM.PatternEditor
 
         public Stage SelectedStage { get; set; } = Stage.Match;
 
-        public string SourceCodeLanguage { get; set; } = "CSharp";
+        public string SourceCodeLanguage { get; set; } = "";
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
