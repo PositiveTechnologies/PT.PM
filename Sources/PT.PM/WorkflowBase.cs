@@ -25,7 +25,7 @@ namespace PT.PM
         protected Task filesCountTask;
         protected Task convertPatternsTask;
 
-        protected LanguageInfo[] languages;
+        protected Language[] languages;
 
         protected StageHelper<TStage> stageHelper;
 
@@ -90,9 +90,9 @@ namespace PT.PM
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        public HashSet<LanguageInfo> AnalyzedLanguages { get; set; } = new HashSet<LanguageInfo>(LanguageUtils.Languages.Values);
+        public HashSet<Language> AnalyzedLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
-        public HashSet<LanguageInfo> BaseLanguages { get; set; } = new HashSet<LanguageInfo>(LanguageUtils.Languages.Values);
+        public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
@@ -100,9 +100,9 @@ namespace PT.PM
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        public WorkflowBase(TStage stage, IEnumerable<LanguageInfo> languages)
+        public WorkflowBase(TStage stage, IEnumerable<Language> languages)
         {
-            AnalyzedLanguages = new HashSet<LanguageInfo>(languages);
+            AnalyzedLanguages = new HashSet<Language>(languages);
             Stage = stage;
             stageHelper = new StageHelper<TStage>(stage);
         }
@@ -137,7 +137,7 @@ namespace PT.PM
                 if (stageHelper.IsContainsParseTree)
                 {
                     stopwatch.Restart();
-                    LanguageInfo detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
+                    Language detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
                     if (detectedLanguage == null)
                     {
                         Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");
@@ -231,13 +231,13 @@ namespace PT.PM
             }
         }
 
-        protected static HashSet<LanguageInfo> GetBaseLanguages(HashSet<LanguageInfo> analyzedLanguages)
+        protected static HashSet<Language> GetBaseLanguages(HashSet<Language> analyzedLanguages)
         {
-            HashSet<LanguageInfo> result = new HashSet<LanguageInfo>();
-            foreach (LanguageInfo language in analyzedLanguages)
+            HashSet<Language> result = new HashSet<Language>();
+            foreach (Language language in analyzedLanguages)
             {
                 result.Add(language);
-                LanguageInfo superLangInfo = language;
+                Language superLangInfo = language;
                 do
                 {
                     superLangInfo = LanguageUtils.Languages.FirstOrDefault(l => l.Value.Sublanguages.Contains(superLangInfo)).Value;

@@ -5,7 +5,7 @@ namespace PT.PM.PhpParseTreeUst
 {
     public static class Html
     {
-        public readonly static LanguageInfo Language =
-            new LanguageInfo("Html", ".html", true, "HTML", new[] { JavaScript.Language });
+        public readonly static Language Language =
+            new Language("Html", ".html", true, "HTML", new[] { JavaScript.Language });
     }
 }

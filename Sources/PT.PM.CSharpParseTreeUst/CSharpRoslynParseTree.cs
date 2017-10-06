@@ -5,7 +5,7 @@ namespace PT.PM.CSharpParseTreeUst
 {
     public class CSharpRoslynParseTree : ParseTree
     {
-        public override LanguageInfo SourceLanguage => CSharp.Language;
+        public override Language SourceLanguage => CSharp.Language;
 
         public SyntaxTree SyntaxTree { get; }
 

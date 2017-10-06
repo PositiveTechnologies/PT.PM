@@ -24,7 +24,7 @@ namespace PT.PM.AntlrUtils
 
         public Parser Parser { get; private set; }
 
-        public abstract LanguageInfo Language { get; }
+        public abstract Language Language { get; }
 
         public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
 

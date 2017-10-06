@@ -31,7 +31,7 @@ namespace PT.PM.Dsl
                 patternVars = new Dictionary<string, PatternVar>();
                 var result = new PatternRoot();
                 result.Node = VisitPattern(pattern);
-                result.Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values);
+                result.Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
                 var ascendantsFiller = new PatternAscendantsFiller(result);
                 ascendantsFiller.FillAscendants();
                 return result;

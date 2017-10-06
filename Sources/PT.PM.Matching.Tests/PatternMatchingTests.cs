@@ -153,7 +153,7 @@ namespace PT.PM.Matching.Tests
         {
             Assert.Throws(typeof(ArgumentException), () => new PatternRoot()
             {
-                Languages = new HashSet<LanguageInfo>() { Aspx.Language }
+                Languages = new HashSet<Language>() { Aspx.Language }
             });
         }
     }

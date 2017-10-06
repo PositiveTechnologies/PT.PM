@@ -12,7 +12,7 @@ namespace PT.PM.Matching
 {
     public class PatternRoot : ILoggable
     {
-        private HashSet<LanguageInfo> languages = new HashSet<LanguageInfo>();
+        private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
         public ILogger Logger { get; set; }
@@ -35,7 +35,7 @@ namespace PT.PM.Matching
 
         public SourceCodeFile SourceCodeFile { get; set; }
 
-        public HashSet<LanguageInfo> Languages
+        public HashSet<Language> Languages
         {
             get
             {
@@ -43,7 +43,7 @@ namespace PT.PM.Matching
             }
             set
             {
-                LanguageInfo notPatternLang = value.FirstOrDefault(lang => !lang.IsPattern);
+                Language notPatternLang = value.FirstOrDefault(lang => !lang.IsPattern);
                 if (notPatternLang != null)
                 {
                     throw new ArgumentException($"Unable to create pattern for {notPatternLang.Title}");

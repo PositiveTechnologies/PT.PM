@@ -20,9 +20,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
     {
         private RootUst root { get; set; }
 
-        public LanguageInfo Language => CSharp.Language;
+        public Language Language => CSharp.Language;
 
-        public HashSet<LanguageInfo> AnalyzedLanguages { get; set; }
+        public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public RootUst ParentRoot { get; set; }
 

@@ -52,7 +52,7 @@ namespace PT.PM.Dsl.Tests
             PatternRoot result = processor.Deserialize(data);
             if (fileName == "DebugInfo.ptpm")
             {
-                new HashSet<LanguageInfo>() { Php.Language };
+                new HashSet<Language>() { Php.Language };
             }
             Assert.AreEqual(0, logger.ErrorCount);
 

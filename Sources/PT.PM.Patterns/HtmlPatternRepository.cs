@@ -16,7 +16,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 1 possible XSS",
-                Languages = new HashSet<LanguageInfo>() { Html.Language },
+                Languages = new HashSet<Language>() { Html.Language },
                 FilenameWildcard = "**/app/views/*.html",
                 Node = new PatternStringRegexLiteral("&{\\w+}")
             });
@@ -25,7 +25,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 2 possible XSS",
-                Languages = new HashSet<LanguageInfo>() { Html.Language },
+                Languages = new HashSet<Language>() { Html.Language },
                 FilenameWildcard = "**/app/views/*.html",
                 Node = new PatternStringRegexLiteral("@Html\\(\\w+\\)")
             });

@@ -7,9 +7,9 @@ namespace PT.PM.Common.Nodes
 {
     public class RootUst : Ust
     {
-        private LanguageInfo[] sublanguges;
+        private Language[] sublanguges;
 
-        public LanguageInfo Language { get; }
+        public Language Language { get; }
 
         public SourceCodeFile SourceCodeFile { get; set; }
 
@@ -18,7 +18,7 @@ namespace PT.PM.Common.Nodes
         public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
 
         [JsonIgnore]
-        public LanguageInfo[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
+        public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
 
         [JsonIgnore]
         public Ust Node
@@ -29,7 +29,7 @@ namespace PT.PM.Common.Nodes
 
         public int LineOffset { get; set; }
 
-        public RootUst(SourceCodeFile sourceCodeFile, LanguageInfo language)
+        public RootUst(SourceCodeFile sourceCodeFile, Language language)
         {
             SourceCodeFile = sourceCodeFile ?? new SourceCodeFile();
             Language = language;
@@ -48,9 +48,9 @@ namespace PT.PM.Common.Nodes
             sublanguges = GetSublangauges();
         }
 
-        private LanguageInfo[] GetSublangauges()
+        private Language[] GetSublangauges()
         {
-            var result = new HashSet<LanguageInfo>();
+            var result = new HashSet<Language>();
             var descendants = this.WhereDescendants(child => child is RootUst)
                 .Cast<RootUst>();
             foreach (RootUst descendant in descendants)

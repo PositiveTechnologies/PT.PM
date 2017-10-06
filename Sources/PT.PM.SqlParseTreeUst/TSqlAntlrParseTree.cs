@@ -6,7 +6,7 @@ namespace PT.PM.SqlParseTreeUst
 {
     public class TSqlAntlrParseTree : AntlrParseTree
     {
-        public override LanguageInfo SourceLanguage => TSql.Language;
+        public override Language SourceLanguage => TSql.Language;
 
         public TSqlAntlrParseTree()
         {

@@ -5,9 +5,9 @@ namespace PT.PM.Common
 {
     public interface IParseTreeToUstConverter : ILoggable
     {
-        LanguageInfo Language { get; }
+        Language Language { get; }
 
-        HashSet<LanguageInfo> AnalyzedLanguages { get; set; }
+        HashSet<Language> AnalyzedLanguages { get; set; }
 
         RootUst ParentRoot { get; set; }
 

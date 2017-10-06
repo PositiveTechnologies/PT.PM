@@ -34,7 +34,7 @@ namespace PT.PM
 
         protected StageHelper<TStage> stageExt;
 
-        public WorkflowResultBase(IEnumerable<LanguageInfo> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
+        public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
         {
             AnalyzedLanguages = languages.ToList();
             ThreadCount = threadCount;
@@ -43,9 +43,9 @@ namespace PT.PM
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
-        public IReadOnlyList<LanguageInfo> AnalyzedLanguages { get; private set; }
+        public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
 
-        public IReadOnlyList<LanguageInfo> BaseLanguages { get; set; }
+        public IReadOnlyList<Language> BaseLanguages { get; set; }
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 

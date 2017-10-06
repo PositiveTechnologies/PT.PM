@@ -31,13 +31,13 @@ namespace PT.PM.Matching.Json
                 if (objectType == typeof(PatternRoot))
                 {
                     var languagesArray = (JArray)jObject[nameof(PatternDto.Languages)];
-                    HashSet<LanguageInfo> resultLanguages;
+                    HashSet<Language> resultLanguages;
                     if (languagesArray?.Count > 0)
                     {
-                        resultLanguages = new HashSet<LanguageInfo>();
+                        resultLanguages = new HashSet<Language>();
                         foreach (string value in languagesArray.Values<string>())
                         {
-                            LanguageInfo language = LanguageUtils.Languages.Values.FirstOrDefault(
+                            Language language = LanguageUtils.Languages.Values.FirstOrDefault(
                                     lang => string.Equals(lang.Key, value, StringComparison.OrdinalIgnoreCase));
                             if (language != null)
                             {
@@ -51,7 +51,7 @@ namespace PT.PM.Matching.Json
                     }
                     else
                     {
-                        resultLanguages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values);
+                        resultLanguages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
                     }
                     target = new PatternRoot
                     {

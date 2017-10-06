@@ -9,14 +9,14 @@ namespace PT.PM.Matching.Tests
 {
     public class PatternMatchingUtils
     {
-        public static MatchingResultDto[] GetMatchings(string code, string pattern, LanguageInfo analyseLanguage)
+        public static MatchingResultDto[] GetMatchings(string code, string pattern, Language analyseLanguage)
         {
             return GetMatchings(code, pattern, new[] { analyseLanguage });
         }
 
         public static MatchingResultDto[] GetMatchings(string code, string pattern,
-            IEnumerable<LanguageInfo> analyzedLanguages,
-            IEnumerable<LanguageInfo> patternLanguages = null)
+            IEnumerable<Language> analyzedLanguages,
+            IEnumerable<Language> patternLanguages = null)
         {
             var sourceCodeRep = new MemoryCodeRepository(code);
             var patternsRep = new MemoryPatternsRepository();
@@ -27,7 +27,7 @@ namespace PT.PM.Matching.Tests
 
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(pattern);
-            patternNode.Languages = new HashSet<LanguageInfo>(patternLanguages ?? LanguageUtils.PatternLanguages.Values);
+            patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageUtils.PatternLanguages.Values);
             patternNode.DebugInfo = pattern;
             var patternsConverter = new PatternConverter();
             patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));

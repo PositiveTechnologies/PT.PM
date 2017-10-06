@@ -32,7 +32,7 @@ namespace PT.PM.PhpParseTreeUst
         protected int jsStartCodeInd = 0;
         protected int namespaceDepth;
 
-        public override LanguageInfo Language => Php.Language;
+        public override Language Language => Php.Language;
 
         public PhpAntlrParseTreeConverter()
             : base()

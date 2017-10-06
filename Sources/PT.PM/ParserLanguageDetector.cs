@@ -13,9 +13,9 @@ namespace PT.PM
         private readonly static Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
         private readonly static Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
 
-        public override LanguageInfo Detect(string sourceCode, IEnumerable<LanguageInfo> languages = null)
+        public override Language Detect(string sourceCode, IEnumerable<Language> languages = null)
         {
-            List<LanguageInfo> langs = (languages ?? LanguageUtils.Languages.Values).ToList();
+            List<Language> langs = (languages ?? LanguageUtils.Languages.Values).ToList();
             // Any PHP file contains start tag.
             if (!sourceCode.Contains("<?"))
             {
@@ -28,7 +28,7 @@ namespace PT.PM
                 langs.Remove(langs.FirstOrDefault(l => l.Key == "Html"));
             }
             var sourceCodeFile = new SourceCodeFile() { Code = sourceCode };
-            var parseUnits = new Queue<Tuple<LanguageInfo, ParserUnit>>(langs.Count);
+            var parseUnits = new Queue<Tuple<Language, ParserUnit>>(langs.Count);
 
             langs = langs
                 .GroupBy(l => l.CreateParser())
@@ -40,7 +40,7 @@ namespace PT.PM
                 return langs[0];
             }
 
-            foreach (LanguageInfo language in langs)
+            foreach (Language language in langs)
             {
                 var logger = new LoggerMessageCounter();
                 ILanguageParser languageParser = language.CreateParser();
@@ -55,7 +55,7 @@ namespace PT.PM
             }
 
             int minErrorCount = int.MaxValue;
-            LanguageInfo resultWithMinErrors = null;
+            Language resultWithMinErrors = null;
 
             // Check every parseUnit completion every 50 ms.
             while (parseUnits.Count > 0)

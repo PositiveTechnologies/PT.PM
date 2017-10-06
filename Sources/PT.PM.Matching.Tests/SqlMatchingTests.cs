@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Tests
             Match_TestPatternsSql_MatchedAllDefault(TSql.Language, "TSql/tsql_patterns.sql");
         }
 
-        private void Match_TestPatternsSql_MatchedAllDefault(LanguageInfo language, string patternsFileName)
+        private void Match_TestPatternsSql_MatchedAllDefault(Language language, string patternsFileName)
         {
             var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);

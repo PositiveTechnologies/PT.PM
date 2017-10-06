@@ -13,7 +13,7 @@ namespace PT.PM.CSharpParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public LanguageInfo Language => CSharp.Language;
+        public Language Language => CSharp.Language;
 
         public ParseTree Parse(SourceCodeFile sourceCodeFile)
         {

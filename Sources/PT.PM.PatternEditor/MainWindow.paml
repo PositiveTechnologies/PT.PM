@@ -34,7 +34,7 @@
         <TextBlock Grid.Column="7" Text="Stage" IsVisible="{Binding DeveloperMode}"/>
         <DropDown Grid.Column="8" Items="{Binding Stages}" SelectedItem="{Binding Stage}" IsVisible="{Binding DeveloperMode}"/>
         <TextBlock Grid.Column="9" Margin="10,0,0,0" Text="Language"/>
-        <DropDown Grid.Column="10" Items="{Binding Languages}" SelectedItem="{Binding SelectedLanguageInfo}" />
+        <DropDown Grid.Column="10" Items="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
         <TextBlock Grid.Column="11" Margin="10,0,0,0" Text="JS Type  " IsVisible="{Binding IsJavaScriptTypeVisible}" />
         <DropDown Grid.Column="12" Items="{Binding JavaScriptTypes}" SelectedItem="{Binding JavaScriptType}" IsVisible="{Binding IsJavaScriptTypeVisible}" />
       </Grid>

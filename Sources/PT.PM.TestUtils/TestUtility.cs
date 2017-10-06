@@ -52,7 +52,7 @@ namespace PT.PM.TestUtils
             SevenZipPath = CommonUtils.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
-        public static WorkflowResult CheckFile(string fileName, LanguageInfo language, Stage endStage,
+        public static WorkflowResult CheckFile(string fileName, Language language, Stage endStage,
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false)
         {
             var codeRep = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
@@ -84,7 +84,7 @@ namespace PT.PM.TestUtils
             return workflowResult;
         }
 
-        public static WorkflowResult CheckProject(TestProject testProject, LanguageInfo language, Stage endStage,
+        public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
             decimal fileSuccessRatio = 1.0m)
         {
             var logger = new LoggerMessageCounter()
@@ -146,7 +146,7 @@ namespace PT.PM.TestUtils
             return workflowResult;
         }
 
-        public static WorkflowResult CheckProject(string projectPath, LanguageInfo language, Stage endStage)
+        public static WorkflowResult CheckProject(string projectPath, Language language, Stage endStage)
         {
             var logger = new LoggerMessageCounter() { LogToConsole = false };
             var repository = new FilesAggregatorCodeRepository(

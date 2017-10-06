@@ -56,7 +56,7 @@ namespace PT.PM.Common.Nodes
             }
         }
 
-        public static Ust[] SelectAnalyzedNodes(this Ust ustNode, LanguageInfo language, HashSet<LanguageInfo> analyzedLanguages)
+        public static Ust[] SelectAnalyzedNodes(this Ust ustNode, Language language, HashSet<Language> analyzedLanguages)
         {
             Ust[] result;
             if (analyzedLanguages.Contains(language))

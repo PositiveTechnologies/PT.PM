@@ -102,7 +102,7 @@ namespace PT.PM.Cli
                         stage = Stage.Pattern;
                     }
 
-                    IEnumerable<LanguageInfo> languages;
+                    IEnumerable<Language> languages;
                     if (!string.IsNullOrEmpty(languagesString))
                     {
                         languages = languagesString.Split(' ', ',', ';').ToLanguages(logger);

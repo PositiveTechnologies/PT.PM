@@ -81,7 +81,7 @@
     <Compile Include="CodeRepository\ISourceCodeRepository.cs" />
     <Compile Include="Json\JsonUstSerializer.cs" />
     <Compile Include="ParseTree.cs" />
-    <Compile Include="LanguageInfo.cs" />
+    <Compile Include="Language.cs" />
     <Compile Include="LoggerMessageCounter.cs" />
     <Compile Include="Nodes\Collections\ArgsUst.cs" />
     <Compile Include="Nodes\Collections\CollectionUst.cs" />

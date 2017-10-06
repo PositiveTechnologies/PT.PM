@@ -65,8 +65,8 @@ namespace PT.PM.Common.Json
                     object propVal = prop.GetValue(value, null);
                     if (propVal != null)
                     {
-                        object serializeObj = propVal is IEnumerable<LanguageInfo> languageInfos
-                            ? languageInfos.Select(lang => lang.Key)
+                        object serializeObj = propVal is IEnumerable<Language> languages
+                            ? languages.Select(lang => lang.Key)
                             : propVal;
                         jObject.Add(propName, JToken.FromObject(serializeObj, serializer));
                     }

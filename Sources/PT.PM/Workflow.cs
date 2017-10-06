@@ -23,7 +23,7 @@ namespace PT.PM
         {
         }
 
-        public Workflow(ISourceCodeRepository sourceCodeRepository, LanguageInfo language,
+        public Workflow(ISourceCodeRepository sourceCodeRepository, Language language,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : this(sourceCodeRepository, new [] { language }, patternsRepository, stage)
         {
@@ -35,7 +35,7 @@ namespace PT.PM
         {
         }
 
-        public Workflow(ISourceCodeRepository sourceCodeRepository, IEnumerable<LanguageInfo> languages,
+        public Workflow(ISourceCodeRepository sourceCodeRepository, IEnumerable<Language> languages,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : base(stage, languages)
         {

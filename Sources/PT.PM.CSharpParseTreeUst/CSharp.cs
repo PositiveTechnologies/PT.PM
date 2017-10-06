@@ -4,7 +4,7 @@ namespace PT.PM.CSharpParseTreeUst
 {
     public static class CSharp
     {
-        public readonly static LanguageInfo Language =
-            new LanguageInfo("CSharp", ".cs", false, "C#", haveAntlrParser: false);
+        public readonly static Language Language =
+            new Language("CSharp", ".cs", false, "C#", haveAntlrParser: false);
     }
 }

@@ -8,23 +8,23 @@ namespace PT.PM.Common
 {
     public static class LanguageUtils
     {
-        private static Dictionary<LanguageInfo, Type> parsers;
-        private static Dictionary<LanguageInfo, Type> converters;
+        private static Dictionary<Language, Type> parsers;
+        private static Dictionary<Language, Type> converters;
 
-        public readonly static Dictionary<string, LanguageInfo> Languages;
-        public readonly static Dictionary<string, LanguageInfo> PatternLanguages;
-        public readonly static Dictionary<string, LanguageInfo> SqlLanguages;
+        public readonly static Dictionary<string, Language> Languages;
+        public readonly static Dictionary<string, Language> PatternLanguages;
+        public readonly static Dictionary<string, Language> SqlLanguages;
 
         static LanguageUtils()
         {
-            parsers = new Dictionary<LanguageInfo, Type>();
-            converters = new Dictionary<LanguageInfo, Type>();
-            Languages = new Dictionary<string, LanguageInfo>();
-            PatternLanguages = new Dictionary<string, LanguageInfo>();
-            SqlLanguages = new Dictionary<string, LanguageInfo>();
+            parsers = new Dictionary<Language, Type>();
+            converters = new Dictionary<Language, Type>();
+            Languages = new Dictionary<string, Language>();
+            PatternLanguages = new Dictionary<string, Language>();
+            SqlLanguages = new Dictionary<string, Language>();
 
-            var subParsers = new Dictionary<LanguageInfo, Type>();
-            var subConverters = new Dictionary<LanguageInfo, Type>();
+            var subParsers = new Dictionary<Language, Type>();
+            var subConverters = new Dictionary<Language, Type>();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             var visitedAssemblies = new List<Assembly>();
 
@@ -70,7 +70,7 @@ namespace PT.PM.Common
         }
 
         private static void ProcessAssembly(Assembly assembly,
-            Dictionary<LanguageInfo, Type> subParsers, Dictionary<LanguageInfo, Type> subConverters,
+            Dictionary<Language, Type> subParsers, Dictionary<Language, Type> subConverters,
             List<Assembly> visitedAssemblies)
         {
             if (!assembly.IsActual() || visitedAssemblies.Contains(assembly))
@@ -86,7 +86,7 @@ namespace PT.PM.Common
                 {
                     var parser = (ILanguageParser)Activator.CreateInstance(type);
                     parsers.Add(parser.Language, parser.GetType());
-                    foreach (LanguageInfo sublanguage in parser.Language.Sublanguages)
+                    foreach (Language sublanguage in parser.Language.Sublanguages)
                     {
                         subParsers.Add(sublanguage, type);
                     }
@@ -98,7 +98,7 @@ namespace PT.PM.Common
                 {
                     var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
                     converters.Add(converter.Language, converter.GetType());
-                    foreach (LanguageInfo sublanguage in converter.Language.Sublanguages)
+                    foreach (Language sublanguage in converter.Language.Sublanguages)
                     {
                         subConverters.Add(sublanguage, type);
                     }
@@ -106,9 +106,9 @@ namespace PT.PM.Common
             }
         }
 
-        private static void ProcessLanguage(IEnumerable<LanguageInfo> languages)
+        private static void ProcessLanguage(IEnumerable<Language> languages)
         {
-            foreach (LanguageInfo lang in languages)
+            foreach (Language lang in languages)
             {
                 string languageKey = lang.Key;
                 Languages[languageKey] = lang;
@@ -123,7 +123,7 @@ namespace PT.PM.Common
             }
         }
 
-        public static ILanguageParser CreateParser(this LanguageInfo language)
+        public static ILanguageParser CreateParser(this Language language)
         {
             if (parsers.TryGetValue(language, out Type parserType))
             {
@@ -135,7 +135,7 @@ namespace PT.PM.Common
             }
         }
 
-        public static IParseTreeToUstConverter CreateConverter(this LanguageInfo language)
+        public static IParseTreeToUstConverter CreateConverter(this Language language)
         {
             if (converters.TryGetValue(language, out Type converterType))
             {
@@ -147,12 +147,12 @@ namespace PT.PM.Common
             }
         }
 
-        public static List<LanguageInfo> ToLanguages(this IEnumerable<string> languages, ILogger logger)
+        public static List<Language> ToLanguages(this IEnumerable<string> languages, ILogger logger)
         {
-            var result = new List<LanguageInfo>();
+            var result = new List<Language>();
             foreach (string langStr in languages)
             {
-                LanguageInfo value;
+                Language value;
                 if ((value = Languages.Values.FirstOrDefault(lang =>
                     string.Equals(lang.Key, langStr, StringComparison.OrdinalIgnoreCase))) != null)
                 {
@@ -166,9 +166,9 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static HashSet<LanguageInfo> GetSelfAndSublanguages(this LanguageInfo language)
+        public static HashSet<Language> GetSelfAndSublanguages(this Language language)
         {
-            var result = new HashSet<LanguageInfo>();
+            var result = new HashSet<Language>();
             result.Add(language);
             foreach (var lang in language.Sublanguages)
                 result.Add(lang);

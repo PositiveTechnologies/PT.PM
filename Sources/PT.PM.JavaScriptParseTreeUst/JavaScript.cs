@@ -4,7 +4,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public static class JavaScript
     {
-        public readonly static LanguageInfo Language =
-            new LanguageInfo("JavaScript", ".js", false, "JavaScript");
+        public readonly static Language Language =
+            new Language("JavaScript", ".js", false, "JavaScript");
     }
 }

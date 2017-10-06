@@ -129,7 +129,7 @@ namespace PT.PM.PatternEditor
 
             CheckSourceCode();
 
-            this.RaisePropertyChanged(nameof(SelectedLanguageInfo));
+            this.RaisePropertyChanged(nameof(SelectedLanguage));
             this.RaisePropertyChanged(nameof(OpenedFileName));
 
             sourceCodeTextBox.GetObservable(TextBox.CaretIndexProperty)
@@ -300,15 +300,15 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public ObservableCollection<LanguageInfo> Languages
+        public ObservableCollection<Language> Languages
         {
             get
             {
-                return new ObservableCollection<LanguageInfo>(LanguageUtils.Languages.Values);
+                return new ObservableCollection<Language>(LanguageUtils.Languages.Values);
             }
         }
         
-        public LanguageInfo SelectedLanguageInfo
+        public Language SelectedLanguage
         {
             get
             {
@@ -324,24 +324,6 @@ namespace PT.PM.PatternEditor
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
                     this.RaisePropertyChanged(nameof(IsTreeVisible));
                     this.RaisePropertyChanged(nameof(IsJavaScriptTypeVisible));
-                    CheckSourceCode();
-                }
-            }
-        }
-
-        public string SelectedLanguage
-        {
-            get
-            {
-                return Settings.SourceCodeLanguage;
-            }
-            set
-            {
-                if (Settings.SourceCodeLanguage != value)
-                {
-                    Settings.SourceCodeLanguage = value;
-                    Settings.Save();
-                    this.RaisePropertyChanged(nameof(SelectedLanguageInfo));
                     CheckSourceCode();
                 }
             }
@@ -373,7 +355,7 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public bool IsJavaScriptTypeVisible => SelectedLanguage == "JavaScript";
+        public bool IsJavaScriptTypeVisible => SelectedLanguage == JavaScript.Language;
 
         public ReactiveCommand<object> OpenSourceCodeFile { get; } = ReactiveCommand.Create();
 
@@ -395,8 +377,7 @@ namespace PT.PM.PatternEditor
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    LanguageInfo language = languageDetector.DetectIfRequired(value);
-                    SelectedLanguage = language.Key ?? "CSharp";
+                    SelectedLanguage = languageDetector.DetectIfRequired(value);
                 }
                 Settings.SourceCodeFile = value;
                 Settings.Save();
@@ -416,9 +397,9 @@ namespace PT.PM.PatternEditor
 
         public string UstJson { get; set; }
 
-        public bool IsTokensVisible => SelectedLanguageInfo.HaveAntlrParser && IsDeveloperMode;
+        public bool IsTokensVisible => SelectedLanguage.HaveAntlrParser && IsDeveloperMode;
 
-        public bool IsTreeVisible => SelectedLanguageInfo.HaveAntlrParser && IsDeveloperMode;
+        public bool IsTreeVisible => SelectedLanguage.HaveAntlrParser && IsDeveloperMode;
 
         public bool IsUstJsonVisible => Stage >= Stage.Ust && IsDeveloperMode;
 
@@ -549,11 +530,10 @@ namespace PT.PM.PatternEditor
             {
                 patternRepository = new MemoryPatternsRepository();
             }
-            LanguageInfo language = LanguageUtils.Languages[SelectedLanguage];
-            var workflow = new Workflow(sourceCodeRep, language, patternRepository, stage: Stage);
+            var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage);
             workflow.IsIncludeIntermediateResult = true;
             workflow.Logger = sourceCodeLogger;
-            if (SelectedLanguage == "JavaScript")
+            if (SelectedLanguage == JavaScript.Language)
             {
                 workflow.JavaScriptType = JavaScriptType;
             }
@@ -621,8 +601,8 @@ namespace PT.PM.PatternEditor
             {
                 Task.Factory.StartNew(() =>
                 {
-                    var detectedLanguage = languageDetector.Detect(newSourceCode);
-                    Dispatcher.UIThread.InvokeAsync(() => SelectedLanguage = detectedLanguage.Key);
+                    Language detectedLanguage = languageDetector.Detect(newSourceCode);
+                    Dispatcher.UIThread.InvokeAsync(() => SelectedLanguage = detectedLanguage);
                 });
                 Dispatcher.UIThread.InvokeAsync(() => OpenedFileName = "");
             }

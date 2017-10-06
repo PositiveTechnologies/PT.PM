@@ -2,7 +2,7 @@
 {
     public interface ILanguageParser : ILoggable
     {
-        LanguageInfo Language { get; }
+        Language Language { get; }
 
         ParseTree Parse(SourceCodeFile sourceCodeFile);
 

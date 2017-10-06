@@ -17,7 +17,7 @@ namespace PT.PM.SqlParseTreeUst
 {
     public partial class PlSqlAntlrConverter : AntlrConverter, IPlSqlParserVisitor<Ust>
     {
-        public override LanguageInfo Language => PlSql.Language;
+        public override Language Language => PlSql.Language;
 
         /// <returns><see cref="ArgsUst"/></returns>
         public Ust VisitSwallow_to_semi([NotNull] PlSqlParser.Swallow_to_semiContext context)

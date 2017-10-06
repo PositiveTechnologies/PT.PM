@@ -16,7 +16,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AttributesCodeInsideElementEvent",
-                Languages = new HashSet<LanguageInfo>() { JavaScript.Language },
+                Languages = new HashSet<Language>() { JavaScript.Language },
                 Node = new PatternAssignmentExpression
                 {
                     Left = new PatternMemberReferenceExpression

@@ -9,14 +9,14 @@ namespace PT.PM
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public LanguageInfo DetectIfRequired(string sourceCodeFileName)
+        public Language DetectIfRequired(string sourceCodeFileName)
         {
             return DetectIfRequired(sourceCodeFileName, File.ReadAllText(sourceCodeFileName));
         }
 
-        public LanguageInfo DetectIfRequired(string sourceCodeFileName, string sourceCode, IEnumerable<LanguageInfo> languages = null)
+        public Language DetectIfRequired(string sourceCodeFileName, string sourceCode, IEnumerable<Language> languages = null)
         {
-            LanguageInfo result = null;
+            Language result = null;
             if ((languages?.Count() ?? 0) == 1)
             {
                 result = languages.First();
@@ -24,7 +24,7 @@ namespace PT.PM
             else if (!string.IsNullOrEmpty(sourceCodeFileName))
             {
                 string[] extensions = GetExtensions(sourceCodeFileName);
-                List<LanguageInfo> finalLanguages = GetLanguagesIntersection(extensions, languages);
+                List<Language> finalLanguages = GetLanguagesIntersection(extensions, languages);
                 if (finalLanguages.Count == 1 || finalLanguages.Any(final => final.Key == "CSharp"))
                 {
                     result = finalLanguages[0];
@@ -43,9 +43,9 @@ namespace PT.PM
             return result;
         }
 
-        public abstract LanguageInfo Detect(string sourceCode, IEnumerable<LanguageInfo> languages = null);
+        public abstract Language Detect(string sourceCode, IEnumerable<Language> languages = null);
 
-        protected void LogDetection(LanguageInfo detectedLanguage, IEnumerable<LanguageInfo> languages, string sourceCodeFileName)
+        protected void LogDetection(Language detectedLanguage, IEnumerable<Language> languages, string sourceCodeFileName)
         {
             string languagesString = string.Join(", ", languages.Select(lang => lang.Title));
             if (detectedLanguage != null)
@@ -71,23 +71,24 @@ namespace PT.PM
             return result.ToArray();
         }
 
-        private static List<LanguageInfo> GetLanguagesIntersection(string[] extensions, IEnumerable<LanguageInfo> languages)
+        private static List<Language> GetLanguagesIntersection(string[] extensions, IEnumerable<Language> languages)
         {
-            var result = new List<LanguageInfo>();
+            var result = new List<Language>();
             if (extensions.Length == 0)
             {
-                return languages.ToList() ?? new List<LanguageInfo>();
+                return languages.ToList() ?? new List<Language>();
             }
             foreach (var extension in extensions)
             {
                 var normalizedExtension = extension.ToLowerInvariant();
-                foreach (LanguageInfo languageInfo in LanguageUtils.Languages.Values)
+                foreach (Language language in LanguageUtils.Languages.Values)
                 {
-                    var extensionIsFine = string.IsNullOrEmpty(normalizedExtension) || languageInfo.Extensions.Contains(normalizedExtension);
-                    var languageIsFine = languages == null || languages.Contains(languageInfo);
+                    var extensionIsFine = string.IsNullOrEmpty(normalizedExtension) ||
+                        language.Extensions.Contains(normalizedExtension);
+                    var languageIsFine = languages == null || languages.Contains(language);
                     if (extensionIsFine && languageIsFine)
                     {
-                        result.Add(languageInfo);
+                        result.Add(language);
                     }
                 }
             }

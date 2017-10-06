@@ -5,7 +5,7 @@ namespace PT.PM.CSharpParseTreeUst
 {
     public class AspxParseTree: ParseTree
     {
-        public override LanguageInfo SourceLanguage => Aspx.Language;
+        public override Language SourceLanguage => Aspx.Language;
 
         public AspxNode Root { get; set; }
 

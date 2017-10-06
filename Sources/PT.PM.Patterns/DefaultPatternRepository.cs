@@ -55,7 +55,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedPassword",
-                Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values),
                 Node = new PatternOr
                 (
                     new PatternBinaryOperatorExpression
@@ -100,7 +100,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureTransport",
-                Languages = new HashSet<LanguageInfo>
+                Languages = new HashSet<Language>
                 {
                     CSharp.Language,
                     Java.Language,
@@ -114,7 +114,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureRandomness",
-                Languages = new HashSet<LanguageInfo>() { CSharp.Language, Java.Language },
+                Languages = new HashSet<Language>() { CSharp.Language, Java.Language },
                 Node = new PatternObjectCreateExpression
                 {
                     Type = new PatternIdToken("Random"),
@@ -126,7 +126,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PasswordInComment. Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
-                Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values),
                 Node = new PatternOr
                 (
                     new PatternCommentRegex("(?i)(password|pwd)\\s*=\\s*[\"\\w]+"),
@@ -138,7 +138,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Poor Error Handling: Empty Default Exception Handler",
-                Languages = new HashSet<LanguageInfo>(LanguageUtils.PatternLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values),
                 Node = new PatternTryCatchStatement { IsCatchBodyEmpty = true }
             });
 
@@ -146,7 +146,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Erroneous Null Comparison",
-                Languages = new HashSet<LanguageInfo>(LanguageUtils.SqlLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.SqlLanguages.Values),
                 Node = new PatternOr
                 (
                     new PatternBinaryOperatorExpression
@@ -168,7 +168,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Privilege Management: Overly Broad Grant",
-                Languages = new HashSet<LanguageInfo>(LanguageUtils.SqlLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.SqlLanguages.Values),
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdToken("grant_all"),

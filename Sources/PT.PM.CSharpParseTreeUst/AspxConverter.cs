@@ -18,9 +18,9 @@ namespace PT.PM.CSharpParseTreeUst
         private SourceCodeFile sourceCodeFile;
         private int namespaceDepth;
 
-        public LanguageInfo Language => Aspx.Language;
+        public Language Language => Aspx.Language;
 
-        public HashSet<LanguageInfo> AnalyzedLanguages { get; set; }
+        public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
