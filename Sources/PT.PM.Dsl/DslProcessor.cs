@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Matching;
-using System.Collections.Generic;
 
 namespace PT.PM.Dsl
 {

@@ -11,7 +11,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         public void Parse_JavaScriptProject_WithoutErrors(string projectKey)
         {
             TestUtility.CheckProject(TestProjects.JavaScriptProjects
-                .Single(p => p.Key == projectKey), JavaScript.Language, Stage.Parse);
+                .Single(p => p.Key == projectKey), JavaScript.Language, Stage.ParseTree);
         }
     }
 }

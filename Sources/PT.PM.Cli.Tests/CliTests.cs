@@ -25,7 +25,7 @@ namespace PT.PM.Cli.Tests
             }
 
             string patternsStr = PreparePatternsString();
-            var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --log-errors");
+            var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsStr} --log-errors");
 
             Assert.AreEqual("Pattern Parsing Error in \"Pattern\": token recognition error at: '>' at 1:18.", result.Output[2]);
             Assert.AreEqual("Pattern Parsing Error in \"Pattern\": no viable alternative at input '(?' at 1:1.", result.Output[3]);
@@ -48,7 +48,7 @@ namespace PT.PM.Cli.Tests
                 {
                     Directory.Delete(logPath, true);
                 }
-                var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Patterns} --patterns {patternsStr} --logs-dir \"{logPath}\"");
+                var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsStr} --logs-dir \"{logPath}\"");
                 var logFiles = Directory.GetFiles(logPath, "*.*");
                 Assert.Greater(logFiles.Length, 0);
             }
@@ -73,7 +73,7 @@ namespace PT.PM.Cli.Tests
             ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestUtility.TestsDataPath}\" " +
                 $"-l PlSql,TSql " +
-                $"--stage {Stage.Parse} --log-debugs");
+                $"--stage {Stage.ParseTree} --log-debugs");
 
             // Do not process php (csharp, java etc.) files.
             Assert.IsTrue(result.Output.Any(line => line.Contains(".php has not been read")));
@@ -82,7 +82,7 @@ namespace PT.PM.Cli.Tests
             result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
                 $"-f \"{TestUtility.TestsDataPath}\" " +
                 $"-l PlSql " +
-                $"--stage {Stage.Parse} --log-debugs");
+                $"--stage {Stage.ParseTree} --log-debugs");
 
             // Do not detect language for only one language.
             Assert.IsFalse(result.Output.Any(line => line.Contains("has been detected")));
@@ -99,7 +99,7 @@ namespace PT.PM.Cli.Tests
             var patternTempFile = Path.GetTempFileName() + ".json";
             File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
             ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
-               $"--stage {Stage.Patterns} " +
+               $"--stage {Stage.Pattern} " +
                $"--patterns {patternTempFile} " +
                $"--log-debugs --log-errors");
 

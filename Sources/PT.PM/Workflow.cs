@@ -60,7 +60,7 @@ namespace PT.PM
             result.BaseLanguages = BaseLanguages.ToArray();
 
             StartConvertPatternsTaskIfRequired(result);
-            if (Stage == Stage.Patterns)
+            if (Stage == Stage.Pattern)
             {
                 WaitOrConverterPatterns(result);
             }
@@ -117,7 +117,7 @@ namespace PT.PM
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
                 ust = ReadParseAndConvert(fileName, workflowResult);
-                if (ust != null && Stage >= Stage.Preprocess)
+                if (ust != null && Stage >= Stage.SimpleParseTree)
                 {
                     Stopwatch stopwatch = new Stopwatch();
                     if (IsIncludePreprocessing)

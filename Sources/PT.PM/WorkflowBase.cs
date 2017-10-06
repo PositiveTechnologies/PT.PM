@@ -112,7 +112,7 @@ namespace PT.PM
             RootUst result = null;
             var stopwatch = new Stopwatch();
             string file = fileName;
-            if (stageHelper.IsContainsRead)
+            if (stageHelper.IsContainsFile)
             {
                 if (SourceCodeRepository.IsFileIgnored(fileName))
                 {
@@ -134,7 +134,7 @@ namespace PT.PM
                 cancellationToken.ThrowIfCancellationRequested();
 
                 file = sourceCodeFile.RelativePath;
-                if (stageHelper.IsContainsParse)
+                if (stageHelper.IsContainsParseTree)
                 {
                     stopwatch.Restart();
                     LanguageInfo detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
@@ -170,7 +170,7 @@ namespace PT.PM
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    if (stageHelper.IsContainsConvert)
+                    if (stageHelper.IsContainsUst)
                     {
                         stopwatch.Reset();
 
@@ -194,7 +194,7 @@ namespace PT.PM
         {
             if (IsAsyncPatternsConversion)
             {
-                if (stageHelper.IsPatterns || stageHelper.IsContainsMatch)
+                if (stageHelper.IsPattern || stageHelper.IsContainsMatch)
                 {
                     convertPatternsTask = new Task(() => ConvertPatterns(workflowResult));
                     convertPatternsTask.Start();

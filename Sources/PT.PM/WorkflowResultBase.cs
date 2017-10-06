@@ -57,17 +57,17 @@ namespace PT.PM
 
         public int ErrorCount { get; set; }
 
-        public IReadOnlyList<SourceCodeFile> SourceCodeFiles => ValidateStageAndReturn(PM.Stage.Read.ToString(), sourceCodeFiles);
+        public IReadOnlyList<SourceCodeFile> SourceCodeFiles => ValidateStageAndReturn(PM.Stage.File.ToString(), sourceCodeFiles);
 
-        public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.Parse.ToString(), parseTrees);
+        public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
 
         public IReadOnlyList<RootUst> Usts
         {
             get
             {
-                if (!stageExt.IsConvert && !stageExt.IsPreprocess && !IsIncludeIntermediateResult)
+                if (!stageExt.IsUst && !stageExt.IsSimpleParseTree && !IsIncludeIntermediateResult)
                 {
-                    ThrowInvalidStageException(PM.Stage.Convert.ToString());
+                    ThrowInvalidStageException(PM.Stage.Ust.ToString());
                 }
                 return usts;
             }
@@ -79,9 +79,9 @@ namespace PT.PM
         {
             get
             {
-                if (!stageExt.IsPatterns && (stageExt.IsLessThanMatch || !IsIncludeIntermediateResult))
+                if (!stageExt.IsPattern && (stageExt.IsLessThanMatch || !IsIncludeIntermediateResult))
                 {
-                    ThrowInvalidStageException(PM.Stage.Patterns.ToString());
+                    ThrowInvalidStageException(PM.Stage.Pattern.ToString());
                 }
 
                 return patterns;
@@ -106,7 +106,7 @@ namespace PT.PM
 
         public void AddResultEntity(SourceCodeFile sourceCodeFile)
         {
-            if (stageExt.IsRead || IsIncludeIntermediateResult)
+            if (stageExt.IsFile || IsIncludeIntermediateResult)
             {
                 AddEntity(sourceCodeFiles, sourceCodeFile);
             }
@@ -114,7 +114,7 @@ namespace PT.PM
 
         public void AddResultEntity(ParseTree parseTree)
         {
-            if (stageExt.IsParse || IsIncludeIntermediateResult)
+            if (stageExt.IsParseTree || IsIncludeIntermediateResult)
             {
                 AddEntity(parseTrees, parseTree);
             }
@@ -122,7 +122,7 @@ namespace PT.PM
 
         public void AddResultEntity(RootUst ust, bool convert)
         {
-            if (IsIncludeIntermediateResult || (convert && stageExt.IsConvert) || (!convert && stageExt.IsPreprocess))
+            if (IsIncludeIntermediateResult || (convert && stageExt.IsUst) || (!convert && stageExt.IsSimpleParseTree))
             {
                 int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
                 lock (usts)

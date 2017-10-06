@@ -14,21 +14,21 @@ namespace PT.PM
             stageInt = Convert.ToInt32(Stage);
         }
 
-        public bool IsRead => stageInt == (int)PM.Stage.Read;
+        public bool IsFile => stageInt == (int)PM.Stage.File;
 
-        public bool IsParse => stageInt == (int)PM.Stage.Parse;
+        public bool IsParseTree => stageInt == (int)PM.Stage.ParseTree;
 
-        public bool IsConvert => stageInt == (int)PM.Stage.Convert;
+        public bool IsUst => stageInt == (int)PM.Stage.Ust;
 
-        public bool IsPreprocess => stageInt == (int)PM.Stage.Preprocess;
+        public bool IsSimpleParseTree => stageInt == (int)PM.Stage.SimpleParseTree;
 
-        public bool IsPatterns => stageInt == (int)PM.Stage.Patterns;
+        public bool IsPattern => stageInt == (int)PM.Stage.Pattern;
 
-        public bool IsContainsRead => stageInt >= (int)PM.Stage.Read;
+        public bool IsContainsFile => stageInt >= (int)PM.Stage.File;
 
-        public bool IsContainsParse => stageInt >= (int)PM.Stage.Parse;
+        public bool IsContainsParseTree => stageInt >= (int)PM.Stage.ParseTree;
 
-        public bool IsContainsConvert => stageInt >= (int)PM.Stage.Convert;
+        public bool IsContainsUst => stageInt >= (int)PM.Stage.Ust;
 
         public bool IsContainsMatch => stageInt >= (int)PM.Stage.Match;
 

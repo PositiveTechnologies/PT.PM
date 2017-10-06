@@ -72,7 +72,7 @@ namespace PT.PM.Cli
             {
                 if (isDumpUst)
                 {
-                    stage = Stage.Convert;
+                    stage = Stage.Ust;
                     logger = new DummyLogger();
                 }
 
@@ -99,7 +99,7 @@ namespace PT.PM.Cli
 
                     if (string.IsNullOrEmpty(fileName))
                     {
-                        stage = Stage.Patterns;
+                        stage = Stage.Pattern;
                     }
 
                     IEnumerable<LanguageInfo> languages;
@@ -156,7 +156,7 @@ namespace PT.PM.Cli
                         DumpUst(isIndentedUst, isIncludeTextSpansInUst, workflowResult);
                     }
 
-                    if (stage != Stage.Patterns)
+                    if (stage != Stage.Pattern)
                     {
                         logger.LogInfo("Scan completed.");
                         if (stage == Stage.Match)

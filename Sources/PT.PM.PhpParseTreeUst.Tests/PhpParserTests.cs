@@ -23,7 +23,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         [TestCase("xmlTag.php")]
         public void Parse_PhpSyntax_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Php.Language, Stage.Parse);
+            TestUtility.CheckFile(fileName, Php.Language, Stage.ParseTree);
         }
 
         [Test]

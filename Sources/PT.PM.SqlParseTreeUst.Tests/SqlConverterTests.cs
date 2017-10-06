@@ -15,7 +15,7 @@ namespace PT.PM.SqlParseTreeUst.Tests
         [Test]
         public void Convert_PlSqlFiles_WithoutErrors()
         {
-            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "PlSql"), PlSql.Language, Stage.Convert);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "PlSql"), PlSql.Language, Stage.Ust);
         }
 
         //[TestCase("TSQL Samples")]
@@ -23,13 +23,13 @@ namespace PT.PM.SqlParseTreeUst.Tests
         public void Convert_TSqlFiles_WithoutErrors(string projectKey)
         {
             TestUtility.CheckProject(
-                TestProjects.TSqlProjects.Single(p => p.Key == projectKey), TSql.Language, Stage.Convert);
+                TestProjects.TSqlProjects.Single(p => p.Key == projectKey), TSql.Language, Stage.Ust);
         }
 
         [Test]
         public void Convert_TSqlSyntax_WithoutErrors()
         {
-            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "TSql"), TSql.Language, Stage.Convert);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "TSql"), TSql.Language, Stage.Ust);
         }
     }
 }

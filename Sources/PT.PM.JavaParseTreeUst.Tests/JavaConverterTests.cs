@@ -20,7 +20,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Java.Language, Stage.Convert);
+            TestUtility.CheckFile(fileName, Java.Language, Stage.Ust);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         {
             string projectKey = "WebGoat.Java-05a1f5";
             TestUtility.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),
-                Java.Language, Stage.Parse);
+                Java.Language, Stage.ParseTree);
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 "}"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Convert);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Ust);
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
             var intType = new TypeToken("int");
@@ -104,7 +104,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 }"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Convert);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Ust);
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
 
@@ -115,7 +115,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [TestCase("AllInOne.java")]
         public void Convert_Java_BaseTypesExist(string fileName)
         {
-            var workflowResults = TestUtility.CheckFile(fileName, Java.Language, Stage.Convert);
+            var workflowResults = TestUtility.CheckFile(fileName, Java.Language, Stage.Ust);
             var ust = workflowResults.Usts.First();
             bool result = ust.AnyDescendant(descendant =>
             {

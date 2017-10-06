@@ -11,7 +11,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         [TestCase("numericScale.php")]
         public void Convert_PhpSyntax_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Php.Language, Stage.Convert);
+            TestUtility.CheckFile(fileName, Php.Language, Stage.Ust);
         }
 
         [TestCase("WebGoatPHP-6f48c9")]
@@ -20,7 +20,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         public void Convert_PhpProject_WithoutErrors(string projectKey)
         {
             TestUtility.CheckProject(
-                TestProjects.PhpProjects.Single(p => p.Key == projectKey), Php.Language, Stage.Convert);
+                TestProjects.PhpProjects.Single(p => p.Key == projectKey), Php.Language, Stage.Ust);
         }
 
         [Test]

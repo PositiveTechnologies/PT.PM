@@ -278,7 +278,7 @@ namespace PT.PM.PatternEditor
 
         public string SourceCodeTextBoxPosition { get; set; }
 
-        public ObservableCollection<Stage> Stages { get; } = new ObservableCollection<Stage>(new[] { Stage.Parse, Stage.Convert, Stage.Match });
+        public ObservableCollection<Stage> Stages { get; } = new ObservableCollection<Stage>(new[] { Stage.ParseTree, Stage.Ust, Stage.Match });
 
         public Stage Stage
         {
@@ -420,7 +420,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsTreeVisible => SelectedLanguageInfo.HaveAntlrParser && IsDeveloperMode;
 
-        public bool IsUstJsonVisible => Stage >= Stage.Convert && IsDeveloperMode;
+        public bool IsUstJsonVisible => Stage >= Stage.Ust && IsDeveloperMode;
 
         public string MatchingResultText { get; set; } = "MATCHINGS";
 
@@ -574,7 +574,7 @@ namespace PT.PM.PatternEditor
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tokens.txt"), Tokens);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tree.txt"), ParseTree);
                 }
-                if (Stage >= Stage.Convert && workflowResult.Usts.FirstOrDefault() != null)
+                if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {
                     UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault().Nodes);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UST.json"), UstJson);
