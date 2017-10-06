@@ -100,7 +100,6 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        [Ignore("Conside a unified hashing function for UST and pattern types")]
         public void Sort_PatternVars_CorrectOrder()
         {
             var unsorted = new PatternOr
@@ -120,14 +119,14 @@ namespace PT.PM.Tests
             (
                 new PatternIdToken("42"),
                 new PatternIdToken("testId"),
-                new PatternStringLiteral("42"),
-                new PatternStringLiteral("42"),
-                new PatternStringLiteral("Hello World!"),
-                new PatternNot(new PatternStringLiteral("42")),
-                new PatternNot(new PatternStringLiteral("42")),
                 new PatternIntLiteral(0),
                 new PatternIntLiteral(42),
-                new PatternIntLiteral(100)
+                new PatternIntLiteral(100),
+                new PatternNot(new PatternStringLiteral("42")),
+                new PatternNot(new PatternStringLiteral("42")),
+                new PatternStringLiteral("42"),
+                new PatternStringLiteral("42"),
+                new PatternStringLiteral("Hello World!")
             );
 
             var logger = new LoggerMessageCounter();

@@ -19,11 +19,11 @@ namespace PT.PM.Common.Reflection
             }
             else if (node != null && other == null)
             {
-                return node.GetType().Name.GetHashCode();
+                return 1;
             }
             else if (node == null && other != null)
             {
-                return -other.GetType().Name.GetHashCode();
+                return -1;
             }
 
             Type type1 = node.GetType();
@@ -33,7 +33,7 @@ namespace PT.PM.Common.Reflection
             {
                 if (type1 != type2)
                 {
-                    return type1.Name.GetHashCode() - type2.Name.GetHashCode();
+                    return type1.Name.CompareTo(type2.Name);
                 }
             }
 

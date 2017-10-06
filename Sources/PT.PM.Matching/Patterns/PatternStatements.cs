@@ -76,14 +76,7 @@ namespace PT.PM.Matching.Patterns
                     if (patternStatementInd == Statements.Count)
                     {
                         success = true;
-                        if (!context.FindAllAlternatives)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            patternStatementInd -= 1;
-                        }
+                        patternStatementInd = 0;
                     }
                 }
             }

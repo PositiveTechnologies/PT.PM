@@ -46,16 +46,10 @@ namespace PT.PM.Matching.Tests
             var missingBroadcasterPermission = patternDtos.Single(dto => dto.Description.StartsWith("MissingBroadcasterPermission"));
             Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == missingBroadcasterPermission.Key));
 
-            Assert.Ignore("Pin vars won't be supported in future versions of PT.PM");
-
             var cookieNotSentOverSslDto = patternDtos.Single(dto => dto.Description.StartsWith("CookieNotSentOverSSL"));
             var cookieNotSentOverSslResults =
                 matchingResults.Where(r => r.PatternKey == cookieNotSentOverSslDto.Key).ToArray();
 
-            Assert.AreEqual(0, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieNotExistsSimple")));
-            Assert.AreEqual(0, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieNotExistsComplex")));
-
-            Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsTwoPatterns1")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsSimple")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsComplex")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsAnotherVarName")));
