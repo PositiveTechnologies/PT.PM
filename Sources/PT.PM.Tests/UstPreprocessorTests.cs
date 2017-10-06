@@ -100,6 +100,7 @@ namespace PT.PM.Tests
         }
 
         [Test]
+        [Ignore("Conside a unified hashing function for UST and pattern types")]
         public void Sort_PatternVars_CorrectOrder()
         {
             var unsorted = new PatternOr
