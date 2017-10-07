@@ -129,7 +129,10 @@ namespace PT.PM.PatternEditor
             CreatePattern.Subscribe(_ =>
             {
                 SavePatterns();
-                var newPattern = new PatternDto();
+                var newPattern = new PatternDto
+                {
+                    Languages = new HashSet<string>(LanguageUtils.PatternLanguages.Keys)
+                };
                 newPattern.Key = Guid.NewGuid().ToString();
                 newPattern.Name = "New Pattern";
                 Patterns.Add(newPattern);
@@ -418,21 +421,23 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(IsDeveloperMode));
         }
 
-        private void ChangeLanguage(string language, bool value)
+        private void ChangeLanguage(string language, bool set)
         {
             if (SelectedPattern != null)
             {
                 bool changed = false;
-                if (value && !SelectedPattern.Languages.Contains(language))
+                if (set && !SelectedPattern.Languages.Contains(language))
                 {
                     SelectedPattern.Languages.Add(language);
                     changed = true;
                 }
-                else if (!value && SelectedPattern.Languages.Contains(language))
+                else if (!set && SelectedPattern.Languages.Contains(language) &&
+                    SelectedPattern.Languages.Count > 1)
                 {
                     SelectedPattern.Languages.Remove(language);
                     changed = true;
                 }
+
                 if (changed)
                 {
                     CheckPattern();
@@ -446,7 +451,7 @@ namespace PT.PM.PatternEditor
             if (oldPattern != patternTextBox.Text || !oldLanguages.SequenceEqual(Languages))
             {
                 oldPattern = patternTextBox.Text;
-                oldLanguages = Languages;
+                oldLanguages = new HashSet<string>(Languages);
 
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
@@ -457,6 +462,7 @@ namespace PT.PM.PatternEditor
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
                         patternNode = dslProcessor.Deserialize(patternTextBox.Text);
+                        patternNode.Languages = new HashSet<Language>(Languages.ToLanguages(patternLogger));
                     }
                 }
                 catch

@@ -28,7 +28,29 @@ namespace PT.PM.Matching
 
         public override string ToString()
         {
-            return $"{Name} ({(string.Join(", ", Languages))})";
+            string languages = "";
+            var patternLanguages = LanguageUtils.PatternLanguages;
+
+            if (patternLanguages.All(lang => Languages.Contains(lang.Key)))
+            {
+                languages = "Universal";
+            }
+            else if (patternLanguages.All(lang =>
+                lang.Value.IsSql ? Languages.Contains(lang.Key) : true))
+            {
+                languages = "SQL";
+            }
+            else
+            {
+                languages = string.Join(", ", Languages);
+            }
+
+            if (!string.IsNullOrEmpty(languages))
+            {
+                languages = $" ({languages})";
+            }
+
+            return $"{Name}{languages}";
         }
     }
 }
