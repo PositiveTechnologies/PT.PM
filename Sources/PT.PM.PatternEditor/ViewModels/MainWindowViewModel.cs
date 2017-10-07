@@ -45,6 +45,14 @@ namespace PT.PM.PatternEditor
         private JavaScriptType oldJavaScriptType;
         private int sourceCodeSelectionStart, sourceCodeSelectionEnd;
         private LanguageDetector languageDetector = new ParserLanguageDetector();
+        private string tokensHeader;
+        private string parseTreeHeader;
+        private string sourceCodeErrorsText = "Errors";
+        private bool sourceCodeErrorsIsVisible;
+        private string tokens;
+        private string parseTree;
+        private string ustJson;
+        private string matchingResultText = "MATCHINGS";
 
         public MainWindowViewModel(Window w)
         {
@@ -70,7 +78,8 @@ namespace PT.PM.PatternEditor
             logger = window.Find<TextBox>("Logger");
 
             patternsPanelColumn.Width = GridLength.Parse(Settings.PatternsPanelWidth.ToString(), CultureInfo.InvariantCulture);
-            sourceCodeErrorsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            sourceCodeErrorsListBox.DoubleTapped +=
+            (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
                 GuiHelpers.ProcessErrorOnDoubleClick(sourceCodeErrorsListBox, sourceCodeTextBox);
             };
@@ -385,17 +394,49 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public string SourceCodeErrorsText { get; set; } = "Errors";
+        public string SourceCodeErrorsText
+        {
+            get => sourceCodeErrorsText;
+            set => this.RaiseAndSetIfChanged(ref sourceCodeErrorsText, value);
+        }
 
-        public bool SourceCodeErrorsIsVisible { get; set; }
+        public bool SourceCodeErrorsIsVisible
+        {
+            get => sourceCodeErrorsIsVisible;
+            set => this.RaiseAndSetIfChanged(ref sourceCodeErrorsIsVisible, value);
+        }
 
         public ObservableCollection<object> SourceCodeErrors { get; } = new ObservableCollection<object>();
 
-        public string Tokens { get; set; }
+        public string TokensHeader
+        {
+            get => tokensHeader;
+            set => this.RaiseAndSetIfChanged(ref tokensHeader, value);
+        }
 
-        public string ParseTree { get; set; }
+        public string Tokens
+        {
+            get => tokens;
+            set => this.RaiseAndSetIfChanged(ref tokens, value);
+        }
 
-        public string UstJson { get; set; }
+        public string ParseTreeHeader
+        {
+            get => parseTreeHeader;
+            set => this.RaiseAndSetIfChanged(ref parseTreeHeader, value);
+        }
+
+        public string ParseTree
+        {
+            get => parseTree;
+            set => this.RaiseAndSetIfChanged(ref parseTree, value);
+        }
+
+        public string UstJson
+        {
+            get => ustJson;
+            set => this.RaiseAndSetIfChanged(ref ustJson, value);
+        }
 
         public bool IsTokensVisible => SelectedLanguage.HaveAntlrParser && IsDeveloperMode;
 
@@ -403,7 +444,11 @@ namespace PT.PM.PatternEditor
 
         public bool IsUstJsonVisible => Stage >= Stage.Ust && IsDeveloperMode;
 
-        public string MatchingResultText { get; set; } = "MATCHINGS";
+        public string MatchingResultText
+        {
+            get => matchingResultText;
+            set => this.RaiseAndSetIfChanged(ref matchingResultText, value);
+        }
 
         public ObservableCollection<MathingResultDtoWrapper> MatchingResults { get; } = new ObservableCollection<MathingResultDtoWrapper>();
 
@@ -554,6 +599,10 @@ namespace PT.PM.PatternEditor
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tokens.txt"), Tokens);
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tree.txt"), ParseTree);
                 }
+
+                TokensHeader = "Tokens" + (SelectedLanguage.HaveAntlrParser ? " (ANTLR)" : "");
+                ParseTreeHeader = "Parse Tree" + (SelectedLanguage.HaveAntlrParser ? " (ANTLR)" : "");
+
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {
                     UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault().Nodes);
@@ -561,11 +610,7 @@ namespace PT.PM.PatternEditor
                 }
             }
 
-            MatchingResultText = "MATCHINGS";
-            if (matchingResults.Count() > 0)
-            {
-                MatchingResultText += " (" + matchingResults.Count() + ")";
-            }
+            MatchingResultText = "MATCHINGS" + (matchingResults.Count() > 0 ? $" ({matchingResults.Count()})" : "");
 
             if (sourceCodeLogger.ErrorCount == 0)
             {
@@ -585,12 +630,6 @@ namespace PT.PM.PatternEditor
                 {
                     MatchingResults.Add(new MathingResultDtoWrapper(matchingResult));
                 }
-                this.RaisePropertyChanged(nameof(Tokens));
-                this.RaisePropertyChanged(nameof(ParseTree));
-                this.RaisePropertyChanged(nameof(UstJson));
-                this.RaisePropertyChanged(nameof(MatchingResultText));
-                this.RaisePropertyChanged(nameof(SourceCodeErrorsIsVisible));
-                this.RaisePropertyChanged(nameof(SourceCodeErrorsText));
             });
         }
 
