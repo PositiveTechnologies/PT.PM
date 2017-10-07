@@ -20,7 +20,7 @@ namespace PT.PM
 
         public bool IsUst => stageInt == (int)PM.Stage.Ust;
 
-        public bool IsSimpleParseTree => stageInt == (int)PM.Stage.SimpleParseTree;
+        public bool IsSimplifiedUst => stageInt == (int)PM.Stage.SimplifiedUst;
 
         public bool IsPattern => stageInt == (int)PM.Stage.Pattern;
 

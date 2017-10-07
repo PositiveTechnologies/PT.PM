@@ -27,7 +27,7 @@ namespace PT.PM.Tests
                 "$b = -3.1;"
             );
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, Php.Language, stage: Stage.SimpleParseTree);
+            var workflow = new Workflow(sourceCodeRep, Php.Language, stage: Stage.SimplifiedUst);
             workflow.IsIncludePreprocessing = true;
             workflow.Logger = logger;
             workflow.Process();
@@ -50,7 +50,7 @@ namespace PT.PM.Tests
                 "}"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.SimpleParseTree);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.SimplifiedUst);
             workflow.IsIncludePreprocessing = true;
             var ust = workflow.Process().Usts.First();
 

@@ -21,7 +21,7 @@ namespace PT.PM
         private long totalReadTicks;
         private long totalParseTicks;
         private long totalConvertTicks;
-        private long totalPreprocessTicks;
+        private long totalSimplifyTicks;
         private long totalMatchTicks;
         private long totalPatternsTicks;
 
@@ -65,7 +65,7 @@ namespace PT.PM
         {
             get
             {
-                if (!stageExt.IsUst && !stageExt.IsSimpleParseTree && !IsIncludeIntermediateResult)
+                if (!stageExt.IsUst && !stageExt.IsSimplifiedUst && !IsIncludeIntermediateResult)
                 {
                     ThrowInvalidStageException(PM.Stage.Ust.ToString());
                 }
@@ -91,7 +91,7 @@ namespace PT.PM
         public long TotalReadTicks => totalReadTicks;
         public long TotalParseTicks => totalParseTicks;
         public long TotalConvertTicks => totalConvertTicks;
-        public long TotalPreprocessTicks => totalPreprocessTicks;
+        public long TotalSimplifyTicks => totalSimplifyTicks;
         public long TotalMatchTicks => totalMatchTicks;
         public long TotalPatternsTicks => totalPatternsTicks;
 
@@ -122,7 +122,7 @@ namespace PT.PM
 
         public void AddResultEntity(RootUst ust, bool convert)
         {
-            if (IsIncludeIntermediateResult || (convert && stageExt.IsUst) || (!convert && stageExt.IsSimpleParseTree))
+            if (IsIncludeIntermediateResult || (convert && stageExt.IsUst) || (!convert && stageExt.IsSimplifiedUst))
             {
                 int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
                 lock (usts)
@@ -180,9 +180,9 @@ namespace PT.PM
             AddTicks(ref totalConvertTicks, convertTicks);
         }
 
-        public void AddPreprocessTime(long preprocessTicks)
+        public void AddSimplifyTime(long simplifyTicks)
         {
-            AddTicks(ref totalPreprocessTicks, preprocessTicks);
+            AddTicks(ref totalSimplifyTicks, simplifyTicks);
         }
 
         public void AddMatchTime(long matchTicks)
@@ -208,7 +208,7 @@ namespace PT.PM
         public long GetTotalTimeTicks()
         {
             return totalReadTicks + totalParseTicks + totalConvertTicks +
-                   totalPreprocessTicks + totalMatchTicks + totalPatternsTicks;
+                   totalSimplifyTicks + totalMatchTicks + totalPatternsTicks;
         }
 
         protected Result ValidateStageAndReturn<Result>(string stage, Result result)

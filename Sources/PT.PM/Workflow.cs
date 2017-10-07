@@ -117,17 +117,17 @@ namespace PT.PM
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
                 ust = ReadParseAndConvert(fileName, workflowResult);
-                if (ust != null && Stage >= Stage.SimpleParseTree)
+                if (ust != null && Stage >= Stage.SimplifiedUst)
                 {
                     Stopwatch stopwatch = new Stopwatch();
                     if (IsIncludePreprocessing)
                     {
-                        var ustPreprocessor = new UstSimplifier() { Logger = logger };
+                        var simplifier = new UstSimplifier() { Logger = logger };
                         stopwatch.Restart();
-                        ust = ustPreprocessor.Preprocess(ust);
+                        ust = simplifier.Simplify(ust);
                         stopwatch.Stop();
                         Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
-                        workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(ust, false);
 
                         cancellationToken.ThrowIfCancellationRequested();

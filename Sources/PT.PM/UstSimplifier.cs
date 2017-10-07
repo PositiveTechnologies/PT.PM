@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PT.PM.Matching
+namespace PT.PM
 {
     public class UstSimplifier : UstVisitor<Ust>, ILoggable
     {
@@ -20,13 +20,13 @@ namespace PT.PM.Matching
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public RootUst Preprocess(RootUst ust)
+        public RootUst Simplify(RootUst ust)
         {
-            var result = (RootUst)Preprocess((Ust)ust);
+            var result = (RootUst)Simplify((Ust)ust);
             return result;
         }
 
-        public Ust Preprocess(Ust ustNode)
+        public Ust Simplify(Ust ustNode)
         {
             return Visit(ustNode);
         }

@@ -33,9 +33,9 @@ namespace PT.PM.Cli
                         if (WorkflowResult.Stage >= Stage.Ust)
                         {
                             LogStageTime(Stage.Ust);
-                            if (WorkflowResult.Stage >= Stage.SimpleParseTree)
+                            if (WorkflowResult.Stage >= Stage.SimplifiedUst)
                             {
-                                LogStageTime(Stage.SimpleParseTree);
+                                LogStageTime(Stage.SimplifiedUst);
                                 if (WorkflowResult.Stage >= Stage.Match)
                                 {
                                     LogStageTime(Stage.Match);
@@ -66,8 +66,8 @@ namespace PT.PM.Cli
                 case Stage.Ust:
                     ticks = WorkflowResult.TotalConvertTicks;
                     break;
-                case Stage.SimpleParseTree:
-                    ticks = WorkflowResult.TotalPreprocessTicks;
+                case Stage.SimplifiedUst:
+                    ticks = WorkflowResult.TotalSimplifyTicks;
                     break;
                 case Stage.Match:
                     ticks = WorkflowResult.TotalMatchTicks;
