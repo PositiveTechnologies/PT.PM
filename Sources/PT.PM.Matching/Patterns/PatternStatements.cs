@@ -46,7 +46,12 @@ namespace PT.PM.Matching.Patterns
 
             if (Statements == null || Statements.Count == 0)
             {
-                return context;
+                if(blockStatement.Statements == null || blockStatement.Statements.Count == 0)
+                {
+                    context = context.AddMatch(blockStatement);
+                    return context;
+                }
+                return context.Fail();
             }
 
             IEnumerable<Statement> statements = blockStatement.Statements

@@ -1,4 +1,4 @@
-class Test extends SecurityManager implements X509TrustManager
+class Test extends SecurityManager implements Certificate
 {
 	public static String passwordQuestion = "What is your favorite color";
 	private final Logger logger = Logger.getLogger(MyClass.class);
@@ -117,7 +117,31 @@ class Test extends SecurityManager implements X509TrustManager
 		return this;
 	}
 
-	@Override
-	public void checkClientTrusted(final X509Certificate[] array, final String s)
-		throws CertificateException {}
+	class TrustManager1 implements X509TrustManager {
+		@Override
+		public void checkClientTrusted(final X509Certificate[] array, final String s)
+			throws CertificateException {}
+	}
+
+	class TrustManager2 implements X509TrustManager {
+		@Override
+		public Object getSecurityContext() {
+			return null;
+		}
+	}
+
+	class TrustManager3 implements X509TrustManager {
+		@Override
+		public void checkSecurityAccess(String target) {
+			throw new UnsupportedOperationException("Invalid operation for sorted list.");
+		}
+	}
+
+	class TrustManager4 implements X509TrustManager {
+		@Override
+		public ThreadGroup getThreadGroup() {
+			doSmth();
+			return null;
+		}
+	}
 }
