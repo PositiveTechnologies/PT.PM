@@ -23,25 +23,26 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust == null)
-            {
-                return context.Fail();
-            }
+            MatchingContext newContext;
 
             if (ust is ThrowStatement throwStatement)
             {
-                MatchingContext newContext = Pattern.Match(throwStatement.ThrowExpression, context);
+                newContext = Pattern.Match(throwStatement.ThrowExpression, context);
                 if (newContext.Success)
                 {
-                    return newContext.AddMatch(ust);
+                    newContext = newContext.AddMatch(ust);
                 }
                 else
                 {
-                    return newContext.Fail();
+                    newContext = newContext.Fail();
                 }
             }
+            else
+            {
+                newContext = context.Fail();
+            }
 
-            return context.Fail();
+            return newContext;
         }
     }
 }

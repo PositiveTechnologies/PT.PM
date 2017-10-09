@@ -178,7 +178,7 @@ namespace PT.PM.Dsl
             var bodyExpression = context.expression();
             if (bodyExpression != null)
             {
-                var body = VisitExpression(bodyExpression);
+                PatternUst body = VisitExpression(bodyExpression);
                 result = new PatternMethodDeclaration(modifiers, name, body, context.GetTextSpan());
             }
             else if (context.Ellipsis() != null)

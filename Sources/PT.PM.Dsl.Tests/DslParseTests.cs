@@ -41,7 +41,7 @@ namespace PT.PM.Dsl.Tests
         [TestCase("KeyManagementNullEncryptionKey.ptpm")]
         [TestCase("AttributesCodeInsideElementEvent.ptpm")]
         [TestCase("ExtendingSecurityManagerWithoutFinal.ptpm")]
-        [TestCase("ImproperValidationEmptyMethod_full.ptpm")]
+        [TestCase("ImproperValidationEmptyMethodFull.ptpm")]
         [TestCase("UsingCloneWithoutCloneable.ptpm")]
         [TestCase("PoorLoggingPractice.ptpm")]
         public void Process_Dsl_EqualsToHardcoded(string fileName)

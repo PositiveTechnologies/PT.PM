@@ -80,10 +80,10 @@ namespace PT.PM.Matching.Patterns
                         }
                         else
                         {
-                            var statements = methodDeclaration.Body.Statements;
-                            if (statements.Count() == 1)
+                            var otherStatements = methodDeclaration.Body.Statements;
+                            if (otherStatements.Count() == 1)
                             {
-                                newContext = Body.Match(statements.First(), newContext);
+                                newContext = Body.Match(otherStatements.First(), newContext);
                             }
                             else
                             {
