@@ -7,22 +7,22 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class RoslynUstCommonConverterVisitor
+    public partial class CSharpRoslynParseTreeConverter
     {
         protected IdToken ConvertId(SyntaxToken node)
         {
             string name = node.ValueText;
-            return new IdToken(name, node.GetTextSpan(), FileNode);
+            return new IdToken(name, node.GetTextSpan());
         }
 
         protected ModifierLiteral ConvertModifier(SyntaxToken token)
         {
             Modifier modifier;
             Enum.TryParse(token.ValueText, true, out modifier);
-            return new ModifierLiteral(modifier, token.GetTextSpan(), FileNode);
+            return new ModifierLiteral(modifier, token.GetTextSpan());
         }
 
-        protected TypeToken ConvertType(UstNode node)
+        protected TypeToken ConvertType(Ust node)
         {
             var typeToken = node as TypeToken;
             if (typeToken != null)
@@ -30,12 +30,12 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             var idToken = node as IdToken;
             if (idToken != null)
-                return new TypeToken(idToken.Id, idToken.TextSpan, FileNode);
+                return new TypeToken(idToken.Id, idToken.TextSpan);
 
             return null;
         }
 
-        protected UstNode VisitAndReturnNullIfError(SyntaxNode node)
+        protected Ust VisitAndReturnNullIfError(SyntaxNode node)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             {
                 Logger.LogError(new ConversionException(ex.Message)
                 {
-                    FileName = FileNode?.FileName?.Text ?? "",
+                    FileName = root?.SourceCodeFile?.FullPath ?? "",
                     TextSpan = node.GetTextSpan()
                 });
                 return null;

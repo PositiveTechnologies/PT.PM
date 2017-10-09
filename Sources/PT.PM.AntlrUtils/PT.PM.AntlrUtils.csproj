@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,14 +44,13 @@
   <ItemGroup>
     <Compile Include="AntlrParseTree.cs" />
     <Compile Include="AntlrCaseInsensitiveInputStream.cs" />
-    <Compile Include="AntlrConverter.cs" />
-    <Compile Include="AntlrHelper.cs" />
+    <Compile Include="AntlrUtils.cs" />
     <Compile Include="AntlrMemoryErrorListener.cs" />
     <Compile Include="AntlrParser.cs" />
     <Compile Include="AntlrError.cs" />
     <Compile Include="AntlrParserError.cs" />
     <Compile Include="AntlrLexerError.cs" />
-    <Compile Include="AntlrDefaultVisitor.cs" />
+    <Compile Include="AntlrConverter.cs" />
     <Compile Include="CaseInsensitiveType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">

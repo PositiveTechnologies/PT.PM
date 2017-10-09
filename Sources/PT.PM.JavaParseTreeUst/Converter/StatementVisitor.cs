@@ -15,26 +15,26 @@ using PT.PM.Common;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrUstConverterVisitor
+    public partial class JavaAntlrParseTreeConverter
     {
-        public UstNode VisitBlock(JavaParser.BlockContext context)
+        public Ust VisitBlock(JavaParser.BlockContext context)
         {
             Statement[] statements = context.blockStatement()
                 .Select(s => (Statement)Visit(s))
                 .Where(s => s != null).ToArray();
 
-            var result = new BlockStatement(statements, context.GetTextSpan(), FileNode);
+            var result = new BlockStatement(statements, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitBlockStatement(JavaParser.BlockStatementContext context)
+        public Ust VisitBlockStatement(JavaParser.BlockStatementContext context)
         {
             Statement result;
 
             var localVariableDeclaration = context.localVariableDeclaration();
             if (localVariableDeclaration != null)
             {
-                result = new ExpressionStatement((Expression)Visit(localVariableDeclaration), context.GetTextSpan(), FileNode);
+                result = new ExpressionStatement((Expression)Visit(localVariableDeclaration), context.GetTextSpan());
                 return result;
             }
 
@@ -49,14 +49,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (typeDec != null)
             {
                 var typeDeclaration = (TypeDeclaration)Visit(typeDec);
-                result = new TypeDeclarationStatement(typeDeclaration, typeDeclaration.TextSpan, FileNode);
+                result = new TypeDeclarationStatement(typeDeclaration, typeDeclaration.TextSpan);
                 return result;
             }
 
             return VisitChildren(context);
         }
 
-        public UstNode VisitLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext context)
+        public Ust VisitLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext context)
         {
             var type = (TypeToken)Visit(context.typeType());
             AssignmentExpression[] initializers = context.variableDeclarators().variableDeclarator()
@@ -67,24 +67,24 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 var expressions = multichildExpression.Expressions;
                 // is array?
-                if (Helper.TryCheckIdTokenValue(expressions.FirstOrDefault(), "{") &&
-                    Helper.TryCheckIdTokenValue(expressions.LastOrDefault(), "}"))
+                if (CommonUtils.TryCheckIdTokenValue(expressions.FirstOrDefault(), "{") &&
+                    CommonUtils.TryCheckIdTokenValue(expressions.LastOrDefault(), "}"))
                 {
                     int dimensions = multichildExpression.GetDepth(1);
                     var sizes = Enumerable.Range(0, dimensions).Select(
-                        _ => new IntLiteral(0, type.TextSpan, FileNode)).ToList<Expression>();
-                    var array_initializers = expressions.Where(el => el.NodeType != NodeType.IdToken);
+                        _ => new IntLiteral(0, type.TextSpan)).ToList<Expression>();
+                    var array_initializers = expressions.Where(el => !(el is IdToken));
                     initializers.First().Right = new ArrayCreationExpression(
-                        new TypeToken(type.TypeText, type.TextSpan, FileNode), sizes,
-                        array_initializers, multichildExpression.TextSpan, FileNode);
+                        new TypeToken(type.TypeText, type.TextSpan), sizes,
+                        array_initializers, multichildExpression.TextSpan);
                 }
             }
 
-            var result = new VariableDeclarationExpression(type, initializers, context.GetTextSpan(), FileNode);
+            var result = new VariableDeclarationExpression(type, initializers, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitStatement(JavaParser.StatementContext context)
+        public Ust VisitStatement(JavaParser.StatementContext context)
         {
             var textSpan = context.GetTextSpan();
             Statement result;
@@ -107,14 +107,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (context.identifierLabel != null)
             {
                 var defaultResult = VisitChildren(context);
-                return new WrapperStatement(defaultResult, textSpan, FileNode);
+                return new WrapperStatement(defaultResult, textSpan);
             }
 
             int firstTokenType = context.GetChild<ITerminalNode>(0).Symbol.Type;
             if (firstTokenType == JavaLexer.ASSERT)
             {
                 var defaultResult = VisitChildren(context);
-                return new WrapperStatement(defaultResult, textSpan, FileNode);
+                return new WrapperStatement(defaultResult, textSpan);
             }
 
             if (firstTokenType == JavaLexer.IF)
@@ -125,7 +125,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     ? null
                     : (Statement)Visit(context.statement(1));
 
-                result = new IfElseStatement(condition, trueStatement, textSpan, FileNode)
+                result = new IfElseStatement(condition, trueStatement, textSpan)
                 {
                     FalseStatement = falseStatment
                 };
@@ -143,7 +143,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 var conditionWhile = (Expression)Visit(context.parExpression());
                 statement = (Statement)Visit(context.statement(0));
 
-                result = new WhileStatement(conditionWhile, statement, textSpan, FileNode);
+                result = new WhileStatement(conditionWhile, statement, textSpan);
                 return result;
             }
 
@@ -152,7 +152,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 statement = (Statement)Visit(context.statement(0));
                 expression = (Expression)Visit(context.parExpression());
 
-                result = new DoWhileStatement(statement, expression, textSpan, FileNode);
+                result = new DoWhileStatement(statement, expression, textSpan);
                 return result;
             }
 
@@ -173,7 +173,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                 if (resSpec == null)
                 {
-                    result = new TryCatchStatement(block, textSpan, FileNode)
+                    result = new TryCatchStatement(block, textSpan)
                     {
                         CatchClauses = catchClauses,
                         FinallyBlock = finallyBlock
@@ -191,9 +191,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         })
                         .Where(res => res != null));
                     statements.AddRange(block.Statements);
-                    var blockStatement = new BlockStatement(statements, context.GetTextSpan(), FileNode);
+                    var blockStatement = new BlockStatement(statements, context.GetTextSpan());
 
-                    result = new TryCatchStatement(block, textSpan, FileNode)
+                    result = new TryCatchStatement(block, textSpan)
                     {
                         CatchClauses = catchClauses,
                         FinallyBlock = finallyBlock
@@ -209,7 +209,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     .Select(group => (SwitchSection)Visit(group))
                     .Where(group => group != null).ToArray();
 
-                result = new SwitchStatement(expression, switchSections, textSpan, FileNode);
+                result = new SwitchStatement(expression, switchSections, textSpan);
                 return result;
             }
 
@@ -220,10 +220,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 statements = context.block().blockStatement()
                     .Select(s => (Statement)Visit(s))
                     .Where(s => s != null).ToList();
-                resultStatements.Add(new ExpressionStatement(expression, expression.TextSpan, FileNode));
+                resultStatements.Add(new ExpressionStatement(expression, expression.TextSpan));
                 resultStatements.AddRange(statements);
 
-                result = new BlockStatement(resultStatements, textSpan, FileNode);
+                result = new BlockStatement(resultStatements, textSpan);
                 return result;
             }
 
@@ -232,39 +232,39 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 expression = context.expression(0) != null
                             ? (Expression)Visit(context.expression(0))
                             : null;
-                result = new ReturnStatement(expression, textSpan, FileNode);
+                result = new ReturnStatement(expression, textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.THROW)
             {
                 expression = (Expression)Visit(context.expression(0));
-                result = new ThrowStatement(expression, textSpan, FileNode);
+                result = new ThrowStatement(expression, textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.BREAK)
             {
-                result = new BreakStatement(textSpan, FileNode);
+                result = new BreakStatement(textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.CONTINUE)
             {
-                result = new ContinueStatement(textSpan, FileNode);
+                result = new ContinueStatement(textSpan);
                 return result;
             }
 
             if (firstTokenType == JavaLexer.SEMI)
             {
-                result = new EmptyStatement(textSpan, FileNode);
+                result = new EmptyStatement(textSpan);
                 return result;
             }
 
             return VisitShouldNotBeVisited(context);
         }
 
-        public UstNode VisitForControl(JavaParser.ForControlContext context)
+        public Ust VisitForControl(JavaParser.ForControlContext context)
         {
             JavaParser.EnhancedForControlContext forEach = context.enhancedForControl();
             if (forEach != null)
@@ -276,7 +276,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 var parent = (JavaParser.StatementContext)context.parent;
                 var statement = (Statement)Visit(parent.statement(0));
 
-                var result = new ForeachStatement(type, varDecId, expr, statement, parent.GetTextSpan(), FileNode);
+                var result = new ForeachStatement(type, varDecId, expr, statement, parent.GetTextSpan());
                 return result;
             }
             else
@@ -299,7 +299,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                             .Select(expr =>
                                 {
                                     var ex = (Expression)Visit(expr);
-                                    return ex == null ? null : new ExpressionStatement(ex, expr.GetTextSpan(), FileNode);
+                                    return ex == null ? null : new ExpressionStatement(ex, expr.GetTextSpan());
                                 }).Where(stmt => stmt != null).ToArray());
                     }
                 }
@@ -315,30 +315,30 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                 var parent = (JavaParser.StatementContext)context.parent;
                 var statement = (Statement)Visit(parent.statement(0));
-                var result = new ForStatement(initializers, condition, iterators, statement, parent.GetTextSpan(), FileNode);
+                var result = new ForStatement(initializers, condition, iterators, statement, parent.GetTextSpan());
                 return result;
             }
         }
 
-        public UstNode VisitForInit(JavaParser.ForInitContext context)
+        public Ust VisitForInit(JavaParser.ForInitContext context)
         {
             return VisitChildren(context);
         }
 
         #region Switch
 
-        public UstNode VisitSwitchBlockStatementGroup(JavaParser.SwitchBlockStatementGroupContext context)
+        public Ust VisitSwitchBlockStatementGroup(JavaParser.SwitchBlockStatementGroupContext context)
         {
             Expression[] caseLabels = context.switchLabel().Select(label => (Expression)Visit(label))
                 .Where(l => l != null).ToArray();
             Statement[] statements = context.blockStatement().Select(s => (Statement)Visit(s))
                 .Where(s => s != null).ToArray();
 
-            var result = new SwitchSection(caseLabels, statements, context.GetTextSpan(), FileNode);
+            var result = new SwitchSection(caseLabels, statements, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitSwitchLabel(JavaParser.SwitchLabelContext context)
+        public Ust VisitSwitchLabel(JavaParser.SwitchLabelContext context)
         {
             var result = Visit(context.GetChild(0));
             return result;
@@ -348,40 +348,40 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         #region Try Catch Finally
 
-        public UstNode VisitCatchClause(JavaParser.CatchClauseContext context)
+        public Ust VisitCatchClause(JavaParser.CatchClauseContext context)
         {
             var type = (TypeToken)Visit(context.catchType());
             var id = (IdToken)Visit(context.IDENTIFIER());
             var body = (BlockStatement)Visit(context.block());
 
-            var result = new CatchClause(type, id, body, context.GetTextSpan(), FileNode);
+            var result = new CatchClause(type, id, body, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitCatchType(JavaParser.CatchTypeContext context)
+        public Ust VisitCatchType(JavaParser.CatchTypeContext context)
         {
             string[] names = context.qualifiedName().Select(name => ((StringLiteral)Visit(name))?.Text)
                 .Where(n => n != null).ToArray();
 
-            var result = new TypeToken(string.Join("|", names), context.GetTextSpan(), FileNode);
+            var result = new TypeToken(string.Join("|", names), context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitFinallyBlock(JavaParser.FinallyBlockContext context)
+        public Ust VisitFinallyBlock(JavaParser.FinallyBlockContext context)
         {
             var result = (BlockStatement)Visit(context.block());
             return result;
         }
 
-        public UstNode VisitResource(JavaParser.ResourceContext context)
+        public Ust VisitResource(JavaParser.ResourceContext context)
         {
             var type = (TypeToken)Visit(context.classOrInterfaceType());
             var id = (IdToken)Visit(context.variableDeclaratorId());
             var initializer = (Expression)Visit(context.expression());
 
             var result = new VariableDeclarationExpression(type,
-                new[] { new AssignmentExpression(id, initializer, context.variableDeclaratorId().GetTextSpan(), FileNode) },
-                context.GetTextSpan(), FileNode);
+                new[] { new AssignmentExpression(id, initializer, context.variableDeclaratorId().GetTextSpan()) },
+                context.GetTextSpan());
             return result;
         }
 

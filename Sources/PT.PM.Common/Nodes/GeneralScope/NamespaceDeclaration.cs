@@ -5,38 +5,33 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
-    public class NamespaceDeclaration : UstNode
+    public class NamespaceDeclaration : Ust
     {
-        public override NodeType NodeType => NodeType.NamespaceDeclaration;
-
         public StringLiteral Name { get; set; }
 
-        public List<UstNode> Members { get; set; }
+        public List<Ust> Members { get; set; }
 
-        public Language Language { get; set; }
-
-        public NamespaceDeclaration(StringLiteral name, UstNode member,
-            Language language, TextSpan textSpan, FileNode fileNode)
-            : this(name, new UstNode[] { member }, language, textSpan, fileNode)
+        public NamespaceDeclaration(StringLiteral name, Ust member,
+            TextSpan textSpan)
+            : this(name, new Ust[] { member }, textSpan)
         {
         }
 
-        public NamespaceDeclaration(StringLiteral name, IEnumerable<UstNode> members,
-            Language language, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public NamespaceDeclaration(StringLiteral name, IEnumerable<Ust> members,
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Name = name;
-            Members = members as List<UstNode> ?? members.ToList();
-            Language = language;
+            Members = members as List<Ust> ?? members.ToList();
         }
 
         public NamespaceDeclaration()
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new UstNode[Members.Count + 1];
+            var result = new Ust[Members.Count + 1];
             int index = 0;
             result[index++] = Name;
             foreach (var member in Members)

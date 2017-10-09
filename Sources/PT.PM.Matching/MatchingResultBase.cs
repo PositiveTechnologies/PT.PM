@@ -1,14 +1,14 @@
-﻿using PT.PM.Common.Nodes;
-using PT.PM.Patterns;
-using System.Collections.Generic;
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching
 {
     public abstract class MatchingResultBase<TPattern>
-        where TPattern : PatternBase
     {
+        public RootUst RootUst { get; set; }
+
         public TPattern Pattern { get; set; }
 
-        public List<UstNode> Nodes { get; set; }
+        public TextSpan[] TextSpans { get; set; } = ArrayUtils<TextSpan>.EmptyArray;
     }
 }

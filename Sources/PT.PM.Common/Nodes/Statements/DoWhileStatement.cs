@@ -5,14 +5,12 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class DoWhileStatement : Statement
     {
-        public override NodeType NodeType => NodeType.DoWhileStatement;
-
         public Statement EmbeddedStatement { get; set; }
 
         public Expression Condition { get; set; }
 
-        public DoWhileStatement(Statement embeddedStatement, Expression condition, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public DoWhileStatement(Statement embeddedStatement, Expression condition, TextSpan textSpan)
+            : base(textSpan)
         {
             EmbeddedStatement = embeddedStatement;
             Condition = condition;
@@ -22,9 +20,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode> {EmbeddedStatement, Condition};
+            var result = new List<Ust> {EmbeddedStatement, Condition};
             return result.ToArray();
         }
     }

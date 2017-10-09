@@ -9,8 +9,6 @@ namespace PT.PM.TestUtils
 
         public string Key { get; set; }
 
-        public Language Language { get; set; }
-
         public string[] Urls { get; set; } = new string[0];
 
         public string[] IgnoredFiles

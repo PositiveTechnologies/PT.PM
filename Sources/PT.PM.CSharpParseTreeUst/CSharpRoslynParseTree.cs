@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using Microsoft.CodeAnalysis;
 
 namespace PT.PM.CSharpParseTreeUst
 {
     public class CSharpRoslynParseTree : ParseTree
     {
-        public readonly SyntaxTree SyntaxTree;
+        public override Language SourceLanguage => CSharp.Language;
 
-        public SyntaxTrivia[] Comments;
+        public SyntaxTree SyntaxTree { get; }
 
-        public bool ParseError { get; set; }
-
-        public override Language SourceLanguage => Language.CSharp;
+        public SyntaxTrivia[] Comments = ArrayUtils<SyntaxTrivia>.EmptyArray;
 
         public CSharpRoslynParseTree()
         {

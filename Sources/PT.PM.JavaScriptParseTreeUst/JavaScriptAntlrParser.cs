@@ -7,11 +7,9 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public class JavaScriptAntlrParser: AntlrParser
     {
-        private bool useStrict = false;
-
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
-        public override Language Language => Language.JavaScript;
+        public override Language Language => JavaScript.Language;
 
         protected override int CommentsChannel => JavaScriptLexer.Hidden;
 
@@ -22,7 +20,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new JavaScriptAntlrParseTree((JavaScriptParser.ProgramContext)syntaxTree);
         }
 
-        protected override Lexer InitLexer(ICharStream inputStream)
+        public override Lexer InitLexer(ICharStream inputStream)
         {
             var lexer = new JavaScriptLexer(inputStream);
             if (JavaScriptType != JavaScriptType.Undefined)
@@ -33,7 +31,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return lexer;
         }
 
-        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
+        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
         {
             return new JavaScriptParser(inputStream);
         }

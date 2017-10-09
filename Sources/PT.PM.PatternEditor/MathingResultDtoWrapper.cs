@@ -1,4 +1,6 @@
-﻿namespace PT.PM.PatternEditor
+﻿using PT.PM.Matching;
+
+namespace PT.PM.PatternEditor
 {
     public class MathingResultDtoWrapper
     {

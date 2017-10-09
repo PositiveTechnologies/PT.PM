@@ -7,8 +7,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ForStatement : Statement
     {
-        public override NodeType NodeType => NodeType.ForStatement;
-
         public List<Statement> Initializers { get; set; } = new List<Statement>();
 
         public Expression Condition { get; set; }
@@ -18,8 +16,8 @@ namespace PT.PM.Common.Nodes.Statements
         public Statement Statement { get; set; }
 
         public ForStatement(IEnumerable<Statement> initializers, Expression condition,
-            IEnumerable<Expression> iterators, Statement statement, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+            IEnumerable<Expression> iterators, Statement statement, TextSpan textSpan)
+            : base(textSpan)
         {
             Initializers = initializers as List<Statement> ?? initializers.ToList();
             Condition = condition;
@@ -31,9 +29,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(Initializers);
             result.Add(Condition);
             result.AddRange(Iterators);

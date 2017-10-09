@@ -1,11 +1,11 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using PT.PM.Common.Nodes;
-using PT.PM.TestUtils;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
+using PT.PM.Matching;
 using PT.PM.Patterns.PatternsRepository;
-using NUnit.Framework;
+using PT.PM.PhpParseTreeUst;
+using PT.PM.TestUtils;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -15,60 +15,67 @@ namespace PT.PM.Dsl.Tests
     public class DslParseTests
     {
         private DefaultPatternRepository patternsRepository;
-        private Pattern[] patterns;
+        private PatternRoot[] patterns;
 
         [SetUp]
         public void Init()
         {
             patternsRepository = new DefaultPatternRepository();
-            var patternsConverter = new PatternConverter(new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
+            var patternsConverter = new PatternConverter();
             patterns = patternsConverter.Convert(patternsRepository.GetAll());
         }
 
-        [TestCase(@"HardcodedPassword.aipm")]
-        [TestCase(@"InsecureTransport.aipm")]
-        [TestCase(@"InsecureRandomness.aipm")]
-        [TestCase(@"WeakCryptographicHash.aipm")]
-        [TestCase(@"AndroidPermissionCheck.aipm")]
-        [TestCase(@"MissingBroadcasterPermission.aipm")]
-        [TestCase(@"CookieNotSentOverSSL.aipm")]
-        [TestCase(@"CookieSecurityOverlyBroadDomain.aipm")]
-        [TestCase(@"PasswordInComment.aipm")]
-        [TestCase(@"InadequateRSAPadding.aipm")]
-        [TestCase(@"DebugInfo.aipm")]
-        [TestCase(@"XmlExternalEntity.aipm")]
-        [TestCase(@"AndroidHostnameVerificationDisabled.aipm")]
-        [TestCase(@"KeyManagementNullEncryptionKey.aipm")]
-        [TestCase(@"AttributesCodeInsideElementEvent.aipm")]
-        [TestCase(@"ExtendingSecurityManagerWithoutFinal.aipm")]
-        [TestCase(@"ImproperValidationEmptyMethod.aipm")]
-        [TestCase(@"UsingCloneWithoutCloneable.aipm")]
-        [TestCase(@"PoorLoggingPractice.aipm")]
+        [TestCase("HardcodedPassword.ptpm")]
+        [TestCase("InsecureTransport.ptpm")]
+        [TestCase("InsecureRandomness.ptpm")]
+        [TestCase("WeakCryptographicHash.ptpm")]
+        [TestCase("AndroidPermissionCheck.ptpm")]
+        [TestCase("MissingBroadcasterPermission.ptpm")]
+        [TestCase("CookieNotSentOverSSL.ptpm")]
+        [TestCase("CookieSecurityOverlyBroadDomain.ptpm")]
+        [TestCase("PasswordInComment.ptpm")]
+        [TestCase("InadequateRSAPadding.ptpm")]
+        [TestCase("DebugInfo.ptpm")]
+        [TestCase("XmlExternalEntity.ptpm")]
+        [TestCase("AndroidHostnameVerificationDisabled.ptpm")]
+        [TestCase("KeyManagementNullEncryptionKey.ptpm")]
+        [TestCase("AttributesCodeInsideElementEvent.ptpm")]
+        [TestCase("ExtendingSecurityManagerWithoutFinal.ptpm")]
+        [TestCase("ImproperValidationEmptyMethod.ptpm")]
+        [TestCase("UsingCloneWithoutCloneable.ptpm")]
+        [TestCase("PoorLoggingPractice.ptpm")]
         public void Process_Dsl_EqualsToHardcoded(string fileName)
         {
-            var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
+            var data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger, PatternExpressionInsideStatement = false };
-            UstNode result = processor.Deserialize(data, fileName == @"DebugInfo.aipm" ? LanguageFlags.Php : LanguageExt.AllPatternLanguages);
+            PatternRoot result = processor.Deserialize(data);
+            if (fileName == "DebugInfo.ptpm")
+            {
+                new HashSet<Language>() { Php.Language };
+            }
             Assert.AreEqual(0, logger.ErrorCount);
 
             string patternName = Path.GetFileNameWithoutExtension(fileName);
-            Pattern defaultPattern = patterns.FirstOrDefault(p => p.DebugInfo.StartsWith(patternName));
+            PatternRoot defaultPattern = patterns.FirstOrDefault(p => p.DebugInfo.StartsWith(patternName));
             if (defaultPattern == null)
             {
                 Assert.Inconclusive($"Pattern {patternName} does not exists in DefaultPatternRepository");
             }
 
-            Assert.IsTrue(result.Equals(defaultPattern.Data));
+            var patternNormalizer = new PatternNormalizer();
+            defaultPattern = patternNormalizer.Normalize(defaultPattern);
+
+            Assert.AreEqual(defaultPattern.Node, result.Node);
         }
 
-        [TestCase(@"Range.aipm")]
+        [TestCase("Range.ptpm")]
         public void Parse_Dsl_WithoutErrors(string fileName)
         {
-            var data = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, fileName));
+            var data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger };
-            UstNode result = processor.Deserialize(data, LanguageExt.AllPatternLanguages);
+            PatternRoot result = processor.Deserialize(data);
             Assert.AreEqual(0, logger.ErrorCount);
         }
 
@@ -78,7 +85,7 @@ namespace PT.PM.Dsl.Tests
             var logger = new LoggerMessageCounter();
             var data = "(?i)password(?-i)]> = <[\"\\w*\" || null]>";
             var processor = new DslProcessor() { Logger = logger };
-            UstNode result = processor.Deserialize(data, LanguageExt.AllPatternLanguages);
+            PatternRoot result = processor.Deserialize(data);
             Assert.AreEqual(5, logger.ErrorCount);
         }
 
@@ -89,7 +96,7 @@ namespace PT.PM.Dsl.Tests
             Assert.Throws(typeof(ConversionException), () =>
             {
                 var processor = new DslProcessor();
-                UstNode result = processor.Deserialize(data, LanguageExt.AllPatternLanguages);
+                PatternRoot result = processor.Deserialize(data);
             });
         }
     }

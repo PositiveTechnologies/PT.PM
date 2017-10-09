@@ -4,15 +4,13 @@ namespace PT.PM.Common
 {
     public class SourceCodeFile
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         public string RelativePath { get; set; } = "";
 
-        public string Code { get; set; }
+        public string Code { get; set; } = "";
 
         public string FullPath => Path.Combine(RelativePath, Name);
-
-        public int LineOffset { get; set; }
 
         public SourceCodeFile()
         {
@@ -23,20 +21,13 @@ namespace PT.PM.Common
             Name = name;
         }
 
-        public SourceCodeFile(SourceCodeFile sourceCodeFile)
-        {
-            Name = sourceCodeFile.Name;
-            RelativePath = sourceCodeFile.RelativePath;
-            Code = sourceCodeFile.Code;
-        }
-
         public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)
         {
             // TODO: replace with fast binary version.
             int beginLine, beginColumn;
             int endLine, endColumn;
-            TextHelper.LinearToLineColumn(textSpan.Start, Code, out beginLine, out beginColumn);
-            TextHelper.LinearToLineColumn(textSpan.End, Code, out endLine, out endColumn);
+            textSpan.Start.ToLineColumn(Code, out beginLine, out beginColumn);
+            textSpan.End.ToLineColumn(Code, out endLine, out endColumn);
             return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
         }
 

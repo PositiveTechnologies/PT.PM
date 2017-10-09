@@ -5,6 +5,9 @@ using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using PT.PM.Matching.PatternsRepository;
+using System.Collections.Generic;
+using PT.PM.SqlParseTreeUst;
 
 namespace PT.PM.Matching.Tests
 {
@@ -21,27 +24,27 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsPlSql_MatchedAllDefault()
         {
-            Match_TestPatternsSql_MatchedAllDefault(Language.PlSql, "PlSql/plsql_patterns.sql");
+            Match_TestPatternsSql_MatchedAllDefault(PlSql.Language, "PlSql/plsql_patterns.sql");
         }
 
         [Test]
         public void Match_TestPatternsTSql_MatchedAllDefault()
         {
-            Match_TestPatternsSql_MatchedAllDefault(Language.TSql, "TSql/tsql_patterns.sql");
+            Match_TestPatternsSql_MatchedAllDefault(TSql.Language, "TSql/tsql_patterns.sql");
         }
 
         private void Match_TestPatternsSql_MatchedAllDefault(Language language, string patternsFileName)
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, patternsFileName.NormDirSeparator());
+            var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, language, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults
-                .ToDto(workflow.SourceCodeRepository)
-                .OrderBy(r => r.PatternKey).ToArray();
+            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
+                .ToDto()
+                .OrderBy(r => r.PatternKey);
             var patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Is(language)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains(language.Key)).ToArray();
 
             foreach (var dto in patternDtos)
             {

@@ -2,19 +2,17 @@
 {
     public class IntLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.IntLiteral;
-
         public long Value { get; set; }
 
         public override string TextValue => Value.ToString();
 
         public IntLiteral(long value)
-            : this(value, default(TextSpan), null)
+            : this(value, default(TextSpan))
         {
         }
 
-        public IntLiteral(long value, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public IntLiteral(long value, TextSpan textSpan)
+            : base(textSpan)
         {
             Value = value;
         }
@@ -23,7 +21,7 @@
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

@@ -1,25 +1,24 @@
-﻿using System;
+﻿using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.JavaParseTreeUst.Parser;
-using Antlr4.Runtime;
 
 namespace PT.PM.JavaParseTreeUst
 {
     public class JavaAntlrParser : AntlrParser
     {
-        public override Language Language => Language.Java;
+        public override Language Language => Java.Language;
 
         public JavaAntlrParser()
         {
         }
 
-        protected override Lexer InitLexer(ICharStream inputStream)
+        public override Lexer InitLexer(ICharStream inputStream)
         {
             return new JavaLexer(inputStream);
         }
 
-        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
+        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
         {
             return new JavaParser(inputStream);
         }

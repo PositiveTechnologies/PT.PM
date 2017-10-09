@@ -24,16 +24,12 @@ namespace PT.PM.Prebuild
     /// </summary>
     class Program
     {
-        static string AntlrDefaultPath;
-        static string AntlrJarFileName;
+        const string AntlrJarFileName = @"packages\Antlr4.CodeGenerator.4.6.3\tools\antlr4-csharp-4.6.3-complete.jar";
+        static string AntlrFullJarFileName;
 
         static void Main(string[] args)
         {
             var argsWithUsualSlashes = args.Select(arg => arg.Replace('/', '\\')).ToArray(); // TODO: bug in FluentCommandLineParser.
-
-            string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            AntlrDefaultPath = Path.Combine(currentPath,
-                @"..\..\Sources\packages\Antlr4.CodeGenerator.4.6.3\tools\antlr4-csharp-4.6.3-complete.jar");
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             var cmdParser = new FluentCommandLineParser();
@@ -45,19 +41,30 @@ namespace PT.PM.Prebuild
             string packageName = null;
             bool listener = false;
             string output = null;
-            AntlrJarFileName = NormDirSeparator(AntlrDefaultPath);
+            string solutionDir = null;
             cmdParser.Setup<string>("lexer").Callback(lexer => lexerFile = NormDirSeparator(lexer));
             cmdParser.Setup<string>("parser").Callback(parser => parserFile = NormDirSeparator(parser));
             cmdParser.Setup<string>("package").Callback(package => packageName = package);
-            cmdParser.Setup<string>("antlrJar").Callback(antlrJar => AntlrJarFileName = NormDirSeparator(antlrJar));
             cmdParser.Setup<bool>("listener").Callback(l => listener = l);
             cmdParser.Setup<string>("output").Callback(o => output = NormDirSeparator(o));
             cmdParser.Setup<string>("lexerSuperClass").Callback(param => lexerSuperClass = param);
             cmdParser.Setup<string>("parserSuperClass").Callback(param => parserSuperClass = param);
+            cmdParser.Setup<string>("solutionDir").Callback(param => solutionDir = param);
 
             var result = cmdParser.Parse(argsWithUsualSlashes);
             if (!result.HasErrors)
             {
+                if (string.IsNullOrEmpty(solutionDir))
+                {
+                    string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    AntlrFullJarFileName = Path.Combine(currentPath, @"..\..\Sources", AntlrJarFileName);
+                }
+                else
+                {
+                    AntlrFullJarFileName = Path.Combine(solutionDir, AntlrJarFileName);
+                }
+                AntlrFullJarFileName = NormDirSeparator(AntlrFullJarFileName);
+
                 GenerateStatus generateStatus = GenerateStatus.NotGenerated;
                 if (!string.IsNullOrEmpty(lexerFile))
                 {
@@ -180,7 +187,7 @@ namespace PT.PM.Prebuild
             GenerateStatus result = GenerateStatus.NotGenerated;
             if (generate)
             {
-                if (!ProcessHelpers.IsProcessCanBeExecuted("java"))
+                if (!ProcessUtils.IsProcessCanBeExecuted("java"))
                 {
                     Console.WriteLine("java is not installed or java path is not specified.");
                     return GenerateStatus.Error;
@@ -193,7 +200,7 @@ namespace PT.PM.Prebuild
                 process.StartInfo.WorkingDirectory = grammarFileDir;
                 string visitorListenerStr = (listener ? "-listener " : "-no-listener ") + "-visitor";
                 string superClassParam = string.IsNullOrEmpty(superClass) ? "" : $"-DsuperClass={superClass}";
-                process.StartInfo.Arguments = $@"-jar ""{AntlrJarFileName}"" -o ""{outputDirectory}"" ""{shortGrammarFileName}"" -Dlanguage=CSharp_v4_5 {visitorListenerStr} {superClassParam} -Werror -package {packageName}";
+                process.StartInfo.Arguments = $@"-jar ""{AntlrFullJarFileName}"" -o ""{outputDirectory}"" ""{shortGrammarFileName}"" -Dlanguage=CSharp_v4_5 {visitorListenerStr} {superClassParam} -Werror -package {packageName}";
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.UseShellExecute = false;
@@ -231,7 +238,7 @@ namespace PT.PM.Prebuild
             return result;
         }
 
-        public static string NormDirSeparator(string path)
+        private static string NormDirSeparator(string path)
         {
             return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
         }

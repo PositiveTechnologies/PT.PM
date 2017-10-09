@@ -1,16 +1,13 @@
-﻿using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Tokens.Literals;
+﻿using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
-    public class UsingDeclaration : UstNode
+    public class UsingDeclaration : Ust
     {
-        public override NodeType NodeType => NodeType.UsingDeclaration;
-
         public StringLiteral Name { get; set; }
 
-        public UsingDeclaration(StringLiteral name, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public UsingDeclaration(StringLiteral name, TextSpan textSpan)
+            : base(textSpan)
         {
             Name = name;
         }
@@ -19,9 +16,9 @@ namespace PT.PM.Common.Nodes.GeneralScope
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Name};
+            return new Ust[] {Name};
         }
     }
 }

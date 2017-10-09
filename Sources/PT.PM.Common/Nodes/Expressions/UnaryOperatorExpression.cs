@@ -1,18 +1,17 @@
-﻿using PT.PM.Common.Nodes.Tokens;
+﻿using System;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
     public class UnaryOperatorExpression : Expression
     {
-        public override NodeType NodeType => NodeType.UnaryOperatorExpression;
-
         public UnaryOperatorLiteral Operator { get; set; }
 
         public Expression Expression { get; set; }
 
-        public UnaryOperatorExpression(UnaryOperatorLiteral op, Expression ex, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public UnaryOperatorExpression(UnaryOperatorLiteral op, Expression ex, TextSpan textSpan)
+            : base(textSpan)
         {
             Operator = op;
             Expression = ex;
@@ -22,9 +21,14 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Operator, Expression};
+            return new Ust[] { Operator, Expression };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Operator, Expression };
         }
 
         public override string ToString()

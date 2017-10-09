@@ -9,14 +9,12 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class WithStatement : Statement
     {
-        public override NodeType NodeType => NodeType.WithStatement;
-
-        public UstNode WithNode { get; set; }
+        public Ust WithNode { get; set; }
 
         public Statement Body { get; set; }
 
-        public WithStatement(UstNode withNode, Statement body, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public WithStatement(Ust withNode, Statement body, TextSpan textSpan)
+            : base(textSpan)
         {
             WithNode = withNode;
             Body = body;
@@ -26,9 +24,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(WithNode);
             result.Add(Body);
             return result.ToArray();

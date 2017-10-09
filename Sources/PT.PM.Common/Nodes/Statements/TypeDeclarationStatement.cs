@@ -9,21 +9,19 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class TypeDeclarationStatement : Statement
     {
-        public override NodeType NodeType => NodeType.TypeDeclarationStatement;
-
         public TypeDeclaration TypeDeclaration { get;set; }
 
         public TypeDeclarationStatement()
         {
         }
 
-        public TypeDeclarationStatement(TypeDeclaration typeDeclaration, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public TypeDeclarationStatement(TypeDeclaration typeDeclaration, TextSpan textSpan)
+            : base(textSpan)
         {
             TypeDeclaration = typeDeclaration;
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
             var result = new[] { TypeDeclaration };
             return result;

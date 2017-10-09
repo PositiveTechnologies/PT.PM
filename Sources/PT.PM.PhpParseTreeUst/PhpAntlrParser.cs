@@ -1,14 +1,13 @@
-﻿using PT.PM.AntlrUtils;
+﻿using Antlr4.Runtime;
+using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.PhpParseTreeUst;
-using Antlr4.Runtime;
 using System.IO;
 
-namespace PT.PM.UstParsing
+namespace PT.PM.PhpParseTreeUst
 {
     public class PhpAntlrParser : AntlrParser
     {
-        public override Language Language => Language.Php;
+        public override Language Language => Php.Language;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.lower;
 
@@ -20,12 +19,12 @@ namespace PT.PM.UstParsing
 
         protected override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
 
-        protected override Lexer InitLexer(ICharStream inputStream)
+        public override Lexer InitLexer(ICharStream inputStream)
         {
             return new PhpLexer(inputStream);
         }
 
-        protected override Parser InitParser(ITokenStream inputStream)
+        public override Parser InitParser(ITokenStream inputStream)
         {
             return new PhpParser(inputStream);
         }

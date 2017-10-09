@@ -1,28 +1,27 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Ust;
+using PT.PM.Common.Nodes;
 using PT.PM.Matching;
-using PT.PM.Patterns;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace PT.PM
 {
-    public abstract class WorkflowResultBase<TStage, TPattern, TMatchingResult> 
+    public abstract class WorkflowResultBase<TStage, TPattern, TMatchingResult>
         where TStage : struct, IConvertible
-        where TPattern : PatternBase
         where TMatchingResult : MatchingResultBase<TPattern>
     {
         private List<SourceCodeFile> sourceCodeFiles = new List<SourceCodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
-        private List<Ust> usts = new List<Ust>();
+        private List<RootUst> usts = new List<RootUst>();
         private List<TPattern> patterns = new List<TPattern>();
         private List<TMatchingResult> matchingResults = new List<TMatchingResult>();
 
         private long totalReadTicks;
         private long totalParseTicks;
         private long totalConvertTicks;
-        private long totalPreprocessTicks;
+        private long totalSimplifyTicks;
         private long totalMatchTicks;
         private long totalPatternsTicks;
 
@@ -35,16 +34,20 @@ namespace PT.PM
 
         protected StageHelper<TStage> stageExt;
 
-        public WorkflowResultBase(Language[] languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
+        public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
         {
-            Languages = languages;
+            AnalyzedLanguages = languages.ToList();
             ThreadCount = threadCount;
             Stage = stage;
             stageExt = new StageHelper<TStage>(stage);
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
-        public Language[] Languages { get; private set; }
+        public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
+
+        public IReadOnlyList<Language> BaseLanguages { get; set; }
+
+        public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
         public int ThreadCount { get; private set; }
 
@@ -54,17 +57,17 @@ namespace PT.PM
 
         public int ErrorCount { get; set; }
 
-        public IReadOnlyList<SourceCodeFile> SourceCodeFiles => ValidateStageAndReturn(PM.Stage.Read.ToString(), sourceCodeFiles);
+        public IReadOnlyList<SourceCodeFile> SourceCodeFiles => ValidateStageAndReturn(PM.Stage.File.ToString(), sourceCodeFiles);
 
-        public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.Parse.ToString(), parseTrees);
+        public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
 
-        public IReadOnlyList<Ust> Usts
+        public IReadOnlyList<RootUst> Usts
         {
             get
             {
-                if (!stageExt.IsConvert && !stageExt.IsPreprocess && !IsIncludeIntermediateResult)
+                if (!stageExt.IsUst && !stageExt.IsSimplifiedUst && !IsIncludeIntermediateResult)
                 {
-                    ThrowInvalidStageException(PM.Stage.Convert.ToString());
+                    ThrowInvalidStageException(PM.Stage.Ust.ToString());
                 }
                 return usts;
             }
@@ -76,9 +79,9 @@ namespace PT.PM
         {
             get
             {
-                if (!stageExt.IsPatterns && (stageExt.IsLessThanMatch || !IsIncludeIntermediateResult))
+                if (!stageExt.IsPattern && (stageExt.IsLessThanMatch || !IsIncludeIntermediateResult))
                 {
-                    ThrowInvalidStageException(PM.Stage.Patterns.ToString());
+                    ThrowInvalidStageException(PM.Stage.Pattern.ToString());
                 }
 
                 return patterns;
@@ -88,7 +91,7 @@ namespace PT.PM
         public long TotalReadTicks => totalReadTicks;
         public long TotalParseTicks => totalParseTicks;
         public long TotalConvertTicks => totalConvertTicks;
-        public long TotalPreprocessTicks => totalPreprocessTicks;
+        public long TotalSimplifyTicks => totalSimplifyTicks;
         public long TotalMatchTicks => totalMatchTicks;
         public long TotalPatternsTicks => totalPatternsTicks;
 
@@ -103,7 +106,7 @@ namespace PT.PM
 
         public void AddResultEntity(SourceCodeFile sourceCodeFile)
         {
-            if (stageExt.IsRead || IsIncludeIntermediateResult)
+            if (stageExt.IsFile || IsIncludeIntermediateResult)
             {
                 AddEntity(sourceCodeFiles, sourceCodeFile);
             }
@@ -111,17 +114,17 @@ namespace PT.PM
 
         public void AddResultEntity(ParseTree parseTree)
         {
-            if (stageExt.IsParse || IsIncludeIntermediateResult)
+            if (stageExt.IsParseTree || IsIncludeIntermediateResult)
             {
                 AddEntity(parseTrees, parseTree);
             }
         }
 
-        public void AddResultEntity(Ust ust, bool convert)
+        public void AddResultEntity(RootUst ust, bool convert)
         {
-            if (IsIncludeIntermediateResult || (convert && stageExt.IsConvert) || (!convert && stageExt.IsPreprocess))
+            if (IsIncludeIntermediateResult || (convert && stageExt.IsUst) || (!convert && stageExt.IsSimplifiedUst))
             {
-                int ustIndex = usts.FindIndex(tree => tree.FileName == ust.FileName);
+                int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
                 lock (usts)
                 {
                     if (ustIndex == -1)
@@ -142,7 +145,7 @@ namespace PT.PM
             AddEntities(this.matchingResults, matchingResults);
         }
 
-        public void AddResultEntity(TPattern[] patterns)
+        public void AddResultEntity(IEnumerable<TPattern> patterns)
         {
             AddEntities(this.patterns, patterns);
         }
@@ -177,9 +180,9 @@ namespace PT.PM
             AddTicks(ref totalConvertTicks, convertTicks);
         }
 
-        public void AddPreprocessTime(long preprocessTicks)
+        public void AddSimplifyTime(long simplifyTicks)
         {
-            AddTicks(ref totalPreprocessTicks, preprocessTicks);
+            AddTicks(ref totalSimplifyTicks, simplifyTicks);
         }
 
         public void AddMatchTime(long matchTicks)
@@ -205,7 +208,7 @@ namespace PT.PM
         public long GetTotalTimeTicks()
         {
             return totalReadTicks + totalParseTicks + totalConvertTicks +
-                   totalPreprocessTicks + totalMatchTicks + totalPatternsTicks;
+                   totalSimplifyTicks + totalMatchTicks + totalPatternsTicks;
         }
 
         protected Result ValidateStageAndReturn<Result>(string stage, Result result)

@@ -1,88 +1,48 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using System;
-using System.Linq;
-using PT.PM.Patterns.Nodes;
-using PT.PM.UstPreprocessing;
-using System.Collections.Generic;
 using PT.PM.Common.Exceptions;
+using PT.PM.Matching;
 
 namespace PT.PM.Dsl
 {
-    public class DslProcessor : IUstNodeSerializer
+    public class DslProcessor : IPatternSerializer
     {
-        private ILogger logger = DummyLogger.Instance;
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public ILogger Logger
-        {
-            get
-            {
-                return logger;
-            }
-            set
-            {
-                logger = value;
-                Parser.Logger = logger;
-                UstConverter.Logger = logger;
-            }
-        }
+        public string Format => "Dsl";
 
-        protected DslAntlrParser Parser { get; set; }
-
-        protected DslUstConverter UstConverter { get; set; }
-
-        public bool PatternExpressionInsideStatement
-        {
-            get
-            {
-                return UstConverter?.PatternExpressionInsideStatement ?? false;
-            }
-            set
-            {
-                if (UstConverter != null)
-                {
-                    UstConverter.PatternExpressionInsideStatement = value;
-                }
-            }
-        }
-
-
-        public UstNodeSerializationFormat DataFormat => UstNodeSerializationFormat.Dsl;
+        public bool PatternExpressionInsideStatement { get; set; }
 
         public DslProcessor()
         {
-            Parser = new DslAntlrParser();
-            UstConverter = new DslUstConverter();
         }
 
-        public UstNode Deserialize(string data, LanguageFlags sourceLanguage)
+        public PatternRoot Deserialize(string data)
         {
             if (string.IsNullOrEmpty(data))
             {
                 throw new ParsingException("Pattern value can not be empty.") { IsPattern = true };
             }
 
-            Parser.Logger = Logger;
-            UstConverter.Logger = Logger;
-            DslParser.PatternContext patternContext = Parser.Parse(data);
-            UstConverter.SourceLanguage = sourceLanguage;
-            UstConverter.Data = data;
-            DslNode dslNode = UstConverter.Convert(patternContext);
-            UstNode result = dslNode.Collection.First();
-            ResultPatternVars = dslNode.PatternVarDefs;
-            var preprocessor = new UstSimplifier();
-            preprocessor.Logger = Logger;
-            result = new PatternNode(result, dslNode.PatternVarDefs);
-            result = preprocessor.Preprocess(result);
+            var parser = new DslAntlrParser() { Logger = Logger };
+            var converter = new DslUstConverter
+            {
+                Logger = Logger,
+                PatternExpressionInsideStatement = PatternExpressionInsideStatement,
+                Data = data
+            };
+            DslParser.PatternContext patternContext = parser.Parse(data);
 
-            return result;
+            PatternRoot patternNode = converter.Convert(patternContext);
+
+            var preprocessor = new PatternNormalizer() { Logger = Logger };
+            patternNode = preprocessor.Normalize(patternNode);
+
+            return patternNode;
         }
 
-        public List<PatternVarDef> ResultPatternVars { get; private set; }
-
-        public string Serialize(UstNode node)
+        public string Serialize(PatternRoot patternRoot)
         {
-            throw new NotImplementedException();
+            return patternRoot.Node.ToString();
         }
     }
 }

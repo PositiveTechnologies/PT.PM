@@ -6,14 +6,12 @@ namespace PT.PM.Common.Nodes.Statements.Switch
 {
     public class SwitchStatement : Statement
     {
-        public override NodeType NodeType => NodeType.SwitchStatement;
-
         public Expression Expression { get; set; }
 
         public List<SwitchSection> Sections { get; set; }
 
-        public SwitchStatement(Expression expression, IEnumerable<SwitchSection> sections, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public SwitchStatement(Expression expression, IEnumerable<SwitchSection> sections, TextSpan textSpan)
+            : base(textSpan)
         {
             Expression = expression;
             Sections = sections as List<SwitchSection> ?? sections.ToList();
@@ -23,9 +21,9 @@ namespace PT.PM.Common.Nodes.Statements.Switch
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Expression);
             result.AddRange(Sections);
             return result.ToArray();

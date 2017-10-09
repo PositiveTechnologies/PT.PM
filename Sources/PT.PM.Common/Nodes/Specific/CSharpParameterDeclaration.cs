@@ -8,14 +8,12 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class CSharpParameterDeclaration : ParameterDeclaration
     {
-        public override NodeType NodeType => NodeType.CSharpParameterDeclaration;
-
         public ParameterModifierLiteral Modifier { get; set; }
 
         public Expression DefaultExpression { get; set; }
 
-        public CSharpParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan, FileNode fileNode)
-            : base(type, name, textSpan, fileNode)
+        public CSharpParameterDeclaration(TypeToken type, IdToken name, TextSpan textSpan)
+            : base(type, name, textSpan)
         {
             Name = name;
         }
@@ -24,9 +22,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             result.Add(Name);
             if (Modifier != null)

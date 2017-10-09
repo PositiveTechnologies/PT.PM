@@ -12,11 +12,11 @@ using System.Linq;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
-    public partial class JavaAntlrUstConverterVisitor
+    public partial class JavaAntlrParseTreeConverter
     {
         #region Expression base
 
-        public UstNode VisitExpression(JavaParser.ExpressionContext context)
+        public Ust VisitExpression(JavaParser.ExpressionContext context)
         {
             var textSpan = context.GetTextSpan();
             var child0Terminal = context.GetChild(0) as ITerminalNode;
@@ -32,18 +32,18 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.LPAREN: // '(' type ')' expression
                         var type = (TypeToken)Visit(context.typeType());
                         target = (Expression)Visit(context.expression(0));
-                        result = new CastExpression(type, target, textSpan, FileNode);
+                        result = new CastExpression(type, target, textSpan);
                         return result;
                     default: // unary operator ('+', '-', '++', '--', '~', '!')
                         UnaryOperator op = UnaryOperatorLiteral.PrefixTextUnaryOperator[child0Terminal.GetText()];
-                        var opLiteral = new UnaryOperatorLiteral(op, child0Terminal.GetTextSpan(), FileNode);
+                        var opLiteral = new UnaryOperatorLiteral(op, child0Terminal.GetTextSpan());
                         target = (Expression)Visit(context.expression(0));
-                        result = new UnaryOperatorExpression(opLiteral, target, textSpan, FileNode);
+                        result = new UnaryOperatorExpression(opLiteral, target, textSpan);
                         return result;
                 }
             }
 
-            ArgsNode args;
+            ArgsUst args;
             var child1Terminal = context.GetChild(1) as ITerminalNode;
             if (child1Terminal != null)
             {
@@ -54,7 +54,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var id = context.IDENTIFIER();
                         if (id != null)
                         {
-                            result = new MemberReferenceExpression(target, (IdToken)Visit(id), textSpan, FileNode);
+                            result = new MemberReferenceExpression(target, (IdToken)Visit(id), textSpan);
                             return result;
                         }
 
@@ -80,9 +80,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.LBRACK: // '['
                         target = (Expression)Visit(context.expression(0));
                         Expression expr = (Expression)Visit(context.expression(1));
-                        args = new ArgsNode(new Expression[] { expr }, expr.TextSpan, FileNode);
+                        args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
 
-                        result = new IndexerExpression(target, args, textSpan, FileNode);
+                        result = new IndexerExpression(target, args, textSpan);
                         return result;
 
                     case JavaParser.LPAREN: // '('
@@ -92,14 +92,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                         if (expressionList != null)
                         {
-                            args = (ArgsNode)Visit(expressionList);
+                            args = (ArgsUst)Visit(expressionList);
                         }
                         else
                         {
-                            args = new ArgsNode();
+                            args = new ArgsUst();
                         }
 
-                        result = new InvocationExpression(target, args, textSpan, FileNode);
+                        result = new InvocationExpression(target, args, textSpan);
                         return result;
 
                     case JavaParser.INSTANCEOF: // x instanceof y -> (y)x != null
@@ -107,11 +107,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var type = (TypeToken)Visit(context.typeType());
                         result = new BinaryOperatorExpression
                         {
-                            Left = new CastExpression(type, expression, context.GetTextSpan(), FileNode),
-                            Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual, default(TextSpan), FileNode),
-                            Right = new NullLiteral(default(TextSpan), FileNode),
+                            Left = new CastExpression(type, expression, context.GetTextSpan()),
+                            Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual, default(TextSpan)),
+                            Right = new NullLiteral(default(TextSpan)),
                             TextSpan = context.GetTextSpan(),
-                            FileNode = FileNode
+                            Root = root
                         };
                         return result;
 
@@ -120,7 +120,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         var trueExpr = (Expression)Visit(context.expression(1));
                         var falseExpr = (Expression)Visit(context.expression(2));
 
-                        result = new ConditionalExpression(condition, trueExpr, falseExpr, textSpan, FileNode);
+                        result = new ConditionalExpression(condition, trueExpr, falseExpr, textSpan);
                         return result;
 
                     default: // binary operator
@@ -134,7 +134,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                             if (text == "=")
                             {
-                                result = new AssignmentExpression(left, right, textSpan, FileNode);
+                                result = new AssignmentExpression(left, right, textSpan);
                             }
                             else if (BinaryOperatorLiteral.TextBinaryAssignmentOperator.Contains(text))
                             {
@@ -148,8 +148,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
                                     op = BinaryOperatorLiteral.TextBinaryOperator[text.Remove(text.Length - 1)];
                                 }
 
-                                result = ConverterHelper.ConvertToAssignmentExpression(left, op, child1Terminal.GetTextSpan(), right,
-                                    context.GetTextSpan(), FileNode);
+                                // TODO: implement assignment + operator
+                                result = new AssignmentExpression(left, right, context.GetTextSpan());
                             }
                             else
                             {
@@ -162,18 +162,18 @@ namespace PT.PM.JavaParseTreeUst.Converter
                                 {
                                     op = BinaryOperatorLiteral.TextBinaryOperator[text];
                                 }
-                                var opLiteral = new BinaryOperatorLiteral(op, child1Terminal.GetTextSpan(), FileNode);
+                                var opLiteral = new BinaryOperatorLiteral(op, child1Terminal.GetTextSpan());
 
-                                result = new BinaryOperatorExpression(left, opLiteral, right, textSpan, FileNode);
+                                result = new BinaryOperatorExpression(left, opLiteral, right, textSpan);
                             }
                         }
                         else
                         {
                             // post increment or decrement.
                             UnaryOperator op = UnaryOperatorLiteral.PostfixTextUnaryOperator[text];
-                            var opLiteral = new UnaryOperatorLiteral(op, child1Terminal.GetTextSpan(), FileNode);
+                            var opLiteral = new UnaryOperatorLiteral(op, child1Terminal.GetTextSpan());
 
-                            result = new UnaryOperatorExpression(opLiteral, left, textSpan, FileNode);
+                            result = new UnaryOperatorExpression(opLiteral, left, textSpan);
                             return result;
                         }
 
@@ -184,7 +184,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return Visit(context.GetChild(0));
         }
 
-        public UstNode VisitPrimary(JavaParser.PrimaryContext context)
+        public Ust VisitPrimary(JavaParser.PrimaryContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
             var child0Terminal = context.GetChild(0) as ITerminalNode;
@@ -198,20 +198,19 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         return result;
 
                     case JavaParser.THIS:
-                        result = new ThisReferenceToken(textSpan, FileNode);
+                        result = new ThisReferenceToken(textSpan);
                         return result;
 
                     case JavaParser.SUPER:
-                        result = new BaseReferenceExpression(textSpan, FileNode);
+                        result = new BaseReferenceToken(textSpan);
                         return result;
 
                     case JavaParser.VOID:
-                        var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan(), FileNode);
+                        var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan());
                         var child0TerminalSpan = child0Terminal.GetTextSpan();
                         result = new InvocationExpression(id,
-                            new ArgsNode(new Expression[] { new NullLiteral(child0TerminalSpan, FileNode) }, child0TerminalSpan, FileNode),
-                            textSpan,
-                            FileNode);
+                            new ArgsUst(new Expression[] { new NullLiteral(child0TerminalSpan) }, child0TerminalSpan),
+                            textSpan);
                         return result;
                 }
             }
@@ -220,11 +219,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (type != null)
             {
                 var typeToken = (TypeToken)Visit(type);
-                var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan(), FileNode);
+                var id = new IdToken("TypeOf", ((ITerminalNode)context.GetChild(2)).GetTextSpan());
                 result = new InvocationExpression(id,
-                    new ArgsNode(new Expression[] { typeToken }, typeToken.TextSpan, FileNode),
-                    textSpan,
-                    FileNode);
+                    new ArgsUst(new Expression[] { typeToken }, typeToken.TextSpan),
+                    textSpan);
                 return result;
             }
 
@@ -239,70 +237,70 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return Visit(context.GetChild(0));
         }
 
-        public UstNode VisitMethodReference(JavaParser.MethodReferenceContext context)
+        public Ust VisitMethodReference(JavaParser.MethodReferenceContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitClassType(JavaParser.ClassTypeContext context)
+        public Ust VisitClassType(JavaParser.ClassTypeContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitParExpression(JavaParser.ParExpressionContext context)
+        public Ust VisitParExpression(JavaParser.ParExpressionContext context)
         {
             var result = (Expression)Visit(context.expression());
             return result;
         }
 
-        public UstNode VisitInnerCreator(JavaParser.InnerCreatorContext context)
+        public Ust VisitInnerCreator(JavaParser.InnerCreatorContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitNonWildcardTypeArguments(JavaParser.NonWildcardTypeArgumentsContext context)
+        public Ust VisitNonWildcardTypeArguments(JavaParser.NonWildcardTypeArgumentsContext context)
         {
             var type = (TypeToken)Visit(context.typeList());
             string resultType = context.GetChild<ITerminalNode>(0) + type.TypeText + context.GetChild<ITerminalNode>(1);
 
-            var result = new TypeToken(resultType, context.GetTextSpan(), FileNode);
+            var result = new TypeToken(resultType, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitSuperSuffix(JavaParser.SuperSuffixContext context)
+        public Ust VisitSuperSuffix(JavaParser.SuperSuffixContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitExplicitGenericInvocation(JavaParser.ExplicitGenericInvocationContext context)
+        public Ust VisitExplicitGenericInvocation(JavaParser.ExplicitGenericInvocationContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitArguments(JavaParser.ArgumentsContext context)
+        public Ust VisitArguments(JavaParser.ArgumentsContext context)
         {
             JavaParser.ExpressionListContext expressionList = context.expressionList();
             if (expressionList != null)
             {
-                var result = (ArgsNode)Visit(expressionList);
+                var result = (ArgsUst)Visit(expressionList);
                 return result;
             }
             else
             {
-                return new ArgsNode();
+                return new ArgsUst();
             }
         }
 
-        public UstNode VisitExpressionList(JavaParser.ExpressionListContext context)
+        public Ust VisitExpressionList(JavaParser.ExpressionListContext context)
         {
             Expression[] exprs = context.expression().Select(expr => (Expression)Visit(expr)).ToArray();
-            var result = new ArgsNode(exprs, context.GetTextSpan(), FileNode);
+            var result = new ArgsUst(exprs, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitCreator(JavaParser.CreatorContext context)
+        public Ust VisitCreator(JavaParser.CreatorContext context)
         {
-            UstNode result;
+            Ust result;
             JavaParser.CreatedNameContext createdName = context.createdName();
             JavaParser.ArrayCreatorRestContext arrayCreatorRest = context.arrayCreatorRest();
             if (arrayCreatorRest != null)
@@ -313,11 +311,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     // new int[] { 1, 2 };
                     int dimensions = (arrayCreatorRest.ChildCount - 1) / 2; // number of square bracket pairs
                     var sizes = Enumerable.Range(0, dimensions).Select(
-                        _ => new IntLiteral(0, createdName.GetTextSpan(), FileNode)).ToList<Expression>();
-                    var initializers = initializer.Expressions.Where(el => el.NodeType != NodeType.IdToken);
+                        _ => new IntLiteral(0, createdName.GetTextSpan())).ToList<Expression>();
+                    var initializers = initializer.Expressions.Where(el => !(el is IdToken));
                     result = new ArrayCreationExpression(
-                        new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), sizes,
-                        initializers, context.GetTextSpan(), FileNode);
+                        new TypeToken(createdName.GetText(), createdName.GetTextSpan()), sizes,
+                        initializers, context.GetTextSpan());
                 }
                 else
                 {
@@ -326,32 +324,32 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     var sizes = Enumerable.Range(0, dimensions).Select(
                         i => i < arrayCreatorRest.expression().Length ?
                                 (Expression)Visit(arrayCreatorRest.expression(i)) :
-                                new IntLiteral(0, createdName.GetTextSpan(), FileNode)).ToList();
+                                new IntLiteral(0, createdName.GetTextSpan())).ToList();
                     result = new ArrayCreationExpression(
-                        new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), sizes,
-                        null, context.GetTextSpan(), FileNode);
+                        new TypeToken(createdName.GetText(), createdName.GetTextSpan()), sizes,
+                        null, context.GetTextSpan());
                 }
             }
             else
             {
                 JavaParser.ClassCreatorRestContext classCreatorRest = context.classCreatorRest();
-                ArgsNode args = (ArgsNode)Visit(classCreatorRest?.arguments()) ?? new ArgsNode();
+                ArgsUst args = (ArgsUst)Visit(classCreatorRest?.arguments()) ?? new ArgsUst();
 
                 // TODO: add classBody
 
                 result = new ObjectCreateExpression(
-                    new TypeToken(createdName.GetText(), createdName.GetTextSpan(), FileNode), args,
-                    context.GetTextSpan(), FileNode);
+                    new TypeToken(createdName.GetText(), createdName.GetTextSpan()), args,
+                    context.GetTextSpan());
             }
             return result;
         }
 
-        public UstNode VisitCreatedName(JavaParser.CreatedNameContext context)
+        public Ust VisitCreatedName(JavaParser.CreatedNameContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitTypeArgumentsOrDiamond(JavaParser.TypeArgumentsOrDiamondContext context)
+        public Ust VisitTypeArgumentsOrDiamond(JavaParser.TypeArgumentsOrDiamondContext context)
         {
             JavaParser.TypeArgumentsContext typeArguments = context.typeArguments();
             TypeToken result;
@@ -362,21 +360,21 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
 
             result = new TypeToken(context.GetChild<ITerminalNode>(0).GetText() + context.GetChild<ITerminalNode>(1).GetText(),
-                context.GetTextSpan(), FileNode);
+                context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitTypeTypeOrVoid(JavaParser.TypeTypeOrVoidContext context)
+        public Ust VisitTypeTypeOrVoid(JavaParser.TypeTypeOrVoidContext context)
         {
             if (context.typeType() != null)
             {
                 return Visit(context.typeType());
             }
 
-            return new TypeToken("void", context.GetTextSpan(), FileNode);
+            return new TypeToken("void", context.GetTextSpan());
         }
 
-        public UstNode VisitTypeType(JavaParser.TypeTypeContext context)
+        public Ust VisitTypeType(JavaParser.TypeTypeContext context)
         {
             var result = (TypeToken)Visit(context.GetChild(0));
             return result;
@@ -389,44 +387,44 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return result;*/
         }
 
-        public UstNode VisitExplicitGenericInvocationSuffix(JavaParser.ExplicitGenericInvocationSuffixContext context)
+        public Ust VisitExplicitGenericInvocationSuffix(JavaParser.ExplicitGenericInvocationSuffixContext context)
         {
             return VisitChildren(context);
         }
 
         #endregion
 
-        public UstNode VisitTypeList(JavaParser.TypeListContext context)
+        public Ust VisitTypeList(JavaParser.TypeListContext context)
         {
             var types = context.typeType().Select(t => ((TypeToken)Visit(t))?.TypeText)
                 .Where(t => t != null).ToArray();
 
-            var result = new TypeToken(string.Join(",", types), context.GetTextSpan(), FileNode);
+            var result = new TypeToken(string.Join(",", types), context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitQualifiedName(JavaParser.QualifiedNameContext context)
+        public Ust VisitQualifiedName(JavaParser.QualifiedNameContext context)
         {
             string complexName = string.Join("", context.children.Select(c => c.ToString()).ToArray());
             TextSpan textSpan = context.GetTextSpan();
 
-            var result = new StringLiteral(complexName, textSpan, FileNode);
+            var result = new StringLiteral(complexName, textSpan);
             return result;
         }
 
-        public UstNode VisitQualifiedNameList(JavaParser.QualifiedNameListContext context)
+        public Ust VisitQualifiedNameList(JavaParser.QualifiedNameListContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitPrimitiveType(JavaParser.PrimitiveTypeContext context)
+        public Ust VisitPrimitiveType(JavaParser.PrimitiveTypeContext context)
         {
             var name = context.GetChild<ITerminalNode>(0).GetText();
-            var result = new TypeToken(name, context.GetTextSpan(), FileNode);
+            var result = new TypeToken(name, context.GetTextSpan());
             return result;
         }
 
-        public UstNode VisitLiteral(JavaParser.LiteralContext context)
+        public Ust VisitLiteral(JavaParser.LiteralContext context)
         {
             var textSpan = context.GetTextSpan();
 
@@ -434,7 +432,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (stringLiteral != null)
             {
                 string text = stringLiteral.GetText();
-                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan, FileNode);
+                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
             }
 
             if (context.integerLiteral() != null)
@@ -445,49 +443,49 @@ namespace PT.PM.JavaParseTreeUst.Converter
             ITerminalNode boolLiteral = context.BOOL_LITERAL();
             if (boolLiteral != null)
             {
-                return new BooleanLiteral(bool.Parse(boolLiteral.GetText()), textSpan, FileNode);
+                return new BooleanLiteral(bool.Parse(boolLiteral.GetText()), textSpan);
             }
 
             ITerminalNode charLiteral = context.CHAR_LITERAL();
             if (charLiteral != null)
             {
                 string text = charLiteral.GetText();
-                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan, FileNode);
+                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
             }
 
             ITerminalNode floatLiteral = context.FLOAT_LITERAL();
             if (floatLiteral != null)
             {
                 var text = floatLiteral.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
-                return new FloatLiteral(double.Parse(text), textSpan, FileNode);
+                return new FloatLiteral(double.Parse(text), textSpan);
             }
 
             if (context.Start.Type == JavaParser.NULL_LITERAL)
             {
-                return new NullLiteral(textSpan, FileNode);
+                return new NullLiteral(textSpan);
             }
 
             return VisitChildren(context);
         }
 
-        public UstNode VisitIntegerLiteral(JavaParser.IntegerLiteralContext context)
+        public Ust VisitIntegerLiteral(JavaParser.IntegerLiteralContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
             string text = context.GetText().Replace("_", "");
-            return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan, FileNode);
+            return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan);
         }
 
-        public UstNode VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
+        public Ust VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
         {
             return VisitChildren(context).ToExpressionIfRequired();
         }
 
-        public UstNode VisitLambdaParameters(JavaParser.LambdaParametersContext context)
+        public Ust VisitLambdaParameters(JavaParser.LambdaParametersContext context)
         {
             return VisitChildren(context);
         }
 
-        public UstNode VisitLambdaBody(JavaParser.LambdaBodyContext context)
+        public Ust VisitLambdaBody(JavaParser.LambdaBodyContext context)
         {
             return Visit(context.GetChild(0));
         }

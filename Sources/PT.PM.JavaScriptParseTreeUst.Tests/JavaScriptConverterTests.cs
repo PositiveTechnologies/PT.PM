@@ -10,7 +10,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         [Test]
         public void Convert_JavaScriptSyntaxFiles_WithoutErrors()
         {
-            TestHelper.CheckProject(TestHelper.TestsDataPath, Language.JavaScript, Stage.Convert);
+            TestUtility.CheckProject(TestUtility.TestsDataPath, JavaScript.Language, Stage.Ust);
         }
     }
 }

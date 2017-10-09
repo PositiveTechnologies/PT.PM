@@ -2,7 +2,7 @@
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
-    public partial class JavaScriptAntlrUstConverterVisitor
+    public partial class JavaScriptParseTreeConverter
     {
         protected override BinaryOperator CreateBinaryOperator(string binaryOperatorText)
         {

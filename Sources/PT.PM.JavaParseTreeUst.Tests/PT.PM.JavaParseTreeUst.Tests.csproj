@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,10 +63,6 @@
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
-      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
-      <Name>PT.PM.UstPreprocessing</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>

@@ -30,33 +30,87 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BruteForcePatternMatcher.cs" />
+    <Compile Include="Json\JsonPatternSerializer.cs" />
+    <Compile Include="MatchingResultDto.cs" />
+    <Compile Include="PatternAscendantsFiller.cs" />
+    <Compile Include="Json\PatternBaseJsonConverter.cs" />
+    <Compile Include="PatternMatcher.cs" />
+    <Compile Include="DslPatternRepository.cs" />
+    <Compile Include="IPatternConverter.cs" />
     <Compile Include="IUstPatternMatcher.cs" />
+    <Compile Include="IPatternVisitor.cs" />
     <Compile Include="MatchingResult.cs" />
     <Compile Include="MatchingResultBase.cs" />
-    <Compile Include="PatternVarRefEnumerator.cs" />
+    <Compile Include="MatchingContext.cs" />
+    <Compile Include="PatternNormalizer.cs" />
+    <Compile Include="IPatternSerializer.cs" />
+    <Compile Include="PatternsRepository\MemoryPatternsRepository.cs" />
+    <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
+    <Compile Include="PatternsRepository\IPatternsRepository.cs" />
+    <Compile Include="PatternsRepository\JsonPatternsRepository.cs" />
+    <Compile Include="Patterns\PatternExpression.cs" />
+    <Compile Include="Patterns\PatternAny.cs" />
+    <Compile Include="Patterns\PatternBaseReferenceToken.cs" />
+    <Compile Include="Patterns\PatternAssignmentExpression.cs" />
+    <Compile Include="Patterns\PatternUst.cs" />
+    <Compile Include="Patterns\PatternAnd.cs" />
+    <Compile Include="Patterns\PatternAnyExpression.cs" />
+    <Compile Include="Patterns\PatternBinaryOperatorExpression.cs" />
+    <Compile Include="Patterns\PatternBinaryOperatorLiteral.cs" />
+    <Compile Include="Patterns\PatternBooleanLiteral.cs" />
+    <Compile Include="Patterns\PatternClassDeclaration.cs" />
+    <Compile Include="Patterns\PatternCommentRegex.cs" />
+    <Compile Include="PatternDeclarationUtils.cs" />
+    <Compile Include="Patterns\PatternArbitraryDepth.cs" />
+    <Compile Include="Patterns\PatternArgs.cs" />
+    <Compile Include="Patterns\PatternIdToken.cs" />
+    <Compile Include="Patterns\PatternIdRegexToken.cs" />
+    <Compile Include="Patterns\PatternIndexerExpression.cs" />
+    <Compile Include="Patterns\PatternIntRangeLiteral.cs" />
+    <Compile Include="Patterns\PatternIntLiteral.cs" />
+    <Compile Include="Patterns\PatternInvocationExpression.cs" />
+    <Compile Include="Patterns\PatternMemberReferenceExpression.cs" />
+    <Compile Include="Patterns\PatternMethodDeclaration.cs" />
+    <Compile Include="Patterns\PatternMultipleExpressions.cs" />
+    <Compile Include="Patterns\PatternNot.cs" />
+    <Compile Include="Patterns\PatternNullLiteral.cs" />
+    <Compile Include="Patterns\PatternObjectCreateExpression.cs" />
+    <Compile Include="Patterns\PatternOr.cs" />
+    <Compile Include="Patterns\PatternParameterDeclaration.cs" />
+    <Compile Include="PatternRoot.cs" />
+    <Compile Include="Patterns\PatternStatements.cs" />
+    <Compile Include="Patterns\PatternStringLiteral.cs" />
+    <Compile Include="Patterns\PatternStringRegexLiteral.cs" />
+    <Compile Include="Patterns\PatternThisReferenceToken.cs" />
+    <Compile Include="Patterns\PatternTryCatchStatement.cs" />
+    <Compile Include="Patterns\PatternVar.cs" />
+    <Compile Include="Patterns\PatternVarOrFieldDeclaration.cs" />
+    <Compile Include="PatternConverter.cs" />
+    <Compile Include="PatternDto.cs" />
+    <Compile Include="PatternUtils.cs" />
+    <Compile Include="PatternIdGenerator.cs" />
+    <Compile Include="PatternVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
-      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
-      <Name>PT.PM.UstPreprocessing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
-      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
-      <Name>PT.PM.Patterns</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

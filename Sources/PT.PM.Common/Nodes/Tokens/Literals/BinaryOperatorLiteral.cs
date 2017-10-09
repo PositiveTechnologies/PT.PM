@@ -45,18 +45,16 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ">>=",
         };
 
-        public override NodeType NodeType => NodeType.BinaryOperatorLiteral;
-
         public override string TextValue => BinaryOperator.ToString();
 
         public BinaryOperator BinaryOperator { get; set; }
 
         public BinaryOperatorLiteral(BinaryOperator op)
-            : this(op, default(TextSpan), null)
+            : this(op, default(TextSpan))
         {
         }
 
-        public BinaryOperatorLiteral(string op, TextSpan textSpan, FileNode fileNode)
+        public BinaryOperatorLiteral(string op, TextSpan textSpan)
         {
             BinaryOperator binaryOperator;
             if (!TextBinaryOperator.TryGetValue(op, out binaryOperator))
@@ -65,11 +63,10 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             }
             BinaryOperator = binaryOperator;
             TextSpan = textSpan;
-            FileNode = fileNode;
         }
 
-        public BinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public BinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan)
+            : base(textSpan)
         {
             BinaryOperator = op;
         }
@@ -78,7 +75,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

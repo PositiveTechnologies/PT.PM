@@ -1,38 +1,31 @@
 ﻿using System.Linq;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Patterns;
 using System.Collections.Generic;
+using PT.PM.Matching.Patterns;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResult : MatchingResultBase<Pattern>
+    public class MatchingResult : MatchingResultBase<PatternRoot>
     {
-        public FileNode FileNode => Nodes.FirstOrDefault()?.FileNode;
+        public SourceCodeFile SourceCodeFile => RootUst.SourceCodeFile;
 
-        public TextSpan TextSpan { get; private set; }
+        public TextSpan TextSpan => TextSpans.FirstOrDefault();
 
         public MatchingResult()
         {
-            Nodes = new List<UstNode>();
         }
 
-        public MatchingResult(Pattern pattern, UstNode node, TextSpan textSpan)
-            : this(pattern, new List<UstNode> { node })
+        public MatchingResult(RootUst rootUst, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
-            TextSpan = textSpan;
-        }
-
-        public MatchingResult(Pattern pattern, List<UstNode> nodes)
-        {
+            RootUst = rootUst;
             Pattern = pattern;
-            Nodes = nodes;
+            TextSpans = textSpans.ToArray();
         }
 
         public override string ToString()
         {
-            string textSpan = Nodes.Count == 1 ? TextSpan.ToString() : string.Join("; ", Nodes.Select(node => node.TextSpan));
-            return $"Pattern {Pattern} mathched at {textSpan}";
+            return $"Pattern {Pattern} mathched at {(string.Join(", ", TextSpans))}";
         }
     }
 }

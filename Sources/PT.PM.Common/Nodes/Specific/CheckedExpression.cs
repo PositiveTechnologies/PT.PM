@@ -1,28 +1,31 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using System;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.Specific
 {
     public class CheckedExpression : SpecificExpression
     {
-        public override NodeType NodeType => NodeType.CheckedExpression;
-
         public Expression Expression { get; set; }
 
-        public CheckedExpression(Expression checkedExpression, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public CheckedExpression(Expression checkedExpression, TextSpan textSpan)
+            : base(textSpan)
         {
             Expression = checkedExpression;
             TextSpan = textSpan;
-            FileNode = fileNode;
         }
 
         public CheckedExpression()
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Expression};
+            return new Ust[] { Expression };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { this };
         }
     }
 }

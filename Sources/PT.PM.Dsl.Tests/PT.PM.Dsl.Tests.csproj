@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,66 +53,66 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\AndroidHostnameVerificationDisabled.aipm">
+    <None Include="Data\AndroidHostnameVerificationDisabled.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\AndroidPermissionCheck.aipm">
+    </None>
+    <None Include="Data\AndroidPermissionCheck.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\CookieNotSentOverSSL.aipm">
+    </None>
+    <None Include="Data\CookieNotSentOverSSL.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\CookieSecurityOverlyBroadDomain.aipm">
+    </None>
+    <None Include="Data\CookieSecurityOverlyBroadDomain.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\DebugInfo.aipm">
+    </None>
+    <None Include="Data\DebugInfo.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\HardcodedPassword.aipm">
+    </None>
+    <None Include="Data\HardcodedPassword.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\InadequateRSAPadding.aipm">
+    </None>
+    <None Include="Data\InadequateRSAPadding.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\InsecureRandomness.aipm">
+    </None>
+    <None Include="Data\InsecureRandomness.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\InsecureTransport.aipm">
+    </None>
+    <None Include="Data\InsecureTransport.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\MissingBroadcasterPermission.aipm">
+    </None>
+    <None Include="Data\MissingBroadcasterPermission.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\PasswordInComment.aipm">
+    </None>
+    <None Include="Data\PasswordInComment.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\WeakCryptographicHash.aipm">
+    </None>
+    <None Include="Data\WeakCryptographicHash.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\XmlExternalEntity.aipm">
+    </None>
+    <None Include="Data\XmlExternalEntity.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\KeyManagementNullEncryptionKey.aipm">
+    </None>
+    <None Include="Data\KeyManagementNullEncryptionKey.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\AttributesCodeInsideElementEvent.aipm">
+    </None>
+    <None Include="Data\AttributesCodeInsideElementEvent.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Range.aipm">
+    </None>
+    <None Include="Data\Range.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\ExtendingSecurityManagerWithoutFinal.aipm">
+    </None>
+    <None Include="Data\ExtendingSecurityManagerWithoutFinal.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\ImproperValidationEmptyMethod.aipm">
+    </None>
+    <None Include="Data\ImproperValidationEmptyMethod.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\UsingCloneWithoutCloneable.aipm">
+    </None>
+    <None Include="Data\UsingCloneWithoutCloneable.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\PoorLoggingPractice.aipm">
+    </None>
+    <None Include="Data\PoorLoggingPractice.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -129,9 +129,17 @@
       <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
       <Name>PT.PM.Dsl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
+      <Project>{9215DF23-07BE-49AA-90A0-ED1C542C388C}</Project>
+      <Name>PT.PM.Matching</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
       <Name>PT.PM.Patterns</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj">
+      <Project>{08FBC341-AC44-4CAE-AE71-9462F7885E3E}</Project>
+      <Name>PT.PM.PhpParseTreeUst</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>

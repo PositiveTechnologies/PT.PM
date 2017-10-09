@@ -1,16 +1,16 @@
-﻿using System;
-using PT.PM.Common.Ust;
+﻿using PT.PM.Common.Nodes;
+using System.Collections.Generic;
 
 namespace PT.PM.Common
 {
     public interface IParseTreeToUstConverter : ILoggable
     {
-        UstType UstType { get; set; }
+        Language Language { get; }
 
-        Language MainLanguage { get; }
+        HashSet<Language> AnalyzedLanguages { get; set; }
 
-        LanguageFlags ConvertedLanguages { get; set; }
+        RootUst ParentRoot { get; set; }
 
-        Ust.Ust Convert(ParseTree langParseTree);
+        RootUst Convert(ParseTree langParseTree);
     }
 }

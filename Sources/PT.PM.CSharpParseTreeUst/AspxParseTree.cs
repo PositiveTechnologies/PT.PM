@@ -1,16 +1,11 @@
-﻿using PT.PM.Common;
-using AspxParser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AspxParser;
+using PT.PM.Common;
 
 namespace PT.PM.CSharpParseTreeUst
 {
     public class AspxParseTree: ParseTree
     {
-        public override Language SourceLanguage => Language.Aspx;
+        public override Language SourceLanguage => Aspx.Language;
 
         public AspxNode Root { get; set; }
 

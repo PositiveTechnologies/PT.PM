@@ -2,17 +2,15 @@
 {
     public class BooleanLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.BooleanLiteral;
-
         public bool Value { get; set; }
 
         public BooleanLiteral(bool value)
-            : this(value, default(TextSpan), null)
+            : this(value, default(TextSpan))
         {
         }
 
-        public BooleanLiteral(bool value, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public BooleanLiteral(bool value, TextSpan textSpan)
+            : base(textSpan)
         {
             Value = value;
         }
@@ -23,7 +21,7 @@
 
         public override string TextValue => Value.ToString();
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

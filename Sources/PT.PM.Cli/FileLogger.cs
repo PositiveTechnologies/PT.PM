@@ -20,7 +20,7 @@ namespace PT.PM.Cli
 
         protected NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
 
-        protected NLog.Logger MatchLogger { get; } = NLog.LogManager.GetLogger("match");
+        protected NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
 
         protected TextTruncater ErrorTruncater { get; } = new TextTruncater { MaxMessageLength = 300, CutWords = false };
 
@@ -75,11 +75,17 @@ namespace PT.PM.Cli
                 var matchingResult = infoObj as MatchingResult;
                 if (matchingResult != null)
                 {
-                    var matchingResultDto = MatchingResultDto.CreateFromMatchingResult(matchingResult, SourceCodeRepository);
+                    var matchingResultDto = new MatchingResultDto(matchingResult);
                     matchingResultDto.MatchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
                     var json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
                     MatchLogger.Info(json);
                     LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
+                }
+                else
+                {
+                    string match = infoObj.ToString();
+                    MatchLogger.Info(match);
+                    LogInfo(match);
                 }
             }
         }

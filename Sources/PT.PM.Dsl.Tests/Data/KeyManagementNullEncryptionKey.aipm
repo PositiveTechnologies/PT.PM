@@ -1,3 +1,0 @@
-﻿<[@encryption_key]> = <[@encryption_key_value: "" || null]>;
-...
-# = new Zend_Filter_Encrypt(<[@encryption_key]>);

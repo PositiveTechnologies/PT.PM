@@ -26,9 +26,10 @@ namespace PT.PM.TestUtils
         /// </summary>
         public string RepositoryName { get; set; }
 
-        public string DownloadPath { get; set; } = TestHelper.TestsDownloadedPath;
+        public string DownloadPath { get; set; } = TestUtility.TestsDownloadedPath;
 
-        public IEnumerable<string> Extensions { get; set; } = LanguageExt.Extensions;
+        public IEnumerable<string> Extensions { get; set; } =
+            LanguageUtils.Languages.SelectMany(lang => lang.Value.Extensions);
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
@@ -55,7 +56,7 @@ namespace PT.PM.TestUtils
             if (IsDirectoryNotExistsOrEmpty(CachedSourceDir))
             {
                 // Block another processes which try to use the same files.
-                using (var zipFileNameMutex = new Mutex(false, TestHelper.ConvertToValidMutexName(zipFileName)))
+                using (var zipFileNameMutex = new Mutex(false, TestUtility.ConvertToValidMutexName(zipFileName)))
                 {
                     if (zipFileNameMutex.WaitOne())
                     {
@@ -127,7 +128,7 @@ namespace PT.PM.TestUtils
 
         private bool IsDirectoryNotExistsOrEmpty(string directoryName)
         {
-            return !Directory.Exists(CachedSourceDir) || TestHelper.IsDirectoryEmpty(CachedSourceDir);
+            return !Directory.Exists(CachedSourceDir) || TestUtility.IsDirectoryEmpty(CachedSourceDir);
         }
 
         private void DownloadPack(string zipFileName)
@@ -179,7 +180,7 @@ namespace PT.PM.TestUtils
                 Directory.Delete(testDir, true);
             }
 
-            if (!Helper.IsRunningOnLinux)
+            if (!CommonUtils.IsRunningOnLinux)
             {
                 // Extract long paths with 7zip, also see here: http://stackoverflow.com/questions/5188527/how-to-deal-with-files-with-a-name-longer-than-259-characters
                 SevenZipExtractor.Extract(zipFileName, testDir);

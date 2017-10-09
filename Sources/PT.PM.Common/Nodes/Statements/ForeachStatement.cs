@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class ForeachStatement : Statement
     {
-        public override NodeType NodeType => NodeType.ForeachStatement;
-
         public TypeToken Type { get; set; }
 
         public IdToken VarName { get; set; }
@@ -17,8 +15,8 @@ namespace PT.PM.Common.Nodes.Statements
         public Statement EmbeddedStatement { get; set; }
 
         public ForeachStatement(TypeToken type, IdToken varName, Expression inExpression,
-            Statement embeddedStatement, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+            Statement embeddedStatement, TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             VarName = varName;
@@ -30,9 +28,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             result.Add(VarName);
             result.Add(InExpression);

@@ -7,72 +7,72 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class RoslynUstCommonConverterVisitor
+    public partial class CSharpRoslynParseTreeConverter
     {
-        public override UstNode VisitAccessorList(AccessorListSyntax node)
+        public override Ust VisitAccessorList(AccessorListSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitArgumentList(ArgumentListSyntax node)
+        public override Ust VisitArgumentList(ArgumentListSyntax node)
         {
             Expression[] args = node.Arguments.Select(arg => (Expression)VisitAndReturnNullIfError(arg))
                 .ToArray();
 
-            var result = new ArgsNode(args, node.GetTextSpan(), FileNode);
+            var result = new ArgsUst(args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitAttributeArgumentList(AttributeArgumentListSyntax node)
+        public override Ust VisitAttributeArgumentList(AttributeArgumentListSyntax node)
         {
             throw new InvalidOperationException();
         }
 
-        public override UstNode VisitAttributeList(AttributeListSyntax node)
+        public override Ust VisitAttributeList(AttributeListSyntax node)
         {
             return null;
         }
 
-        public override UstNode VisitBaseList(BaseListSyntax node)
+        public override Ust VisitBaseList(BaseListSyntax node)
         {
             return base.VisitBaseList(node);
         }
 
-        public override UstNode VisitBracketedArgumentList(BracketedArgumentListSyntax node)
+        public override Ust VisitBracketedArgumentList(BracketedArgumentListSyntax node)
         {
             Expression[] args = node.Arguments.Select(arg => (Expression)VisitAndReturnNullIfError(arg))
                 .ToArray();
 
-            var result = new ArgsNode(args, node.GetTextSpan(), FileNode);
+            var result = new ArgsUst(args, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitBracketedParameterList(BracketedParameterListSyntax node)
+        public override Ust VisitBracketedParameterList(BracketedParameterListSyntax node)
         {
             return base.VisitBracketedParameterList(node);
         }
 
-        public override UstNode VisitCrefBracketedParameterList(CrefBracketedParameterListSyntax node)
+        public override Ust VisitCrefBracketedParameterList(CrefBracketedParameterListSyntax node)
         {
             return base.VisitCrefBracketedParameterList(node);
         }
 
-        public override UstNode VisitCrefParameterList(CrefParameterListSyntax node)
+        public override Ust VisitCrefParameterList(CrefParameterListSyntax node)
         {
             return base.VisitCrefParameterList(node);
         }
 
-        public override UstNode VisitTypeArgumentList(TypeArgumentListSyntax node)
+        public override Ust VisitTypeArgumentList(TypeArgumentListSyntax node)
         {
             return base.VisitTypeArgumentList(node);
         }
 
-        public override UstNode VisitTypeParameterList(TypeParameterListSyntax node)
+        public override Ust VisitTypeParameterList(TypeParameterListSyntax node)
         {
             return base.VisitTypeParameterList(node);
         }
 
-        public override UstNode VisitParameterList(ParameterListSyntax node)
+        public override Ust VisitParameterList(ParameterListSyntax node)
         {
             throw new InvalidOperationException();
         }

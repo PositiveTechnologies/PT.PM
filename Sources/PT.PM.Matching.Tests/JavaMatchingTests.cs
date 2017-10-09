@@ -5,6 +5,9 @@ using PT.PM.Patterns.PatternsRepository;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using PT.PM.Matching.PatternsRepository;
+using System.Collections.Generic;
+using PT.PM.JavaParseTreeUst;
 
 namespace PT.PM.Matching.Tests
 {
@@ -22,16 +25,16 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsJava_MatchedAllDefault()
         {
-            var path = Path.Combine(TestHelper.TestsDataPath, "Patterns.java");
+            var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.java");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Language.Java, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)
-                .OrderBy(r => r.PatternKey)
-                .ToArray();
+            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
+                .ToDto()
+                .OrderBy(r => r.PatternKey);
             var patternDtos = patternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Is(LanguageFlags.Java)).ToArray();
+                .Where(patternDto => patternDto.Languages.Contains("Java")).ToArray();
             foreach (var dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
@@ -47,10 +50,6 @@ namespace PT.PM.Matching.Tests
             var cookieNotSentOverSslResults =
                 matchingResults.Where(r => r.PatternKey == cookieNotSentOverSslDto.Key).ToArray();
 
-            Assert.AreEqual(0, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieNotExistsSimple")));
-            Assert.AreEqual(0, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieNotExistsComplex")));
-
-            Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsTwoPatterns1")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsSimple")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsComplex")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsAnotherVarName")));

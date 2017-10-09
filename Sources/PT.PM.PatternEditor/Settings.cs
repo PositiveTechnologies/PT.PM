@@ -1,10 +1,9 @@
-﻿using PT.PM.Common;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using PT.PM.JavaScriptParseTreeUst;
 using System;
 using System.IO;
-using PT.PM.JavaScriptParseTreeUst;
 
 namespace PT.PM.PatternEditor
 {
@@ -43,7 +42,7 @@ namespace PT.PM.PatternEditor
 
         public Stage SelectedStage { get; set; } = Stage.Match;
 
-        public Language SourceCodeLanguage { get; set; } = Language.CSharp;
+        public string SourceCodeLanguage { get; set; } = "";
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 

@@ -9,8 +9,6 @@ namespace PT.PM.Common.Nodes.GeneralScope
 {
     public class TypeDeclaration : EntityDeclaration
     {
-        public override NodeType NodeType => NodeType.TypeDeclaration;
-
         public TypeTypeLiteral Type { get; set; }
 
         public List<TypeToken> BaseTypes { get; set; }
@@ -18,7 +16,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
         public List<EntityDeclaration> TypeMembers { get; set; }
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<EntityDeclaration> typeMembers,
-             TextSpan textSpan, FileNode fileNode) : base(name, textSpan, fileNode)
+             TextSpan textSpan) : base(name, textSpan)
         {
             Type = type;
             BaseTypes = new List<TypeToken>();
@@ -26,8 +24,8 @@ namespace PT.PM.Common.Nodes.GeneralScope
         }
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, List<TypeToken> baseTypes,
-            IEnumerable<EntityDeclaration> typeMembers, TextSpan textSpan, FileNode fileNode)
-            : base(name, textSpan, fileNode)
+            IEnumerable<EntityDeclaration> typeMembers, TextSpan textSpan)
+            : base(name, textSpan)
         {
             Type = type;
             BaseTypes = baseTypes;
@@ -38,9 +36,9 @@ namespace PT.PM.Common.Nodes.GeneralScope
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(base.GetChildren());
             result.Add(Type);
             result.AddRange(BaseTypes);

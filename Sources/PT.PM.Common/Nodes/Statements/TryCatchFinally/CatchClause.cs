@@ -3,18 +3,16 @@ using System;
 
 namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 {
-    public class CatchClause : UstNode
+    public class CatchClause : Ust
     {
-        public override NodeType NodeType => NodeType.CatchClause;
-
         public TypeToken Type { get; set; }
 
         public IdToken VarName { get; set; }
 
         public BlockStatement Body { get; set; }
 
-        public CatchClause(TypeToken type, IdToken varName, BlockStatement body, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public CatchClause(TypeToken type, IdToken varName, BlockStatement body, TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
             VarName = varName;
@@ -25,9 +23,9 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Type, VarName, Body};
+            return new Ust[] {Type, VarName, Body};
         }
 
         public override string ToString()

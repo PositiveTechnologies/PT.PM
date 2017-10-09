@@ -1,7 +1,4 @@
-﻿using PT.PM.ParseTreeUst;
-using PT.PM.UstParsing;
-using PT.PM.Common;
-using PT.PM.Common.Ust;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.TestUtils;
 using NUnit.Framework;
@@ -26,13 +23,13 @@ namespace PT.PM.PhpParseTreeUst.Tests
         [TestCase("xmlTag.php")]
         public void Parse_PhpSyntax_WithoutErrors(string fileName)
         {
-            TestHelper.CheckFile(fileName, Language.Php, Stage.Parse);
+            TestUtility.CheckFile(fileName, Php.Language, Stage.ParseTree);
         }
 
         [Test]
         public void Parse_NewLine_CorrectLineColumn()
         {
-            string fileText = File.ReadAllText(Path.Combine(TestHelper.TestsDataPath, "newLine -r-n.php"));
+            string fileText = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "newLine -r-n.php"));
             var lineEnds = new string[] { "\r", "\n", "\r\n" };
 
             foreach (var lineEnd in lineEnds)
@@ -46,31 +43,30 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 };
                 var parseTree = (PhpAntlrParseTree)phpParser.Parse(sourceCodeFile);
                 var converter = new PhpAntlrParseTreeConverter();
-                Ust ust = converter.Convert(parseTree);
-                
-                UstNode intNode = ust.Root.GetAllDescendants(
-                    node => node.NodeType == NodeType.IntLiteral &&
-                    ((IntLiteral)node).Value == 42).First();
+                RootUst ust = converter.Convert(parseTree);
+
+                Ust intNode = ust.WhereDescendants(
+                    node => node is IntLiteral intLiteral && intLiteral.Value == 42).First();
 
                 int beginLine, beginColumn, endLine, endColumn;
-                TextHelper.ToLineColumn(intNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                TextUtils.ToLineColumn(intNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
                 Assert.AreEqual(1, beginLine);
                 Assert.AreEqual(12, beginColumn);
                 Assert.AreEqual(14, endColumn);
 
-                UstNode heredocNode = ust.Root.GetAllDescendants(
-                    node => node.NodeType == NodeType.StringLiteral &&
-                    ((StringLiteral)node).Text.StartsWith("Heredoc text")).First();
+                Ust heredocNode = ust.WhereDescendants(
+                    node => node is StringLiteral stringLiteral &&
+                    stringLiteral.Text.StartsWith("Heredoc text")).First();
 
-                TextHelper.ToLineColumn(heredocNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                heredocNode.TextSpan.ToLineColumn(code, out beginLine, out beginColumn, out endLine, out endColumn);
                 Assert.AreEqual(3, beginLine);
                 Assert.AreEqual(6, endLine);
 
-                UstNode serverAddressNode = ust.Root.GetAllDescendants(
-                    node => node.NodeType == NodeType.StringLiteral &&
-                    ((StringLiteral)node).Text.Contains("http://127.0.0.1")).First();
+                Ust serverAddressNode = ust.WhereDescendants(
+                    node => node is StringLiteral stringLiteral &&
+                    stringLiteral.Text.Contains("http://127.0.0.1")).First();
 
-                TextHelper.ToLineColumn(serverAddressNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
+                TextUtils.ToLineColumn(serverAddressNode.TextSpan, code, out beginLine, out beginColumn, out endLine, out endColumn);
                 Assert.AreEqual(8, beginLine);
                 Assert.AreEqual(15, beginColumn);
             }

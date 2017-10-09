@@ -15,21 +15,21 @@ namespace PT.PM.SqlParseTreeUst.Tests
         [Test]
         public void Convert_PlSqlFiles_WithoutErrors()
         {
-            TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "PlSql"), Language.PlSql, Stage.Convert);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "PlSql"), PlSql.Language, Stage.Ust);
         }
 
         //[TestCase("TSQL Samples")]
         //[Ignore("Add TSQL samples from codebuff repository: https://github.com/antlr/codebuff/tree/master/corpus/sql/training")]
         public void Convert_TSqlFiles_WithoutErrors(string projectKey)
         {
-            TestHelper.CheckProject(
-                TestProjects.TSqlProjects.Single(p => p.Key == projectKey), Language.TSql, Stage.Convert);
+            TestUtility.CheckProject(
+                TestProjects.TSqlProjects.Single(p => p.Key == projectKey), TSql.Language, Stage.Ust);
         }
 
         [Test]
         public void Convert_TSqlSyntax_WithoutErrors()
         {
-            TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "TSql"), Language.TSql, Stage.Convert);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "TSql"), TSql.Language, Stage.Ust);
         }
     }
 }

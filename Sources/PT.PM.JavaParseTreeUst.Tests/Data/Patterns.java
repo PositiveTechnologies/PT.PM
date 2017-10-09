@@ -2,7 +2,7 @@ class Test extends SecurityManager implements X509TrustManager
 {
 	public static String passwordQuestion = "What is your favorite color";
 	private final Logger logger = Logger.getLogger(MyClass.class);
-    
+
 	// Default password: "asdf"
 	public void bar() {
 		String hardcodedPasswordValueNull = null;
@@ -98,15 +98,15 @@ class Test extends SecurityManager implements X509TrustManager
 		cookie1.setSecure(true);
 		response.addCookie(emailCookieExistsAnotherVarName);
 	}
-    
-    public void CookieNotSentOverSSLExistsTwoPatterns() {
-        Cookie emailCookieExistsTwoPatterns = new Cookie("emailCookieExistsTwoPatterns", email);
+
+	public void CookieNotSentOverSSLExistsTwoPatterns() {
+		Cookie emailCookieExistsTwoPatterns = new Cookie("emailCookieExistsTwoPatterns", email);
 		emailCookieExistsTwoPatterns.setSecure(true);
 		response.addCookie(emailCookieExistsTwoPatterns);
-        
-        Cookie emailCookieExistsTwoPatterns1 = new Cookie("emailCookieExistsTwoPatterns1", email);
+
+		Cookie emailCookieExistsTwoPatterns1 = new Cookie("emailCookieExistsTwoPatterns1", email);
 		response.addCookie(emailCookieExistsTwoPatterns1);
-    }
+	}
 
 	public Object clone() throws CloneNotSupportedException {
 		return this;

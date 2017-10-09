@@ -1,10 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
+using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,13 +9,14 @@ namespace PT.PM.Matching.Tests
 {
     public class PatternMatchingUtils
     {
-        public static MatchingResultDto[] GetMatchings(string code, string pattern, Language analyseLanguages)
+        public static MatchingResultDto[] GetMatchings(string code, string pattern, Language analyseLanguage)
         {
-            return GetMatchings(code, pattern, analyseLanguages.ToFlags());
+            return GetMatchings(code, pattern, new[] { analyseLanguage });
         }
 
-        public static MatchingResultDto[] GetMatchings(string code, string pattern, LanguageFlags analyzedLanguages,
-            LanguageFlags? patternLanguages = null)
+        public static MatchingResultDto[] GetMatchings(string code, string pattern,
+            IEnumerable<Language> analyzedLanguages,
+            IEnumerable<Language> patternLanguages = null)
         {
             var sourceCodeRep = new MemoryCodeRepository(code);
             var patternsRep = new MemoryPatternsRepository();
@@ -28,17 +26,13 @@ namespace PT.PM.Matching.Tests
             };
 
             var processor = new DslProcessor();
-            var patternNode = (PatternNode)processor.Deserialize(pattern, patternLanguages ?? LanguageExt.AllPatternLanguages);
-            var p = new Pattern
-            {
-                Data = patternNode,
-                DebugInfo = pattern
-            };
-            var patternsConverter = new PatternConverter(
-                new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef)));
-            patternsRep.Add(patternsConverter.ConvertBack(new List<Pattern>() { p }));
+            PatternRoot patternNode = processor.Deserialize(pattern);
+            patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageUtils.PatternLanguages.Values);
+            patternNode.DebugInfo = pattern;
+            var patternsConverter = new PatternConverter();
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto(workflow.SourceCodeRepository)
+            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto()
                 .OrderBy(r => r.PatternKey)
                 .ToArray();
 

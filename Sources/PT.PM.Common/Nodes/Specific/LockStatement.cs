@@ -5,14 +5,12 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class LockStatement : SpecificStatement
     {
-        public override NodeType NodeType => NodeType.LockStatement;
-
         public Expression Lock { get; set; }
 
         public Statement Embedded { get; set; }
 
-        public LockStatement(Expression lockExpression, Statement embedded, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public LockStatement(Expression lockExpression, Statement embedded, TextSpan textSpan)
+            : base(textSpan)
         {
             Lock = lockExpression;
             Embedded = embedded;
@@ -22,9 +20,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Lock, Embedded};
+            return new Ust[] {Lock, Embedded};
         }
     }
 }

@@ -12,7 +12,8 @@ namespace PT.PM.Common.CodeRepository
 
         public string Path { get; set; }
 
-        public IEnumerable<string> Extensions { get; set; } = LanguageExt.Extensions;
+        public IEnumerable<string> Extensions { get; set; } =
+            LanguageUtils.Languages.SelectMany(language => language.Value.Extensions);
 
         public SearchOption SearchOption { get; set; } = SearchOption.AllDirectories;
 

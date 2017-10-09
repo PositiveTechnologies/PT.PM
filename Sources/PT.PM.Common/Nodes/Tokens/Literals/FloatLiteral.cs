@@ -4,19 +4,17 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class FloatLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.FloatLiteral;
-
         public double Value { get; set; }
 
         public override string TextValue => Value.ToString(CultureInfo.InvariantCulture);
 
         public FloatLiteral(double value)
-            : this(value, default(TextSpan), null)
+            : this(value, default(TextSpan))
         {
         }
 
-        public FloatLiteral(double value, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public FloatLiteral(double value, TextSpan textSpan)
+            : base(textSpan)
         {
             Value = value;
         }
@@ -25,7 +23,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

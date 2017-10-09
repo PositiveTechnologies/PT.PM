@@ -1,0 +1,1 @@
+(field <[ [Ll]og ]> <[ \w+ ]>) <&> (<~>(field static final <[ [Ll]og ]> <[ \w+ ]>))

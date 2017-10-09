@@ -4,14 +4,14 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class StringLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.StringLiteral;
-
         public override string TextValue => Text;
 
         public virtual string Text { get; set; }
 
-        public StringLiteral(string text, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public int EscapeCharsLength { get; set; } = 1;
+
+        public StringLiteral(string text, TextSpan textSpan)
+            : base(textSpan)
         {
             Text = text;
         }
@@ -25,7 +25,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

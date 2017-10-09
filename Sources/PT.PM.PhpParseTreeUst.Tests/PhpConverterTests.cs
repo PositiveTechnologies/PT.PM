@@ -11,7 +11,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         [TestCase("numericScale.php")]
         public void Convert_PhpSyntax_WithoutErrors(string fileName)
         {
-            TestHelper.CheckFile(fileName, Language.Php, Stage.Convert);
+            TestUtility.CheckFile(fileName, Php.Language, Stage.Ust);
         }
 
         [TestCase("WebGoatPHP-6f48c9")]
@@ -19,18 +19,18 @@ namespace PT.PM.PhpParseTreeUst.Tests
         // [TestCase("ZendFramework-2.4.8")] // Too long test duration
         public void Convert_PhpProject_WithoutErrors(string projectKey)
         {
-            TestHelper.CheckProject(
-                TestProjects.PhpProjects.Single(p => p.Key == projectKey), Language.Php, Stage.Convert);
+            TestUtility.CheckProject(
+                TestProjects.PhpProjects.Single(p => p.Key == projectKey), Php.Language, Stage.Ust);
         }
 
         [Test]
         public void Convert_PhpPatternsWithErrors_MatchedResultsEqual()
         {
             var patternsLogger = new LoggerMessageCounter();
-            TestHelper.CheckFile("Patterns.php", Language.Php, Stage.Match, patternsLogger);
+            TestUtility.CheckFile("Patterns.php", Php.Language, Stage.Match, patternsLogger);
 
             var patternWithErrorsLogger = new LoggerMessageCounter();
-            TestHelper.CheckFile("PatternsWithParseErrors.php", Language.Php, Stage.Match, patternWithErrorsLogger, true);
+            TestUtility.CheckFile("PatternsWithParseErrors.php", Php.Language, Stage.Match, patternWithErrorsLogger, true);
 
             Assert.AreEqual(patternsLogger.InfoMessageCount, patternWithErrorsLogger.InfoMessageCount);
         }

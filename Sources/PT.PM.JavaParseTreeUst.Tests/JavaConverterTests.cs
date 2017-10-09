@@ -20,27 +20,27 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
-            TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
+            TestUtility.CheckFile(fileName, Java.Language, Stage.Ust);
         }
 
         [Test]
         public void Convert_JavaWebGoat_WithoutErrors()
         {
             string projectKey = "WebGoat.Java-05a1f5";
-            TestHelper.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),
-                Language.Java, Stage.Parse);
+            TestUtility.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),
+                Java.Language, Stage.ParseTree);
         }
 
         [Test]
         public void Convert_JavaPatternsWithErrors_MatchedResultsEqual()
         {
             var patternsLogger = new LoggerMessageCounter();
-            TestHelper.CheckFile("Patterns.java", Language.Java, Stage.Match, patternsLogger);
+            TestUtility.CheckFile("Patterns.java", Java.Language, Stage.Match, patternsLogger);
 
             var patternWithErrorsLogger = new LoggerMessageCounter();
-            TestHelper.CheckFile("PatternsWithParseErrors.java", Language.Java, Stage.Match, patternWithErrorsLogger, true);
+            TestUtility.CheckFile("PatternsWithParseErrors.java", Java.Language, Stage.Match, patternWithErrorsLogger, true);
 
-            Assert.AreEqual(patternsLogger.InfoMessageCount, patternWithErrorsLogger.InfoMessageCount);
+            Assert.AreEqual(0, patternWithErrorsLogger.InfoMessageCount - patternsLogger.InfoMessageCount);
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 "}"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Language.Java, stage: Stage.Convert);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Ust);
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
             var intType = new TypeToken("int");
@@ -87,7 +87,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                     Initializers = data.Item1,
                     Sizes = data.Item2
                 };
-                bool exist = ust.Root.DoesAnyDescendantMatchPredicate(node => node.Equals(arrayCreationExpression));
+                bool exist = ust.AnyDescendant(node => node.Equals(arrayCreationExpression));
                 Assert.IsTrue(exist, "Test failed on " + i + " iteration.");
             }
         }
@@ -104,23 +104,23 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 }"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Language.Java, stage: Stage.Convert);
+            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Ust);
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
 
-            Assert.IsTrue(ust.Root.DoesAnyDescendantMatchPredicate(ustNode =>
+            Assert.IsTrue(ust.AnyDescendant(ustNode =>
                 ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
         }
 
         [TestCase("AllInOne.java")]
         public void Convert_Java_BaseTypesExist(string fileName)
         {
-            var workflowResults = TestHelper.CheckFile(fileName, Language.Java, Stage.Convert);
+            var workflowResults = TestUtility.CheckFile(fileName, Java.Language, Stage.Ust);
             var ust = workflowResults.Usts.First();
-            bool result = ust.Root.DoesAnyDescendantMatchPredicate(el =>
+            bool result = ust.AnyDescendant(descendant =>
             {
-                bool isTypeDeclaration = el.NodeType == Common.Nodes.NodeType.TypeDeclaration;
-                return isTypeDeclaration && ((TypeDeclaration)el).BaseTypes.Any(t => t.TypeText == "Runnable");
+                return descendant is TypeDeclaration typeDeclaration &&
+                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "Runnable");
             });
             Assert.IsTrue(result, "Ust doesn't contain type declaration node with Runnable base type");
         }

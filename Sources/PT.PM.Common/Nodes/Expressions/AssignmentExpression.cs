@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PT.PM.Common.Nodes.Expressions
+﻿namespace PT.PM.Common.Nodes.Expressions
 {
     public class AssignmentExpression : Expression
     {
-        public override NodeType NodeType => NodeType.AssignmentExpression;
-
         public Expression Left { get; set; }
 
         public Expression Right { get; set; }
 
-        public AssignmentExpression(Expression left, Expression right, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public AssignmentExpression(Expression left, Expression right, TextSpan textSpan)
+            : base(textSpan)
         {
             Left = left;
             Right = right;
@@ -22,11 +17,9 @@ namespace PT.PM.Common.Nodes.Expressions
         {
         }
 
-        public override UstNode[] GetChildren()
-        {
-            var result = new List<UstNode> {Left, Right};
-            return result.ToArray();
-        }
+        public override Ust[] GetChildren() => new Ust[] { Left, Right };
+
+        public override Expression[] GetArgs() => new Expression[] { Left, Right };
 
         public override string ToString()
         {

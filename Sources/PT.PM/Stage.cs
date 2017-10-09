@@ -3,11 +3,11 @@
     public enum Stage
     {
         None = 0,
-        Read = 1,
-        Parse = 2,
-        Convert = 3,
-        Preprocess = 4,
+        File = 1,
+        ParseTree = 2,
+        Ust = 3,
+        SimplifiedUst = 4,
         Match = 10,
-        Patterns = 16
+        Pattern = 16
     }
 }

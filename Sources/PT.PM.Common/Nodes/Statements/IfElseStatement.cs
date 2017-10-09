@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class IfElseStatement : Statement
     {
-        public override NodeType NodeType => NodeType.IfElseStatement;
-
         public Expression Condition { get; set; }
 
         public Statement TrueStatement { get; set; }
@@ -17,8 +15,8 @@ namespace PT.PM.Common.Nodes.Statements
         /// </summary>
         public Statement FalseStatement { get; set; }
 
-        public IfElseStatement(Expression condition, Statement trueStatement, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public IfElseStatement(Expression condition, Statement trueStatement, TextSpan textSpan)
+            : base(textSpan)
         {
             Condition = condition;
             TrueStatement = trueStatement;
@@ -28,9 +26,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>()
+            var result = new List<Ust>()
             {
                 Condition,
                 TrueStatement

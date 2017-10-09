@@ -40,9 +40,9 @@ namespace PT.PM.AntlrUtils
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        protected abstract Lexer InitLexer(ICharStream inputStream);
+        public abstract Lexer InitLexer(ICharStream inputStream);
 
-        protected abstract Parser InitParser(ITokenStream inputStream);
+        public abstract Parser InitParser(ITokenStream inputStream);
 
         protected abstract ParserRuleContext Parse(Parser parser);
 
@@ -51,6 +51,8 @@ namespace PT.PM.AntlrUtils
         protected abstract IVocabulary Vocabulary { get; }
 
         protected abstract int CommentsChannel { get; }
+
+        public int LineOffset { get; set; }
 
         public AntlrParser()
         {
@@ -103,12 +105,12 @@ namespace PT.PM.AntlrUtils
                 errorListener.FileName = filePath;
                 errorListener.FileData = sourceCodeFile.Code;
                 errorListener.Logger = Logger;
-                errorListener.LineOffset = sourceCodeFile.LineOffset;
+                errorListener.LineOffset = LineOffset;
                 try
                 {
                     var preprocessedText = PreprocessText(sourceCodeFile);
                     AntlrInputStream inputStream;
-                    if (Language.IsCaseInsensitive())
+                    if (Language.IsCaseInsensitive)
                     {
                         inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
                     }
@@ -129,9 +131,11 @@ namespace PT.PM.AntlrUtils
                     stopwatch.Stop();
                     long lexerTimeSpanTicks = stopwatch.ElapsedTicks;
 
-#if DEBUG
-                    var codeTokensStr = AntlrHelper.GetTokensString(tokens, Vocabulary, onlyDefaultChannel: false);
-#endif
+                    if (Debugger.IsAttached)
+                    {
+                        var codeTokensStr = tokens.GetTokensString(Vocabulary, onlyDefaultChannel: false);
+                    }
+
                     ClearCacheIfRequired(lexer.Interpreter, lexerLock, ClearCacheLexerFilesCount);
 
                     foreach (var token in tokens)
@@ -171,8 +175,7 @@ namespace PT.PM.AntlrUtils
             {
                 result = Create(null);
             }
-            result.FileName = filePath;
-            result.FileData = sourceCodeFile.Code;
+            result.SourceCodeFile = sourceCodeFile;
 
             return result;
         }

@@ -34,7 +34,7 @@
         <TextBlock Grid.Column="7" Text="Stage" IsVisible="{Binding DeveloperMode}"/>
         <DropDown Grid.Column="8" Items="{Binding Stages}" SelectedItem="{Binding Stage}" IsVisible="{Binding DeveloperMode}"/>
         <TextBlock Grid.Column="9" Margin="10,0,0,0" Text="Language"/>
-        <DropDown Grid.Column="10" Items="{Binding Languages}" SelectedItem="{Binding SelectedLanguageInfo}" />
+        <DropDown Grid.Column="10" Items="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
         <TextBlock Grid.Column="11" Margin="10,0,0,0" Text="JS Type  " IsVisible="{Binding IsJavaScriptTypeVisible}" />
         <DropDown Grid.Column="12" Items="{Binding JavaScriptTypes}" SelectedItem="{Binding JavaScriptType}" IsVisible="{Binding IsJavaScriptTypeVisible}" />
       </Grid>
@@ -47,13 +47,13 @@
         </Grid>
       </Expander>
 
-      <Expander Grid.Row="3" Header="ANTLR Tokens" IsExpanded="{Binding IsTokensExpanded, Mode=TwoWay}" IsVisible="{Binding IsTokensVisible}">
+      <Expander Grid.Row="3" Header="{Binding TokensHeader}" IsExpanded="{Binding IsTokensExpanded, Mode=TwoWay}" IsVisible="{Binding IsTokensVisible}">
         <Grid RowDefinitions="80">
           <TextBox Text="{Binding Tokens}" AcceptsReturn="true" TextWrapping="Wrap" IsReadOnly="true" MinHeight="80"/>
         </Grid>
       </Expander>
 
-      <Expander Grid.Row="4" Header="ANTLR Parse Tree" IsExpanded="{Binding IsParseTreeExpanded, Mode=TwoWay}" IsVisible="{Binding IsTreeVisible}">
+      <Expander Grid.Row="4" Header="{Binding ParseTreeHeader}" IsExpanded="{Binding IsParseTreeExpanded, Mode=TwoWay}" IsVisible="{Binding IsTreeVisible}">
         <Grid RowDefinitions="80">
           <TextBox Text="{Binding ParseTree}" AcceptsReturn="true" TextWrapping="Wrap" IsReadOnly="true" MinHeight="80"/>
         </Grid>

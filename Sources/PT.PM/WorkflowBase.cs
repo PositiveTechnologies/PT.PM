@@ -1,31 +1,29 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Patterns;
-using PT.PM.Patterns.PatternsRepository;
+using PT.PM.Common.Exceptions;
+using PT.PM.Common.Nodes;
+using PT.PM.JavaScriptParseTreeUst;
+using PT.PM.Matching;
+using PT.PM.Matching.PatternsRepository;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System;
-using System.Threading.Tasks;
-using PT.PM.Matching;
 using System.Threading;
-using PT.PM.Common.Exceptions;
+using System.Threading.Tasks;
 
 namespace PT.PM
 {
     public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
-        where TPattern : PatternBase
         where TMatchingResult : MatchingResultBase<TPattern>
     {
-        private int maxTimespan;
-        private int memoryConsumptionMb;
-
         protected ILogger logger = DummyLogger.Instance;
         protected int maxStackSize;
         protected Task filesCountTask;
+        protected Task convertPatternsTask;
 
         protected Language[] languages;
 
@@ -37,8 +35,6 @@ namespace PT.PM
 
         public IPatternsRepository PatternsRepository { get; set; }
 
-        public Dictionary<Language, ParserConverterSet> ParserConverterSets { get; set; } = new Dictionary<Language, ParserConverterSet>();
-
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
         public IUstPatternMatcher<TInputGraph, TPattern, TMatchingResult> UstPatternMatcher { get; set; }
@@ -49,6 +45,10 @@ namespace PT.PM
 
         public bool IsIncludePreprocessing { get; set; } = true;
 
+        public bool IsAsyncPatternsConversion { get; set; } = true;
+
+        public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
+
         public ILogger Logger
         {
             get { return logger; }
@@ -58,17 +58,6 @@ namespace PT.PM
                 if (SourceCodeRepository != null)
                 {
                     SourceCodeRepository.Logger = Logger;
-                }
-                foreach (var languageParser in ParserConverterSets)
-                {
-                    if (languageParser.Value.Parser != null)
-                    {
-                        languageParser.Value.Parser.Logger = logger;
-                    }
-                    if (languageParser.Value.Converter != null)
-                    {
-                        languageParser.Value.Converter.Logger = logger;
-                    }
                 }
                 if (PatternsRepository != null)
                 {
@@ -95,102 +84,35 @@ namespace PT.PM
 
         public int ThreadCount { get; set; }
 
-        public int MaxStackSize
-        {
-            get
-            {
-                return maxStackSize;
-            }
-            set
-            {
-                maxStackSize = value;
-                foreach (var languageParser in ParserConverterSets)
-                {
-                    var antlrParser = languageParser.Value.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MaxStackSize = maxStackSize;
-                    }
-                }
-            }
-        }
+        public int MaxStackSize { get; set; } = 0;
 
-        public Language[] Languages
-        {
-            get
-            {
-                if (languages == null)
-                {
-                    languages = ParserConverterSets.Keys.Select(key => key).ToArray();
-                }
-                return languages;
-            }
-        }
+        public int MaxTimespan { get; set; } = 0;
 
-        public int MaxTimespan
-        {
-            get
-            {
-                return maxTimespan;
-            }
-            set
-            {
-                maxTimespan = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MaxTimespan = maxTimespan;
-                    }
-                }
-            }
-        }
+        public long MemoryConsumptionMb { get; set; } = 300;
 
-        public int MemoryConsumptionMb
-        {
-            get
-            {
-                return memoryConsumptionMb;
-            }
-            set
-            {
-                memoryConsumptionMb = value;
-                foreach (var pair in ParserConverterSets)
-                {
-                    var antlrParser = pair.Value?.Parser as AntlrParser;
-                    if (antlrParser != null)
-                    {
-                        antlrParser.MemoryConsumptionMb = memoryConsumptionMb;
-                    }
-                }
-            }
-        }
+        public HashSet<Language> AnalyzedLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
+
+        public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
+
+        public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
+
+        public string DumpDir { get; set; } = "";
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        public WorkflowBase(TStage stage)
+        public WorkflowBase(TStage stage, IEnumerable<Language> languages)
         {
+            AnalyzedLanguages = new HashSet<Language>(languages);
             Stage = stage;
             stageHelper = new StageHelper<TStage>(stage);
         }
 
-        public ILanguageParser GetParser(Language language)
+        protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return ParserConverterSets[language].Parser;
-        }
-
-        public IParseTreeToUstConverter GetConverter(Language language)
-        {
-            return ParserConverterSets[language].Converter;
-        }
-
-        protected ParseTree ReadAndParse(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            ParseTree result = null;
+            RootUst result = null;
             var stopwatch = new Stopwatch();
             string file = fileName;
-            if (stageHelper.IsContainsRead)
+            if (stageHelper.IsContainsFile)
             {
                 if (SourceCodeRepository.IsFileIgnored(fileName))
                 {
@@ -205,28 +127,41 @@ namespace PT.PM
                 Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
 
                 workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-                workflowResult.AddProcessedLinesCount(TextHelper.GetLinesCount(sourceCodeFile.Code));
+                workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
                 workflowResult.AddReadTime(stopwatch.ElapsedTicks);
                 workflowResult.AddResultEntity(sourceCodeFile);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
                 file = sourceCodeFile.RelativePath;
-                if (stageHelper.IsContainsParse)
+                if (stageHelper.IsContainsParseTree)
                 {
                     stopwatch.Restart();
-                    Language? detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, Languages);
+                    Language detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
                     if (detectedLanguage == null)
                     {
                         Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");
                         return null;
                     }
-                    result = ParserConverterSets[(Language)detectedLanguage].Parser.Parse(sourceCodeFile);
+                    var parser = detectedLanguage.CreateParser();
+                    parser.Logger = Logger;
+                    if (parser is AntlrParser antlrParser)
+                    {
+                        antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
+                        antlrParser.MaxTimespan = MaxTimespan;
+                        antlrParser.MaxStackSize = MaxStackSize;
+                        if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
+                        {
+                            javaScriptAntlrParser.JavaScriptType = JavaScriptType;
+                        }
+                    }
+                    ParseTree parseTree = parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
                     Logger.LogInfo($"File {fileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
+                    workflowResult.AddResultEntity(parseTree);
 
-                    var antlrParseTree = result as AntlrParseTree;
+                    var antlrParseTree = parseTree as AntlrParseTree;
                     if (antlrParseTree != null)
                     {
                         workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
@@ -234,36 +169,95 @@ namespace PT.PM
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
+
+                    if (stageHelper.IsContainsUst)
+                    {
+                        stopwatch.Reset();
+
+                        var converter = detectedLanguage.CreateConverter();
+                        converter.Logger = Logger;
+                        converter.AnalyzedLanguages = AnalyzedLanguages;
+                        result = converter.Convert(parseTree);
+                        stopwatch.Stop();
+                        Logger.LogInfo($"File {fileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
+                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(result, true);
+
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
                 }
             }
             return result;
         }
 
-        protected Task GetConvertPatternsTask(TWorkflowResult workflowResult)
+        protected void StartConvertPatternsTaskIfRequired(TWorkflowResult workflowResult)
         {
-            Task convertPatternsTask = null;
-            if (stageHelper.IsPatterns || stageHelper.IsContainsMatch)
+            if (IsAsyncPatternsConversion)
             {
-                convertPatternsTask = new Task(() =>
+                if (stageHelper.IsPattern || stageHelper.IsContainsMatch)
                 {
-                    try
-                    {
-                        var stopwatch = Stopwatch.StartNew();
-                        IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                        UstPatternMatcher.Patterns = PatternConverter.Convert(patternDtos);
-                        stopwatch.Stop();
-                        workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(UstPatternMatcher.Patterns);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
-                    }
-                });
-                convertPatternsTask.Start();
+                    convertPatternsTask = new Task(() => ConvertPatterns(workflowResult));
+                    convertPatternsTask.Start();
+                }
             }
+        }
 
-            return convertPatternsTask;
+        protected void WaitOrConverterPatterns(TWorkflowResult result)
+        {
+            if (IsAsyncPatternsConversion)
+            {
+                convertPatternsTask.Wait();
+            }
+            else
+            {
+                ConvertPatterns(result);
+            }
+        }
+
+        protected void ConvertPatterns(TWorkflowResult workflowResult)
+        {
+            try
+            {
+                var stopwatch = Stopwatch.StartNew();
+                IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
+                UstPatternMatcher.Patterns = PatternConverter.Convert(patternDtos);
+                stopwatch.Stop();
+                workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
+                workflowResult.AddResultEntity(UstPatternMatcher.Patterns);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
+            }
+        }
+
+        protected static HashSet<Language> GetBaseLanguages(HashSet<Language> analyzedLanguages)
+        {
+            HashSet<Language> result = new HashSet<Language>();
+            foreach (Language language in analyzedLanguages)
+            {
+                result.Add(language);
+                Language superLangInfo = language;
+                do
+                {
+                    superLangInfo = LanguageUtils.Languages.FirstOrDefault(l => l.Value.Sublanguages.Contains(superLangInfo)).Value;
+                    if (superLangInfo != null)
+                    {
+                        result.Add(superLangInfo);
+                    }
+                }
+                while (superLangInfo != null);
+            }
+            return result;
+        }
+
+        protected ParallelOptions PrepareParallelOptions(CancellationToken cancellationToken)
+        {
+            return new ParallelOptions
+            {
+                MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
+                CancellationToken = cancellationToken
+            };
         }
     }
 }

@@ -2,20 +2,12 @@
 {
     public class CommentLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.CommentLiteral;
-
         public virtual string Comment { get; set; }
 
         public override string TextValue => Comment;
 
-        public CommentLiteral(string comment, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
-        {
-            Comment = comment;
-        }
-
         public CommentLiteral(string comment, TextSpan textSpan)
-           : base(textSpan)
+            : base(textSpan)
         {
             Comment = comment;
         }

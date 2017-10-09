@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Tokens;
+﻿using PT.PM.Common.Nodes.Tokens;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
     public class ArrayCreationExpression : Expression
     {
-        public override NodeType NodeType => NodeType.ArrayCreationExpression;
-
         public TypeToken Type { get; set; }
 
         public List<Expression> Sizes { get; set; }
@@ -15,21 +13,23 @@ namespace PT.PM.Common.Nodes.Expressions
         public List<Expression> Initializers { get; set; }
 
         public ArrayCreationExpression(TypeToken type, IEnumerable<Expression> sizes, IEnumerable<Expression> inits,
-            TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Type = type;
-            Sizes = sizes as List<Expression> ?? Sizes?.ToList();
-            Initializers = inits as List<Expression> ?? inits?.ToList();
+            Sizes = sizes as List<Expression> ?? sizes?.ToList() ?? new List<Expression>();
+            Initializers = inits as List<Expression> ?? inits?.ToList() ?? new List<Expression>();
         }
 
         public ArrayCreationExpression()
         {
+            Sizes = new List<Expression>();
+            Initializers = new List<Expression>();
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.Add(Type);
             if (Sizes != null)
             {
@@ -42,14 +42,21 @@ namespace PT.PM.Common.Nodes.Expressions
             return result.ToArray();
         }
 
-        public override int CompareTo(UstNode other)
+        public override Expression[] GetArgs()
+        {
+            var result = new List<Expression> { Type };
+            result.AddRange(Sizes);
+            return result.ToArray();
+        }
+
+        public override int CompareTo(Ust other)
         {
             if (other == null)
             {
-                return (int)NodeType;
+                return (int)KindId;
             }
 
-            var nodeTypeCompareResult = NodeType - other.NodeType;
+            var nodeTypeCompareResult = KindId - other.KindId;
             if (nodeTypeCompareResult != 0)
             {
                 return nodeTypeCompareResult;

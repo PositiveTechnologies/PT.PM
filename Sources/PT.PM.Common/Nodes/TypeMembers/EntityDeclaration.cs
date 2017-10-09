@@ -4,14 +4,14 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
-    public abstract class EntityDeclaration : UstNode
+    public abstract class EntityDeclaration : Ust
     {
         public List<ModifierLiteral> Modifiers { get; set; }
 
         public IdToken Name { get; set; }
 
-        protected EntityDeclaration(IdToken name, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        protected EntityDeclaration(IdToken name, TextSpan textSpan)
+            : base(textSpan)
         {
             Name = name;
         }
@@ -20,9 +20,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             if (Modifiers != null)
                 result.AddRange(Modifiers);
             result.Add(Name);

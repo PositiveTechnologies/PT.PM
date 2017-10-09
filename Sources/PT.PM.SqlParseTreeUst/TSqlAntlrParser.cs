@@ -7,7 +7,7 @@ namespace PT.PM.SqlParseTreeUst
 {
     public class TSqlAntlrParser : AntlrParser
     {
-        public override Language Language => Language.TSql;
+        public override Language Language => TSql.Language;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.UPPER;
 
@@ -19,12 +19,12 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override IVocabulary Vocabulary => TSqlLexer.DefaultVocabulary;
 
-        protected override Lexer InitLexer(ICharStream inputStream)
+        public override Lexer InitLexer(ICharStream inputStream)
         {
             return new TSqlLexer(inputStream);
         }
 
-        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
+        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
         {
             return new TSqlParser(inputStream);
         }

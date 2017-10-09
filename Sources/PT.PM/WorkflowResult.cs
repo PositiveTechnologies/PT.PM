@@ -1,12 +1,12 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
-using PT.PM.Patterns;
+using System.Collections.Generic;
 
 namespace PT.PM
 {
-    public class WorkflowResult : WorkflowResultBase<Stage, Pattern, MatchingResult>
+    public class WorkflowResult : WorkflowResultBase<Stage, PatternRoot, MatchingResult>
     {
-        public WorkflowResult(Language[] languages, int threadCount, Stage stage, bool isIncludeIntermediateResult)
+        public WorkflowResult(IEnumerable<Language> languages, int threadCount, Stage stage, bool isIncludeIntermediateResult)
             : base(languages, threadCount, stage, isIncludeIntermediateResult)
         {
         }

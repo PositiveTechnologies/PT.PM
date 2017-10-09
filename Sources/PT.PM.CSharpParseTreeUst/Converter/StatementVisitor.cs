@@ -11,47 +11,47 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
-    public partial class RoslynUstCommonConverterVisitor
+    public partial class CSharpRoslynParseTreeConverter
     {
-        public override UstNode VisitBlock(BlockSyntax node)
+        public override Ust VisitBlock(BlockSyntax node)
         {
             var statements = node.Statements.Select(s => (Statement)VisitAndReturnNullIfError(s))
                 .ToList();
-            var result = new BlockStatement(statements, node.GetTextSpan(), FileNode);
+            var result = new BlockStatement(statements, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
+        public override Ust VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
         {
             var type = ConvertType(base.Visit(node.Declaration.Type));
             AssignmentExpression[] variables = 
                 node.Declaration.Variables.Select(v => (AssignmentExpression)VisitAndReturnNullIfError(v))
                 .ToArray();
 
-            var resultExpression = new VariableDeclarationExpression(type, variables, node.GetTextSpan(), FileNode);
+            var resultExpression = new VariableDeclarationExpression(type, variables, node.GetTextSpan());
             var result = new ExpressionStatement(resultExpression);
             return result;
         }
 
-        public override UstNode VisitBreakStatement(BreakStatementSyntax node)
+        public override Ust VisitBreakStatement(BreakStatementSyntax node)
         {
-            var result = new BreakStatement(node.GetTextSpan(), FileNode);
+            var result = new BreakStatement(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitCheckedStatement(CheckedStatementSyntax node)
+        public override Ust VisitCheckedStatement(CheckedStatementSyntax node)
         {
             var result = (BlockStatement)VisitBlock(node.Block);
             return result;
         }
 
-        public override UstNode VisitContinueStatement(ContinueStatementSyntax node)
+        public override Ust VisitContinueStatement(ContinueStatementSyntax node)
         {
-            var result = new ContinueStatement(node.GetTextSpan(), FileNode);
+            var result = new ContinueStatement(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitDoStatement(DoStatementSyntax node)
+        public override Ust VisitDoStatement(DoStatementSyntax node)
         {
             var embedded = (Statement)base.Visit(node.Statement);
             var condition = (Expression)base.Visit(node.Condition);
@@ -59,26 +59,25 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var result = new DoWhileStatement(
                 embedded,
                 condition,
-                node.GetTextSpan(),
-                FileNode
+                node.GetTextSpan()
             );
             return result;
         }
 
-        public override UstNode VisitEmptyStatement(EmptyStatementSyntax node)
+        public override Ust VisitEmptyStatement(EmptyStatementSyntax node)
         {
-            var result = new EmptyStatement(node.GetTextSpan(), FileNode);
+            var result = new EmptyStatement(node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitExpressionStatement(ExpressionStatementSyntax node)
+        public override Ust VisitExpressionStatement(ExpressionStatementSyntax node)
         {
             var expression = (Expression)base.Visit(node.Expression);
-            var result = new ExpressionStatement(expression, node.GetTextSpan(), FileNode);
+            var result = new ExpressionStatement(expression, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitFixedStatement(FixedStatementSyntax node)
+        public override Ust VisitFixedStatement(FixedStatementSyntax node)
         {
             var statements = new List<Statement>();
 
@@ -86,22 +85,22 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             statements.Add(new ExpressionStatement(varDec));
             statements.AddRange(GetChildStatements(node.Statement));
 
-            var result = new BlockStatement(statements, node.GetTextSpan(), FileNode);
+            var result = new BlockStatement(statements, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitForEachStatement(ForEachStatementSyntax node)
+        public override Ust VisitForEachStatement(ForEachStatementSyntax node)
         {
             var type = ConvertType(base.Visit(node.Type));
-            var var = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan(), FileNode);
+            var var = new IdToken(node.Identifier.ValueText, node.Identifier.GetTextSpan());
             var inExpression = (Expression) base.Visit(node.Expression);
             var embedded = (Statement) base.Visit(node.Statement);
 
-            var result = new ForeachStatement(type, var, inExpression, embedded, node.GetTextSpan(), FileNode);
+            var result = new ForeachStatement(type, var, inExpression, embedded, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitForStatement(ForStatementSyntax node)
+        public override Ust VisitForStatement(ForStatementSyntax node)
         {
             Statement[] initializers = node.Declaration != null ?
                 new Statement[]
@@ -110,7 +109,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 } :
                 node.Initializers.Select(init => {
                     Expression ex = (Expression)VisitAndReturnNullIfError(init);
-                    return ex == null ? null : new ExpressionStatement(ex, init.GetTextSpan(), FileNode);
+                    return ex == null ? null : new ExpressionStatement(ex, init.GetTextSpan());
                 })
                 .ToArray();
 
@@ -119,18 +118,18 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 .ToArray();
             var statement = (Statement)base.Visit(node.Statement);
 
-            var result = new ForStatement(initializers, condition, iterators, statement, node.GetTextSpan(), FileNode);
+            var result = new ForStatement(initializers, condition, iterators, statement, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitGotoStatement(GotoStatementSyntax node)
+        public override Ust VisitGotoStatement(GotoStatementSyntax node)
         {
             return new GotoStatement(
-                new IdToken("label", node.GetTextSpan(), FileNode),
-                node.GetTextSpan(), FileNode); // TODO implement;
+                new IdToken("label", node.GetTextSpan()),
+                node.GetTextSpan()); // TODO implement;
         }
         
-        public override UstNode VisitIfStatement(IfStatementSyntax node)
+        public override Ust VisitIfStatement(IfStatementSyntax node)
         {
             var condition = (Expression) base.Visit(node.Condition);
             Statement trueStatement = (Statement)base.Visit(node.Statement);
@@ -141,17 +140,16 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var result = new IfElseStatement(
                 condition,
                 trueStatement,
-                node.GetTextSpan(),
-                FileNode)
+                node.GetTextSpan())
             {
                 FalseStatement = falseStatement
             };
             return result;
         }
 
-        public override UstNode VisitLabeledStatement(LabeledStatementSyntax node)
+        public override Ust VisitLabeledStatement(LabeledStatementSyntax node)
         {
-            return new EmptyStatement(node.GetTextSpan(), FileNode);
+            return new EmptyStatement(node.GetTextSpan());
         }
 
         /// <summary>
@@ -159,29 +157,29 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public override UstNode VisitLockStatement(LockStatementSyntax node)
+        public override Ust VisitLockStatement(LockStatementSyntax node)
         {
             var statements = new List<Statement>();
 
             var expr = new ExpressionStatement((Expression) base.Visit(node.Expression),
-                node.Expression.GetTextSpan(), FileNode);
+                node.Expression.GetTextSpan());
             statements.Add(expr);
             statements.AddRange(GetChildStatements(node.Statement));
 
-            var result = new BlockStatement(statements, node.GetTextSpan(), FileNode);
+            var result = new BlockStatement(statements, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitReturnStatement(ReturnStatementSyntax node)
+        public override Ust VisitReturnStatement(ReturnStatementSyntax node)
         {
             var expression = (Expression) base.Visit(node.Expression);
-            var result = new ReturnStatement(expression, node.GetTextSpan(), FileNode);
+            var result = new ReturnStatement(expression, node.GetTextSpan());
             return result;
         }
 
         #region Switch
 
-        public override UstNode VisitSwitchStatement(SwitchStatementSyntax node)
+        public override Ust VisitSwitchStatement(SwitchStatementSyntax node)
         {
             var expression = (Expression) base.Visit(node.Expression);
             var sections = node.Sections.Select(s => (SwitchSection) VisitAndReturnNullIfError(s))
@@ -190,12 +188,11 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var result = new SwitchStatement(
                 expression,
                 sections,
-                node.GetTextSpan(),
-                FileNode);
+                node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitSwitchSection(SwitchSectionSyntax node)
+        public override Ust VisitSwitchSection(SwitchSectionSyntax node)
         {
             var caseLabels = node.Labels.Select(s => (Expression)VisitAndReturnNullIfError(s)).ToArray();
             var statements = node.Statements.Select(s => (Statement)VisitAndReturnNullIfError(s)).ToArray();
@@ -203,34 +200,33 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var result = new SwitchSection(
                 caseLabels,
                 statements,
-                node.GetTextSpan(),
-                FileNode);
+                node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitCaseSwitchLabel(CaseSwitchLabelSyntax node)
+        public override Ust VisitCaseSwitchLabel(CaseSwitchLabelSyntax node)
         {
             var result = (Expression) base.Visit(node.Value);
             return result;
         }
 
-        public override UstNode VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
+        public override Ust VisitDefaultSwitchLabel(DefaultSwitchLabelSyntax node)
         {
             return null;
         }
 
         #endregion
 
-        public override UstNode VisitThrowStatement(ThrowStatementSyntax node)
+        public override Ust VisitThrowStatement(ThrowStatementSyntax node)
         {
             var throwEpression = (Expression) base.Visit(node.Expression);
-            var result = new ThrowStatement(throwEpression, node.GetTextSpan(), FileNode);
+            var result = new ThrowStatement(throwEpression, node.GetTextSpan());
             return result;
         }
 
         #region Try Catch Finally
 
-        public override UstNode VisitTryStatement(TryStatementSyntax node)
+        public override Ust VisitTryStatement(TryStatementSyntax node)
         {
             var tryBlock = (BlockStatement)VisitBlock(node.Block);
             var catchClauses = node.Catches.Select(c => (CatchClause)VisitAndReturnNullIfError(c))
@@ -239,7 +235,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             if (node.Finally != null)
                 finallyStatement = (BlockStatement)VisitFinallyClause(node.Finally);
 
-            var result = new TryCatchStatement(tryBlock, node.GetTextSpan(), FileNode)
+            var result = new TryCatchStatement(tryBlock, node.GetTextSpan())
             {
                 CatchClauses = catchClauses,
                 FinallyBlock = finallyStatement
@@ -247,19 +243,19 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override UstNode VisitCatchClause(CatchClauseSyntax node)
+        public override Ust VisitCatchClause(CatchClauseSyntax node)
         {
             TypeToken typeToken;
             IdToken varName;
             if (node.Declaration == null)
             {
-                typeToken = new TypeToken("Exception", node.CatchKeyword.GetTextSpan(), FileNode);
-                varName = new IdToken("e", node.CatchKeyword.GetTextSpan(), FileNode);
+                typeToken = new TypeToken("Exception", node.CatchKeyword.GetTextSpan());
+                varName = new IdToken("e", node.CatchKeyword.GetTextSpan());
             }
             else
             {
                 typeToken = ConvertType(base.Visit(node.Declaration.Type));
-                varName = new IdToken(node.Declaration.Identifier.ValueText ?? "", node.Declaration.GetTextSpan(), FileNode);
+                varName = new IdToken(node.Declaration.Identifier.ValueText ?? "", node.Declaration.GetTextSpan());
             }
 
             var body = (BlockStatement) VisitBlock(node.Block);
@@ -267,22 +263,21 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 typeToken,
                 varName,
                 body,
-                node.GetTextSpan(),
-                FileNode);
+                node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitCatchDeclaration(CatchDeclarationSyntax node)
+        public override Ust VisitCatchDeclaration(CatchDeclarationSyntax node)
         {
             return base.VisitCatchDeclaration(node);
         }
 
-        public override UstNode VisitCatchFilterClause(CatchFilterClauseSyntax node)
+        public override Ust VisitCatchFilterClause(CatchFilterClauseSyntax node)
         {
             throw new NotSupportedException();
         }
 
-        public override UstNode VisitFinallyClause(FinallyClauseSyntax node)
+        public override Ust VisitFinallyClause(FinallyClauseSyntax node)
         {
             var result = (BlockStatement)VisitBlock(node.Block);
             return result;
@@ -290,7 +285,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #endregion
 
-        public override UstNode VisitUnsafeStatement(UnsafeStatementSyntax node)
+        public override Ust VisitUnsafeStatement(UnsafeStatementSyntax node)
         {
             var result = (BlockStatement)VisitBlock(node.Block);
             return result;
@@ -301,51 +296,51 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public override UstNode VisitUsingStatement(UsingStatementSyntax node)
+        public override Ust VisitUsingStatement(UsingStatementSyntax node)
         {
             var statements = new List<Statement>();
             Statement resourceAcquisition;
             if (node.Declaration != null)
                 resourceAcquisition = new ExpressionStatement((VariableDeclarationExpression)VisitVariableDeclaration(node.Declaration));
             else
-                resourceAcquisition = new ExpressionStatement((Expression)base.Visit(node.Expression), node.Expression.GetTextSpan(), FileNode);
+                resourceAcquisition = new ExpressionStatement((Expression)base.Visit(node.Expression), node.Expression.GetTextSpan());
             
             statements.Add(resourceAcquisition);
             statements.AddRange(GetChildStatements(node.Statement));
 
-            var body = new BlockStatement(statements, node.GetTextSpan(), FileNode);
-            var finallyStatement = new BlockStatement(new Statement[0], node.CloseParenToken.GetTextSpan(), FileNode);
-            var result = new TryCatchStatement(body, node.GetTextSpan(), FileNode)
+            var body = new BlockStatement(statements, node.GetTextSpan());
+            var finallyStatement = new BlockStatement(new Statement[0], node.CloseParenToken.GetTextSpan());
+            var result = new TryCatchStatement(body, node.GetTextSpan())
             {
                 FinallyBlock = finallyStatement
             };
             return result;
         }
 
-        public override UstNode VisitWhileStatement(WhileStatementSyntax node)
+        public override Ust VisitWhileStatement(WhileStatementSyntax node)
         {
             var condition = (Expression)base.Visit(node.Condition);
             var embedded = (Statement)base.Visit(node.Statement);
 
-            var result = new WhileStatement(condition, embedded, node.GetTextSpan(), FileNode);
+            var result = new WhileStatement(condition, embedded, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitYieldStatement(YieldStatementSyntax node)
+        public override Ust VisitYieldStatement(YieldStatementSyntax node)
         {
             var expression = (Expression)base.Visit(node.Expression);
-            var result = new ReturnStatement(expression, node.GetTextSpan(), FileNode);
+            var result = new ReturnStatement(expression, node.GetTextSpan());
             return result;
         }
 
-        public override UstNode VisitVariableDeclaration(VariableDeclarationSyntax node)
+        public override Ust VisitVariableDeclaration(VariableDeclarationSyntax node)
         {
             var typeToken = ConvertType(base.Visit(node.Type));
             AssignmentExpression[] vars = node
                 .Variables.Select(v => (AssignmentExpression)VisitAndReturnNullIfError(v))
                 .ToArray();
 
-            var result = new VariableDeclarationExpression(typeToken, vars, node.GetTextSpan(), FileNode);
+            var result = new VariableDeclarationExpression(typeToken, vars, node.GetTextSpan());
             return result;
         }
         

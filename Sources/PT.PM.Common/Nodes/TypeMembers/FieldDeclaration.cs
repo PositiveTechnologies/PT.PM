@@ -7,23 +7,21 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class FieldDeclaration : EntityDeclaration
     {
-        public override NodeType NodeType => NodeType.FieldDeclaration;
-
         public TypeToken Type { get; set; }
 
         public List<AssignmentExpression> Variables { get; set; }
 
         public FieldDeclaration(TypeToken type, IEnumerable<AssignmentExpression> variables,
-            TextSpan textSpan, FileNode fileNode)
-            : base(null, textSpan, fileNode)
+            TextSpan textSpan)
+            : base(null, textSpan)
         {
             Type = type;
             Variables = variables as List<AssignmentExpression> ?? variables.ToList();
         }
 
         public FieldDeclaration(IEnumerable<AssignmentExpression> variables,
-            TextSpan textSpan, FileNode fileNode)
-            : base(null, textSpan, fileNode)
+            TextSpan textSpan)
+            : base(null, textSpan)
         {
             Type = null;
             Variables = variables as List<AssignmentExpression> ?? variables.ToList();
@@ -33,9 +31,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>(base.GetChildren());
+            var result = new List<Ust>(base.GetChildren());
             result.Add(Type);
             result.AddRange(Variables);
             return result.ToArray();

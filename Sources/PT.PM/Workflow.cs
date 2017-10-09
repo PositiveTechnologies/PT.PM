@@ -1,53 +1,50 @@
-﻿using System;
+﻿using PT.PM.Common;
+using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Nodes;
+using PT.PM.Dsl;
+using PT.PM.Matching;
+using PT.PM.Matching.Json;
+using PT.PM.Matching.PatternsRepository;
+using PT.PM.Patterns.PatternsRepository;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PT.PM.Common;
-using PT.PM.Common.Ust;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
-using PT.PM.Dsl;
-using PT.PM.Matching;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using PT.PM.Patterns.PatternsRepository;
-using PT.PM.UstPreprocessing;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<Ust, Stage, WorkflowResult, Pattern, MatchingResult>
+    public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchingResult>
     {
         public Workflow()
-            : this(null, LanguageExt.AllLanguages)
+            : this(null, LanguageUtils.Languages.Values)
         {
         }
 
         public Workflow(ISourceCodeRepository sourceCodeRepository, Language language,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            : this(sourceCodeRepository, language.ToFlags(), patternsRepository, stage)
+            : this(sourceCodeRepository, new [] { language }, patternsRepository, stage)
         {
         }
 
         public Workflow(ISourceCodeRepository sourceCodeRepository,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            :this(sourceCodeRepository,  LanguageExt.AllLanguages, patternsRepository, stage)
+            :this(sourceCodeRepository, LanguageUtils.Languages.Values, patternsRepository, stage)
         {
         }
 
-        public Workflow(ISourceCodeRepository sourceCodeRepository, LanguageFlags languages,
+        public Workflow(ISourceCodeRepository sourceCodeRepository, IEnumerable<Language> languages,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            : base(stage)
+            : base(stage, languages)
         {
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
-            ParserConverterSets = ParserConverterBuilder.GetParserConverterSets(languages);
-            UstPatternMatcher = new BruteForcePatternMatcher();
-            IUstNodeSerializer jsonNodeSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef));
-            IUstNodeSerializer dslNodeSerializer = new DslProcessor();
-            PatternConverter = new PatternConverter(new IUstNodeSerializer[] { jsonNodeSerializer, dslNodeSerializer });
+            UstPatternMatcher = new PatternMatcher();
+            IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();
+            IPatternSerializer dslNodeSerializer = new DslProcessor();
+            PatternConverter = new PatternConverter(jsonNodeSerializer, dslNodeSerializer);
             Stage = stage;
             ThreadCount = 1;
         }
@@ -55,15 +52,17 @@ namespace PT.PM
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var result = workflowResult ?? new WorkflowResult(Languages, ThreadCount, Stage, IsIncludeIntermediateResult);
-            Task convertPatternsTask = GetConvertPatternsTask(result);
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-            if (Stage == Stage.Patterns)
+            BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
+            var result = workflowResult ??
+                new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
+            result.BaseLanguages = BaseLanguages.ToArray();
+
+            StartConvertPatternsTaskIfRequired(result);
+            if (Stage == Stage.Pattern)
             {
-                if (!convertPatternsTask.IsCompleted)
-                {
-                    convertPatternsTask.Wait();
-                }
+                WaitOrConverterPatterns(result);
             }
             else
             {
@@ -77,30 +76,21 @@ namespace PT.PM
                 {
                     if (ThreadCount == 1 || (fileNames is IList<string> fileNamesList && fileNamesList.Count == 1))
                     {
-                        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                        Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-
                         foreach (string fileName in fileNames)
                         {
-                            ProcessFile(fileName, convertPatternsTask, result, cancellationToken);
+                            ProcessFile(fileName, result, cancellationToken);
                         }
                     }
                     else
                     {
-                        var parallelOptions = new ParallelOptions
-                        {
-                            MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
-                            CancellationToken = cancellationToken
-                        };
-
+                        var parallelOptions = PrepareParallelOptions(cancellationToken);
                         Parallel.ForEach(
                             fileNames,
                             parallelOptions,
                             fileName =>
                             {
                                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                                Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-                                ProcessFile(fileName, convertPatternsTask, result, parallelOptions.CancellationToken);
+                                ProcessFile(fileName, result, parallelOptions.CancellationToken);
                             });
                     }
                 }
@@ -109,72 +99,52 @@ namespace PT.PM
                     Logger.LogInfo("Scan has been cancelled by user");
                 }
 
-                foreach (var pair in ParserConverterSets)
+                /*foreach (var pair in ParserConverterSets) // TODO: cache clearint at the end.
                 {
                     pair.Value?.Parser.ClearCache();
-                }
+                }*/
             }
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;
         }
 
-        private void ProcessFile(string fileName, Task convertPatternsTask, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        private void ProcessFile(string fileName, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
-            ParseTree parseTree = null;
+            RootUst ust = null;
             try
             {
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
-                parseTree = ReadAndParse(fileName, workflowResult);
-                if (parseTree != null)
+                ust = ReadParseAndConvert(fileName, workflowResult);
+                if (ust != null && Stage >= Stage.SimplifiedUst)
                 {
-                    workflowResult.AddResultEntity(parseTree);
-
-                    if (Stage >= Stage.Convert)
+                    Stopwatch stopwatch = new Stopwatch();
+                    if (IsIncludePreprocessing)
                     {
-                        var stopwatch = Stopwatch.StartNew();
-                        IParseTreeToUstConverter converter = ParserConverterSets[parseTree.SourceLanguage].Converter;
-                        Ust ust = converter.Convert(parseTree);
+                        var simplifier = new UstSimplifier() { Logger = logger };
+                        stopwatch.Restart();
+                        ust = simplifier.Simplify(ust);
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {fileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
-                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(ust, true);
+                        Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
+                        workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(ust, false);
 
                         cancellationToken.ThrowIfCancellationRequested();
+                    }
 
-                        if (Stage >= Stage.Preprocess)
-                        {
-                            if (IsIncludePreprocessing)
-                            {
-                                var ustPreprocessor = new UstSimplifier() { Logger = logger };
-                                stopwatch.Restart();
-                                ust = ustPreprocessor.Preprocess(ust);
-                                stopwatch.Stop();
-                                Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
-                                workflowResult.AddPreprocessTime(stopwatch.ElapsedTicks);
-                                workflowResult.AddResultEntity(ust, false);
+                    if (Stage >= Stage.Match)
+                    {
+                        WaitOrConverterPatterns(workflowResult);
 
-                                cancellationToken.ThrowIfCancellationRequested();
-                            }
+                        stopwatch.Restart();
+                        IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
+                        stopwatch.Stop();
+                        Logger.LogInfo($"File {fileName} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
+                        workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(matchingResults);
 
-                            if (Stage >= Stage.Match)
-                            {
-                                if (!convertPatternsTask.IsCompleted)
-                                {
-                                    convertPatternsTask.Wait();
-                                }
-
-                                stopwatch.Restart();
-                                IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
-                                stopwatch.Stop();
-                                Logger.LogInfo($"File {fileName} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
-                                workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
-                                workflowResult.AddResultEntity(matchingResults);
-
-                                cancellationToken.ThrowIfCancellationRequested();
-                            }
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
                 }
             }
@@ -194,7 +164,7 @@ namespace PT.PM
                 Logger.LogInfo(new ProgressEventArgs(progress, fileName));
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
 
-                if (parseTree == null)
+                if (ust == null)
                 {
                     Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
                 }

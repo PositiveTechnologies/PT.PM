@@ -4,16 +4,14 @@ using System.Linq;
 
 namespace PT.PM.Common.Nodes.Statements.Switch
 {
-    public class SwitchSection : UstNode
+    public class SwitchSection : Ust
     {
-        public override NodeType NodeType => NodeType.SwitchSection;
-
         public List<Expression> CaseLabels { get; set; }
 
         public List<Statement> Statements { get; set; }
 
-        public SwitchSection(IEnumerable<Expression> caseLabels, IEnumerable<Statement> statements, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public SwitchSection(IEnumerable<Expression> caseLabels, IEnumerable<Statement> statements, TextSpan textSpan)
+            : base(textSpan)
         {
             CaseLabels = caseLabels as List<Expression> ?? caseLabels.ToList();
             Statements = statements as List<Statement> ?? statements.ToList();
@@ -23,9 +21,9 @@ namespace PT.PM.Common.Nodes.Statements.Switch
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            var result = new List<UstNode>();
+            var result = new List<Ust>();
             result.AddRange(CaseLabels);
             result.AddRange(Statements);
             return result.ToArray();

@@ -6,11 +6,9 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class BlockStatement : Statement
     {
-        public override NodeType NodeType => NodeType.BlockStatement;
-
         public List<Statement> Statements { get; set; } = new List<Statement>();
 
-        public BlockStatement(IEnumerable<Statement> statements, FileNode fileNode)
+        public BlockStatement(IEnumerable<Statement> statements)
         {
             Statements = statements as List<Statement> ?? statements.ToList();
             if (Statements.Count > 0)
@@ -21,11 +19,10 @@ namespace PT.PM.Common.Nodes.Statements
             {
                 TextSpan = default(TextSpan);
             }
-            FileNode = fileNode;
         }
 
-        public BlockStatement(IEnumerable<Statement> statements, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public BlockStatement(IEnumerable<Statement> statements, TextSpan textSpan)
+            : base(textSpan)
         {
             Statements = statements as List<Statement> ?? statements.ToList();
         }
@@ -34,9 +31,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return Statements.Select(s => (UstNode) s).ToArray();
+            return Statements.Select(s => (Ust) s).ToArray();
         }
 
         public override string ToString()

@@ -1,13 +1,13 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.Dsl;
-using PT.PM.Patterns;
-using PT.PM.Patterns.Nodes;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using PT.PM.Common;
+using PT.PM.Common.Json;
+using PT.PM.Dsl;
+using PT.PM.Matching;
+using PT.PM.Matching.Json;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -21,11 +21,17 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        private JsonUstNodeSerializer ustNodeJsonSerializer = new JsonUstNodeSerializer(typeof(UstNode), typeof(PatternVarDef))
+        private JsonUstSerializer jsonUstSerializer = new JsonUstSerializer
         {
             IncludeTextSpans = false,
+            ExcludeDefaults = true,
+            Indented = true
+        };
+        private JsonPatternSerializer jsonPatternSerializer = new JsonPatternSerializer
+        {
+            IncludeTextSpans = false,
+            ExcludeDefaults = true,
             Indented = true,
-            ExcludeNulls = true
         };
         private static JsonConverter[] jsonConverters = new JsonConverter[] { new StringEnumConverter() };
 
@@ -35,7 +41,7 @@ namespace PT.PM.PatternEditor
         private TextBox logger;
 
         private PatternDto selectedPattern;
-        private LanguageFlags oldLanguages;
+        private HashSet<string> oldLanguages;
         private string oldPattern;
         private GuiLogger patternLogger;
         private DslProcessor dslProcessor = new DslProcessor();
@@ -123,7 +129,10 @@ namespace PT.PM.PatternEditor
             CreatePattern.Subscribe(_ =>
             {
                 SavePatterns();
-                var newPattern = new PatternDto();
+                var newPattern = new PatternDto
+                {
+                    Languages = new HashSet<string>(LanguageUtils.PatternLanguages.Keys)
+                };
                 newPattern.Key = Guid.NewGuid().ToString();
                 newPattern.Name = "New Pattern";
                 Patterns.Add(newPattern);
@@ -271,15 +280,15 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public LanguageFlags Languages
+        public HashSet<string> Languages
         {
             get
             {
-                return SelectedPattern?.Languages ?? LanguageFlags.None;
+                return SelectedPattern?.Languages ?? new HashSet<string>();
             }
             set
             {
-                if (SelectedPattern != null && SelectedPattern.Languages != value)
+                if (SelectedPattern?.Languages != value)
                 {
                     CheckPattern();
                     this.RaisePropertyChanged();
@@ -289,44 +298,44 @@ namespace PT.PM.PatternEditor
 
         public bool IsCSharpLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.CSharp) ?? false; }
-            set { ChangeLanguage(LanguageFlags.CSharp, value); }
+            get { return SelectedPattern?.Languages.Contains("CSharp") ?? false; }
+            set { ChangeLanguage("CSharp", value); }
         }
 
         public bool IsJavaLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.Java) ?? false; }
-            set { ChangeLanguage(LanguageFlags.Java, value); }
+            get { return SelectedPattern?.Languages.Contains("Java") ?? false; }
+            set { ChangeLanguage("Java", value); }
         }
 
         public bool IsPhpLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.Php) ?? false; }
-            set { ChangeLanguage(LanguageFlags.Php, value); }
+            get { return SelectedPattern?.Languages.Contains("Php") ?? false; }
+            set { ChangeLanguage("Php", value); }
         }
 
         public bool IsPlSqlLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.PlSql) ?? false; }
-            set { ChangeLanguage(LanguageFlags.PlSql, value); }
+            get { return SelectedPattern?.Languages.Contains("PlSql") ?? false; }
+            set { ChangeLanguage("PlSql", value); }
         }
 
         public bool IsTSqlLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.TSql) ?? false; }
-            set { ChangeLanguage(LanguageFlags.TSql, value); }
+            get { return SelectedPattern?.Languages.Contains("TSql") ?? false; }
+            set { ChangeLanguage("TSql", value); }
         }
 
         public bool IsJavaScriptLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.JavaScript) ?? false; }
-            set { ChangeLanguage(LanguageFlags.JavaScript, value); }
+            get { return SelectedPattern?.Languages.Contains("JavaScript") ?? false; }
+            set { ChangeLanguage("JavaScript", value); }
         }
 
         public bool IsHtmlLanguage
         {
-            get { return SelectedPattern?.Languages.Is(LanguageFlags.Html) ?? false; }
-            set { ChangeLanguage(LanguageFlags.Html, value); }
+            get { return SelectedPattern?.Languages.Contains("Html") ?? false; }
+            set { ChangeLanguage("Html", value); }
         }
 
         public string Description
@@ -412,14 +421,25 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(IsDeveloperMode));
         }
 
-        private void ChangeLanguage(LanguageFlags languages, bool value)
+        private void ChangeLanguage(string language, bool set)
         {
             if (SelectedPattern != null)
             {
-                var flags = value ? (SelectedPattern.Languages | languages) : (SelectedPattern.Languages & ~languages);
-                if (SelectedPattern.Languages != flags)
+                bool changed = false;
+                if (set && !SelectedPattern.Languages.Contains(language))
                 {
-                    SelectedPattern.Languages = flags;
+                    SelectedPattern.Languages.Add(language);
+                    changed = true;
+                }
+                else if (!set && SelectedPattern.Languages.Contains(language) &&
+                    SelectedPattern.Languages.Count > 1)
+                {
+                    SelectedPattern.Languages.Remove(language);
+                    changed = true;
+                }
+
+                if (changed)
+                {
                     CheckPattern();
                     this.RaisePropertyChanged();
                 }
@@ -428,20 +448,21 @@ namespace PT.PM.PatternEditor
 
         private void CheckPattern()
         {
-            if (oldPattern != patternTextBox.Text || oldLanguages != Languages)
+            if (oldPattern != patternTextBox.Text || !oldLanguages.SequenceEqual(Languages))
             {
                 oldPattern = patternTextBox.Text;
-                oldLanguages = Languages;
+                oldLanguages = new HashSet<string>(Languages);
 
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
 
-                UstNode patternNode = null;
+                PatternRoot patternNode = null;
                 try
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
-                        patternNode = dslProcessor.Deserialize(patternTextBox.Text, Languages);
+                        patternNode = dslProcessor.Deserialize(patternTextBox.Text);
+                        patternNode.Languages = new HashSet<Language>(Languages.ToLanguages(patternLogger));
                     }
                 }
                 catch
@@ -454,7 +475,7 @@ namespace PT.PM.PatternEditor
                     PatternErrorsText = "";
                     if (IsDeveloperMode && patternNode != null)
                     {
-                        PatternJson = ustNodeJsonSerializer.Serialize(patternNode);
+                        PatternJson = jsonPatternSerializer.Serialize(patternNode);
                         File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Pattern UST.json"), PatternJson);
                     }
                 }
@@ -501,7 +522,7 @@ namespace PT.PM.PatternEditor
         private void UpdatePatternCaretIndex(int caretIndex)
         {
             int line, column;
-            TextHelper.LinearToLineColumn(caretIndex, patternTextBox.Text, out line, out column);
+            caretIndex.ToLineColumn(patternTextBox.Text, out line, out column);
             PatternTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(PatternTextBoxPosition)));
         }

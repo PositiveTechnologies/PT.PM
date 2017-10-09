@@ -3,12 +3,10 @@ namespace PT.PM.Common.Nodes.Statements
 {
     public class BreakStatement : Statement
     {
-        public override NodeType NodeType => NodeType.BreakStatement;
-
         public Expression Expression  { get; set; }
 
-        public BreakStatement(TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public BreakStatement(TextSpan textSpan)
+            : base(textSpan)
         {
         }
 
@@ -16,9 +14,9 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return ArrayUtils<UstNode>.EmptyArray;
+            return ArrayUtils<Ust>.EmptyArray;
         }
 
         public override string ToString()

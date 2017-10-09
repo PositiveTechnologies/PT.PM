@@ -23,25 +23,22 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             { "++", UnaryOperator.PostIncrement},
             { "--", UnaryOperator.PostDecrement},
         };
-
-        public override NodeType NodeType => NodeType.UnaryOperatorLiteral;
-
         public override string TextValue => UnaryOperator.ToString();
 
         public UnaryOperator UnaryOperator { get; set; }
 
         public UnaryOperatorLiteral(UnaryOperator op)
-            : this(op, default(TextSpan), null)
+            : this(op, default(TextSpan))
         {
         }
 
-        public UnaryOperatorLiteral(bool prefix, string op, TextSpan textSpan, FileNode fileNode)
-            : this(prefix ? PrefixTextUnaryOperator[op] : PostfixTextUnaryOperator[op], textSpan, fileNode)
+        public UnaryOperatorLiteral(bool prefix, string op, TextSpan textSpan)
+            : this(prefix ? PrefixTextUnaryOperator[op] : PostfixTextUnaryOperator[op], textSpan)
         {
         }
 
-        public UnaryOperatorLiteral(UnaryOperator op, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public UnaryOperatorLiteral(UnaryOperator op, TextSpan textSpan)
+            : base(textSpan)
         {
             UnaryOperator = op;
         }
@@ -50,7 +47,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

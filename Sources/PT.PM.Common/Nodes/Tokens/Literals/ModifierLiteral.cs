@@ -5,8 +5,6 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class ModifierLiteral : Literal
     {
-        public override NodeType NodeType => NodeType.ModifierLiteral;
-
         [JsonIgnore]
         public Modifier Modifier { get; set; }
 
@@ -14,14 +12,14 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
         public override string TextValue => ModifierName;
 
-        public ModifierLiteral(Modifier modifier, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public ModifierLiteral(Modifier modifier, TextSpan textSpan)
+            : base(textSpan)
         {
-            initModifierAndName(modifier);
+            InitModifierAndName(modifier);
         }
 
-        public ModifierLiteral(string modifierName, TextSpan textSpan, FileNode fileNode)
-             : base(textSpan, fileNode)
+        public ModifierLiteral(string modifierName, TextSpan textSpan)
+             : base(textSpan)
         {
             Modifier modifier;
             if (Enum.TryParse(modifierName, true, out modifier))
@@ -38,7 +36,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
         public ModifierLiteral(Modifier modifier)
         {
-            initModifierAndName(modifier);
+            InitModifierAndName(modifier);
         }
 
         public ModifierLiteral()
@@ -47,7 +45,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ModifierName = "";
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)
@@ -59,7 +57,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             return modifierCompareResult;
         }
 
-        private void initModifierAndName(Modifier modifier)
+        private void InitModifierAndName(Modifier modifier)
         {
             Modifier = modifier;
             if (Modifier == Modifier.Other)

@@ -1,6 +1,5 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
 using PT.PM.TestUtils;
-using NUnit.Framework;
 using System.IO;
 
 namespace PT.PM.SqlParseTreeUst.Tests
@@ -11,13 +10,13 @@ namespace PT.PM.SqlParseTreeUst.Tests
         [Test]
         public void Parse_PlSqlFiles_WithoutErrors()
         {
-            TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "PlSql"), Language.PlSql, Stage.Parse);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "PlSql"), PlSql.Language, Stage.ParseTree);
         }
 
         [Test]
         public void Parse_TSqlSyntax_WithoutErrors()
         {
-            TestHelper.CheckProject(Path.Combine(TestHelper.TestsDataPath, "TSql"), Language.TSql, Stage.Parse);
+            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "TSql"), TSql.Language, Stage.ParseTree);
         }
     }
 }

@@ -30,11 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -55,13 +52,29 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj">
+      <Project>{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}</Project>
+      <Name>PT.PM.CSharpParseTreeUst</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj">
+      <Project>{F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB}</Project>
+      <Name>PT.PM.JavaParseTreeUst</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj">
+      <Project>{98727837-F9FA-476C-B0B5-88845B53FDDF}</Project>
+      <Name>PT.PM.JavaScriptParseTreeUst</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj">
+      <Project>{08FBC341-AC44-4CAE-AE71-9462F7885E3E}</Project>
+      <Name>PT.PM.PhpParseTreeUst</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj">
+      <Project>{8F34670A-B91D-460B-9D67-7A03F7194673}</Project>
+      <Name>PT.PM.SqlParseTreeUst</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
-      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
-      <Name>PT.PM.UstPreprocessing</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>

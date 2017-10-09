@@ -1,0 +1,20 @@
+﻿using PT.PM.Common.Nodes;
+using System.Collections.Generic;
+
+namespace PT.PM.Common
+{
+    public class UstRefComparer : IEqualityComparer<Ust>
+    {
+        public static UstRefComparer Instance = new UstRefComparer();
+
+        public bool Equals(Nodes.Ust x, Nodes.Ust y)
+        {
+            return ReferenceEquals(x, y);
+        }
+
+        public int GetHashCode(Nodes.Ust obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+}

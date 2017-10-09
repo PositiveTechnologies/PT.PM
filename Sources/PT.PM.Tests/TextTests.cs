@@ -14,11 +14,11 @@ namespace PT.PM.Tests
                           "row3\r" +
                           "row4";
 
-            int linearPos = TextHelper.LineColumnToLinear(text, 4, 4);
+            int linearPos = TextUtils.LineColumnToLinear(text, 4, 4);
             Assert.AreEqual('4', text[linearPos]);
 
             int line, column;
-            TextHelper.LinearToLineColumn(linearPos, text, out line, out column);
+            linearPos.ToLineColumn(text, out line, out column);
             Assert.AreEqual(4, line);
             Assert.AreEqual(4, column);
         }

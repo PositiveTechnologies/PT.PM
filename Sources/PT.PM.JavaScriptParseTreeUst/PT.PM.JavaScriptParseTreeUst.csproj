@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,10 +56,10 @@
     <Compile Include="Generated\JavaScriptLexer.cs" />
     <Compile Include="Generated\JavaScriptParser.cs" />
     <Compile Include="Generated\JavaScriptParserVisitor.cs" />
+    <Compile Include="JavaScript.cs" />
     <Compile Include="JavaScriptAntlrUstConverterVisitorHelper.cs" />
     <Compile Include="JavaScriptAntlrParseTree.cs" />
     <Compile Include="JavaScriptAntlrParser.cs" />
-    <Compile Include="JavaScriptAntlrUstConverterVisitor.cs" />
     <Compile Include="JavaScriptParseTreeConverter.cs" />
     <Compile Include="JavaScriptType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,6 +92,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateJavaScriptAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptParser.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot;" />
+    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptParser.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
   </Target>
 </Project>

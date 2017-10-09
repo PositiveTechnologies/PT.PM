@@ -4,14 +4,12 @@ namespace PT.PM.Common.Nodes.Tokens
 {
     public class IdToken : Token
     {
-        public override NodeType NodeType => NodeType.IdToken;
-
         public virtual string Id { get; set; }
 
         public override string TextValue => Id;
 
-        public IdToken(string id, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public IdToken(string id, TextSpan textSpan)
+            : base(textSpan)
         {
             Id = id;
         }
@@ -25,7 +23,7 @@ namespace PT.PM.Common.Nodes.Tokens
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

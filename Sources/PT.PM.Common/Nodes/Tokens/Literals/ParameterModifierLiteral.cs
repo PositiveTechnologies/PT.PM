@@ -2,14 +2,12 @@
 {
     public class ParameterModifierLiteral : Token
     {
-        public override NodeType NodeType => NodeType.ParameterModifierLiteral;
-
         public ParameterModifier Modifier { get; set; }
 
         public override string TextValue => Modifier.ToString();
 
-        public ParameterModifierLiteral(ParameterModifier modifier, TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+        public ParameterModifierLiteral(ParameterModifier modifier, TextSpan textSpan)
+            : base(textSpan)
         {
             Modifier = modifier;
         }
@@ -18,7 +16,7 @@
         {
         }
 
-        public override int CompareTo(UstNode other)
+        public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
             if (baseCompareResult != 0)

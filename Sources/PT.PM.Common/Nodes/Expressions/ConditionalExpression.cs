@@ -1,9 +1,9 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿using System;
+
+namespace PT.PM.Common.Nodes.Expressions
 {
     public class ConditionalExpression : Expression
     {
-        public override NodeType NodeType => NodeType.ConditionalExpression;
-
         public Expression Condition { get; set; }
 
         public Expression TrueExpression { get; set; }
@@ -11,8 +11,8 @@
         public Expression FalseExpression { get; set; }
 
         public ConditionalExpression(Expression condition, Expression trueExpression, Expression falseExpression,
-            TextSpan textSpan, FileNode fileNode)
-            : base(textSpan, fileNode)
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Condition = condition;
             TrueExpression = trueExpression;
@@ -23,9 +23,14 @@
         {
         }
 
-        public override UstNode[] GetChildren()
+        public override Ust[] GetChildren()
         {
-            return new UstNode[] {Condition, TrueExpression, FalseExpression};
+            return new Ust[] { Condition, TrueExpression, FalseExpression };
+        }
+
+        public override Expression[] GetArgs()
+        {
+            return new Expression[] { Condition };
         }
 
         public override string ToString()
