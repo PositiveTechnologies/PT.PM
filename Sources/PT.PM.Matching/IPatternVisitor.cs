@@ -18,8 +18,8 @@ namespace PT.PM.Matching
         T Visit(PatternClassDeclaration patternClassDeclaration);
         T Visit(PatternCommentRegex patternCommentRegex);
         T Visit(PatternArbitraryDepth patternArbitraryDepth);
-        T Visit(PatternReturn patternReturn);
-        T Visit(PatternThrow patternThrow);
+        T Visit(PatternReturnStatement patternReturn);
+        T Visit(PatternThrowStatement patternThrow);
         T Visit(PatternIdRegexToken patternIdRegexToken);
         T Visit(PatternIdToken patternIdToken);
         T Visit(PatternIndexerExpression patternIndexerExpression);

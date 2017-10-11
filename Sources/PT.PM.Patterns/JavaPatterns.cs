@@ -452,24 +452,24 @@ namespace PT.PM.Patterns.PatternsRepository
                         {
                             Patterns = new List<PatternUst>
                             {
-                                new PatternMethodDeclaration(Enumerable.Empty<PatternUst>(), new PatternIdRegexToken(@"\w+"), false),
+                                new PatternMethodDeclaration(new List<PatternUst>(), new PatternIdRegexToken(@"\w+"), false),
                                 new PatternOr
                                 {
                                     Patterns = new List<PatternUst>
                                     {
                                         new PatternMethodDeclaration
                                         {
-                                            Modifiers = Enumerable.Empty<PatternUst>().ToList(),
+                                            Modifiers = new List<PatternUst>(),
                                             Name = new PatternIdRegexToken(@"\w+"),
-                                            Body = new PatternReturn(new PatternNullLiteral())
+                                            Body = new PatternReturnStatement(new PatternNullLiteral())
                                         },
                                         new PatternMethodDeclaration
                                         {
-                                            Modifiers = Enumerable.Empty<PatternUst>().ToList(),
+                                            Modifiers = new List<PatternUst>(),
                                             Name = new PatternIdRegexToken(@"\w+"),
                                             Body = new PatternArbitraryDepth
                                             {
-                                                Pattern = new PatternThrow
+                                                Pattern = new PatternThrowStatement
                                                 (
                                                     new PatternObjectCreateExpression
                                                     {
@@ -505,9 +505,9 @@ namespace PT.PM.Patterns.PatternsRepository
                     {
                         Pattern = new PatternMethodDeclaration
                         {
-                            Modifiers = Enumerable.Empty<PatternUst>().ToList(),
+                            Modifiers = new List<PatternUst>(),
                             Name = new PatternIdRegexToken(@"\w+"),
-                            Body = new PatternReturn(new PatternNullLiteral())
+                            Body = new PatternReturnStatement(new PatternNullLiteral())
                         }
                     }
                 }

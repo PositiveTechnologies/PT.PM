@@ -333,14 +333,14 @@ namespace PT.PM.Dsl
         public PatternUst VisitPatternReturnExpression(DslParser.PatternReturnExpressionContext context)
         {
             PatternUst expression = VisitExpression(context.expression());
-            var result = new PatternReturn(expression, context.GetTextSpan());
+            var result = new PatternReturnStatement(expression, context.GetTextSpan());
             return result;
         }
 
         public PatternUst VisitPatternThrowExpression(DslParser.PatternThrowExpressionContext context)
         {
             PatternUst expression = VisitExpression(context.expression());
-            var result = new PatternThrow(expression, context.GetTextSpan());
+            var result = new PatternThrowStatement(expression, context.GetTextSpan());
             return result;
         }
 

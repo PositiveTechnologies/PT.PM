@@ -90,12 +90,12 @@ namespace PT.PM.Matching
             return VisitChildren(patternArbitraryDepth);
         }
 
-        public virtual T Visit(PatternReturn patternReturn)
+        public virtual T Visit(PatternReturnStatement patternReturn)
         {
             return VisitChildren(patternReturn);
         }
 
-        public virtual T Visit(PatternThrow patternThrow)
+        public virtual T Visit(PatternThrowStatement patternThrow)
         {
             return VisitChildren(patternThrow);
         }

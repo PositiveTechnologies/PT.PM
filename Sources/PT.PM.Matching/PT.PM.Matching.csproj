@@ -60,8 +60,8 @@
     <Compile Include="Patterns\PatternAny.cs" />
     <Compile Include="Patterns\PatternBaseReferenceToken.cs" />
     <Compile Include="Patterns\PatternAssignmentExpression.cs" />
-    <Compile Include="Patterns\PatternReturn.cs" />
-    <Compile Include="Patterns\PatternThrow.cs" />
+    <Compile Include="Patterns\PatternReturnStatement.cs" />
+    <Compile Include="Patterns\PatternThrowStatement.cs" />
     <Compile Include="Patterns\PatternUst.cs" />
     <Compile Include="Patterns\PatternAnd.cs" />
     <Compile Include="Patterns\PatternAnyExpression.cs" />

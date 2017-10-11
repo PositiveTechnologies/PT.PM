@@ -5,21 +5,21 @@ using System;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternReturn : PatternUst
+    public class PatternReturnStatement : PatternUst
     {
-        public PatternUst Pattern { get; set; } = PatternAny.Instance;
+        public PatternUst Expression { get; set; } = PatternAny.Instance;
 
-        public PatternReturn()
+        public PatternReturnStatement()
         {
         }
 
-        public PatternReturn(PatternUst pattern, TextSpan textSpan = default(TextSpan))
+        public PatternReturnStatement(PatternUst pattern, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
+            Expression = pattern ?? throw new ArgumentNullException(nameof(pattern));
         }
 
-        public override string ToString() => $"return {Pattern}";
+        public override string ToString() => $"return {Expression}";
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
@@ -27,7 +27,7 @@ namespace PT.PM.Matching.Patterns
 
             if (ust is ReturnStatement returnStatement)
             {
-                newContext = Pattern.Match(returnStatement.Return, context);
+                newContext = Expression.Match(returnStatement.Return, context);
                 if (newContext.Success)
                 {
                     newContext = newContext.AddMatch(ust);
