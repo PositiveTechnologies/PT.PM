@@ -1,0 +1,5 @@
+class : <[X509TrustManager|SSLSocketFactory]> {
+	<{ (<[\w+]>() {}) <|>
+	(<[\w+]>() { return null }) <|>
+	(<[\w+]>() { <{ throw new UnsupportedOperationException(<[".*"]>) }> }) }>
+}

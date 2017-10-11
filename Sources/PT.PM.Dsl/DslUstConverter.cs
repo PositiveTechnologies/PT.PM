@@ -175,10 +175,10 @@ namespace PT.PM.Dsl
             PatternUst result;
             IEnumerable<PatternUst> modifiers = ProcessLiteralsOrPatternIds(context._modifiers);
             PatternUst name = VisitLiteralOrPatternId(context.methodName);
-            var arbitraryDepthExpression = context.arbitraryDepthExpression();
-            if (arbitraryDepthExpression != null)
+            var bodyExpression = context.expression();
+            if (bodyExpression != null)
             {
-                var body = (PatternArbitraryDepth)VisitArbitraryDepthExpression(arbitraryDepthExpression);
+                PatternUst body = VisitExpression(bodyExpression);
                 result = new PatternMethodDeclaration(modifiers, name, body, context.GetTextSpan());
             }
             else if (context.Ellipsis() != null)
@@ -328,6 +328,20 @@ namespace PT.PM.Dsl
         public PatternUst VisitArbitraryDepthExpression([NotNull] DslParser.ArbitraryDepthExpressionContext context)
         {
             return new PatternArbitraryDepth(VisitExpression(context.expression()), context.GetTextSpan());
+        }
+
+        public PatternUst VisitPatternReturnExpression(DslParser.PatternReturnExpressionContext context)
+        {
+            PatternUst expression = VisitExpression(context.expression());
+            var result = new PatternReturnStatement(expression, context.GetTextSpan());
+            return result;
+        }
+
+        public PatternUst VisitPatternThrowExpression(DslParser.PatternThrowExpressionContext context)
+        {
+            PatternUst expression = VisitExpression(context.expression());
+            var result = new PatternThrowStatement(expression, context.GetTextSpan());
+            return result;
         }
 
         public PatternUst VisitBaseReferenceExpression(DslParser.BaseReferenceExpressionContext context)

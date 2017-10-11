@@ -44,50 +44,60 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
+            MatchingContext newContext = MatchingContext.CreateWithInputParamsAndVars(context);
+
             if (Statements == null || Statements.Count == 0)
             {
-                return context;
-            }
-
-            IEnumerable<Statement> statements = blockStatement.Statements
-                .Where(statement =>
-                    !(statement is TypeDeclarationStatement) &&
-                    !(statement is WrapperStatement));
-            Expression[] expressions = statements.SelectMany(statement =>
-                statement
-                .WhereDescendants(descendant =>
-                    descendant is Expression expressionDescendant &&
-                    !(expressionDescendant is Token)))
-                .Cast<Expression>()
-                .ToArray();
-
-            var matchedTextSpans = new List<TextSpan>();
-            int patternStatementInd = 0;
-            MatchingContext newContext = MatchingContext.CreateWithInputParamsAndVars(context);
-            bool success = false;
-            for (int i = 0; i < expressions.Length; i++)
-            {
-                newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);
-                newContext = Statements[patternStatementInd].Match(expressions[i], newContext);
-                if (newContext.Success)
+                if (blockStatement.Statements == null || blockStatement.Statements.Count == 0)
                 {
-                    matchedTextSpans.AddRange(newContext.Locations);
-                    patternStatementInd += 1;
-                    if (patternStatementInd == Statements.Count)
-                    {
-                        success = true;
-                        patternStatementInd = 0;
-                    }
+                    newContext = newContext.AddMatch(blockStatement);
                 }
-            }
-
-            if (success)
-            {
-                context = context.AddMatches(matchedTextSpans);
+                else
+                {
+                    return context.Fail();
+                }
             }
             else
             {
-                context = context.Fail();
+                IEnumerable<Statement> statements = blockStatement.Statements
+                    .Where(statement =>
+                        !(statement is TypeDeclarationStatement) &&
+                        !(statement is WrapperStatement));
+                Expression[] expressions = statements.SelectMany(statement =>
+                    statement
+                    .WhereDescendants(descendant =>
+                        descendant is Expression expressionDescendant &&
+                        !(expressionDescendant is Token)))
+                    .Cast<Expression>()
+                    .ToArray();
+
+                var matchedTextSpans = new List<TextSpan>();
+                int patternStatementInd = 0;
+                bool success = false;
+                for (int i = 0; i < expressions.Length; i++)
+                {
+                    newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);
+                    newContext = Statements[patternStatementInd].Match(expressions[i], newContext);
+                    if (newContext.Success)
+                    {
+                        matchedTextSpans.AddRange(newContext.Locations);
+                        patternStatementInd += 1;
+                        if (patternStatementInd == Statements.Count)
+                        {
+                            success = true;
+                            patternStatementInd = 0;
+                        }
+                    }
+                }
+
+                if (success)
+                {
+                    context = context.AddMatches(matchedTextSpans);
+                }
+                else
+                {
+                    context = context.Fail();
+                }
             }
 
             return context;

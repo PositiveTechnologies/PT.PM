@@ -27,7 +27,7 @@ expression
       '{' arbitraryDepthExpression? '}'                    #ClassDeclaration
 
     | modifiers+=literalOrPatternId* methodName=literalOrPatternId '(' ')'
-      '{' (arbitraryDepthExpression | Ellipsis)? '}'       #MethodDeclaration
+      '{' (expression | Ellipsis)? '}'                     #MethodDeclaration
 
     | Field? modifiers+=literalOrPatternId*
       type=literalOrPatternId variableName                 #VarOrFieldDeclarationExpression
@@ -49,6 +49,8 @@ expression
     | expression ('<&>' expression)+                       #PatternAndExpression
     | '<~>' expression                                     #PatternNotExpression
     | arbitraryDepthExpression                             #PatternArbitraryDepthExpression
+    | 'throw' expression                                   #PatternThrowExpression
+    | 'return' expression                                  #PatternReturnExpression
     | '(' expression ')'                                   #ParenthesisExpression
     | BaseReference                                        #BaseReferenceExpression
     ;

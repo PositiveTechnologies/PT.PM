@@ -34,6 +34,8 @@ If:       'if';
 Function: 'function';
 Class:    'class';
 Field:    'field';
+Return:   'return';
+Throw:    'throw';
 BaseReference:       'base';
 OpenCurlyBracket:    '{';
 CloseCurlyBracket:   '}';

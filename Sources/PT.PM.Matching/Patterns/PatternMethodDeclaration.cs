@@ -74,7 +74,23 @@ namespace PT.PM.Matching.Patterns
                 {
                     if (Body != null)
                     {
-                        newContext = Body.Match(methodDeclaration.Body, newContext);
+                        if (Body is PatternArbitraryDepth || Body is PatternStatements)
+                        {
+                            newContext = Body.Match(methodDeclaration.Body, newContext);
+                        }
+                        else
+                        {
+                            var otherStatements = methodDeclaration.Body.Statements;
+                            if (otherStatements.Count() == 1)
+                            {
+                                newContext = Body.Match(otherStatements.First(), newContext);
+                            }
+                            else
+                            {
+                                return newContext.Fail();
+                            }
+                        }
+
                         if (!newContext.Success)
                         {
                             return newContext;

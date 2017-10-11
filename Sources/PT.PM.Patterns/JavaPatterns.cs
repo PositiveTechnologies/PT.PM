@@ -438,7 +438,7 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
-                DebugInfo = "ImproperValidationEmptyMethod. Improper Certificate Validation (Empty method)",
+                DebugInfo = "ImproperValidationEmptyMethodFull. Improper Certificate Validation (Empty method)",
                 Languages = new HashSet<Language>() { Java.Language },
                 Node = new PatternClassDeclaration
                 {
@@ -448,8 +448,67 @@ namespace PT.PM.Patterns.PatternsRepository
                     },
                     Body = new PatternArbitraryDepth
                     {
-                        Pattern = new PatternMethodDeclaration(
-                            Enumerable.Empty<PatternUst>().ToList(), new PatternIdRegexToken(".+"), false)
+                        Pattern = new PatternOr
+                        {
+                            Patterns = new List<PatternUst>
+                            {
+                                new PatternMethodDeclaration(new List<PatternUst>(), new PatternIdRegexToken(@"\w+"), false),
+                                new PatternOr
+                                {
+                                    Patterns = new List<PatternUst>
+                                    {
+                                        new PatternMethodDeclaration
+                                        {
+                                            Modifiers = new List<PatternUst>(),
+                                            Name = new PatternIdRegexToken(@"\w+"),
+                                            Body = new PatternReturnStatement(new PatternNullLiteral())
+                                        },
+                                        new PatternMethodDeclaration
+                                        {
+                                            Modifiers = new List<PatternUst>(),
+                                            Name = new PatternIdRegexToken(@"\w+"),
+                                            Body = new PatternArbitraryDepth
+                                            {
+                                                Pattern = new PatternThrowStatement
+                                                (
+                                                    new PatternObjectCreateExpression
+                                                    {
+                                                        Type = new PatternIdToken("UnsupportedOperationException"),
+                                                        Arguments = new PatternArgs(new List<PatternUst>
+                                                        {
+                                                            new PatternStringRegexLiteral(".*")
+                                                        })
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "ImproperValidationEmptyMethodPartial. Improper Certificate Validation (Empty method)",
+                Languages = new HashSet<Language>() { Java.Language },
+                Node = new PatternClassDeclaration
+                {
+                    BaseTypes = new List<PatternUst>
+                    {
+                        new PatternIdRegexToken("X509TrustManager|SSLSocketFactory")
+                    },
+                    Body = new PatternArbitraryDepth
+                    {
+                        Pattern = new PatternMethodDeclaration
+                        {
+                            Modifiers = new List<PatternUst>(),
+                            Name = new PatternIdRegexToken(@"\w+"),
+                            Body = new PatternReturnStatement(new PatternNullLiteral())
+                        }
                     }
                 }
             });

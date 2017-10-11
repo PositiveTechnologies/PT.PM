@@ -104,7 +104,7 @@
     <None Include="Data\ExtendingSecurityManagerWithoutFinal.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\ImproperValidationEmptyMethod.ptpm">
+    <None Include="Data\ImproperValidationEmptyMethodFull.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Data\UsingCloneWithoutCloneable.ptpm">

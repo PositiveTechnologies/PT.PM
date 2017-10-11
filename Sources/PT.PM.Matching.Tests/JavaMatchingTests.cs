@@ -40,6 +40,12 @@ namespace PT.PM.Matching.Tests
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
 
+            var improperValidationEmptyMethodPartial = patternDtos.Single(dto => dto.Description.StartsWith("ImproperValidationEmptyMethodPartial"));
+            Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == improperValidationEmptyMethodPartial.Key));
+
+            var improperValidationEmptyMethodFull = patternDtos.Single(dto => dto.Description.StartsWith("ImproperValidationEmptyMethodFull"));
+            Assert.AreEqual(3, matchingResults.Count(r => r.PatternKey == improperValidationEmptyMethodFull.Key));
+
             var missingReceiverPermission = patternDtos.Single(dto => dto.Description.StartsWith("MissingReceiverPermission"));
             Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == missingReceiverPermission.Key));
 
