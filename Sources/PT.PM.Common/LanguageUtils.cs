@@ -8,12 +8,15 @@ namespace PT.PM.Common
 {
     public static class LanguageUtils
     {
+        private static readonly string[] LanguagesSplitters = new string[] { " ", ",", ";", "|" };
+
         private static Dictionary<Language, Type> parsers;
         private static Dictionary<Language, Type> converters;
 
         public readonly static Dictionary<string, Language> Languages;
         public readonly static Dictionary<string, Language> PatternLanguages;
         public readonly static Dictionary<string, Language> SqlLanguages;
+        public readonly static Dictionary<Language, HashSet<Language>> SuperLanguages;
 
         static LanguageUtils()
         {
@@ -22,6 +25,7 @@ namespace PT.PM.Common
             Languages = new Dictionary<string, Language>();
             PatternLanguages = new Dictionary<string, Language>();
             SqlLanguages = new Dictionary<string, Language>();
+            SuperLanguages = new Dictionary<Language, HashSet<Language>>();
 
             var subParsers = new Dictionary<Language, Type>();
             var subConverters = new Dictionary<Language, Type>();
@@ -120,6 +124,18 @@ namespace PT.PM.Common
                 {
                     SqlLanguages[languageKey] = lang;
                 }
+                
+                foreach (Language sublanguage in lang.Sublanguages)
+                {
+                    HashSet<Language> superLanguages;
+                    if (!SuperLanguages.TryGetValue(sublanguage, out superLanguages))
+                    {
+                        superLanguages = new HashSet<Language>();
+                        SuperLanguages.Add(sublanguage, superLanguages);
+                    }
+
+                    superLanguages.Add(lang);
+                }
             }
         }
 
@@ -147,7 +163,12 @@ namespace PT.PM.Common
             }
         }
 
-        public static List<Language> ToLanguages(this IEnumerable<string> languages, ILogger logger)
+        public static List<Language> ToLanguages(this string languages, ILogger logger = null)
+        {
+            return languages.Split(LanguagesSplitters, StringSplitOptions.RemoveEmptyEntries).ToLanguages(logger);
+        }
+
+        public static List<Language> ToLanguages(this IEnumerable<string> languages, ILogger logger = null)
         {
             var result = new List<Language>();
             foreach (string langStr in languages)
