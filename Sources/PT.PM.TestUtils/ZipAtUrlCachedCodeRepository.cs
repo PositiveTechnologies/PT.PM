@@ -10,16 +10,9 @@ using System.Threading;
 
 namespace PT.PM.TestUtils
 {
-    public class ZipAtUrlCachedCodeRepository : ISourceCodeRepository
+    public class ZipAtUrlCachedCodeRepository : SourceCodeRepository
     {
         private const int percentStep = 5;
-
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        /// <summary>
-        /// Url of archive.
-        /// </summary>
-        public string Path { get; set; }
 
         /// <summary>
         /// Name of repository.
@@ -37,13 +30,13 @@ namespace PT.PM.TestUtils
 
         public ZipAtUrlCachedCodeRepository(string url, string repositoryName = null)
         {
-            Path = url;
+            Path = url; // url of archive
             RepositoryName = string.IsNullOrEmpty(repositoryName)
                 ? System.IO.Path.GetFileNameWithoutExtension(url)
                 : repositoryName;
         }
 
-        public IEnumerable<string> GetFileNames()
+        public override IEnumerable<string> GetFileNames()
         {
             if (!Path.EndsWith(".zip"))
             {
@@ -96,12 +89,12 @@ namespace PT.PM.TestUtils
             return GetFileNamesFromDownloadedAndUnpacked();
         }
 
-        public string GetFullPath(string relativePath)
+        public override string GetFullPath(string relativePath)
         {
             return System.IO.Path.Combine(System.IO.Path.GetFullPath(CachedSourceDir), relativePath);
         }
 
-        public SourceCodeFile ReadFile(string fileName)
+        public override SourceCodeFile ReadFile(string fileName)
         {
             var removeBeginLength = CachedSourceDir.Length + (CachedSourceDir.EndsWith("\\") ? 0 : 1);
             var shortFileName = System.IO.Path.GetFileName(fileName);
@@ -121,7 +114,7 @@ namespace PT.PM.TestUtils
             return result;
         }
 
-        public bool IsFileIgnored(string fileName)
+        public override bool IsFileIgnored(string fileName)
         {
             return IgnoredFiles.Any(fileName.EndsWith) || !Extensions.Any(fileName.EndsWith);
         }

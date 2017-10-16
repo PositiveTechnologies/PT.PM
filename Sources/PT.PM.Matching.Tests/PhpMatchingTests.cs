@@ -28,7 +28,7 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.php");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Php.Language, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto()

@@ -11,7 +11,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         [TestCase("numericScale.php")]
         public void Convert_PhpSyntax_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Php.Language, Stage.Ust);
+            TestUtility.CheckFile(fileName, Stage.Ust);
         }
 
         [TestCase("WebGoatPHP-6f48c9")]
@@ -27,10 +27,10 @@ namespace PT.PM.PhpParseTreeUst.Tests
         public void Convert_PhpPatternsWithErrors_MatchedResultsEqual()
         {
             var patternsLogger = new LoggerMessageCounter();
-            TestUtility.CheckFile("Patterns.php", Php.Language, Stage.Match, patternsLogger);
+            TestUtility.CheckFile("Patterns.php", Stage.Match, patternsLogger);
 
             var patternWithErrorsLogger = new LoggerMessageCounter();
-            TestUtility.CheckFile("PatternsWithParseErrors.php", Php.Language, Stage.Match, patternWithErrorsLogger, true);
+            TestUtility.CheckFile("PatternsWithParseErrors.php", Stage.Match, patternWithErrorsLogger, true);
 
             Assert.AreEqual(patternsLogger.InfoMessageCount, patternWithErrorsLogger.InfoMessageCount);
         }

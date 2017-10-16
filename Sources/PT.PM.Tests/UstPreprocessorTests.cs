@@ -24,10 +24,12 @@ namespace PT.PM.Tests
                 "echo 60 * 60 * 24;\r\n" +
                 "echo 6 + 6 * 6;\r\n" +
                 "$a = -3;\r\n" +
-                "$b = -3.1;"
+                "$b = -3.1;",
+
+                "constants.php"
             );
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, Php.Language, stage: Stage.SimplifiedUst)
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.SimplifiedUst)
             {
                 IsIncludePreprocessing = true,
                 Logger = logger
@@ -49,10 +51,12 @@ namespace PT.PM.Tests
                 "  public void init() {\r\n" +
                 "    char[] array = { 'n', 'o', 'n', 'e' };\r\n" +
                 "  }\r\n" +
-                "}"
+                "}",
+
+                "constantCharArray.java"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.SimplifiedUst)
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.SimplifiedUst)
             {
                 IsIncludePreprocessing = true
             };

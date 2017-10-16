@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, language, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto()

@@ -1,6 +1,5 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
 using PT.PM.TestUtils;
-using NUnit.Framework;
 
 namespace PT.PM.JavaScriptParseTreeUst.Tests
 {
@@ -10,7 +9,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         [Test]
         public void Convert_JavaScriptSyntaxFiles_WithoutErrors()
         {
-            TestUtility.CheckProject(TestUtility.TestsDataPath, JavaScript.Language, Stage.Ust);
+            TestUtility.CheckProject(TestUtility.TestsDataPath, JavaScript.Language, Stage.Ust, "*.js");
         }
     }
 }

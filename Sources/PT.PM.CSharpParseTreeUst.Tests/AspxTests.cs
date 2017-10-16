@@ -35,7 +35,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         [TestCase("Patterns.aspx")]
         public void Parse_AspxFile_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Aspx.Language, Stage.Ust);
+            TestUtility.CheckFile(fileName, Stage.Ust);
         }
     }
 }

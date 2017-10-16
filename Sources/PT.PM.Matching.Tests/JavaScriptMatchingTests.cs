@@ -68,7 +68,7 @@ namespace PT.PM.Matching.Tests
             var sourceCodeRep = new FileCodeRepository(path);
             var patternsRepository = new DefaultPatternRepository();
 
-            var workflow = new Workflow(sourceCodeRep, JavaScript.Language, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, patternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto().OrderBy(r => r.PatternKey);

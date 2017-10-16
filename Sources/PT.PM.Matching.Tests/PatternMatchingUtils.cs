@@ -18,9 +18,12 @@ namespace PT.PM.Matching.Tests
             IEnumerable<Language> analyzedLanguages,
             IEnumerable<Language> patternLanguages = null)
         {
-            var sourceCodeRep = new MemoryCodeRepository(code);
+            var sourceCodeRep = new MemoryCodeRepository(code)
+            {
+                Languages = new HashSet<Language>(analyzedLanguages)
+            };
             var patternsRep = new MemoryPatternsRepository();
-            var workflow = new Workflow(sourceCodeRep, analyzedLanguages, patternsRep)
+            var workflow = new Workflow(sourceCodeRep, patternsRep)
             {
                 Logger = new LoggerMessageCounter()
             };

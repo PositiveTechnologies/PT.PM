@@ -11,14 +11,14 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         [TestCase("AllInOne.cs")]
         public void Parse_CSharpWithRoslyn(string fileName)
         {
-            TestUtility.CheckFile(fileName, CSharp.Language, Stage.ParseTree);
+            TestUtility.CheckFile(fileName, Stage.ParseTree);
         }
 
         [Test]
         public void Parse_SyntaxErrorFileCSharp_CatchErrors()
         {
             var logger = new LoggerMessageCounter();
-            TestUtility.CheckFile("ParseError.cs", CSharp.Language, Stage.ParseTree, logger, true);
+            TestUtility.CheckFile("ParseError.cs", Stage.ParseTree, logger, true);
 
             Assert.AreEqual(7, logger.ErrorCount);
         }

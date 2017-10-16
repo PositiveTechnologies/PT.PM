@@ -11,7 +11,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_HtmlTestPatterns_MatchedExpected()
         {
-            WorkflowResult result = TestUtility.CheckFile("Patterns.html", Html.Language, Stage.Match,
+            WorkflowResult result = TestUtility.CheckFile("Patterns.html", Stage.Match,
                 isIgnoreFilenameWildcards: true);
             Assert.AreEqual(2, result.MatchingResults.Count);
             Assert.AreEqual(TextSpan.FromBounds(94, 102), result.MatchingResults[0].TextSpan);

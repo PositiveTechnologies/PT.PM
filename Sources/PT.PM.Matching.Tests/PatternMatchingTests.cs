@@ -42,9 +42,11 @@ namespace PT.PM.Matching.Tests
                 "\n" +
                 "$password2 = \"1234\";\n" +
                 "if ($password2->Length > 0) { }\n" +
-                "test_call_5(1, $password2, 2);"
+                "test_call_5(1, $password2, 2);",
+
+                "samples.php"
             );
-            workflow = new Workflow(sourceCodeRep, Php.Language, patternsRep)
+            workflow = new Workflow(sourceCodeRep, patternsRep)
             {
                 Logger = new LoggerMessageCounter()
             };
