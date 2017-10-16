@@ -321,7 +321,11 @@ namespace PT.PM.PatternEditor
         {
             get
             {
-                return LanguageUtils.Languages[Settings.SourceCodeLanguage];
+                if (LanguageUtils.Languages.TryGetValue(Settings.SourceCodeLanguage, out Language language))
+                {
+                    return language;
+                }
+                return null;
             }
             set
             {
@@ -438,9 +442,9 @@ namespace PT.PM.PatternEditor
             set => this.RaiseAndSetIfChanged(ref ustJson, value);
         }
 
-        public bool IsTokensVisible => SelectedLanguage.HaveAntlrParser && IsDeveloperMode;
+        public bool IsTokensVisible => SelectedLanguage?.HaveAntlrParser == true && IsDeveloperMode;
 
-        public bool IsTreeVisible => SelectedLanguage.HaveAntlrParser && IsDeveloperMode;
+        public bool IsTreeVisible => SelectedLanguage?.HaveAntlrParser == true && IsDeveloperMode;
 
         public bool IsUstJsonVisible => Stage >= Stage.Ust && IsDeveloperMode;
 
@@ -600,8 +604,8 @@ namespace PT.PM.PatternEditor
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tree.txt"), ParseTree);
                 }
 
-                TokensHeader = "Tokens" + (SelectedLanguage.HaveAntlrParser ? " (ANTLR)" : "");
-                ParseTreeHeader = "Parse Tree" + (SelectedLanguage.HaveAntlrParser ? " (ANTLR)" : "");
+                TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
+                ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
 
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {

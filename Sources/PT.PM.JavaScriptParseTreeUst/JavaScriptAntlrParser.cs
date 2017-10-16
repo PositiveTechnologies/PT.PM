@@ -25,7 +25,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             var lexer = new JavaScriptLexer(inputStream);
             if (JavaScriptType != JavaScriptType.Undefined)
             {
-                lexer.UseStrictDefalult = JavaScriptType == JavaScriptType.Strict;
+                lexer.UseStrictDefault = JavaScriptType == JavaScriptType.Strict;
             }
 
             return lexer;

@@ -45,9 +45,15 @@ namespace PT.PM.Common.Exceptions
                 ? $@" in ""{fileName}"""
                 : "";
             string patternString = IsPattern ? "Pattern " : "";
+
             string exceptionString = printStackTrace
                 ? InnerException?.FormatExceptionMessage() ?? Message
                 : Message;
+
+            if (string.IsNullOrEmpty(exceptionString))
+            {
+                exceptionString = InnerException?.FormatExceptionMessage();
+            }
 
             if (!string.IsNullOrEmpty(exceptionString))
             {

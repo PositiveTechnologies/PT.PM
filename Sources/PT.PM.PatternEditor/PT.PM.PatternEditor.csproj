@@ -80,6 +80,9 @@
       <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Serilog.Sinks.Trace" Version="2.1.0" />
+    <PackageReference Include="System.ValueTuple">
+      <Version>4.3.1</Version>
+    </PackageReference>
     <PackageReference Include="System.Xml.ReaderWriter">
       <Version>4.3.0</Version>
     </PackageReference>

@@ -521,8 +521,7 @@ namespace PT.PM.PatternEditor
 
         private void UpdatePatternCaretIndex(int caretIndex)
         {
-            int line, column;
-            caretIndex.ToLineColumn(patternTextBox.Text, out line, out column);
+            caretIndex.ToLineColumn(patternTextBox.Text ?? "", out int line, out int column);
             PatternTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(PatternTextBoxPosition)));
         }
