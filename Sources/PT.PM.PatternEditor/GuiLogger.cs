@@ -18,7 +18,7 @@ namespace PT.PM.PatternEditor
 
         internal bool LogPatternErrors { get; set; }
 
-        public ISourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public GuiLogger(ObservableCollection<object> errorsCollection)
         {

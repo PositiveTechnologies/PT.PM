@@ -29,9 +29,8 @@ namespace PT.PM.Common
         /// </summary>
         public LineColumnTextSpan(TextSpan textSpan, string text)
         {
-            int beginLine, beginColumn, endLine, endColumn;
-            textSpan.Start.ToLineColumn(text, out beginLine, out beginColumn);
-            textSpan.End.ToLineColumn(text, out endLine, out endColumn);
+            textSpan.Start.ToLineColumn(text, out int beginLine, out int beginColumn);
+            textSpan.End.ToLineColumn(text, out int endLine, out int endColumn);
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;
@@ -58,8 +57,10 @@ namespace PT.PM.Common
 
         public bool Equals(LineColumnTextSpan other)
         {
-            return BeginLine == other.BeginLine && BeginColumn == other.BeginColumn &&
-                   EndLine == other.EndLine && EndColumn == other.EndColumn;
+            return BeginLine == other.BeginLine &&
+                   BeginColumn == other.BeginColumn &&
+                   EndLine == other.EndLine &&
+                   EndColumn == other.EndColumn;
         }
     }
 }

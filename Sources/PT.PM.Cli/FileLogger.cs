@@ -53,7 +53,7 @@ namespace PT.PM.Cli
 
         public bool IsLogDebugs { get; set; } = false;
 
-        public ISourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public virtual void LogError(Exception ex)
         {

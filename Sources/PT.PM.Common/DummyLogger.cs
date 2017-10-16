@@ -9,7 +9,7 @@ namespace PT.PM.Common
 
         public int ErrorCount => 0;
 
-        public ISourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public void LogDebug(string message)
         {

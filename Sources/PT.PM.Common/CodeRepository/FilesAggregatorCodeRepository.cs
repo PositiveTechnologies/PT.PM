@@ -2,38 +2,32 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
 {
-    public class FilesAggregatorCodeRepository : ISourceCodeRepository
+    public class FilesAggregatorCodeRepository : SourceCodeRepository
     {
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public string Path { get; set; }
-
-        public IEnumerable<string> Extensions { get; set; } =
-            LanguageUtils.Languages.SelectMany(language => language.Value.Extensions);
+        public string SearchPattern { get; set; } = "*.*";
 
         public SearchOption SearchOption { get; set; } = SearchOption.AllDirectories;
 
-        public FilesAggregatorCodeRepository(string directoryPath, string extension)
-            : this(directoryPath, new[] { extension })
+        public FilesAggregatorCodeRepository(string directoryPath, params Language[] languages)
+            : this(directoryPath, (IEnumerable<Language>)languages)
         {
         }
 
-        public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<string> extensions)
+        public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<Language> languages)
         {
             Path = directoryPath;
-            Extensions = extensions;
+            Languages = new HashSet<Language>(languages);
         }
 
-        public IEnumerable<string> GetFileNames()
+        public override IEnumerable<string> GetFileNames()
         {
-            return Directory.EnumerateFiles(Path, "*.*", SearchOption);
+            return Directory.EnumerateFiles(Path, SearchPattern, SearchOption);
         }
 
-        public SourceCodeFile ReadFile(string fileName)
+        public override SourceCodeFile ReadFile(string fileName)
         {
             SourceCodeFile result = null;
             try
@@ -59,14 +53,9 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public string GetFullPath(string relativePath)
+        public override string GetFullPath(string relativePath)
         {
             return System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
-        }
-
-        public bool IsFileIgnored(string fileName)
-        {
-            return !Extensions.Any(fileName.EndsWith);
         }
     }
 }

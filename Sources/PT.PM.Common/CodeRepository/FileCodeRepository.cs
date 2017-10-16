@@ -2,34 +2,26 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
 {
-    public class FileCodeRepository : ISourceCodeRepository
+    public class FileCodeRepository : SourceCodeRepository
     {
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public string Path { get; set; }
-
-        public IEnumerable<string> Extensions { get; set; } = Enumerable.Empty<string>();
-
-        public FileCodeRepository(string filePath)
+        public FileCodeRepository(string filePath, Language language = null)
         {
             Path = filePath;
+            if (language != null)
+            {
+                Languages = new HashSet<Language>() { language };
+            }
         }
 
-        public IEnumerable<string> GetFileNames()
+        public override IEnumerable<string> GetFileNames()
         {
             return new string[] { Path };
         }
 
-        public SourceCodeFile ReadFile()
-        {
-            return ReadFile(Path);
-        }
-
-        public SourceCodeFile ReadFile(string fileName)
+        public override SourceCodeFile ReadFile(string fileName)
         {
             var result = new SourceCodeFile(fileName);
             try
@@ -44,17 +36,19 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public string GetFullPath(string relativePath)
+        public override string GetFullPath(string relativePath)
         {
             return System.IO.Path.GetFullPath(relativePath);
         }
 
-        public bool IsFileIgnored(string fileName)
+        public override bool IsFileIgnored(string fileName)
         {
-            if (!Extensions.Any())
+            if (Languages.Count == 1)
+            {
                 return false;
+            }
 
-            return !Extensions.Any(fileName.EndsWith);
+            return base.IsFileIgnored(fileName);
         }
     }
 }

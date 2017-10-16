@@ -19,25 +19,13 @@ namespace PT.PM
     public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchingResult>
     {
         public Workflow()
-            : this(null, LanguageUtils.Languages.Values)
+            : this(null)
         {
         }
 
-        public Workflow(ISourceCodeRepository sourceCodeRepository, Language language,
+        public Workflow(SourceCodeRepository sourceCodeRepository,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            : this(sourceCodeRepository, new [] { language }, patternsRepository, stage)
-        {
-        }
-
-        public Workflow(ISourceCodeRepository sourceCodeRepository,
-            IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            :this(sourceCodeRepository, LanguageUtils.Languages.Values, patternsRepository, stage)
-        {
-        }
-
-        public Workflow(ISourceCodeRepository sourceCodeRepository, IEnumerable<Language> languages,
-            IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
-            : base(stage, languages)
+            : base(stage)
         {
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();

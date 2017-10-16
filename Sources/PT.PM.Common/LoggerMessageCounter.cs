@@ -25,7 +25,7 @@ namespace PT.PM.Common
 
         public string ErrorsString => string.Join(", " + Environment.NewLine, errorMessages);
 
-        public ISourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public void LogError(Exception ex)
         {
@@ -33,8 +33,7 @@ namespace PT.PM.Common
             lock (errorMessages)
             {
                 errorMessages.Add(message);
-                var parsingException = ex as ParsingException;
-                if (parsingException != null)
+                if (ex is ParsingException parsingException)
                 {
                     errorFiles.Add(parsingException.FileName);
                 }
@@ -58,8 +57,7 @@ namespace PT.PM.Common
         public void LogInfo(object infoObj)
         {
             string message;
-            var progressEventArgs = infoObj as ProgressEventArgs;
-            if (progressEventArgs != null)
+            if (infoObj is ProgressEventArgs progressEventArgs)
             {
                 message = string.Format("Progress: {0}%; File: {1}{2}",
                     (int)(progressEventArgs.Progress * 100), progressEventArgs.CurrentFile,

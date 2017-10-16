@@ -4,31 +4,25 @@ using System.Collections.Generic;
 
 namespace PT.PM.Common.CodeRepository
 {
-    public class MemoryCodeRepository : ISourceCodeRepository
+    public class MemoryCodeRepository : SourceCodeRepository
     {
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public string Path { get; set; } = "";
-
         public string Code { get; set; }
 
-        public MemoryCodeRepository(string code, string fileName = "")
+        public MemoryCodeRepository(string code, string fileName = "", Language language = null)
         {
             Code = code;
             Path = fileName;
+            if (language != null)
+            {
+                Languages = new HashSet<Language>() { language };
+            }
         }
 
-        public IEnumerable<string> GetFileNames()
-        {
-            return new string[] { Path };
-        }
+        public override IEnumerable<string> GetFileNames() => new string[] { Path };
 
-        public string GetFullPath(string relativePath)
-        {
-            return Path;
-        }
+        public override string GetFullPath(string relativePath) => Path;
 
-        public SourceCodeFile ReadFile(string fileName)
+        public override SourceCodeFile ReadFile(string fileName)
         {
             var result = new SourceCodeFile(fileName);
             try
@@ -43,6 +37,14 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public bool IsFileIgnored(string fileName) => false;
+        public override bool IsFileIgnored(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName) || Languages.Count == 1)
+            {
+                return false;
+            }
+
+            return base.IsFileIgnored(fileName);
+        }
     }
 }

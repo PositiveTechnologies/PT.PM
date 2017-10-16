@@ -578,7 +578,7 @@ namespace PT.PM.PatternEditor
             {
                 patternRepository = new MemoryPatternsRepository();
             }
-            var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage)
+            var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
             {
                 IsIncludeIntermediateResult = true,
                 Logger = sourceCodeLogger

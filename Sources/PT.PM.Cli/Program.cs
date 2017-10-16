@@ -104,17 +104,16 @@ namespace PT.PM.Cli
                     IEnumerable<Language> languages;
                     if (!string.IsNullOrEmpty(languagesString))
                     {
-                        languages = languagesString.Split(' ', ',', ';').ToLanguages(logger);
+                        languages = languagesString.ToLanguages(logger);
                     }
                     else
                     {
                         languages = LanguageUtils.Languages.Values;
                     }
-                    ISourceCodeRepository sourceCodeRepository;
+                    SourceCodeRepository sourceCodeRepository;
                     if (Directory.Exists(fileName))
                     {
-                        sourceCodeRepository = new FilesAggregatorCodeRepository(fileName,
-                            languages.SelectMany(lang => lang.Extensions));
+                        sourceCodeRepository = new FilesAggregatorCodeRepository(fileName, languages);
                     }
                     else
                     {
@@ -137,7 +136,7 @@ namespace PT.PM.Cli
                         patternsRepository = new JsonPatternsRepository(patterns);
                     }
 
-                    var workflow = new Workflow(sourceCodeRepository, languages, patternsRepository, stage)
+                    var workflow = new Workflow(sourceCodeRepository, patternsRepository, stage)
                     {
                         Logger = logger,
                         ThreadCount = threadCount,

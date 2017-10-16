@@ -7,7 +7,7 @@ namespace PT.PM.Common
     {
         int ErrorCount { get; }
 
-        ISourceCodeRepository SourceCodeRepository { get; set; }
+        SourceCodeRepository SourceCodeRepository { get; set; }
 
         void LogError(Exception ex);
 

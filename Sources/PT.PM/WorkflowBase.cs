@@ -31,7 +31,7 @@ namespace PT.PM
 
         public TStage Stage { get; set; }
 
-        public ISourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public IPatternsRepository PatternsRepository { get; set; }
 
@@ -90,7 +90,7 @@ namespace PT.PM
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        public HashSet<Language> AnalyzedLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
+        public HashSet<Language> AnalyzedLanguages => SourceCodeRepository.Languages;
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
@@ -100,9 +100,8 @@ namespace PT.PM
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        public WorkflowBase(TStage stage, IEnumerable<Language> languages)
+        public WorkflowBase(TStage stage)
         {
-            AnalyzedLanguages = new HashSet<Language>(languages);
             Stage = stage;
             stageHelper = new StageHelper<TStage>(stage);
         }
