@@ -83,8 +83,7 @@ namespace PT.PM.Cli
                         logger.LogInfo($"PT.PM version: {version}");
                     }
 
-                    var abstractLogger = logger as FileLogger;
-                    if (abstractLogger != null)
+                    if (logger is FileLogger abstractLogger)
                     {
                         abstractLogger.LogsDir = logsDir;
                         abstractLogger.IsLogErrors = logErrors;
@@ -177,8 +176,7 @@ namespace PT.PM.Cli
                 {
                     if (logger != null)
                     {
-                        var abstractLogger = logger as FileLogger;
-                        if (abstractLogger != null)
+                        if (logger is FileLogger abstractLogger)
                         {
                             abstractLogger.IsLogErrors = true;
                         }
@@ -187,8 +185,7 @@ namespace PT.PM.Cli
                 }
                 finally
                 {
-                    var disposableLogger = logger as IDisposable;
-                    if (disposableLogger != null)
+                    if (logger is IDisposable disposableLogger)
                     {
                         disposableLogger.Dispose();
                     }

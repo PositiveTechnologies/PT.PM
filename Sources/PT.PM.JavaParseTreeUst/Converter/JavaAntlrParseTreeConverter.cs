@@ -64,8 +64,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitTypeDeclaration(JavaParser.TypeDeclarationContext context)
         {
-            var child0Terminal = context.GetChild(0) as ITerminalNode;
-            if (child0Terminal != null) // ignore ';'
+            if (context.GetChild(0) is ITerminalNode child0Terminal) // ignore ';'
                 return null;
 
             var result = Visit(context.GetChild(context.ChildCount - 1));
@@ -155,15 +154,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 for (int i = 0; i < typeArgument.ChildCount; i++)
                 {
-                    var terminalNode = typeArgument.GetChild(i) as ITerminalNode;
-                    if (terminalNode != null)
+                    if (typeArgument.GetChild(i) is ITerminalNode terminalNode)
                     {
                         typeNodes.Append(terminalNode.Symbol.Text);
                         continue;
                     }
 
-                    var typeNode = typeArgument.GetChild(i) as JavaParser.TypeArgumentContext;
-                    if (typeNode != null)
+                    if (typeArgument.GetChild(i) is JavaParser.TypeArgumentContext typeNode)
                     {
                         typeNodes.Append(((TypeToken)Visit(typeNode))?.TypeText);
                     }

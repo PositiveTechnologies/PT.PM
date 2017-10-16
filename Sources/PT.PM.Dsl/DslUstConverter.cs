@@ -29,9 +29,11 @@ namespace PT.PM.Dsl
             try
             {
                 patternVars = new Dictionary<string, PatternVar>();
-                var result = new PatternRoot();
-                result.Node = VisitPattern(pattern);
-                result.Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
+                var result = new PatternRoot
+                {
+                    Node = VisitPattern(pattern),
+                    Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values)
+                };
                 var ascendantsFiller = new PatternAscendantsFiller(result);
                 ascendantsFiller.FillAscendants();
                 return result;
@@ -590,8 +592,10 @@ namespace PT.PM.Dsl
         public PatternUst VisitPatternBoolLiteral(DslParser.PatternBoolLiteralContext context)
         {
             var boolText = context.PatternBool().GetText();
-            var result = new PatternBooleanLiteral(boolText == "bool" ? (bool?)null : bool.Parse(boolText));
-            result.TextSpan = context.GetTextSpan();
+            var result = new PatternBooleanLiteral(boolText == "bool" ? (bool?)null : bool.Parse(boolText))
+            {
+                TextSpan = context.GetTextSpan()
+            };
             return result;
         }
 

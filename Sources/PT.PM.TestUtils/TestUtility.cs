@@ -67,8 +67,7 @@ namespace PT.PM.TestUtils
             WorkflowResult workflowResult = workflow.Process();
 
             string errorString = string.Empty;
-            var loggerMessageCounter = log as LoggerMessageCounter;
-            if (loggerMessageCounter != null)
+            if (log is LoggerMessageCounter loggerMessageCounter)
             {
                 errorString = loggerMessageCounter.ErrorsString;
             }
@@ -151,9 +150,11 @@ namespace PT.PM.TestUtils
             var logger = new LoggerMessageCounter() { LogToConsole = false };
             var repository = new FilesAggregatorCodeRepository(
                 projectPath , language.Extensions);
-            var workflow = new Workflow(repository, language, stage: endStage);
-            workflow.Logger = logger;
-            workflow.ThreadCount = 1;
+            var workflow = new Workflow(repository, language, stage: endStage)
+            {
+                Logger = logger,
+                ThreadCount = 1
+            };
             WorkflowResult workflowResult = workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);

@@ -249,8 +249,7 @@ namespace PT.PM.PatternEditor
 
         private void MatchingResultListBox_DoubleTapped(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            MathingResultDtoWrapper matchingResultWrapper = matchingResultListBox.SelectedItem as MathingResultDtoWrapper;
-            if (matchingResultWrapper != null)
+            if (matchingResultListBox.SelectedItem is MathingResultDtoWrapper matchingResultWrapper)
             {
                 var matchingResult = matchingResultWrapper.MatchingResult;
                 sourceCodeTextBox.Focus();
@@ -579,9 +578,11 @@ namespace PT.PM.PatternEditor
             {
                 patternRepository = new MemoryPatternsRepository();
             }
-            var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage);
-            workflow.IsIncludeIntermediateResult = true;
-            workflow.Logger = sourceCodeLogger;
+            var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage)
+            {
+                IsIncludeIntermediateResult = true,
+                Logger = sourceCodeLogger
+            };
             if (SelectedLanguage == JavaScript.Language)
             {
                 workflow.JavaScriptType = JavaScriptType;

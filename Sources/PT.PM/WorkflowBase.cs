@@ -161,8 +161,7 @@ namespace PT.PM
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
                     workflowResult.AddResultEntity(parseTree);
 
-                    var antlrParseTree = parseTree as AntlrParseTree;
-                    if (antlrParseTree != null)
+                    if (parseTree is AntlrParseTree antlrParseTree)
                     {
                         workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
                         workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);

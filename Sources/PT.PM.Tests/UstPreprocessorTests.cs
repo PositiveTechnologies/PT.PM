@@ -27,9 +27,11 @@ namespace PT.PM.Tests
                 "$b = -3.1;"
             );
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, Php.Language, stage: Stage.SimplifiedUst);
-            workflow.IsIncludePreprocessing = true;
-            workflow.Logger = logger;
+            var workflow = new Workflow(sourceCodeRep, Php.Language, stage: Stage.SimplifiedUst)
+            {
+                IsIncludePreprocessing = true,
+                Logger = logger
+            };
             workflow.Process();
 
             Assert.IsTrue(logger.ContainsDebugMessagePart("Hello World!"));
@@ -50,8 +52,10 @@ namespace PT.PM.Tests
                 "}"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.SimplifiedUst);
-            workflow.IsIncludePreprocessing = true;
+            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.SimplifiedUst)
+            {
+                IsIncludePreprocessing = true
+            };
             var ust = workflow.Process().Usts.First();
 
             Assert.IsTrue(ust.AnyDescendant(
