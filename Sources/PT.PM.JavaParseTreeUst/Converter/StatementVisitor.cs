@@ -45,7 +45,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 return result;
             }
 
-            var typeDec = context.typeDeclaration();
+            var typeDec = context.localTypeDeclaration();
             if (typeDec != null)
             {
                 var typeDeclaration = (TypeDeclaration)Visit(typeDec);

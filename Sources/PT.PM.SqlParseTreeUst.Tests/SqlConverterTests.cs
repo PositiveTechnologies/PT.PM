@@ -1,9 +1,5 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+﻿using NUnit.Framework;
 using PT.PM.TestUtils;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 

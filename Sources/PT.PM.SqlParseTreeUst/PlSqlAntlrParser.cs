@@ -21,7 +21,7 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
         {
-            return new PlSqlAntlrParseTree((PlSqlParser.Compilation_unitContext)syntaxTree);
+            return new PlSqlAntlrParseTree((PlSqlParser.Sql_scriptContext)syntaxTree);
         }
 
         public override Lexer InitLexer(ICharStream inputStream)
@@ -36,7 +36,7 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
         {
-            return ((PlSqlParser)parser).compilation_unit();
+            return ((PlSqlParser)parser).sql_script();
         }
     }
 }

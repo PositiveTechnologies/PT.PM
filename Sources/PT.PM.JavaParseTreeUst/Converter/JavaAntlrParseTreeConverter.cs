@@ -380,6 +380,16 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return VisitChildren(context);
         }
 
+        public Ust VisitLocalTypeDeclaration([NotNull] JavaParser.LocalTypeDeclarationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAccessorOrMethodRefCall([NotNull] JavaParser.AccessorOrMethodRefCallContext context)
+        {
+            return VisitChildren(context);
+        }
+
         #endregion
     }
 }
