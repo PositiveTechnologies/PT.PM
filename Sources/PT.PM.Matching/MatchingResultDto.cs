@@ -41,7 +41,7 @@ namespace PT.PM.Matching
             EndLine = endLine;
             EndColumn = endColumn;
             PatternKey = matchingResult.Pattern.Key;
-            SourceFile = sourceCodeFile.FullPath;
+            SourceFile = sourceCodeFile.FullName;
             
             var startLineIndex = sourceCodeFile.Code.LastIndexOfAny(newLineChars, lastTextSpan.Start) + 1;
             var endLineIndex = sourceCodeFile.Code.IndexOfAny(newLineChars, lastTextSpan.Start + lastTextSpan.Length);

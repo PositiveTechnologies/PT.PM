@@ -7,15 +7,13 @@ namespace PT.PM.Common.CodeRepository
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public string Path { get; set; } = "";
+        public string RootPath { get; protected set; } = "";
 
         public HashSet<Language> Languages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
         public abstract IEnumerable<string> GetFileNames();
 
         public abstract SourceCodeFile ReadFile(string fileName);
-
-        public abstract string GetFullPath(string relativePath);
 
         public virtual bool IsFileIgnored(string fileName)
         {

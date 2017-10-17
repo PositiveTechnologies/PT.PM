@@ -56,7 +56,7 @@ namespace PT.PM.CSharpParseTreeUst
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile.FullPath, ex));
+                Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile.FullName, ex));
                 result = new RootUst(langParseTree.SourceCodeFile, Language);
             }
 

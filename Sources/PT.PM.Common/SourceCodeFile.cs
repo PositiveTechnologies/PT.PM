@@ -4,21 +4,20 @@ namespace PT.PM.Common
 {
     public class SourceCodeFile
     {
-        public string Name { get; set; } = "";
+        public string RootPath { get; set; } = "";
 
         public string RelativePath { get; set; } = "";
 
+        public string Name { get; set; } = "";
+
         public string Code { get; set; } = "";
 
-        public string FullPath => Path.Combine(RelativePath, Name);
+        public string RelativeName => Path.Combine(RelativePath, Name);
+
+        public string FullName => Path.Combine(RootPath, RelativePath, Name);
 
         public SourceCodeFile()
         {
-        }
-
-        public SourceCodeFile(string name)
-        {
-            Name = name;
         }
 
         public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)
@@ -31,6 +30,6 @@ namespace PT.PM.Common
             return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
         }
 
-        public override string ToString() => Name;
+        public override string ToString() => RelativeName;
     }
 }

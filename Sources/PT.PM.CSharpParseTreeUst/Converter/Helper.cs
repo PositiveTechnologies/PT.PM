@@ -45,7 +45,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             {
                 Logger.LogError(new ConversionException(ex.Message)
                 {
-                    FileName = root?.SourceCodeFile?.FullPath ?? "",
+                    FileName = root?.SourceCodeFile?.FullName ?? "",
                     TextSpan = node.GetTextSpan()
                 });
                 return null;
