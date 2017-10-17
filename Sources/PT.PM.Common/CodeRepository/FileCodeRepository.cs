@@ -7,9 +7,14 @@ namespace PT.PM.Common.CodeRepository
 {
     public class FileCodeRepository : SourceCodeRepository
     {
-        public FileCodeRepository(string filePath, Language language = null)
+        protected string fullName;
+
+        public FileCodeRepository(string fileName, Language language = null)
         {
-            Path = filePath;
+            RootPath = !string.IsNullOrEmpty(fileName)
+                ? Path.GetDirectoryName(fileName)
+                : "";
+            fullName = fileName;
             if (language != null)
             {
                 Languages = new HashSet<Language>() { language };
@@ -18,27 +23,26 @@ namespace PT.PM.Common.CodeRepository
 
         public override IEnumerable<string> GetFileNames()
         {
-            return new string[] { Path };
+            return new string[] { fullName };
         }
 
         public override SourceCodeFile ReadFile(string fileName)
         {
-            var result = new SourceCodeFile(fileName);
+            var result = new SourceCodeFile
+            {
+                RootPath = RootPath,
+                RelativePath = "",
+                Name = Path.GetFileName(fileName)
+            };
             try
             {
-                result.RelativePath = "";
-                result.Code = File.ReadAllText(fileName);
+                result.Code = ReadCode(fileName);
             }
             catch (Exception ex)
             {
                 Logger.LogError(new ReadException(fileName, ex));
             }
             return result;
-        }
-
-        public override string GetFullPath(string relativePath)
-        {
-            return System.IO.Path.GetFullPath(relativePath);
         }
 
         public override bool IsFileIgnored(string fileName)
@@ -50,5 +54,7 @@ namespace PT.PM.Common.CodeRepository
 
             return base.IsFileIgnored(fileName);
         }
+
+        protected virtual string ReadCode(string fileName) => File.ReadAllText(fileName);
     }
 }
