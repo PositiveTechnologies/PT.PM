@@ -18,44 +18,57 @@ namespace PT.PM.Common.CodeRepository
 
         public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<Language> languages)
         {
-            Path = directoryPath;
+            RootPath = directoryPath;
+            if (RootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                RootPath = RootPath.Remove(RootPath.Length - 1);
+            }
             Languages = new HashSet<Language>(languages);
         }
 
         public override IEnumerable<string> GetFileNames()
         {
-            return Directory.EnumerateFiles(Path, SearchPattern, SearchOption);
+            return Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
         }
 
         public override SourceCodeFile ReadFile(string fileName)
         {
-            SourceCodeFile result = null;
+            string name = Path.GetFileName(fileName);
+            string relativePath;
+            int removeIndex = fileName.Length - name.Length;
+            if (removeIndex != 0)
+            {
+                removeIndex -= 1; // remove directory seprator char
+                relativePath = fileName.Remove(removeIndex);
+            }
+            else
+            {
+                relativePath = fileName;
+            }
+
+            int substringIndex = RootPath.Length;
+            if (substringIndex + 1 < relativePath.Length && relativePath[substringIndex] == Path.DirectorySeparatorChar)
+            {
+                substringIndex += 1;
+            }
+            relativePath = relativePath.Substring(substringIndex);
+
+            var result = new SourceCodeFile
+            {
+                RootPath = RootPath,
+                RelativePath = relativePath,
+                Name = name
+            };
             try
             {
-                var removeBeginLength = Path.Length + (Path.EndsWith("\\") ? 0 : 1);
-                var shortFileName = System.IO.Path.GetFileName(fileName);
-                result = new SourceCodeFile(shortFileName);
-            
-                int removeEndLength = shortFileName.Length + 1;
-                result.RelativePath = removeEndLength + removeBeginLength > fileName.Length
-                        ? "" : fileName.Remove(fileName.Length - removeEndLength).Remove(0, removeBeginLength);
                 result.Code = File.ReadAllText(fileName);
                 return result;
             }
             catch (Exception ex)
             {
                 Logger.LogError(new ReadException(fileName, ex));
-                if (result == null)
-                {
-                    result = new SourceCodeFile(fileName);
-                }
             }
             return result;
-        }
-
-        public override string GetFullPath(string relativePath)
-        {
-            return System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
         }
     }
 }
