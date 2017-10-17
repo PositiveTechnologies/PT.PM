@@ -31,16 +31,16 @@ namespace PT.PM.Matching.Tests
                 TestProjects.CSharpProjects.Single(p => p.Key == projectKey), CSharp.Language, Stage.Match);
 
             Assert.AreEqual(13, workflowResult.MatchingResults.Count);
-            Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 400 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\AddNewUser.aspx.cs".NormDirSeparator())), 1);
-            Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 70174 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
-            Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 70254 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
-            Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 72299 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator())), 1);
-            Assert.AreEqual(workflowResult.MatchingResults.Count(r =>
-                r.TextSpan.Start == 618 && r.SourceCodeFile.FullPath.EndsWith(@"WebGoat\Content\EncryptVSEncode.aspx.cs".NormDirSeparator())), 1);
+            Assert.NotNull(workflowResult.MatchingResults.SingleOrDefault(r =>
+                r.TextSpan.Start == 400 && r.SourceCodeFile.RelativeName == @"WebGoat\AddNewUser.aspx.cs".NormDirSeparator()));
+            Assert.NotNull(workflowResult.MatchingResults.Count(r =>
+                r.TextSpan.Start == 70174 && r.SourceCodeFile.RelativeName == @"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator()));
+            Assert.NotNull(workflowResult.MatchingResults.Count(r =>
+                r.TextSpan.Start == 70254 && r.SourceCodeFile.RelativeName == @"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator()));
+            Assert.NotNull(workflowResult.MatchingResults.Count(r =>
+                r.TextSpan.Start == 72299 && r.SourceCodeFile.RelativeName == @"WebGoat\Code\SQLiteMembershipProvider.cs".NormDirSeparator()));
+            Assert.NotNull(workflowResult.MatchingResults.Count(r =>
+                r.TextSpan.Start == 618 && r.SourceCodeFile.RelativeName == @"WebGoat\Content\EncryptVSEncode.aspx.cs".NormDirSeparator()));
         }
 
         [Test]
