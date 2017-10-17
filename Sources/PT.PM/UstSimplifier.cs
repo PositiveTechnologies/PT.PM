@@ -191,7 +191,7 @@ namespace PT.PM
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(ust.Root?.SourceCodeFile?.FullPath ?? "", ex)
+                Logger.LogError(new ConversionException(ust.Root?.SourceCodeFile?.FullName ?? "", ex)
                 {
                     TextSpan = ust.TextSpan
                 });

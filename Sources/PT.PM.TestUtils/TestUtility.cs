@@ -98,7 +98,6 @@ namespace PT.PM.TestUtils
                     codeRepository = new ZipAtUrlCachedCodeRepository(url, testProject.Key)
                     {
                         Languages = new HashSet<Language>() { language },
-                        Extensions = language.Extensions,
                         IgnoredFiles = testProject.IgnoredFiles,
                         Logger = logger
                     };

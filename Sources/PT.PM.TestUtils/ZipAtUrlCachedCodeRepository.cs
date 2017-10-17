@@ -10,43 +10,55 @@ using System.Threading;
 
 namespace PT.PM.TestUtils
 {
-    public class ZipAtUrlCachedCodeRepository : SourceCodeRepository
+    public class ZipAtUrlCachedCodeRepository : FilesAggregatorCodeRepository
     {
         private const int percentStep = 5;
 
-        /// <summary>
-        /// Name of repository.
-        /// </summary>
-        public string RepositoryName { get; set; }
+        public string RepositoryName { get; private set; }
 
         public string DownloadPath { get; set; } = TestUtility.TestsDownloadedPath;
 
-        public IEnumerable<string> Extensions { get; set; } =
-            LanguageUtils.Languages.SelectMany(lang => lang.Value.Extensions);
-
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
-        public string CachedSourceDir { get; private set; }
+        public string Url { get; private set; }
 
         public ZipAtUrlCachedCodeRepository(string url, string repositoryName = null)
+            : base("")
         {
-            Path = url; // url of archive
+            Url = url; // url of archive
             RepositoryName = string.IsNullOrEmpty(repositoryName)
-                ? System.IO.Path.GetFileNameWithoutExtension(url)
+                ? Path.GetFileNameWithoutExtension(url)
                 : repositoryName;
+        }
+
+        public override bool IsFileIgnored(string fileName)
+        {
+            bool result = IgnoredFiles.Any(fileName.EndsWith);
+            if (result)
+            {
+                return true;
+            }
+
+            return base.IsFileIgnored(fileName);
         }
 
         public override IEnumerable<string> GetFileNames()
         {
-            if (!Path.EndsWith(".zip"))
+            DownloadIfRequired();
+            return base.GetFileNames();
+        }
+
+        private void DownloadIfRequired()
+        {
+            if (!Url.EndsWith(".zip"))
             {
                 throw new NotSupportedException("Not zip archives are not supported");
             }
-            
-            CachedSourceDir = System.IO.Path.Combine(DownloadPath, RepositoryName);
-            string zipFileName = CachedSourceDir + ".zip";
 
-            if (IsDirectoryNotExistsOrEmpty(CachedSourceDir))
+            RootPath = Path.Combine(DownloadPath, RepositoryName);
+            string zipFileName = RootPath + ".zip";
+
+            if (IsDirectoryNotExistsOrEmpty(RootPath))
             {
                 // Block another processes which try to use the same files.
                 using (var zipFileNameMutex = new Mutex(false, TestUtility.ConvertToValidMutexName(zipFileName)))
@@ -55,11 +67,11 @@ namespace PT.PM.TestUtils
                     {
                         try
                         {
-                            if (IsDirectoryNotExistsOrEmpty(CachedSourceDir))
+                            if (IsDirectoryNotExistsOrEmpty(RootPath))
                             {
-                                if (Directory.Exists(CachedSourceDir))
+                                if (Directory.Exists(RootPath))
                                 {
-                                    Directory.Delete(CachedSourceDir);
+                                    Directory.Delete(RootPath);
                                 }
 
                                 if (!File.Exists(zipFileName))
@@ -85,43 +97,11 @@ namespace PT.PM.TestUtils
                     }
                 }
             }
-
-            return GetFileNamesFromDownloadedAndUnpacked();
-        }
-
-        public override string GetFullPath(string relativePath)
-        {
-            return System.IO.Path.Combine(System.IO.Path.GetFullPath(CachedSourceDir), relativePath);
-        }
-
-        public override SourceCodeFile ReadFile(string fileName)
-        {
-            var removeBeginLength = CachedSourceDir.Length + (CachedSourceDir.EndsWith("\\") ? 0 : 1);
-            var shortFileName = System.IO.Path.GetFileName(fileName);
-            SourceCodeFile result = new SourceCodeFile(shortFileName);
-            try
-            {
-                int removeEndLength = shortFileName.Length + 1;
-                result.RelativePath = removeEndLength + removeBeginLength > fileName.Length
-                        ? "" : fileName.Remove(fileName.Length - removeEndLength).Remove(0, removeBeginLength);
-                result.Code = File.ReadAllText(fileName);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(new ReadException(fileName, ex));
-            }
-            return result;
-        }
-
-        public override bool IsFileIgnored(string fileName)
-        {
-            return IgnoredFiles.Any(fileName.EndsWith) || !Extensions.Any(fileName.EndsWith);
         }
 
         private bool IsDirectoryNotExistsOrEmpty(string directoryName)
         {
-            return !Directory.Exists(CachedSourceDir) || TestUtility.IsDirectoryEmpty(CachedSourceDir);
+            return !Directory.Exists(RootPath) || TestUtility.IsDirectoryEmpty(RootPath);
         }
 
         private void DownloadPack(string zipFileName)
@@ -152,7 +132,7 @@ namespace PT.PM.TestUtils
             {
                 Directory.CreateDirectory(DownloadPath);
             }
-            webClient.DownloadFileAsync(new Uri(Path), zipFileName);
+            webClient.DownloadFileAsync(new Uri(Url), zipFileName);
 
             do
             {
@@ -166,7 +146,7 @@ namespace PT.PM.TestUtils
         private void UnpackFiles(string zipFileName)
         {
             Logger.LogInfo($"{RepositoryName} extraction...");
-            string testDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), RepositoryName);
+            string testDir = Path.Combine(Path.GetTempPath(), RepositoryName);
             Logger.LogInfo($"{RepositoryName} test directory: {testDir}");
             if (Directory.Exists(testDir))
             {
@@ -192,13 +172,12 @@ namespace PT.PM.TestUtils
             {
                 if (Directory.GetFiles(testDir).Length == 1)
                 {
-                    Directory.CreateDirectory(CachedSourceDir);
-                    File.Move(fileSystemEntries[0], System.IO.Path.Combine(CachedSourceDir,
-                        System.IO.Path.GetFileName(fileSystemEntries[0])));
+                    Directory.CreateDirectory(RootPath);
+                    File.Move(fileSystemEntries[0], Path.Combine(RootPath, Path.GetFileName(fileSystemEntries[0])));
                 }
                 else
                 {
-                    Directory.Move(fileSystemEntries[0], CachedSourceDir);
+                    Directory.Move(fileSystemEntries[0], RootPath);
                 }
                 try
                 {
@@ -211,13 +190,8 @@ namespace PT.PM.TestUtils
             }
             else
             {
-                Directory.Move(testDir, CachedSourceDir);
+                Directory.Move(testDir, RootPath);
             }
-        }
-
-        private IEnumerable<string> GetFileNamesFromDownloadedAndUnpacked()
-        {
-            return Directory.EnumerateFiles(CachedSourceDir, "*.*", SearchOption.AllDirectories);
         }
     }
 }

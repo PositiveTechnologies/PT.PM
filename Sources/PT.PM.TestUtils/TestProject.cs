@@ -38,5 +38,10 @@ namespace PT.PM.TestUtils
         {
             Key = key;
         }
+
+        public override string ToString()
+        {
+            return $"{Key} {Urls.FirstOrDefault() ?? ""}";
+        }
     }
 }
