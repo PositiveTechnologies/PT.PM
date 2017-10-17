@@ -8,7 +8,7 @@ namespace PT.PM.Common
 {
     public static class LanguageUtils
     {
-        private static readonly string[] LanguagesSplitters = new string[] { " ", ",", ";", "|" };
+        public static readonly string[] LanguageSplitters = new string[] { " ", ",", ";", "|" };
 
         private static Dictionary<Language, Type> parsers;
         private static Dictionary<Language, Type> converters;
@@ -165,7 +165,7 @@ namespace PT.PM.Common
 
         public static List<Language> ToLanguages(this string languages, ILogger logger = null)
         {
-            return languages.Split(LanguagesSplitters, StringSplitOptions.RemoveEmptyEntries).ToLanguages(logger);
+            return languages.Split(LanguageSplitters, StringSplitOptions.RemoveEmptyEntries).ToLanguages(logger);
         }
 
         public static List<Language> ToLanguages(this IEnumerable<string> languages, ILogger logger = null)
