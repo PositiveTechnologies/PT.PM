@@ -53,13 +53,20 @@ namespace PT.PM.Dsl
             PatternUst result;
             if (context.statement().Length > 0)
             {
-                IEnumerable<PatternUst> statements = context.statement().Select(
+                List<PatternUst> statements = context.statement().Select(
                     statement => VisitStatement(statement))
-                    .Where(statement => statement != null);
-                result = new PatternStatements(statements)
+                    .Where(statement => statement != null).ToList();
+                if (statements.Count == 1)
                 {
-                    TextSpan = context.GetTextSpan()
-                };
+                    result = statements.First();
+                }
+                else
+                {
+                    result = new PatternStatements(statements)
+                    {
+                        TextSpan = context.GetTextSpan()
+                    };
+                }
             }
             else if (context.expression() != null)
             {
@@ -352,7 +359,7 @@ namespace PT.PM.Dsl
         public PatternUst VisitVariableName(DslParser.VariableNameContext context)
         {
             PatternUst result;
-            if(context.literalOrPatternId() != null)
+            if (context.literalOrPatternId() != null)
             {
                 result = VisitLiteralOrPatternId(context.literalOrPatternId());
             }
