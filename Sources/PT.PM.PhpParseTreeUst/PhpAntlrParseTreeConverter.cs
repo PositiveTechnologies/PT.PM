@@ -316,37 +316,37 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitClassEntryType(PhpParser.ClassEntryTypeContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitInterfaceList(PhpParser.InterfaceListContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTypeParameterListInBrackets(PhpParser.TypeParameterListInBracketsContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTypeParameterList(PhpParser.TypeParameterListContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTypeParameterWithDefaultsList(PhpParser.TypeParameterWithDefaultsListContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTypeParameterDecl(PhpParser.TypeParameterDeclContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTypeParameterWithDefaultDecl(PhpParser.TypeParameterWithDefaultDeclContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitGenericDynamicArgs(PhpParser.GenericDynamicArgsContext context)
@@ -362,32 +362,32 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitAttributes(PhpParser.AttributesContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitAttributesGroup(PhpParser.AttributesGroupContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitAttribute(PhpParser.AttributeContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitAttributeArgList(PhpParser.AttributeArgListContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitAttributeNamedArgList(PhpParser.AttributeNamedArgListContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitAttributeNamedArg(PhpParser.AttributeNamedArgContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitInnerStatementList(PhpParser.InnerStatementListContext context)
@@ -899,32 +899,32 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitTraitAdaptations(PhpParser.TraitAdaptationsContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTraitAdaptationStatement(PhpParser.TraitAdaptationStatementContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTraitPrecedence(PhpParser.TraitPrecedenceContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTraitAlias(PhpParser.TraitAliasContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitTraitMethodReference(PhpParser.TraitMethodReferenceContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitBaseCtorCall(PhpParser.BaseCtorCallContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitMethodBody(PhpParser.MethodBodyContext context)
@@ -937,12 +937,12 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitPropertyModifiers(PhpParser.PropertyModifiersContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitMemberModifiers(PhpParser.MemberModifiersContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitVariableInitializer(PhpParser.VariableInitializerContext context)
@@ -1440,7 +1440,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitQualifiedNamespaceNameList(PhpParser.QualifiedNamespaceNameListContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitArguments(PhpParser.ArgumentsContext context)
@@ -1870,7 +1870,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitModifier(PhpParser.ModifierContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitIdentifier(PhpParser.IdentifierContext context)
@@ -1881,7 +1881,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitMemberModifier(PhpParser.MemberModifierContext context)
         {
-            throw new NotImplementedException();
+            return VisitChildren(context);
         }
 
         public Ust VisitMagicConstant(PhpParser.MagicConstantContext context)
