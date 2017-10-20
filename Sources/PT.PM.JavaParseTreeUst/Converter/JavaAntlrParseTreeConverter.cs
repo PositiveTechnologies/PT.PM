@@ -72,7 +72,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
             if (context.classOrInterfaceModifier().Any() && result is TypeDeclaration typeDeclaration)
             {
                 var modifiers = context.classOrInterfaceModifier()
-                    .Select(m => (ModifierLiteral)VisitClassOrInterfaceModifier(m)).ToList();
+                    .Select(m => VisitClassOrInterfaceModifier(m) as ModifierLiteral)
+                    .Where(m => m != null).ToList();
                 typeDeclaration.Modifiers = modifiers;
             }
 
