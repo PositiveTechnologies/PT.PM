@@ -148,5 +148,10 @@ namespace PT.PM.Common
             }
             return resultTextSpan;
         }
+
+        public static string Substring(this string str, TextSpan textSpan)
+        {
+            return str.Substring(textSpan.Start, textSpan.Length);
+        }
     }
 }

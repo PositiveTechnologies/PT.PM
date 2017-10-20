@@ -6,7 +6,8 @@ namespace PT.PM.Common
 {
     public class TextTruncater
     {
-        private static string[] newLines = new string[] { "\r\n", "\n" };
+        private static readonly string[] newLines = new string[] { "\r\n", "\n" };
+        private static readonly Regex wsRegex = new Regex(@"\s+", RegexOptions.Compiled);
 
         public int MaxMessageLength { get; set; } = 200;
 
@@ -14,13 +15,26 @@ namespace PT.PM.Common
 
         public string Splitter { get; set; } = " ... ";
 
+        public bool Trim { get; set; } = true;
+
         public bool CutWords { get; set; } = false;
+
+        public bool ReduceWhitespaces { get; set; } = false;
 
         public bool TrimIndent { get; set; } = false;
 
         public string Trunc(string message)
         {
-            if (TrimIndent)
+            if (Trim)
+            {
+                message = message.Trim();
+            }
+
+            if (ReduceWhitespaces)
+            {
+                message = wsRegex.Replace(message, " ");
+            }
+            else if (TrimIndent)
             {
                 string lastLine = message.Split(newLines, StringSplitOptions.None).Last();
 

@@ -26,7 +26,10 @@ namespace PT.PM.Cli
 
         protected TextTruncater MessageTruncater { get; } = new TextTruncater();
 
-        protected TextTruncater CodeTruncater { get; } = new TextTruncater { TrimIndent = true };
+        protected TextTruncater CodeTruncater { get; } = new TextTruncater
+        {
+            ReduceWhitespaces = true
+        };
 
         public string LogsDir
         {

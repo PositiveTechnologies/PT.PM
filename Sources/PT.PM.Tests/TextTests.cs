@@ -31,20 +31,37 @@ namespace PT.PM.Tests
             string actual = truncater.Trunc(origin);
             Assert.AreEqual(origin, actual);
 
-            truncater = new TextTruncater() { MaxMessageLength = 30, CutWords = true };
+            truncater = new TextTruncater
+            {
+                MaxMessageLength = 30,
+                CutWords = true
+            };
             actual = truncater.Trunc(origin);
             Assert.AreEqual(30, actual.Length);
             Assert.AreEqual("The sample of v ... g message.", actual);
 
-            truncater = new TextTruncater() { MaxMessageLength = 30, CutWords = false };
+            truncater = new TextTruncater
+            {
+                MaxMessageLength = 30,
+                CutWords = false
+            };
             actual = truncater.Trunc(origin);
             Assert.AreEqual("The sample of ... message.", actual);
 
-            truncater = new TextTruncater() { MaxMessageLength = 10, CutWords = false };
+            truncater = new TextTruncater
+            {
+                Trim = false,
+                MaxMessageLength = 10,
+                CutWords = false
+            };
             Assert.AreEqual(" ... ", truncater.Trunc("                          "));
 
             origin = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-            truncater = new TextTruncater() { MaxMessageLength = 20, CutWords = false };
+            truncater = new TextTruncater
+            {
+                MaxMessageLength = 20,
+                CutWords = false
+            };
             Assert.AreEqual("aaaaaaaaaa ... aaaaa", truncater.Trunc(origin));
         }
 
@@ -69,6 +86,18 @@ namespace PT.PM.Tests
 }";
 
             Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void ReduceWhitespaces()
+        {
+            string origin = " a   =   b ";
+            var truncater = new TextTruncater
+            {
+                Trim = true,
+                ReduceWhitespaces = true
+            };
+            Assert.AreEqual("a = b", truncater.Trunc(origin));
         }
     }
 }
