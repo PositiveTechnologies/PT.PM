@@ -13,5 +13,10 @@ namespace PT.PM
             MessageType = messageType;
             FileName = fileName;
         }
+
+        public override string ToString()
+        {
+            return $"{MessageType}: {FileName}";
+        }
     }
 }

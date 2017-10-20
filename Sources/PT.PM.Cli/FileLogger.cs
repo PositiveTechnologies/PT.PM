@@ -84,7 +84,6 @@ namespace PT.PM.Cli
                 else
                 {
                     string match = infoObj.ToString();
-                    MatchLogger.Info(match);
                     LogInfo(match);
                 }
             }
