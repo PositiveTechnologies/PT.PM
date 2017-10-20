@@ -14,7 +14,7 @@ namespace PT.PM.Matching
 
         public bool FindAllAlternatives { get; set; } = false;
 
-        public bool IncludeNonterminalTextSpans { get; set; } = false;
+        public bool IncludeNonterminalTextSpans { get; set; } = true;
 
         public List<TextSpan> Locations { get; } = new List<TextSpan>();
 
