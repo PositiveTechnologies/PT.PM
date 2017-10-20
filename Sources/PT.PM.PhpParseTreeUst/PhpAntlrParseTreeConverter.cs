@@ -1674,14 +1674,14 @@ namespace PT.PM.PhpParseTreeUst
 
             if (context.memberAccess().Length > 0)
             {
-                IdToken[] memberAccesses = context.memberAccess().Select(memberAccess =>
-                    (IdToken)Visit(memberAccess))
+                Expression[] memberAccesses = context.memberAccess().Select(memberAccess =>
+                    (Expression)Visit(memberAccess))
                     .Where(m => m != null).ToArray();
 
                 MemberReferenceExpression memberRefExpr = new MemberReferenceExpression();
                 for (int i = memberAccesses.Length - 1; i >= 0; i--)
                 {
-                    IdToken memberAccess = memberAccesses[i];
+                    Expression memberAccess = memberAccesses[i];
                     memberRefExpr.Name = memberAccess;
                     if (i > 0)
                     {
@@ -1705,15 +1705,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitMemberAccess(PhpParser.MemberAccessContext context)
         {
-            MultichildExpression expression = null;
-            if (context.actualArguments() != null)
-            {
-                var args = (ArgsUst)Visit(context.actualArguments());
-                expression = new MultichildExpression(args.Collection, args.TextSpan);
-            }
-            var result = (IdToken)Visit(context.keyedFieldName());
-            result.Expression = expression;
-            return result;
+            return VisitChildren(context);
         }
 
         public Ust VisitFunctionCall(PhpParser.FunctionCallContext context)
@@ -1789,7 +1781,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitKeyedFieldName(PhpParser.KeyedFieldNameContext context)
         {
-            return (IdToken)Visit(context.GetChild(0));
+            return Visit(context.GetChild(0));
         }
 
         public Ust VisitKeyedSimpleFieldName(PhpParser.KeyedSimpleFieldNameContext context)
@@ -1816,7 +1808,7 @@ namespace PT.PM.PhpParseTreeUst
             Expression left;
             if (context.VarName() != null)
             {
-                left = (IdToken)ConvertVar(context.VarName());
+                left = ConvertVar(context.VarName());
                 left.TextSpan = context.GetTextSpan();
             }
             else
