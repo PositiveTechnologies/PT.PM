@@ -7,14 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace PT.PM
 {
     public class ZipAtUrlCachingRepository : FilesAggregatorCodeRepository
     {
-        private static readonly Regex httpRegex = new Regex("^https?://", RegexOptions.Compiled);
         private const int percentStep = 5;
         private const long bytesStep = 500000;
 
@@ -30,7 +28,7 @@ namespace PT.PM
             : base("")
         {
             Url = url;
-            Key = ConvertToValidFileName(string.IsNullOrEmpty(name) ? httpRegex.Replace(url, "") : name);
+            Key = ConvertToValidFileName(string.IsNullOrEmpty(name) ? TextUtils.HttpRegex.Replace(url, "") : name);
             if (Key.EndsWith(".zip"))
                 Key = Key.Remove(Key.Length - ".zip".Length);
         }

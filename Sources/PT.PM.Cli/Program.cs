@@ -112,20 +112,32 @@ namespace PT.PM.Cli
                     {
                         languages = LanguageUtils.Languages.Values;
                     }
+
                     SourceCodeRepository sourceCodeRepository;
-                    if (fileName.StartsWith("http") && fileName.EndsWith(".zip"))
-                    {
-                        var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(fileName.Replace(@"\", "/"));
-                        zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
-                        sourceCodeRepository = zipAtUrlCachedCodeRepository;
-                    }
-                    else if (Directory.Exists(fileName))
+                    if (Directory.Exists(fileName))
                     {
                         sourceCodeRepository = new FilesAggregatorCodeRepository(fileName, languages);
                     }
-                    else
+                    else if (File.Exists(fileName))
                     {
                         sourceCodeRepository = new FileCodeRepository(fileName);
+                    }
+                    else
+                    {
+                        string url = fileName.Replace(@"\", "/");
+                        string projectName = null;
+                        if (!url.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                        {
+                            string urlWithoutHttp = TextUtils.HttpRegex.Replace(url, "");
+                            if (urlWithoutHttp.StartsWith("github.com"))
+                            {
+                                projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
+                                url = url + "/archive/master.zip";
+                            }
+                        }
+                        var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName);
+                        zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
+                        sourceCodeRepository = zipAtUrlCachedCodeRepository;
                     }
                     sourceCodeRepository.Languages = new HashSet<Language>(languages);
 

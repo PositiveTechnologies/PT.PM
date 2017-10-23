@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace PT.PM.Common
 {
@@ -9,10 +9,8 @@ namespace PT.PM.Common
     {
         private const int StartLine = 1;
         private const int StartColumn = 1;
-        private const int MaxMessageLength = 200;
-        private const double TruncMessageStartRatio = 0.5;
-        private const string TruncMessageDelimiter = " ... ";
-        private const bool TruncMessageCutWords = false;
+
+        public static readonly Regex HttpRegex = new Regex("^https?://", RegexOptions.Compiled);
 
         public static int LineColumnToLinear(string text, int line, int column)
         {
