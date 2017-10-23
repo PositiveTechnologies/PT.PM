@@ -1,21 +1,24 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 
-namespace PT.PM.TestUtils
+namespace PT.PM
 {
     public class ZipAtUrlCachedCodeRepository : FilesAggregatorCodeRepository
     {
         private const int percentStep = 5;
+        private const long bytesStep = 500000;
 
         public string RepositoryName { get; private set; }
 
-        public string DownloadPath { get; set; } = TestUtility.TestsDownloadedPath;
+        public string DownloadPath { get; set; } = Path.GetTempPath();
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
@@ -26,8 +29,10 @@ namespace PT.PM.TestUtils
         {
             Url = url; // url of archive
             RepositoryName = string.IsNullOrEmpty(repositoryName)
-                ? Path.GetFileNameWithoutExtension(url)
+                ? ConvertToValidFileName(url)
                 : repositoryName;
+            if (RepositoryName.EndsWith(".zip"))
+                RepositoryName = RepositoryName.Remove(RepositoryName.Length - ".zip".Length);
         }
 
         public override bool IsFileIgnored(string fileName)
@@ -60,7 +65,7 @@ namespace PT.PM.TestUtils
             if (IsDirectoryNotExistsOrEmpty(RootPath))
             {
                 // Block another processes which try to use the same files.
-                using (var zipFileNameMutex = new Mutex(false, TestUtility.ConvertToValidMutexName(zipFileName)))
+                using (var zipFileNameMutex = new Mutex(false, ConvertToValidMutexName(zipFileName)))
                 {
                     if (zipFileNameMutex.WaitOne())
                     {
@@ -87,6 +92,7 @@ namespace PT.PM.TestUtils
                         }
                         catch (Exception ex)
                         {
+                            RootPath = null;
                             Logger.LogError(ex);
                         }
                         finally
@@ -100,7 +106,7 @@ namespace PT.PM.TestUtils
 
         private bool IsDirectoryNotExistsOrEmpty(string directoryName)
         {
-            return !Directory.Exists(RootPath) || TestUtility.IsDirectoryEmpty(RootPath);
+            return !Directory.Exists(RootPath) || IsDirectoryEmpty(RootPath);
         }
 
         private void DownloadPack(string zipFileName)
@@ -108,6 +114,7 @@ namespace PT.PM.TestUtils
             bool fileDownloaded = false;
             object progressLockObj = new object();
             int previousPercent = 0;
+            long previousBytes = 0;
             string currentFileName = RepositoryName;
             WebClient webClient = new WebClient();
 
@@ -117,10 +124,21 @@ namespace PT.PM.TestUtils
                 {
                     lock (progressLockObj)
                     {
-                        if (e.ProgressPercentage / percentStep > previousPercent / percentStep)
+                        if (e.ProgressPercentage == 0)
                         {
-                            Logger.LogInfo($"{currentFileName}: {e.ProgressPercentage / percentStep * percentStep}% downloaded.");
-                            previousPercent = e.ProgressPercentage;
+                            if (e.ProgressPercentage / percentStep > previousPercent / percentStep)
+                            {
+                                Logger.LogInfo($"{currentFileName}: {e.ProgressPercentage / percentStep * percentStep}% downloaded.");
+                                previousPercent = e.ProgressPercentage;
+                            }
+                        }
+                        else
+                        {
+                            if (e.BytesReceived / bytesStep > previousBytes / bytesStep)
+                            {
+                                Logger.LogInfo($"{currentFileName}: {e.BytesReceived} bytes received.");
+                                previousBytes = e.BytesReceived;
+                            }
                         }
                     }
                 };
@@ -152,45 +170,74 @@ namespace PT.PM.TestUtils
                 Directory.Delete(testDir, true);
             }
 
-            if (!CommonUtils.IsRunningOnLinux)
+            var sevenZipExtractor = new SevenZipExtractor();
+            if (!CommonUtils.IsRunningOnLinux && File.Exists(sevenZipExtractor.SevenZipPath))
             {
                 // Extract long paths with 7zip, also see here: http://stackoverflow.com/questions/5188527/how-to-deal-with-files-with-a-name-longer-than-259-characters
-                SevenZipExtractor.Extract(zipFileName, testDir);
+                sevenZipExtractor.Extract(zipFileName, testDir);
             }
             else
             {
-                System.IO.Compression.ZipFile.ExtractToDirectory(zipFileName, testDir);
+                new StandartArchiveExtractor().Extract(zipFileName, testDir);
                 Thread.Sleep(500);
             }
 
             File.Delete(zipFileName);
             Logger.LogInfo($"{RepositoryName} has been extracted.");
 
-            string[] fileSystemEntries = Directory.GetFileSystemEntries(testDir);
-            if (fileSystemEntries.Length == 1)
+            string[] directories = Directory.GetDirectories(testDir);
+            if (directories.Length == 1)
             {
-                if (Directory.GetFiles(testDir).Length == 1)
+                Directory.CreateDirectory(RootPath);
+                foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(directories[0]))
                 {
-                    Directory.CreateDirectory(RootPath);
-                    File.Move(fileSystemEntries[0], Path.Combine(RootPath, Path.GetFileName(fileSystemEntries[0])));
+                    string shortName = Path.GetFileName(fileSystemEntry);
+                    string newName = Path.Combine(RootPath, shortName);
+                    if (File.Exists(fileSystemEntry))
+                    {
+                        File.Move(fileSystemEntry, newName);
+                    }
+                    else
+                    {
+                        Directory.Move(fileSystemEntry, newName);
+                    }
                 }
-                else
-                {
-                    Directory.Move(fileSystemEntries[0], RootPath);
-                }
+
                 try
                 {
-                    Directory.Delete(testDir, true);
+                    Directory.Delete(directories[0], true);
                 }
                 catch (IOException ex)
                 {
-                    Logger.LogError(new IOException("Something going wrong during unpacking: ", ex));
+                    Logger.LogError(new ReadException("", ex, "Something going wrong during unpacking"));
                 }
             }
             else
             {
                 Directory.Move(testDir, RootPath);
             }
+        }
+
+        private static bool IsDirectoryEmpty(string path)
+        {
+            IEnumerable<string> items = Directory.EnumerateFileSystemEntries(path);
+            using (IEnumerator<string> en = items.GetEnumerator())
+            {
+                return !en.MoveNext();
+            }
+        }
+
+        private static string ConvertToValidMutexName(string name) => ConvertToValidFileName(name);
+
+        private static string ConvertToValidFileName(string str)
+        {
+            StringBuilder result = new StringBuilder(str.Length);
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in str)
+            {
+                result.Append(!invalidChars.Contains(c) ? c : '-');
+            }
+            return result.ToString();
         }
     }
 }

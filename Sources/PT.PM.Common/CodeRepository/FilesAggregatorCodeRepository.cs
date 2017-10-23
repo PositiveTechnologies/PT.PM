@@ -31,6 +31,11 @@ namespace PT.PM.Common.CodeRepository
 
         public override IEnumerable<string> GetFileNames()
         {
+            if (RootPath == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+
             var result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
             if (SearchPredicate != null)
             {

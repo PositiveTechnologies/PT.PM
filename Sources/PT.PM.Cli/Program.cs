@@ -111,7 +111,11 @@ namespace PT.PM.Cli
                         languages = LanguageUtils.Languages.Values;
                     }
                     SourceCodeRepository sourceCodeRepository;
-                    if (Directory.Exists(fileName))
+                    if (fileName.StartsWith("http") && fileName.EndsWith(".zip"))
+                    {
+                        sourceCodeRepository = new ZipAtUrlCachedCodeRepository(fileName.Replace(@"\", "/"));
+                    }
+                    else if (Directory.Exists(fileName))
                     {
                         sourceCodeRepository = new FilesAggregatorCodeRepository(fileName, languages);
                     }

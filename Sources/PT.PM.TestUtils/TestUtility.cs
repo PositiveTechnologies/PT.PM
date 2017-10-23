@@ -2,10 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 
 namespace PT.PM.TestUtils
@@ -18,17 +15,9 @@ namespace PT.PM.TestUtils
         private static string repositoryDirectory;
         public static string TestsPath = $@"Tests/Unit/bin/{(Debug ? "Debug" : "Release")}";
         public static string TestsDataPath = $@"{TestsPath}/Data";
-        public static string TestsDownloadedPath = $@"{TestsPath}/Downloaded";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
         public static string GraphvizPath = "Sources/packages/Graphviz.2.38.0.2/dot.exe";
         public static string SevenZipPath = "Sources/packages/7-Zip.x64.16.02.1/tools/7z.exe";
-
-        public static bool AllTests =>
-#if ALL_TESTS
-            true;
-#else
-            false;
-#endif
 
         internal static bool Debug =>
 #if DEBUG
@@ -43,7 +32,6 @@ namespace PT.PM.TestUtils
 
             TestsPath = Path.Combine(repositoryDirectory, TestsPath).NormDirSeparator();
             TestsDataPath = Path.Combine(repositoryDirectory, TestsDataPath).NormDirSeparator();
-            TestsDownloadedPath = Path.Combine(repositoryDirectory, TestsDownloadedPath).NormDirSeparator();
             TestsOutputPath = Path.Combine(repositoryDirectory, TestsOutputPath).NormDirSeparator();
             if (!Directory.Exists(TestsOutputPath))
             {
@@ -84,68 +72,6 @@ namespace PT.PM.TestUtils
             return workflowResult;
         }
 
-        public static WorkflowResult CheckProject(TestProject testProject, Language language, Stage endStage,
-            decimal fileSuccessRatio = 1.0m)
-        {
-            var logger = new LoggerMessageCounter()
-            {
-                LogToConsole = false
-            };
-            ZipAtUrlCachedCodeRepository codeRepository = null;
-            foreach (var url in testProject.Urls)
-            {
-                if (FileAtUrlExists(url))
-                {
-                    codeRepository = new ZipAtUrlCachedCodeRepository(url, testProject.Key)
-                    {
-                        Languages = new HashSet<Language>() { language },
-                        IgnoredFiles = testProject.IgnoredFiles,
-                        Logger = logger
-                    };
-                    break;
-                }
-            }
-            if (codeRepository == null)
-            {
-                Assert.Ignore($@"Project {testProject.Key} has not been found at {(string.Join(", ", testProject.Urls))} or can not be downloaded.");
-                return null;
-            }
-
-            if (!Directory.Exists(TestsDownloadedPath))
-            {
-                Directory.CreateDirectory(TestsDownloadedPath);
-            }
-
-            var workflow = new Workflow(codeRepository, stage: endStage)
-            {
-                IsIncludePreprocessing = false
-            };
-            workflow.Logger = logger;
-            workflow.ThreadCount = 1;
-            WorkflowResult workflowResult = workflow.Process();
-
-            if (fileSuccessRatio == 1.0m)
-            {
-                Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
-            }
-            else
-            {
-                var filesCount = codeRepository.GetFileNames().Count();
-                if (filesCount == 0)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Files not exist");
-                }
-                else
-                {
-                    decimal actualFileSuccessRatio = (decimal)(filesCount - logger.ErrorFilesCount) / filesCount;
-                    System.Diagnostics.Debug.WriteLine($"Actual FileSuccessRatio: {actualFileSuccessRatio}");
-                    Assert.GreaterOrEqual(actualFileSuccessRatio, fileSuccessRatio, logger.ErrorsString);
-                }
-            }
-
-            return workflowResult;
-        }
-
         public static WorkflowResult CheckProject(string projectPath, Language language, Stage endStage,
             string searchPattern = "*.*", Func<string, bool> searchPredicate = null)
         {
@@ -166,46 +92,6 @@ namespace PT.PM.TestUtils
 
             return workflowResult;
         }
-
-        public static bool FileAtUrlExists(string url)
-        {
-            bool result = false;
-
-            WebRequest webRequest = WebRequest.Create(url);
-            webRequest.Timeout = 10000;
-            webRequest.Method = "HEAD";
-
-            HttpWebResponse response = null;
-
-            try
-            {
-                response = (HttpWebResponse)webRequest.GetResponse();
-                result = true;
-            }
-            catch (WebException)
-            {
-            }
-            finally
-            {
-                if (response != null)
-                {
-                    response.Close();
-                }
-            }
-
-            return result;
-        }
-
-        public static bool IsDirectoryEmpty(string path)
-        {
-            IEnumerable<string> items = Directory.EnumerateFileSystemEntries(path);
-            using (IEnumerator<string> en = items.GetEnumerator())
-            {
-                return !en.MoveNext();
-            }
-        }
-
-        public static string ConvertToValidMutexName(string name) => name.Replace('/', ' ').Replace('\\', ' ');
 
         /// <summary>
         /// Returns path to the current source code file.
