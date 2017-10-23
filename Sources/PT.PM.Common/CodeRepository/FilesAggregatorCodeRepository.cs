@@ -2,12 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
 {
     public class FilesAggregatorCodeRepository : SourceCodeRepository
     {
         public string SearchPattern { get; set; } = "*.*";
+
+        public Func<string, bool> SearchPredicate { get; set; } = null;
 
         public SearchOption SearchOption { get; set; } = SearchOption.AllDirectories;
 
@@ -28,7 +31,12 @@ namespace PT.PM.Common.CodeRepository
 
         public override IEnumerable<string> GetFileNames()
         {
-            return Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+            var result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+            if (SearchPredicate != null)
+            {
+                result = result.Where(SearchPredicate);
+            }
+            return result;
         }
 
         public override SourceCodeFile ReadFile(string fileName)

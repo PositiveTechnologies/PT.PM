@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -146,12 +147,13 @@ namespace PT.PM.TestUtils
         }
 
         public static WorkflowResult CheckProject(string projectPath, Language language, Stage endStage,
-            string searchPattern = "*.*")
+            string searchPattern = "*.*", Func<string, bool> searchPredicate = null)
         {
             var logger = new LoggerMessageCounter() { LogToConsole = false };
             var repository = new FilesAggregatorCodeRepository(projectPath, language)
             {
-                SearchPattern = searchPattern
+                SearchPattern = searchPattern,
+                SearchPredicate = searchPredicate
             };
             var workflow = new Workflow(repository, stage: endStage)
             {

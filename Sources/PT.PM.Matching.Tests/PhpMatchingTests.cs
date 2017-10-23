@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
-using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Matching.PatternsRepository;
-using PT.PM.Patterns.PatternsRepository;
-using PT.PM.PhpParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
@@ -14,26 +10,18 @@ namespace PT.PM.Matching.Tests
     [TestFixture]
     public class PhpMatchingTests
     {
-        private IPatternsRepository patternsRepository;
-
-        [SetUp]
-        public void Init()
-        {
-            patternsRepository = new DefaultPatternRepository();
-        }
-
         [Test]
         public void Match_TestPatternsPhp_MatchedAllDefault()
         {
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.php");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
-            PatternDto[] patternDtos = patternsRepository.GetAll()
+            PatternDto[] patternDtos = Global.PatternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains("Php")).ToArray();
             foreach (var dto in patternDtos)
             {
