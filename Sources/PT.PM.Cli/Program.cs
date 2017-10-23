@@ -22,7 +22,7 @@ namespace PT.PM.Cli
             var parser = new FluentCommandLineParser();
 
             string fileName = "";
-            string escapedPatterns = "";
+            string patternsString = "";
             int threadCount = 1;
             string languagesString = "";
             Stage stage = Stage.Match;
@@ -41,10 +41,10 @@ namespace PT.PM.Cli
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
-            parser.Setup<string>('p', "patterns").Callback(p =>
-                escapedPatterns = p.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
-                    ? p.NormDirSeparator()
-                    : p.Replace('\\', '/')
+            parser.Setup<string>('p', "patterns").Callback(param =>
+                patternsString = param.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
+                    ? param.NormDirSeparator()
+                    : param.Replace('\\', '/')
             );
             parser.Setup<int>('t', "threads").Callback(t => threadCount = t);
             parser.Setup<Stage>('s', "stage").Callback(s => stage = s);
@@ -93,7 +93,7 @@ namespace PT.PM.Cli
                         abstractLogger.LogInfo(commandLineArguments);
                     }
 
-                    if (string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(escapedPatterns))
+                    if (string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(patternsString))
                     {
                         throw new ArgumentException("at least --files or --patterns parameter required");
                     }
@@ -113,50 +113,11 @@ namespace PT.PM.Cli
                         languages = LanguageUtils.Languages.Values;
                     }
 
-                    SourceCodeRepository sourceCodeRepository;
-                    if (Directory.Exists(fileName))
-                    {
-                        sourceCodeRepository = new FilesAggregatorCodeRepository(fileName, languages);
-                    }
-                    else if (File.Exists(fileName))
-                    {
-                        sourceCodeRepository = new FileCodeRepository(fileName);
-                    }
-                    else
-                    {
-                        string url = fileName.Replace(@"\", "/");
-                        string projectName = null;
-                        if (!url.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                        {
-                            string urlWithoutHttp = TextUtils.HttpRegex.Replace(url, "");
-                            if (urlWithoutHttp.StartsWith("github.com"))
-                            {
-                                projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
-                                url = url + "/archive/master.zip";
-                            }
-                        }
-                        var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName);
-                        zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
-                        sourceCodeRepository = zipAtUrlCachedCodeRepository;
-                    }
-                    sourceCodeRepository.Languages = new HashSet<Language>(languages);
+                    SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir);
 
                     logger.SourceCodeRepository = sourceCodeRepository;
 
-                    IPatternsRepository patternsRepository;
-                    if (string.IsNullOrEmpty(escapedPatterns))
-                    {
-                        patternsRepository = new DefaultPatternRepository();
-                    }
-                    else if (escapedPatterns.EndsWith(".json"))
-                    {
-                        patternsRepository = new FilePatternsRepository(escapedPatterns);
-                    }
-                    else
-                    {
-                        var patterns = StringCompressorEscaper.UnescapeDecompress(escapedPatterns);
-                        patternsRepository = new JsonPatternsRepository(patterns);
-                    }
+                    IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(patternsString);
 
                     var workflow = new Workflow(sourceCodeRepository, patternsRepository, stage)
                     {
