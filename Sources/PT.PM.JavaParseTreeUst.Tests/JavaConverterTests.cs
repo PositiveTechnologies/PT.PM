@@ -24,14 +24,6 @@ namespace PT.PM.JavaParseTreeUst.Tests
         }
 
         [Test]
-        public void Convert_JavaWebGoat_WithoutErrors()
-        {
-            string projectKey = "WebGoat.Java-05a1f5";
-            TestUtility.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),
-                Java.Language, Stage.ParseTree);
-        }
-
-        [Test]
         public void Convert_JavaPatternsWithErrors_MatchedResultsEqual()
         {
             var patternsLogger = new LoggerMessageCounter();

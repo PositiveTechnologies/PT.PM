@@ -16,14 +16,6 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             TestUtility.CheckFile(fileName, Stage.Ust);
         }
 
-        [Test]
-        public void Convert_WebGoatNet_WithoutException()
-        {
-            string projectKey = "WebGoat.NET-1c6cab";
-            TestUtility.CheckProject(
-                TestProjects.CSharpProjects.Single(p => p.Key == projectKey), CSharp.Language, Stage.Ust);
-        }
-
         [TestCase("AllInOne.cs")]
         public void Convert_CSharp_BaseTypesExist(string fileName)
         {

@@ -17,7 +17,7 @@ namespace PT.PM.TestUtils
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     FileName = TestUtility.SevenZipPath,
-                    Arguments = "x \"" + zipPath + "\" -o\"" + extractPath + "\" -y"
+                    Arguments = $@"x ""{zipPath}"" -o""{extractPath}"" -y"
                 };
                 Process process = Process.Start(processStartInfo);
                 process.WaitForExit();

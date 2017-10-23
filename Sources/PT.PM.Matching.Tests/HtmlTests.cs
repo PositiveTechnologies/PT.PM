@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
-using PT.PM.PhpParseTreeUst;
 using PT.PM.TestUtils;
 
 namespace PT.PM.Matching.Tests
