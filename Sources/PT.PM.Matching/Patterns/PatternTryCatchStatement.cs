@@ -52,7 +52,7 @@ namespace PT.PM.Matching.Patterns
                             ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
                     });
 
-                    newContext = context.Change(result);
+                    newContext = context.Set(result);
                 }
             }
             else

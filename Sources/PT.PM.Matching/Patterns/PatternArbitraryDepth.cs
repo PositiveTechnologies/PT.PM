@@ -35,7 +35,7 @@ namespace PT.PM.Matching.Patterns
             }
 
             var result = ust.AnyDescendant(ustNode => MatchExpression(ustNode, context).Success);
-            return context.Change(result).AddUstIfSuccess(ust);
+            return context.Set(result).AddUstIfSuccess(ust);
         }
 
         protected MatchingContext MatchExpression(Ust other, MatchingContext context)
