@@ -54,7 +54,8 @@ namespace PT.PM.Matching
         public MatchingContext AddUstIfSuccess(Ust ust)
         {
             if (Success && 
-                !IgnoreLocations && (ust.IsTerminal || IncludeNonterminalTextSpans))
+                !IgnoreLocations &&
+                !ust.TextSpan.IsEmpty && (ust.IsTerminal || IncludeNonterminalTextSpans))
             {
                 Locations.Add(ust.TextSpan);
             }
@@ -77,7 +78,7 @@ namespace PT.PM.Matching
             Success = true;
             if (!IgnoreLocations)
             {
-                Locations.AddRange(textSpans);
+                Locations.AddRange(textSpans.Where(textSpan => !textSpan.IsEmpty));
             }
             return this;
         }
