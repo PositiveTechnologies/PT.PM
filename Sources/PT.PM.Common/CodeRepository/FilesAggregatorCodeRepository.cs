@@ -20,13 +20,17 @@ namespace PT.PM.Common.CodeRepository
         }
 
         public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<Language> languages)
+            : base()
         {
             RootPath = directoryPath;
             if (RootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 RootPath = RootPath.Remove(RootPath.Length - 1);
             }
-            Languages = new HashSet<Language>(languages);
+            if (languages?.Count() > 0)
+            {
+                Languages = new HashSet<Language>(languages);
+            }
         }
 
         public override IEnumerable<string> GetFileNames()

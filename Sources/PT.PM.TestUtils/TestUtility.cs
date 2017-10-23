@@ -13,13 +13,13 @@ namespace PT.PM.TestUtils
         public const string TooLongTestDurationMessage = "Too long test duration.";
 
         private static string repositoryDirectory;
-        public static string TestsPath = $@"Tests/Unit/bin/{(Debug ? "Debug" : "Release")}";
+        public static string TestsPath = $@"Tests/Unit/bin/{(IsDebug ? "Debug" : "Release")}";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
         public static string GraphvizPath = "Sources/packages/Graphviz.2.38.0.2/dot.exe";
         public static string SevenZipPath = "Sources/packages/7-Zip.x64.16.02.1/tools/7z.exe";
 
-        internal static bool Debug =>
+        internal static bool IsDebug =>
 #if DEBUG
             true;
 #else

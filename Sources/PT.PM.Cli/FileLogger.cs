@@ -22,7 +22,11 @@ namespace PT.PM.Cli
 
         protected NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
 
-        protected TextTruncater ErrorTruncater { get; } = new TextTruncater { MaxMessageLength = 300, CutWords = false };
+        protected TextTruncater ErrorTruncater { get; } = new TextTruncater
+        {
+            MaxMessageLength = 300,
+            CutWords = false
+        };
 
         protected TextTruncater MessageTruncater { get; } = new TextTruncater();
 

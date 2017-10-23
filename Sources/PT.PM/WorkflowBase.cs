@@ -96,7 +96,9 @@ namespace PT.PM
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
-        public string DumpDir { get; set; } = "";
+        public string LogsDir { get; set; } = "";
+
+        public string TempDir { get; set; } = "";
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 

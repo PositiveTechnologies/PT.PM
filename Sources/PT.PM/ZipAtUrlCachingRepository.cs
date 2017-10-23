@@ -7,32 +7,32 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace PT.PM
 {
-    public class ZipAtUrlCachedCodeRepository : FilesAggregatorCodeRepository
+    public class ZipAtUrlCachingRepository : FilesAggregatorCodeRepository
     {
+        private static readonly Regex httpRegex = new Regex("^https?://", RegexOptions.Compiled);
         private const int percentStep = 5;
         private const long bytesStep = 500000;
 
-        public string RepositoryName { get; private set; }
+        public string Url { get; private set; }
+
+        public string Key { get; private set; }
 
         public string DownloadPath { get; set; } = Path.GetTempPath();
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
-        public string Url { get; private set; }
-
-        public ZipAtUrlCachedCodeRepository(string url, string repositoryName = null)
+        public ZipAtUrlCachingRepository(string url, string name = null)
             : base("")
         {
-            Url = url; // url of archive
-            RepositoryName = string.IsNullOrEmpty(repositoryName)
-                ? ConvertToValidFileName(url)
-                : repositoryName;
-            if (RepositoryName.EndsWith(".zip"))
-                RepositoryName = RepositoryName.Remove(RepositoryName.Length - ".zip".Length);
+            Url = url;
+            Key = ConvertToValidFileName(string.IsNullOrEmpty(name) ? httpRegex.Replace(url, "") : name);
+            if (Key.EndsWith(".zip"))
+                Key = Key.Remove(Key.Length - ".zip".Length);
         }
 
         public override bool IsFileIgnored(string fileName)
@@ -59,7 +59,7 @@ namespace PT.PM
                 throw new NotSupportedException("Not zip archives are not supported");
             }
 
-            RootPath = Path.Combine(DownloadPath, RepositoryName);
+            RootPath = Path.Combine(DownloadPath, Key);
             string zipFileName = RootPath + ".zip";
 
             if (IsDirectoryNotExistsOrEmpty(RootPath))
@@ -87,7 +87,7 @@ namespace PT.PM
                             }
                             else
                             {
-                                Logger.LogInfo($"{RepositoryName} already downloaded and unpacked.");
+                                Logger.LogInfo($"{Key} already downloaded and unpacked.");
                             }
                         }
                         catch (Exception ex)
@@ -115,7 +115,7 @@ namespace PT.PM
             object progressLockObj = new object();
             int previousPercent = 0;
             long previousBytes = 0;
-            string currentFileName = RepositoryName;
+            string currentFileName = Key;
             WebClient webClient = new WebClient();
 
             if (Logger != null)
@@ -144,7 +144,7 @@ namespace PT.PM
                 };
             }
             webClient.DownloadFileCompleted += (sender, e) => fileDownloaded = true;
-            Logger.LogInfo($"{RepositoryName} downloading...");
+            Logger.LogInfo($"{Key} downloading...");
             if (!Directory.Exists(DownloadPath))
             {
                 Directory.CreateDirectory(DownloadPath);
@@ -157,35 +157,32 @@ namespace PT.PM
             }
             while (!fileDownloaded);
 
-            Logger.LogInfo($"{RepositoryName} has been downloaded.");
+            Logger.LogInfo($"{Key} has been downloaded.");
         }
 
         private void UnpackFiles(string zipFileName)
         {
-            Logger.LogInfo($"{RepositoryName} extraction...");
-            string testDir = Path.Combine(Path.GetTempPath(), RepositoryName);
-            Logger.LogInfo($"{RepositoryName} test directory: {testDir}");
-            if (Directory.Exists(testDir))
+            Logger.LogInfo($"{Key} extraction...");
+            if (Directory.Exists(RootPath))
             {
-                Directory.Delete(testDir, true);
+                Directory.Delete(RootPath, true);
             }
 
             var sevenZipExtractor = new SevenZipExtractor();
             if (!CommonUtils.IsRunningOnLinux && File.Exists(sevenZipExtractor.SevenZipPath))
             {
-                // Extract long paths with 7zip, also see here: http://stackoverflow.com/questions/5188527/how-to-deal-with-files-with-a-name-longer-than-259-characters
-                sevenZipExtractor.Extract(zipFileName, testDir);
+                sevenZipExtractor.Extract(zipFileName, RootPath);
             }
             else
             {
-                new StandartArchiveExtractor().Extract(zipFileName, testDir);
+                new StandartArchiveExtractor().Extract(zipFileName, RootPath);
                 Thread.Sleep(500);
             }
 
             File.Delete(zipFileName);
-            Logger.LogInfo($"{RepositoryName} has been extracted.");
+            Logger.LogInfo($"{Key} has been extracted.");
 
-            string[] directories = Directory.GetDirectories(testDir);
+            string[] directories = Directory.GetDirectories(RootPath);
             if (directories.Length == 1)
             {
                 Directory.CreateDirectory(RootPath);
@@ -212,10 +209,6 @@ namespace PT.PM
                     Logger.LogError(new ReadException("", ex, "Something going wrong during unpacking"));
                 }
             }
-            else
-            {
-                Directory.Move(testDir, RootPath);
-            }
         }
 
         private static bool IsDirectoryEmpty(string path)
@@ -227,7 +220,10 @@ namespace PT.PM
             }
         }
 
-        private static string ConvertToValidMutexName(string name) => ConvertToValidFileName(name);
+        private static string ConvertToValidMutexName(string name)
+        {
+            return ConvertToValidFileName(name);
+        }
 
         private static string ConvertToValidFileName(string str)
         {

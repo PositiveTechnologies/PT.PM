@@ -30,6 +30,7 @@ namespace PT.PM.Cli
             int maxTimespan = 0;
             int memoryConsumptionMb = 300;
             string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM", "Logs");
+            string tempDir = Path.GetTempPath();
             bool logErrors = false;
             bool logDebugs = false;
             bool showVersion = true;
@@ -51,6 +52,7 @@ namespace PT.PM.Cli
             parser.Setup<int>("max-timespan").Callback(mt => maxTimespan = mt);
             parser.Setup<int>('m', "memory").Callback(m => memoryConsumptionMb = m);
             parser.Setup<string>("logs-dir").Callback(lp => logsDir = lp.NormDirSeparator());
+            parser.Setup<string>("temp-dir").Callback(param => tempDir = param);
             parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
             parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
             parser.Setup<bool>('v', "version").Callback(v => showVersion = v);
@@ -113,7 +115,9 @@ namespace PT.PM.Cli
                     SourceCodeRepository sourceCodeRepository;
                     if (fileName.StartsWith("http") && fileName.EndsWith(".zip"))
                     {
-                        sourceCodeRepository = new ZipAtUrlCachedCodeRepository(fileName.Replace(@"\", "/"));
+                        var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(fileName.Replace(@"\", "/"));
+                        zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
+                        sourceCodeRepository = zipAtUrlCachedCodeRepository;
                     }
                     else if (Directory.Exists(fileName))
                     {
@@ -123,6 +127,8 @@ namespace PT.PM.Cli
                     {
                         sourceCodeRepository = new FileCodeRepository(fileName);
                     }
+                    sourceCodeRepository.Languages = new HashSet<Language>(languages);
+
                     logger.SourceCodeRepository = sourceCodeRepository;
 
                     IPatternsRepository patternsRepository;
@@ -147,7 +153,9 @@ namespace PT.PM.Cli
                         MaxStackSize = maxStackSize,
                         MaxTimespan = maxTimespan,
                         MemoryConsumptionMb = memoryConsumptionMb,
-                        IsIncludePreprocessing = isPreprocess
+                        IsIncludePreprocessing = isPreprocess,
+                        LogsDir = logsDir,
+                        TempDir = tempDir
                     };
                     var stopwatch = Stopwatch.StartNew();
                     WorkflowResult workflowResult = workflow.Process();
