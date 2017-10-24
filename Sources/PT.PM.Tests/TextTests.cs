@@ -17,8 +17,7 @@ namespace PT.PM.Tests
             int linearPos = TextUtils.LineColumnToLinear(text, 4, 4);
             Assert.AreEqual('4', text[linearPos]);
 
-            int line, column;
-            linearPos.ToLineColumn(text, out line, out column);
+            linearPos.ToLineColumn(text, out int line, out int column);
             Assert.AreEqual(4, line);
             Assert.AreEqual(4, column);
         }

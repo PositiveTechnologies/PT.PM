@@ -45,8 +45,7 @@ namespace PT.PM.Cli
                 {
                     foreach (var target in NLog.LogManager.Configuration.AllTargets)
                     {
-                        var fileTarget = target as NLog.Targets.FileTarget;
-                        if (fileTarget != null)
+                        if (target is NLog.Targets.FileTarget fileTarget)
                         {
                             string fullFileName = fileTarget.FileName.ToString().Replace("'", "");
                             fileTarget.FileName = Path.Combine(logPath, Path.GetFileName(fullFileName));
@@ -72,20 +71,19 @@ namespace PT.PM.Cli
 
         public virtual void LogInfo(object infoObj)
         {
-            var progressEventArgs = infoObj as ProgressEventArgs;
-            if (progressEventArgs != null)
+            if (infoObj is ProgressEventArgs progressEventArgs)
             {
                 LogInfo(progressEventArgs.ToString());
             }
             else
             {
-                var matchingResult = infoObj as MatchingResult;
-                if (matchingResult != null)
+                if (infoObj is MatchingResult matchingResult)
                 {
                     var matchingResultDto = new MatchingResultDto(matchingResult);
                     matchingResultDto.MatchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
-                    var json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
-                    MatchLogger.Info(json);
+                    matchingResultDto.SourceFile = matchingResultDto.SourceFile.Replace('\\', '/');
+                    string json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
+                    MatchLogger.Info(json + ",");
                     LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
                 }
                 else

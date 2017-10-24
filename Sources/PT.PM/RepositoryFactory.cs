@@ -35,8 +35,10 @@ namespace PT.PM
                         url = url + "/archive/master.zip";
                     }
                 }
-                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName);
-                zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
+                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName)
+                {
+                    DownloadPath = tempDir
+                };
                 sourceCodeRepository = zipAtUrlCachedCodeRepository;
             }
             sourceCodeRepository.Languages = new HashSet<Language>(languages);

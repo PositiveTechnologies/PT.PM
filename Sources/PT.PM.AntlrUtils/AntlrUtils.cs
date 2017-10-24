@@ -39,8 +39,7 @@ namespace PT.PM.AntlrUtils
             RuleContext parent = ruleContext.Parent;
             while (stop == null && parent != null)
             {
-                var parentParserRuleContext = parent as ParserRuleContext;
-                if (parentParserRuleContext != null)
+                if (parent is ParserRuleContext parentParserRuleContext)
                 {
                     stop = parentParserRuleContext.Stop;
                 }
@@ -102,8 +101,7 @@ namespace PT.PM.AntlrUtils
         {
             int currentLevelStringLength = level * IndentSize;
             builder.PadLeft(currentLevelStringLength);
-            var ruleContext = parseTree as RuleContext;
-            if (ruleContext != null)
+            if (parseTree is RuleContext ruleContext)
             {
                 builder.AppendLine("(");
                 builder.PadLeft(currentLevelStringLength);
@@ -114,7 +112,7 @@ namespace PT.PM.AntlrUtils
                     ruleContext.GetChild(i).ToStringTreeIndented(parser, builder, level + 1);
                     builder.AppendLine();
                 }
-                
+
                 builder.PadLeft(currentLevelStringLength);
                 builder.Append(")");
             }

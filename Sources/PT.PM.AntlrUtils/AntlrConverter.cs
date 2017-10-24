@@ -70,15 +70,19 @@ namespace PT.PM.AntlrUtils
 
                     if (result == null)
                     {
-                        result = new RootUst(langParseTree.SourceCodeFile, Language);
-                        result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
+                        result = new RootUst(langParseTree.SourceCodeFile, Language)
+                        {
+                            Comments = ArrayUtils<CommentLiteral>.EmptyArray
+                        };
                     }
                 }
             }
             else
             {
-                result = new RootUst(langParseTree.SourceCodeFile, Language);
-                result.Comments = ArrayUtils<CommentLiteral>.EmptyArray;
+                result = new RootUst(langParseTree.SourceCodeFile, Language)
+                {
+                    Comments = ArrayUtils<CommentLiteral>.EmptyArray
+                };
             }
             result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())).ToArray();
             return result;
@@ -97,10 +101,9 @@ namespace PT.PM.AntlrUtils
             }
             catch (Exception ex)
             {
-                var parserRuleContext = tree as ParserRuleContext;
-                if (parserRuleContext != null)
+                if (tree is ParserRuleContext parserRuleContext)
                 {
-                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile.FullName, root.SourceCodeFile.Code);
+                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile.RelativeName, root.SourceCodeFile.Code);
                 }
                 return DefaultResult;
             }
@@ -125,9 +128,8 @@ namespace PT.PM.AntlrUtils
                     var child = Visit(node.GetChild(i));
                     if (child != null)
                     {
-                        var childExpression = child as Expression;
                         // Ignore null.
-                        if (childExpression != null)
+                        if (child is Expression childExpression)
                         {
                             exprs.Add(childExpression);
                         }
@@ -154,8 +156,7 @@ namespace PT.PM.AntlrUtils
             }
             else if (nodeText.Contains("."))
             {
-                double value;
-                double.TryParse(nodeText, out value);
+                double.TryParse(nodeText, out double value);
                 return new FloatLiteral(value, textSpan);
             }
 
@@ -181,29 +182,25 @@ namespace PT.PM.AntlrUtils
             Match match = RegexHexLiteral.Match(text);
             if (match.Success)
             {
-                long value;
-                match.Groups[1].Value.TryConvertToInt64(16, out value);
+                match.Groups[1].Value.TryConvertToInt64(16, out long value);
                 return new IntLiteral(value, textSpan);
             }
             match = RegexOctalLiteral.Match(text);
             if (match.Success)
             {
-                long value;
-                match.Groups[1].Value.TryConvertToInt64(8, out value);
+                match.Groups[1].Value.TryConvertToInt64(8, out long value);
                 return new IntLiteral(value, textSpan);
             }
             match = RegexBinaryLiteral.Match(text);
             if (match.Success)
             {
-                long value;
-                match.Groups[1].Value.TryConvertToInt64(2, out value);
+                match.Groups[1].Value.TryConvertToInt64(2, out long value);
                 return new IntLiteral(value, textSpan);
             }
             match = RegexDecimalLiteral.Match(text);
             if (match.Success)
             {
-                long value;
-                match.Groups[1].Value.TryConvertToInt64(10, out value);
+                match.Groups[1].Value.TryConvertToInt64(10, out long value);
                 return new IntLiteral(value, textSpan);
             }
             return null;

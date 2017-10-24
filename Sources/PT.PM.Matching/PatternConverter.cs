@@ -9,7 +9,7 @@ namespace PT.PM.Matching
 {
     public class PatternConverter : IPatternConverter<PatternRoot>
     {
-        private ILogger logger { get; set; } = DummyLogger.Instance;
+        private ILogger logger = DummyLogger.Instance;
 
         public ILogger Logger
         {

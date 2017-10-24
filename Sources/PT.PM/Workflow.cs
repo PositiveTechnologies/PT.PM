@@ -84,7 +84,7 @@ namespace PT.PM
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.LogInfo("Scan has been cancelled by user");
+                    Logger.LogInfo("Scan has been cancelled");
                 }
 
                 /*foreach (var pair in ParserConverterSets) // TODO: cache clearint at the end.
@@ -114,7 +114,7 @@ namespace PT.PM
                         stopwatch.Restart();
                         ust = simplifier.Simplify(ust);
                         stopwatch.Stop();
-                        Logger.LogInfo($"Ust of file {fileName} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
+                        Logger.LogInfo($"Ust of file {ust.SourceCodeFile.Name} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(ust, false);
 
@@ -128,7 +128,7 @@ namespace PT.PM
                         stopwatch.Restart();
                         IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {fileName} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
+                        Logger.LogInfo($"File {ust.SourceCodeFile.Name} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(matchingResults);
 
@@ -145,16 +145,17 @@ namespace PT.PM
             }
             finally
             {
+                string shortFileName = ust?.SourceCodeFile.Name ?? System.IO.Path.GetFileName(fileName);
                 workflowResult.AddProcessedFilesCount(1);
                 double progress = workflowResult.TotalFilesCount == 0
                     ? workflowResult.TotalProcessedFilesCount
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
-                Logger.LogInfo(new ProgressEventArgs(progress, fileName));
-                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
+                Logger.LogInfo(new ProgressEventArgs(progress, shortFileName));
+                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, shortFileName));
 
                 if (ust == null)
                 {
-                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
+                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, shortFileName));
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();

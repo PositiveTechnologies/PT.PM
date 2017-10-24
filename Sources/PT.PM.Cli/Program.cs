@@ -3,7 +3,6 @@ using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Json;
 using PT.PM.Matching.PatternsRepository;
-using PT.PM.Patterns.PatternsRepository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -5,8 +5,6 @@ namespace PT.PM.Matching
 {
     public class MatchingResultDto
     {
-        private static char[] newLineChars = new[] { '\n', '\r' };
-
         public string MatchedCode { get; set; }
 
         public int BeginLine { get; set; }
@@ -29,11 +27,11 @@ namespace PT.PM.Matching
         {
             SourceCodeFile sourceCodeFile = matchingResult.SourceCodeFile;
             string code = sourceCodeFile.Code;
-
             TextSpan textSpan = matchingResult.TextSpans.Union();
             textSpan.ToLineColumn(sourceCodeFile.Code,
                 out int beginLine, out int beginColumn,
                 out int endLine, out int endColumn);
+
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;

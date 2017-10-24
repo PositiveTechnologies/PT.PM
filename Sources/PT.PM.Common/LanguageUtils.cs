@@ -127,8 +127,7 @@ namespace PT.PM.Common
                 
                 foreach (Language sublanguage in lang.Sublanguages)
                 {
-                    HashSet<Language> superLanguages;
-                    if (!SuperLanguages.TryGetValue(sublanguage, out superLanguages))
+                    if (!SuperLanguages.TryGetValue(sublanguage, out HashSet<Language> superLanguages))
                     {
                         superLanguages = new HashSet<Language>();
                         SuperLanguages.Add(sublanguage, superLanguages);
@@ -220,9 +219,8 @@ namespace PT.PM.Common
 
         public static HashSet<Language> GetSelfAndSublanguages(this Language language)
         {
-            var result = new HashSet<Language>();
-            result.Add(language);
-            foreach (var lang in language.Sublanguages)
+            var result = new HashSet<Language> { language };
+            foreach (Language lang in language.Sublanguages)
                 result.Add(lang);
             return result;
         }
