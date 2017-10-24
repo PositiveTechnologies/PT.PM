@@ -440,6 +440,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 return Visit(context.integerLiteral());
             }
 
+            if (context.floatLiteral() != null)
+            {
+                return Visit(context.floatLiteral());
+            }
+
             ITerminalNode boolLiteral = context.BOOL_LITERAL();
             if (boolLiteral != null)
             {
@@ -451,13 +456,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 string text = charLiteral.GetText();
                 return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
-            }
-
-            ITerminalNode floatLiteral = context.FLOAT_LITERAL();
-            if (floatLiteral != null)
-            {
-                var text = floatLiteral.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
-                return new FloatLiteral(double.Parse(text), textSpan);
             }
 
             if (context.Start.Type == JavaParser.NULL_LITERAL)
@@ -473,6 +471,36 @@ namespace PT.PM.JavaParseTreeUst.Converter
             TextSpan textSpan = context.GetTextSpan();
             string text = context.GetText().Replace("_", "");
             return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan);
+        }
+
+        public Ust VisitFloatLiteral(JavaParser.FloatLiteralContext context)
+       {
+            string literalText = context.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
+            TextSpan textSpan = context.GetTextSpan();
+
+            ITerminalNode floatLiteral = context.FLOAT_LITERAL();
+            if (floatLiteral != null)
+            {
+                return new FloatLiteral(double.Parse(literalText), textSpan);
+            }
+
+            literalText = literalText.Replace("0x", "");
+            string[] parts = literalText.Split('p');
+
+            string significandString = parts[0];
+            significandString.Replace(".", "").TryConvertToInt64(16, out long significand);
+            double result = significand;
+            int dotIndex = significandString.LastIndexOf('.');
+            if (dotIndex != -1)
+            {
+                result = result / Math.Pow(16, significandString.Length - dotIndex - 1);
+            }
+
+            parts[1].TryConvertToInt64(10, out long exp);
+
+            result = result * Math.Pow(2, exp);
+
+            return new FloatLiteral(result, textSpan);
         }
 
         public Ust VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
