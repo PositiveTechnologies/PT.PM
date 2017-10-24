@@ -16,7 +16,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
     public class JavaConverterTests
     {
         [TestCase("ManyStringsConcat.java")]
-        [TestCase("AllInOne.java")]
+        [TestCase("AllInOne7.java")]
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
@@ -108,17 +108,17 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
         }
 
-        [TestCase("AllInOne.java")]
-        public void Convert_Java_BaseTypesExist(string fileName)
+        [Test]
+        public void Convert_Java_BaseTypesExist()
         {
-            var workflowResults = TestUtility.CheckFile(fileName, Stage.Ust);
+            var workflowResults = TestUtility.CheckFile("AllInOne7.java", Stage.Ust);
             var ust = workflowResults.Usts.First();
             bool result = ust.AnyDescendant(descendant =>
             {
                 return descendant is TypeDeclaration typeDeclaration &&
-                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "Runnable");
+                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "ActionListener");
             });
-            Assert.IsTrue(result, "Ust doesn't contain type declaration node with Runnable base type");
+            Assert.IsTrue(result, "Ust doesn't contain type declaration node with ActionListener base type");
         }
     }
 }

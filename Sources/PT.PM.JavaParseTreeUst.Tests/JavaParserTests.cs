@@ -14,7 +14,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         }
 
         [TestCase("ManyStringsConcat.java")]
-        [TestCase("AllInOne.java")]
+        [TestCase("AllInOne7.java")]
         [TestCase("AllInOne8.java")]
         public void Parser_JavaFile_WithoutErrors(string fileName)
         {
