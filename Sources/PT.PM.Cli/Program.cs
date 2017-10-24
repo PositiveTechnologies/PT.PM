@@ -106,7 +106,7 @@ namespace PT.PM.Cli
                     IEnumerable<Language> languages;
                     if (!string.IsNullOrEmpty(languagesString))
                     {
-                        languages = languagesString.ToLanguages(logger);
+                        languages = languagesString.ToLanguages();
                     }
                     else
                     {

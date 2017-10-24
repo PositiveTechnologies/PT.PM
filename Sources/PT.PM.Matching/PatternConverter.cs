@@ -65,9 +65,9 @@ namespace PT.PM.Matching
                 {
                     PatternRoot pattern = serializer.Deserialize(patternDto.Value);
 
-                    var languages = patternDto.Languages.Count() == 0
-                        ? LanguageUtils.PatternLanguages.Values.ToList()
-                        : patternDto.Languages.ToLanguages(Logger);
+                    HashSet<Language> languages = patternDto.Languages.Count() == 0
+                        ? new HashSet<Language>(LanguageUtils.PatternLanguages.Values)
+                        : patternDto.Languages.ToLanguages();
 
                     if (languages.Count == 0)
                     {
@@ -76,7 +76,7 @@ namespace PT.PM.Matching
 
                     pattern.DataFormat = serializer.Format;
                     pattern.Key = patternDto.Key;
-                    pattern.Languages = new HashSet<Language>(languages);
+                    pattern.Languages = languages;
                     pattern.DebugInfo = patternDto.Description;
                     pattern.FilenameWildcard = patternDto.FilenameWildcard;
 

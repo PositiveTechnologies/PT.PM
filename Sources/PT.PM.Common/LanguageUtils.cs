@@ -163,28 +163,59 @@ namespace PT.PM.Common
             }
         }
 
-        public static List<Language> ToLanguages(this string languages, ILogger logger = null)
+        public static HashSet<Language> ToLanguages(this string languages)
         {
-            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ToLanguages(logger);
+            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ToLanguages();
         }
 
-        public static List<Language> ToLanguages(this IEnumerable<string> languages, ILogger logger = null)
+        public static HashSet<Language> ToLanguages(this IEnumerable<string> languageStrings)
         {
-            var result = new List<Language>();
-            foreach (string langStr in languages)
+            var langs = new HashSet<Language>();
+            var negationLangs = Languages.Values.ToList();
+            bool containsNegation = false;
+            foreach (string languageString in languageStrings)
             {
-                Language value;
-                if ((value = Languages.Values.FirstOrDefault(lang =>
-                    string.Equals(lang.Key, langStr, StringComparison.OrdinalIgnoreCase))) != null)
+                bool negation = false;
+                string langStr = languageString;
+                if (langStr.StartsWith("~") || langStr.StartsWith("!"))
                 {
-                    result.Add(value);
+                    negation = true;
+                    langStr = langStr.Substring(1);
                 }
-                else
+                bool isSql = langStr.Equals("sql", StringComparison.OrdinalIgnoreCase);
+
+                foreach (Language language in Languages.Values)
                 {
-                    //logger.LogError(new ConversionException("", message: $"Language \"{langStr}\" is not supported or wrong"));
+                    bool result = isSql
+                        ? language.IsSql
+                        : string.Equals(language.Key, langStr, StringComparison.OrdinalIgnoreCase);
+                    if (negation)
+                    {
+                        containsNegation = true;
+                        if (result)
+                        {
+                            negationLangs.Remove(language);
+                        }
+                    }
+                    else
+                    {
+                        if (result)
+                        {
+                            langs.Add(language);
+                        }
+                    }
+                };
+            }
+
+            if (containsNegation)
+            {
+                foreach (Language lang in negationLangs)
+                {
+                    langs.Add(lang);
                 }
             }
-            return result;
+
+            return langs;
         }
 
         public static HashSet<Language> GetSelfAndSublanguages(this Language language)
