@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PT.PM.Common;
-using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Common.Reflection;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PT.PM.Matching.Json
 {
@@ -31,28 +29,10 @@ namespace PT.PM.Matching.Json
                 if (objectType == typeof(PatternRoot))
                 {
                     var languagesArray = (JArray)jObject[nameof(PatternDto.Languages)];
-                    HashSet<Language> resultLanguages;
-                    if (languagesArray?.Count > 0)
-                    {
-                        resultLanguages = new HashSet<Language>();
-                        foreach (string value in languagesArray.Values<string>())
-                        {
-                            Language language = LanguageUtils.Languages.Values.FirstOrDefault(
-                                    lang => string.Equals(lang.Key, value, StringComparison.OrdinalIgnoreCase));
-                            if (language != null)
-                            {
-                                resultLanguages.Add(language);
-                            }
-                            else
-                            {
-                                Logger.LogError(new ConversionException("", message: $"Language \"{value}\" is not supported or wrong."));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        resultLanguages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
-                    }
+                    HashSet<Language> resultLanguages = languagesArray?.Count > 0
+                        ? languagesArray.Values<string>().ToLanguages()
+                        : new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
+
                     target = new PatternRoot
                     {
                         Key = (string)jObject[nameof(PatternRoot.Key)] ?? "",

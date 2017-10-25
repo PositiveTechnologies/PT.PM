@@ -19,7 +19,7 @@ namespace PT.PM.Tests
 
             CollectionAssert.AreEquivalent(sqlLanguages, "Sql".ToLanguages());
 
-            HashSet<Language> notJavaLangs = "!Java".ToLanguages();
+            HashSet<Language> notJavaLangs = "~Java".ToLanguages();
             CollectionAssert.IsSupersetOf(LanguageUtils.Languages.Values, notJavaLangs);
             CollectionAssert.DoesNotContain(notJavaLangs, Java.Language);
 
