@@ -2,40 +2,6 @@
 {
     public static class TestProjects
     {
-        public static TestProject[] CSharpProjects = new TestProject[]
-        {
-            new TestProject("WebGoat.NET-1c6cab")
-            {
-                Urls = new [] {
-                    $"{TestUtility.GithubUrlPrefix}jerryhoff/WebGoat.NET/archive/1c6cab19f9029673cd98ba8624bf9cc91d04bae9.zip"
-                }
-            },
-            new TestProject("corefx-1.0.0-rc2")
-            {
-                Urls = new [] { $"{TestUtility.GithubUrlPrefix}dotnet/corefx/archive/release/1.0.0-rc2.zip" },
-                IgnoredFiles = new [] {
-                    @"src\Common\tests\System\Xml\XmlCoreTest\TestData.g.cs"
-                }
-            },
-            new TestProject("EntityFramework-7.0.0-rc1")
-            {
-                Urls = new [] {
-                   $"{TestUtility.GithubUrlPrefix}aspnet/EntityFramework/archive/7.0.0-rc1.zip"
-                }
-            },
-            new TestProject("aspnet-mvc-6.0.0-rc1")
-            {
-                Urls = new []
-                {
-                    $"{TestUtility.GithubUrlPrefix}aspnet/Mvc/archive/6.0.0-rc1.zip"
-                }
-            },
-            new TestProject("ImageProcessor-2.3.0",
-                $"{TestUtility.GithubUrlPrefix}JimBobSquarePants/ImageProcessor/archive/2.3.0.zip"),
-            new TestProject("Newtonsoft.Json-8.0.2",
-                $"{TestUtility.GithubUrlPrefix}/JamesNK/Newtonsoft.Json/archive/8.0.2.zip")
-        };
-
         public static TestProject[] TSqlProjects = new TestProject[]
         {
             new TestProject("TSQL Samples")
