@@ -20,21 +20,37 @@ namespace PT.PM
             }
             else if (File.Exists(path))
             {
-                sourceCodeRepository = new FileCodeRepository(path);
+                if (Path.GetExtension(path) == ".zip")
+                {
+                    sourceCodeRepository = new ZipCachingRepository(path)
+                    {
+                        ExtractPath = tempDir
+                    };
+                }
+                else
+                {
+                    sourceCodeRepository = new FileCodeRepository(path);
+                }
             }
             else
             {
                 string url = path.Replace(@"\", "/");
                 string projectName = null;
+                string urlWithoutHttp = TextUtils.HttpRegex.Replace(url, "");
+
                 if (!url.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                 {
-                    string urlWithoutHttp = TextUtils.HttpRegex.Replace(url, "");
                     if (urlWithoutHttp.StartsWith("github.com"))
                     {
-                        projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
                         url = url + "/archive/master.zip";
                     }
                 }
+
+                if (urlWithoutHttp.StartsWith("github.com"))
+                {
+                    projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
+                }
+
                 var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName)
                 {
                     DownloadPath = tempDir

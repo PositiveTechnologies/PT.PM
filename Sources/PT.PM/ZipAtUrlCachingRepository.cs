@@ -1,47 +1,29 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 
 namespace PT.PM
 {
-    public class ZipAtUrlCachingRepository : FilesAggregatorCodeRepository
+    public class ZipAtUrlCachingRepository : ZipCachingRepository
     {
         private const int percentStep = 5;
         private const long bytesStep = 500000;
 
         public string Url { get; private set; }
 
-        public string Key { get; private set; }
-
         public string DownloadPath { get; set; } = Path.GetTempPath();
-
-        public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
         public ZipAtUrlCachingRepository(string url, string name = null)
             : base("")
         {
             Url = url;
-            Key = ConvertToValidFileName(string.IsNullOrEmpty(name) ? TextUtils.HttpRegex.Replace(url, "") : name);
-            if (Key.EndsWith(".zip"))
-                Key = Key.Remove(Key.Length - ".zip".Length);
-        }
-
-        public override bool IsFileIgnored(string fileName)
-        {
-            bool result = IgnoredFiles.Any(fileName.EndsWith);
-            if (result)
-            {
-                return true;
-            }
-
-            return base.IsFileIgnored(fileName);
+            Name = ConvertToValidFileName(string.IsNullOrEmpty(name) ? TextUtils.HttpRegex.Replace(url, "") : name);
+            if (Name.EndsWith(".zip"))
+                Name = Name.Remove(Name.Length - ".zip".Length);
+            RemoveAfterExtraction = true;
         }
 
         public override IEnumerable<string> GetFileNames()
@@ -57,63 +39,67 @@ namespace PT.PM
                 throw new NotSupportedException("Not zip archives are not supported");
             }
 
-            RootPath = Path.Combine(DownloadPath, Key);
-            string zipFileName = RootPath + ".zip";
+            ExtractPath = DownloadPath;
+            RootPath = Path.Combine(ExtractPath, Name);
+            ArchiveName = RootPath + ".zip";
 
-            if (IsDirectoryNotExistsOrEmpty(RootPath))
+            if (Rewrite || IsDirectoryNotExistsOrEmpty(RootPath))
             {
                 // Block another processes which try to use the same files.
-                using (var zipFileNameMutex = new Mutex(false, ConvertToValidMutexName(zipFileName)))
+                using (var zipFileNameMutex = new Mutex(false, ConvertToValidMutexName(ArchiveName)))
                 {
-                    if (zipFileNameMutex.WaitOne())
+                    if (!zipFileNameMutex.WaitOne())
                     {
-                        try
+                        return;
+                    }
+
+                    try
+                    {
+                        if (Rewrite || IsDirectoryNotExistsOrEmpty(RootPath))
                         {
-                            if (IsDirectoryNotExistsOrEmpty(RootPath))
+                            if (Directory.Exists(RootPath))
                             {
-                                if (Directory.Exists(RootPath))
-                                {
-                                    Directory.Delete(RootPath);
-                                }
+                                Directory.Delete(RootPath);
+                            }
 
-                                if (!File.Exists(zipFileName))
+                            if (File.Exists(ArchiveName))
+                            {
+                                if (Rewrite)
                                 {
-                                    DownloadPack(zipFileName);
+                                    File.Delete(ArchiveName);
                                 }
-
-                                UnpackFiles(zipFileName);
+                                DownloadArchive();
                             }
                             else
                             {
-                                Logger.LogInfo($"{Key} already downloaded and unpacked.");
+                                DownloadArchive();
                             }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            RootPath = null;
-                            Logger.LogError(ex);
+                            Logger.LogInfo($"{Name} already downloaded and unpacked.");
                         }
-                        finally
-                        {
-                            zipFileNameMutex.ReleaseMutex();
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        RootPath = null;
+                        Logger.LogError(ex);
+                    }
+                    finally
+                    {
+                        zipFileNameMutex.ReleaseMutex();
                     }
                 }
             }
         }
 
-        private bool IsDirectoryNotExistsOrEmpty(string directoryName)
-        {
-            return !Directory.Exists(RootPath) || IsDirectoryEmpty(RootPath);
-        }
-
-        private void DownloadPack(string zipFileName)
+        private void DownloadArchive()
         {
             bool fileDownloaded = false;
             object progressLockObj = new object();
             int previousPercent = 0;
             long previousBytes = 0;
-            string currentFileName = Key;
+            string currentFileName = Name;
             WebClient webClient = new WebClient();
 
             if (Logger != null)
@@ -142,12 +128,12 @@ namespace PT.PM
                 };
             }
             webClient.DownloadFileCompleted += (sender, e) => fileDownloaded = true;
-            Logger.LogInfo($"{Key} downloading...");
+            Logger.LogInfo($"{Name} downloading...");
             if (!Directory.Exists(DownloadPath))
             {
                 Directory.CreateDirectory(DownloadPath);
             }
-            webClient.DownloadFileAsync(new Uri(Url), zipFileName);
+            webClient.DownloadFileAsync(new Uri(Url), ArchiveName);
 
             do
             {
@@ -155,83 +141,7 @@ namespace PT.PM
             }
             while (!fileDownloaded);
 
-            Logger.LogInfo($"{Key} has been downloaded.");
-        }
-
-        private void UnpackFiles(string zipFileName)
-        {
-            Logger.LogInfo($"{Key} extraction...");
-            if (Directory.Exists(RootPath))
-            {
-                Directory.Delete(RootPath, true);
-            }
-
-            var sevenZipExtractor = new SevenZipExtractor();
-            if (!CommonUtils.IsRunningOnLinux && File.Exists(sevenZipExtractor.SevenZipPath))
-            {
-                sevenZipExtractor.Extract(zipFileName, RootPath);
-            }
-            else
-            {
-                new StandartArchiveExtractor().Extract(zipFileName, RootPath);
-                Thread.Sleep(500);
-            }
-
-            File.Delete(zipFileName);
-            Logger.LogInfo($"{Key} has been extracted.");
-
-            string[] directories = Directory.GetDirectories(RootPath);
-            if (directories.Length == 1)
-            {
-                Directory.CreateDirectory(RootPath);
-                foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(directories[0]))
-                {
-                    string shortName = Path.GetFileName(fileSystemEntry);
-                    string newName = Path.Combine(RootPath, shortName);
-                    if (File.Exists(fileSystemEntry))
-                    {
-                        File.Move(fileSystemEntry, newName);
-                    }
-                    else
-                    {
-                        Directory.Move(fileSystemEntry, newName);
-                    }
-                }
-
-                try
-                {
-                    Directory.Delete(directories[0], true);
-                }
-                catch (IOException ex)
-                {
-                    Logger.LogError(new ReadException("", ex, "Something going wrong during unpacking"));
-                }
-            }
-        }
-
-        private static bool IsDirectoryEmpty(string path)
-        {
-            IEnumerable<string> items = Directory.EnumerateFileSystemEntries(path);
-            using (IEnumerator<string> en = items.GetEnumerator())
-            {
-                return !en.MoveNext();
-            }
-        }
-
-        private static string ConvertToValidMutexName(string name)
-        {
-            return ConvertToValidFileName(name);
-        }
-
-        private static string ConvertToValidFileName(string str)
-        {
-            StringBuilder result = new StringBuilder(str.Length);
-            char[] invalidChars = Path.GetInvalidFileNameChars();
-            foreach (char c in str)
-            {
-                result.Append(!invalidChars.Contains(c) ? c : '-');
-            }
-            return result.ToString();
+            Logger.LogInfo($"{Name} has been downloaded.");
         }
     }
 }

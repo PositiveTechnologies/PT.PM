@@ -14,6 +14,8 @@ namespace PT.PM.Common.CodeRepository
 
         public SearchOption SearchOption { get; set; } = SearchOption.AllDirectories;
 
+        public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
+
         public FilesAggregatorCodeRepository(string directoryPath, params Language[] languages)
             : this(directoryPath, (IEnumerable<Language>)languages)
         {
@@ -86,6 +88,17 @@ namespace PT.PM.Common.CodeRepository
                 Logger.LogError(new ReadException(fileName, ex));
             }
             return result;
+        }
+
+        public override bool IsFileIgnored(string fileName)
+        {
+            bool result = IgnoredFiles.Any(fileName.EndsWith);
+            if (result)
+            {
+                return true;
+            }
+
+            return base.IsFileIgnored(fileName);
         }
     }
 }

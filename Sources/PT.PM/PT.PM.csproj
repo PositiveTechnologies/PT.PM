@@ -69,6 +69,7 @@
     <Compile Include="WorkflowResult.cs" />
     <Compile Include="WorkflowResultBase.cs" />
     <Compile Include="ZipAtUrlCachingRepository.cs" />
+    <Compile Include="ZipCachingRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AspxParser\AspxParser\AspxParser.csproj">
