@@ -46,41 +46,6 @@
             }
         };
 
-        public static TestProject[] PhpProjects = new TestProject[]
-        {
-            new TestProject("WebGoatPHP-6f48c9")
-            {
-                Urls = new []
-                {
-                    $"{TestUtility.GithubUrlPrefix}shivamdixit/WebGoatPHP/archive/6f48c99b4d952402c805c0e2d561f0f2c7572055.zip"
-                },
-                IgnoredFiles = new string[]
-                {
-                    @"_japp\view\default\logs\view.php"
-                }
-            },
-            new TestProject("phpBB-3.1.6")
-            {
-                Urls = new []
-                {
-                    $"{TestUtility.GithubUrlPrefix}phpbb/phpbb/archive/release-3.1.6.zip"
-                },
-                IgnoredFiles = new []
-                {
-                    @"phpBB\develop\benchmark.php",
-                    @"phpBB\develop\search_fill.php",
-                    @"phpBB\install\database_update.php"
-                }
-            },
-            new TestProject("ZendFramework-2.4.8")
-            {
-                Urls = new []
-                {
-                    $"{TestUtility.GithubUrlPrefix}zendframework/zf2/archive/release-2.4.8.zip"
-                }
-            }
-        };
-
         public static TestProject[] TSqlProjects = new TestProject[]
         {
             new TestProject("TSQL Samples")

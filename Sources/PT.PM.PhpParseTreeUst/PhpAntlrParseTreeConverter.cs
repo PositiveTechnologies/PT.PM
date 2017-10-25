@@ -1203,9 +1203,10 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitArrayCreationExpression(PhpParser.ArrayCreationExpressionContext context)
         {
-            List<Expression> inits = context.arrayItemList().arrayItem()
+            List<Expression> inits = context.arrayItemList()?.arrayItem()
                 .Select(item => (Expression)Visit(item))
-                .Where(item => item != null).ToList();
+                .Where(item => item != null).ToList()
+                ?? new List<Expression>();
             if (context.expression() != null)
                 inits.Add((Expression)Visit(context.expression()));
 
