@@ -48,8 +48,6 @@
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
     <Compile Include="TestUtility.cs" />
-    <Compile Include="TestProject.cs" />
-    <Compile Include="TestProjects.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
