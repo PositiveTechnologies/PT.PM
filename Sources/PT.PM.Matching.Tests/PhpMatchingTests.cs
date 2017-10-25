@@ -21,9 +21,9 @@ namespace PT.PM.Matching.Tests
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
-            PatternDto[] patternDtos = Global.PatternsRepository.GetAll()
-                .Where(patternDto => patternDto.Languages.Contains("Php")).ToArray();
-            foreach (var dto in patternDtos)
+            IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()
+                .Where(patternDto => patternDto.Languages.Contains("Php"));
+            foreach (PatternDto dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }

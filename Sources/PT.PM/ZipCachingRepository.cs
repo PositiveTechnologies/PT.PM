@@ -66,7 +66,6 @@ namespace PT.PM
                             else
                             {
                                 new StandartArchiveExtractor().Extract(ArchiveName, RootPath);
-                                Thread.Sleep(500);
                             }
 
                             if (RemoveAfterExtraction)
@@ -79,6 +78,7 @@ namespace PT.PM
                             if (directories.Length == 1)
                             {
                                 Directory.CreateDirectory(RootPath);
+
                                 foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(directories[0]))
                                 {
                                     string shortName = Path.GetFileName(fileSystemEntry);
@@ -89,7 +89,14 @@ namespace PT.PM
                                     }
                                     else
                                     {
-                                        Directory.Move(fileSystemEntry, newName);
+                                        try
+                                        {
+                                            Directory.Move(fileSystemEntry, newName);
+                                        }
+                                        catch
+                                        {
+                                            Directory.Move(fileSystemEntry, newName);
+                                        }
                                     }
                                 }
 
