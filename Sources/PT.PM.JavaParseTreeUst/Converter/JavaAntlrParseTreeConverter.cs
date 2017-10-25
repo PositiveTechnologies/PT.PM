@@ -376,6 +376,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return VisitChildren(context);
         }
 
+        public Ust VisitSuperOrThis([NotNull] JavaParser.SuperOrThisContext context)
+        {
+            return VisitChildren(context);
+        }
+
         #endregion
 
         private Ust ProcessTypeDeclaration(ParserRuleContext context,
