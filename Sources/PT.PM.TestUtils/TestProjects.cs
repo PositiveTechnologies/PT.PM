@@ -36,16 +36,6 @@
                 $"{TestUtility.GithubUrlPrefix}/JamesNK/Newtonsoft.Json/archive/8.0.2.zip")
         };
 
-        public static TestProject[] JavaProjects = new TestProject[]
-        {
-            new TestProject("WebGoat.Java-05a1f5")
-            {
-                Urls = new [] {
-                    $"{TestUtility.GithubUrlPrefix}WebGoat/WebGoat/archive/05a1f5dd3a6c7def0e6131e4899c85f01a504ea5.zip"
-                }
-            }
-        };
-
         public static TestProject[] TSqlProjects = new TestProject[]
         {
             new TestProject("TSQL Samples")
