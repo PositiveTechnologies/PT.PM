@@ -151,11 +151,11 @@ namespace PT.PM
                     ? workflowResult.TotalProcessedFilesCount
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
                 Logger.LogInfo(new ProgressEventArgs(progress, shortFileName));
-                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, shortFileName));
+                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
 
                 if (ust == null)
                 {
-                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, shortFileName));
+                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
