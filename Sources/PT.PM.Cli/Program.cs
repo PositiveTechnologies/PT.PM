@@ -102,16 +102,7 @@ namespace PT.PM.Cli
                         stage = Stage.Pattern;
                     }
 
-                    IEnumerable<Language> languages;
-                    if (!string.IsNullOrEmpty(languagesString))
-                    {
-                        languages = languagesString.ToLanguages();
-                    }
-                    else
-                    {
-                        languages = LanguageUtils.Languages.Values;
-                    }
-
+                    HashSet<Language> languages = languagesString.ToLanguages();
                     SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir);
 
                     logger.SourceCodeRepository = sourceCodeRepository;
@@ -127,7 +118,7 @@ namespace PT.PM.Cli
                         MemoryConsumptionMb = memoryConsumptionMb,
                         IsIncludePreprocessing = isPreprocess,
                         LogsDir = logsDir,
-                        TempDir = tempDir
+                        DumpDir = tempDir
                     };
                     var stopwatch = Stopwatch.StartNew();
                     WorkflowResult workflowResult = workflow.Process();

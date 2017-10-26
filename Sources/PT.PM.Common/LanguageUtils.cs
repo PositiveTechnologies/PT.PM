@@ -162,17 +162,24 @@ namespace PT.PM.Common
             }
         }
 
-        public static HashSet<Language> ToLanguages(this string languages)
+        public static HashSet<Language> ToLanguages(this string languages, bool allByDefault = true)
         {
-            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ToLanguages();
+            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ToLanguages(allByDefault);
         }
 
-        public static HashSet<Language> ToLanguages(this IEnumerable<string> languageStrings)
+        public static HashSet<Language> ToLanguages(this IEnumerable<string> languageStrings, bool allByDefault = true)
         {
+            string[] languageStringsArray = languageStrings.ToArray() ?? ArrayUtils<string>.EmptyArray;
+            HashSet<Language> negationLangs = new HashSet<Language>(Languages.Values);
+
+            if (allByDefault && languageStringsArray.Length == 0)
+            {
+                return negationLangs;
+            }
+
             var langs = new HashSet<Language>();
-            var negationLangs = Languages.Values.ToList();
             bool containsNegation = false;
-            foreach (string languageString in languageStrings)
+            foreach (string languageString in languageStringsArray)
             {
                 bool negation = false;
                 string langStr = languageString;

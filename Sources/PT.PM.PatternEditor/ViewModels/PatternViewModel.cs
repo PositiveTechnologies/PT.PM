@@ -462,7 +462,7 @@ namespace PT.PM.PatternEditor
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
                         patternNode = dslProcessor.Deserialize(patternTextBox.Text);
-                        patternNode.Languages = Languages.ToLanguages();
+                        patternNode.Languages = Languages.ToLanguages(false);
                     }
                 }
                 catch

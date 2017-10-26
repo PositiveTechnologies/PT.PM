@@ -98,7 +98,7 @@ namespace PT.PM
 
         public string LogsDir { get; set; } = "";
 
-        public string TempDir { get; set; } = "";
+        public string DumpDir { get; set; } = "";
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
