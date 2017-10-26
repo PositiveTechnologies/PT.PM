@@ -131,7 +131,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitVariableDeclarators(JavaParser.VariableDeclaratorsContext context)
         {
-            return VisitShouldNotBeVisited(context);
+            return VisitChildren(context);
         }
 
         public Ust VisitVariableDeclarator(JavaParser.VariableDeclaratorContext context)

@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
@@ -123,6 +124,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         result = new ConditionalExpression(condition, trueExpr, falseExpr, textSpan);
                         return result;
 
+                    case JavaParser.COLONCOLON:
+                        return VisitChildren(context);
+
                     default: // binary operator
                         string text = child1Terminal.GetText();
                         var left = (Expression)Visit(context.expression(0));
@@ -181,7 +185,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 }
             }
 
-            return Visit(context.GetChild(0));
+            return VisitChildren(context);
         }
 
         public Ust VisitPrimary(JavaParser.PrimaryContext context)
@@ -235,11 +239,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
 
             return Visit(context.GetChild(0));
-        }
-
-        public Ust VisitMethodReference(JavaParser.MethodReferenceContext context)
-        {
-            return VisitChildren(context);
         }
 
         public Ust VisitClassType(JavaParser.ClassTypeContext context)
@@ -376,15 +375,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitTypeType(JavaParser.TypeTypeContext context)
         {
-            var result = (TypeToken)Visit(context.GetChild(0));
-            return result;
-            //TODO: fix
-            /*var lastType = result.Type.Last();
-            var terminalNodes = context.children.OfType<ITerminalNode>();
-            foreach (var node in terminalNodes)
-                lastType += node.Symbol.Text;
-            result.Type[result.Type.Count - 1] = lastType;
-            return result;*/
+            if (context.classOrInterfaceType() != null)
+            {
+                return Visit(context.classOrInterfaceType());
+            }
+
+            return Visit(context.primitiveType());
         }
 
         public Ust VisitExplicitGenericInvocationSuffix(JavaParser.ExplicitGenericInvocationSuffixContext context)
