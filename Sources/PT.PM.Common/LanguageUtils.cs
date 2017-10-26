@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using static System.Collections.Generic.Dictionary<TKey, TValue>;
 
 namespace PT.PM.Common
 {
