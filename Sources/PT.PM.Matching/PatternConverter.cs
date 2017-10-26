@@ -64,7 +64,7 @@ namespace PT.PM.Matching
                 try
                 {
                     PatternRoot pattern = serializer.Deserialize(patternDto.Value);
-                    HashSet<Language> languages = patternDto.Languages.ToLanguages();
+                    HashSet<Language> languages = patternDto.Languages.ToLanguages(patternLanguages: true);
 
                     if (languages.Count == 0)
                     {

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static System.Collections.Generic.Dictionary<TKey, TValue>;
 
 namespace PT.PM.Common
 {
@@ -162,15 +163,18 @@ namespace PT.PM.Common
             }
         }
 
-        public static HashSet<Language> ToLanguages(this string languages, bool allByDefault = true)
+        public static HashSet<Language> ToLanguages(this string languages, bool allByDefault = true,
+            bool patternLanguages = false)
         {
-            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ToLanguages(allByDefault);
+            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ToLanguages(allByDefault, patternLanguages);
         }
 
-        public static HashSet<Language> ToLanguages(this IEnumerable<string> languageStrings, bool allByDefault = true)
+        public static HashSet<Language> ToLanguages(this IEnumerable<string> languageStrings, bool allByDefault = true,
+            bool patternLanguages = false)
         {
             string[] languageStringsArray = languageStrings.ToArray() ?? ArrayUtils<string>.EmptyArray;
-            HashSet<Language> negationLangs = new HashSet<Language>(Languages.Values);
+            var languages = !patternLanguages ? Languages.Values : PatternLanguages.Values;
+            HashSet<Language> negationLangs = new HashSet<Language>(languages);
 
             if (allByDefault && languageStringsArray.Length == 0)
             {
@@ -190,7 +194,7 @@ namespace PT.PM.Common
                 }
                 bool isSql = langStr.Equals("sql", StringComparison.OrdinalIgnoreCase);
 
-                foreach (Language language in Languages.Values)
+                foreach (Language language in languages)
                 {
                     bool result = isSql
                         ? language.IsSql
