@@ -6,6 +6,7 @@ using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Json;
+using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
@@ -324,7 +325,7 @@ namespace PT.PM.PatternEditor
                 {
                     return language;
                 }
-                return null;
+                return CSharp.Language;
             }
             set
             {
@@ -551,7 +552,6 @@ namespace PT.PM.PatternEditor
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
-                DetectLanguageIfRequired();
                 Settings.SourceCode = !string.IsNullOrEmpty(OpenedFileName) ? "" : sourceCode;
                 Settings.Save();
 
@@ -568,7 +568,7 @@ namespace PT.PM.PatternEditor
         {
             sourceCodeLogger.Clear();
 
-            var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text);
+            var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text, language: SelectedLanguage ?? CSharp.Language);
             IPatternsRepository patternRepository;
             if (!string.IsNullOrEmpty(ServiceLocator.PatternViewModel.Value))
             {
