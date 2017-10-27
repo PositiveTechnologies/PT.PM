@@ -171,8 +171,7 @@ namespace PT.PM
 
                     if (stageHelper.IsContainsUst)
                     {
-                        stopwatch.Reset();
-
+                        stopwatch.Restart();
                         var converter = detectedLanguage.CreateConverter();
                         converter.Logger = Logger;
                         converter.AnalyzedLanguages = AnalyzedLanguages;
