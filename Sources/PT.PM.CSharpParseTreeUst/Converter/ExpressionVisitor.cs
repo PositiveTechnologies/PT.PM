@@ -535,8 +535,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitQueryExpression(QueryExpressionSyntax node)
         {
-            var expressions = node.DescendantNodes().OfType<ExpressionSyntax>()
-                .Select(exp => (Expression)VisitAndReturnNullIfError(exp)).ToList();
+            IEnumerable<Expression> expressions = node.DescendantNodes()
+                .OfType<ExpressionSyntax>()
+                .Select(exp => VisitAndReturnNullIfError(exp) as Expression)
+                .Where(expr => expr != null);
 
             var result = new MultichildExpression(expressions, node.GetTextSpan());
             return result;

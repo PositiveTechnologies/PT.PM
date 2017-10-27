@@ -11,19 +11,10 @@ namespace PT.PM.PhpParseTreeUst.Tests
     [TestFixture]
     public class PhpParserTests
     {
-        [TestCase("priorityTest.php")]
-        [TestCase("alternativeSyntax.php")]
-        [TestCase("heredoc.php")]
-        [TestCase("scriptInHtml.php")]
-        [TestCase("styleInHtml.php")]
-        [TestCase("shebang.php")]
-        [TestCase("aspTags.php")]
-        [TestCase("deepConcatanation.php")]
-        [TestCase("strings.php")]
-        [TestCase("xmlTag.php")]
-        public void Parse_PhpSyntax_WithoutErrors(string fileName)
+        public void Parse_PhpSyntax_WithoutErrors()
         {
-            TestUtility.CheckFile(fileName, Php.Language, Stage.ParseTree);
+            TestUtility.CheckProject(TestUtility.TestsDataPath, Php.Language, Stage.ParseTree,
+               searchPredicate: fileName => !fileName.Contains("Error"));
         }
 
         [Test]

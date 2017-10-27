@@ -9,7 +9,7 @@ namespace PT.PM.Matching
 {
     public class PatternConverter : IPatternConverter<PatternRoot>
     {
-        private ILogger logger { get; set; } = DummyLogger.Instance;
+        private ILogger logger = DummyLogger.Instance;
 
         public ILogger Logger
         {
@@ -64,10 +64,7 @@ namespace PT.PM.Matching
                 try
                 {
                     PatternRoot pattern = serializer.Deserialize(patternDto.Value);
-
-                    var languages = patternDto.Languages.Count() == 0
-                        ? LanguageUtils.PatternLanguages.Values.ToList()
-                        : patternDto.Languages.ToLanguages(Logger);
+                    HashSet<Language> languages = patternDto.Languages.ToLanguages(patternLanguages: true);
 
                     if (languages.Count == 0)
                     {
@@ -76,7 +73,7 @@ namespace PT.PM.Matching
 
                     pattern.DataFormat = serializer.Format;
                     pattern.Key = patternDto.Key;
-                    pattern.Languages = new HashSet<Language>(languages);
+                    pattern.Languages = languages;
                     pattern.DebugInfo = patternDto.Description;
                     pattern.FilenameWildcard = patternDto.FilenameWildcard;
 

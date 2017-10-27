@@ -14,8 +14,6 @@ namespace PT.PM.Matching
 
         public bool FindAllAlternatives { get; set; } = false;
 
-        public bool IncludeNonterminalTextSpans { get; set; } = false;
-
         public List<TextSpan> Locations { get; } = new List<TextSpan>();
 
         public Dictionary<string, IdToken> Vars { get; } = new Dictionary<string, IdToken>();
@@ -34,27 +32,24 @@ namespace PT.PM.Matching
             return new MatchingContext(context.PatternUst, vars)
             {
                 Logger = context.Logger,
-                FindAllAlternatives = context.FindAllAlternatives,
-                IncludeNonterminalTextSpans = context.IncludeNonterminalTextSpans,
+                FindAllAlternatives = context.FindAllAlternatives
             };
         }
 
-        public static implicit operator bool(MatchingContext context)
-        {
-            return context.Success;
-        }
+        public static implicit operator bool(MatchingContext context) => context.Success;
 
         public MatchingContext(PatternRoot patternUst, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
             if (vars != null)
+            {
                 Vars = vars;
+            }
         }
 
         public MatchingContext AddUstIfSuccess(Ust ust)
         {
-            if (Success && 
-                !IgnoreLocations && (ust.IsTerminal || IncludeNonterminalTextSpans))
+            if (Success && !IgnoreLocations && !ust.TextSpan.IsEmpty)
             {
                 Locations.Add(ust.TextSpan);
             }
@@ -64,8 +59,7 @@ namespace PT.PM.Matching
         public MatchingContext AddMatch(Ust ust)
         {
             Success = true;
-            if (!IgnoreLocations &&
-                !ust.TextSpan.IsEmpty && (ust.IsTerminal || IncludeNonterminalTextSpans))
+            if (!IgnoreLocations && !ust.TextSpan.IsEmpty)
             {
                 Locations.Add(ust.TextSpan);
             }
@@ -77,7 +71,7 @@ namespace PT.PM.Matching
             Success = true;
             if (!IgnoreLocations)
             {
-                Locations.AddRange(textSpans);
+                Locations.AddRange(textSpans.Where(textSpan => !textSpan.IsEmpty));
             }
             return this;
         }
@@ -94,7 +88,7 @@ namespace PT.PM.Matching
             return this;
         }
 
-        public MatchingContext Change(bool success)
+        public MatchingContext Set(bool success)
         {
             Success = success;
             return this;

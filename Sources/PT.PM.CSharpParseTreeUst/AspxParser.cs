@@ -22,7 +22,7 @@ namespace PT.PM.CSharpParseTreeUst
                 try
                 {
                     var parser = new global::AspxParser.AspxParser(sourceCodeFile.RelativePath);
-                    var source = new AspxSource(sourceCodeFile.FullPath, sourceCodeFile.Code);
+                    var source = new AspxSource(sourceCodeFile.FullName, sourceCodeFile.Code);
                     AspxParseResult aspxTree = parser.Parse(source);
                     foreach (var error in aspxTree.ParseErrors)
                     {

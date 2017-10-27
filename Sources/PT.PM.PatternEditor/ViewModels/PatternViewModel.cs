@@ -462,7 +462,7 @@ namespace PT.PM.PatternEditor
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
                         patternNode = dslProcessor.Deserialize(patternTextBox.Text);
-                        patternNode.Languages = new HashSet<Language>(Languages.ToLanguages(patternLogger));
+                        patternNode.Languages = Languages.ToLanguages(allByDefault: false, patternLanguages: true);
                     }
                 }
                 catch
@@ -521,8 +521,7 @@ namespace PT.PM.PatternEditor
 
         private void UpdatePatternCaretIndex(int caretIndex)
         {
-            int line, column;
-            caretIndex.ToLineColumn(patternTextBox.Text, out line, out column);
+            caretIndex.ToLineColumn(patternTextBox.Text ?? "", out int line, out int column);
             PatternTextBoxPosition = $"Caret: {line}:{column-1}";
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(PatternTextBoxPosition)));
         }

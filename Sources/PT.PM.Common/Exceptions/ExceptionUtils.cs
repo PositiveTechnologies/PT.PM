@@ -7,8 +7,7 @@ namespace PT.PM.Common.Exceptions
     {
         public static string GetPrettyErrorMessage(this Exception ex, FileNameType fileNameType = FileNameType.None)
         {
-            var pmException = ex as PMException;
-            if (pmException != null)
+            if (ex is PMException pmException)
             {
                 return pmException.ToString(fileNameType);
             }

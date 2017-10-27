@@ -80,6 +80,9 @@
       <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Serilog.Sinks.Trace" Version="2.1.0" />
+    <PackageReference Include="System.ValueTuple">
+      <Version>4.3.1</Version>
+    </PackageReference>
     <PackageReference Include="System.Xml.ReaderWriter">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -93,6 +96,10 @@
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj">
+      <Project>{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}</Project>
+      <Name>PT.PM.CSharpParseTreeUst</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
       <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>

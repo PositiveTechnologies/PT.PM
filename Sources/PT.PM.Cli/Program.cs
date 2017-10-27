@@ -3,7 +3,6 @@ using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Json;
 using PT.PM.Matching.PatternsRepository;
-using PT.PM.Patterns.PatternsRepository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +21,7 @@ namespace PT.PM.Cli
             var parser = new FluentCommandLineParser();
 
             string fileName = "";
-            string escapedPatterns = "";
+            string patternsString = "";
             int threadCount = 1;
             string languagesString = "";
             Stage stage = Stage.Match;
@@ -30,6 +29,7 @@ namespace PT.PM.Cli
             int maxTimespan = 0;
             int memoryConsumptionMb = 300;
             string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM", "Logs");
+            string tempDir = Path.GetTempPath();
             bool logErrors = false;
             bool logDebugs = false;
             bool showVersion = true;
@@ -40,10 +40,10 @@ namespace PT.PM.Cli
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
-            parser.Setup<string>('p', "patterns").Callback(p =>
-                escapedPatterns = p.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
-                    ? p.NormDirSeparator()
-                    : p.Replace('\\', '/')
+            parser.Setup<string>('p', "patterns").Callback(param =>
+                patternsString = param.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
+                    ? param.NormDirSeparator()
+                    : param.Replace('\\', '/')
             );
             parser.Setup<int>('t', "threads").Callback(t => threadCount = t);
             parser.Setup<Stage>('s', "stage").Callback(s => stage = s);
@@ -51,6 +51,7 @@ namespace PT.PM.Cli
             parser.Setup<int>("max-timespan").Callback(mt => maxTimespan = mt);
             parser.Setup<int>('m', "memory").Callback(m => memoryConsumptionMb = m);
             parser.Setup<string>("logs-dir").Callback(lp => logsDir = lp.NormDirSeparator());
+            parser.Setup<string>("temp-dir").Callback(param => tempDir = param);
             parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
             parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
             parser.Setup<bool>('v', "version").Callback(v => showVersion = v);
@@ -83,8 +84,7 @@ namespace PT.PM.Cli
                         logger.LogInfo($"PT.PM version: {version}");
                     }
 
-                    var abstractLogger = logger as FileLogger;
-                    if (abstractLogger != null)
+                    if (logger is FileLogger abstractLogger)
                     {
                         abstractLogger.LogsDir = logsDir;
                         abstractLogger.IsLogErrors = logErrors;
@@ -92,7 +92,7 @@ namespace PT.PM.Cli
                         abstractLogger.LogInfo(commandLineArguments);
                     }
 
-                    if (string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(escapedPatterns))
+                    if (string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(patternsString))
                     {
                         throw new ArgumentException("at least --files or --patterns parameter required");
                     }
@@ -102,50 +102,23 @@ namespace PT.PM.Cli
                         stage = Stage.Pattern;
                     }
 
-                    IEnumerable<Language> languages;
-                    if (!string.IsNullOrEmpty(languagesString))
-                    {
-                        languages = languagesString.Split(' ', ',', ';').ToLanguages(logger);
-                    }
-                    else
-                    {
-                        languages = LanguageUtils.Languages.Values;
-                    }
-                    ISourceCodeRepository sourceCodeRepository;
-                    if (Directory.Exists(fileName))
-                    {
-                        sourceCodeRepository = new FilesAggregatorCodeRepository(fileName,
-                            languages.SelectMany(lang => lang.Extensions));
-                    }
-                    else
-                    {
-                        sourceCodeRepository = new FileCodeRepository(fileName);
-                    }
+                    HashSet<Language> languages = languagesString.ToLanguages();
+                    SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir);
+
                     logger.SourceCodeRepository = sourceCodeRepository;
 
-                    IPatternsRepository patternsRepository;
-                    if (string.IsNullOrEmpty(escapedPatterns))
-                    {
-                        patternsRepository = new DefaultPatternRepository();
-                    }
-                    else if (escapedPatterns.EndsWith(".json"))
-                    {
-                        patternsRepository = new FilePatternsRepository(escapedPatterns);
-                    }
-                    else
-                    {
-                        var patterns = StringCompressorEscaper.UnescapeDecompress(escapedPatterns);
-                        patternsRepository = new JsonPatternsRepository(patterns);
-                    }
+                    IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(patternsString);
 
-                    var workflow = new Workflow(sourceCodeRepository, languages, patternsRepository, stage)
+                    var workflow = new Workflow(sourceCodeRepository, patternsRepository, stage)
                     {
                         Logger = logger,
                         ThreadCount = threadCount,
                         MaxStackSize = maxStackSize,
                         MaxTimespan = maxTimespan,
                         MemoryConsumptionMb = memoryConsumptionMb,
-                        IsIncludePreprocessing = isPreprocess
+                        IsIncludePreprocessing = isPreprocess,
+                        LogsDir = logsDir,
+                        DumpDir = tempDir
                     };
                     var stopwatch = Stopwatch.StartNew();
                     WorkflowResult workflowResult = workflow.Process();
@@ -177,8 +150,7 @@ namespace PT.PM.Cli
                 {
                     if (logger != null)
                     {
-                        var abstractLogger = logger as FileLogger;
-                        if (abstractLogger != null)
+                        if (logger is FileLogger abstractLogger)
                         {
                             abstractLogger.IsLogErrors = true;
                         }
@@ -187,8 +159,7 @@ namespace PT.PM.Cli
                 }
                 finally
                 {
-                    var disposableLogger = logger as IDisposable;
-                    if (disposableLogger != null)
+                    if (logger is IDisposable disposableLogger)
                     {
                         disposableLogger.Dispose();
                     }

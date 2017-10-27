@@ -43,6 +43,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             "^=",
             "<<=",
             ">>=",
+            ">>>="
         };
 
         public override string TextValue => BinaryOperator.ToString();

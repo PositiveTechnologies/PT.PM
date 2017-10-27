@@ -631,11 +631,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="ExpressionStatement"/></returns>
         public Ust VisitDrop_statistics([NotNull] TSqlParser.Drop_statisticsContext context)
         {
-            var funcName = new IdToken((context.DROP().GetText() + " " + context.STATISTICS().GetText()).ToLowerInvariant(),
-                context.DROP().GetTextSpan().Union(context.STATISTICS().GetTextSpan()));
-            var id = (IdToken)Visit(context.id());
-            var invocation = new InvocationExpression(funcName, new ArgsUst(id), context.GetTextSpan());
-            return new ExpressionStatement(invocation);
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="ExpressionStatement"/></returns>
@@ -1472,40 +1468,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Expression"/></returns>
         public Ust VisitQuery_expression([NotNull] TSqlParser.Query_expressionContext context)
         {
-            Expression result;
-
-            if (context.query_specification() != null)
-            {
-                result = (Expression)Visit(context.query_specification());
-            }
-            else
-            {
-                result = (Expression)Visit(context.query_expression());
-            }
-
-            if (context.union().Length > 0)
-            {
-                result = new MultichildExpression(new List<Expression>(
-                    context.union().Select(union => (InvocationExpression)Visit(union))));
-            }
-            return result;
-        }
-
-        /// <returns><see cref="InvocationExpression"/></returns>
-        public Ust VisitUnion([NotNull] TSqlParser.UnionContext context)
-        {
-            var exprs = new List<Expression>();
-            if (context.query_specification() != null)
-            {
-                exprs.Add((MultichildExpression)Visit(context.query_specification()));
-            }
-            else
-            {
-                exprs.Add((Expression)Visit(context.query_expression()));
-            }
-
-            InvocationExpression result = CreateSpecialInvocation(context.GetChild<ITerminalNode>(0), context, exprs);
-            return result;
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="MultichildExpression"/></returns>
@@ -2440,11 +2403,6 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitDml_trigger([NotNull] TSqlParser.Dml_triggerContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitDml_trigger_option([NotNull] TSqlParser.Dml_trigger_optionContext context)
         {
             return VisitChildren(context);
@@ -2455,22 +2413,12 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitDdl_trigger([NotNull] TSqlParser.Ddl_triggerContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitDdl_trigger_operation([NotNull] TSqlParser.Ddl_trigger_operationContext context)
         {
             return VisitChildren(context);
         }
 
         public Ust VisitTable_options([NotNull] TSqlParser.Table_optionsContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitTable_option([NotNull] TSqlParser.Table_optionContext context)
         {
             return VisitChildren(context);
         }
@@ -2751,11 +2699,6 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitRANKING_WINDOWED_FUNCTION([NotNull] TSqlParser.RANKING_WINDOWED_FUNCTIONContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitCURRENT_USER([NotNull] TSqlParser.CURRENT_USERContext context)
         {
             return VisitChildren(context);
@@ -2823,11 +2766,6 @@ namespace PT.PM.SqlParseTreeUst
             return new InvocationExpression(target, args, context.GetTextSpan());
         }
 
-        public Ust VisitXML_DATA_TYPE_METHODS([NotNull] TSqlParser.XML_DATA_TYPE_METHODSContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitDATEPART([NotNull] TSqlParser.DATEPARTContext context)
         {
             return VisitChildren(context);
@@ -2838,17 +2776,7 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitANALYTIC_WINDOWED_FUNCTION([NotNull] TSqlParser.ANALYTIC_WINDOWED_FUNCTIONContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitIDENTITY([NotNull] TSqlParser.IDENTITYContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitAGGREGATE_WINDOWED_FUNCTION([NotNull] TSqlParser.AGGREGATE_WINDOWED_FUNCTIONContext context)
         {
             return VisitChildren(context);
         }
@@ -2885,11 +2813,6 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitAlter_application_role_with_clause([NotNull] TSqlParser.Alter_application_role_with_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitAlter_assembly([NotNull] TSqlParser.Alter_assemblyContext context)
         {
             return VisitChildren(context);
@@ -2915,32 +2838,12 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitAlter_assembly_add_files([NotNull] TSqlParser.Alter_assembly_add_filesContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitClient_file_clause([NotNull] TSqlParser.Client_file_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitFile_bits([NotNull] TSqlParser.File_bitsContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitAlter_assembly_with_clause([NotNull] TSqlParser.Alter_assembly_with_clauseContext context)
         {
             return VisitChildren(context);
         }
 
         public Ust VisitClient_assembly_specifier([NotNull] TSqlParser.Client_assembly_specifierContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitAssembly_bits([NotNull] TSqlParser.Assembly_bitsContext context)
         {
             return VisitChildren(context);
         }
@@ -2971,11 +2874,6 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitAlter_asymmetric_key([NotNull] TSqlParser.Alter_asymmetric_keyContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitAlter_asymmetric_key_option([NotNull] TSqlParser.Alter_asymmetric_key_optionContext context)
         {
             return VisitChildren(context);
         }
@@ -3026,101 +2924,6 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitClass_type_for_parallel_dw([NotNull] TSqlParser.Class_type_for_parallel_dwContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitCreate_endpoint([NotNull] TSqlParser.Create_endpointContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_authorization([NotNull] TSqlParser.Endpoint_authorizationContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_state([NotNull] TSqlParser.Endpoint_stateContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_as_clause([NotNull] TSqlParser.Endpoint_as_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_tcp_protocol_specific_arguments([NotNull] TSqlParser.Endpoint_tcp_protocol_specific_argumentsContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_listener_ip([NotNull] TSqlParser.Endpoint_listener_ipContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitIpv4_address([NotNull] TSqlParser.Ipv4_addressContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitIpv6_address([NotNull] TSqlParser.Ipv6_addressContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_for_clause([NotNull] TSqlParser.Endpoint_for_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_database_mirroring_clause([NotNull] TSqlParser.Endpoint_database_mirroring_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_role_clause([NotNull] TSqlParser.Endpoint_role_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_server_broker_clause([NotNull] TSqlParser.Endpoint_server_broker_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_authentication_clause([NotNull] TSqlParser.Endpoint_authentication_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_authentication_clause_methods([NotNull] TSqlParser.Endpoint_authentication_clause_methodsContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitWindows_auth_methods([NotNull] TSqlParser.Windows_auth_methodsContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_encryption_clause([NotNull] TSqlParser.Endpoint_encryption_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_encryption_algorithm([NotNull] TSqlParser.Endpoint_encryption_algorithmContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_message_forwarding_clause([NotNull] TSqlParser.Endpoint_message_forwarding_clauseContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEndpoint_message_forward_size([NotNull] TSqlParser.Endpoint_message_forward_sizeContext context)
         {
             return VisitChildren(context);
         }
@@ -3181,6 +2984,881 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitEntity_name_for_parallel_dw([NotNull] TSqlParser.Entity_name_for_parallel_dwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitXML_DATA_TYPE_FUNC([NotNull] TSqlParser.XML_DATA_TYPE_FUNCContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAGGREGATE_WINDOWED_FUNC([NotNull] TSqlParser.AGGREGATE_WINDOWED_FUNCContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRANKING_WINDOWED_FUNC([NotNull] TSqlParser.RANKING_WINDOWED_FUNCContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitANALYTIC_WINDOWED_FUNC([NotNull] TSqlParser.ANALYTIC_WINDOWED_FUNCContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBackup_statement([NotNull] TSqlParser.Backup_statementContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_application_role([NotNull] TSqlParser.Create_application_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_aggregate([NotNull] TSqlParser.Drop_aggregateContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_application_role([NotNull] TSqlParser.Drop_application_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_start([NotNull] TSqlParser.Alter_assembly_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_from_clause_start([NotNull] TSqlParser.Alter_assembly_from_clause_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_drop_multiple_files([NotNull] TSqlParser.Alter_assembly_drop_multiple_filesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_drop([NotNull] TSqlParser.Alter_assembly_dropContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_asssembly_add_clause_start([NotNull] TSqlParser.Alter_asssembly_add_clause_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_client_file_clause([NotNull] TSqlParser.Alter_assembly_client_file_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_file_name([NotNull] TSqlParser.Alter_assembly_file_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_file_bits([NotNull] TSqlParser.Alter_assembly_file_bitsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_as([NotNull] TSqlParser.Alter_assembly_asContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_assembly_with([NotNull] TSqlParser.Alter_assembly_withContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNetwork_computer([NotNull] TSqlParser.Network_computerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNetwork_file_start([NotNull] TSqlParser.Network_file_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitFile_directory_path_separator([NotNull] TSqlParser.File_directory_path_separatorContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLocal_drive([NotNull] TSqlParser.Local_driveContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMultiple_local_file_start([NotNull] TSqlParser.Multiple_local_file_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_assembly([NotNull] TSqlParser.Create_assemblyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_assembly([NotNull] TSqlParser.Drop_assemblyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_asymmetric_key_start([NotNull] TSqlParser.Alter_asymmetric_key_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAsymmetric_key_option_start([NotNull] TSqlParser.Asymmetric_key_option_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_asymmetric_key([NotNull] TSqlParser.Create_asymmetric_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_asymmetric_key([NotNull] TSqlParser.Drop_asymmetric_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAuthorization_grantee([NotNull] TSqlParser.Authorization_granteeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEntity_to([NotNull] TSqlParser.Entity_toContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitColon_colon([NotNull] TSqlParser.Colon_colonContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_authorization_start([NotNull] TSqlParser.Alter_authorization_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_availability_group([NotNull] TSqlParser.Drop_availability_groupContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_availability_group([NotNull] TSqlParser.Alter_availability_groupContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_availability_group_start([NotNull] TSqlParser.Alter_availability_group_startContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_availability_group_options([NotNull] TSqlParser.Alter_availability_group_optionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_or_alter_broker_priority([NotNull] TSqlParser.Create_or_alter_broker_priorityContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_broker_priority([NotNull] TSqlParser.Drop_broker_priorityContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_certificate([NotNull] TSqlParser.Alter_certificateContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_column_encryption_key([NotNull] TSqlParser.Alter_column_encryption_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_column_encryption_key([NotNull] TSqlParser.Create_column_encryption_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_certificate([NotNull] TSqlParser.Drop_certificateContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_column_encryption_key([NotNull] TSqlParser.Drop_column_encryption_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_column_master_key([NotNull] TSqlParser.Drop_column_master_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_contract([NotNull] TSqlParser.Drop_contractContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_credential([NotNull] TSqlParser.Drop_credentialContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_cryptograhic_provider([NotNull] TSqlParser.Drop_cryptograhic_providerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_database([NotNull] TSqlParser.Drop_databaseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_database_audit_specification([NotNull] TSqlParser.Drop_database_audit_specificationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_database_scoped_credential([NotNull] TSqlParser.Drop_database_scoped_credentialContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_default([NotNull] TSqlParser.Drop_defaultContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_endpoint([NotNull] TSqlParser.Drop_endpointContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_external_data_source([NotNull] TSqlParser.Drop_external_data_sourceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_external_file_format([NotNull] TSqlParser.Drop_external_file_formatContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_external_library([NotNull] TSqlParser.Drop_external_libraryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_external_resource_pool([NotNull] TSqlParser.Drop_external_resource_poolContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_external_table([NotNull] TSqlParser.Drop_external_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_event_notifications([NotNull] TSqlParser.Drop_event_notificationsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_event_session([NotNull] TSqlParser.Drop_event_sessionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_fulltext_catalog([NotNull] TSqlParser.Drop_fulltext_catalogContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_fulltext_index([NotNull] TSqlParser.Drop_fulltext_indexContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_fulltext_stoplist([NotNull] TSqlParser.Drop_fulltext_stoplistContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_login([NotNull] TSqlParser.Drop_loginContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_master_key([NotNull] TSqlParser.Drop_master_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_message_type([NotNull] TSqlParser.Drop_message_typeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_partition_function([NotNull] TSqlParser.Drop_partition_functionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_partition_scheme([NotNull] TSqlParser.Drop_partition_schemeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_queue([NotNull] TSqlParser.Drop_queueContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_remote_service_binding([NotNull] TSqlParser.Drop_remote_service_bindingContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_resource_pool([NotNull] TSqlParser.Drop_resource_poolContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_db_role([NotNull] TSqlParser.Drop_db_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_route([NotNull] TSqlParser.Drop_routeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_rule([NotNull] TSqlParser.Drop_ruleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_schema([NotNull] TSqlParser.Drop_schemaContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_search_property_list([NotNull] TSqlParser.Drop_search_property_listContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_security_policy([NotNull] TSqlParser.Drop_security_policyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_sequence([NotNull] TSqlParser.Drop_sequenceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_server_audit([NotNull] TSqlParser.Drop_server_auditContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_server_audit_specification([NotNull] TSqlParser.Drop_server_audit_specificationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_server_role([NotNull] TSqlParser.Drop_server_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_service([NotNull] TSqlParser.Drop_serviceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_signature([NotNull] TSqlParser.Drop_signatureContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_statistics_name_azure_dw_and_pdw([NotNull] TSqlParser.Drop_statistics_name_azure_dw_and_pdwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_symmetric_key([NotNull] TSqlParser.Drop_symmetric_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_synonym([NotNull] TSqlParser.Drop_synonymContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_user([NotNull] TSqlParser.Drop_userContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_workload_group([NotNull] TSqlParser.Drop_workload_groupContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_xml_schema_collection([NotNull] TSqlParser.Drop_xml_schema_collectionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDisable_trigger([NotNull] TSqlParser.Disable_triggerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEnable_trigger([NotNull] TSqlParser.Enable_triggerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTruncate_table([NotNull] TSqlParser.Truncate_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_column_master_key([NotNull] TSqlParser.Create_column_master_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_credential([NotNull] TSqlParser.Alter_credentialContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_credential([NotNull] TSqlParser.Create_credentialContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_cryptographic_provider([NotNull] TSqlParser.Alter_cryptographic_providerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_cryptographic_provider([NotNull] TSqlParser.Create_cryptographic_providerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_event_notification([NotNull] TSqlParser.Create_event_notificationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_or_alter_event_session([NotNull] TSqlParser.Create_or_alter_event_sessionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEvent_session_predicate_expression([NotNull] TSqlParser.Event_session_predicate_expressionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEvent_session_predicate_factor([NotNull] TSqlParser.Event_session_predicate_factorContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEvent_session_predicate_leaf([NotNull] TSqlParser.Event_session_predicate_leafContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_external_data_source([NotNull] TSqlParser.Alter_external_data_sourceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_external_library([NotNull] TSqlParser.Alter_external_libraryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_external_library([NotNull] TSqlParser.Create_external_libraryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_external_resource_pool([NotNull] TSqlParser.Alter_external_resource_poolContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_external_resource_pool([NotNull] TSqlParser.Create_external_resource_poolContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_fulltext_catalog([NotNull] TSqlParser.Alter_fulltext_catalogContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_fulltext_catalog([NotNull] TSqlParser.Create_fulltext_catalogContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_fulltext_stoplist([NotNull] TSqlParser.Alter_fulltext_stoplistContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_fulltext_stoplist([NotNull] TSqlParser.Create_fulltext_stoplistContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_login_sql_server([NotNull] TSqlParser.Alter_login_sql_serverContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_login_sql_server([NotNull] TSqlParser.Create_login_sql_serverContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_login_azure_sql([NotNull] TSqlParser.Alter_login_azure_sqlContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_login_azure_sql([NotNull] TSqlParser.Create_login_azure_sqlContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_login_azure_sql_dw_and_pdw([NotNull] TSqlParser.Alter_login_azure_sql_dw_and_pdwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_login_pdw([NotNull] TSqlParser.Create_login_pdwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_master_key_sql_server([NotNull] TSqlParser.Alter_master_key_sql_serverContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_master_key_sql_server([NotNull] TSqlParser.Create_master_key_sql_serverContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_master_key_azure_sql([NotNull] TSqlParser.Alter_master_key_azure_sqlContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_master_key_azure_sql([NotNull] TSqlParser.Create_master_key_azure_sqlContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_message_type([NotNull] TSqlParser.Alter_message_typeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_partition_function([NotNull] TSqlParser.Alter_partition_functionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_partition_scheme([NotNull] TSqlParser.Alter_partition_schemeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_remote_service_binding([NotNull] TSqlParser.Alter_remote_service_bindingContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_remote_service_binding([NotNull] TSqlParser.Create_remote_service_bindingContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_resource_pool([NotNull] TSqlParser.Create_resource_poolContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_resource_governor([NotNull] TSqlParser.Alter_resource_governorContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_db_role([NotNull] TSqlParser.Alter_db_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_db_role([NotNull] TSqlParser.Create_db_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_route([NotNull] TSqlParser.Create_routeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_rule([NotNull] TSqlParser.Create_ruleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_schema_sql([NotNull] TSqlParser.Alter_schema_sqlContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_schema([NotNull] TSqlParser.Create_schemaContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_schema_azure_sql_dw_and_pdw([NotNull] TSqlParser.Create_schema_azure_sql_dw_and_pdwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_schema_azure_sql_dw_and_pdw([NotNull] TSqlParser.Alter_schema_azure_sql_dw_and_pdwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_search_property_list([NotNull] TSqlParser.Create_search_property_listContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_security_policy([NotNull] TSqlParser.Create_security_policyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_sequence([NotNull] TSqlParser.Alter_sequenceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_sequence([NotNull] TSqlParser.Create_sequenceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_server_audit([NotNull] TSqlParser.Alter_server_auditContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_server_audit([NotNull] TSqlParser.Create_server_auditContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_server_audit_specification([NotNull] TSqlParser.Alter_server_audit_specificationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_server_audit_specification([NotNull] TSqlParser.Create_server_audit_specificationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_server_configuration([NotNull] TSqlParser.Alter_server_configurationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_server_role([NotNull] TSqlParser.Alter_server_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_server_role([NotNull] TSqlParser.Create_server_roleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_server_role_pdw([NotNull] TSqlParser.Alter_server_role_pdwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_service([NotNull] TSqlParser.Alter_serviceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_service([NotNull] TSqlParser.Create_serviceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_service_master_key([NotNull] TSqlParser.Alter_service_master_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_symmetric_key([NotNull] TSqlParser.Alter_symmetric_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_symmetric_key([NotNull] TSqlParser.Create_symmetric_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_synonym([NotNull] TSqlParser.Create_synonymContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_user([NotNull] TSqlParser.Alter_userContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_user([NotNull] TSqlParser.Create_userContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_user_azure_sql_dw([NotNull] TSqlParser.Create_user_azure_sql_dwContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_user_azure_sql([NotNull] TSqlParser.Alter_user_azure_sqlContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_workload_group([NotNull] TSqlParser.Alter_workload_groupContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_workload_group([NotNull] TSqlParser.Create_workload_groupContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_xml_schema_collection([NotNull] TSqlParser.Create_xml_schema_collectionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_or_alter_dml_trigger([NotNull] TSqlParser.Create_or_alter_dml_triggerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_or_alter_ddl_trigger([NotNull] TSqlParser.Create_or_alter_ddl_triggerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_endpoint([NotNull] TSqlParser.Alter_endpointContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMirroring_partner([NotNull] TSqlParser.Mirroring_partnerContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMirroring_witness([NotNull] TSqlParser.Mirroring_witnessContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitWitness_partner_equal([NotNull] TSqlParser.Witness_partner_equalContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMirroring_host_port_seperator([NotNull] TSqlParser.Mirroring_host_port_seperatorContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPartner_server_tcp_prefix([NotNull] TSqlParser.Partner_server_tcp_prefixContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBackup_database([NotNull] TSqlParser.Backup_databaseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBackup_log([NotNull] TSqlParser.Backup_logContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBackup_certificate([NotNull] TSqlParser.Backup_certificateContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBackup_master_key([NotNull] TSqlParser.Backup_master_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBackup_service_master_key([NotNull] TSqlParser.Backup_service_master_keyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSql_union([NotNull] TSqlParser.Sql_unionContext context)
         {
             return VisitChildren(context);
         }

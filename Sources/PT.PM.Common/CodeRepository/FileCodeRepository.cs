@@ -2,40 +2,41 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
 {
-    public class FileCodeRepository : ISourceCodeRepository
+    public class FileCodeRepository : SourceCodeRepository
     {
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
+        protected string fullName;
 
-        public string Path { get; set; }
-
-        public IEnumerable<string> Extensions { get; set; } = Enumerable.Empty<string>();
-
-        public FileCodeRepository(string filePath)
+        public FileCodeRepository(string fileName, Language language = null)
         {
-            Path = filePath;
+            RootPath = !string.IsNullOrEmpty(fileName)
+                ? Path.GetDirectoryName(fileName)
+                : "";
+            fullName = fileName;
+            if (language != null)
+            {
+                Languages = new HashSet<Language>() { language };
+            }
         }
 
-        public IEnumerable<string> GetFileNames()
+        public override IEnumerable<string> GetFileNames()
         {
-            return new string[] { Path };
+            return new string[] { fullName };
         }
 
-        public SourceCodeFile ReadFile()
+        public override SourceCodeFile ReadFile(string fileName)
         {
-            return ReadFile(Path);
-        }
-
-        public SourceCodeFile ReadFile(string fileName)
-        {
-            var result = new SourceCodeFile(fileName);
+            var result = new SourceCodeFile
+            {
+                RootPath = RootPath,
+                RelativePath = "",
+                Name = Path.GetFileName(fileName)
+            };
             try
             {
-                result.RelativePath = "";
-                result.Code = File.ReadAllText(fileName);
+                result.Code = ReadCode(fileName);
             }
             catch (Exception ex)
             {
@@ -44,17 +45,16 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public string GetFullPath(string relativePath)
+        public override bool IsFileIgnored(string fileName)
         {
-            return System.IO.Path.GetFullPath(relativePath);
-        }
-
-        public bool IsFileIgnored(string fileName)
-        {
-            if (!Extensions.Any())
+            if (Languages.Count == 1)
+            {
                 return false;
+            }
 
-            return !Extensions.Any(fileName.EndsWith);
+            return base.IsFileIgnored(fileName);
         }
+
+        protected virtual string ReadCode(string fileName) => File.ReadAllText(fileName);
     }
 }

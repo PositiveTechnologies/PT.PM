@@ -33,11 +33,12 @@ namespace PT.PM
 
         public override Ust Visit(RootUst rootUst)
         {
-            var newRoot = new RootUst(rootUst.SourceCodeFile, rootUst.Language);
-
-            newRoot.SourceCodeFile = rootUst.SourceCodeFile;
-            newRoot.Nodes = rootUst.Nodes.Select(node => Visit(node)).ToArray();
-            newRoot.Comments = rootUst.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray();
+            var newRoot = new RootUst(rootUst.SourceCodeFile, rootUst.Language)
+            {
+                SourceCodeFile = rootUst.SourceCodeFile,
+                Nodes = rootUst.Nodes.Select(node => Visit(node)).ToArray(),
+                Comments = rootUst.Comments.Select(comment => (CommentLiteral)Visit(comment)).ToArray()
+            };
 
             newRoot.FillAscendants();
             return newRoot;
@@ -190,7 +191,7 @@ namespace PT.PM
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(ust.Root?.SourceCodeFile?.FullPath ?? "", ex)
+                Logger.LogError(new ConversionException(ust.Root?.SourceCodeFile?.FullName ?? "", ex)
                 {
                     TextSpan = ust.TextSpan
                 });

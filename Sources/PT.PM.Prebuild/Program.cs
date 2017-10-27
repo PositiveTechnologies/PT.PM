@@ -57,7 +57,7 @@ namespace PT.PM.Prebuild
                 if (string.IsNullOrEmpty(solutionDir))
                 {
                     string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    AntlrFullJarFileName = Path.Combine(currentPath, @"..\..\Sources", AntlrJarFileName);
+                    AntlrFullJarFileName = Path.Combine(currentPath, "..", "..", "Sources", AntlrJarFileName);
                 }
                 else
                 {

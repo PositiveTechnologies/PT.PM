@@ -20,7 +20,7 @@ namespace PT.PM.Matching.Tests
     public class PatternMatchingTests
     {
         private PatternConverter patternsConverter;
-        private MemoryPatternsRepository patternsRep;
+        private MemoryPatternsRepository patternsRepository;
         private MemoryCodeRepository sourceCodeRep;
         private Workflow workflow;
 
@@ -28,7 +28,7 @@ namespace PT.PM.Matching.Tests
         public void Init()
         {
             patternsConverter = new PatternConverter();
-            patternsRep = new MemoryPatternsRepository();
+            patternsRepository = new MemoryPatternsRepository();
             sourceCodeRep = new MemoryCodeRepository(
                 "<?php \n" +
                 "test_call_0();\n" +
@@ -42,9 +42,11 @@ namespace PT.PM.Matching.Tests
                 "\n" +
                 "$password2 = \"1234\";\n" +
                 "if ($password2->Length > 0) { }\n" +
-                "test_call_5(1, $password2, 2);"
+                "test_call_5(1, $password2, 2);",
+
+                "samples.php"
             );
-            workflow = new Workflow(sourceCodeRep, Php.Language, patternsRep)
+            workflow = new Workflow(sourceCodeRep, patternsRepository)
             {
                 Logger = new LoggerMessageCounter()
             };
@@ -62,10 +64,10 @@ namespace PT.PM.Matching.Tests
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
-            patternsRep.Clear();
+            patternsRepository.Clear();
 
             Assert.AreEqual(matchMethodNumbers.Contains(0) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_0")));
             Assert.AreEqual(matchMethodNumbers.Contains(1) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_1")));
@@ -81,10 +83,10 @@ namespace PT.PM.Matching.Tests
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
-            patternsRep.Clear();
+            patternsRepository.Clear();
 
             int expectedMatchingCount = patternData.Contains("password") ? 1 : 0;
             Assert.AreEqual(expectedMatchingCount, matchingResults.Count());
@@ -96,10 +98,10 @@ namespace PT.PM.Matching.Tests
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(patternData);
             patternNode.DebugInfo = patternData;
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
-            patternsRep.Clear();
+            patternsRepository.Clear();
 
             int expectedMatchingCount = patternData.Contains("~<[@pwd]>.Length") ? 0 : 1;
             Assert.AreEqual(expectedMatchingCount, matchingResults.Count());

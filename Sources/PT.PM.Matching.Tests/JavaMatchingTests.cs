@@ -1,41 +1,29 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
 using PT.PM.Common.CodeRepository;
 using PT.PM.TestUtils;
-using PT.PM.Patterns.PatternsRepository;
-using NUnit.Framework;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PT.PM.Matching.PatternsRepository;
-using System.Collections.Generic;
-using PT.PM.JavaParseTreeUst;
 
 namespace PT.PM.Matching.Tests
 {
     [TestFixture]
     public class JavaMatchingTests
     {
-        private IPatternsRepository patternsRepository;
-
-        [SetUp]
-        public void Init()
-        {
-            patternsRepository = new DefaultPatternRepository();
-        }
-
         [Test]
         public void Match_TestPatternsJava_MatchedAllDefault()
         {
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.java");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, patternsRepository);
+            var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
-            var patternDtos = patternsRepository.GetAll()
+            IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains("Java")).ToArray();
-            foreach (var dto in patternDtos)
+            foreach (PatternDto dto in patternDtos)
             {
                 Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }

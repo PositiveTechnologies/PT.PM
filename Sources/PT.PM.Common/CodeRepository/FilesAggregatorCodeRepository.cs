@@ -6,67 +6,99 @@ using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
 {
-    public class FilesAggregatorCodeRepository : ISourceCodeRepository
+    public class FilesAggregatorCodeRepository : SourceCodeRepository
     {
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
+        public string SearchPattern { get; set; } = "*.*";
 
-        public string Path { get; set; }
-
-        public IEnumerable<string> Extensions { get; set; } =
-            LanguageUtils.Languages.SelectMany(language => language.Value.Extensions);
+        public Func<string, bool> SearchPredicate { get; set; } = null;
 
         public SearchOption SearchOption { get; set; } = SearchOption.AllDirectories;
 
-        public FilesAggregatorCodeRepository(string directoryPath, string extension)
-            : this(directoryPath, new[] { extension })
+        public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
+
+        public FilesAggregatorCodeRepository(string directoryPath, params Language[] languages)
+            : this(directoryPath, (IEnumerable<Language>)languages)
         {
         }
 
-        public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<string> extensions)
+        public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<Language> languages)
+            : base()
         {
-            Path = directoryPath;
-            Extensions = extensions;
+            RootPath = directoryPath;
+            if (RootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                RootPath = RootPath.Remove(RootPath.Length - 1);
+            }
+            if (languages?.Count() > 0)
+            {
+                Languages = new HashSet<Language>(languages);
+            }
         }
 
-        public IEnumerable<string> GetFileNames()
+        public override IEnumerable<string> GetFileNames()
         {
-            return Directory.EnumerateFiles(Path, "*.*", SearchOption);
+            if (RootPath == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            var result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+            if (SearchPredicate != null)
+            {
+                result = result.Where(SearchPredicate);
+            }
+            return result;
         }
 
-        public SourceCodeFile ReadFile(string fileName)
+        public override SourceCodeFile ReadFile(string fileName)
         {
-            SourceCodeFile result = null;
+            string name = Path.GetFileName(fileName);
+            string relativePath;
+            int removeIndex = fileName.Length - name.Length;
+            if (removeIndex != 0)
+            {
+                removeIndex -= 1; // remove directory seprator char
+                relativePath = fileName.Remove(removeIndex);
+            }
+            else
+            {
+                relativePath = fileName;
+            }
+
+            int substringIndex = RootPath.Length;
+            if (substringIndex + 1 < relativePath.Length && relativePath[substringIndex] == Path.DirectorySeparatorChar)
+            {
+                substringIndex += 1;
+            }
+            relativePath = relativePath.Substring(substringIndex);
+
+            var result = new SourceCodeFile
+            {
+                RootPath = RootPath,
+                RelativePath = relativePath,
+                Name = name
+            };
             try
             {
-                var removeBeginLength = Path.Length + (Path.EndsWith("\\") ? 0 : 1);
-                var shortFileName = System.IO.Path.GetFileName(fileName);
-                result = new SourceCodeFile(shortFileName);
-            
-                int removeEndLength = shortFileName.Length + 1;
-                result.RelativePath = removeEndLength + removeBeginLength > fileName.Length
-                        ? "" : fileName.Remove(fileName.Length - removeEndLength).Remove(0, removeBeginLength);
                 result.Code = File.ReadAllText(fileName);
                 return result;
             }
             catch (Exception ex)
             {
                 Logger.LogError(new ReadException(fileName, ex));
-                if (result == null)
-                {
-                    result = new SourceCodeFile(fileName);
-                }
             }
             return result;
         }
 
-        public string GetFullPath(string relativePath)
+        public override bool IsFileIgnored(string fileName)
         {
-            return System.IO.Path.Combine(System.IO.Path.GetFullPath(Path), relativePath);
-        }
+            bool result = IgnoredFiles.Any(fileName.EndsWith);
+            if (result)
+            {
+                return true;
+            }
 
-        public bool IsFileIgnored(string fileName)
-        {
-            return !Extensions.Any(fileName.EndsWith);
+            return base.IsFileIgnored(fileName);
         }
     }
 }

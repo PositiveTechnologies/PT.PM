@@ -1,9 +1,12 @@
-﻿using PT.PM.Matching;
+﻿using PT.PM.Common;
+using PT.PM.Matching;
 
 namespace PT.PM.PatternEditor
 {
     public class MathingResultDtoWrapper
     {
+        private TextTruncater textTruncater = new TextTruncater() { MaxMessageLength = 32 };
+
         public MatchingResultDto MatchingResult { get; set; }
 
         public MathingResultDtoWrapper(MatchingResultDto matchingResult)
@@ -13,7 +16,7 @@ namespace PT.PM.PatternEditor
 
         public override string ToString()
         {
-            string codeFragment = MatchingResult.MatchedCode.Length > 32 ? MatchingResult.MatchedCode.Substring(0, 32) + "..." : MatchingResult.MatchedCode;
+            var codeFragment = textTruncater.Trunc(MatchingResult.MatchedCode);
             return $"\"{codeFragment}\" matched at ({MatchingResult.BeginLine};{MatchingResult.BeginColumn})-({MatchingResult.EndLine};{MatchingResult.EndColumn})";
         }
     }

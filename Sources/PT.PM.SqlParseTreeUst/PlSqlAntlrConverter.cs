@@ -27,14 +27,12 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        public Ust VisitCompilation_unit([NotNull] PlSqlParser.Compilation_unitContext context)
+        public Ust VisitSql_script([NotNull] PlSqlParser.Sql_scriptContext context)
         {
             var statements = context.unit_statement().Select(statement => (Statement)Visit(statement)).ToArray();
             root.Nodes = statements;
             return root;
         }
-
-        public Ust VisitSql_script([NotNull] PlSqlParser.Sql_scriptContext context) { return VisitChildren(context); }
 
         /// <returns><see cref="Statement"/></returns>
         public Ust VisitUnit_statement([NotNull] PlSqlParser.Unit_statementContext context)
@@ -744,69 +742,39 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitCursor_expression([NotNull] PlSqlParser.Cursor_expressionContext context) { return VisitChildren(context); }
 
-        public Ust VisitExpression_list([NotNull] PlSqlParser.Expression_listContext context) { return VisitChildren(context); }
-
         public Ust VisitCondition([NotNull] PlSqlParser.ConditionContext context) { return VisitChildren(context); }
 
         public Ust VisitExpression([NotNull] PlSqlParser.ExpressionContext context) { return VisitChildren(context); }
 
         /// <returns><see cref="Expression"/></returns>
-        public Ust VisitLogical_or_expression([NotNull] PlSqlParser.Logical_or_expressionContext context)
+        public Ust VisitLogical_expression([NotNull] PlSqlParser.Logical_expressionContext context)
         {
             Expression result;
-            if (context.OR() != null)
+            if (context.multiset_expression() != null)
             {
-                var left = (Expression)Visit(context.logical_or_expression());
-                var right = (Expression)Visit(context.logical_and_expression());
-                var opLiteral = new BinaryOperatorLiteral(BinaryOperator.LogicalOr, context.GetTextSpan());
+                return VisitChildren(context);
+            }
+            if (context.NOT().Length == 2)
+            {
+                var opLiteral = new UnaryOperatorLiteral(UnaryOperator.Not, context.NOT(0).GetTextSpan());
+                result = new UnaryOperatorExpression(opLiteral,
+                    (Expression)Visit(context.logical_expression(0)), context.GetTextSpan());
+            }
+            else
+            {
+                // AND, OR
+                var left = (Expression)Visit(context.logical_expression(0));
+                var right = (Expression)Visit(context.logical_expression(1));
+                BinaryOperator op = context.AND() != null
+                    ? BinaryOperator.LogicalAnd
+                    : BinaryOperator.LogicalOr;
+                var opLiteral = new BinaryOperatorLiteral(op, context.GetTextSpan());
                 result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan());
             }
-            else
-            {
-                result = (Expression)Visit(context.logical_and_expression());
-            }
             return result;
         }
-
-        /// <returns><see cref="Expression"/></returns>
-        public Ust VisitLogical_and_expression([NotNull] PlSqlParser.Logical_and_expressionContext context)
-        {
-            Expression result;
-            if (context.AND() != null)
-            {
-                var left = (Expression)Visit(context.negated_expression());
-                var right = (Expression)Visit(context.logical_and_expression());
-                var opLiteral = new BinaryOperatorLiteral(BinaryOperator.LogicalAnd, context.GetTextSpan());
-                result = new BinaryOperatorExpression(left, opLiteral, right, context.GetTextSpan());
-            }
-            else
-            {
-                result = (Expression)Visit(context.negated_expression());
-            }
-            return result;
-        }
-
-        /// <returns><see cref="Expression"/></returns>
-        public Ust VisitNegated_expression([NotNull] PlSqlParser.Negated_expressionContext context)
-        {
-            Expression result;
-            if (context.NOT() != null)
-            {
-                var opLiteral = new UnaryOperatorLiteral(UnaryOperator.Not, context.NOT().GetTextSpan());
-                result = new UnaryOperatorExpression(opLiteral, (Expression)Visit(context.negated_expression()), context.GetTextSpan());
-            }
-            else
-            {
-                result = (Expression)Visit(context.equality_expression());
-            }
-            return result;
-        }
-
-        public Ust VisitEquality_expression([NotNull] PlSqlParser.Equality_expressionContext context) { return VisitChildren(context); }
 
         public Ust VisitMultiset_expression([NotNull] PlSqlParser.Multiset_expressionContext context) { return VisitChildren(context); }
-
-        public Ust VisitMultiset_type([NotNull] PlSqlParser.Multiset_typeContext context) { return VisitChildren(context); }
 
         /// <returns><see cref="Expression"/></returns>
         public Ust VisitRelational_expression([NotNull] PlSqlParser.Relational_expressionContext context)
@@ -831,90 +799,65 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="BinaryOperatorLiteral"/></returns>
         public Ust VisitRelational_operator([NotNull] PlSqlParser.Relational_operatorContext context)
         {
-            BinaryOperatorLiteral result;
-            if (context.not_equal_op() != null)
+            BinaryOperator op;
+            string opText = context.GetText();
+            if (opText == "=")
             {
-                result = (BinaryOperatorLiteral)Visit(context.not_equal_op());
+                op = BinaryOperator.Equal;
             }
-            else if (context.less_than_or_equals_op() != null)
+            else if (opText == ">")
             {
-                result = (BinaryOperatorLiteral)Visit(context.less_than_or_equals_op());
+                op = BinaryOperator.Greater;
             }
-            else if (context.greater_than_or_equals_op() != null)
+            else if (opText == "<")
             {
-                result = (BinaryOperatorLiteral)Visit(context.greater_than_or_equals_op());
+                op = BinaryOperator.Less;
+            }
+            else if (opText == ">=")
+            {
+                op = BinaryOperator.GreaterOrEqual;
+            }
+            else if (opText == "<=")
+            {
+                op = BinaryOperator.LessOrEqual;
             }
             else
             {
-                string opText = context.GetText();
-                if (opText == "=")
-                {
-                    opText = "==";
-                }
-                var literal = BinaryOperatorLiteral.TextBinaryOperator[opText];
-                result = new BinaryOperatorLiteral(literal, context.GetTextSpan());
+                op = BinaryOperator.NotEqual;
             }
+
+            var result = new BinaryOperatorLiteral(op, context.GetTextSpan());
             return result;
         }
-
-        public Ust VisitLike_type([NotNull] PlSqlParser.Like_typeContext context) { return VisitChildren(context); }
-
-        public Ust VisitLike_escape_part([NotNull] PlSqlParser.Like_escape_partContext context) { return VisitChildren(context); }
 
         public Ust VisitIn_elements([NotNull] PlSqlParser.In_elementsContext context) { return VisitChildren(context); }
 
         public Ust VisitBetween_elements([NotNull] PlSqlParser.Between_elementsContext context) { return VisitChildren(context); }
 
+        /// <returns><see cref="Expression"/></returns>
         public Ust VisitConcatenation([NotNull] PlSqlParser.ConcatenationContext context)
         {
-            var result = (Expression)Visit(context.additive_expression(0));
-            if (context.additive_expression().Length > 1)
+            Expression result;
+            if (context.model_expression() != null)
             {
-                for (int i = 1; i < context.additive_expression().Length; i++)
+                result = (Expression)VisitChildren(context);
+            }
+            else
+            {
+                BinaryOperator op = BinaryOperator.Plus;
+                if (context.BAR() == null)
                 {
-                    var right = (Expression)Visit(context.additive_expression(i));
-                    result = new BinaryOperatorExpression(result, (BinaryOperatorLiteral)Visit(context.concatenation_op(i - 1)), right,
-                        result.TextSpan.Union(right.TextSpan));
+                    BinaryOperatorLiteral.TextBinaryOperator.TryGetValue(context.op.Text, out op);
                 }
+                var literal = new BinaryOperatorLiteral(op, context.op?.GetTextSpan() ?? context.BAR(0).GetTextSpan());
+                result = new BinaryOperatorExpression(
+                    (Expression)Visit(context.concatenation(0)),
+                    literal,
+                    (Expression)Visit(context.concatenation(1)),
+                    context.GetTextSpan());
             }
             return result;
         }
-
-        /// <returns><see cref="Expression"/></returns>
-        public Ust VisitAdditive_expression([NotNull] PlSqlParser.Additive_expressionContext context)
-        {
-            var result = (Expression)Visit(context.multiply_expression(0));
-            if (context.multiply_expression().Length > 1)
-            {
-                for (int i = 1; i < context.multiply_expression().Length; i++)
-                {
-                    var op = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[context._op[i - 1].Text],
-                      context._op[i - 1].GetTextSpan());
-                    var right = (Expression)Visit(context.multiply_expression(i));
-                    result = new BinaryOperatorExpression(result, op, right, result.TextSpan.Union(right.TextSpan));
-                }
-            }
-            return result;
-        }
-
-        /// <returns><see cref="Expression"/></returns>
-        public Ust VisitMultiply_expression([NotNull] PlSqlParser.Multiply_expressionContext context)
-        {
-            var result = (Expression)Visit(context.datetime_expression(0));
-            if (context.datetime_expression().Length > 1)
-            {
-                for (int i = 1; i < context.datetime_expression().Length; i++)
-                {
-                    var right = (Expression)Visit(context.datetime_expression(i));
-                    var op  = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[context._op[i - 1].Text],
-                        context._op[i - 1].GetTextSpan());
-                    result = new BinaryOperatorExpression(result, op, right, result.TextSpan.Union(right.TextSpan));
-                }
-            }
-            return result;
-        }
-
-        public Ust VisitDatetime_expression([NotNull] PlSqlParser.Datetime_expressionContext context) { return VisitChildren(context); }
 
         public Ust VisitInterval_expression([NotNull] PlSqlParser.Interval_expressionContext context) { return VisitChildren(context); }
 
@@ -923,10 +866,6 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitModel_expression_element([NotNull] PlSqlParser.Model_expression_elementContext context) { return VisitChildren(context); }
 
         public Ust VisitSingle_column_for_loop([NotNull] PlSqlParser.Single_column_for_loopContext context) { return VisitChildren(context); }
-
-        public Ust VisitFor_like_part([NotNull] PlSqlParser.For_like_partContext context) { return VisitChildren(context); }
-
-        public Ust VisitFor_increment_decrement_type([NotNull] PlSqlParser.For_increment_decrement_typeContext context) { return VisitChildren(context); }
 
         public Ust VisitMulti_column_for_loop([NotNull] PlSqlParser.Multi_column_for_loopContext context) { return VisitChildren(context); }
 
@@ -945,10 +884,6 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitCase_else_part([NotNull] PlSqlParser.Case_else_partContext context) { return VisitChildren(context); }
 
         public Ust VisitAtom([NotNull] PlSqlParser.AtomContext context) { return VisitChildren(context); }
-
-        public Ust VisitExpression_or_vector([NotNull] PlSqlParser.Expression_or_vectorContext context) { return VisitChildren(context); }
-
-        public Ust VisitVector_expr([NotNull] PlSqlParser.Vector_exprContext context) { return VisitChildren(context); }
 
         public Ust VisitQuantified_expression([NotNull] PlSqlParser.Quantified_expressionContext context) { return VisitChildren(context); }
 
@@ -1006,24 +941,13 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSet_command([NotNull] PlSqlParser.Set_commandContext context) { return VisitChildren(context); }
 
-        public Ust VisitExit_command([NotNull] PlSqlParser.Exit_commandContext context) { return VisitChildren(context); }
-
-        public Ust VisitPrompt_command([NotNull] PlSqlParser.Prompt_commandContext context) { return VisitChildren(context); }
-
         public Ust VisitPartition_extension_clause([NotNull] PlSqlParser.Partition_extension_clauseContext context) { return VisitChildren(context); }
 
         public Ust VisitColumn_alias([NotNull] PlSqlParser.Column_aliasContext context) { return VisitChildren(context); }
 
         public Ust VisitTable_alias([NotNull] PlSqlParser.Table_aliasContext context) { return VisitChildren(context); }
 
-        public Ust VisitAlias_quoted_string([NotNull] PlSqlParser.Alias_quoted_stringContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitWhere_clause([NotNull] PlSqlParser.Where_clauseContext context) { return VisitChildren(context); }
-
-        public Ust VisitCurrent_of_clause([NotNull] PlSqlParser.Current_of_clauseContext context) { return VisitChildren(context); }
 
         public Ust VisitInto_clause([NotNull] PlSqlParser.Into_clauseContext context) { return VisitChildren(context); }
 
@@ -1270,37 +1194,12 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        /// <returns><see cref="BinaryOperatorLiteral"/></returns>
-        public Ust VisitNot_equal_op([NotNull] PlSqlParser.Not_equal_opContext context)
-        {
-            return new BinaryOperatorLiteral(BinaryOperator.NotEqual, context.GetTextSpan());
-        }
-
-        /// <returns><see cref="BinaryOperatorLiteral"/></returns>
-        public Ust VisitGreater_than_or_equals_op([NotNull] PlSqlParser.Greater_than_or_equals_opContext context)
-        {
-            return new BinaryOperatorLiteral(BinaryOperator.GreaterOrEqual, context.GetTextSpan());
-        }
-
-        /// <returns><see cref="BinaryOperatorLiteral"/></returns>
-        public Ust VisitLess_than_or_equals_op([NotNull] PlSqlParser.Less_than_or_equals_opContext context)
-        {
-            return new BinaryOperatorLiteral(BinaryOperator.LessOrEqual, context.GetTextSpan());
-        }
-
-        public Ust VisitConcatenation_op([NotNull] PlSqlParser.Concatenation_opContext context)
-        {
-            return new BinaryOperatorLiteral(BinaryOperator.Plus, context.GetTextSpan());
-        }
-
         public Ust VisitOuter_join_sign([NotNull] PlSqlParser.Outer_join_signContext context) { return VisitChildren(context); }
 
         public Ust VisitRegular_id([NotNull] PlSqlParser.Regular_idContext context)
         {
             return VisitChildren(context);
         }
-
-        public Ust VisitShow_errors_command([NotNull] PlSqlParser.Show_errors_commandContext context) { return VisitChildren(context); }
 
         public Ust VisitNumeric_negative([NotNull] PlSqlParser.Numeric_negativeContext context) { return VisitChildren(context); }
 
@@ -1409,10 +1308,6 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitStart_command([NotNull] PlSqlParser.Start_commandContext context)
-        {
-            return VisitChildren(context);
-        }
 
         public Ust VisitComment_on_column([NotNull] PlSqlParser.Comment_on_columnContext context)
         {
@@ -1435,6 +1330,91 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitSchema_object_name([NotNull] PlSqlParser.Schema_object_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_index([NotNull] PlSqlParser.Create_indexContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_index([NotNull] PlSqlParser.Alter_indexContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_index([NotNull] PlSqlParser.Drop_indexContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSize_clause([NotNull] PlSqlParser.Size_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_table([NotNull] PlSqlParser.Alter_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_constraint([NotNull] PlSqlParser.Add_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCheck_constraint([NotNull] PlSqlParser.Check_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_constraint([NotNull] PlSqlParser.Drop_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEnable_constraint([NotNull] PlSqlParser.Enable_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDisable_constraint([NotNull] PlSqlParser.Disable_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitForeign_key_clause([NotNull] PlSqlParser.Foreign_key_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitReferences_clause([NotNull] PlSqlParser.References_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOn_delete_clause([NotNull] PlSqlParser.On_delete_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUnique_key_clause([NotNull] PlSqlParser.Unique_key_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPrimary_key_clause([NotNull] PlSqlParser.Primary_key_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPipe_row_statement([NotNull] PlSqlParser.Pipe_row_statementContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitExpressions([NotNull] PlSqlParser.ExpressionsContext context)
         {
             return VisitChildren(context);
         }

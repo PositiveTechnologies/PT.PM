@@ -31,7 +31,7 @@ namespace PT.PM
 
         public TStage Stage { get; set; }
 
-        public ISourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public IPatternsRepository PatternsRepository { get; set; }
 
@@ -90,19 +90,20 @@ namespace PT.PM
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        public HashSet<Language> AnalyzedLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
+        public HashSet<Language> AnalyzedLanguages => SourceCodeRepository.Languages;
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
+        public string LogsDir { get; set; } = "";
+
         public string DumpDir { get; set; } = "";
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        public WorkflowBase(TStage stage, IEnumerable<Language> languages)
+        public WorkflowBase(TStage stage)
         {
-            AnalyzedLanguages = new HashSet<Language>(languages);
             Stage = stage;
             stageHelper = new StageHelper<TStage>(stage);
         }
@@ -111,7 +112,6 @@ namespace PT.PM
         {
             RootUst result = null;
             var stopwatch = new Stopwatch();
-            string file = fileName;
             if (stageHelper.IsContainsFile)
             {
                 if (SourceCodeRepository.IsFileIgnored(fileName))
@@ -133,14 +133,14 @@ namespace PT.PM
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                file = sourceCodeFile.RelativePath;
+                string shortFileName = sourceCodeFile.Name;
                 if (stageHelper.IsContainsParseTree)
                 {
                     stopwatch.Restart();
                     Language detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
                     if (detectedLanguage == null)
                     {
-                        Logger.LogInfo($"Input languages set is empty or {sourceCodeFile.Name} language has not been detected. File has not been converter.");
+                        Logger.LogInfo($"Input languages set is empty or {shortFileName} language has not been detected. File has not been converter.");
                         return null;
                     }
                     var parser = detectedLanguage.CreateParser();
@@ -157,12 +157,11 @@ namespace PT.PM
                     }
                     ParseTree parseTree = parser.Parse(sourceCodeFile);
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {fileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
+                    Logger.LogInfo($"File {shortFileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
                     workflowResult.AddParseTime(stopwatch.ElapsedTicks);
                     workflowResult.AddResultEntity(parseTree);
 
-                    var antlrParseTree = parseTree as AntlrParseTree;
-                    if (antlrParseTree != null)
+                    if (parseTree is AntlrParseTree antlrParseTree)
                     {
                         workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
                         workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
@@ -172,14 +171,13 @@ namespace PT.PM
 
                     if (stageHelper.IsContainsUst)
                     {
-                        stopwatch.Reset();
-
+                        stopwatch.Restart();
                         var converter = detectedLanguage.CreateConverter();
                         converter.Logger = Logger;
                         converter.AnalyzedLanguages = AnalyzedLanguages;
                         result = converter.Convert(parseTree);
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {fileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
+                        Logger.LogInfo($"File {shortFileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(result, true);
 

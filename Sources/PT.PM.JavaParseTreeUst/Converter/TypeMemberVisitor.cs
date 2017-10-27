@@ -25,9 +25,16 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
             else
             {
-                var result = (EntityDeclaration)Visit(context.memberDeclaration());
-                result.Modifiers = context.modifier().Select(Visit).OfType<ModifierLiteral>().ToList();
-                return result;
+                var result = Visit(context.memberDeclaration()) as EntityDeclaration;
+                if (result != null)
+                {
+                    result.Modifiers = context.modifier().Select(Visit).OfType<ModifierLiteral>().ToList();
+                    return result;
+                }
+                else
+                {
+                    return VisitChildren(context);
+                }
             }
         }
 
@@ -124,7 +131,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitVariableDeclarators(JavaParser.VariableDeclaratorsContext context)
         {
-            return VisitShouldNotBeVisited(context);
+            return VisitChildren(context);
         }
 
         public Ust VisitVariableDeclarator(JavaParser.VariableDeclaratorContext context)

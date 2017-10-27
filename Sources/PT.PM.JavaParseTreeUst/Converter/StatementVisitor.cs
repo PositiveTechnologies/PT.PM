@@ -45,7 +45,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 return result;
             }
 
-            var typeDec = context.typeDeclaration();
+            var typeDec = context.localTypeDeclaration();
             if (typeDec != null)
             {
                 var typeDeclaration = (TypeDeclaration)Visit(typeDec);
@@ -163,9 +163,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 var block = (BlockStatement)Visit(context.block());
                 JavaParser.ResourceSpecificationContext resSpec = context.resourceSpecification();
 
-                List<CatchClause> catchClauses = context.catchClause() == null ? null
-                    : context.catchClause()
-                    .Select(cc => (CatchClause)Visit(cc))
+                List<CatchClause> catchClauses = context.catchClause()
+                    ?.Select(cc => (CatchClause)Visit(cc))
                     .Where(cc => cc != null).ToList();
 
                 var finallyBlock = context.finallyBlock() == null ? null

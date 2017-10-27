@@ -41,17 +41,23 @@
       <HintPath>$(SolutionDir)packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GraphvizGraph.cs" />
     <Compile Include="GraphvizOutputFormat.cs" />
+    <Compile Include="IArchiveExtractor.cs" />
     <Compile Include="LanguageDetector.cs" />
     <Compile Include="MessageEventArgs.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="ParserLanguageDetector.cs" />
     <Compile Include="ParserUnit.cs" />
+    <Compile Include="RepositoryFactory.cs" />
+    <Compile Include="SevenZipExtractor.cs" />
     <Compile Include="Stage.cs" />
     <Compile Include="StageHelper.cs" />
+    <Compile Include="StandartArchiveExtractor.cs" />
     <Compile Include="StringCompressorEscaper.cs" />
     <Compile Include="UstSimplifier.cs" />
     <Compile Include="Workflow.cs" />
@@ -62,6 +68,8 @@
     <Compile Include="WorkflowBase.cs" />
     <Compile Include="WorkflowResult.cs" />
     <Compile Include="WorkflowResultBase.cs" />
+    <Compile Include="ZipAtUrlCachingRepository.cs" />
+    <Compile Include="ZipCachingRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AspxParser\AspxParser\AspxParser.csproj">

@@ -18,7 +18,7 @@ namespace PT.PM.PatternEditor
 
         internal bool LogPatternErrors { get; set; }
 
-        public ISourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public GuiLogger(ObservableCollection<object> errorsCollection)
         {
@@ -42,25 +42,12 @@ namespace PT.PM.PatternEditor
             {
                 errorCount++;
                 Dispatcher.UIThread.InvokeAsync(() => ErrorsCollection.Add(ex));
-                LogEvent?.Invoke(this, "Error: " + ex.ToString());
-            }
-        }
-
-        public void LogError(string message)
-        {
-            errorCount++;
-            Dispatcher.UIThread.InvokeAsync(() => ErrorsCollection.Add(message));
-            LogEvent?.Invoke(this, "Error: " + message);
-        }
-
-        public void LogError(string message, Exception ex)
-        {
-            bool logError = WhetherLogError(ex);
-            if (logError)
-            {
-                errorCount++;
-                Dispatcher.UIThread.InvokeAsync(() => ErrorsCollection.Add(message + "; " + ex.ToString()));
-                LogEvent?.Invoke(this, "Error: " + message + "; " + ex.ToString());
+                string message = ex.ToString();
+                if (string.IsNullOrEmpty(message))
+                {
+                    message = ex.InnerException.ToString();
+                }
+                LogEvent?.Invoke(this, "Error: " + message);
             }
         }
 
@@ -72,11 +59,6 @@ namespace PT.PM.PatternEditor
         public void LogInfo(string message)
         {
             LogEvent?.Invoke(this, message);
-        }
-
-        public void LogInfo(string format, params string[] args)
-        {
-            LogEvent?.Invoke(this, string.Format(format, args));
         }
 
         private bool WhetherLogError(Exception ex)

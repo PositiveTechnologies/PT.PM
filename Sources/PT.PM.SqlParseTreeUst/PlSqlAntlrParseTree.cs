@@ -12,7 +12,7 @@ namespace PT.PM.SqlParseTreeUst
         {
         }
 
-        public PlSqlAntlrParseTree(PlSqlParser.Compilation_unitContext syntaxTree)
+        public PlSqlAntlrParseTree(PlSqlParser.Sql_scriptContext syntaxTree)
             : base(syntaxTree)
         {
         }

@@ -12,8 +12,7 @@ namespace PT.PM.Common.Nodes
             Statement result = node as Statement;
             if (result == null)
             {
-                Expression expr = node as Expression;
-                if (expr != null)
+                if (node is Expression expr)
                 {
                     result = new ExpressionStatement(expr);
                 }

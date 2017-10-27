@@ -6,6 +6,7 @@ using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Json;
+using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
@@ -249,8 +250,7 @@ namespace PT.PM.PatternEditor
 
         private void MatchingResultListBox_DoubleTapped(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            MathingResultDtoWrapper matchingResultWrapper = matchingResultListBox.SelectedItem as MathingResultDtoWrapper;
-            if (matchingResultWrapper != null)
+            if (matchingResultListBox.SelectedItem is MathingResultDtoWrapper matchingResultWrapper)
             {
                 var matchingResult = matchingResultWrapper.MatchingResult;
                 sourceCodeTextBox.Focus();
@@ -321,7 +321,11 @@ namespace PT.PM.PatternEditor
         {
             get
             {
-                return LanguageUtils.Languages[Settings.SourceCodeLanguage];
+                if (LanguageUtils.Languages.TryGetValue(Settings.SourceCodeLanguage, out Language language))
+                {
+                    return language;
+                }
+                return CSharp.Language;
             }
             set
             {
@@ -438,9 +442,9 @@ namespace PT.PM.PatternEditor
             set => this.RaiseAndSetIfChanged(ref ustJson, value);
         }
 
-        public bool IsTokensVisible => SelectedLanguage.HaveAntlrParser && IsDeveloperMode;
+        public bool IsTokensVisible => SelectedLanguage?.HaveAntlrParser == true && IsDeveloperMode;
 
-        public bool IsTreeVisible => SelectedLanguage.HaveAntlrParser && IsDeveloperMode;
+        public bool IsTreeVisible => SelectedLanguage?.HaveAntlrParser == true && IsDeveloperMode;
 
         public bool IsUstJsonVisible => Stage >= Stage.Ust && IsDeveloperMode;
 
@@ -548,7 +552,6 @@ namespace PT.PM.PatternEditor
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
-                DetectLanguageIfRequired();
                 Settings.SourceCode = !string.IsNullOrEmpty(OpenedFileName) ? "" : sourceCode;
                 Settings.Save();
 
@@ -565,7 +568,7 @@ namespace PT.PM.PatternEditor
         {
             sourceCodeLogger.Clear();
 
-            var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text);
+            var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text, language: SelectedLanguage ?? CSharp.Language);
             IPatternsRepository patternRepository;
             if (!string.IsNullOrEmpty(ServiceLocator.PatternViewModel.Value))
             {
@@ -575,9 +578,11 @@ namespace PT.PM.PatternEditor
             {
                 patternRepository = new MemoryPatternsRepository();
             }
-            var workflow = new Workflow(sourceCodeRep, SelectedLanguage, patternRepository, stage: Stage);
-            workflow.IsIncludeIntermediateResult = true;
-            workflow.Logger = sourceCodeLogger;
+            var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
+            {
+                IsIncludeIntermediateResult = true,
+                Logger = sourceCodeLogger
+            };
             if (SelectedLanguage == JavaScript.Language)
             {
                 workflow.JavaScriptType = JavaScriptType;
@@ -600,8 +605,8 @@ namespace PT.PM.PatternEditor
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tree.txt"), ParseTree);
                 }
 
-                TokensHeader = "Tokens" + (SelectedLanguage.HaveAntlrParser ? " (ANTLR)" : "");
-                ParseTreeHeader = "Parse Tree" + (SelectedLanguage.HaveAntlrParser ? " (ANTLR)" : "");
+                TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
+                ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
 
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {

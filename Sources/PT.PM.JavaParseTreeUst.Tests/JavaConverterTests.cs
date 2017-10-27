@@ -16,29 +16,21 @@ namespace PT.PM.JavaParseTreeUst.Tests
     public class JavaConverterTests
     {
         [TestCase("ManyStringsConcat.java")]
-        [TestCase("AllInOne.java")]
+        [TestCase("AllInOne7.java")]
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Java.Language, Stage.Ust);
-        }
-
-        [Test]
-        public void Convert_JavaWebGoat_WithoutErrors()
-        {
-            string projectKey = "WebGoat.Java-05a1f5";
-            TestUtility.CheckProject(TestProjects.JavaProjects.Single(p => p.Key == projectKey),
-                Java.Language, Stage.ParseTree);
+            TestUtility.CheckFile(fileName, Stage.Ust);
         }
 
         [Test]
         public void Convert_JavaPatternsWithErrors_MatchedResultsEqual()
         {
             var patternsLogger = new LoggerMessageCounter();
-            TestUtility.CheckFile("Patterns.java", Java.Language, Stage.Match, patternsLogger);
+            TestUtility.CheckFile("Patterns.java", Stage.Match, patternsLogger);
 
             var patternWithErrorsLogger = new LoggerMessageCounter();
-            TestUtility.CheckFile("PatternsWithParseErrors.java", Java.Language, Stage.Match, patternWithErrorsLogger, true);
+            TestUtility.CheckFile("PatternsWithParseErrors.java", Stage.Match, patternWithErrorsLogger, true);
 
             Assert.AreEqual(0, patternWithErrorsLogger.InfoMessageCount - patternsLogger.InfoMessageCount);
         }
@@ -53,10 +45,12 @@ namespace PT.PM.JavaParseTreeUst.Tests
                         "int[][] arr2 = new int[1][2];\r\n" +
                         "int[][] arr3 = new int[1][];\r\n" +
                     "}\r\n" +
-                "}"
+                "}",
+
+                "ArrayInitialization.java"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Ust);
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust);
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
             var intType = new TypeToken("int");
@@ -101,10 +95,12 @@ namespace PT.PM.JavaParseTreeUst.Tests
                         obj.f1 = 'a';
                         obj.f2 = ""'b'"";
                     }
-                }"
+                }",
+
+                "StringLiteralWithoutQuotes.java"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.Ust);
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust);
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
 
@@ -112,17 +108,17 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
         }
 
-        [TestCase("AllInOne.java")]
-        public void Convert_Java_BaseTypesExist(string fileName)
+        [Test]
+        public void Convert_Java_BaseTypesExist()
         {
-            var workflowResults = TestUtility.CheckFile(fileName, Java.Language, Stage.Ust);
+            var workflowResults = TestUtility.CheckFile("AllInOne7.java", Stage.Ust);
             var ust = workflowResults.Usts.First();
             bool result = ust.AnyDescendant(descendant =>
             {
                 return descendant is TypeDeclaration typeDeclaration &&
-                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "Runnable");
+                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "ActionListener");
             });
-            Assert.IsTrue(result, "Ust doesn't contain type declaration node with Runnable base type");
+            Assert.IsTrue(result, "Ust doesn't contain type declaration node with ActionListener base type");
         }
     }
 }

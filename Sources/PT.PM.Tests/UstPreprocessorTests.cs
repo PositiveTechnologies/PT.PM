@@ -3,10 +3,8 @@ using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Dsl;
-using PT.PM.JavaParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
-using PT.PM.PhpParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,12 +22,16 @@ namespace PT.PM.Tests
                 "echo 60 * 60 * 24;\r\n" +
                 "echo 6 + 6 * 6;\r\n" +
                 "$a = -3;\r\n" +
-                "$b = -3.1;"
+                "$b = -3.1;",
+
+                "constants.php"
             );
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, Php.Language, stage: Stage.SimplifiedUst);
-            workflow.IsIncludePreprocessing = true;
-            workflow.Logger = logger;
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.SimplifiedUst)
+            {
+                IsIncludePreprocessing = true,
+                Logger = logger
+            };
             workflow.Process();
 
             Assert.IsTrue(logger.ContainsDebugMessagePart("Hello World!"));
@@ -47,11 +49,15 @@ namespace PT.PM.Tests
                 "  public void init() {\r\n" +
                 "    char[] array = { 'n', 'o', 'n', 'e' };\r\n" +
                 "  }\r\n" +
-                "}"
+                "}",
+
+                "constantCharArray.java"
             );
 
-            var workflow = new Workflow(sourceCodeRep, Java.Language, stage: Stage.SimplifiedUst);
-            workflow.IsIncludePreprocessing = true;
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.SimplifiedUst)
+            {
+                IsIncludePreprocessing = true
+            };
             var ust = workflow.Process().Usts.First();
 
             Assert.IsTrue(ust.AnyDescendant(

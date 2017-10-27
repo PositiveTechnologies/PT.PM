@@ -1,13 +1,12 @@
-﻿using PT.PM.Common;
-using PT.PM.TestUtils;
-using PT.PM.Patterns;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
+using PT.PM.Common;
+using PT.PM.Matching;
+using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PT.PM.Matching;
 
 namespace PT.PM.Cli.Tests
 {

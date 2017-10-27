@@ -146,7 +146,7 @@ namespace PT.PM.Matching
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(patternBase.Root?.SourceCodeFile?.FullPath ?? "", ex)
+                Logger.LogError(new ConversionException(patternBase.Root?.SourceCodeFile?.FullName ?? "", ex)
                 {
                     TextSpan = patternBase.TextSpan,
                     IsPattern = true

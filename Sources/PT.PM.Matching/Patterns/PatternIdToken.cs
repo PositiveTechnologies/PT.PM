@@ -1,6 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
@@ -40,7 +41,7 @@ namespace PT.PM.Matching.Patterns
         {
             MatchingContext newContext;
 
-            if (ust is Token token)
+            if (ust is Token token && !(ust is CommentLiteral))
             {
                 string tokenText = token.TextValue;
                 if (ust.Root.Language.IsCaseInsensitive)

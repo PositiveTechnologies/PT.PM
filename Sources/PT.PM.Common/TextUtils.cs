@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace PT.PM.Common
 {
@@ -9,10 +9,8 @@ namespace PT.PM.Common
     {
         private const int StartLine = 1;
         private const int StartColumn = 1;
-        private const int MaxMessageLength = 200;
-        private const double TruncMessageStartRatio = 0.5;
-        private const string TruncMessageDelimiter = " ... ";
-        private const bool TruncMessageCutWords = false;
+
+        public static readonly Regex HttpRegex = new Regex("^https?://", RegexOptions.Compiled);
 
         public static int LineColumnToLinear(string text, int line, int column)
         {
@@ -20,36 +18,28 @@ namespace PT.PM.Common
             int currentColumn = StartColumn;
 
             int i = 0;
-            while (currentLine != line || currentLine == line && currentColumn != column)
+            while (i < text.Length)
             {
-                // General line endings:
-                //  Windows: '\r\n'
-                //  Mac (OS 9-): '\r'
-                //  Mac (OS 10+): '\n'
-                //  Unix/Linux: '\n'
-
-                switch (text[i])
+                char c = text[i];
+                if (c == '\r' || c == '\n')
                 {
-                    case '\r':
-                        currentLine++;
-                        currentColumn = StartColumn;
-                        if (i + 1 < text.Length && text[i + 1] == '\n')
-                        {
-                            i++;
-                        }
-                        break;
-
-                    case '\n':
-                        currentLine++;
-                        currentColumn = StartColumn;
-                        break;
-
-                    default:
-                        currentColumn++;
-                        break;
+                    currentLine++;
+                    currentColumn = StartColumn;
+                    if (c == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
+                    {
+                        i++;
+                    }
                 }
-
+                else
+                {
+                    currentColumn++;
+                }
                 i++;
+
+                if (currentLine == line && currentColumn == column)
+                {
+                    break;
+                }
             }
 
             return i;
@@ -67,27 +57,26 @@ namespace PT.PM.Common
             column = StartColumn;
 
             int i = 0;
-            while (i != index)
+            while (i < text.Length)
             {
-                switch (text[i])
+                if (i == index)
                 {
-                    case '\r':
-                        line++;
-                        column = StartColumn;
-                        if (i + 1 < text.Length && text[i + 1] == '\n')
-                        {
-                            i++;
-                        }
-                        break;
+                    break;
+                }
 
-                    case '\n':
-                        line++;
-                        column = StartColumn;
-                        break;
-
-                    default:
-                        column++;
-                        break;
+                char c = text[i];
+                if (c == '\r' || c == '\n')
+                {
+                    line++;
+                    column = StartColumn;
+                    if (c == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
+                    {
+                        i++;
+                    }
+                }
+                else
+                {
+                    column++;
                 }
                 i++;
             }
@@ -156,6 +145,11 @@ namespace PT.PM.Common
                 resultTextSpan = resultTextSpan.Union(textSpan);
             }
             return resultTextSpan;
+        }
+
+        public static string Substring(this string str, TextSpan textSpan)
+        {
+            return str.Substring(textSpan.Start, textSpan.Length);
         }
     }
 }

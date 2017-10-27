@@ -60,6 +60,10 @@
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PT.PM.UstPreprocessing\PT.PM.UstPreprocessing.csproj">
+      <Project>{6b3d2a76-9a11-4c40-97e1-18ea210376b2}</Project>
+      <Name>PT.PM.UstPreprocessing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
       <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
       <Name>PT.PM.Common</Name>
@@ -82,28 +86,12 @@
       <Link>Data\PlSql\aggregate01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\analytic_query02.sql">
-      <Link>Data\PlSql\analytic_query02.sql</Link>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\alter_table.sql">
+      <Link>Data\PlSql\alter_table.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\analytic_query03.sql">
-      <Link>Data\PlSql\analytic_query03.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\analytic_query04.sql">
-      <Link>Data\PlSql\analytic_query04.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\analytic_query05.sql">
-      <Link>Data\PlSql\analytic_query05.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\analytic_query06.sql">
-      <Link>Data\PlSql\analytic_query06.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\analytic_query07.sql">
-      <Link>Data\PlSql\analytic_query07.sql</Link>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\analytic_query.sql">
+      <Link>Data\PlSql\analytic_query.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\bindvar01.sql">
@@ -190,36 +178,12 @@
       <Link>Data\PlSql\columns01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment01.sql">
-      <Link>Data\PlSql\comment01.sql</Link>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comments.sql">
+      <Link>Data\PlSql\comments.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_column01.sql">
-      <Link>Data\PlSql\comment_on_column01.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_column02.sql">
-      <Link>Data\PlSql\comment_on_column02.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_column03.sql">
-      <Link>Data\PlSql\comment_on_column03.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table01.sql">
-      <Link>Data\PlSql\comment_on_table01.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table02.sql">
-      <Link>Data\PlSql\comment_on_table02.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table03.sql">
-      <Link>Data\PlSql\comment_on_table03.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on_table04.sql">
-      <Link>Data\PlSql\comment_on_table04.sql</Link>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\comment_on.sql">
+      <Link>Data\PlSql\comment_on.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\condition01.sql">
@@ -426,6 +390,10 @@
       <Link>Data\PlSql\groupby07.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\index.sql">
+      <Link>Data\PlSql\index.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\interval01.sql">
       <Link>Data\PlSql\interval01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -546,6 +514,10 @@
       <Link>Data\PlSql\keywordasidentifier05.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\least_greatest.sql">
+      <Link>Data\PlSql\least_greatest.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\lexer01.sql">
       <Link>Data\PlSql\lexer01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -568,6 +540,10 @@
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\like01.sql">
       <Link>Data\PlSql\like01.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\max_001.sql">
+      <Link>Data\PlSql\max_001.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\merge01.sql">
@@ -608,6 +584,10 @@
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\numbers01.sql">
       <Link>Data\PlSql\numbers01.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\nvl_001.sql">
+      <Link>Data\PlSql\nvl_001.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\object_access01.sql">
@@ -746,6 +726,10 @@
       <Link>Data\PlSql\sample01.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\select_package_function.sql">
+      <Link>Data\PlSql\select_package_function.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\simple02.sql">
       <Link>Data\PlSql\simple02.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -794,12 +778,20 @@
       <Link>Data\PlSql\simple13.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\to_char.sql">
+      <Link>Data\PlSql\to_char.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\to_char_001.sql">
       <Link>Data\PlSql\to_char_001.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\to_char_002.sql">
       <Link>Data\PlSql\to_char_002.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\plsql\examples\to_date.sql">
+      <Link>Data\PlSql\to_date.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\plsql\examples\union01.sql">
@@ -866,20 +858,76 @@
       <Link>Data\TSql\authorizations.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\availability_group.sql">
+      <Link>Data\TSql\availability_group.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\backup.sql">
+      <Link>Data\TSql\backup.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\backup_certificate.sql">
+      <Link>Data\TSql\backup_certificate.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\backup_master_key.sql">
+      <Link>Data\TSql\backup_master_key.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\backup_service_master_key.sql">
+      <Link>Data\TSql\backup_service_master_key.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\broker_priority.sql">
+      <Link>Data\TSql\broker_priority.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\certificates.sql">
+      <Link>Data\TSql\certificates.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\column_encryption_key.sql">
+      <Link>Data\TSql\column_encryption_key.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\column_master_key.sql">
+      <Link>Data\TSql\column_master_key.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\control_flow.sql">
       <Link>Data\TSql\control_flow.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\credentials.sql">
+      <Link>Data\TSql\credentials.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\cryptographic_provider.sql">
+      <Link>Data\TSql\cryptographic_provider.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\cursors.sql">
       <Link>Data\TSql\cursors.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\database_hadr.sql">
+      <Link>Data\TSql\database_hadr.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\dbcc.sql">
       <Link>Data\TSql\dbcc.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\db_roles.sql">
+      <Link>Data\TSql\db_roles.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_alter_database_mirroring.sql">
       <Link>Data\TSql\ddl_alter_database_mirroring.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_alter_endpoint.sql">
+      <Link>Data\TSql\ddl_alter_endpoint.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_alter_database.sql">
@@ -888,10 +936,6 @@
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_drop_type.sql">
       <Link>Data\TSql\ddl_create_drop_type.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_endpoint.sql">
-      <Link>Data\TSql\ddl_create_endpoint.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_create_table.sql">
@@ -904,6 +948,10 @@
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_index.sql">
       <Link>Data\TSql\ddl_index.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_procedures.sql">
+      <Link>Data\TSql\ddl_procedures.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\ddl_table.sql">
@@ -934,24 +982,136 @@
       <Link>Data\TSql\dml_update.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\drop.sql">
+      <Link>Data\TSql\drop.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\event_notification.sql">
+      <Link>Data\TSql\event_notification.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\event_session.sql">
+      <Link>Data\TSql\event_session.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\expressions.sql">
       <Link>Data\TSql\expressions.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\external_data_source.sql">
+      <Link>Data\TSql\external_data_source.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\external_library.sql">
+      <Link>Data\TSql\external_library.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\fulltext_catalog.sql">
+      <Link>Data\TSql\fulltext_catalog.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\full_width_chars.sql">
       <Link>Data\TSql\full_width_chars.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\logins.sql">
+      <Link>Data\TSql\logins.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\master_key.sql">
+      <Link>Data\TSql\master_key.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\message_type.sql">
+      <Link>Data\TSql\message_type.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\partition_function.sql">
+      <Link>Data\TSql\partition_function.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\partition_scheme.sql">
+      <Link>Data\TSql\partition_scheme.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\predicates.sql">
       <Link>Data\TSql\predicates.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\antlr-grammars-v4\tsql\examples\procedures.sql">
-      <Link>Data\TSql\procedures.sql</Link>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\remote_service_binding.sql">
+      <Link>Data\TSql\remote_service_binding.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\resource_governor.sql">
+      <Link>Data\TSql\resource_governor.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\resource_pools.sql">
+      <Link>Data\TSql\resource_pools.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\route.sql">
+      <Link>Data\TSql\route.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\rule.sql">
+      <Link>Data\TSql\rule.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\schema.sql">
+      <Link>Data\TSql\schema.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\search_property_list.sql">
+      <Link>Data\TSql\search_property_list.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\security_policy.sql">
+      <Link>Data\TSql\security_policy.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\sequences.sql">
+      <Link>Data\TSql\sequences.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\server_audit.sql">
+      <Link>Data\TSql\server_audit.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\server_audit_specification.sql">
+      <Link>Data\TSql\server_audit_specification.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\server_configuration.sql">
+      <Link>Data\TSql\server_configuration.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\server_roles.sql">
+      <Link>Data\TSql\server_roles.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\service.sql">
+      <Link>Data\TSql\service.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\service_master_keys.sql">
+      <Link>Data\TSql\service_master_keys.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\statements.sql">
       <Link>Data\TSql\statements.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\stoplist.sql">
+      <Link>Data\TSql\stoplist.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\symmetric_keys.sql">
+      <Link>Data\TSql\symmetric_keys.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\synonym.sql">
+      <Link>Data\TSql\synonym.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\transactions.sql">
@@ -962,8 +1122,24 @@
       <Link>Data\TSql\triggers.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\trucate.sql">
+      <Link>Data\TSql\trucate.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\users.sql">
+      <Link>Data\TSql\users.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\workload_group.sql">
+      <Link>Data\TSql\workload_group.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\antlr-grammars-v4\tsql\examples\xml_data_type.sql">
       <Link>Data\TSql\xml_data_type.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\antlr-grammars-v4\tsql\examples\xml_schema_collection.sql">
+      <Link>Data\TSql\xml_schema_collection.sql</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\PlSql\plsql_patterns.sql">

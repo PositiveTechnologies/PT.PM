@@ -1,13 +1,34 @@
 ﻿using PT.PM.Common.Exceptions;
 using System;
 using System.Diagnostics;
+using PT.PM.Common;
+using System.IO;
+using System.Reflection;
 
-namespace PT.PM.TestUtils
+namespace PT.PM
 {
-    public class SevenZipExtractor
+    public class SevenZipExtractor : IArchiveExtractor
     {
-        public static void Extract(string zipPath, string extractPath)
+        public string SevenZipPath { get; set; } = "";
+
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
+
+        public SevenZipExtractor()
         {
+            string executingAssemblyPath = Path.Combine(
+               Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            SevenZipPath = CommonUtils.IsRunningOnLinux
+               ? "7z"
+               : Path.Combine(executingAssemblyPath, "7-Zip", "7z.exe");
+        }
+
+        public void Extract(string zipPath, string extractPath)
+        {
+            if (!File.Exists(SevenZipPath))
+            {
+                throw new Exception($"7z.exe has not been found at {SevenZipPath}");
+            }
+
             string errorMessage = null;
             try
             {
@@ -16,8 +37,8 @@ namespace PT.PM.TestUtils
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    FileName = TestUtility.SevenZipPath,
-                    Arguments = "x \"" + zipPath + "\" -o\"" + extractPath + "\" -y"
+                    FileName = SevenZipPath,
+                    Arguments = $@"x ""{zipPath}"" -o""{extractPath}"" -y"
                 };
                 Process process = Process.Start(processStartInfo);
                 process.WaitForExit();

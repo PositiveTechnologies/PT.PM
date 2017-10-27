@@ -13,6 +13,7 @@ using System.Text;
 using Antlr4.Runtime.Misc;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.Expressions;
+using Antlr4.Runtime;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
@@ -64,20 +65,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitTypeDeclaration(JavaParser.TypeDeclarationContext context)
         {
-            var child0Terminal = context.GetChild(0) as ITerminalNode;
-            if (child0Terminal != null) // ignore ';'
-                return null;
+            return ProcessTypeDeclaration(context, context.classOrInterfaceModifier());
+        }
 
-            var result = Visit(context.GetChild(context.ChildCount - 1));
-
-            if (context.classOrInterfaceModifier().Any() && result is TypeDeclaration typeDeclaration)
-            {
-                var modifiers = context.classOrInterfaceModifier()
-                    .Select(m => (ModifierLiteral)VisitClassOrInterfaceModifier(m)).ToList();
-                typeDeclaration.Modifiers = modifiers;
-            }
-
-            return result;
+        public Ust VisitLocalTypeDeclaration([NotNull] JavaParser.LocalTypeDeclarationContext context)
+        {
+            return ProcessTypeDeclaration(context, context.classOrInterfaceModifier());
         }
 
         public Ust VisitClassOrInterfaceModifier(JavaParser.ClassOrInterfaceModifierContext context)
@@ -155,15 +148,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
             {
                 for (int i = 0; i < typeArgument.ChildCount; i++)
                 {
-                    var terminalNode = typeArgument.GetChild(i) as ITerminalNode;
-                    if (terminalNode != null)
+                    if (typeArgument.GetChild(i) is ITerminalNode terminalNode)
                     {
                         typeNodes.Append(terminalNode.Symbol.Text);
                         continue;
                     }
 
-                    var typeNode = typeArgument.GetChild(i) as JavaParser.TypeArgumentContext;
-                    if (typeNode != null)
+                    if (typeArgument.GetChild(i) is JavaParser.TypeArgumentContext typeNode)
                     {
                         typeNodes.Append(((TypeToken)Visit(typeNode))?.TypeText);
                     }
@@ -212,7 +203,23 @@ namespace PT.PM.JavaParseTreeUst.Converter
             return VisitChildren(context);
         }
 
-        #region Not implemented
+        public Ust VisitConstDeclaration([NotNull] JavaParser.ConstDeclarationContext context)
+        {
+            var type = (TypeToken)Visit(context.typeType());
+            var assignments = context.constantDeclarator()
+                .Select(declarator => (AssignmentExpression)Visit(declarator));
+            return new FieldDeclaration(type, assignments, context.GetTextSpan());
+        }
+
+        public Ust VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)
+        {
+            return new AssignmentExpression(
+                (Expression)Visit(context.IDENTIFIER()),
+                (Expression)Visit(context.variableInitializer()),
+                context.GetTextSpan());
+        }
+
+        #region Default implementation
 
         public Ust VisitClassBody(JavaParser.ClassBodyContext context)
         {
@@ -257,22 +264,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public Ust VisitInterfaceBody([NotNull] JavaParser.InterfaceBodyContext context)
         {
             return VisitChildren(context);
-        }
-
-        public Ust VisitConstDeclaration([NotNull] JavaParser.ConstDeclarationContext context)
-        {
-            var type = (TypeToken)Visit(context.typeType());
-            var assignments = context.constantDeclarator()
-                .Select(declarator => (AssignmentExpression)Visit(declarator));
-            return new FieldDeclaration(type, assignments, context.GetTextSpan());
-        }
-
-        public Ust VisitConstantDeclarator([NotNull] JavaParser.ConstantDeclaratorContext context)
-        {
-            return new AssignmentExpression(
-                (Expression)Visit(context.IDENTIFIER()),
-                (Expression)Visit(context.variableInitializer()),
-                context.GetTextSpan());
         }
 
         public Ust VisitGenericInterfaceMethodDeclaration([NotNull] JavaParser.GenericInterfaceMethodDeclarationContext context)
@@ -381,5 +372,23 @@ namespace PT.PM.JavaParseTreeUst.Converter
         }
 
         #endregion
+
+        private Ust ProcessTypeDeclaration(ParserRuleContext context,
+            JavaParser.ClassOrInterfaceModifierContext[] modifiers)
+        {
+            if (context.GetChild(0) is ITerminalNode child0Terminal) // ignore ';'
+                return null;
+
+            var result = Visit(context.GetChild(context.ChildCount - 1));
+
+            if (modifiers.Any() && result is TypeDeclaration typeDeclaration)
+            {
+                typeDeclaration.Modifiers = modifiers
+                    .Select(m => VisitClassOrInterfaceModifier(m) as ModifierLiteral)
+                    .Where(m => m != null).ToList();
+            }
+
+            return result;
+        }
     }
 }

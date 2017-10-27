@@ -35,11 +35,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { PlSql.Language },
                 Node = new PatternInvocationExpression()
                 {
-                    Target = new PatternMemberReferenceExpression
-                    {
-                        Target = new PatternIdToken("DBMS_OBFUSCATION_TOOLKIT"),
-                        Name = new PatternIdRegexToken("^(md2|md4|md5)$")
-                    },
+                    Target = new PatternIdRegexToken("^(md2|md4|md5)$"),
                     Arguments = new PatternArgs(new PatternMultipleExpressions())
                 }
             });
