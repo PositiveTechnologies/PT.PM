@@ -89,15 +89,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\antlr-grammars-v4\java-perf\examples\AllInOne7.java">
+    <Content Include="..\antlr-grammars-v4\java\examples\AllInOne7.java">
       <Link>Data\AllInOne7.java</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\antlr-grammars-v4\java-perf\examples\AllInOne8.java">
+    <Content Include="..\antlr-grammars-v4\java\examples\AllInOne8.java">
       <Link>Data\AllInOne8.java</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\antlr-grammars-v4\java-perf\examples\ManyStringsConcat.java">
+    <Content Include="..\antlr-grammars-v4\java\examples\ManyStringsConcat.java">
       <Link>Data\ManyStringsConcat.java</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
