@@ -90,7 +90,7 @@ namespace PT.PM
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        public HashSet<Language> AnalyzedLanguages => SourceCodeRepository.Languages;
+        public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
