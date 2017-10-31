@@ -96,6 +96,10 @@ namespace PT.PM
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
+        public GraphvizOutputFormat RenderFormat { get; set; } = GraphvizOutputFormat.Png;
+
+        public GraphvizDirection RenderDirection { get; set; } = GraphvizDirection.TopBottom;
+
         public string LogsDir { get; set; } = "";
 
         public string DumpDir { get; set; } = "";
