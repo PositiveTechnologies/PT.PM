@@ -1178,7 +1178,7 @@ namespace PT.PM.PhpParseTreeUst
         
         public Ust VisitChainExpression(PhpParser.ChainExpressionContext context)
         {
-            return (Expression)Visit(context.GetChild(0));
+            return (Expression)VisitChildren(context);
         }
         
         public Ust VisitScalarExpression(PhpParser.ScalarExpressionContext context)
@@ -1680,22 +1680,24 @@ namespace PT.PM.PhpParseTreeUst
                     .Where(m => m != null).ToArray();
 
                 MemberReferenceExpression memberRefExpr = new MemberReferenceExpression();
+                result = memberRefExpr;
                 for (int i = memberAccesses.Length - 1; i >= 0; i--)
                 {
                     Expression memberAccess = memberAccesses[i];
                     memberRefExpr.Name = memberAccess;
+                    memberRefExpr.TextSpan = memberAccess.TextSpan;
                     if (i > 0)
                     {
-                        memberRefExpr.TextSpan = memberAccess.TextSpan;
                         memberRefExpr.Target = new MemberReferenceExpression();
                         memberRefExpr = (MemberReferenceExpression)memberRefExpr.Target;
                     }
+                    else
+                    {
+                        memberRefExpr.Target = target;
+                    }
                 }
 
-                memberRefExpr.Target = target;
-                memberRefExpr.TextSpan = context.GetTextSpan();
-
-                result = memberRefExpr;
+                result.TextSpan = context.GetTextSpan();
             }
             else
             {
@@ -1706,7 +1708,16 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitMemberAccess(PhpParser.MemberAccessContext context)
         {
-            return VisitChildren(context);
+            var fieldName = (Expression)Visit(context.keyedFieldName());
+            if (context.actualArguments() == null)
+            {
+                return fieldName;
+            }
+            else
+            {
+                var arguments = (ArgsUst)Visit(context.actualArguments());
+                return new InvocationExpression(fieldName, arguments, context.GetTextSpan());
+            }
         }
 
         public Ust VisitFunctionCall(PhpParser.FunctionCallContext context)
