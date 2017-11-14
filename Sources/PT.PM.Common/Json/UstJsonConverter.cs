@@ -24,18 +24,27 @@ namespace PT.PM.Common.Json
                 var kind = jObject[KindName].ToString();
                 Type type = ReflectionCache.UstKindFullClassName.Value[kind];
 
-                object target;
+                Ust target;
                 if (type == typeof(RootUst))
                 {
                     Language language = ((string)jObject[nameof(RootUst.Language)]).ParseLangs().FirstOrDefault();
-                    target = Activator.CreateInstance(type, null, language);
+                    target = (Ust)Activator.CreateInstance(type, null, language);
                 }
                 else
                 {
-                    target = Activator.CreateInstance(type);
+                    target = (Ust)Activator.CreateInstance(type);
                 }
 
                 serializer.Populate(jObject.CreateReader(), target);
+
+                JToken textSpanObj = jObject[nameof(Ust.TextSpan)];
+                if (textSpanObj != null)
+                {
+                    int start = textSpanObj[nameof(TextSpan.Start)]?.ToObject<int>() ?? 0;
+                    int length = textSpanObj[nameof(TextSpan.Length)]?.ToObject<int>() ?? 0;
+                    target.TextSpan = new TextSpan(start, length);
+                }
+
                 return target;
             }
 
