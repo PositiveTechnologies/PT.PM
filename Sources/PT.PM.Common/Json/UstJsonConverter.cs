@@ -27,7 +27,7 @@ namespace PT.PM.Common.Json
                 Ust target;
                 if (type == typeof(RootUst))
                 {
-                    Language language = ((string)jObject[nameof(RootUst.Language)]).ParseLangs().FirstOrDefault();
+                    Language language = ((string)jObject[nameof(RootUst.Language)]).ParseLanguages().FirstOrDefault();
                     target = (Ust)Activator.CreateInstance(type, null, language);
                 }
                 else

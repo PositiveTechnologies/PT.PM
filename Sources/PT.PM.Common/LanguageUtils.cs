@@ -162,13 +162,13 @@ namespace PT.PM.Common
             }
         }
 
-        public static HashSet<Language> ParseLangs(this string languages, bool allByDefault = true,
+        public static HashSet<Language> ParseLanguages(this string languages, bool allByDefault = true,
             bool patternLanguages = false)
         {
-            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ParseLangs(allByDefault, patternLanguages);
+            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ParseLanguages(allByDefault, patternLanguages);
         }
 
-        public static HashSet<Language> ParseLangs(this IEnumerable<string> languageStrings, bool allByDefault = true,
+        public static HashSet<Language> ParseLanguages(this IEnumerable<string> languageStrings, bool allByDefault = true,
             bool patternLanguages = false)
         {
             string[] languageStringsArray = languageStrings.ToArray() ?? ArrayUtils<string>.EmptyArray;

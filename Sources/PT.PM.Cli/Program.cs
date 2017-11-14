@@ -104,7 +104,7 @@ namespace PT.PM.Cli
                         stage = Stage.Pattern;
                     }
 
-                    HashSet<Language> languages = languagesString.ParseLangs();
+                    HashSet<Language> languages = languagesString.ParseLanguages();
                     SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir, startStage);
 
                     logger.SourceCodeRepository = sourceCodeRepository;
