@@ -25,6 +25,10 @@ namespace PT.PM.Common.Json
             Type type = value.GetType();
             jObject.Add(KindName, type.Name);
             PropertyInfo[] properties = type.GetClassProperties();
+            if (type.Name == nameof(RootUst))
+            {
+                jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.Key);
+            }
             foreach (PropertyInfo prop in properties)
             {
                 string propName = prop.Name;
@@ -45,7 +49,7 @@ namespace PT.PM.Common.Json
                             {
                                 include = false;
                             }
-                            else if(propType == typeof(string))
+                            else if (propType == typeof(string))
                             {
                                 include = !string.IsNullOrEmpty(((string)propValue));
                             }
@@ -60,6 +64,15 @@ namespace PT.PM.Common.Json
                         }
                     }
                 }
+
+                if (type.Name == nameof(RootUst))
+                {
+                    if (include && propName == nameof(RootUst.Node) || propName == nameof(RootUst.Sublanguages))
+                    {
+                        include = false;
+                    }
+                }
+
                 if (include)
                 {
                     object propVal = prop.GetValue(value, null);
@@ -67,8 +80,11 @@ namespace PT.PM.Common.Json
                     {
                         object serializeObj = propVal is IEnumerable<Language> languages
                             ? languages.Select(lang => lang.Key)
+                            : propVal is Language language
+                            ? language.Key
                             : propVal;
-                        jObject.Add(propName, JToken.FromObject(serializeObj, serializer));
+                        JToken jToken = JToken.FromObject(serializeObj, serializer);
+                        jObject.Add(propName, jToken);
                     }
                 }
             }

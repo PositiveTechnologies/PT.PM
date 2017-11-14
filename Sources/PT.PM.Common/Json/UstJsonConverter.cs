@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
+using System.Linq;
 
 namespace PT.PM.Common.Json
 {
@@ -21,16 +21,18 @@ namespace PT.PM.Common.Json
             {
                 JObject jObject = JObject.Load(reader);
 
-                object target = null;
-                if (objectType == typeof(Ust) || objectType.IsSubclassOf(typeof(Ust)))
+                var kind = jObject[KindName].ToString();
+                Type type = ReflectionCache.UstKindFullClassName.Value[kind];
+
+                object target;
+                if (type == typeof(RootUst))
                 {
-                    var kind = jObject[nameof(Ust)].ToString();
-                    var type = ReflectionCache.UstKindFullClassName.Value[kind];
-                    target = Activator.CreateInstance(type);
+                    Language language = ((string)jObject[nameof(RootUst.Language)]).ParseLangs().FirstOrDefault();
+                    target = Activator.CreateInstance(type, null, language);
                 }
                 else
                 {
-                    throw new FormatException("Invalid JSON");
+                    target = Activator.CreateInstance(type);
                 }
 
                 serializer.Populate(jObject.CreateReader(), target);

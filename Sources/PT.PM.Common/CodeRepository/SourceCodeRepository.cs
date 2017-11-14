@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
@@ -11,6 +12,8 @@ namespace PT.PM.Common.CodeRepository
 
         public HashSet<Language> Languages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
+        public bool LoadJson { get; set; }
+
         public abstract IEnumerable<string> GetFileNames();
 
         public abstract SourceCodeFile ReadFile(string fileName);
@@ -19,16 +22,23 @@ namespace PT.PM.Common.CodeRepository
         {
             string fileExtension = System.IO.Path.GetExtension(fileName);
 
-            foreach (Language language in Languages)
+            if (!LoadJson)
             {
-                bool ignored = IsLanguageIgnored(language, fileExtension);
-                if (!ignored)
+                foreach (Language language in Languages)
                 {
-                    return false;
+                    bool ignored = IsLanguageIgnored(language, fileExtension);
+                    if (!ignored)
+                    {
+                        return false;
+                    }
                 }
-            }
 
-            return true;
+                return true;
+            }
+            else
+            {
+                return !fileExtension.EndsWith("json", StringComparison.OrdinalIgnoreCase);
+            }
         }
 
         private bool IsLanguageIgnored(Language language, string fileExtension)

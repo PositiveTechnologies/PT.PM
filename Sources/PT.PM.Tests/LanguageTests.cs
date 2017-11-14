@@ -15,15 +15,15 @@ namespace PT.PM.Tests
         public void Parse_String_CorrectLanguages()
         {
             var sqlLanguages = new Language[] { TSql.Language, PlSql.Language };
-            CollectionAssert.AreEquivalent(sqlLanguages, "TSQL plsql".ToLanguages());
+            CollectionAssert.AreEquivalent(sqlLanguages, "TSQL plsql".ParseLangs());
 
-            CollectionAssert.AreEquivalent(sqlLanguages, "Sql".ToLanguages());
+            CollectionAssert.AreEquivalent(sqlLanguages, "Sql".ParseLangs());
 
-            HashSet<Language> notJavaLangs = "~Java".ToLanguages();
+            HashSet<Language> notJavaLangs = "~Java".ParseLangs();
             CollectionAssert.IsSupersetOf(LanguageUtils.Languages.Values, notJavaLangs);
             CollectionAssert.DoesNotContain(notJavaLangs, Java.Language);
 
-            HashSet<Language> notJavaSqlLangs = "!Java|!Sql".ToLanguages();
+            HashSet<Language> notJavaSqlLangs = "!Java|!Sql".ParseLangs();
             CollectionAssert.IsSupersetOf(LanguageUtils.Languages.Values, notJavaSqlLangs);
             CollectionAssert.DoesNotContain(notJavaSqlLangs, Java.Language);
             CollectionAssert.DoesNotContain(notJavaSqlLangs, TSql.Language);
