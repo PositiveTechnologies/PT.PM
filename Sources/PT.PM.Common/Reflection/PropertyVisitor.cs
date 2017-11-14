@@ -21,7 +21,7 @@ namespace PT.PM.Common.Reflection
             }
 
             Type type = node.GetType();
-            PropertyInfo[] properties = ReflectionCache.GetClassProperties(type);
+            PropertyInfo[] properties = ReflectionCache.GetReadWriteClassProperties(type);
 
             TOutput result = Clone ? (TOutput)Activator.CreateInstance(type) : default(TOutput);
             foreach (PropertyInfo prop in properties)

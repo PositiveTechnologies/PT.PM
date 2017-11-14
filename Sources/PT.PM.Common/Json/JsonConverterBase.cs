@@ -24,7 +24,7 @@ namespace PT.PM.Common.Json
             JObject jObject = new JObject();
             Type type = value.GetType();
             jObject.Add(KindName, type.Name);
-            PropertyInfo[] properties = type.GetClassProperties();
+            PropertyInfo[] properties = type.GetReadWriteClassProperties();
             if (type.Name == nameof(RootUst))
             {
                 jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.Key);

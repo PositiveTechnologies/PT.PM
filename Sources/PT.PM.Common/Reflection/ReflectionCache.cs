@@ -31,7 +31,7 @@ namespace PT.PM.Common.Reflection
                 return result;
             });
 
-        public static PropertyInfo[] GetClassProperties(this Type objectType)
+        public static PropertyInfo[] GetReadWriteClassProperties(this Type objectType)
         {
             PropertyInfo[] result = null;
             if (!ustNodeProperties.TryGetValue(objectType, out result))
