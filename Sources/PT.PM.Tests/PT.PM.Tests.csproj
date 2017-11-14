@@ -47,6 +47,7 @@
     <Compile Include="UstPreprocessorTests.cs" />
     <Compile Include="TextTests.cs" />
     <Compile Include="UstVisitorTests.cs" />
+    <Compile Include="WorkflowTests.cs" />
     <Content Include="Data\TaintPoc.cs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -77,6 +78,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="app.config" />
+    <None Include="Data\Ust.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SourceCodeRepositoryTests.cs" />
