@@ -14,6 +14,8 @@ namespace PT.PM
             stageInt = Convert.ToInt32(Stage);
         }
 
+        public bool IsDefault => stageInt == 0;
+
         public bool IsFile => stageInt == (int)PM.Stage.File;
 
         public bool IsParseTree => stageInt == (int)PM.Stage.ParseTree;
