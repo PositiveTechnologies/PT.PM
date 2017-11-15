@@ -1,4 +1,4 @@
-﻿namespace PT.PM.AntlrUtils
+﻿namespace PT.PM.Common
 {
     public enum TokenValueDisplayMode
     {

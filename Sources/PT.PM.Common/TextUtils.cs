@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Common
@@ -150,6 +151,11 @@ namespace PT.PM.Common
         public static string Substring(this string str, TextSpan textSpan)
         {
             return str.Substring(textSpan.Start, textSpan.Length);
+        }
+
+        public static void PadLeft(this StringBuilder builder, int totalWidth)
+        {
+            builder.Append(' ', totalWidth);
         }
     }
 }
