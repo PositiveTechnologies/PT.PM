@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 using System;
+using System.IO;
 
 namespace PT.PM.PatternEditor
 {
     internal class ServiceLocator
     {
-        internal static string TempDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        internal static string TempDirectory = Path.GetTempPath();
 
         internal static Settings Settings { get; set; } = Settings.Load();
 
