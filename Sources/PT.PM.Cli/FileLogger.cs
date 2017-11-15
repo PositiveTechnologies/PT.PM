@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
 using PT.PM.Matching;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace PT.PM.Cli
@@ -80,11 +80,21 @@ namespace PT.PM.Cli
                 if (infoObj is MatchingResult matchingResult)
                 {
                     var matchingResultDto = new MatchingResultDto(matchingResult);
-                    matchingResultDto.MatchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
-                    matchingResultDto.SourceFile = matchingResultDto.SourceFile.Replace('\\', '/');
-                    string json = JsonConvert.SerializeObject(matchingResultDto, Formatting.Indented);
-                    MatchLogger.Info(json + ",");
-                    LogInfo($"Pattern matched: {Environment.NewLine}{json}{Environment.NewLine}");
+                    string matchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
+
+                    var message = new StringBuilder();
+                    message.AppendLine("---------------------");
+                    message.AppendLine($"{nameof(MatchingResultDto.MatchedCode)}: {matchedCode}");
+                    message.AppendLine($"{nameof(MatchingResultDto.BeginLine)}: {matchingResultDto.BeginLine}");
+                    message.AppendLine($"{nameof(MatchingResultDto.BeginColumn)}: {matchingResultDto.BeginColumn}");
+                    message.AppendLine($"{nameof(MatchingResultDto.EndLine)}: {matchingResultDto.EndLine}");
+                    message.AppendLine($"{nameof(MatchingResultDto.EndColumn)}: {matchingResultDto.EndColumn}");
+                    message.AppendLine($"{nameof(MatchingResultDto.PatternKey)}: {matchingResultDto.PatternKey}");
+                    message.AppendLine($"{nameof(MatchingResultDto.SourceFile)}: {matchingResultDto.SourceFile}");
+                    string result = message.ToString();
+
+                    MatchLogger.Info(result);
+                    LogInfo(result);
                 }
                 else if (!(infoObj is MessageEventArgs))
                 {

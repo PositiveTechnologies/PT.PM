@@ -33,7 +33,7 @@ namespace PT.PM.Cli
             bool logErrors = false;
             bool logDebugs = false;
             bool showVersion = true;
-            bool isIndentedDump = false;
+            bool isIndentedDump = true;
             bool isIncludeTextSpansInDump = true;
             bool isPreprocess = true;
             Stage startStage = Stage.File;
