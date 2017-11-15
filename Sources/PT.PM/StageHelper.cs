@@ -8,6 +8,8 @@ namespace PT.PM
 
         public T Stage { get; }
 
+        public static StageHelper<T> FromStage(T stage) => new StageHelper<T>(stage);
+
         public StageHelper(T stage)
         {
             Stage = stage;

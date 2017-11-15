@@ -4,12 +4,14 @@ using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
+using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -111,9 +113,15 @@ namespace PT.PM
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
 
+        public HashSet<TStage> DumpStages { get; set; } = new HashSet<TStage>();
+
         public GraphvizOutputFormat RenderFormat { get; set; } = GraphvizOutputFormat.Png;
 
         public GraphvizDirection RenderDirection { get; set; } = GraphvizDirection.TopBottom;
+
+        public bool IndentedDump { get; set; } = true;
+
+        public bool DumpWithTextSpans { get; set; } = true;
 
         public string LogsDir { get; set; } = "";
 
@@ -192,6 +200,8 @@ namespace PT.PM
                             workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
                         }
 
+                        DumpTokensAndParseTree(parseTree);
+
                         cancellationToken.ThrowIfCancellationRequested();
                     }
 
@@ -201,10 +211,12 @@ namespace PT.PM
 
                         if (!startStageHelper.IsUst)
                         {
-                            var converter = detectedLanguage.CreateConverter();
+                            IParseTreeToUstConverter converter = detectedLanguage.CreateConverter();
                             converter.Logger = Logger;
                             converter.AnalyzedLanguages = AnalyzedLanguages;
                             result = converter.Convert(parseTree);
+
+                            DumpUst(result);
                         }
                         else
                         {
@@ -227,6 +239,40 @@ namespace PT.PM
                 }
             }
             return result;
+        }
+
+        private void DumpTokensAndParseTree(ParseTree parseTree)
+        {
+            if (DumpStages.Any(stage => StageHelper<TStage>.FromStage(stage).IsParseTree))
+            {
+                ParseTreeDumper dumper;
+                if (parseTree.SourceLanguage.HaveAntlrParser)
+                {
+                    dumper = new AntlrDumper();
+                }
+                else
+                {
+                    dumper = new RoslynDumper();
+                }
+                dumper.DumpDir = DumpDir;
+                dumper.DumpTokens(parseTree);
+                dumper.DumpTree(parseTree);
+            }
+        }
+
+        private void DumpUst(RootUst result)
+        {
+            if (DumpStages.Any(stage => StageHelper<TStage>.FromStage(stage).IsUst))
+            {
+                var serializer = new JsonUstSerializer
+                {
+                    Indented = IndentedDump,
+                    IncludeTextSpans = DumpWithTextSpans
+                };
+                string json = serializer.Serialize(result);
+                string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
+                File.WriteAllText(Path.Combine(DumpDir, name + "ust.json"), json);
+            }
         }
 
         protected void StartConvertPatternsTaskIfRequired(TWorkflowResult workflowResult)

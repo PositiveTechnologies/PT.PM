@@ -138,6 +138,7 @@
     <Compile Include="Converter\StatementVisitor.cs" />
     <Compile Include="Converter\TriviaVisitor.cs" />
     <Compile Include="Converter\TypeMembersVisitor.cs" />
+    <Compile Include="RoslynDumper.cs" />
     <Compile Include="RoslynUtils.cs" />
   </ItemGroup>
   <ItemGroup>
