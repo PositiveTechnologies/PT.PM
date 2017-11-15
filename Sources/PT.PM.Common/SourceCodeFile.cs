@@ -23,10 +23,8 @@ namespace PT.PM.Common
         public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)
         {
             // TODO: replace with fast binary version.
-            int beginLine, beginColumn;
-            int endLine, endColumn;
-            textSpan.Start.ToLineColumn(Code, out beginLine, out beginColumn);
-            textSpan.End.ToLineColumn(Code, out endLine, out endColumn);
+            textSpan.Start.ToLineColumn(Code, out int beginLine, out int beginColumn);
+            textSpan.End.ToLineColumn(Code, out int endLine, out int endColumn);
             return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
         }
 

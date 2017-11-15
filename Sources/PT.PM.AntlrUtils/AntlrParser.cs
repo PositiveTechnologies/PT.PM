@@ -131,11 +131,6 @@ namespace PT.PM.AntlrUtils
                     stopwatch.Stop();
                     long lexerTimeSpanTicks = stopwatch.ElapsedTicks;
 
-                    if (Debugger.IsAttached)
-                    {
-                        var codeTokensStr = tokens.GetTokensString(Vocabulary, onlyDefaultChannel: false);
-                    }
-
                     ClearCacheIfRequired(lexer.Interpreter, lexerLock, ClearCacheLexerFilesCount);
 
                     foreach (var token in tokens)

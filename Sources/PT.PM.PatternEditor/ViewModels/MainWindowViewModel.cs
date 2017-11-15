@@ -2,10 +2,8 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
-using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Json;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
@@ -24,14 +22,6 @@ namespace PT.PM.PatternEditor
 {
     public class MainWindowViewModel: ReactiveObject
     {
-        private JsonUstSerializer jsonSerializer = new JsonUstSerializer
-        {
-            IncludeTextSpans = true,
-            Indented = true,
-            ExcludeDefaults = true,
-            IncludeCode = true
-        };
-
         private Window window;
         private ColumnDefinition patternsPanelColumn;
         private TextBox sourceCodeTextBox;
@@ -582,37 +572,40 @@ namespace PT.PM.PatternEditor
             var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
             {
                 IsIncludeIntermediateResult = true,
-                Logger = sourceCodeLogger
+                Logger = sourceCodeLogger,
+                DumpDir = ServiceLocator.TempDirectory
             };
             if (SelectedLanguage == JavaScript.Language)
             {
                 workflow.JavaScriptType = JavaScriptType;
+            }
+            if (IsDeveloperMode)
+            {
+                var dumpStages = new HashSet<Stage>();
+                if (Stage >= Stage.ParseTree)
+                {
+                    dumpStages.Add(Stage.ParseTree);
+                    if (Stage >= Stage.Ust)
+                    {
+                        dumpStages.Add(Stage.Ust);
+                    }
+                }
+                workflow.DumpStages = dumpStages;
             }
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
 
             if (IsDeveloperMode)
             {
-                AntlrParseTree antlrParseTree = workflowResult.ParseTrees.FirstOrDefault() as AntlrParseTree;
-                if (antlrParseTree?.SyntaxTree != null)
-                {
-                    var antlrParser = ((AntlrParser)LanguageUtils.CreateParser(antlrParseTree.SourceLanguage)).InitParser(null);
-                    string tokensString = antlrParseTree.Tokens.GetTokensString(antlrParser.Vocabulary, onlyDefaultChannel: true);
-                    string treeString = antlrParseTree.SyntaxTree.ToStringTreeIndented(antlrParser);
-
-                    Tokens = tokensString;
-                    ParseTree = treeString;
-                    File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tokens.txt"), Tokens);
-                    File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Tree.txt"), ParseTree);
-                }
+                Tokens = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "tokens"));
+                ParseTree = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "parseTree"));
 
                 TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
                 ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
 
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {
-                    UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault());
-                    File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UST.json"), UstJson);
+                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "ust.json"));
                 }
             }
 

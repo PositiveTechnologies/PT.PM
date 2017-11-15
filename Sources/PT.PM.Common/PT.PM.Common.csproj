@@ -52,6 +52,7 @@
     <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Nodes\IUst.cs" />
     <Compile Include="Nodes\IUstVisitor.cs" />
+    <Compile Include="ParseTreeDumper.cs" />
     <Compile Include="Reflection\PropertyCloner.cs" />
     <Compile Include="Reflection\PropertyComparer.cs" />
     <Compile Include="Reflection\PropertyVisitor.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Nodes\UstLinq.cs" />
     <Compile Include="Nodes\UstRefComparer.cs" />
     <Compile Include="Nodes\UstVisitor.cs" />
+    <Compile Include="TokenValueDisplayMode.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />

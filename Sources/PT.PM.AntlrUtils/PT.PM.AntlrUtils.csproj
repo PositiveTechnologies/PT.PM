@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AntlrParseTree.cs" />
     <Compile Include="AntlrCaseInsensitiveInputStream.cs" />
+    <Compile Include="AntlrDumper.cs" />
     <Compile Include="AntlrUtils.cs" />
     <Compile Include="AntlrMemoryErrorListener.cs" />
     <Compile Include="AntlrParser.cs" />
@@ -56,7 +57,6 @@
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
-    <Compile Include="TokenValueDisplayMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
