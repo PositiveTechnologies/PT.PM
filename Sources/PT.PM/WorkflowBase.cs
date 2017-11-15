@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
@@ -29,7 +30,21 @@ namespace PT.PM
 
         protected StageHelper<TStage> stageHelper;
 
+        protected StageHelper<TStage> startStageHelper = new StageHelper<TStage>(default(TStage));
+
         public TStage Stage { get; set; }
+
+        public TStage StartStage
+        {
+            get
+            {
+                return startStageHelper.Stage;
+            }
+            set
+            {
+                startStageHelper = new StageHelper<TStage>(value);
+            }
+        }
 
         public SourceCodeRepository SourceCodeRepository { get; set; }
 
@@ -90,11 +105,15 @@ namespace PT.PM
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
-        public HashSet<Language> AnalyzedLanguages => SourceCodeRepository.Languages;
+        public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
         public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
+
+        public GraphvizOutputFormat RenderFormat { get; set; } = GraphvizOutputFormat.Png;
+
+        public GraphvizDirection RenderDirection { get; set; } = GraphvizDirection.TopBottom;
 
         public string LogsDir { get; set; } = "";
 
@@ -134,48 +153,70 @@ namespace PT.PM
                 cancellationToken.ThrowIfCancellationRequested();
 
                 string shortFileName = sourceCodeFile.Name;
+
                 if (stageHelper.IsContainsParseTree)
                 {
-                    stopwatch.Restart();
-                    Language detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
-                    if (detectedLanguage == null)
+                    ParseTree parseTree = null;
+                    Language detectedLanguage = null;
+
+                    if (startStageHelper.IsDefault || startStageHelper.IsFile)
                     {
-                        Logger.LogInfo($"Input languages set is empty or {shortFileName} language has not been detected. File has not been converter.");
-                        return null;
-                    }
-                    var parser = detectedLanguage.CreateParser();
-                    parser.Logger = Logger;
-                    if (parser is AntlrParser antlrParser)
-                    {
-                        antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
-                        antlrParser.MaxTimespan = MaxTimespan;
-                        antlrParser.MaxStackSize = MaxStackSize;
-                        if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
+                        stopwatch.Restart();
+                        detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
+                        if (detectedLanguage == null)
                         {
-                            javaScriptAntlrParser.JavaScriptType = JavaScriptType;
+                            Logger.LogInfo($"Input languages set is empty or {shortFileName} language has not been detected. File has not been converter.");
+                            return null;
                         }
-                    }
-                    ParseTree parseTree = parser.Parse(sourceCodeFile);
-                    stopwatch.Stop();
-                    Logger.LogInfo($"File {shortFileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
-                    workflowResult.AddParseTime(stopwatch.ElapsedTicks);
-                    workflowResult.AddResultEntity(parseTree);
+                        var parser = detectedLanguage.CreateParser();
+                        parser.Logger = Logger;
+                        if (parser is AntlrParser antlrParser)
+                        {
+                            antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
+                            antlrParser.MaxTimespan = MaxTimespan;
+                            antlrParser.MaxStackSize = MaxStackSize;
+                            if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
+                            {
+                                javaScriptAntlrParser.JavaScriptType = JavaScriptType;
+                            }
+                        }
+                        parseTree = parser.Parse(sourceCodeFile);
+                        stopwatch.Stop();
+                        Logger.LogInfo($"File {shortFileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
+                        workflowResult.AddParseTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddResultEntity(parseTree);
 
-                    if (parseTree is AntlrParseTree antlrParseTree)
-                    {
-                        workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
-                        workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
-                    }
+                        if (parseTree is AntlrParseTree antlrParseTree)
+                        {
+                            workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
+                            workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
+                        }
 
-                    cancellationToken.ThrowIfCancellationRequested();
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
 
                     if (stageHelper.IsContainsUst)
                     {
                         stopwatch.Restart();
-                        var converter = detectedLanguage.CreateConverter();
-                        converter.Logger = Logger;
-                        converter.AnalyzedLanguages = AnalyzedLanguages;
-                        result = converter.Convert(parseTree);
+
+                        if (!startStageHelper.IsUst)
+                        {
+                            var converter = detectedLanguage.CreateConverter();
+                            converter.Logger = Logger;
+                            converter.AnalyzedLanguages = AnalyzedLanguages;
+                            result = converter.Convert(parseTree);
+                        }
+                        else
+                        {
+                            var jsonUstSerializer = new JsonUstSerializer();
+                            result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile.Code);
+                            if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
+                            {
+                                Logger.LogInfo($"File {fileName} has been ignored.");
+                                return null;
+                            }
+                        }
+
                         stopwatch.Stop();
                         Logger.LogInfo($"File {shortFileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddConvertTime(stopwatch.ElapsedTicks);

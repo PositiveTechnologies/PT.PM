@@ -88,7 +88,12 @@ namespace PT.PM.Cli
                 }
                 else if (!(infoObj is MessageEventArgs))
                 {
-                    LogInfo(infoObj.ToString());
+                    string message = infoObj.ToString();
+                    if (infoObj is IMatchingResultBase)
+                    {
+                        MatchLogger.Info(message);
+                    }
+                    LogInfo(message);
                 }
             }
         }

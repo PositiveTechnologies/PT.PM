@@ -61,8 +61,8 @@ namespace PT.PM.Common.Reflection
             }
             else if (type1.IsSubclassOf(typeof(T)) || type1 == typeof(T))
             {
-                PropertyInfo[] properties1 = ReflectionCache.GetClassProperties(type1);
-                PropertyInfo[] properties2 = ReflectionCache.GetClassProperties(type2);
+                PropertyInfo[] properties1 = ReflectionCache.GetReadWriteClassProperties(type1);
+                PropertyInfo[] properties2 = ReflectionCache.GetReadWriteClassProperties(type2);
 
                 if (properties1.Length != properties2.Length)
                 {

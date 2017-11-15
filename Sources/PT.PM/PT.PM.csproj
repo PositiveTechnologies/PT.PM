@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GraphvizGraph.cs" />
+    <Compile Include="GraphvizDirection.cs" />
     <Compile Include="GraphvizOutputFormat.cs" />
     <Compile Include="IArchiveExtractor.cs" />
     <Compile Include="LanguageDetector.cs" />

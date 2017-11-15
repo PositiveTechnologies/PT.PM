@@ -138,6 +138,7 @@ namespace PT.PM
             }
             catch (OperationCanceledException)
             {
+                Logger.LogInfo($"{fileName} processing has been cancelled");
             }
             catch (Exception ex)
             {

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using PT.PM.Common.Nodes.Tokens.Literals;
+﻿using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,10 +16,8 @@ namespace PT.PM.Common.Nodes
 
         public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
 
-        [JsonIgnore]
         public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
 
-        [JsonIgnore]
         public Ust Node
         {
             get => Nodes.FirstOrDefault();

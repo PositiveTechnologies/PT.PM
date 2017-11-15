@@ -16,6 +16,8 @@ namespace PT.PM.Common.Json
 
         public bool ExcludeDefaults { get; set; } = true;
 
+        public bool IncludeCode { get; set; } = false;
+
         protected abstract JsonConverterBase CreateConverterBase();
 
         public virtual T Deserialize(string data)
@@ -47,7 +49,12 @@ namespace PT.PM.Common.Json
                 Converters = new List<JsonConverter>
                 {
                     stringEnumConverter,
-                    jsonConverterBase
+                    jsonConverterBase,
+                    new SourceCodeFileJsonConverter
+                    {
+                        ExcludeDefaults = ExcludeDefaults,
+                        IncludeCode = IncludeCode
+                    }
                 }
             };
             return jsonSettings;

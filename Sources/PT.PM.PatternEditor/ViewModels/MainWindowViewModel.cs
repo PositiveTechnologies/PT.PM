@@ -26,9 +26,10 @@ namespace PT.PM.PatternEditor
     {
         private JsonUstSerializer jsonSerializer = new JsonUstSerializer
         {
-            IncludeTextSpans = false,
+            IncludeTextSpans = true,
             Indented = true,
-            ExcludeDefaults = true
+            ExcludeDefaults = true,
+            IncludeCode = true
         };
 
         private Window window;
@@ -610,7 +611,7 @@ namespace PT.PM.PatternEditor
 
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {
-                    UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault().Nodes);
+                    UstJson = jsonSerializer.Serialize(workflowResult.Usts.FirstOrDefault());
                     File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "UST.json"), UstJson);
                 }
             }

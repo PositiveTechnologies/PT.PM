@@ -2,11 +2,10 @@
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using System.Collections.Generic;
-using PT.PM.Matching.Patterns;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResult : MatchingResultBase<PatternRoot>
+    public class MatchingResult : MatchingResultBase<PatternRoot>, IMatchingResultBase
     {
         public SourceCodeFile SourceCodeFile => RootUst.SourceCodeFile;
 

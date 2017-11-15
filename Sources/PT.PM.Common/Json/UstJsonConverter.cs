@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
+using System.Linq;
 
 namespace PT.PM.Common.Json
 {
@@ -21,19 +21,30 @@ namespace PT.PM.Common.Json
             {
                 JObject jObject = JObject.Load(reader);
 
-                object target = null;
-                if (objectType == typeof(Ust) || objectType.IsSubclassOf(typeof(Ust)))
+                var kind = jObject[KindName].ToString();
+                Type type = ReflectionCache.UstKindFullClassName.Value[kind];
+
+                Ust target;
+                if (type == typeof(RootUst))
                 {
-                    var kind = jObject[nameof(Ust)].ToString();
-                    var type = ReflectionCache.UstKindFullClassName.Value[kind];
-                    target = Activator.CreateInstance(type);
+                    Language language = ((string)jObject[nameof(RootUst.Language)]).ParseLanguages().FirstOrDefault();
+                    target = (Ust)Activator.CreateInstance(type, null, language);
                 }
                 else
                 {
-                    throw new FormatException("Invalid JSON");
+                    target = (Ust)Activator.CreateInstance(type);
                 }
 
                 serializer.Populate(jObject.CreateReader(), target);
+
+                JToken textSpanObj = jObject[nameof(Ust.TextSpan)];
+                if (textSpanObj != null)
+                {
+                    int start = textSpanObj[nameof(TextSpan.Start)]?.ToObject<int>() ?? 0;
+                    int length = textSpanObj[nameof(TextSpan.Length)]?.ToObject<int>() ?? 0;
+                    target.TextSpan = new TextSpan(start, length);
+                }
+
                 return target;
             }
 

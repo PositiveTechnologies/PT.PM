@@ -37,6 +37,7 @@ namespace PT.PM.Cli
             bool isIndentedUst = false;
             bool isIncludeTextSpansInUst = true;
             bool isPreprocess = true;
+            Stage startStage = Stage.File;
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
@@ -59,6 +60,7 @@ namespace PT.PM.Cli
             parser.Setup<bool>("indented-ust").Callback(param => isIndentedUst = param);
             parser.Setup<bool>("text-spans-ust").Callback(param => isIncludeTextSpansInUst = param);
             parser.Setup<bool>("preprocess-ust").Callback(param => isPreprocess = param);
+            parser.Setup<Stage>("start-stage").Callback(param => startStage = param);
 
             ILogger logger = new ConsoleFileLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
@@ -102,8 +104,8 @@ namespace PT.PM.Cli
                         stage = Stage.Pattern;
                     }
 
-                    HashSet<Language> languages = languagesString.ToLanguages();
-                    SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir);
+                    HashSet<Language> languages = languagesString.ParseLanguages();
+                    SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir, startStage);
 
                     logger.SourceCodeRepository = sourceCodeRepository;
 
@@ -118,7 +120,8 @@ namespace PT.PM.Cli
                         MemoryConsumptionMb = memoryConsumptionMb,
                         IsIncludePreprocessing = isPreprocess,
                         LogsDir = logsDir,
-                        DumpDir = tempDir
+                        DumpDir = tempDir,
+                        StartStage = startStage
                     };
                     var stopwatch = Stopwatch.StartNew();
                     WorkflowResult workflowResult = workflow.Process();
