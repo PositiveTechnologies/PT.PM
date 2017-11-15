@@ -33,11 +33,11 @@ namespace PT.PM.Cli
             bool logErrors = false;
             bool logDebugs = false;
             bool showVersion = true;
-            bool isDumpUst = false;
-            bool isIndentedUst = false;
-            bool isIncludeTextSpansInUst = true;
+            bool isIndentedDump = false;
+            bool isIncludeTextSpansInDump = true;
             bool isPreprocess = true;
             Stage startStage = Stage.File;
+            string dumpStagesString = "";
 
             parser.Setup<string>('f', "files").Callback(f => fileName = f.NormDirSeparator());
             parser.Setup<string>('l', "languages").Callback(l => languagesString = l);
@@ -49,18 +49,18 @@ namespace PT.PM.Cli
             parser.Setup<int>('t', "threads").Callback(t => threadCount = t);
             parser.Setup<Stage>('s', "stage").Callback(s => stage = s);
             parser.Setup<int>("max-stack-size").Callback(mss => maxStackSize = mss);
-            parser.Setup<int>("max-timespan").Callback(mt => maxTimespan = mt);
-            parser.Setup<int>('m', "memory").Callback(m => memoryConsumptionMb = m);
-            parser.Setup<string>("logs-dir").Callback(lp => logsDir = lp.NormDirSeparator());
+            parser.Setup<int>("max-timespan").Callback(param => maxTimespan = param);
+            parser.Setup<int>('m', "memory").Callback(param => memoryConsumptionMb = param);
+            parser.Setup<string>("logs-dir").Callback(param => logsDir = param.NormDirSeparator());
             parser.Setup<string>("temp-dir").Callback(param => tempDir = param);
-            parser.Setup<bool>("log-errors").Callback(le => logErrors = le);
-            parser.Setup<bool>("log-debugs").Callback(ld => logDebugs = ld);
-            parser.Setup<bool>('v', "version").Callback(v => showVersion = v);
-            parser.Setup<bool>("dump-ust").Callback(param => isDumpUst = param);
-            parser.Setup<bool>("indented-ust").Callback(param => isIndentedUst = param);
-            parser.Setup<bool>("text-spans-ust").Callback(param => isIncludeTextSpansInUst = param);
+            parser.Setup<bool>("log-errors").Callback(param => logErrors = param);
+            parser.Setup<bool>("log-debugs").Callback(param => logDebugs = param);
+            parser.Setup<bool>("indented").Callback(param => isIndentedDump = param);
+            parser.Setup<bool>("text-spans").Callback(param => isIncludeTextSpansInDump = param);
             parser.Setup<bool>("preprocess-ust").Callback(param => isPreprocess = param);
             parser.Setup<Stage>("start-stage").Callback(param => startStage = param);
+            parser.Setup<string>('d', "dump").Callback(param => dumpStagesString = param);
+            parser.Setup<bool>('v', "version").Callback(v => showVersion = v);
 
             ILogger logger = new ConsoleFileLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
@@ -69,16 +69,10 @@ namespace PT.PM.Cli
 
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             var argsWithUsualSlashes = args.Select(arg => arg.Replace('/', '\\')).ToArray(); // TODO: bug in FluentCommandLineParser.
-            var parsingResult = parser.Parse(argsWithUsualSlashes);
+            ICommandLineParserResult parsingResult = parser.Parse(argsWithUsualSlashes);
 
             if (!parsingResult.HasErrors)
             {
-                if (isDumpUst)
-                {
-                    stage = Stage.Ust;
-                    logger = new DummyLogger();
-                }
-
                 try
                 {
                     if (showVersion)
@@ -111,6 +105,7 @@ namespace PT.PM.Cli
 
                     IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(patternsString);
 
+                    HashSet<Stage> dumpStages = new HashSet<Stage>(dumpStagesString.ParseCollection<Stage>());
                     var workflow = new Workflow(sourceCodeRepository, patternsRepository, stage)
                     {
                         Logger = logger,
@@ -120,17 +115,15 @@ namespace PT.PM.Cli
                         MemoryConsumptionMb = memoryConsumptionMb,
                         IsIncludePreprocessing = isPreprocess,
                         LogsDir = logsDir,
-                        DumpDir = tempDir,
-                        StartStage = startStage
+                        DumpDir = logsDir,
+                        StartStage = startStage,
+                        DumpStages = dumpStages,
+                        IndentedDump = isIndentedDump,
+                        DumpWithTextSpans = isIncludeTextSpansInDump
                     };
                     var stopwatch = Stopwatch.StartNew();
                     WorkflowResult workflowResult = workflow.Process();
                     stopwatch.Stop();
-
-                    if (isDumpUst)
-                    {
-                        DumpUst(isIndentedUst, isIncludeTextSpansInUst, workflowResult);
-                    }
 
                     if (stage != Stage.Pattern)
                     {
@@ -179,16 +172,6 @@ namespace PT.PM.Cli
                 Console.WriteLine("Press Enter to exit");
                 Console.ReadLine();
             }
-        }
-
-        private static void DumpUst(bool isIndentedUst, bool isIncludeTextSpansInUst, WorkflowResult workflowResult)
-        {
-            var serializer = new JsonUstSerializer
-            {
-                Indented = isIndentedUst,
-                IncludeTextSpans = isIncludeTextSpansInUst
-            };
-            Console.Write(serializer.Serialize(workflowResult.Usts));
         }
     }
 }
