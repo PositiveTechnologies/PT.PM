@@ -46,9 +46,9 @@ namespace PT.PM.Cli
                     ? param.NormDirSeparator()
                     : param.Replace('\\', '/')
             );
-            parser.Setup<int>('t', "threads").Callback(t => threadCount = t);
-            parser.Setup<Stage>('s', "stage").Callback(s => stage = s);
-            parser.Setup<int>("max-stack-size").Callback(mss => maxStackSize = mss);
+            parser.Setup<int>('t', "threads").Callback(param => threadCount = param);
+            parser.Setup<Stage>('s', "stage").Callback(param => stage = param);
+            parser.Setup<int>("max-stack-size").Callback(param => maxStackSize = param);
             parser.Setup<int>("max-timespan").Callback(param => maxTimespan = param);
             parser.Setup<int>('m', "memory").Callback(param => memoryConsumptionMb = param);
             parser.Setup<string>("logs-dir").Callback(param => logsDir = param.NormDirSeparator());
@@ -60,7 +60,7 @@ namespace PT.PM.Cli
             parser.Setup<bool>("preprocess-ust").Callback(param => isPreprocess = param);
             parser.Setup<Stage>("start-stage").Callback(param => startStage = param);
             parser.Setup<string>('d', "dump").Callback(param => dumpStagesString = param);
-            parser.Setup<bool>('v', "version").Callback(v => showVersion = v);
+            parser.Setup<bool>('v', "version").Callback(param => showVersion = param);
 
             ILogger logger = new ConsoleFileLogger();
             string commandLineArguments = "Command line arguments" + (args.Length > 0 
@@ -99,7 +99,7 @@ namespace PT.PM.Cli
                     }
 
                     HashSet<Language> languages = languagesString.ParseLanguages();
-                    SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir, startStage);
+                    SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(fileName, languages, tempDir, startStage == Stage.Ust);
 
                     logger.SourceCodeRepository = sourceCodeRepository;
 

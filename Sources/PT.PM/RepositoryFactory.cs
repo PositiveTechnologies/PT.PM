@@ -11,8 +11,7 @@ namespace PT.PM
 {
     public static class RepositoryFactory
     {
-        public static SourceCodeRepository CreateSourceCodeRepository(string path, IEnumerable<Language> languages, string tempDir,
-            Stage startStage)
+        public static SourceCodeRepository CreateSourceCodeRepository(string path, IEnumerable<Language> languages, string tempDir, bool isStartUstStage)
         {
             SourceCodeRepository sourceCodeRepository;
             if (Directory.Exists(path))
@@ -60,7 +59,7 @@ namespace PT.PM
             }
 
             sourceCodeRepository.Languages = new HashSet<Language>(languages);
-            sourceCodeRepository.LoadJson = startStage == Stage.Ust;
+            sourceCodeRepository.LoadJson = isStartUstStage;
 
             return sourceCodeRepository;
         }
