@@ -19,7 +19,7 @@ namespace PT.PM.Tests
             string filePath = Path.Combine(TestUtility.TestsDataPath, "Ust.json");
             SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(
                 filePath,
-                new List<Language>() { Php.Language }, "", Stage.Ust);
+                new List<Language>() { Php.Language }, "", true);
             var workflow = new Workflow(sourceCodeRepository)
             {
                 StartStage = Stage.Ust
