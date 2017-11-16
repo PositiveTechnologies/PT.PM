@@ -68,5 +68,15 @@ namespace PT.PM.Common
                 return ArrayUtils<TEnum>.EmptyArray;
             }
         }
+
+        public static T ParseEnum<T>(this string str, T defaultValue = default(T))
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return defaultValue;
+            }
+
+            return (T)Enum.Parse(typeof(T), str, true);
+        }
     }
 }
