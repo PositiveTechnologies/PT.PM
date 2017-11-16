@@ -28,10 +28,6 @@ namespace PT.PM.AntlrUtils
 
         public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
 
-        public int MaxStackSize { get; set; } = 0;
-
-        public int MaxTimespan { get; set; } = 0;
-
         public bool UseFastParseStrategyAtFirst { get; set; } = true;
 
         public int ClearCacheLexerFilesCount { get; set; } = 100;
@@ -61,40 +57,6 @@ namespace PT.PM.AntlrUtils
         }
 
         public ParseTree Parse(SourceCodeFile sourceCodeFile)
-        {
-            if (MaxStackSize == 0 && MaxTimespan == 0)
-            {
-                return TokenizeAndParse(sourceCodeFile);
-            }
-            else
-            {
-                ParseTree result = null;
-
-                Thread thread = new Thread(delegate ()
-                {
-                    result = TokenizeAndParse(sourceCodeFile);
-                },
-                MaxStackSize);
-                thread.Start();
-                bool finished = thread.Join(MaxTimespan == 0 ? int.MaxValue : MaxTimespan);
-                if (!finished)
-                {
-                    thread.Interrupt();
-                    thread.Abort();
-                    Logger.LogError(new ParsingException(sourceCodeFile.Name, message: $"Parsing error in \"{sourceCodeFile.Name}\": Timeout ({MaxTimespan}) expired"));
-                }
-
-                return result;
-            }
-        }
-
-        public void ClearCache()
-        {
-            ClearCacheIfRequired(InitLexer(null).Interpreter, lexerLock, 1);
-            ClearCacheIfRequired(InitParser(null).Interpreter, parserLock, 1);
-        }
-
-        protected virtual ParseTree TokenizeAndParse(SourceCodeFile sourceCodeFile)
         {
             AntlrParseTree result = null;
 
@@ -175,6 +137,12 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
+        public void ClearCache()
+        {
+            ClearCacheIfRequired(InitLexer(null).Interpreter, lexerLock, 1);
+            ClearCacheIfRequired(InitParser(null).Interpreter, parserLock, 1);
+        }
+
         protected ParserRuleContext ParseTokens(SourceCodeFile sourceCodeFile,
             AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
@@ -226,10 +194,6 @@ namespace PT.PM.AntlrUtils
                 }
             }
             ClearCacheIfRequired(parser.Interpreter, parserLock, ClearCacheParserFilesCount);
-
-#if DEBUG
-            var tree = syntaxTree.ToStringTree(parser);
-#endif
 
             return syntaxTree;
         }

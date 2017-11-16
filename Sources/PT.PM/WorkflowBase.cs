@@ -24,7 +24,6 @@ namespace PT.PM
         where TMatchingResult : MatchingResultBase<TPattern>
     {
         protected ILogger logger = DummyLogger.Instance;
-        protected int maxStackSize;
         protected Task filesCountTask;
         protected Task convertPatternsTask;
 
@@ -100,10 +99,6 @@ namespace PT.PM
         }
 
         public int ThreadCount { get; set; }
-
-        public int MaxStackSize { get; set; } = 0;
-
-        public int MaxTimespan { get; set; } = 0;
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
@@ -181,8 +176,6 @@ namespace PT.PM
                         if (parser is AntlrParser antlrParser)
                         {
                             antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
-                            antlrParser.MaxTimespan = MaxTimespan;
-                            antlrParser.MaxStackSize = MaxStackSize;
                             if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
                             {
                                 javaScriptAntlrParser.JavaScriptType = JavaScriptType;
