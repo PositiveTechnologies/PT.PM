@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Matching;
@@ -9,7 +8,7 @@ namespace PT.PM.Cli
 {
     public class CliProcessor : CliProcessorBase<Stage, WorkflowResult, PatternRoot, MatchingResult>
     {
-        protected override WorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository, out Stopwatch stopwatch)
+        protected override WorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository)
         {
             Stage stage = string.IsNullOrEmpty(parameters.InputFileNameOrDirectory)
                 ? Stage.Pattern
@@ -31,9 +30,8 @@ namespace PT.PM.Cli
                 RenderFormat = parameters.RenderFormat.ParseEnum<GraphvizOutputFormat>(),
                 RenderDirection = parameters.RenderDirection.ParseEnum<GraphvizDirection>(),
             };
-            stopwatch = Stopwatch.StartNew();
+
             WorkflowResult workflowResult = workflow.Process();
-            stopwatch.Stop();
 
             return workflowResult;
         }

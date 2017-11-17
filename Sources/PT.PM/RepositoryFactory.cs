@@ -34,7 +34,7 @@ namespace PT.PM
             }
             else
             {
-                string url = path.Replace(@"\", "/");
+                string url = path;
                 string projectName = null;
                 string urlWithoutHttp = TextUtils.HttpRegex.Replace(url, "");
 

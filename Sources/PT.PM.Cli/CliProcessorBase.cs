@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Cli
@@ -57,8 +58,9 @@ namespace PT.PM.Cli
             {
                 if (parameters.ShowVersion)
                 {
-                    string version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                    logger.LogInfo($"PT.PM version: {version}");
+                    AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+                    string name = assemblyName.Name.Replace(".Cli", "");
+                    logger.LogInfo($"{name} version: {assemblyName.Version}");
                 }
 
                 if (logger is FileLogger abstractLogger)
@@ -95,9 +97,10 @@ namespace PT.PM.Cli
 
                 IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns);
 
-                Stopwatch stopwatch;
+                var stopwatch = Stopwatch.StartNew();
                 TWorkflowResult workflowResult =
-                    InitWorkflowAndProcess(parameters, logger, sourceCodeRepository, patternsRepository, out stopwatch);
+                    InitWorkflowAndProcess(parameters, logger, sourceCodeRepository, patternsRepository);
+                stopwatch.Stop();
 
                 if (pmStage != Stage.Pattern)
                 {
@@ -139,7 +142,7 @@ namespace PT.PM.Cli
             return 0;
         }
 
-        protected abstract TWorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository, out Stopwatch stopwatch);
+        protected abstract TWorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
 
         protected abstract void LogStatistics(ILogger logger, TWorkflowResult workflowResult);
 

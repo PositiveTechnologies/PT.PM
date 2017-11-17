@@ -9,5 +9,26 @@ namespace PT.PM.Cli
             : base(logger, workflowResult)
         {
         }
+
+        protected override void LogAdvanced()
+        {
+            if (WorkflowResult.Stage >= Stage.SimplifiedUst)
+            {
+                LogStageTime(nameof(Stage.SimplifiedUst));
+                if (WorkflowResult.Stage >= Stage.Match)
+                {
+                    LogStageTime(nameof(Stage.Match));
+                }
+            }
+        }
+
+        protected override long GetTicksCount(string stage)
+        {
+            if (stage == nameof(Stage.SimplifiedUst))
+            {
+                return WorkflowResult.TotalSimplifyTicks;
+            }
+            return 0;
+        }
     }
 }

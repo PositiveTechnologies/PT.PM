@@ -30,64 +30,61 @@ namespace PT.PM.Cli
             {
                 if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.File)
                 {
-                    LogStageTime(Stage.File);
+                    LogStageTime(nameof(Stage.File));
                     if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.ParseTree)
                     {
-                        LogStageTime(Stage.ParseTree);
+                        LogStageTime(nameof(Stage.ParseTree));
                         if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.Ust)
                         {
-                            LogStageTime(Stage.Ust);
-                            if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.SimplifiedUst)
-                            {
-                                LogStageTime(Stage.SimplifiedUst);
-                                if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.Match)
-                                {
-                                    LogStageTime(Stage.Match);
-                                }
-                            }
+                            LogStageTime(nameof(Stage.Ust));
+                            LogAdvanced();
                         }
                     }
                 }
                 if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.Match ||
                     Convert.ToInt32(WorkflowResult.Stage) == (int)Stage.Pattern)
                 {
-                    LogStageTime(Stage.Pattern);
+                    LogStageTime(nameof(Stage.Pattern));
                 }
             }
         }
 
-        protected void LogStageTime(Stage stage)
+        protected abstract void LogAdvanced();
+
+        protected void LogStageTime(string stage)
         {
             long totalTimeTicks = WorkflowResult.GetTotalTimeTicks();
             long ticks = 0;
             switch (stage)
             {
-                case Stage.File:
+                case nameof(Stage.File):
                     ticks = WorkflowResult.TotalReadTicks;
                     break;
-                case Stage.ParseTree:
+                case nameof(Stage.ParseTree):
                     ticks = WorkflowResult.TotalParseTicks;
                     break;
-                case Stage.Ust:
+                case nameof(Stage.Ust):
                     ticks = WorkflowResult.TotalConvertTicks;
                     break;
-                case Stage.SimplifiedUst:
-                    ticks = WorkflowResult.TotalSimplifyTicks;
-                    break;
-                case Stage.Match:
+                case nameof(Stage.Match):
                     ticks = WorkflowResult.TotalMatchTicks;
                     break;
-                case Stage.Pattern:
+                case nameof(Stage.Pattern):
                     ticks = WorkflowResult.TotalPatternsTicks;
+                    break;
+                default:
+                    ticks = GetTicksCount(stage);
                     break;
             }
             Logger.LogInfo
                 ($"{"Total " + stage.ToString().ToLowerInvariant() + " time:",-22} {new TimeSpan(ticks)} {CalculatePercent(ticks, totalTimeTicks):00.00}%");
-            if (stage == Stage.ParseTree)
+            if (stage == nameof(Stage.ParseTree))
             {
                 LogAdditionalParserInfo();
             }
         }
+
+        protected abstract long GetTicksCount(string stage);
 
         protected void LogAdditionalParserInfo()
         {
