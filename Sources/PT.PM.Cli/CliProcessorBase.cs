@@ -79,11 +79,11 @@ namespace PT.PM.Cli
                     throw new ArgumentException("at least --files or --patterns parameter required");
                 }
 
-                if (!Enum.TryParse(parameters.Stage, out Stage pmStage))
+                if (!Enum.TryParse(parameters.Stage, true, out Stage pmStage))
                 {
                     pmStage = Stage.Match;
                 }
-                if (!Enum.TryParse(parameters.StartStage, out Stage pmStartStage))
+                if (!Enum.TryParse(parameters.StartStage, true, out Stage pmStartStage))
                 {
                     pmStartStage = Stage.File;
                 }
