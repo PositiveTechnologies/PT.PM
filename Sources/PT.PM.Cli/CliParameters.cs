@@ -12,10 +12,10 @@ namespace PT.PM.Cli
         [Option('l', "languages", HelpText = "Languages to be processed")]
         public string Languages { get; set; } = "";
 
-        [Option('p', "patterns", HelpText = "Patterns to be processed (encoded or base64)")]
+        [Option('p', "patterns", HelpText = "Patterns to be processed (json or base64 encoded)")]
         public string Patterns { get; set; } = "";
 
-        [Option('t', "threads", HelpText = "Number of processing threads.")]
+        [Option('t', "threads", HelpText = "Number of processing threads")]
         public int ThreadCount { get; set; } = 1;
 
         [Option("preprocess-ust", HelpText = "Is include ust simplification stage")]
@@ -54,7 +54,7 @@ namespace PT.PM.Cli
         [Option('d', "dump", HelpText = "Stages to be dumped (ParseTree, Ust)")]
         public string DumpStages { get; set; } = "";
 
-        [Option('v', "version", HelpText = "Is show version")]
+        [Option('v', "version", HelpText = "Show version or not")]
         public bool ShowVersion { get; set; } = true;
 
         [Option('r', "render", HelpText = "Stages to be rendered")]

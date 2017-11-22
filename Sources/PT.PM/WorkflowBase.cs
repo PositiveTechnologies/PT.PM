@@ -142,16 +142,7 @@ namespace PT.PM
                     return null;
                 }
 
-                stopwatch.Restart();
-                SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
-                stopwatch.Stop();
-
-                Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
-
-                workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-                workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
-                workflowResult.AddReadTime(stopwatch.ElapsedTicks);
-                workflowResult.AddResultEntity(sourceCodeFile);
+                SourceCodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -162,7 +153,7 @@ namespace PT.PM
                     ParseTree parseTree = null;
                     Language detectedLanguage = null;
 
-                    if (startStageHelper.IsDefault || startStageHelper.IsFile)
+                    if (startStageHelper.IsFile)
                     {
                         stopwatch.Restart();
                         detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
@@ -266,6 +257,22 @@ namespace PT.PM
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
                 File.WriteAllText(Path.Combine(DumpDir, name + "ust.json"), json);
             }
+        }
+
+        protected SourceCodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
+            stopwatch.Stop();
+
+            Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
+
+            workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
+            workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
+            workflowResult.AddReadTime(stopwatch.ElapsedTicks);
+            workflowResult.AddResultEntity(sourceCodeFile);
+
+            return sourceCodeFile;
         }
 
         protected void StartConvertPatternsTaskIfRequired(TWorkflowResult workflowResult)

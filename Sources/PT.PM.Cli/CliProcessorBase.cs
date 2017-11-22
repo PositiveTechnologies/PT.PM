@@ -91,7 +91,7 @@ namespace PT.PM.Cli
                 HashSet<Language> languages = parameters.Languages.ParseLanguages();
                 SourceCodeRepository sourceCodeRepository = RepositoryFactory.
                     CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir,
-                    pmStartStage == Stage.Ust);
+                    pmStartStage != Stage.File);
 
                 logger.SourceCodeRepository = sourceCodeRepository;
 
