@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 
 namespace PT.PM.Common
 {
@@ -36,10 +35,8 @@ namespace PT.PM.Common
 
         public int Length { get; }
 
-        [JsonIgnore]
         public int End => Start + Length;
 
-        [JsonIgnore]
         public bool IsEmpty => Length == 0;
 
         public bool Contains(int position)
@@ -94,6 +91,15 @@ namespace PT.PM.Common
         {
             int start = TextUtils.LineColumnToLinear(text, startLine, startColumn);
             int end = TextUtils.LineColumnToLinear(text, endLine, endColumn);
+            return FromBounds(start, end);
+        }
+
+        public static TextSpan Parse(string text)
+        {
+            string range = text.Substring(1, text.Length - 2);
+            int index = range.IndexOf("..");
+            int start = int.Parse(range.Remove(index));
+            int end = int.Parse(range.Substring(index + 2));
             return FromBounds(start, end);
         }
 
