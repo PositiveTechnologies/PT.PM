@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonBaseSerializer<T>
+    public abstract class JsonBaseSerializer<T> : ILoggable
     {
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
-        public bool IncludeTextSpans { get; set; } = true;
+        public ILogger Logger { get; set; }
 
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
+        public bool IncludeTextSpans { get; set; } = true;
 
         public bool Indented { get; set; } = false;
 
@@ -18,38 +18,48 @@ namespace PT.PM.Common.Json
 
         public bool IncludeCode { get; set; } = false;
 
+        public bool ShortTextSpans { get; set; } = true;
+
+        public string EmptyTextSpanFormat { get; set; } = null;
+
         protected abstract JsonConverterBase CreateConverterBase();
 
         public virtual T Deserialize(string data)
         {
-            JsonConverterBase baseJsonConverter = CreateConverterBase();
-            var result = JsonConvert.DeserializeObject<T>(data, baseJsonConverter, stringEnumConverter);
-            return result;
+            JsonSerializerSettings jsonSettings = PrepareSettings();
+            return JsonConvert.DeserializeObject<T>(data, jsonSettings);
         }
 
         public virtual string Serialize(T node)
         {
             JsonSerializerSettings jsonSettings = PrepareSettings();
-            return JsonConvert.SerializeObject(node, Indented ? Formatting.Indented : Formatting.None, jsonSettings);
+            return JsonConvert.SerializeObject(node, jsonSettings);
         }
 
         public string Serialize(IEnumerable<T> nodes)
         {
             JsonSerializerSettings jsonSettings = PrepareSettings();
-            return JsonConvert.SerializeObject(nodes, Indented ? Formatting.Indented : Formatting.None, jsonSettings);
+            return JsonConvert.SerializeObject(nodes, jsonSettings);
         }
 
-        private JsonSerializerSettings PrepareSettings()
+        public JsonSerializerSettings PrepareSettings()
         {
             JsonConverterBase jsonConverterBase = CreateConverterBase();
             jsonConverterBase.IncludeTextSpans = IncludeTextSpans;
             jsonConverterBase.ExcludeDefaults = ExcludeDefaults;
             var jsonSettings = new JsonSerializerSettings
             {
+                Formatting = Indented ? Formatting.Indented : Formatting.None,
                 Converters = new List<JsonConverter>
                 {
                     stringEnumConverter,
                     jsonConverterBase,
+                    new LanguageJsonConverter(),
+                    new TextSpanJsonConverter
+                    {
+                        ShortFormat = ShortTextSpans,
+                        EmptyTextSpanFormat = EmptyTextSpanFormat
+                    },
                     new SourceCodeFileJsonConverter
                     {
                         ExcludeDefaults = ExcludeDefaults,

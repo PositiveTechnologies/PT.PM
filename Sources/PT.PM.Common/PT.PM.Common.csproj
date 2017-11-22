@@ -47,7 +47,9 @@
     <Compile Include="Exceptions\ReadException.cs" />
     <Compile Include="Json\JsonBaseSerializer.cs" />
     <Compile Include="Json\JsonConverterBase.cs" />
+    <Compile Include="Json\LanguageJsonConverter.cs" />
     <Compile Include="Json\SourceCodeFileJsonConverter.cs" />
+    <Compile Include="Json\TextSpanJsonConverter.cs" />
     <Compile Include="LanguageUtils.cs" />
     <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Nodes\IUst.cs" />
