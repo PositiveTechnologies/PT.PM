@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Reflection;
 using System;
 
 namespace PT.PM.Common.Json
@@ -21,9 +22,23 @@ namespace PT.PM.Common.Json
             }
 
             JObject jObject = JObject.Load(reader);
-            Ust target = CreateUst(jObject);
+            string kind = jObject[KindName].ToString();
 
-            serializer.Populate(jObject.CreateReader(), target);
+            Ust target;
+            JsonReader newReader;
+            if (!ReflectionCache.UstKindFullClassName.Value.ContainsKey(kind))
+            {
+                // Try load from Ust subfield.
+                JToken jToken = jObject[nameof(Ust)];
+                target = CreateUst(jToken);
+                newReader = jToken.CreateReader();
+            }
+            else
+            {
+                target = CreateUst(jObject);
+                newReader = jObject.CreateReader();
+            }
+            serializer.Populate(newReader, target);
             return target;
         }
     }

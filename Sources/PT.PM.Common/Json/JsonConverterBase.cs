@@ -93,15 +93,12 @@ namespace PT.PM.Common.Json
         protected Ust CreateUst(object jObjectOrToken)
         {
             JObject jObject = jObjectOrToken as JObject;
-            JToken jToken = jObject == null
-                ? jObjectOrToken as JToken
-                : null;
+            JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
 
             string ustKind = jObject != null
-                    ? ((string)jObject[KindName])
-                    : jToken != null
-                    ? ((string)jToken[KindName])
-                    : "";
+                ? ((string)jObject[KindName]) : jToken != null
+                ? ((string)jToken[KindName]) : "";
+
             Type type = ReflectionCache.UstKindFullClassName.Value[ustKind];
 
             Ust ust;
