@@ -11,10 +11,7 @@
         "Kind": "StringLiteral",
         "Text": "pt.pm_default",
         "EscapeCharsLength": 1,
-        "TextSpan": {
-          "Start": 7,
-          "Length": 53
-        }
+        "TextSpan": "[7..60)"
       },
       "Members": [
         {
@@ -32,10 +29,7 @@
                       "Target": {
                         "Kind": "IdToken",
                         "Id": "echo",
-                        "TextSpan": {
-                          "Start": 18,
-                          "Length": 9
-                        }
+                        "TextSpan": "[18..27)"
                       },
                       "Arguments": {
                         "Kind": "ArgsUst",
@@ -45,52 +39,28 @@
                             "Left": {
                               "Kind": "IntLiteral",
                               "Value": 1,
-                              "TextSpan": {
-                                "Start": 23,
-                                "Length": 1
-                              }
+                              "TextSpan": "[23..24)"
                             },
                             "Operator": {
                               "Kind": "BinaryOperatorLiteral",
                               "BinaryOperator": "Divide",
-                              "TextSpan": {
-                                "Start": 24,
-                                "Length": 1
-                              }
+                              "TextSpan": "[24..25)"
                             },
                             "Right": {
                               "Kind": "IntLiteral",
-                              "TextSpan": {
-                                "Start": 25,
-                                "Length": 1
-                              }
+                              "TextSpan": "[25..26)"
                             },
-                            "TextSpan": {
-                              "Start": 23,
-                              "Length": 3
-                            }
+                            "TextSpan": "[23..26)"
                           }
                         ],
-                        "TextSpan": {
-                          "Start": 23,
-                          "Length": 3
-                        }
+                        "TextSpan": "[23..26)"
                       },
-                      "TextSpan": {
-                        "Start": 18,
-                        "Length": 9
-                      }
+                      "TextSpan": "[18..27)"
                     },
-                    "TextSpan": {
-                      "Start": 18,
-                      "Length": 9
-                    }
+                    "TextSpan": "[18..27)"
                   }
                 ],
-                "TextSpan": {
-                  "Start": 11,
-                  "Length": 19
-                }
+                "TextSpan": "[11..30)"
               },
               "CatchClauses": [
                 {
@@ -98,52 +68,31 @@
                   "Type": {
                     "Kind": "TypeToken",
                     "TypeText": "Exception",
-                    "TextSpan": {
-                      "Start": 38,
-                      "Length": 9
-                    }
+                    "TextSpan": "[38..47)"
                   },
                   "VarName": {
                     "Kind": "IdToken",
                     "Id": "e",
-                    "TextSpan": {
-                      "Start": 48,
-                      "Length": 2
-                    }
+                    "TextSpan": "[48..50)"
                   },
                   "Body": {
                     "Kind": "BlockStatement",
                     "Statements": [],
-                    "TextSpan": {
-                      "Start": 52,
-                      "Length": 4
-                    }
+                    "TextSpan": "[52..56)"
                   },
-                  "TextSpan": {
-                    "Start": 31,
-                    "Length": 25
-                  }
+                  "TextSpan": "[31..56)"
                 }
               ],
-              "TextSpan": {
-                "Start": 7,
-                "Length": 49
-              }
+              "TextSpan": "[7..56)"
             },
             {
               "Kind": "EmptyStatement",
-              "TextSpan": {
-                "Start": 58,
-                "Length": 2
-              }
+              "TextSpan": "[58..60)"
             }
           ]
         }
       ],
-      "TextSpan": {
-        "Start": 7,
-        "Length": 53
-      }
+      "TextSpan": "[7..60)"
     }
   ],
   "Comments": []

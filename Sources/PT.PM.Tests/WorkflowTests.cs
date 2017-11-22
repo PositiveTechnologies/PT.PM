@@ -22,7 +22,8 @@ namespace PT.PM.Tests
                 new List<Language>() { Php.Language }, "", true);
             var workflow = new Workflow(sourceCodeRepository)
             {
-                StartStage = Stage.Ust
+                StartStage = Stage.Ust,
+                IsAsyncPatternsConversion = false
             };
             var result = workflow.Process();
 
