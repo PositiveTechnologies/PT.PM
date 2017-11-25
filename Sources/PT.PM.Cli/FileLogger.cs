@@ -85,10 +85,7 @@ namespace PT.PM.Cli
                     var message = new StringBuilder();
                     message.AppendLine("---------------------");
                     message.AppendLine($"{nameof(MatchingResultDto.MatchedCode)}: {matchedCode}");
-                    message.AppendLine($"{nameof(MatchingResultDto.BeginLine)}: {matchingResultDto.BeginLine}");
-                    message.AppendLine($"{nameof(MatchingResultDto.BeginColumn)}: {matchingResultDto.BeginColumn}");
-                    message.AppendLine($"{nameof(MatchingResultDto.EndLine)}: {matchingResultDto.EndLine}");
-                    message.AppendLine($"{nameof(MatchingResultDto.EndColumn)}: {matchingResultDto.EndColumn}");
+                    message.AppendLine($"Location: [{matchingResultDto.BeginLine};{matchingResultDto.BeginColumn}] - [{matchingResultDto.EndLine};{matchingResultDto.EndColumn}]");
                     message.AppendLine($"{nameof(MatchingResultDto.PatternKey)}: {matchingResultDto.PatternKey}");
                     message.AppendLine($"{nameof(MatchingResultDto.SourceFile)}: {matchingResultDto.SourceFile}");
                     string result = message.ToString();
