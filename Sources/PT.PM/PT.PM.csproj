@@ -57,6 +57,8 @@
     <Compile Include="RepositoryFactory.cs" />
     <Compile Include="SevenZipExtractor.cs" />
     <Compile Include="Stage.cs" />
+    <Compile Include="StageDotRenderer.cs" />
+    <Compile Include="StageDumper.cs" />
     <Compile Include="StageHelper.cs" />
     <Compile Include="StandartArchiveExtractor.cs" />
     <Compile Include="StringCompressorEscaper.cs" />

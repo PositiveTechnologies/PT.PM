@@ -46,6 +46,7 @@ namespace PT.PM
             var result = workflowResult ??
                 new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
             result.BaseLanguages = BaseLanguages.ToArray();
+            result.RenderStages = RenderStages;
 
             StartConvertPatternsTaskIfRequired(result);
             if (Stage == Stage.Pattern)
@@ -134,6 +135,8 @@ namespace PT.PM
 
                         cancellationToken.ThrowIfCancellationRequested();
                     }
+
+                    DumpGraphs(workflowResult);
                 }
             }
             catch (OperationCanceledException)
@@ -160,6 +163,21 @@ namespace PT.PM
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
+            }
+        }
+
+        private void DumpGraphs(WorkflowResult result)
+        {
+            if (result.RenderStages.Any())
+            {
+                var dumper = new StageDumper(result)
+                {
+                    DumpDir = DumpDir,
+                    Stages = RenderStages,
+                    RenderFormat = RenderFormat,
+                    RenderDirection = RenderDirection
+                };
+                dumper.Dump();
             }
         }
     }

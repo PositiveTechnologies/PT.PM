@@ -71,7 +71,6 @@
     <Compile Include="Nodes\UstUtils.cs" />
     <Compile Include="Nodes\Tokens\Literals\Literal.cs" />
     <Compile Include="TextUtils.cs" />
-    <Compile Include="UstDotRenderer.cs" />
     <Compile Include="CodeRepository\MemoryCodeRepository.cs" />
     <Compile Include="DotFormatUtils.cs" />
     <Compile Include="Exceptions\PreprocessingException.cs" />

@@ -65,7 +65,8 @@ namespace PT.PM
         {
             get
             {
-                if (!stageExt.IsUst && !stageExt.IsSimplifiedUst && !IsIncludeIntermediateResult)
+                if (!stageExt.IsUst && !stageExt.IsSimplifiedUst && !IsIncludeIntermediateResult &&
+                    RenderStages.All(stage => Convert.ToInt32(stage) != (int)PM.Stage.Ust))
                 {
                     ThrowInvalidStageException(PM.Stage.Ust.ToString());
                 }
@@ -114,7 +115,8 @@ namespace PT.PM
 
         public void AddResultEntity(ParseTree parseTree)
         {
-            if (stageExt.IsParseTree || IsIncludeIntermediateResult)
+            if (stageExt.IsParseTree || IsIncludeIntermediateResult ||
+                RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.ParseTree))
             {
                 AddEntity(parseTrees, parseTree);
             }
@@ -122,7 +124,8 @@ namespace PT.PM
 
         public void AddResultEntity(RootUst ust, bool convert)
         {
-            if (IsIncludeIntermediateResult || (convert && stageExt.IsUst) || (!convert && stageExt.IsSimplifiedUst))
+            if (IsIncludeIntermediateResult || (convert && stageExt.IsUst) || (!convert && stageExt.IsSimplifiedUst) ||
+                RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.Ust))
             {
                 int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
                 lock (usts)

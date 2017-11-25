@@ -255,6 +255,7 @@ namespace PT.PM
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
+                Directory.CreateDirectory(DumpDir);
                 File.WriteAllText(Path.Combine(DumpDir, name + "ust.json"), json);
             }
         }
