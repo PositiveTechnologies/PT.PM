@@ -12,6 +12,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -45,6 +46,7 @@ namespace PT.PM.PatternEditor
         private string parseTree;
         private string ustJson;
         private string matchingResultText = "MATCHINGS";
+        private bool oldIsIncludeTextSpans;
 
         public MainWindowViewModel(Window w)
         {
@@ -113,6 +115,11 @@ namespace PT.PM.PatternEditor
             {
                 OpenedFileName = "";
                 sourceCodeTextBox.Text = "";
+            });
+
+            OpenDumpDirectory.Subscribe(_ =>
+            {
+                Process.Start(ServiceLocator.TempDirectory);
             });
 
             if (string.IsNullOrEmpty(Settings.SourceCodeFile) || !File.Exists(Settings.SourceCodeFile))
@@ -307,7 +314,7 @@ namespace PT.PM.PatternEditor
                 return new ObservableCollection<Language>(LanguageUtils.Languages.Values);
             }
         }
-        
+
         public Language SelectedLanguage
         {
             get
@@ -368,6 +375,8 @@ namespace PT.PM.PatternEditor
         public ReactiveCommand<object> ReloadFile { get; } = ReactiveCommand.Create();
 
         public ReactiveCommand<object> Reset { get; } = ReactiveCommand.Create();
+
+        public ReactiveCommand<object> OpenDumpDirectory { get; } = ReactiveCommand.Create();
 
         public string OpenedFullFileName => sourceCodeFileName;
 
@@ -534,12 +543,31 @@ namespace PT.PM.PatternEditor
             }
         }
 
+        public bool IsIncludeTextSpans
+        {
+            get
+            {
+                return Settings.IsIncludeTextSpans;
+            }
+            set
+            {
+                if (Settings.IsIncludeTextSpans != value)
+                {
+                    Settings.IsIncludeTextSpans = value;
+                    Settings.Save();
+                    this.RaisePropertyChanged();
+                    CheckSourceCode();
+                }
+            }
+        }
+
         private void CheckSourceCode()
         {
             if (oldSourceCode != sourceCodeTextBox.Text ||
                 oldSelectedLanguage != Settings.SourceCodeLanguage ||
                 oldEndStage != Settings.SelectedStage ||
-                oldJavaScriptType != Settings.JavaScriptType)
+                oldJavaScriptType != Settings.JavaScriptType ||
+                oldIsIncludeTextSpans != Settings.IsIncludeTextSpans)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
@@ -552,6 +580,7 @@ namespace PT.PM.PatternEditor
                 oldSelectedLanguage = Settings.SourceCodeLanguage;
                 oldEndStage = Settings.SelectedStage;
                 oldJavaScriptType = Settings.JavaScriptType;
+                oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
             }
         }
 
@@ -572,8 +601,11 @@ namespace PT.PM.PatternEditor
             var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
             {
                 IsIncludeIntermediateResult = true,
+                DumpWithTextSpans = IsIncludeTextSpans,
                 Logger = sourceCodeLogger,
-                DumpDir = ServiceLocator.TempDirectory
+                RenderFormat = GraphvizOutputFormat.Svg,
+                DumpDir = ServiceLocator.TempDirectory,
+                RenderStages = new HashSet<Stage>() { Stage.Ust }
             };
             if (SelectedLanguage == JavaScript.Language)
             {
@@ -597,15 +629,17 @@ namespace PT.PM.PatternEditor
 
             if (IsDeveloperMode)
             {
-                Tokens = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "tokens"));
-                ParseTree = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "parseTree"));
+                string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, "tokens");
+                string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, "parseTree");
+                Tokens = File.Exists(tokensFileName) ? File.ReadAllText(tokensFileName) : "";
+                ParseTree = File.Exists(parseTreeFileName) ? File.ReadAllText(parseTreeFileName) : "";
 
                 TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
                 ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
 
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {
-                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "ust.json"));
+                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", "ust.json"));
                 }
             }
 

@@ -62,6 +62,8 @@ namespace PT.PM.PatternEditor
 
         public bool IsPatternJsonExpanded { get; set; } = false;
 
+        public bool IsIncludeTextSpans { get; set; } = false;
+
         public static Settings Load()
         { 
             if (File.Exists(settingsFileName))
