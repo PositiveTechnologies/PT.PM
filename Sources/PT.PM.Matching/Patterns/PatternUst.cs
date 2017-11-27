@@ -37,6 +37,8 @@ namespace PT.PM.Matching.Patterns
     public abstract class PatternUst<TMatchUst> : PatternUst, IUst<PatternUst, PatternRoot>, IUst
         where TMatchUst : Ust
     {
+        public Type UstType => typeof(TMatchUst);
+
         protected PatternUst()
         {
         }

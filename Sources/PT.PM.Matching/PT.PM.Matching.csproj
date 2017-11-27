@@ -56,7 +56,7 @@
     <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
     <Compile Include="PatternsRepository\IPatternsRepository.cs" />
     <Compile Include="PatternsRepository\JsonPatternsRepository.cs" />
-    <Compile Include="Patterns\PatternExpression.cs" />
+    <Compile Include="Patterns\IPatternExpression.cs" />
     <Compile Include="Patterns\PatternAny.cs" />
     <Compile Include="Patterns\PatternBaseReferenceToken.cs" />
     <Compile Include="Patterns\PatternAssignmentExpression.cs" />
