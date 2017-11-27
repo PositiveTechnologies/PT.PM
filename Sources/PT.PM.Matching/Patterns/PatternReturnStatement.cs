@@ -23,6 +23,7 @@ namespace PT.PM.Matching.Patterns
         public override MatchingContext Match(ReturnStatement returnStatement, MatchingContext context)
         {
             MatchingContext newContext = Expression.MatchUst(returnStatement.Return, context);
+
             return newContext.Success
                 ? newContext.AddMatch(returnStatement)
                 : newContext.Fail();

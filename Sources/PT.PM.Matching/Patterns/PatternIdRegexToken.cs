@@ -53,23 +53,15 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Token token, MatchingContext context)
         {
-            MatchingContext newContext;
-
             Regex regex = token.Root.Language.IsCaseInsensitive
                 ? caseInsensitiveRegex
                 : this.regex;
             string tokenText = token.TextValue;
             TextSpan textSpan = regex.Match(tokenText).GetTextSpan(tokenText);
-            if (!textSpan.IsEmpty)
-            {
-                newContext = context.AddMatch(token);
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
 
-            return newContext;
+            return !textSpan.IsEmpty
+                ? context.AddMatch(token)
+                : context.Fail();
         }
     }
 }

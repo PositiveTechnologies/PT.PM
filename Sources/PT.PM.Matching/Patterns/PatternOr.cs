@@ -35,10 +35,10 @@ namespace PT.PM.Matching.Patterns
             var matchedTextSpans = new List<TextSpan>();
 
             bool success = false;
-            foreach (PatternUst alt in Patterns)
+            foreach (PatternUst pattern in Patterns)
             {
                 var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
-                MatchingContext match = alt.MatchUst(ust, altContext);
+                MatchingContext match = pattern.MatchUst(ust, altContext);
                 if (match.Success)
                 {
                     success = true;
@@ -50,16 +50,9 @@ namespace PT.PM.Matching.Patterns
                 }
             }
 
-            if (success)
-            {
-                context = context.AddMatches(matchedTextSpans);
-            }
-            else
-            {
-                context = context.Fail();
-            }
-
-            return context;
+            return success
+                ? context.AddMatches(matchedTextSpans)
+                : context.Fail();
         }
     }
 }

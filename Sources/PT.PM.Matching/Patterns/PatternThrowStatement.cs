@@ -22,19 +22,11 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(ThrowStatement throwStatement, MatchingContext context)
         {
-            MatchingContext newContext;
+            MatchingContext newContext = Expression.MatchUst(throwStatement.ThrowExpression, context);
 
-            newContext = Expression.MatchUst(throwStatement.ThrowExpression, context);
-            if (newContext.Success)
-            {
-                newContext = newContext.AddMatch(throwStatement);
-            }
-            else
-            {
-                newContext = newContext.Fail();
-            }
-
-            return newContext;
+            return newContext.Success
+                ? newContext.AddMatch(throwStatement)
+                : newContext.Fail();
         }
     }
 }

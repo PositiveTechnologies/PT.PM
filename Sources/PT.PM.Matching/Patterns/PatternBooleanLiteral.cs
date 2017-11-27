@@ -29,18 +29,9 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(BooleanLiteral booleanLiteral, MatchingContext context)
         {
-            MatchingContext newContext;
-
-            if (Boolean == null || Boolean.Value.Equals(booleanLiteral.Value))
-            {
-                newContext = context.AddMatch(booleanLiteral);
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
-
-            return newContext;
+            return (Boolean == null || Boolean.Value.Equals(booleanLiteral.Value))
+                ? context.AddMatch(booleanLiteral)
+                : context.Fail();
         }
     }
 }

@@ -60,14 +60,9 @@ namespace PT.PM.Matching.Patterns
             }
             else
             {
-                if (newContext.Vars.ContainsKey(Id))
-                {
-                    newContext = newContext.AddMatch(idToken);
-                }
-                else
-                {
-                    newContext = newContext.Fail();
-                }
+                newContext = newContext.Vars.ContainsKey(Id)
+                    ? newContext.AddMatch(idToken)
+                    : newContext.Fail();
             }
 
             return newContext;

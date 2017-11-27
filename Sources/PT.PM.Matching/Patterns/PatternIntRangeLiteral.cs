@@ -40,18 +40,9 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(IntLiteral intLiteral, MatchingContext context)
         {
-            MatchingContext newContext;
-
-            if (intLiteral.Value >= MinValue && intLiteral.Value < MaxValue)
-            {
-                newContext = context.AddMatch(intLiteral);
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
-
-            return newContext;
+            return intLiteral.Value >= MinValue && intLiteral.Value < MaxValue
+                ? context.AddMatch(intLiteral)
+                : context.Fail();
         }
     }
 }

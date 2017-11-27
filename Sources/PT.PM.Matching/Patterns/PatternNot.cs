@@ -23,14 +23,10 @@ namespace PT.PM.Matching.Patterns
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
             MatchingContext newContext = Pattern.MatchUst(ust, context);
-            if (newContext.Success)
-            {
-                return newContext.Fail();
-            }
-            else
-            {
-                return newContext.AddMatch(ust);
-            }
+
+            return newContext.Success
+                ? newContext.Fail()
+                : newContext.AddMatch(ust);
         }
     }
 }

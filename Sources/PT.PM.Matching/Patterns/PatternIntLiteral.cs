@@ -21,18 +21,9 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(IntLiteral intLiteral, MatchingContext context)
         {
-            MatchingContext newContext;
-
-            if (intLiteral.Value == Value)
-            {
-                newContext = context.AddMatch(intLiteral);
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
-
-            return newContext;
+            return intLiteral.Value == Value
+                ? context.AddMatch(intLiteral)
+                : context.Fail();
         }
     }
 }

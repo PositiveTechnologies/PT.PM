@@ -30,21 +30,13 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(StringLiteral stringLiteral, MatchingContext context)
         {
-            MatchingContext newContext;
-
             IEnumerable<TextSpan> matches = StringRegex
                 .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength)
                 .Select(location => location.AddOffset(stringLiteral.TextSpan.Start));
-            if (matches.Count() > 0)
-            {
-                newContext = context.AddMatches(matches);
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
 
-            return newContext;
+            return matches.Count() > 0
+                ? context.AddMatches(matches)
+                : context.Fail();
         }
     }
 }
