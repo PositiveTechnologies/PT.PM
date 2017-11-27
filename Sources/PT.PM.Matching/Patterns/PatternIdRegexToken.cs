@@ -1,12 +1,10 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdRegexToken : PatternUst
+    public class PatternIdRegexToken : PatternUst<Token>
     {
         private Regex regex;
         private Regex caseInsensitiveRegex;
@@ -53,25 +51,18 @@ namespace PT.PM.Matching.Patterns
             return $"<[{regexString}]>";
         }
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Token token, MatchingContext context)
         {
             MatchingContext newContext;
 
-            if (ust is Token token)
+            Regex regex = token.Root.Language.IsCaseInsensitive
+                ? caseInsensitiveRegex
+                : this.regex;
+            string tokenText = token.TextValue;
+            TextSpan textSpan = regex.Match(tokenText).GetTextSpan(tokenText);
+            if (!textSpan.IsEmpty)
             {
-                Regex regex = ust.Root.Language.IsCaseInsensitive
-                    ? caseInsensitiveRegex
-                    : this.regex;
-                string tokenText = token.TextValue;
-                TextSpan textSpan = regex.Match(tokenText).GetTextSpan(tokenText);
-                if (!textSpan.IsEmpty)
-                {
-                    newContext = context.AddMatch(ust);
-                }
-                else
-                {
-                    newContext = context.Fail();
-                }
+                newContext = context.AddMatch(token);
             }
             else
             {

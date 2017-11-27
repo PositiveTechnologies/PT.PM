@@ -1,12 +1,11 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdToken : PatternUst
+    public class PatternIdToken : PatternUst<Token>
     {
         private string id = "";
         private Regex caseInsensitiveRegex;
@@ -37,19 +36,19 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Id;
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Token token, MatchingContext context)
         {
             MatchingContext newContext;
 
-            if (ust is Token token && !(ust is CommentLiteral))
+            if (!(token is CommentLiteral))
             {
                 string tokenText = token.TextValue;
-                if (ust.Root.Language.IsCaseInsensitive)
+                if (token.Root.Language.IsCaseInsensitive)
                 {
                     TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan(tokenText);
                     if (!textSpan.IsEmpty)
                     {
-                        newContext = context.AddMatch(ust);
+                        newContext = context.AddMatch(token);
                     }
                     else
                     {
@@ -58,7 +57,7 @@ namespace PT.PM.Matching.Patterns
                 }
                 else if (id.Equals(tokenText))
                 {
-                    newContext = context.AddMatch(ust);
+                    newContext = context.AddMatch(token);
                 }
                 else
                 {

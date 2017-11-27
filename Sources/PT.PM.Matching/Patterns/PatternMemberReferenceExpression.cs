@@ -1,10 +1,9 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternMemberReferenceExpression : PatternUst
+    public class PatternMemberReferenceExpression : PatternUst<MemberReferenceExpression>
     {
         public PatternUst Target { get; set; }
 
@@ -24,26 +23,17 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}.{Name}";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(MemberReferenceExpression memberRef, MatchingContext context)
         {
-            MatchingContext newContext;
-
-            if (ust is MemberReferenceExpression memberRef)
+            MatchingContext newContext = Target.MatchUst(memberRef.Target, context);
+            if (!newContext.Success)
             {
-                newContext = Target.Match(memberRef.Target, context);
-                if (!newContext.Success)
-                {
-                    return newContext;
-                }
-
-                newContext = Name.Match(memberRef.Name, newContext);
-            }
-            else
-            {
-                newContext = context.Fail();
+                return newContext;
             }
 
-            return newContext.AddUstIfSuccess(ust);
+            newContext = Name.MatchUst(memberRef.Name, newContext);
+
+            return newContext.AddUstIfSuccess(memberRef);
         }
     }
 }

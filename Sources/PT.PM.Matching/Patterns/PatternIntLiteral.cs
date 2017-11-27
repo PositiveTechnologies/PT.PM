@@ -1,11 +1,9 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntLiteral : PatternUst
+    public class PatternIntLiteral : PatternUst<IntLiteral>
     {
         public long Value { get; set; }
 
@@ -21,13 +19,13 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Value.ToString();
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(IntLiteral intLiteral, MatchingContext context)
         {
             MatchingContext newContext;
 
-            if (ust is IntLiteral intLiteral && intLiteral.Value == Value)
+            if (intLiteral.Value == Value)
             {
-                newContext = context.AddMatch(ust);
+                newContext = context.AddMatch(intLiteral);
             }
             else
             {

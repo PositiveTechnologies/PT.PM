@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternVarOrFieldDeclaration : PatternUst
+    public class PatternVarOrFieldDeclaration : PatternUst<Ust>
     {
         public bool LocalVariable { get; set; }
 
@@ -61,7 +61,7 @@ namespace PT.PM.Matching.Patterns
                 return newContext;
             }
 
-            newContext = Type.Match(fieldDeclaration.Type, newContext);
+            newContext = Type.MatchUst(fieldDeclaration.Type, newContext);
             if (!newContext.Success)
             {
                 return newContext;
@@ -79,7 +79,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            MatchingContext newContext = Type.Match(variableDeclaration.Type, context);
+            MatchingContext newContext = Type.MatchUst(variableDeclaration.Type, context);
             if (!newContext.Success)
             {
                 return newContext;
@@ -105,7 +105,7 @@ namespace PT.PM.Matching.Patterns
                 }
                 else
                 {
-                    match = Assignment.Left.Match(variable.Left, altContext);
+                    match = Assignment.Left.MatchUst(variable.Left, altContext);
                 }
                 if (match.Success)
                 {

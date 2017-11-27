@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternTryCatchStatement : PatternUst
+    public class PatternTryCatchStatement : PatternUst<TryCatchStatement>
     {
         public List<PatternUst> ExceptionTypes { get; set; }
 
@@ -29,38 +28,31 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"try catch {{ }}";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(TryCatchStatement tryCatchStatement, MatchingContext context)
         {
             MatchingContext newContext;
 
-            if (ust is TryCatchStatement tryCatchStatement)
-            {
-                if (tryCatchStatement.CatchClauses == null)
-                {
-                    newContext = context.Fail();
-                }
-                else
-                {
-                    bool result = tryCatchStatement.CatchClauses.Any(catchClause =>
-                    {
-                        if (IsCatchBodyEmpty && catchClause.Body.Statements.Any())
-                        {
-                            return false;
-                        }
-
-                        return !ExceptionTypes.Any() ||
-                            ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
-                    });
-
-                    newContext = context.Set(result);
-                }
-            }
-            else
+            if (tryCatchStatement.CatchClauses == null)
             {
                 newContext = context.Fail();
             }
+            else
+            {
+                bool result = tryCatchStatement.CatchClauses.Any(catchClause =>
+                {
+                    if (IsCatchBodyEmpty && catchClause.Body.Statements.Any())
+                    {
+                        return false;
+                    }
 
-            return newContext.AddUstIfSuccess(ust);
+                    return !ExceptionTypes.Any() ||
+                        ExceptionTypes.Any(type => type.MatchUst(catchClause.Type, context).Success);
+                });
+
+                newContext = context.Set(result);
+            }
+
+            return newContext.AddUstIfSuccess(tryCatchStatement);
         }
     }
 }

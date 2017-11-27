@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAnd : PatternUst
+    public class PatternAnd : PatternUst<Ust>
     {
         public List<PatternUst> Patterns { get; set; } = new List<PatternUst>();
 
@@ -32,9 +32,9 @@ namespace PT.PM.Matching.Patterns
         {
             MatchingContext newContext = context;
 
-            foreach (PatternUst expression in Patterns)
+            foreach (PatternUst pattern in Patterns)
             {
-                newContext = expression.Match(ust, newContext);
+                newContext = pattern.MatchUst(ust, newContext);
                 if (!newContext.Success)
                 {
                     return newContext.Fail();

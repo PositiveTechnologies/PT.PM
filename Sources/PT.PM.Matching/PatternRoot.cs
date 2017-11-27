@@ -113,7 +113,7 @@ namespace PT.PM.Matching
         private static void MatchAndAddResult(
             PatternUst patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
         {
-            if (patternUst.Match(ust, context).Success)
+            if (patternUst.MatchUst(ust, context).Success)
             {
                 if (context.Locations.Count == 0)
                 {

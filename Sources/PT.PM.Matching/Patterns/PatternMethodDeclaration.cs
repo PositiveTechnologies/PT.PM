@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternMethodDeclaration : PatternUst
+    public class PatternMethodDeclaration : PatternUst<MethodDeclaration>
     {
         public bool AnyBody { get; set; }
 
@@ -52,62 +51,53 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(MethodDeclaration methodDeclaration, MatchingContext context)
         {
-            MatchingContext newContext;
-
-            if (ust is MethodDeclaration methodDeclaration)
+            MatchingContext newContext = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
+            if (!newContext.Success)
             {
-                newContext = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
-                if (!newContext.Success)
-                {
-                    return newContext;
-                }
+                return newContext;
+            }
 
-                newContext = Name.Match(methodDeclaration.Name, newContext);
-                if (!newContext.Success)
-                {
-                    return newContext;
-                }
+            newContext = Name.MatchUst(methodDeclaration.Name, newContext);
+            if (!newContext.Success)
+            {
+                return newContext;
+            }
 
-                if (!AnyBody)
+            if (!AnyBody)
+            {
+                if (Body != null)
                 {
-                    if (Body != null)
+                    if (Body is PatternArbitraryDepth || Body is PatternStatements)
                     {
-                        if (Body is PatternArbitraryDepth || Body is PatternStatements)
+                        newContext = Body.MatchUst(methodDeclaration.Body, newContext);
+                    }
+                    else
+                    {
+                        var otherStatements = methodDeclaration.Body.Statements;
+                        if (otherStatements.Count() == 1)
                         {
-                            newContext = Body.Match(methodDeclaration.Body, newContext);
+                            newContext = Body.MatchUst(otherStatements.First(), newContext);
                         }
                         else
                         {
-                            var otherStatements = methodDeclaration.Body.Statements;
-                            if (otherStatements.Count() == 1)
-                            {
-                                newContext = Body.Match(otherStatements.First(), newContext);
-                            }
-                            else
-                            {
-                                return newContext.Fail();
-                            }
-                        }
-
-                        if (!newContext.Success)
-                        {
-                            return newContext;
+                            return newContext.Fail();
                         }
                     }
-                    else if (methodDeclaration.Body != null)
+
+                    if (!newContext.Success)
                     {
-                        return newContext.Fail();
+                        return newContext;
                     }
                 }
-            }
-            else
-            {
-                newContext = context.Fail();
+                else if (methodDeclaration.Body != null)
+                {
+                    return newContext.Fail();
+                }
             }
 
-            return newContext.AddUstIfSuccess(ust);
+            return newContext.AddUstIfSuccess(methodDeclaration);
         }
 
         private void InitFields(IEnumerable<PatternUst> modifiers, PatternUst name, bool anyBody)

@@ -26,7 +26,7 @@ namespace PT.PM.Matching
                 int i = 0;
                 while (i < sublistToMatch.Count)
                 {
-                    newContext = sublistToMatch[i].Match(element, newContext);
+                    newContext = sublistToMatch[i].MatchUst(element, newContext);
                     if (newContext.Success)
                     {
                         matches.Add(element);

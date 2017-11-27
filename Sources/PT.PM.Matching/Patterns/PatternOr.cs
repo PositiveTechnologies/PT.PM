@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternOr : PatternUst
+    public class PatternOr : PatternUst<Ust>
     {
         public List<PatternUst> Patterns { get; set; }
 
@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Patterns
             foreach (PatternUst alt in Patterns)
             {
                 var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
-                MatchingContext match = alt.Match(ust, altContext);
+                MatchingContext match = alt.MatchUst(ust, altContext);
                 if (match.Success)
                 {
                     success = true;

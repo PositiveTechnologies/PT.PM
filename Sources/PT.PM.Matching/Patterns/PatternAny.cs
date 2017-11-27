@@ -1,9 +1,8 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
+﻿using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAny : PatternUst
+    public class PatternAny : PatternUst<Ust>
     {
         public static PatternAny Instance = new PatternAny();
 

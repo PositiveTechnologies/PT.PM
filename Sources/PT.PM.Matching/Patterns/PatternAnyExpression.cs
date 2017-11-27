@@ -1,10 +1,9 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAnyExpression : PatternUst
+    public class PatternAnyExpression : PatternUst<Expression>
     {
         public PatternAnyExpression()
         {
@@ -17,14 +16,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "#";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(Expression expression, MatchingContext context)
         {
-            if (!(ust is Expression))
-            {
-                return context.Fail();
-            }
-
-            return context.AddMatch(ust);
+            return context.AddMatch(expression);
         }
     }
 }

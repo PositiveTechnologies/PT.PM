@@ -4,7 +4,7 @@ using System;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternNot : PatternUst
+    public class PatternNot : PatternUst<Ust>
     {
         public PatternUst Pattern { get; set; } = PatternAny.Instance;
 
@@ -22,12 +22,7 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchingContext Match(Ust ust, MatchingContext context)
         {
-            if (ust == null)
-            {
-                return context.Fail();
-            }
-
-            MatchingContext newContext = Pattern.Match(ust, context);
+            MatchingContext newContext = Pattern.MatchUst(ust, context);
             if (newContext.Success)
             {
                 return newContext.Fail();

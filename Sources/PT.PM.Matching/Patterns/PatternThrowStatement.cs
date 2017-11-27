@@ -1,11 +1,10 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Statements;
 using System;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternThrowStatement : PatternUst
+    public class PatternThrowStatement : PatternUst<ThrowStatement>
     {
         public PatternUst Expression { get; set; } = PatternAny.Instance;
 
@@ -21,25 +20,18 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"throw {Expression}";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(ThrowStatement throwStatement, MatchingContext context)
         {
             MatchingContext newContext;
 
-            if (ust is ThrowStatement throwStatement)
+            newContext = Expression.MatchUst(throwStatement.ThrowExpression, context);
+            if (newContext.Success)
             {
-                newContext = Expression.Match(throwStatement.ThrowExpression, context);
-                if (newContext.Success)
-                {
-                    newContext = newContext.AddMatch(ust);
-                }
-                else
-                {
-                    newContext = newContext.Fail();
-                }
+                newContext = newContext.AddMatch(throwStatement);
             }
             else
             {
-                newContext = context.Fail();
+                newContext = newContext.Fail();
             }
 
             return newContext;

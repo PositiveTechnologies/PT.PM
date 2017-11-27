@@ -1,11 +1,10 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternVar : PatternUst
+    public class PatternVar : PatternUst<IdToken>
     {
         public string Id { get; set; } = "";
 
@@ -37,45 +36,38 @@ namespace PT.PM.Matching.Patterns
             return Id + valueString;
         }
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchingContext Match(IdToken idToken, MatchingContext context)
         {
             MatchingContext newContext;
 
-            if (ust is IdToken idToken)
+            newContext = context;
+            if (idToken.Parent is AssignmentExpression parentAssignment &&
+                ReferenceEquals(idToken, parentAssignment.Left))
             {
-                newContext = context;
-                if (ust.Parent is AssignmentExpression parentAssignment &&
-                    ReferenceEquals(ust, parentAssignment.Left))
+                if (Value != null)
                 {
-                    if (Value != null)
-                    {
-                        newContext = Value.Match(ust, newContext);
-                        if (newContext.Success)
-                        {
-                            newContext.Vars[Id] = idToken;
-                        }
-                    }
-                    else
+                    newContext = Value.MatchUst(idToken, newContext);
+                    if (newContext.Success)
                     {
                         newContext.Vars[Id] = idToken;
-                        newContext = newContext.AddMatch(ust);
                     }
                 }
                 else
                 {
-                    if (newContext.Vars.ContainsKey(Id))
-                    {
-                        newContext = newContext.AddMatch(ust);
-                    }
-                    else
-                    {
-                        newContext = newContext.Fail();
-                    }
+                    newContext.Vars[Id] = idToken;
+                    newContext = newContext.AddMatch(idToken);
                 }
             }
             else
             {
-                newContext = context.Fail();
+                if (newContext.Vars.ContainsKey(Id))
+                {
+                    newContext = newContext.AddMatch(idToken);
+                }
+                else
+                {
+                    newContext = newContext.Fail();
+                }
             }
 
             return newContext;
