@@ -6,7 +6,7 @@ using PT.PM.Matching.PatternsRepository;
 
 namespace PT.PM.Cli
 {
-    public class CliProcessor : CliProcessorBase<Stage, WorkflowResult, PatternRoot, MatchingResult>
+    public class CliProcessor : CliProcessorBase<Stage, WorkflowResult, PatternRoot, MatchResult>
     {
         protected override WorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository)
         {

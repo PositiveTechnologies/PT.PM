@@ -36,9 +36,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Id;
 
-        public override MatchingContext Match(Token token, MatchingContext context)
+        public override MatchContext Match(Token token, MatchContext context)
         {
-            MatchingContext newContext;
+            MatchContext newContext;
 
             if (!(token is CommentLiteral))
             {

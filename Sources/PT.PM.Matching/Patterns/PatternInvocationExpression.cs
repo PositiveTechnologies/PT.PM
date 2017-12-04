@@ -32,9 +32,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}({Arguments})";
 
-        public override MatchingContext Match(InvocationExpression invocation, MatchingContext context)
+        public override MatchContext Match(InvocationExpression invocation, MatchContext context)
         {
-            MatchingContext newContext;
+            MatchContext newContext;
 
             newContext = Target.MatchUst(invocation.Target, context);
             if (!newContext.Success)

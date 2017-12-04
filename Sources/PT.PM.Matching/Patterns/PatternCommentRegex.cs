@@ -28,7 +28,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"</*{CommentRegex}*/>";
 
-        public override MatchingContext Match(CommentLiteral commentLiteral, MatchingContext context)
+        public override MatchContext Match(CommentLiteral commentLiteral, MatchContext context)
         {
             IEnumerable<TextSpan> matches = CommentRegex
                 .MatchRegex(commentLiteral.Comment)

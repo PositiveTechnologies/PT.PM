@@ -9,12 +9,12 @@ namespace PT.PM.Matching.Tests
 {
     public class PatternMatchingUtils
     {
-        public static MatchingResultDto[] GetMatchings(string code, string pattern, Language analyseLanguage)
+        public static MatchResultDto[] GetMatches(string code, string pattern, Language analyseLanguage)
         {
-            return GetMatchings(code, pattern, new[] { analyseLanguage });
+            return GetMatches(code, pattern, new[] { analyseLanguage });
         }
 
-        public static MatchingResultDto[] GetMatchings(string code, string pattern,
+        public static MatchResultDto[] GetMatches(string code, string pattern,
             IEnumerable<Language> analyzedLanguages,
             IEnumerable<Language> patternLanguages = null)
         {
@@ -35,11 +35,11 @@ namespace PT.PM.Matching.Tests
             var patternsConverter = new PatternConverter();
             patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
-            MatchingResultDto[] matchingResults = workflowResult.MatchingResults.ToDto()
+            MatchResultDto[] matchResults = workflowResult.MatchResults.ToDto()
                 .OrderBy(r => r.PatternKey)
                 .ToArray();
 
-            return matchingResults;
+            return matchResults;
         }
     }
 }

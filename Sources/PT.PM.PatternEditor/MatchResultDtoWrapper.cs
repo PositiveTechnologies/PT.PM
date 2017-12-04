@@ -3,15 +3,15 @@ using PT.PM.Matching;
 
 namespace PT.PM.PatternEditor
 {
-    public class MathingResultDtoWrapper
+    public class MatchResultDtoWrapper
     {
         private TextTruncater textTruncater = new TextTruncater() { MaxMessageLength = 32 };
 
-        public MatchingResultDto MatchingResult { get; set; }
+        public MatchResultDto MatchingResult { get; set; }
 
-        public MathingResultDtoWrapper(MatchingResultDto matchingResult)
+        public MatchResultDtoWrapper(MatchResultDto matchResult)
         {
-            MatchingResult = matchingResult;
+            MatchingResult = matchResult;
         }
 
         public override string ToString()

@@ -51,9 +51,9 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override MatchingContext Match(MethodDeclaration methodDeclaration, MatchingContext context)
+        public override MatchContext Match(MethodDeclaration methodDeclaration, MatchContext context)
         {
-            MatchingContext newContext = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
+            MatchContext newContext = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
             if (!newContext.Success)
             {
                 return newContext;

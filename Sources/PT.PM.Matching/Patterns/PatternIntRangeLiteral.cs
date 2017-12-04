@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Patterns
             return $"<({lowerBound}..{upperBound})>";
         }
 
-        public override MatchingContext Match(IntLiteral intLiteral, MatchingContext context)
+        public override MatchContext Match(IntLiteral intLiteral, MatchContext context)
         {
             return intLiteral.Value >= MinValue && intLiteral.Value < MaxValue
                 ? context.AddMatch(intLiteral)

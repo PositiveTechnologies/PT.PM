@@ -19,7 +19,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Value.ToString();
 
-        public override MatchingContext Match(IntLiteral intLiteral, MatchingContext context)
+        public override MatchContext Match(IntLiteral intLiteral, MatchContext context)
         {
             return intLiteral.Value == Value
                 ? context.AddMatch(intLiteral)

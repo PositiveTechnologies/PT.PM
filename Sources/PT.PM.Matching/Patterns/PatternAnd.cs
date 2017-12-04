@@ -28,9 +28,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"({(string.Join(" <&> ", Patterns))})";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchingContext newContext = context;
+            MatchContext newContext = context;
 
             foreach (PatternUst pattern in Patterns)
             {

@@ -18,20 +18,20 @@ namespace PT.PM.Matching.Tests
 
             var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
             IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains("Php"));
             foreach (PatternDto dto in patternDtos)
             {
-                Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
+                Assert.Greater(matchResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
-            Assert.AreEqual(1, matchingResults.Count(r =>
+            Assert.AreEqual(1, matchResults.Count(r =>
                 r.MatchedCode.Contains("Configure") &&
                 r.MatchedCode.Contains("write") &&
                 r.MatchedCode.Contains("3")));
-            Assert.AreEqual(0, matchingResults.Count(r => 
+            Assert.AreEqual(0, matchResults.Count(r => 
                 r.MatchedCode.Contains("Configure") &&
                 r.MatchedCode.Contains("write") &&
                 r.MatchedCode.Contains("50")));

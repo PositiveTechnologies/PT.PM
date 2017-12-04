@@ -34,7 +34,7 @@ namespace PT.PM.Matching.Patterns
         public override string ToString() =>
             BinaryOperatorLiteral.TextBinaryOperator.FirstOrDefault(pair => pair.Value == BinaryOperator).Key;
 
-        public override MatchingContext Match(BinaryOperatorLiteral binaryOperatorLiteral, MatchingContext context)
+        public override MatchContext Match(BinaryOperatorLiteral binaryOperatorLiteral, MatchContext context)
         {
             return BinaryOperator.Equals(binaryOperatorLiteral.BinaryOperator)
                 ? context.AddMatch(binaryOperatorLiteral)

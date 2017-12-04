@@ -26,9 +26,9 @@ namespace PT.PM.Matching.Patterns
             return Right == null ? Left.ToString() : $"{Left} = {Right}";
         }
 
-        public override MatchingContext Match(AssignmentExpression assign, MatchingContext context)
+        public override MatchContext Match(AssignmentExpression assign, MatchContext context)
         {
-            MatchingContext newContext = Left.MatchUst(assign.Left, context);
+            MatchContext newContext = Left.MatchUst(assign.Left, context);
             if (newContext.Success)
             {
                 if (Right != null && assign.Right != null)

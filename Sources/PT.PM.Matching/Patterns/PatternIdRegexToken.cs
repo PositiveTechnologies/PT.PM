@@ -51,7 +51,7 @@ namespace PT.PM.Matching.Patterns
             return $"<[{regexString}]>";
         }
 
-        public override MatchingContext Match(Token token, MatchingContext context)
+        public override MatchContext Match(Token token, MatchContext context)
         {
             Regex regex = token.Root.Language.IsCaseInsensitive
                 ? caseInsensitiveRegex

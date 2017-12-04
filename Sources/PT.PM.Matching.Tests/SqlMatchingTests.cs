@@ -30,7 +30,7 @@ namespace PT.PM.Matching.Tests
 
             var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
             IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()
@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Tests
 
             foreach (var dto in patternDtos)
             {
-                Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
+                Assert.Greater(matchResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
         }
     }

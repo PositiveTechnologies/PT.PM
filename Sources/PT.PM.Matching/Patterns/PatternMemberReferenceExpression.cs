@@ -23,9 +23,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}.{Name}";
 
-        public override MatchingContext Match(MemberReferenceExpression memberRef, MatchingContext context)
+        public override MatchContext Match(MemberReferenceExpression memberRef, MatchContext context)
         {
-            MatchingContext newContext = Target.MatchUst(memberRef.Target, context);
+            MatchContext newContext = Target.MatchUst(memberRef.Target, context);
             if (!newContext.Success)
             {
                 return newContext;

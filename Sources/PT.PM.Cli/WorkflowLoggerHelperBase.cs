@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace PT.PM.Cli
 {
-    public abstract class WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
+    public abstract class WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchResult> : ILoggable
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
-        where TMatchingResult : MatchingResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TMatchResult : MatchResultBase<TPattern>
     {
         public ILogger Logger { get; set; }
 

@@ -26,12 +26,12 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(", ", Args);
 
-        public override MatchingContext Match(ArgsUst argsUst, MatchingContext context)
+        public override MatchContext Match(ArgsUst argsUst, MatchContext context)
         {
-            MatchingContext newContext;
+            MatchContext newContext;
 
             List<Expression> args = argsUst.Collection;
-            newContext = MatchingContext.CreateWithInputParamsAndVars(context);
+            newContext = MatchContext.CreateWithInputParamsAndVars(context);
             var matchedTextSpans = new List<TextSpan>();
             int patternArgInd = 0;
             int argInd = 0;
@@ -42,7 +42,7 @@ namespace PT.PM.Matching.Patterns
                     break;
                 }
 
-                newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);
+                newContext = MatchContext.CreateWithInputParamsAndVars(newContext);
                 if (Args[patternArgInd] is PatternMultipleExpressions multiExprArg)
                 {
                     if (patternArgInd + 1 < Args.Count)

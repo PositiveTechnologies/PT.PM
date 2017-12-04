@@ -24,9 +24,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
 
-        public override MatchingContext Match(ParameterDeclaration parameterDeclaration, MatchingContext context)
+        public override MatchContext Match(ParameterDeclaration parameterDeclaration, MatchContext context)
         {
-            MatchingContext newContext = Type.MatchUst(parameterDeclaration.Type, context);
+            MatchContext newContext = Type.MatchUst(parameterDeclaration.Type, context);
             if (!newContext.Success)
             {
                 return newContext;

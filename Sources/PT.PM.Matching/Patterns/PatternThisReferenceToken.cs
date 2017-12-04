@@ -17,7 +17,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "this";
 
-        public override MatchingContext Match(ThisReferenceToken thisReferenceToken, MatchingContext context)
+        public override MatchContext Match(ThisReferenceToken thisReferenceToken, MatchContext context)
         {
             return context.AddMatch(thisReferenceToken);
         }

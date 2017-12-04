@@ -28,9 +28,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"try catch {{ }}";
 
-        public override MatchingContext Match(TryCatchStatement tryCatchStatement, MatchingContext context)
+        public override MatchContext Match(TryCatchStatement tryCatchStatement, MatchContext context)
         {
-            MatchingContext newContext;
+            MatchContext newContext;
 
             if (tryCatchStatement.CatchClauses == null)
             {

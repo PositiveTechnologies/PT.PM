@@ -8,15 +8,15 @@ using System.Threading;
 
 namespace PT.PM
 {
-    public abstract class WorkflowResultBase<TStage, TPattern, TMatchingResult>
+    public abstract class WorkflowResultBase<TStage, TPattern, TMatchResult>
         where TStage : struct, IConvertible
-        where TMatchingResult : MatchingResultBase<TPattern>
+        where TMatchResult : MatchResultBase<TPattern>
     {
         private List<SourceCodeFile> sourceCodeFiles = new List<SourceCodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
         private List<RootUst> usts = new List<RootUst>();
         private List<TPattern> patterns = new List<TPattern>();
-        private List<TMatchingResult> matchingResults = new List<TMatchingResult>();
+        private List<TMatchResult> matchResults = new List<TMatchResult>();
 
         private long totalReadTicks;
         private long totalParseTicks;
@@ -74,7 +74,7 @@ namespace PT.PM
             }
         }
 
-        public IReadOnlyList<TMatchingResult> MatchingResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchingResults);
+        public IReadOnlyList<TMatchResult> MatchResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchResults);
 
         public IReadOnlyList<TPattern> Patterns
         {
@@ -143,9 +143,9 @@ namespace PT.PM
             }
         }
 
-        public void AddResultEntity(IEnumerable<TMatchingResult> matchingResults)
+        public void AddResultEntity(IEnumerable<TMatchResult> matchResults)
         {
-            AddEntities(this.matchingResults, matchingResults);
+            AddEntities(this.matchResults, matchResults);
         }
 
         public void AddResultEntity(IEnumerable<TPattern> patterns)

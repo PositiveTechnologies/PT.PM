@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResultDto
+    public class MatchResultDto
     {
         public string MatchedCode { get; set; }
 
@@ -19,15 +19,15 @@ namespace PT.PM.Matching
 
         public string SourceFile { get; set; }
 
-        public MatchingResultDto()
+        public MatchResultDto()
         {
         }
 
-        public MatchingResultDto(MatchingResult matchingResult)
+        public MatchResultDto(MatchResult matchResult)
         {
-            SourceCodeFile sourceCodeFile = matchingResult.SourceCodeFile;
+            SourceCodeFile sourceCodeFile = matchResult.SourceCodeFile;
             string code = sourceCodeFile.Code;
-            TextSpan textSpan = matchingResult.TextSpans.Union();
+            TextSpan textSpan = matchResult.TextSpans.Union();
             textSpan.ToLineColumn(sourceCodeFile.Code,
                 out int beginLine, out int beginColumn,
                 out int endLine, out int endColumn);
@@ -36,7 +36,7 @@ namespace PT.PM.Matching
             BeginColumn = beginColumn;
             EndLine = endLine;
             EndColumn = endColumn;
-            PatternKey = matchingResult.Pattern.Key;
+            PatternKey = matchResult.Pattern.Key;
             SourceFile = sourceCodeFile.FullName;
             MatchedCode = code.Substring(textSpan);
         }

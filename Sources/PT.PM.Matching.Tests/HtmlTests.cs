@@ -12,9 +12,9 @@ namespace PT.PM.Matching.Tests
         {
             WorkflowResult result = TestUtility.CheckFile("Patterns.html", Stage.Match,
                 isIgnoreFilenameWildcards: true);
-            Assert.AreEqual(2, result.MatchingResults.Count);
-            Assert.AreEqual(TextSpan.FromBounds(94, 102), result.MatchingResults[0].TextSpan);
-            MatchingResult secondResult = result.MatchingResults[1];
+            Assert.AreEqual(2, result.MatchResults.Count);
+            Assert.AreEqual(TextSpan.FromBounds(94, 102), result.MatchResults[0].TextSpan);
+            MatchResult secondResult = result.MatchResults[1];
             Assert.AreEqual(TextSpan.FromBounds(71, 85), secondResult.TextSpans[0]);
             Assert.AreEqual(TextSpan.FromBounds(127, 135), secondResult.TextSpans[1]);
         }

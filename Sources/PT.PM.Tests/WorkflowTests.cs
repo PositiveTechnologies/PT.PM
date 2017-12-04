@@ -27,8 +27,8 @@ namespace PT.PM.Tests
             };
             var result = workflow.Process();
 
-            Assert.GreaterOrEqual(result.MatchingResults.Count, 1);
-            MatchingResult match = result.MatchingResults.First();
+            Assert.GreaterOrEqual(result.MatchResults.Count, 1);
+            MatchResult match = result.MatchResults.First();
             Assert.IsFalse(match.TextSpan.IsEmpty);
         }
     }

@@ -20,9 +20,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"<~>{Pattern}";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchingContext newContext = Pattern.MatchUst(ust, context);
+            MatchContext newContext = Pattern.MatchUst(ust, context);
 
             return newContext.Success
                 ? newContext.Fail()

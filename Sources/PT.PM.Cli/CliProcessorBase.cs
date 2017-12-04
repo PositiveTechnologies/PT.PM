@@ -13,10 +13,10 @@ using System.Threading;
 
 namespace PT.PM.Cli
 {
-    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchingResult>
+    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchResult>
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
-        where TMatchingResult : MatchingResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TMatchResult : MatchResultBase<TPattern>
     {
         public int ParseAndConvert(string[] args)
         {
@@ -107,7 +107,7 @@ namespace PT.PM.Cli
                     logger.LogInfo("Scan completed.");
                     if (pmStage == Stage.Match)
                     {
-                        logger.LogInfo($"{"Matches count: ",-22} {workflowResult.MatchingResults.Count()}");
+                        logger.LogInfo($"{"Matches count: ",-22} {workflowResult.MatchResults.Count()}");
                     }
                 }
                 else

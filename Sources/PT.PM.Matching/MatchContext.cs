@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching
 {
-    public class MatchingContext : ILoggable
+    public class MatchContext : ILoggable
     {
         public PatternRoot PatternUst { get; }
 
@@ -22,23 +22,23 @@ namespace PT.PM.Matching
 
         public bool IgnoreLocations { get; set; }
 
-        public static MatchingContext CreateWithInputParamsAndVars(MatchingContext context)
+        public static MatchContext CreateWithInputParamsAndVars(MatchContext context)
         {
             return CreateWithInputParams(context, context.Vars);
         }
 
-        public static MatchingContext CreateWithInputParams(MatchingContext context, Dictionary<string, IdToken> vars = null)
+        public static MatchContext CreateWithInputParams(MatchContext context, Dictionary<string, IdToken> vars = null)
         {
-            return new MatchingContext(context.PatternUst, vars)
+            return new MatchContext(context.PatternUst, vars)
             {
                 Logger = context.Logger,
                 FindAllAlternatives = context.FindAllAlternatives
             };
         }
 
-        public static implicit operator bool(MatchingContext context) => context.Success;
+        public static implicit operator bool(MatchContext context) => context.Success;
 
-        public MatchingContext(PatternRoot patternUst, Dictionary<string, IdToken> vars = null)
+        public MatchContext(PatternRoot patternUst, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
             if (vars != null)
@@ -47,7 +47,7 @@ namespace PT.PM.Matching
             }
         }
 
-        public MatchingContext AddUstIfSuccess(Ust ust)
+        public MatchContext AddUstIfSuccess(Ust ust)
         {
             if (Success && !IgnoreLocations && !ust.TextSpan.IsEmpty)
             {
@@ -56,7 +56,7 @@ namespace PT.PM.Matching
             return this;
         }
 
-        public MatchingContext AddMatch(Ust ust)
+        public MatchContext AddMatch(Ust ust)
         {
             Success = true;
             if (!IgnoreLocations && !ust.TextSpan.IsEmpty)
@@ -66,7 +66,7 @@ namespace PT.PM.Matching
             return this;
         }
 
-        public MatchingContext AddMatches(IEnumerable<TextSpan> textSpans)
+        public MatchContext AddMatches(IEnumerable<TextSpan> textSpans)
         {
             Success = true;
             if (!IgnoreLocations)
@@ -76,19 +76,19 @@ namespace PT.PM.Matching
             return this;
         }
 
-        public MatchingContext Fail()
+        public MatchContext Fail()
         {
             Success = false;
             return this;
         }
 
-        public MatchingContext MakeSuccess()
+        public MatchContext MakeSuccess()
         {
             Success = true;
             return this;
         }
 
-        public MatchingContext Set(bool success)
+        public MatchContext Set(bool success)
         {
             Success = success;
             return this;

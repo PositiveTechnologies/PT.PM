@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchingResult>
+    public class Workflow: WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult>
     {
         public Workflow()
             : this(null)
@@ -127,11 +127,11 @@ namespace PT.PM
                         WaitOrConverterPatterns(workflowResult);
 
                         stopwatch.Restart();
-                        IEnumerable<MatchingResult> matchingResults = UstPatternMatcher.Match(ust);
+                        IEnumerable<MatchResult> matchResults = UstPatternMatcher.Match(ust);
                         stopwatch.Stop();
                         Logger.LogInfo($"File {ust.SourceCodeFile.Name} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(matchingResults);
+                        workflowResult.AddResultEntity(matchResults);
 
                         cancellationToken.ThrowIfCancellationRequested();
                     }

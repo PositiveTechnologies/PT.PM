@@ -36,9 +36,9 @@ namespace PT.PM.Matching.Patterns
             return Id + valueString;
         }
 
-        public override MatchingContext Match(IdToken idToken, MatchingContext context)
+        public override MatchContext Match(IdToken idToken, MatchContext context)
         {
-            MatchingContext newContext;
+            MatchContext newContext;
 
             newContext = context;
             if (idToken.Parent is AssignmentExpression parentAssignment &&

@@ -22,9 +22,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"new {Type}({Arguments})";
 
-        public override MatchingContext Match(ObjectCreateExpression objectCreateExpression, MatchingContext context)
+        public override MatchContext Match(ObjectCreateExpression objectCreateExpression, MatchContext context)
         {
-            MatchingContext newContext = Type.MatchUst(objectCreateExpression.Type, context);
+            MatchContext newContext = Type.MatchUst(objectCreateExpression.Type, context);
             if (!newContext.Success)
             {
                 return newContext;

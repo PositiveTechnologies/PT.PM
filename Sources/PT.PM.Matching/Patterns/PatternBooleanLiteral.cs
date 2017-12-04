@@ -27,7 +27,7 @@ namespace PT.PM.Matching.Patterns
             return Boolean.ToString();
         }
 
-        public override MatchingContext Match(BooleanLiteral booleanLiteral, MatchingContext context)
+        public override MatchContext Match(BooleanLiteral booleanLiteral, MatchContext context)
         {
             return (Boolean == null || Boolean.Value.Equals(booleanLiteral.Value))
                 ? context.AddMatch(booleanLiteral)

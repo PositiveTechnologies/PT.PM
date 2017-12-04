@@ -19,7 +19,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => '"' + String + '"';
 
-        public override MatchingContext Match(StringLiteral stringLiteral, MatchingContext context)
+        public override MatchContext Match(StringLiteral stringLiteral, MatchContext context)
         {
             return String.Equals(stringLiteral.Text)
                 ? context.AddMatch(stringLiteral)

@@ -28,7 +28,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $@"<""{StringRegex}"">";
 
-        public override MatchingContext Match(StringLiteral stringLiteral, MatchingContext context)
+        public override MatchContext Match(StringLiteral stringLiteral, MatchContext context)
         {
             IEnumerable<TextSpan> matches = StringRegex
                 .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength)

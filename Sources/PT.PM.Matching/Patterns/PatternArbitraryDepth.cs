@@ -27,13 +27,13 @@ namespace PT.PM.Matching.Patterns
             return "<{ " + Pattern.ToString() + " }>";
         }
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
             var result = ust.AnyDescendant(ustNode => MatchExpression(ustNode, context).Success);
             return context.Set(result).AddUstIfSuccess(ust);
         }
 
-        protected MatchingContext MatchExpression(Ust other, MatchingContext context)
+        protected MatchContext MatchExpression(Ust other, MatchContext context)
         {
             if (Pattern == null)
             {

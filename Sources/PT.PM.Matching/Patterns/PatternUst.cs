@@ -31,7 +31,7 @@ namespace PT.PM.Matching.Patterns
             return propertyComparer.Compare(this, other);
         }
 
-        public abstract MatchingContext MatchUst(Ust ust, MatchingContext context);
+        public abstract MatchContext MatchUst(Ust ust, MatchContext context);
     }
 
     public abstract class PatternUst<TMatchUst> : PatternUst, IUst<PatternUst, PatternRoot>, IUst
@@ -48,7 +48,7 @@ namespace PT.PM.Matching.Patterns
             TextSpan = textSpan;
         }
 
-        public override MatchingContext MatchUst(Ust ust, MatchingContext context)
+        public override MatchContext MatchUst(Ust ust, MatchContext context)
         {
             if (ust is TMatchUst matchUst)
             {
@@ -58,6 +58,6 @@ namespace PT.PM.Matching.Patterns
             return context.Fail();
         }
 
-        public abstract MatchingContext Match(TMatchUst ust, MatchingContext context);
+        public abstract MatchContext Match(TMatchUst ust, MatchContext context);
     }
 }

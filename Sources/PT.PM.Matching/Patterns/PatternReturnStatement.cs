@@ -20,9 +20,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"return {Expression}";
 
-        public override MatchingContext Match(ReturnStatement returnStatement, MatchingContext context)
+        public override MatchContext Match(ReturnStatement returnStatement, MatchContext context)
         {
-            MatchingContext newContext = Expression.MatchUst(returnStatement.Return, context);
+            MatchContext newContext = Expression.MatchUst(returnStatement.Return, context);
 
             return newContext.Success
                 ? newContext.AddMatch(returnStatement)

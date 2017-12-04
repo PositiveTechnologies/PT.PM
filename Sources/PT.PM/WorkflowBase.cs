@@ -18,10 +18,10 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
+    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> : ILoggable
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
-        where TMatchingResult : MatchingResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TMatchResult : MatchResultBase<TPattern>
     {
         protected ILogger logger = DummyLogger.Instance;
         protected Task filesCountTask;
@@ -53,7 +53,7 @@ namespace PT.PM
 
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
-        public IUstPatternMatcher<TInputGraph, TPattern, TMatchingResult> UstPatternMatcher { get; set; }
+        public IUstPatternMatcher<TInputGraph, TPattern, TMatchResult> UstPatternMatcher { get; set; }
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 

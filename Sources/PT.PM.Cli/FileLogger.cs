@@ -77,17 +77,17 @@ namespace PT.PM.Cli
             }
             else
             {
-                if (infoObj is MatchingResult matchingResult)
+                if (infoObj is MatchResult matchResult)
                 {
-                    var matchingResultDto = new MatchingResultDto(matchingResult);
-                    string matchedCode = CodeTruncater.Trunc(matchingResultDto.MatchedCode);
+                    var matchResultDto = new MatchResultDto(matchResult);
+                    string matchedCode = CodeTruncater.Trunc(matchResultDto.MatchedCode);
 
                     var message = new StringBuilder();
                     message.AppendLine("---------------------");
-                    message.AppendLine($"{nameof(MatchingResultDto.MatchedCode)}: {matchedCode}");
-                    message.AppendLine($"Location: [{matchingResultDto.BeginLine};{matchingResultDto.BeginColumn}] - [{matchingResultDto.EndLine};{matchingResultDto.EndColumn}]");
-                    message.AppendLine($"{nameof(MatchingResultDto.PatternKey)}: {matchingResultDto.PatternKey}");
-                    message.AppendLine($"{nameof(MatchingResultDto.SourceFile)}: {matchingResultDto.SourceFile}");
+                    message.AppendLine($"{nameof(MatchResultDto.MatchedCode)}: {matchedCode}");
+                    message.AppendLine($"Location: [{matchResultDto.BeginLine};{matchResultDto.BeginColumn}] - [{matchResultDto.EndLine};{matchResultDto.EndColumn}]");
+                    message.AppendLine($"{nameof(MatchResultDto.PatternKey)}: {matchResultDto.PatternKey}");
+                    message.AppendLine($"{nameof(MatchResultDto.SourceFile)}: {matchResultDto.SourceFile}");
                     string result = message.ToString();
 
                     MatchLogger.Info(result);
@@ -96,7 +96,7 @@ namespace PT.PM.Cli
                 else if (!(infoObj is MessageEventArgs))
                 {
                     string message = infoObj.ToString();
-                    if (infoObj is IMatchingResultBase)
+                    if (infoObj is IMatchResultBase)
                     {
                         MatchLogger.Info(message);
                     }

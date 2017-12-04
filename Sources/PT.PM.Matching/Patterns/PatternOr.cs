@@ -30,15 +30,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"({(string.Join(" <|> ", Patterns))})";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
             var matchedTextSpans = new List<TextSpan>();
 
             bool success = false;
             foreach (PatternUst pattern in Patterns)
             {
-                var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
-                MatchingContext match = pattern.MatchUst(ust, altContext);
+                var altContext = MatchContext.CreateWithInputParamsAndVars(context);
+                MatchContext match = pattern.MatchUst(ust, altContext);
                 if (match.Success)
                 {
                     success = true;

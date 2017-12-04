@@ -31,9 +31,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}[{Arguments}]";
 
-        public override MatchingContext Match(IndexerExpression indexerExpression, MatchingContext context)
+        public override MatchContext Match(IndexerExpression indexerExpression, MatchContext context)
         {
-            MatchingContext newContext;
+            MatchContext newContext;
 
             newContext = Target.MatchUst(indexerExpression.Target, context);
             if (!newContext.Success)

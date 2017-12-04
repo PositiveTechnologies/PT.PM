@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{string.Join(", ", Modifiers)} {Type} {Assignment}";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust is FieldDeclaration fieldDeclaration)
             {
@@ -48,14 +48,14 @@ namespace PT.PM.Matching.Patterns
             return context.Fail();
         }
 
-        private MatchingContext MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchingContext context)
+        private MatchContext MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchContext context)
         {
             if (LocalVariable == true || fieldDeclaration.Variables.Count() != 1)
             {
                 return context.Fail();
             }
 
-            MatchingContext newContext = Modifiers.MatchSubset(fieldDeclaration.Modifiers, context);
+            MatchContext newContext = Modifiers.MatchSubset(fieldDeclaration.Modifiers, context);
             if (!newContext.Success)
             {
                 return newContext;
@@ -72,14 +72,14 @@ namespace PT.PM.Matching.Patterns
             return newContext;
         }
 
-        private MatchingContext MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchingContext context)
+        private MatchContext MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchContext context)
         {
             if (LocalVariable == false || Modifiers.Count() != 0)
             {
                 return context.Fail();
             }
 
-            MatchingContext newContext = Type.MatchUst(variableDeclaration.Type, context);
+            MatchContext newContext = Type.MatchUst(variableDeclaration.Type, context);
             if (!newContext.Success)
             {
                 return newContext;
@@ -90,15 +90,15 @@ namespace PT.PM.Matching.Patterns
             return newContext;
         }
 
-        private MatchingContext EnumerateVarsOrFiels(List<AssignmentExpression> variables, MatchingContext context)
+        private MatchContext EnumerateVarsOrFiels(List<AssignmentExpression> variables, MatchContext context)
         {
             var matchedTextSpans = new List<TextSpan>();
 
             bool success = false;
             foreach (AssignmentExpression variable in variables)
             {
-                var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
-                MatchingContext match;
+                var altContext = MatchContext.CreateWithInputParamsAndVars(context);
+                MatchContext match;
                 if (Assignment.Right != null)
                 {
                     match = Assignment.Match(variable, altContext);

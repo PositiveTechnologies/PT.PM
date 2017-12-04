@@ -6,7 +6,7 @@ namespace PT.PM.Matching.Patterns
     {
         public static PatternAny Instance = new PatternAny();
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust == null)
             {

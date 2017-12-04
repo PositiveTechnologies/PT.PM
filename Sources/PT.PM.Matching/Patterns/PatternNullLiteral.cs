@@ -16,7 +16,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "null";
 
-        public override MatchingContext Match(NullLiteral nullLiteral, MatchingContext context)
+        public override MatchContext Match(NullLiteral nullLiteral, MatchContext context)
         {
             return context.AddMatch(nullLiteral);
         }

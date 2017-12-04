@@ -26,9 +26,9 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Left} {Operator} {Right}";
 
-        public override MatchingContext Match(BinaryOperatorExpression binaryOperatorExpression, MatchingContext context)
+        public override MatchContext Match(BinaryOperatorExpression binaryOperatorExpression, MatchContext context)
         {
-            MatchingContext newContext = Left.MatchUst(binaryOperatorExpression.Left, context);
+            MatchContext newContext = Left.MatchUst(binaryOperatorExpression.Left, context);
             if (!newContext.Success)
             {
                 return newContext;
