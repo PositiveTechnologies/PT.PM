@@ -156,18 +156,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>IF $(ConfigurationName) == DebugGraphviz (
-
-start xcopy /s /y /i "$(SolutionDir)packages\Graphviz.2.38.0.2" "$(TargetDir)Graphviz"
-
-)</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="AfterBuild" Condition="'$(OS)' == 'Windows_NT' AND $(ConfigurationName) == DebugGraphviz" >
+    <Exec Command="xcopy /s /y /i &quot;$(SolutionDir)packages\Graphviz.2.38.0.2&quot; &quot;$(TargetDir)Graphviz&quot;" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
