@@ -16,16 +16,29 @@ namespace PT.PM.Tests
         [Test]
         public void Process_JsonUst()
         {
-            string filePath = Path.Combine(TestUtility.TestsDataPath, "Ust.json");
-            SourceCodeRepository sourceCodeRepository = RepositoryFactory.CreateSourceCodeRepository(
-                filePath,
-                new List<Language>() { Php.Language }, "", true);
-            var workflow = new Workflow(sourceCodeRepository)
+            // Serialization
+            string inputFileName = "empty-try-catch.php";
+            var codeRepository = new MemoryCodeRepository("<?php try { echo 1/0; } catch (Exception $e) { } ?>", inputFileName);
+            var workflow = new Workflow(codeRepository)
+            {
+                DumpStages = new HashSet<Stage>() { Stage.Ust },
+                DumpDir = TestUtility.TestsOutputPath,
+                IncludeCodeInDump = true
+            };
+            WorkflowResult result = workflow.Process();
+
+            // Deserialization
+            SourceCodeRepository sourceCodeRepository =
+                new FileCodeRepository(Path.Combine(TestUtility.TestsOutputPath, inputFileName + ".ust.json"))
+            {
+                LoadJson = true
+            };
+            var newWorkflow = new Workflow(sourceCodeRepository)
             {
                 StartStage = Stage.Ust,
                 IsAsyncPatternsConversion = false
             };
-            var result = workflow.Process();
+            var newResult = workflow.Process();
 
             Assert.GreaterOrEqual(result.MatchResults.Count, 1);
             MatchResult match = result.MatchResults.First();

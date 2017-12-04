@@ -118,6 +118,8 @@ namespace PT.PM
 
         public bool DumpWithTextSpans { get; set; } = true;
 
+        public bool IncludeCodeInDump { get; set; } = false;
+
         public string LogsDir { get; set; } = "";
 
         public string DumpDir { get; set; } = "";
@@ -251,7 +253,8 @@ namespace PT.PM
                 var serializer = new JsonUstSerializer
                 {
                     Indented = IndentedDump,
-                    IncludeTextSpans = DumpWithTextSpans
+                    IncludeTextSpans = DumpWithTextSpans,
+                    IncludeCode = IncludeCodeInDump
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
