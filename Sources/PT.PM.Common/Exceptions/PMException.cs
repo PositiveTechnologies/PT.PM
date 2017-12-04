@@ -60,7 +60,7 @@ namespace PT.PM.Common.Exceptions
                 exceptionString = $": {exceptionString}";
             }
 
-            return $"{patternString}{ExceptionType} {fileNameString}{exceptionString}.";
+            return $"{patternString}{ExceptionType}{fileNameString}{exceptionString}.";
         }
     }
 }
