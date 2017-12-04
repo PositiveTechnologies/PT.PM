@@ -5,13 +5,12 @@ using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStatements : PatternUst
+    public class PatternStatements : PatternUst<Ust>
     {
         public List<PatternUst> Statements { get; set; } = new List<PatternUst>();
 
@@ -32,7 +31,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(";\n", Statements);
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
             var blockStatement = ust as BlockStatement;
             if (blockStatement == null ||
@@ -44,7 +43,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            MatchingContext newContext = MatchingContext.CreateWithInputParamsAndVars(context);
+            MatchContext newContext = MatchContext.CreateWithInputParamsAndVars(context);
 
             if (Statements == null || Statements.Count == 0)
             {
@@ -76,8 +75,8 @@ namespace PT.PM.Matching.Patterns
                 bool success = false;
                 for (int i = 0; i < expressions.Length; i++)
                 {
-                    newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);
-                    newContext = Statements[patternStatementInd].Match(expressions[i], newContext);
+                    newContext = MatchContext.CreateWithInputParamsAndVars(newContext);
+                    newContext = Statements[patternStatementInd].MatchUst(expressions[i], newContext);
                     if (newContext.Success)
                     {
                         matchedTextSpans.AddRange(newContext.Locations);

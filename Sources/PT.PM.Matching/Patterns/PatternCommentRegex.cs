@@ -1,14 +1,12 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternCommentRegex : PatternUst
+    public class PatternCommentRegex : PatternUst<CommentLiteral>
     {
         public Regex CommentRegex { get; set; }
 
@@ -30,30 +28,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"</*{CommentRegex}*/>";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(CommentLiteral commentLiteral, MatchContext context)
         {
-            MatchingContext newContext;
+            IEnumerable<TextSpan> matches = CommentRegex
+                .MatchRegex(commentLiteral.Comment)
+                .Select(location => location.AddOffset(commentLiteral.TextSpan.Start));
 
-            if (ust is CommentLiteral commentLiteral)
-            {
-                IEnumerable<TextSpan> matches = CommentRegex
-                    .MatchRegex(commentLiteral.Comment)
-                    .Select(location => location.AddOffset(ust.TextSpan.Start));
-                if (matches.Count() > 0)
-                {
-                    newContext = context.AddMatches(matches);
-                }
-                else
-                {
-                    newContext = context.Fail();
-                }
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
-
-            return newContext;
+            return matches.Count() > 0
+                ? context.AddMatches(matches)
+                : context.Fail();
         }
     }
 }

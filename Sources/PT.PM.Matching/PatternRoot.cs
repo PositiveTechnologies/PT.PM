@@ -73,10 +73,10 @@ namespace PT.PM.Matching
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
 
-        public List<MatchingResult> Match(Ust ust)
+        public List<MatchResult> Match(Ust ust)
         {
-            var context = new MatchingContext(this) { Logger = Logger };
-            var results = new List<MatchingResult>();
+            var context = new MatchContext(this) { Logger = Logger };
+            var results = new List<MatchResult>();
 
             if (ust is RootUst rootUst)
             {
@@ -97,7 +97,7 @@ namespace PT.PM.Matching
             return results;
         }
 
-        private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
+        private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
@@ -111,17 +111,17 @@ namespace PT.PM.Matching
         }
 
         private static void MatchAndAddResult(
-            PatternUst patternUst, Ust ust, MatchingContext context, List<MatchingResult> results)
+            PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
-            if (patternUst.Match(ust, context).Success)
+            if (patternUst.MatchUst(ust, context).Success)
             {
                 if (context.Locations.Count == 0)
                 {
                     context.Locations.Add(ust.TextSpan);
                 }
-                var matching = new MatchingResult(ust.Root, context.PatternUst, context.Locations);
-                results.Add(matching);
-                context.Logger.LogInfo(matching);
+                var match = new MatchResult(ust.Root, context.PatternUst, context.Locations);
+                results.Add(match);
+                context.Logger.LogInfo(match);
             }
             context.Locations.Clear();
         }

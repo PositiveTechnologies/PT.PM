@@ -1,12 +1,11 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBinaryOperatorLiteral : PatternUst
+    public class PatternBinaryOperatorLiteral : PatternUst<BinaryOperatorLiteral>
     {
         public BinaryOperator BinaryOperator { get; set; }
 
@@ -35,21 +34,11 @@ namespace PT.PM.Matching.Patterns
         public override string ToString() =>
             BinaryOperatorLiteral.TextBinaryOperator.FirstOrDefault(pair => pair.Value == BinaryOperator).Key;
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(BinaryOperatorLiteral binaryOperatorLiteral, MatchContext context)
         {
-            MatchingContext newContext;
-
-            if (ust is BinaryOperatorLiteral binaryOperatorLiteral &&
-                BinaryOperator.Equals(binaryOperatorLiteral.BinaryOperator))
-            {
-                newContext = context.AddMatch(ust);
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
-
-            return newContext;
+            return BinaryOperator.Equals(binaryOperatorLiteral.BinaryOperator)
+                ? context.AddMatch(binaryOperatorLiteral)
+                : context.Fail();
         }
     }
 }

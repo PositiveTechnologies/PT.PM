@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStringRegexLiteral : PatternUst
+    public class PatternStringRegexLiteral : PatternUst<StringLiteral>
     {
         public Regex StringRegex { get; set; }
 
@@ -29,30 +28,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $@"<""{StringRegex}"">";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(StringLiteral stringLiteral, MatchContext context)
         {
-            MatchingContext newContext;
+            IEnumerable<TextSpan> matches = StringRegex
+                .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength)
+                .Select(location => location.AddOffset(stringLiteral.TextSpan.Start));
 
-            if (ust is StringLiteral stringLiteral)
-            {
-                IEnumerable<TextSpan> matches = StringRegex
-                    .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength)
-                    .Select(location => location.AddOffset(ust.TextSpan.Start));
-                if (matches.Count() > 0)
-                {
-                    newContext = context.AddMatches(matches);
-                }
-                else
-                {
-                    newContext = context.Fail();
-                }
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
-
-            return newContext;
+            return matches.Count() > 0
+                ? context.AddMatches(matches)
+                : context.Fail();
         }
     }
 }

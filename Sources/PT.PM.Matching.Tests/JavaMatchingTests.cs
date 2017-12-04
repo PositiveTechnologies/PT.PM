@@ -18,38 +18,38 @@ namespace PT.PM.Matching.Tests
 
             var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
             IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains("Java")).ToArray();
             foreach (PatternDto dto in patternDtos)
             {
-                Assert.Greater(matchingResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
+                Assert.Greater(matchResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
 
             var improperValidationEmptyMethodPartial = patternDtos.Single(dto => dto.Description.StartsWith("ImproperValidationEmptyMethodPartial"));
-            Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == improperValidationEmptyMethodPartial.Key));
+            Assert.AreEqual(1, matchResults.Count(r => r.PatternKey == improperValidationEmptyMethodPartial.Key));
 
             var improperValidationEmptyMethodFull = patternDtos.Single(dto => dto.Description.StartsWith("ImproperValidationEmptyMethodFull"));
-            Assert.AreEqual(3, matchingResults.Count(r => r.PatternKey == improperValidationEmptyMethodFull.Key));
+            Assert.AreEqual(3, matchResults.Count(r => r.PatternKey == improperValidationEmptyMethodFull.Key));
 
             var missingReceiverPermission = patternDtos.Single(dto => dto.Description.StartsWith("MissingReceiverPermission"));
-            Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == missingReceiverPermission.Key));
+            Assert.AreEqual(1, matchResults.Count(r => r.PatternKey == missingReceiverPermission.Key));
 
             var missingBroadcasterPermission = patternDtos.Single(dto => dto.Description.StartsWith("MissingBroadcasterPermission"));
-            Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == missingBroadcasterPermission.Key));
+            Assert.AreEqual(1, matchResults.Count(r => r.PatternKey == missingBroadcasterPermission.Key));
 
             var cookieNotSentOverSslDto = patternDtos.Single(dto => dto.Description.StartsWith("CookieNotSentOverSSL"));
             var cookieNotSentOverSslResults =
-                matchingResults.Where(r => r.PatternKey == cookieNotSentOverSslDto.Key).ToArray();
+                matchResults.Where(r => r.PatternKey == cookieNotSentOverSslDto.Key).ToArray();
 
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsSimple")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsComplex")));
             Assert.AreEqual(1, cookieNotSentOverSslResults.Count(r => r.MatchedCode.Contains("emailCookieExistsAnotherVarName")));
 
             var useOfNullPointerException = patternDtos.Single(dto => dto.Description.StartsWith("Use of NullPointerException"));
-            Assert.AreEqual(1, matchingResults.Count(r => r.PatternKey == useOfNullPointerException.Key));
+            Assert.AreEqual(1, matchResults.Count(r => r.PatternKey == useOfNullPointerException.Key));
         }
     }
 }

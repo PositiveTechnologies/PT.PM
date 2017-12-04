@@ -6,7 +6,7 @@ namespace PT.PM.Common.Exceptions
 {
     public abstract class PMException : Exception
     {
-        public abstract PMExceptionType ExceptionType { get; }
+        public string ExceptionType => GetType().Name;
 
         public string FileName { get; set; }
 
@@ -60,7 +60,7 @@ namespace PT.PM.Common.Exceptions
                 exceptionString = $": {exceptionString}";
             }
 
-            return $"{patternString}{ExceptionType} Error{fileNameString}{exceptionString}.";
+            return $"{patternString}{ExceptionType}{fileNameString}{exceptionString}.";
         }
     }
 }

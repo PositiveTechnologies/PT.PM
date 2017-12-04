@@ -1,4 +1,5 @@
-﻿using PT.PM.Common.Json;
+﻿using PT.PM.Common;
+using PT.PM.Common.Json;
 
 namespace PT.PM.Matching.Json
 {

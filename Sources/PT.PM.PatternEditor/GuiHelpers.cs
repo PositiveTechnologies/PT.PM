@@ -11,7 +11,7 @@ namespace PT.PM.PatternEditor
             errorsListBox.Focus();
             ParsingException parsingException;
             ConversionException conversionException;
-            MatchingException matchingException;
+            MatchingException matchException;
             int selectionStart = -1, selectionEnd = -1;
             if ((parsingException = errorsListBox.SelectedItem as ParsingException) != null)
             {
@@ -27,9 +27,9 @@ namespace PT.PM.PatternEditor
                     selectionEnd = textSpan.End;
                 }
             }
-            else if ((matchingException = errorsListBox.SelectedItem as MatchingException) != null)
+            else if ((matchException = errorsListBox.SelectedItem as MatchingException) != null)
             {
-                var textSpan = matchingException.TextSpan;
+                var textSpan = matchException.TextSpan;
                 if (textSpan != null)
                 {
                     selectionStart = textSpan.Start;

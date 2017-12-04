@@ -29,11 +29,11 @@ namespace PT.PM.Matching
             return new TextSpan(startIndex, match.Length);
         }
 
-        public static IEnumerable<MatchingResultDto> ToDto(this IEnumerable<MatchingResult> matchingResults)
+        public static IEnumerable<MatchResultDto> ToDto(this IEnumerable<MatchResult> matchResults)
         {
-            return matchingResults
+            return matchResults
                 .Where(result => result != null)
-                .Select(result => new MatchingResultDto(result));
+                .Select(result => new MatchResultDto(result));
         }
     }
 }

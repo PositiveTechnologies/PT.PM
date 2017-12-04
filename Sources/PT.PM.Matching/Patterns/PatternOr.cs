@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternOr : PatternUst
+    public class PatternOr : PatternUst<Ust>
     {
         public List<PatternUst> Patterns { get; set; }
 
@@ -30,15 +30,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"({(string.Join(" <|> ", Patterns))})";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
             var matchedTextSpans = new List<TextSpan>();
 
             bool success = false;
-            foreach (PatternUst alt in Patterns)
+            foreach (PatternUst pattern in Patterns)
             {
-                var altContext = MatchingContext.CreateWithInputParamsAndVars(context);
-                MatchingContext match = alt.Match(ust, altContext);
+                var altContext = MatchContext.CreateWithInputParamsAndVars(context);
+                MatchContext match = pattern.MatchUst(ust, altContext);
                 if (match.Success)
                 {
                     success = true;
@@ -50,16 +50,9 @@ namespace PT.PM.Matching.Patterns
                 }
             }
 
-            if (success)
-            {
-                context = context.AddMatches(matchedTextSpans);
-            }
-            else
-            {
-                context = context.Fail();
-            }
-
-            return context;
+            return success
+                ? context.AddMatches(matchedTextSpans)
+                : context.Fail();
         }
     }
 }

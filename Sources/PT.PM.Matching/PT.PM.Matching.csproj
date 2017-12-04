@@ -39,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Json\JsonPatternSerializer.cs" />
-    <Compile Include="MatchingResultDto.cs" />
+    <Compile Include="MatchResultDto.cs" />
     <Compile Include="PatternAscendantsFiller.cs" />
     <Compile Include="Json\PatternBaseJsonConverter.cs" />
     <Compile Include="PatternMatcher.cs" />
@@ -47,16 +47,16 @@
     <Compile Include="IPatternConverter.cs" />
     <Compile Include="IUstPatternMatcher.cs" />
     <Compile Include="IPatternVisitor.cs" />
-    <Compile Include="MatchingResult.cs" />
-    <Compile Include="MatchingResultBase.cs" />
-    <Compile Include="MatchingContext.cs" />
+    <Compile Include="MatchResult.cs" />
+    <Compile Include="MatchResultBase.cs" />
+    <Compile Include="MatchContext.cs" />
     <Compile Include="PatternNormalizer.cs" />
     <Compile Include="IPatternSerializer.cs" />
     <Compile Include="PatternsRepository\MemoryPatternsRepository.cs" />
     <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
     <Compile Include="PatternsRepository\IPatternsRepository.cs" />
     <Compile Include="PatternsRepository\JsonPatternsRepository.cs" />
-    <Compile Include="Patterns\PatternExpression.cs" />
+    <Compile Include="Patterns\IPatternExpression.cs" />
     <Compile Include="Patterns\PatternAny.cs" />
     <Compile Include="Patterns\PatternBaseReferenceToken.cs" />
     <Compile Include="Patterns\PatternAssignmentExpression.cs" />

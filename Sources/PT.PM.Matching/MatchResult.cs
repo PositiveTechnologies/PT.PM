@@ -5,17 +5,17 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching
 {
-    public class MatchingResult : MatchingResultBase<PatternRoot>, IMatchingResultBase
+    public class MatchResult : MatchResultBase<PatternRoot>, IMatchResultBase
     {
         public SourceCodeFile SourceCodeFile => RootUst.SourceCodeFile;
 
         public TextSpan TextSpan => TextSpans.FirstOrDefault();
 
-        public MatchingResult()
+        public MatchResult()
         {
         }
 
-        public MatchingResult(RootUst rootUst, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
+        public MatchResult(RootUst rootUst, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
             RootUst = rootUst;
             Pattern = pattern;

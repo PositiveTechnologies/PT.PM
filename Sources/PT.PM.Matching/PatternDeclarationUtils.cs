@@ -7,7 +7,7 @@ namespace PT.PM.Matching
 {
     public static class PatternDeclarationUtils
     {
-        public static MatchingContext MatchSubset<T>(this IEnumerable<PatternUst> collection1, IEnumerable<T> collection2, MatchingContext context)
+        public static MatchContext MatchSubset<T>(this IEnumerable<PatternUst> collection1, IEnumerable<T> collection2, MatchContext context)
             where T : Ust
         {
             var sublistToMatch = new List<PatternUst>(collection1 ?? Enumerable.Empty<PatternUst>());
@@ -21,12 +21,12 @@ namespace PT.PM.Matching
             var matches = new List<Ust>(list.Count);
             foreach (T element in list)
             {
-                MatchingContext newContext = MatchingContext.CreateWithInputParams(context);
+                MatchContext newContext = MatchContext.CreateWithInputParams(context);
 
                 int i = 0;
                 while (i < sublistToMatch.Count)
                 {
-                    newContext = sublistToMatch[i].Match(element, newContext);
+                    newContext = sublistToMatch[i].MatchUst(element, newContext);
                     if (newContext.Success)
                     {
                         matches.Add(element);

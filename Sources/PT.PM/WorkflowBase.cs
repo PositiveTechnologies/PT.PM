@@ -18,13 +18,12 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchingResult> : ILoggable
+    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> : ILoggable
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchingResult>
-        where TMatchingResult : MatchingResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TMatchResult : MatchResultBase<TPattern>
     {
         protected ILogger logger = DummyLogger.Instance;
-        protected int maxStackSize;
         protected Task filesCountTask;
         protected Task convertPatternsTask;
 
@@ -54,7 +53,7 @@ namespace PT.PM
 
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
-        public IUstPatternMatcher<TInputGraph, TPattern, TMatchingResult> UstPatternMatcher { get; set; }
+        public IUstPatternMatcher<TInputGraph, TPattern, TMatchResult> UstPatternMatcher { get; set; }
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
@@ -101,10 +100,6 @@ namespace PT.PM
 
         public int ThreadCount { get; set; }
 
-        public int MaxStackSize { get; set; } = 0;
-
-        public int MaxTimespan { get; set; } = 0;
-
         public long MemoryConsumptionMb { get; set; } = 300;
 
         public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
@@ -122,6 +117,8 @@ namespace PT.PM
         public bool IndentedDump { get; set; } = true;
 
         public bool DumpWithTextSpans { get; set; } = true;
+
+        public bool IncludeCodeInDump { get; set; } = false;
 
         public string LogsDir { get; set; } = "";
 
@@ -147,16 +144,7 @@ namespace PT.PM
                     return null;
                 }
 
-                stopwatch.Restart();
-                SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
-                stopwatch.Stop();
-
-                Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
-
-                workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-                workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
-                workflowResult.AddReadTime(stopwatch.ElapsedTicks);
-                workflowResult.AddResultEntity(sourceCodeFile);
+                SourceCodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -167,7 +155,7 @@ namespace PT.PM
                     ParseTree parseTree = null;
                     Language detectedLanguage = null;
 
-                    if (startStageHelper.IsDefault || startStageHelper.IsFile)
+                    if (startStageHelper.IsFile)
                     {
                         stopwatch.Restart();
                         detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
@@ -181,8 +169,6 @@ namespace PT.PM
                         if (parser is AntlrParser antlrParser)
                         {
                             antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
-                            antlrParser.MaxTimespan = MaxTimespan;
-                            antlrParser.MaxStackSize = MaxStackSize;
                             if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
                             {
                                 javaScriptAntlrParser.JavaScriptType = JavaScriptType;
@@ -267,12 +253,30 @@ namespace PT.PM
                 var serializer = new JsonUstSerializer
                 {
                     Indented = IndentedDump,
-                    IncludeTextSpans = DumpWithTextSpans
+                    IncludeTextSpans = DumpWithTextSpans,
+                    IncludeCode = IncludeCodeInDump
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
+                Directory.CreateDirectory(DumpDir);
                 File.WriteAllText(Path.Combine(DumpDir, name + "ust.json"), json);
             }
+        }
+
+        protected SourceCodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
+            stopwatch.Stop();
+
+            Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
+
+            workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
+            workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
+            workflowResult.AddReadTime(stopwatch.ElapsedTicks);
+            workflowResult.AddResultEntity(sourceCodeFile);
+
+            return sourceCodeFile;
         }
 
         protected void StartConvertPatternsTaskIfRequired(TWorkflowResult workflowResult)

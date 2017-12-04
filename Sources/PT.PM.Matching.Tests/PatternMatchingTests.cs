@@ -66,14 +66,14 @@ namespace PT.PM.Matching.Tests
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             patternsRepository.Clear();
 
-            Assert.AreEqual(matchMethodNumbers.Contains(0) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_0")));
-            Assert.AreEqual(matchMethodNumbers.Contains(1) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_1")));
-            Assert.AreEqual(matchMethodNumbers.Contains(2) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_2")));
-            Assert.AreEqual(matchMethodNumbers.Contains(3) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_3")));
-            Assert.AreEqual(matchMethodNumbers.Contains(4) ? 1 : 0, matchingResults.Count(r => r.MatchedCode.StartsWith("test_call_4")));
+            Assert.AreEqual(matchMethodNumbers.Contains(0) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_0")));
+            Assert.AreEqual(matchMethodNumbers.Contains(1) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_1")));
+            Assert.AreEqual(matchMethodNumbers.Contains(2) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_2")));
+            Assert.AreEqual(matchMethodNumbers.Contains(3) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_3")));
+            Assert.AreEqual(matchMethodNumbers.Contains(4) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_4")));
         }
 
         [TestCase("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);")]
@@ -85,11 +85,11 @@ namespace PT.PM.Matching.Tests
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             patternsRepository.Clear();
 
             int expectedMatchingCount = patternData.Contains("password") ? 1 : 0;
-            Assert.AreEqual(expectedMatchingCount, matchingResults.Count());
+            Assert.AreEqual(expectedMatchingCount, matchResults.Count());
         }
 
         [TestCase("<[@pwd:password2]> = #; ...                       #(#*, <[@pwd]>, #*);")]
@@ -100,11 +100,11 @@ namespace PT.PM.Matching.Tests
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             patternsRepository.Clear();
 
             int expectedMatchingCount = patternData.Contains("~<[@pwd]>.Length") ? 0 : 1;
-            Assert.AreEqual(expectedMatchingCount, matchingResults.Count());
+            Assert.AreEqual(expectedMatchingCount, matchResults.Count());
         }
 
         [Test]
@@ -113,8 +113,8 @@ namespace PT.PM.Matching.Tests
             var code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
             var pattern = "new XMLUtil().parse(<[~\".*\"]>)";
 
-            var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Java.Language);
-            Assert.AreEqual(4, matchingResults.Length);
+            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Java.Language);
+            Assert.AreEqual(4, matchResults.Length);
         }
 
         [Test]
@@ -132,22 +132,22 @@ namespace PT.PM.Matching.Tests
                 "?>";
             var pattern = "Comment: <[ \"(?i)(password|pwd)\\s*(\\=|is|\\:)\" ]>";
 
-            var matchingResults = PatternMatchingUtils.GetMatchings(code, pattern, Php.Language);
+            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
 
-            Assert.AreEqual(2, matchingResults[0].BeginLine);
-            Assert.AreEqual(2, matchingResults[0].BeginColumn);
-            Assert.AreEqual(2, matchingResults[0].EndLine);
-            Assert.AreEqual(11, matchingResults[0].EndColumn);
+            Assert.AreEqual(2, matchResults[0].BeginLine);
+            Assert.AreEqual(2, matchResults[0].BeginColumn);
+            Assert.AreEqual(2, matchResults[0].EndLine);
+            Assert.AreEqual(11, matchResults[0].EndColumn);
 
-            Assert.AreEqual(3, matchingResults[1].BeginLine);
-            Assert.AreEqual(3, matchingResults[1].BeginColumn);
-            Assert.AreEqual(3, matchingResults[1].EndLine);
-            Assert.AreEqual(12, matchingResults[1].EndColumn);
+            Assert.AreEqual(3, matchResults[1].BeginLine);
+            Assert.AreEqual(3, matchResults[1].BeginColumn);
+            Assert.AreEqual(3, matchResults[1].EndLine);
+            Assert.AreEqual(12, matchResults[1].EndColumn);
 
-            Assert.AreEqual(6, matchingResults[2].BeginLine);
-            Assert.AreEqual(5, matchingResults[2].BeginColumn);
-            Assert.AreEqual(7, matchingResults[2].EndLine);
-            Assert.AreEqual(16, matchingResults[2].EndColumn);
+            Assert.AreEqual(6, matchResults[2].BeginLine);
+            Assert.AreEqual(5, matchResults[2].BeginColumn);
+            Assert.AreEqual(7, matchResults[2].EndLine);
+            Assert.AreEqual(16, matchResults[2].EndColumn);
         }
 
         [Test]

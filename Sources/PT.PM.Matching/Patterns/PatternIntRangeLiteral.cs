@@ -1,10 +1,9 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntRangeLiteral : PatternUst
+    public class PatternIntRangeLiteral : PatternUst<IntLiteral>
     {
         public long MinValue { get; set; }
 
@@ -39,21 +38,11 @@ namespace PT.PM.Matching.Patterns
             return $"<({lowerBound}..{upperBound})>";
         }
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(IntLiteral intLiteral, MatchContext context)
         {
-            MatchingContext newContext;
-
-            if (ust is IntLiteral intLiteral && 
-                (intLiteral.Value >= MinValue && intLiteral.Value < MaxValue))
-            {
-                newContext = context.AddMatch(ust);
-            }
-            else
-            {
-                newContext = context.Fail();
-            }
-
-            return newContext;
+            return intLiteral.Value >= MinValue && intLiteral.Value < MaxValue
+                ? context.AddMatch(intLiteral)
+                : context.Fail();
         }
     }
 }

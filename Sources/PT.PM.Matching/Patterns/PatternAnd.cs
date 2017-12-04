@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAnd : PatternUst
+    public class PatternAnd : PatternUst<Ust>
     {
         public List<PatternUst> Patterns { get; set; } = new List<PatternUst>();
 
@@ -28,13 +28,13 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"({(string.Join(" <&> ", Patterns))})";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchingContext newContext = context;
+            MatchContext newContext = context;
 
-            foreach (PatternUst expression in Patterns)
+            foreach (PatternUst pattern in Patterns)
             {
-                newContext = expression.Match(ust, newContext);
+                newContext = pattern.MatchUst(ust, newContext);
                 if (!newContext.Success)
                 {
                     return newContext.Fail();

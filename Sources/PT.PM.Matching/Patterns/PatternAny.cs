@@ -1,13 +1,12 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
+﻿using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAny : PatternUst
+    public class PatternAny : PatternUst<Ust>
     {
         public static PatternAny Instance = new PatternAny();
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust == null)
             {

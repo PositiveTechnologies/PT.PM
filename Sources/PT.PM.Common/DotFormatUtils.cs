@@ -1,5 +1,4 @@
-﻿using PT.PM.Common.Nodes;
-using System.Text;
+﻿using System.Text;
 
 namespace PT.PM.Common
 {
@@ -12,18 +11,23 @@ namespace PT.PM.Common
             builder.AppendLine($"{startInd}->{endInd}" + (advanced == "" ? "" : " " + advanced) + ";");
         }
 
-        public static string GetNodeName(Ust node)
+        public static string TrimAndEscape(string str)
         {
-            return TrimAndEscapeString(node.ToString());
+            return EscapeString(TrimString(str));
         }
 
-        public static string TrimAndEscapeString(string str)
+        public static string EscapeString(string str)
+        {
+            return str.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "");
+        }
+
+        public static string TrimString(string str)
         {
             if (str.Length > TrimLength)
             {
                 str = str.Remove(TrimLength);
             }
-            str = str.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "");
+
             return str;
         }
     }

@@ -43,11 +43,12 @@
     <Compile Include="Exceptions\ExceptionUtils.cs" />
     <Compile Include="Exceptions\FileNameType.cs" />
     <Compile Include="Exceptions\PMException.cs" />
-    <Compile Include="Exceptions\PMExceptionType.cs" />
     <Compile Include="Exceptions\ReadException.cs" />
     <Compile Include="Json\JsonBaseSerializer.cs" />
     <Compile Include="Json\JsonConverterBase.cs" />
+    <Compile Include="Json\LanguageJsonConverter.cs" />
     <Compile Include="Json\SourceCodeFileJsonConverter.cs" />
+    <Compile Include="Json\TextSpanJsonConverter.cs" />
     <Compile Include="LanguageUtils.cs" />
     <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Nodes\IUst.cs" />
@@ -69,7 +70,6 @@
     <Compile Include="Nodes\UstUtils.cs" />
     <Compile Include="Nodes\Tokens\Literals\Literal.cs" />
     <Compile Include="TextUtils.cs" />
-    <Compile Include="UstDotRenderer.cs" />
     <Compile Include="CodeRepository\MemoryCodeRepository.cs" />
     <Compile Include="DotFormatUtils.cs" />
     <Compile Include="Exceptions\PreprocessingException.cs" />

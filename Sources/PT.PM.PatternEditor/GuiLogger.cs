@@ -65,7 +65,7 @@ namespace PT.PM.PatternEditor
         {
             ParsingException parseException;
             ConversionException conversionException;
-            MatchingException matchingException;
+            MatchingException matchException;
             bool logError = LogPatternErrors;
             if ((parseException = ex as ParsingException) != null)
             {
@@ -83,13 +83,13 @@ namespace PT.PM.PatternEditor
                 }
                 conversionException.FileName = "";
             }
-            if ((matchingException = ex as MatchingException) != null)
+            if ((matchException = ex as MatchingException) != null)
             {
                 if (!logError)
                 {
-                    logError = matchingException.FileName != "Pattern";
+                    logError = matchException.FileName != "Pattern";
                 }
-                matchingException.FileName = "";
+                matchException.FileName = "";
             }
 
             return logError;

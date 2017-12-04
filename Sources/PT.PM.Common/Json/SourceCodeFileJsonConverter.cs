@@ -4,10 +4,8 @@ using Newtonsoft.Json.Linq;
 
 namespace PT.PM.Common.Json
 {
-    public class SourceCodeFileJsonConverter : JsonConverter, ILoggable
+    public class SourceCodeFileJsonConverter : JsonConverter
     {
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
         public bool IncludeCode { get; set; } = false;
 
         public bool ExcludeDefaults { get; set; } = true;
@@ -42,7 +40,16 @@ namespace PT.PM.Common.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            JObject obj = JObject.Load(reader);
+            SourceCodeFile result = new SourceCodeFile
+            {
+                RootPath = (string)obj[nameof(SourceCodeFile.RootPath)] ?? "",
+                RelativePath = (string)obj[nameof(SourceCodeFile.RelativePath)] ?? "",
+                Name = (string)obj[nameof(SourceCodeFile.Name)] ?? "",
+                Code = (string)obj[nameof(SourceCodeFile.Code)] ?? ""
+            };
+
+            return result;
         }
     }
 }

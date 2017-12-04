@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
-using System.Linq;
 
 namespace PT.PM.Common.Json
 {
@@ -17,38 +16,30 @@ namespace PT.PM.Common.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
-            if (reader.TokenType != JsonToken.Null)
+            if (reader.TokenType == JsonToken.Null)
             {
-                JObject jObject = JObject.Load(reader);
-
-                var kind = jObject[KindName].ToString();
-                Type type = ReflectionCache.UstKindFullClassName.Value[kind];
-
-                Ust target;
-                if (type == typeof(RootUst))
-                {
-                    Language language = ((string)jObject[nameof(RootUst.Language)]).ParseLanguages().FirstOrDefault();
-                    target = (Ust)Activator.CreateInstance(type, null, language);
-                }
-                else
-                {
-                    target = (Ust)Activator.CreateInstance(type);
-                }
-
-                serializer.Populate(jObject.CreateReader(), target);
-
-                JToken textSpanObj = jObject[nameof(Ust.TextSpan)];
-                if (textSpanObj != null)
-                {
-                    int start = textSpanObj[nameof(TextSpan.Start)]?.ToObject<int>() ?? 0;
-                    int length = textSpanObj[nameof(TextSpan.Length)]?.ToObject<int>() ?? 0;
-                    target.TextSpan = new TextSpan(start, length);
-                }
-
-                return target;
+                return null;
             }
 
-            return null;
+            JObject jObject = JObject.Load(reader);
+            string kind = jObject[KindName].ToString();
+
+            Ust target;
+            JsonReader newReader;
+            if (!ReflectionCache.UstKindFullClassName.Value.ContainsKey(kind))
+            {
+                // Try load from Ust subfield.
+                JToken jToken = jObject[nameof(Ust)];
+                target = CreateUst(jToken);
+                newReader = jToken.CreateReader();
+            }
+            else
+            {
+                target = CreateUst(jObject);
+                newReader = jObject.CreateReader();
+            }
+            serializer.Populate(newReader, target);
+            return target;
         }
     }
 }

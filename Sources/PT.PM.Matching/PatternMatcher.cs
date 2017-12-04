@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PT.PM.Matching
 {
-    public class PatternMatcher : IUstPatternMatcher<RootUst, PatternRoot, MatchingResult>
+    public class PatternMatcher : IUstPatternMatcher<RootUst, PatternRoot, MatchResult>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -24,7 +24,7 @@ namespace PT.PM.Matching
             Patterns = patterns;
         }
 
-        public List<MatchingResult> Match(RootUst ust)
+        public List<MatchResult> Match(RootUst ust)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace PT.PM.Matching
                     patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceCodeFile.FullName) ?? true);
                 }
 
-                var result = new List<MatchingResult>();
+                var result = new List<MatchResult>();
                 foreach (PatternRoot pattern in patterns)
                 {
                     pattern.Logger = Logger;
@@ -48,7 +48,7 @@ namespace PT.PM.Matching
             catch (Exception ex)
             {
                 Logger.LogError(new MatchingException(ust.SourceCodeFile.FullName, ex));
-                return new List<MatchingResult>();
+                return new List<MatchResult>();
             }
         }
     }

@@ -3,11 +3,11 @@ using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching
 {
-    public interface IMatchingResultBase
+    public interface IMatchResultBase
     {
     }
 
-    public abstract class MatchingResultBase<TPattern>
+    public abstract class MatchResultBase<TPattern>
     {
         public RootUst RootUst { get; set; }
 

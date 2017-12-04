@@ -1,11 +1,9 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
-using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternObjectCreateExpression : PatternUst
+    public class PatternObjectCreateExpression : PatternUst<ObjectCreateExpression>
     {
         public PatternUst Type { get; set; }
 
@@ -24,26 +22,17 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"new {Type}({Arguments})";
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(ObjectCreateExpression objectCreateExpression, MatchContext context)
         {
-            MatchingContext newContext;
-
-            if (ust is ObjectCreateExpression objectCreateExpression)
+            MatchContext newContext = Type.MatchUst(objectCreateExpression.Type, context);
+            if (!newContext.Success)
             {
-                newContext = Type.Match(objectCreateExpression.Type, context);
-                if (!newContext.Success)
-                {
-                    return newContext;
-                }
-
-                newContext = Arguments.Match(objectCreateExpression.Arguments, newContext);
-            }
-            else
-            {
-                newContext = context.Fail();
+                return newContext;
             }
 
-            return newContext.AddUstIfSuccess(ust);
+            newContext = Arguments.Match(objectCreateExpression.Arguments, newContext);
+
+            return newContext.AddUstIfSuccess(objectCreateExpression);
         }
     }
 }

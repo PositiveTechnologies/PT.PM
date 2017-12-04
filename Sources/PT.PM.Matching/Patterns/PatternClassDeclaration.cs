@@ -1,12 +1,11 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.GeneralScope;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternClassDeclaration : PatternUst
+    public class PatternClassDeclaration : PatternUst<TypeDeclaration>
     {
         public List<PatternUst> Modifiers { get; set; }
 
@@ -45,48 +44,39 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(TypeDeclaration typeDeclaration, MatchContext context)
         {
-            MatchingContext newContext;
-
-            if (ust is TypeDeclaration typeDeclaration)
+            MatchContext newContext = Modifiers.MatchSubset(typeDeclaration.Modifiers, context);
+            if (!newContext.Success)
             {
-                newContext = Modifiers.MatchSubset(typeDeclaration.Modifiers, context);
+                return newContext;
+            }
+
+            if (Name != null)
+            {
+                newContext = Name.MatchUst(typeDeclaration.Name, newContext);
                 if (!newContext.Success)
                 {
                     return newContext;
                 }
-
-                if (Name != null)
-                {
-                    newContext = Name.Match(typeDeclaration.Name, newContext);
-                    if (!newContext.Success)
-                    {
-                        return newContext;
-                    }
-                }
-
-                newContext = BaseTypes.MatchSubset(typeDeclaration.BaseTypes, newContext);
-
-                if (!newContext.Success)
-                {
-                    return newContext;
-                }
-
-                if (Body != null)
-                {
-                    if (!typeDeclaration.TypeMembers.Any(m => Body.Match(m, newContext).Success))
-                    {
-                        return newContext.Fail();
-                    }
-                }
             }
-            else
+
+            newContext = BaseTypes.MatchSubset(typeDeclaration.BaseTypes, newContext);
+
+            if (!newContext.Success)
             {
-                newContext = context.Fail();
+                return newContext;
             }
 
-            return newContext.AddUstIfSuccess(ust);
+            if (Body != null)
+            {
+                if (!typeDeclaration.TypeMembers.Any(m => Body.Match(m, newContext).Success))
+                {
+                    return newContext.Fail();
+                }
+            }
+
+            return newContext.AddUstIfSuccess(typeDeclaration);
         }
     }
 }

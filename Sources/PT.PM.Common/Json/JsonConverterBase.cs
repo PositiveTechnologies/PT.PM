@@ -3,23 +3,25 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonConverterBase : JsonConverter, ILoggable
+    public abstract class JsonConverterBase : JsonConverter
     {
         protected const string KindName = "Kind";
-
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool IncludeTextSpans { get; set; } = false;
 
         public bool ExcludeDefaults { get; set; } = true;
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            JObject jObject = GetJObject(value, serializer);
+            jObject.WriteTo(writer);
+        }
+
+        protected JObject GetJObject(object value, JsonSerializer serializer)
         {
             JObject jObject = new JObject();
             Type type = value.GetType();
@@ -29,6 +31,7 @@ namespace PT.PM.Common.Json
             {
                 jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.Key);
             }
+
             foreach (PropertyInfo prop in properties)
             {
                 string propName = prop.Name;
@@ -78,23 +81,51 @@ namespace PT.PM.Common.Json
                     object propVal = prop.GetValue(value, null);
                     if (propVal != null)
                     {
-                        object serializeObj = propVal is IEnumerable<Language> languages
-                            ? languages.Select(lang => lang.Key)
-                            : propVal is Language language
-                            ? language.Key
-                            : propVal;
-                        JToken jToken = JToken.FromObject(serializeObj, serializer);
+                        JToken jToken = JToken.FromObject(propVal, serializer);
                         jObject.Add(propName, jToken);
                     }
                 }
             }
-            jObject.WriteTo(writer);
+
+            return jObject;
+        }
+
+        protected Ust CreateUst(object jObjectOrToken)
+        {
+            JObject jObject = jObjectOrToken as JObject;
+            JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
+
+            string ustKind = jObject != null
+                ? ((string)jObject[KindName]) : jToken != null
+                ? ((string)jToken[KindName]) : "";
+
+            Type type = ReflectionCache.UstKindFullClassName.Value[ustKind];
+
+            Ust ust;
+            if (type == typeof(RootUst))
+            {
+                string languageString = jObject != null
+                    ? ((string)jObject[nameof(RootUst.Language)])
+                    : jToken != null
+                    ? ((string)jToken[nameof(RootUst.Language)])
+                    : "";
+                Language language = LanguageUtils.Languages[languageString];
+                ust = (Ust)Activator.CreateInstance(type, null, language);
+            }
+            else
+            {
+                ust = (Ust)Activator.CreateInstance(type);
+            }
+
+            return ust;
         }
 
         private object GetDefaultValue(Type t)
         {
             if (t.IsValueType)
+            {
                 return Activator.CreateInstance(t);
+            }
 
             return null;
         }

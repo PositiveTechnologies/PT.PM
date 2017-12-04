@@ -3,13 +3,13 @@ using PT.PM.Common;
 
 namespace PT.PM.Matching
 {
-    public interface IUstPatternMatcher<TInputGraph, TPattern, TMatchingResult> : ILoggable
-        where TMatchingResult : MatchingResultBase<TPattern>
+    public interface IUstPatternMatcher<TInputGraph, TPattern, TMatchResult> : ILoggable
+        where TMatchResult : MatchResultBase<TPattern>
     {
         bool IsIgnoreFilenameWildcards { get; set; }
 
         IEnumerable<TPattern> Patterns { get; set; }
 
-        List<TMatchingResult> Match(TInputGraph ust);
+        List<TMatchResult> Match(TInputGraph ust);
     }
 }

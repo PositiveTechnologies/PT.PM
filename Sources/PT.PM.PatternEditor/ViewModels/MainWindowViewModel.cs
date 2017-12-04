@@ -12,6 +12,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace PT.PM.PatternEditor
         private ColumnDefinition patternsPanelColumn;
         private TextBox sourceCodeTextBox;
         private ListBox sourceCodeErrorsListBox;
-        private ListBox matchingResultListBox;
+        private ListBox matchResultListBox;
         private TextBox logger;
         private GuiLogger sourceCodeLogger;
         private string oldSelectedLanguage;
@@ -44,7 +45,8 @@ namespace PT.PM.PatternEditor
         private string tokens;
         private string parseTree;
         private string ustJson;
-        private string matchingResultText = "MATCHINGS";
+        private string matchResultText = "MATCHINGS";
+        private bool oldIsIncludeTextSpans;
 
         public MainWindowViewModel(Window w)
         {
@@ -66,7 +68,7 @@ namespace PT.PM.PatternEditor
             patternsPanelColumn = window.Find<Grid>("MainGrid").ColumnDefinitions[0];
             sourceCodeTextBox = window.Find<TextBox>("SourceCode");
             sourceCodeErrorsListBox = window.Find<ListBox>("SourceCodeErrors");
-            matchingResultListBox = window.Find<ListBox>("MatchingResult");
+            matchResultListBox = window.Find<ListBox>("MatchingResult");
             logger = window.Find<TextBox>("Logger");
 
             patternsPanelColumn.Width = GridLength.Parse(Settings.PatternsPanelWidth.ToString(), CultureInfo.InvariantCulture);
@@ -75,7 +77,7 @@ namespace PT.PM.PatternEditor
             {
                 GuiHelpers.ProcessErrorOnDoubleClick(sourceCodeErrorsListBox, sourceCodeTextBox);
             };
-            matchingResultListBox.DoubleTapped += MatchingResultListBox_DoubleTapped;
+            matchResultListBox.DoubleTapped += MatchingResultListBox_DoubleTapped;
 
             sourceCodeLogger = new GuiLogger(SourceCodeErrors) { LogPatternErrors = false };
             languageDetector.Logger = sourceCodeLogger;
@@ -113,6 +115,11 @@ namespace PT.PM.PatternEditor
             {
                 OpenedFileName = "";
                 sourceCodeTextBox.Text = "";
+            });
+
+            OpenDumpDirectory.Subscribe(_ =>
+            {
+                Process.Start(ServiceLocator.TempDirectory);
             });
 
             if (string.IsNullOrEmpty(Settings.SourceCodeFile) || !File.Exists(Settings.SourceCodeFile))
@@ -241,12 +248,12 @@ namespace PT.PM.PatternEditor
 
         private void MatchingResultListBox_DoubleTapped(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (matchingResultListBox.SelectedItem is MathingResultDtoWrapper matchingResultWrapper)
+            if (matchResultListBox.SelectedItem is MatchResultDtoWrapper matchResultWrapper)
             {
-                var matchingResult = matchingResultWrapper.MatchingResult;
+                var matchResult = matchResultWrapper.MatchingResult;
                 sourceCodeTextBox.Focus();
-                sourceCodeTextBox.SelectionStart = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.BeginLine, matchingResult.BeginColumn);
-                sourceCodeTextBox.SelectionEnd = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchingResult.EndLine, matchingResult.EndColumn);
+                sourceCodeTextBox.SelectionStart = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchResult.BeginLine, matchResult.BeginColumn);
+                sourceCodeTextBox.SelectionEnd = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchResult.EndLine, matchResult.EndColumn);
                 sourceCodeTextBox.CaretIndex = sourceCodeTextBox.SelectionEnd;
             }
         }
@@ -307,7 +314,7 @@ namespace PT.PM.PatternEditor
                 return new ObservableCollection<Language>(LanguageUtils.Languages.Values);
             }
         }
-        
+
         public Language SelectedLanguage
         {
             get
@@ -368,6 +375,8 @@ namespace PT.PM.PatternEditor
         public ReactiveCommand<object> ReloadFile { get; } = ReactiveCommand.Create();
 
         public ReactiveCommand<object> Reset { get; } = ReactiveCommand.Create();
+
+        public ReactiveCommand<object> OpenDumpDirectory { get; } = ReactiveCommand.Create();
 
         public string OpenedFullFileName => sourceCodeFileName;
 
@@ -441,11 +450,11 @@ namespace PT.PM.PatternEditor
 
         public string MatchingResultText
         {
-            get => matchingResultText;
-            set => this.RaiseAndSetIfChanged(ref matchingResultText, value);
+            get => matchResultText;
+            set => this.RaiseAndSetIfChanged(ref matchResultText, value);
         }
 
-        public ObservableCollection<MathingResultDtoWrapper> MatchingResults { get; } = new ObservableCollection<MathingResultDtoWrapper>();
+        public ObservableCollection<MatchResultDtoWrapper> MatchingResults { get; } = new ObservableCollection<MatchResultDtoWrapper>();
 
         public bool IsMatchingStage => Stage >= Stage.Match;
 
@@ -534,12 +543,31 @@ namespace PT.PM.PatternEditor
             }
         }
 
+        public bool IsIncludeTextSpans
+        {
+            get
+            {
+                return Settings.IsIncludeTextSpans;
+            }
+            set
+            {
+                if (Settings.IsIncludeTextSpans != value)
+                {
+                    Settings.IsIncludeTextSpans = value;
+                    Settings.Save();
+                    this.RaisePropertyChanged();
+                    CheckSourceCode();
+                }
+            }
+        }
+
         private void CheckSourceCode()
         {
             if (oldSourceCode != sourceCodeTextBox.Text ||
                 oldSelectedLanguage != Settings.SourceCodeLanguage ||
                 oldEndStage != Settings.SelectedStage ||
-                oldJavaScriptType != Settings.JavaScriptType)
+                oldJavaScriptType != Settings.JavaScriptType ||
+                oldIsIncludeTextSpans != Settings.IsIncludeTextSpans)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
@@ -552,6 +580,7 @@ namespace PT.PM.PatternEditor
                 oldSelectedLanguage = Settings.SourceCodeLanguage;
                 oldEndStage = Settings.SelectedStage;
                 oldJavaScriptType = Settings.JavaScriptType;
+                oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
             }
         }
 
@@ -572,8 +601,11 @@ namespace PT.PM.PatternEditor
             var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
             {
                 IsIncludeIntermediateResult = true,
+                DumpWithTextSpans = IsIncludeTextSpans,
                 Logger = sourceCodeLogger,
-                DumpDir = ServiceLocator.TempDirectory
+                RenderFormat = GraphvizOutputFormat.Svg,
+                DumpDir = ServiceLocator.TempDirectory,
+                RenderStages = new HashSet<Stage>() { Stage.Ust }
             };
             if (SelectedLanguage == JavaScript.Language)
             {
@@ -593,23 +625,25 @@ namespace PT.PM.PatternEditor
                 workflow.DumpStages = dumpStages;
             }
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchingResultDto> matchingResults = workflowResult.MatchingResults.ToDto();
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
 
             if (IsDeveloperMode)
             {
-                Tokens = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "tokens"));
-                ParseTree = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "parseTree"));
+                string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, "tokens");
+                string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, "parseTree");
+                Tokens = File.Exists(tokensFileName) ? File.ReadAllText(tokensFileName) : "";
+                ParseTree = File.Exists(parseTreeFileName) ? File.ReadAllText(parseTreeFileName) : "";
 
                 TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
                 ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
 
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {
-                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "ust.json"));
+                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", "ust.json"));
                 }
             }
 
-            MatchingResultText = "MATCHINGS" + (matchingResults.Count() > 0 ? $" ({matchingResults.Count()})" : "");
+            MatchingResultText = "MATCHINGS" + (matchResults.Count() > 0 ? $" ({matchResults.Count()})" : "");
 
             if (sourceCodeLogger.ErrorCount == 0)
             {
@@ -625,9 +659,9 @@ namespace PT.PM.PatternEditor
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 MatchingResults.Clear();
-                foreach (MatchingResultDto matchingResult in matchingResults)
+                foreach (MatchResultDto matchResult in matchResults)
                 {
-                    MatchingResults.Add(new MathingResultDtoWrapper(matchingResult));
+                    MatchingResults.Add(new MatchResultDtoWrapper(matchResult));
                 }
             });
         }

@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternArgs : PatternUst
+    public class PatternArgs : PatternUst<ArgsUst>
     {
         public List<PatternUst> Args { get; set; } = new List<PatternUst>();
 
@@ -27,79 +26,71 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(", ", Args);
 
-        public override MatchingContext Match(Ust ust, MatchingContext context)
+        public override MatchContext Match(ArgsUst argsUst, MatchContext context)
         {
-            MatchingContext newContext;
+            MatchContext newContext;
 
-            if (ust is ArgsUst argsUst)
+            List<Expression> args = argsUst.Collection;
+            newContext = MatchContext.CreateWithInputParamsAndVars(context);
+            var matchedTextSpans = new List<TextSpan>();
+            int patternArgInd = 0;
+            int argInd = 0;
+            while (argInd < args.Count)
             {
-                List<Expression> args = argsUst.Collection;
-
-                newContext = MatchingContext.CreateWithInputParamsAndVars(context);
-                var matchedTextSpans = new List<TextSpan>();
-                int patternArgInd = 0;
-                int argInd = 0;
-                while (argInd < args.Count)
+                if (patternArgInd >= Args.Count)
                 {
-                    if (patternArgInd >= Args.Count)
-                    {
-                        break;
-                    }
+                    break;
+                }
 
-                    newContext = MatchingContext.CreateWithInputParamsAndVars(newContext);
-                    if (Args[patternArgInd] is PatternMultipleExpressions multiExprArg)
+                newContext = MatchContext.CreateWithInputParamsAndVars(newContext);
+                if (Args[patternArgInd] is PatternMultipleExpressions multiExprArg)
+                {
+                    if (patternArgInd + 1 < Args.Count)
                     {
-                        if (patternArgInd + 1 < Args.Count)
+                        newContext = Args[patternArgInd + 1].MatchUst(args[argInd], newContext);
+                        matchedTextSpans.AddRange(newContext.Locations);
+                        if (newContext.Success)
                         {
-                            newContext = Args[patternArgInd + 1].Match(args[argInd], newContext);
-                            matchedTextSpans.AddRange(newContext.Locations);
-                            if (newContext.Success)
-                            {
-                                patternArgInd += 2;
-                            }
+                            patternArgInd += 2;
                         }
-                        else
-                        {
-                            matchedTextSpans.AddRange(newContext.Locations);
-                        }
-                        argInd += 1;
                     }
                     else
                     {
-                        newContext = Args[patternArgInd].Match(args[argInd], newContext);
-                        if (!newContext.Success)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            matchedTextSpans.AddRange(newContext.Locations);
-                        }
-                        patternArgInd += 1;
-                        argInd += 1;
+                        matchedTextSpans.AddRange(newContext.Locations);
                     }
-                }
-
-                if (patternArgInd < Args.Count && Args[patternArgInd] is PatternMultipleExpressions)
-                {
-                    patternArgInd += 1;
-                }
-
-                if (argInd != args.Count || patternArgInd != Args.Count)
-                {
-                    newContext = context.Fail();
+                    argInd += 1;
                 }
                 else
                 {
-                    newContext = context.AddMatches(matchedTextSpans);
+                    newContext = Args[patternArgInd].MatchUst(args[argInd], newContext);
+                    if (!newContext.Success)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        matchedTextSpans.AddRange(newContext.Locations);
+                    }
+                    patternArgInd += 1;
+                    argInd += 1;
                 }
             }
-            else
+
+            if (patternArgInd < Args.Count && Args[patternArgInd] is PatternMultipleExpressions)
+            {
+                patternArgInd += 1;
+            }
+
+            if (argInd != args.Count || patternArgInd != Args.Count)
             {
                 newContext = context.Fail();
             }
+            else
+            {
+                newContext = context.AddMatches(matchedTextSpans);
+            }
 
-            return newContext.AddUstIfSuccess(ust);
+            return newContext.AddUstIfSuccess(argsUst);
         }
     }
 }
