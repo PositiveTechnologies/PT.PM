@@ -5,8 +5,6 @@ namespace PT.PM.Common.Exceptions
 {
     public class ParsingException : PMException
     {
-        public override PMExceptionType ExceptionType => PMExceptionType.Parsing;
-
         public TextSpan TextSpan { get; set; }
 
         public ParsingException()

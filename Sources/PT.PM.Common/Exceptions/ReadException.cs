@@ -4,8 +4,6 @@ namespace PT.PM.Common.Exceptions
 {
     public class ReadException : PMException
     {
-        public override PMExceptionType ExceptionType => PMExceptionType.Read;
-
         public ReadException(string fileName)
         {
             FileName = fileName;

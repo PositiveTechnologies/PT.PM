@@ -2,8 +2,6 @@
 {
     public class ShouldNotBeVisitedException : PMException
     {
-        public override PMExceptionType ExceptionType => PMExceptionType.ShouldNotBeVisited;
-
         private readonly string _ruleName = "";
 
         public ShouldNotBeVisitedException()

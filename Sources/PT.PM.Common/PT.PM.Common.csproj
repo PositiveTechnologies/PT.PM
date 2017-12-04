@@ -43,7 +43,6 @@
     <Compile Include="Exceptions\ExceptionUtils.cs" />
     <Compile Include="Exceptions\FileNameType.cs" />
     <Compile Include="Exceptions\PMException.cs" />
-    <Compile Include="Exceptions\PMExceptionType.cs" />
     <Compile Include="Exceptions\ReadException.cs" />
     <Compile Include="Json\JsonBaseSerializer.cs" />
     <Compile Include="Json\JsonConverterBase.cs" />
