@@ -109,7 +109,11 @@ namespace PT.PM.Common.Json
                     : jToken != null
                     ? ((string)jToken[nameof(RootUst.Language)])
                     : "";
-                Language language = LanguageUtils.Languages[languageString];
+                Language language = Uncertain.Language;
+                if (!string.IsNullOrEmpty(languageString))
+                { 
+                    LanguageUtils.Languages.TryGetValue(languageString, out language);
+                }
                 ust = (Ust)Activator.CreateInstance(type, null, language);
             }
             else

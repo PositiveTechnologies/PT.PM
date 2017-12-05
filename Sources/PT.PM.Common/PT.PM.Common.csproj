@@ -63,6 +63,7 @@
     <Compile Include="Nodes\UstRefComparer.cs" />
     <Compile Include="Nodes\UstVisitor.cs" />
     <Compile Include="TokenValueDisplayMode.cs" />
+    <Compile Include="Uncertain.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />
