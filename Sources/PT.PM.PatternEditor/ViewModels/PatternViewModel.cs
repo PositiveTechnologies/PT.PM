@@ -21,12 +21,6 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        private JsonUstSerializer jsonUstSerializer = new JsonUstSerializer
-        {
-            IncludeTextSpans = false,
-            ExcludeDefaults = true,
-            Indented = true
-        };
         private JsonPatternSerializer jsonPatternSerializer = new JsonPatternSerializer
         {
             IncludeTextSpans = false,
