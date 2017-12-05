@@ -96,10 +96,18 @@ namespace PT.PM.Common.Json
             JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
 
             string ustKind = jObject != null
-                ? ((string)jObject[KindName]) : jToken != null
-                ? ((string)jToken[KindName]) : "";
+                ? ((string)jObject[KindName])
+                : jToken != null
+                ? ((string)jToken[KindName])
+                : "";
 
-            Type type = ReflectionCache.UstKindFullClassName.Value[ustKind];
+            Type type;
+            if (string.IsNullOrEmpty(ustKind) ||
+                !ReflectionCache.UstKindFullClassName.Value.TryGetValue(ustKind, out type))
+            {
+                int errorLineNumber = (jObjectOrToken as IJsonLineInfo)?.LineNumber ?? 0;
+                throw new FormatException($"Line: {errorLineNumber}; {KindName} field undefined or incorrect ({(ustKind ?? "null")})");
+            }
 
             Ust ust;
             if (type == typeof(RootUst))
