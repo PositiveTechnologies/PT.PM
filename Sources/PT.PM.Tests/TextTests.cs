@@ -23,45 +23,54 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void TruncMessages()
+        public void PrettyPrintMessages()
         {
-            var truncater = new TextTruncater() { MaxMessageLength = 32 };
+            var printer = new PrettyPrinter() { MaxMessageLength = 32 };
             string origin = "The sample of very long message.";
-            string actual = truncater.Trunc(origin);
+            string actual = printer.Print(origin);
             Assert.AreEqual(origin, actual);
 
-            truncater = new TextTruncater
+            printer = new PrettyPrinter
             {
                 MaxMessageLength = 30,
                 CutWords = true
             };
-            actual = truncater.Trunc(origin);
+            actual = printer.Print(origin);
             Assert.AreEqual(30, actual.Length);
             Assert.AreEqual("The sample of v ... g message.", actual);
 
-            truncater = new TextTruncater
+            printer = new PrettyPrinter
             {
                 MaxMessageLength = 30,
                 CutWords = false
             };
-            actual = truncater.Trunc(origin);
+            actual = printer.Print(origin);
             Assert.AreEqual("The sample of ... message.", actual);
 
-            truncater = new TextTruncater
+            printer = new PrettyPrinter
             {
                 Trim = false,
                 MaxMessageLength = 10,
                 CutWords = false
             };
-            Assert.AreEqual(" ... ", truncater.Trunc("                          "));
+            Assert.AreEqual(" ... ", printer.Print("                          "));
 
             origin = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-            truncater = new TextTruncater
+            printer = new PrettyPrinter
             {
                 MaxMessageLength = 20,
                 CutWords = false
             };
-            Assert.AreEqual("aaaaaaaaaa ... aaaaa", truncater.Trunc(origin));
+            Assert.AreEqual("aaaaaaaaaa ... aaaaa", printer.Print(origin));
+
+            origin = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            printer = new PrettyPrinter
+            {
+                MaxMessageLength = 20,
+                StartRatio = 1.0,
+                CutWords = false
+            };
+            Assert.AreEqual("aaaaaaaaaaaaaaaaaaaa ... ", printer.Print(origin));
         }
 
         [Test]
@@ -74,8 +83,8 @@ namespace PT.PM.Tests
 			// do nothing
 		}";
 
-            var truncater = new TextTruncater() { TrimIndent = true };
-            string actual = truncater.Trunc(origin);
+            var printer = new PrettyPrinter() { TrimIndent = true };
+            string actual = printer.Print(origin);
 
             string expected =
 @"try {
@@ -91,12 +100,23 @@ namespace PT.PM.Tests
         public void ReduceWhitespaces()
         {
             string origin = " a   =   b ";
-            var truncater = new TextTruncater
+            var printer = new PrettyPrinter
             {
                 Trim = true,
                 ReduceWhitespaces = true
             };
-            Assert.AreEqual("a = b", truncater.Trunc(origin));
+            Assert.AreEqual("a = b", printer.Print(origin));
+        }
+
+        [Test]
+        public void EscapeString()
+        {
+            string origin = "\"\\\r\n";
+            var printer = new PrettyPrinter
+            {
+                Escape = true
+            };
+            Assert.AreEqual("\\\"\\\\", printer.Print(origin));
         }
     }
 }
