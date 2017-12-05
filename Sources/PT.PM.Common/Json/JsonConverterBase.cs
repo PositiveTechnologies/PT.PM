@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
@@ -7,9 +8,11 @@ using System.Reflection;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonConverterBase : JsonConverter
+    public abstract class JsonConverterBase : JsonConverter, ILoggable
     {
         protected const string KindName = "Kind";
+
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool IncludeTextSpans { get; set; } = false;
 
@@ -106,7 +109,12 @@ namespace PT.PM.Common.Json
                 !ReflectionCache.UstKindFullClassName.Value.TryGetValue(ustKind, out type))
             {
                 int errorLineNumber = (jObjectOrToken as IJsonLineInfo)?.LineNumber ?? 0;
-                throw new FormatException($"Line: {errorLineNumber}; {KindName} field undefined or incorrect ({(ustKind ?? "null")})");
+                string errorMessage = $"Line: {errorLineNumber}; {KindName} field ";
+                errorMessage += ustKind == null
+                    ? "undefined"
+                    : $"incorrect ({ustKind})";
+                Logger.LogError(new ConversionException("", null, errorMessage));
+                return null;
             }
 
             Ust ust;

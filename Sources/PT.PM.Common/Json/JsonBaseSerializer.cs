@@ -8,7 +8,7 @@ namespace PT.PM.Common.Json
     {
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool IncludeTextSpans { get; set; } = true;
 
@@ -47,6 +47,7 @@ namespace PT.PM.Common.Json
             JsonConverterBase jsonConverterBase = CreateConverterBase();
             jsonConverterBase.IncludeTextSpans = IncludeTextSpans;
             jsonConverterBase.ExcludeDefaults = ExcludeDefaults;
+            jsonConverterBase.Logger = Logger;
             var jsonSettings = new JsonSerializerSettings
             {
                 Formatting = Indented ? Formatting.Indented : Formatting.None,

@@ -25,20 +25,30 @@ namespace PT.PM.Common.Json
             string kind = jObject[KindName].ToString();
 
             Ust target;
-            JsonReader newReader;
+            JsonReader newReader = null;
             if (!ReflectionCache.UstKindFullClassName.Value.ContainsKey(kind))
             {
                 // Try load from Ust subfield.
                 JToken jToken = jObject[nameof(Ust)];
                 target = CreateUst(jToken);
+                if (target == null)
+                {
+                    return null;
+                }
                 newReader = jToken.CreateReader();
             }
             else
             {
                 target = CreateUst(jObject);
+                if (target == null)
+                {
+                    return null;
+                }
                 newReader = jObject.CreateReader();
             }
+
             serializer.Populate(newReader, target);
+
             return target;
         }
     }

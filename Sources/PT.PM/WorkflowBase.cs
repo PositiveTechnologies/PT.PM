@@ -206,7 +206,7 @@ namespace PT.PM
                         }
                         else
                         {
-                            var jsonUstSerializer = new JsonUstSerializer();
+                            var jsonUstSerializer = new JsonUstSerializer() { Logger = Logger };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile.Code);
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
