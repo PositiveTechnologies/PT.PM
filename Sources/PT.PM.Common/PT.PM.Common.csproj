@@ -58,7 +58,7 @@
     <Compile Include="Reflection\PropertyComparer.cs" />
     <Compile Include="Reflection\PropertyVisitor.cs" />
     <Compile Include="Reflection\ReflectionUtils.cs" />
-    <Compile Include="TextTruncater.cs" />
+    <Compile Include="PrettyPrinter.cs" />
     <Compile Include="Nodes\UstLinq.cs" />
     <Compile Include="Nodes\UstRefComparer.cs" />
     <Compile Include="Nodes\UstVisitor.cs" />

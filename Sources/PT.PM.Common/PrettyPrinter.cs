@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Common
 {
-    public class TextTruncater
+    public class PrettyPrinter
     {
         private static readonly string[] newLines = new string[] { "\r\n", "\n" };
         private static readonly Regex wsRegex = new Regex(@"\s+", RegexOptions.Compiled);
@@ -23,7 +23,9 @@ namespace PT.PM.Common
 
         public bool TrimIndent { get; set; } = false;
 
-        public string Trunc(string message)
+        public bool Escape { get; set; } = false;
+
+        public string Print(string message)
         {
             if (Trim)
             {
@@ -48,7 +50,7 @@ namespace PT.PM.Common
                 }
             }
 
-            if (message.Length > MaxMessageLength)
+            if (MaxMessageLength != 0 && message.Length > MaxMessageLength)
             {
                 int startLength = (int)Math.Round(MaxMessageLength * StartRatio);
                 int endLength;
@@ -59,20 +61,31 @@ namespace PT.PM.Common
                         ? startLength
                         : newStartLength;
 
-                    int endIndex = message.Length - (MaxMessageLength - startLength - Splitter.Length);
+                    endLength = MaxMessageLength - startLength - Splitter.Length;
+                    int endIndex = message.Length - endLength;
                     int newEndLength = message.Length - message.FirstIndexOf(message.FirstIndexOf(endIndex, false), true);
                     endLength = newEndLength == 0 && !char.IsWhiteSpace(message[message.Length - 1])
-                        ? MaxMessageLength - startLength - Splitter.Length
+                        ? endLength
                         : newEndLength;
                 }
                 else
                 {
                     endLength = MaxMessageLength - startLength - Splitter.Length;
                 }
-                return message.Substring(0, startLength) +
+                if (endLength < 0)
+                {
+                    endLength = 0;
+                }
+                message = message.Substring(0, startLength) +
                        Splitter +
                        message.Substring(message.Length - endLength, endLength);
             }
+
+            if (Escape)
+            {
+                message = message.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "");
+            }
+
             return message;
         }
     }
