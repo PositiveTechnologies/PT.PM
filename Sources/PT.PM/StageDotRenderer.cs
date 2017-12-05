@@ -10,15 +10,28 @@ namespace PT.PM
 {
     public class StageDotRenderer
     {
+        private PrettyPrinter graphNodePrinter = new PrettyPrinter
+        {
+            MaxMessageLength = 30,
+            ReduceWhitespaces = true,
+            CutWords = false,
+            Escape = true
+        };
+
+        private PrettyPrinter graphTooltipPrinter = new PrettyPrinter
+        {
+            MaxMessageLength = 200,
+            ReduceWhitespaces = true,
+            CutWords = false,
+            Escape = true
+        };
+
         private StringBuilder vertexesString;
         private StringBuilder edgesString;
         private int currentIndex;
 
         // TODO: Support for parse tree.
-        public HashSet<Stage> RenderStages { get; set; } = new HashSet<Stage>
-        {
-            Stage.Ust,
-        };
+        public HashSet<Stage> RenderStages { get; set; } = new HashSet<Stage> { Stage.Ust };
 
         public GraphvizDirection RenderDirection { get; set; } = GraphvizDirection.TopBottom;
 
@@ -44,7 +57,7 @@ namespace PT.PM
         private void RenderNode(Ust ust)
         {
             int index = currentIndex;
-            string typeName = DotFormatUtils.TrimAndEscape(ust.GetType().Name);
+            string typeName = graphTooltipPrinter.Print(ust.GetType().Name);
 
             string labelName, tooltip;
             if (ust is ArgsUst ||
@@ -53,11 +66,11 @@ namespace PT.PM
                 ust is ConditionalExpression)
             {
                 labelName = typeName;
-                tooltip = DotFormatUtils.EscapeString(ust.ToString());
+                tooltip = graphTooltipPrinter.Print(ust.ToString());
             }
             else
             {
-                labelName = DotFormatUtils.TrimAndEscape(ust.ToString());
+                labelName = graphNodePrinter.Print(ust.ToString());
                 tooltip = typeName;
             }
             vertexesString.Append($@"{index} [label=""{labelName}""");
