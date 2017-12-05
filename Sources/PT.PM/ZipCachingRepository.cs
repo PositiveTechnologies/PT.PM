@@ -65,7 +65,7 @@ namespace PT.PM
                             }
                             else
                             {
-                                new StandartArchiveExtractor().Extract(ArchiveName, RootPath);
+                                new StandardArchiveExtractor().Extract(ArchiveName, RootPath);
                             }
 
                             if (RemoveAfterExtraction)

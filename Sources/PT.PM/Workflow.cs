@@ -170,14 +170,14 @@ namespace PT.PM
         {
             if (result.RenderStages.Any())
             {
-                var dumper = new StageDumper(result)
+                var renderer = new StageRenderer(result)
                 {
                     DumpDir = DumpDir,
                     Stages = RenderStages,
                     RenderFormat = RenderFormat,
                     RenderDirection = RenderDirection
                 };
-                dumper.Dump();
+                renderer.Render();
             }
         }
     }

@@ -58,9 +58,9 @@
     <Compile Include="SevenZipExtractor.cs" />
     <Compile Include="Stage.cs" />
     <Compile Include="StageDotRenderer.cs" />
-    <Compile Include="StageDumper.cs" />
+    <Compile Include="StageRenderer.cs" />
     <Compile Include="StageHelper.cs" />
-    <Compile Include="StandartArchiveExtractor.cs" />
+    <Compile Include="StandardArchiveExtractor.cs" />
     <Compile Include="StringCompressorEscaper.cs" />
     <Compile Include="UstSimplifier.cs" />
     <Compile Include="Workflow.cs" />

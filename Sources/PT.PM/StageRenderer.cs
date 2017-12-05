@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PT.PM
 {
-    public class StageDumper
+    public class StageRenderer
     {
         public string DumpDir { get; set; } = "";
 
@@ -18,12 +18,12 @@ namespace PT.PM
 
         public bool IncludeHiddenTokens { get; set; } = false;
 
-        public StageDumper(WorkflowResult workflowResult)
+        public StageRenderer(WorkflowResult workflowResult)
         {
             WorkflowResult = workflowResult;
         }
 
-        public void Dump()
+        public void Render()
         {
             foreach (RootUst ust in WorkflowResult.Usts)
             {
@@ -43,7 +43,7 @@ namespace PT.PM
                 {
                     OutputFormat = RenderFormat
                 };
-                graph.Dump(Path.Combine(DumpDir, fileName));
+                graph.Render(Path.Combine(DumpDir, fileName));
             }
         }
     }
