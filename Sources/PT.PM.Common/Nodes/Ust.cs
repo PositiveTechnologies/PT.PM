@@ -21,6 +21,8 @@ namespace PT.PM.Common.Nodes
 
         public virtual bool IsTerminal => false;
 
+        public LineColumnTextSpan LineColumnTextSpan => Root?.SourceCodeFile?.GetLineColumnTextSpan(TextSpan);
+
         public TextSpan TextSpan { get; set; }
 
         public Ust[] Children => GetChildren();

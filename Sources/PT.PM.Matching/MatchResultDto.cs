@@ -5,40 +5,26 @@ namespace PT.PM.Matching
 {
     public class MatchResultDto
     {
-        public string MatchedCode { get; set; }
+        public string MatchedCode { get; }
 
-        public int BeginLine { get; set; }
+        public TextSpan TextSpan { get; }
 
-        public int BeginColumn { get; set; }
+        public LineColumnTextSpan LineColumnTextSpan { get; }
 
-        public int EndLine { get; set; }
+        public string PatternKey { get; }
 
-        public int EndColumn { get; set; }
-
-        public string PatternKey { get; set; }
-
-        public string SourceFile { get; set; }
-
-        public MatchResultDto()
-        {
-        }
+        public string SourceFile { get; }
 
         public MatchResultDto(MatchResult matchResult)
         {
             SourceCodeFile sourceCodeFile = matchResult.SourceCodeFile;
             string code = sourceCodeFile.Code;
-            TextSpan textSpan = matchResult.TextSpans.Union();
-            textSpan.ToLineColumn(sourceCodeFile.Code,
-                out int beginLine, out int beginColumn,
-                out int endLine, out int endColumn);
+            TextSpan = matchResult.TextSpans.Union();
+            LineColumnTextSpan = sourceCodeFile.GetLineColumnTextSpan(TextSpan);
 
-            BeginLine = beginLine;
-            BeginColumn = beginColumn;
-            EndLine = endLine;
-            EndColumn = endColumn;
             PatternKey = matchResult.Pattern.Key;
             SourceFile = sourceCodeFile.FullName;
-            MatchedCode = code.Substring(textSpan);
+            MatchedCode = code.Substring(TextSpan);
         }
 
         public override string ToString()

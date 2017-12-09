@@ -252,8 +252,8 @@ namespace PT.PM.PatternEditor
             {
                 var matchResult = matchResultWrapper.MatchingResult;
                 sourceCodeTextBox.Focus();
-                sourceCodeTextBox.SelectionStart = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchResult.BeginLine, matchResult.BeginColumn);
-                sourceCodeTextBox.SelectionEnd = TextUtils.LineColumnToLinear(sourceCodeTextBox.Text, matchResult.EndLine, matchResult.EndColumn);
+                sourceCodeTextBox.SelectionStart = matchResult.TextSpan.Start;
+                sourceCodeTextBox.SelectionEnd = matchResult.TextSpan.End;
                 sourceCodeTextBox.CaretIndex = sourceCodeTextBox.SelectionEnd;
             }
         }

@@ -4,7 +4,6 @@ using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System;
@@ -476,7 +475,7 @@ namespace PT.PM.Dsl
                 string id = context.PatternVar().GetText().Substring(1);
                 if (values.Count() > 0 && patternVars.TryGetValue(id, out PatternVar existedPatternVar))
                 {
-                    var lcTextSpan = new LineColumnTextSpan(existedPatternVar.TextSpan, Data);
+                    var lcTextSpan = new SourceCodeFile(Data).GetLineColumnTextSpan(existedPatternVar.TextSpan);
                     throw new ConversionException(
                             $"DSL Error: PatternVar {id} with the same Id already defined earlier at {lcTextSpan}")
                     {
