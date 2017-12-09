@@ -23,6 +23,9 @@ namespace PT.PM.AntlrUtils
 
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
+            line = line - 1 + SourceCodeFile.StartLine;
+            charPositionInLine = charPositionInLine + SourceCodeFile.StartColumn;
+
             var error = new AntlrLexerError(offendingSymbol, line, charPositionInLine, msg, e);
             string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
             int start = SourceCodeFile.GetLinearFromLineColumn(line, charPositionInLine);
@@ -32,6 +35,9 @@ namespace PT.PM.AntlrUtils
 
         public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
+            line = line - 1 + SourceCodeFile.StartLine;
+            charPositionInLine = charPositionInLine + SourceCodeFile.StartColumn;
+
             var error = new AntlrParserError(offendingSymbol, line, charPositionInLine, msg, e);
             string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
             int start = SourceCodeFile.GetLinearFromLineColumn(line, charPositionInLine);

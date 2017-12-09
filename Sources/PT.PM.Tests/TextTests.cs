@@ -14,20 +14,13 @@ namespace PT.PM.Tests
                           "row3\r" +
                           "row4";
 
-            int linearPos = TextUtils.LineColumnToLinear(text, 4, 4);
+            var sourceCodeFile = new SourceCodeFile(text);
+            int linearPos = sourceCodeFile.GetLinearFromLineColumn(4, 4);
             Assert.AreEqual('4', text[linearPos]);
 
-            var sourceCodeFile = new SourceCodeFile(text);
-            int linearPos2 = sourceCodeFile.GetLinearFromLineColumn(4, 4);
-            Assert.AreEqual(linearPos, linearPos2);
-
-            linearPos.ToLineColumn(text, out int line, out int column);
+            sourceCodeFile.GetLineColumnFromLinear(linearPos, out int line, out int column);
             Assert.AreEqual(4, line);
             Assert.AreEqual(4, column);
-
-            sourceCodeFile.GetLineColumnFromLinear(linearPos, out int line2, out int column2);
-            Assert.AreEqual(line, line2);
-            Assert.AreEqual(column, column2);
 
             Assert.AreEqual(4, sourceCodeFile.GetLinesCount());
         }

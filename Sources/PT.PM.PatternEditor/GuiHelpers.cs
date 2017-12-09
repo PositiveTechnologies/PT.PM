@@ -1,6 +1,5 @@
-﻿using PT.PM.Common;
+﻿using Avalonia.Controls;
 using PT.PM.Common.Exceptions;
-using Avalonia.Controls;
 
 namespace PT.PM.PatternEditor
 {
@@ -38,8 +37,8 @@ namespace PT.PM.PatternEditor
             }
             if (selectionStart != -1)
             {
-                inputTextBox.SelectionStart = selectionStart + 1;
-                inputTextBox.SelectionEnd = selectionEnd + 1;
+                inputTextBox.SelectionStart = selectionStart;
+                inputTextBox.SelectionEnd = selectionEnd;
                 inputTextBox.CaretIndex = inputTextBox.SelectionEnd + 1;
             }
         }

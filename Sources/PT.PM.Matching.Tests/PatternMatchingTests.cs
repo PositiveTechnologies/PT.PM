@@ -132,22 +132,25 @@ namespace PT.PM.Matching.Tests
                 "?>";
             var pattern = "Comment: <[ \"(?i)(password|pwd)\\s*(\\=|is|\\:)\" ]>";
 
-            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
 
-            Assert.AreEqual(2, matchResults[0].BeginLine);
-            Assert.AreEqual(2, matchResults[0].BeginColumn);
-            Assert.AreEqual(2, matchResults[0].EndLine);
-            Assert.AreEqual(11, matchResults[0].EndColumn);
+            LineColumnTextSpan textSpan0 = matchResults[0].LineColumnTextSpan;
+            Assert.AreEqual(2, textSpan0.BeginLine);
+            Assert.AreEqual(2, textSpan0.BeginColumn);
+            Assert.AreEqual(2, textSpan0.EndLine);
+            Assert.AreEqual(11, textSpan0.EndColumn);
 
-            Assert.AreEqual(3, matchResults[1].BeginLine);
-            Assert.AreEqual(3, matchResults[1].BeginColumn);
-            Assert.AreEqual(3, matchResults[1].EndLine);
-            Assert.AreEqual(12, matchResults[1].EndColumn);
+            LineColumnTextSpan textSpan1 = matchResults[1].LineColumnTextSpan;
+            Assert.AreEqual(3, textSpan1.BeginLine);
+            Assert.AreEqual(3, textSpan1.BeginColumn);
+            Assert.AreEqual(3, textSpan1.EndLine);
+            Assert.AreEqual(12, textSpan1.EndColumn);
 
-            Assert.AreEqual(6, matchResults[2].BeginLine);
-            Assert.AreEqual(5, matchResults[2].BeginColumn);
-            Assert.AreEqual(7, matchResults[2].EndLine);
-            Assert.AreEqual(16, matchResults[2].EndColumn);
+            LineColumnTextSpan textSpan2 = matchResults[2].LineColumnTextSpan;
+            Assert.AreEqual(6, textSpan2.BeginLine);
+            Assert.AreEqual(5, textSpan2.BeginColumn);
+            Assert.AreEqual(7, textSpan2.EndLine);
+            Assert.AreEqual(16, textSpan2.EndColumn);
         }
 
         [Test]

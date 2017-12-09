@@ -47,6 +47,7 @@ namespace PT.PM.PatternEditor
         private string ustJson;
         private string matchResultText = "MATCHINGS";
         private bool oldIsIncludeTextSpans;
+        private SourceCodeFile sourceCode;
 
         public MainWindowViewModel(Window w)
         {
@@ -241,8 +242,15 @@ namespace PT.PM.PatternEditor
 
         private void UpdateSourceCodeCaretIndex(int caretIndex)
         {
-            caretIndex.ToLineColumn(sourceCodeTextBox.Text, out int line, out int column);
-            SourceCodeTextBoxPosition = $"Caret: {line}:{column-1}";
+            if (sourceCode != null)
+            {
+                sourceCode.GetLineColumnFromLinear(caretIndex, out int line, out int column);
+                SourceCodeTextBoxPosition = $"Caret: {line}:{column}";
+            }
+            else
+            {
+                SourceCodeTextBoxPosition = $"";
+            }
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition)));
         }
 
@@ -250,7 +258,7 @@ namespace PT.PM.PatternEditor
         {
             if (matchResultListBox.SelectedItem is MatchResultDtoWrapper matchResultWrapper)
             {
-                var matchResult = matchResultWrapper.MatchingResult;
+                var matchResult = matchResultWrapper.MatchResult;
                 sourceCodeTextBox.Focus();
                 sourceCodeTextBox.SelectionStart = matchResult.TextSpan.Start;
                 sourceCodeTextBox.SelectionEnd = matchResult.TextSpan.End;
@@ -626,6 +634,7 @@ namespace PT.PM.PatternEditor
             }
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
+            sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
 
             if (IsDeveloperMode)
             {

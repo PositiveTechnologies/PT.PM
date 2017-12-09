@@ -40,6 +40,7 @@ namespace PT.PM.PatternEditor
         private GuiLogger patternLogger;
         private DslProcessor dslProcessor = new DslProcessor();
         private StringBuilder log = new StringBuilder();
+        private SourceCodeFile patternFile;
 
         public PatternViewModel(PatternUserControl patternUserControl)
         {
@@ -450,6 +451,7 @@ namespace PT.PM.PatternEditor
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
 
+                patternFile = new SourceCodeFile(patternTextBox.Text);
                 PatternRoot patternNode = null;
                 try
                 {
@@ -515,8 +517,15 @@ namespace PT.PM.PatternEditor
 
         private void UpdatePatternCaretIndex(int caretIndex)
         {
-            caretIndex.ToLineColumn(patternTextBox.Text ?? "", out int line, out int column);
-            PatternTextBoxPosition = $"Caret: {line}:{column-1}";
+            if (patternFile != null)
+            {
+                patternFile.GetLineColumnFromLinear(caretIndex, out int line, out int column);
+                PatternTextBoxPosition = $"Caret: {line}:{column}";
+            }
+            else
+            {
+                PatternTextBoxPosition = "";
+            }
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(PatternTextBoxPosition)));
         }
 

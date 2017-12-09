@@ -7,17 +7,17 @@ namespace PT.PM.PatternEditor
     {
         private PrettyPrinter textPrinter = new PrettyPrinter() { MaxMessageLength = 32 };
 
-        public MatchResultDto MatchingResult { get; set; }
+        public MatchResultDto MatchResult { get; set; }
 
         public MatchResultDtoWrapper(MatchResultDto matchResult)
         {
-            MatchingResult = matchResult;
+            MatchResult = matchResult;
         }
 
         public override string ToString()
         {
-            var codeFragment = textPrinter.Print(MatchingResult.MatchedCode);
-            return $"\"{codeFragment}\" matched at ({MatchingResult.BeginLine};{MatchingResult.BeginColumn})-({MatchingResult.EndLine};{MatchingResult.EndColumn})";
+            var codeFragment = textPrinter.Print(MatchResult.MatchedCode);
+            return $"\"{codeFragment}\" matched at {MatchResult.LineColumnTextSpan}";
         }
     }
 }

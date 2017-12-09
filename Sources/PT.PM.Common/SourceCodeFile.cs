@@ -8,8 +8,8 @@ namespace PT.PM.Common
     {
         private readonly object _lockObj = new object();
 
-        private const int StartLine = 1;
-        private const int StartColumn = 1;
+        public const int StartLine = 1;
+        public const int StartColumn = 1;
 
         private int[] lineIndexes;
 
@@ -27,7 +27,7 @@ namespace PT.PM.Common
 
         public SourceCodeFile(string code)
         {
-            Code = code;
+            Code = code ?? "";
         }
 
         public override string ToString() => RelativeName;

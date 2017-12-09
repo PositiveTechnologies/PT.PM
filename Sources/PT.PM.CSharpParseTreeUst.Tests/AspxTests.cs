@@ -21,15 +21,16 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             var foundNode = result.RootNode.Descendants<AspxNode.AspxExpressionTag>()
                 .FirstOrDefault(node => node.Expression.Contains("Expression text"));
 
-            foundNode.Location.Start.ToLineColumn(source.Text, out int line, out int column);
+            var sourceCode = new SourceCodeFile(source.Text);
+            sourceCode.GetLineColumnFromLinear(foundNode.Location.Start, out int line, out int column);
             Assert.AreEqual(15, line);
             Assert.AreEqual(13, column);
-            Assert.AreEqual(foundNode.Location.Start, TextUtils.LineColumnToLinear(source.Text, line, column));
+            Assert.AreEqual(foundNode.Location.Start, sourceCode.GetLinearFromLineColumn(line, column));
 
-            foundNode.Location.End.ToLineColumn(source.Text, out line, out column);
+            sourceCode.GetLineColumnFromLinear(foundNode.Location.End, out line, out column);
             Assert.AreEqual(15, line);
             Assert.AreEqual(30, column);
-            Assert.AreEqual(foundNode.Location.End, TextUtils.LineColumnToLinear(source.Text, line, column));
+            Assert.AreEqual(foundNode.Location.End, sourceCode.GetLinearFromLineColumn(line, column));
         }
 
         [TestCase("TestAspxParser.aspx")]
