@@ -57,7 +57,7 @@ namespace PT.PM.Matching
                     ?? Serializers.First();
                 if (serializer == null)
                 {
-                    Logger.LogError(new ConversionException("", null, $"Serializer for {patternDto.DataFormat} has not been found", true));
+                    Logger.LogError(new ConversionException(SourceCodeFile.Empty, null, $"Serializer for {patternDto.DataFormat} has not been found", true));
                     continue;
                 }
 
@@ -81,7 +81,7 @@ namespace PT.PM.Matching
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException("", ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", true));
+                    Logger.LogError(new ConversionException(SourceCodeFile.Empty, ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", true));
                 }
             }
             return result.ToArray();
@@ -110,7 +110,7 @@ namespace PT.PM.Matching
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException("", ex, $"Error while \"{pattern.Key}\" pattern serialising", true));
+                    Logger.LogError(new ConversionException(pattern.CodeFile, ex, $"Error while \"{pattern.Key}\" pattern serialising", true));
                 }
             }
             return result.ToArray();

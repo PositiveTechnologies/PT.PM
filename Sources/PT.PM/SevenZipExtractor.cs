@@ -54,7 +54,7 @@ namespace PT.PM
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 Console.Error.WriteLine(errorMessage);
-                throw new ReadException(zipPath, message: errorMessage);
+                throw new ReadException(new SourceCodeFile("") { Name = zipPath }, message: errorMessage);
             }
         }
     }

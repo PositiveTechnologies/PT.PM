@@ -6,12 +6,13 @@ namespace PT.PM.Common
 {
     public class SourceCodeFile
     {
-        private readonly object _lockObj = new object();
+        private readonly object lockObj = new object();
+        private int[] lineIndexes;
 
         public const int StartLine = 1;
         public const int StartColumn = 1;
 
-        private int[] lineIndexes;
+        public static SourceCodeFile Empty = new SourceCodeFile("");
 
         public string RootPath { get; set; } = "";
 
@@ -72,7 +73,7 @@ namespace PT.PM.Common
         {
             if (lineIndexes == null)
             {
-                lock (_lockObj)
+                lock (lockObj)
                 {
                     if (lineIndexes == null)
                     {

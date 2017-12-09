@@ -13,7 +13,7 @@ namespace PT.PM.Cli
             base.LogError(ex);
             if (IsLogErrors)
             {
-                NLogConsoleLogger.Error(MessagePrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Short)));
+                NLogConsoleLogger.Error(MessagePrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Relative)));
             }
         }
 

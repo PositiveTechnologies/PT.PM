@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.Serialization;
 
 namespace PT.PM.Common.Exceptions
@@ -8,7 +7,7 @@ namespace PT.PM.Common.Exceptions
     {
         public string ExceptionType => GetType().Name;
 
-        public string FileName { get; set; }
+        public SourceCodeFile SourceCodeFile { get; set; }
 
         public bool IsPattern { get; set; }
 
@@ -30,16 +29,18 @@ namespace PT.PM.Common.Exceptions
 
         public override string ToString()
         {
-            return ToString(FileNameType.Short, false);
+            return ToString(FileNameType.Relative, false);
         }
 
-        public string ToString(FileNameType fileNameType = FileNameType.Short, bool printStackTrace = false)
+        public string ToString(FileNameType fileNameType = FileNameType.Relative, bool printStackTrace = false)
         {
             string fileName = fileNameType == FileNameType.None
                 ? ""
                 : fileNameType == FileNameType.Full
-                ? FileName
-                : Path.GetFileName(FileName);
+                ? SourceCodeFile.FullName
+                : fileNameType == FileNameType.Relative
+                ? SourceCodeFile.RelativeName
+                : SourceCodeFile.Name;
 
             string fileNameString = !string.IsNullOrEmpty(fileName)
                 ? $@" in ""{fileName}"""

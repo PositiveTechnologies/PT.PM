@@ -97,7 +97,7 @@ namespace PT.PM.AntlrUtils
             {
                 exceptionText = $"{ex.Message} at position {lineColumnTextSpan.BeginLine}:{lineColumnTextSpan.BeginColumn} in source file";
             }
-            logger.LogError(new ConversionException(currentFileData.RelativeName, message: exceptionText) { TextSpan = textSpan });
+            logger.LogError(new ConversionException(currentFileData, message: exceptionText) { TextSpan = textSpan });
         }
     }
 }

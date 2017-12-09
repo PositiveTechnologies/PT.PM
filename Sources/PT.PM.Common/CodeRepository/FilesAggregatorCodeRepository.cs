@@ -72,22 +72,26 @@ namespace PT.PM.Common.CodeRepository
             }
             relativePath = relativePath.Substring(substringIndex);
 
-            string code;
+            SourceCodeFile result;
             try
             {
-                code = File.ReadAllText(fileName);
+                result = new SourceCodeFile(File.ReadAllText(fileName))
+                {
+                    RootPath = RootPath,
+                    RelativePath = relativePath,
+                    Name = name
+                };
             }
             catch (Exception ex)
             {
-                code = string.Empty;
-                Logger.LogError(new ReadException(fileName, ex));
+                result = new SourceCodeFile("")
+                {
+                    RootPath = RootPath,
+                    RelativePath = relativePath,
+                    Name = name
+                };
+                Logger.LogError(new ReadException(result, ex));
             }
-            var result = new SourceCodeFile(code)
-            {
-                RootPath = RootPath,
-                RelativePath = relativePath,
-                Name = name
-            };
             return result;
         }
 

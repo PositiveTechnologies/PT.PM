@@ -16,10 +16,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public ConversionException(string fileName, Exception ex = null, string message = "", bool isPattern = false)
+        public ConversionException(SourceCodeFile sourceCodeFile, Exception ex = null, string message = "", bool isPattern = false)
             : base(ex, message, isPattern)
         {
-            FileName = fileName;
+            SourceCodeFile = sourceCodeFile ?? SourceCodeFile.Empty;
         }
     }
 }

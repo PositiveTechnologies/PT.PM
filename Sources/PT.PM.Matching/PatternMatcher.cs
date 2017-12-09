@@ -47,7 +47,7 @@ namespace PT.PM.Matching
             }
             catch (Exception ex)
             {
-                Logger.LogError(new MatchingException(ust.SourceCodeFile.FullName, ex));
+                Logger.LogError(new MatchingException(ust.SourceCodeFile, ex));
                 return new List<MatchResult>();
             }
         }

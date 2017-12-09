@@ -4,7 +4,6 @@ using Avalonia.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PT.PM.Common;
-using PT.PM.Common.Json;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
@@ -451,7 +450,7 @@ namespace PT.PM.PatternEditor
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
 
-                patternFile = new SourceCodeFile(patternTextBox.Text);
+                patternFile = SourceCodeFile.Empty;
                 PatternRoot patternNode = null;
                 try
                 {
@@ -464,6 +463,7 @@ namespace PT.PM.PatternEditor
                 catch
                 {
                 }
+                patternFile = patternNode.CodeFile;
 
                 if (patternLogger.ErrorCount == 0)
                 {

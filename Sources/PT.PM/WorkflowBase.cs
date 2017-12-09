@@ -316,7 +316,10 @@ namespace PT.PM
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
+                Logger.LogError(new ParsingException(SourceCodeFile.Empty, ex, "Patterns can not be deserialized")
+                {
+                    IsPattern = true
+                });
             }
         }
 

@@ -18,9 +18,13 @@ namespace PT.PM.Dsl
 
         public PatternRoot Deserialize(string data)
         {
+            var codeFile = new SourceCodeFile(data) { Name = "Pattern" };
             if (string.IsNullOrEmpty(data))
             {
-                throw new ParsingException("Pattern value can not be empty.") { IsPattern = true };
+                throw new ParsingException(codeFile, message: "Pattern value can not be empty.")
+                {
+                    IsPattern = true
+                };
             }
 
             var parser = new DslAntlrParser() { Logger = Logger };
@@ -28,11 +32,12 @@ namespace PT.PM.Dsl
             {
                 Logger = Logger,
                 PatternExpressionInsideStatement = PatternExpressionInsideStatement,
-                Data = data
+                Data = codeFile
             };
             DslParser.PatternContext patternContext = parser.Parse(data);
 
             PatternRoot patternNode = converter.Convert(patternContext);
+            patternNode.CodeFile = codeFile;
 
             var preprocessor = new PatternNormalizer() { Logger = Logger };
             patternNode = preprocessor.Normalize(patternNode);

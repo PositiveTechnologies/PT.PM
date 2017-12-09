@@ -113,7 +113,7 @@ namespace PT.PM.Common.Json
                 errorMessage += ustKind == null
                     ? "undefined"
                     : $"incorrect ({ustKind})";
-                Logger.LogError(new ConversionException("", null, errorMessage));
+                Logger.LogError(new ConversionException(SourceCodeFile.Empty, null, errorMessage));
                 return null;
             }
 

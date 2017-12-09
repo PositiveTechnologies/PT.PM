@@ -63,33 +63,27 @@ namespace PT.PM.PatternEditor
 
         private bool WhetherLogError(Exception ex)
         {
-            ParsingException parseException;
-            ConversionException conversionException;
-            MatchingException matchException;
             bool logError = LogPatternErrors;
-            if ((parseException = ex as ParsingException) != null)
+            if (ex is ParsingException parseException)
             {
                 if (!logError)
                 {
-                    logError = parseException.FileName != "Pattern";
+                    logError = !parseException.IsPattern;
                 }
-                parseException.FileName = "";
             }
-            if ((conversionException = ex as ConversionException) != null)
+            if (ex is ConversionException conversionException)
             {
                 if (!logError)
                 {
-                    logError = conversionException.FileName != "Pattern";
+                    logError = !conversionException.IsPattern;
                 }
-                conversionException.FileName = "";
             }
-            if ((matchException = ex as MatchingException) != null)
+            if (ex is MatchingException matchException)
             {
                 if (!logError)
                 {
-                    logError = matchException.FileName != "Pattern";
+                    logError = !matchException.IsPattern;
                 }
-                matchException.FileName = "";
             }
 
             return logError;

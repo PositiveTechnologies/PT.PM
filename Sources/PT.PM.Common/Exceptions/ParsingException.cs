@@ -17,10 +17,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public ParsingException(string fileName, Exception ex = null, string message = "", bool isPattern = false)
+        public ParsingException(SourceCodeFile codeFile, Exception ex = null, string message = "", bool isPattern = false)
             : base(ex, message, isPattern)
         {
-            FileName = fileName;
+            SourceCodeFile = codeFile ?? SourceCodeFile.Empty;
         }
     }
 }

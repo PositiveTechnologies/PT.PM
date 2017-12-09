@@ -10,10 +10,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public MatchingException(string fileName, Exception ex = null, string message = "", bool isPattern = false)
+        public MatchingException(SourceCodeFile sourceCodeFile, Exception ex = null, string message = "", bool isPattern = false)
             : base(ex, message, isPattern)
         {
-            FileName = fileName;
+            SourceCodeFile = sourceCodeFile ?? SourceCodeFile.Empty;
         }
     }
 }

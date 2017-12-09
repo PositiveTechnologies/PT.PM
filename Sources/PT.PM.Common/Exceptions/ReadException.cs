@@ -4,20 +4,20 @@ namespace PT.PM.Common.Exceptions
 {
     public class ReadException : PMException
     {
-        public ReadException(string fileName)
+        public ReadException(SourceCodeFile sourceCodeFile)
         {
-            FileName = fileName;
+            SourceCodeFile = sourceCodeFile;
         }
 
-        public ReadException(string fileName, Exception ex = null, string message = "")
+        public ReadException(SourceCodeFile sourceCodeFile, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            FileName = fileName;
+            SourceCodeFile = sourceCodeFile;
         }
 
         public override string ToString()
         {
-            return $"File {FileName} not found or can not be read.";
+            return $"File {SourceCodeFile.RelativeName} not found or can not be read.";
         }
     }
 }

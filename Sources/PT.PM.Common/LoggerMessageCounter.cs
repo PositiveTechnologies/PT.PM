@@ -35,7 +35,7 @@ namespace PT.PM.Common
                 errorMessages.Add(message);
                 if (ex is ParsingException parsingException)
                 {
-                    errorFiles.Add(parsingException.FileName);
+                    errorFiles.Add(parsingException.SourceCodeFile.RelativeName);
                 }
             }
             message = message + Environment.NewLine;

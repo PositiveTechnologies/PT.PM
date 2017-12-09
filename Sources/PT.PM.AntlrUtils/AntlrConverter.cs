@@ -66,7 +66,7 @@ namespace PT.PM.AntlrUtils
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException(filePath, ex));
+                    Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
 
                     if (result == null)
                     {

@@ -10,6 +10,8 @@ namespace PT.PM.Common.Json
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
+        public SourceCodeFile SourceCodeFile { get; set; }
+
         public bool IncludeTextSpans { get; set; } = true;
 
         public bool Indented { get; set; } = false;
@@ -59,7 +61,7 @@ namespace PT.PM.Common.Json
                     new TextSpanJsonConverter
                     {
                         ShortFormat = ShortTextSpans,
-                        EmptyTextSpanFormat = EmptyTextSpanFormat
+                        EmptyTextSpanFormat = EmptyTextSpanFormat,
                     },
                     new SourceCodeFileJsonConverter
                     {

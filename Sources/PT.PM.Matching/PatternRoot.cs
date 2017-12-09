@@ -33,8 +33,6 @@ namespace PT.PM.Matching
             }
         }
 
-        public SourceCodeFile SourceCodeFile { get; set; }
-
         public HashSet<Language> Languages
         {
             get
@@ -58,6 +56,8 @@ namespace PT.PM.Matching
         public string DebugInfo { get; set; } = "";
 
         public PatternUst Node { get; set; } = PatternAny.Instance;
+
+        public SourceCodeFile CodeFile { get; set; } = SourceCodeFile.Empty;
 
         public PatternRoot()
         {

@@ -119,7 +119,7 @@ namespace PT.PM.AntlrUtils
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ParsingException(filePath, ex));
+                    Logger.LogError(new ParsingException(sourceCodeFile, ex));
 
                     if (result == null)
                     {

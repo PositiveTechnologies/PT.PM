@@ -28,22 +28,25 @@ namespace PT.PM.Common.CodeRepository
 
         public override SourceCodeFile ReadFile(string fileName)
         {
-            string code;
+            SourceCodeFile result;
             try
             {
-                code = ReadCode(fileName);
+                result = new SourceCodeFile(ReadCode(fileName))
+                {
+                    RootPath = RootPath,
+                    Name = Path.GetFileName(fileName)
+                };
             }
             catch (Exception ex)
             {
-                code = string.Empty;
-                Logger.LogError(new ReadException(fileName, ex));
+                result = new SourceCodeFile("")
+                {
+                    RootPath = RootPath,
+                    Name = Path.GetFileName(fileName)
+                };
+                Logger.LogError(new ReadException(result, ex));
             }
-            var result = new SourceCodeFile(code)
-            {
-                RootPath = RootPath,
-                RelativePath = "",
-                Name = Path.GetFileName(fileName)
-            };
+            
             return result;
         }
 
