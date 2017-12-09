@@ -13,7 +13,7 @@ namespace PT.PM.Common
 
         public static readonly Regex HttpRegex = new Regex("^https?://", RegexOptions.Compiled);
 
-        public static int LineColumnToLinear(string text, int line, int column)
+        public static int LineColumnToLinear(this string text, int line, int column)
         {
             int currentLine = StartLine;
             int currentColumn = StartColumn;
@@ -46,12 +46,6 @@ namespace PT.PM.Common
             return i;
         }
 
-        public static void ToLineColumn(this TextSpan textSpan, string text, out int startLine, out int startColumn, out int endLine, out int endColumn)
-        {
-            textSpan.Start.ToLineColumn(text, out startLine, out startColumn);
-            textSpan.End.ToLineColumn(text, out endLine, out endColumn);
-        }
-
         public static void ToLineColumn(this int index, string text, out int line, out int column)
         {
             line = StartLine;
@@ -81,30 +75,6 @@ namespace PT.PM.Common
                 }
                 i++;
             }
-        }
-
-        public static int GetLinesCount(this string text)
-        {
-            int result = 1;
-            int length = text.Length;
-            int i = 0;
-            while (i < length)
-            {
-                if (text[i] == '\r')
-                {
-                    result++;
-                    if (i + 1 < length && text[i + 1] == '\n')
-                    {
-                        i++;
-                    }
-                }
-                else if (text[i] == '\n')
-                {
-                    result++;
-                }
-                i++;
-            }
-            return result;
         }
 
         public static int LastIndexOf(this string str, int index, bool whitespace)
