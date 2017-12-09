@@ -6,9 +6,6 @@ namespace PT.PM.AntlrUtils
 {
     public class AntlrMemoryErrorListener : IAntlrErrorListener<IToken>, IAntlrErrorListener<int>
     {
-        private const int MaxErrorCodeLength = 200;
-        private const string ErrorCodeSplitter = " ... ";
-
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public SourceCodeFile SourceCodeFile { get; set; }
@@ -23,40 +20,35 @@ namespace PT.PM.AntlrUtils
 
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            line = line - 1 + SourceCodeFile.StartLine;
-            charPositionInLine = charPositionInLine + SourceCodeFile.StartColumn;
-
-            var error = new AntlrLexerError(offendingSymbol, line, charPositionInLine, msg, e);
-            string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
-            int start = SourceCodeFile.GetLinearFromLineColumn(line, charPositionInLine);
-            Logger.LogError(new ParsingException(SourceCodeFile.RelativeName, message: errorText)
-                { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
+            if (recognizer is Lexer lexer)
+            {
+                ProcessError(lexer.CharIndex, lexer.CharIndex, msg);
+            }
         }
 
         public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            line = line - 1 + SourceCodeFile.StartLine;
-            charPositionInLine = charPositionInLine + SourceCodeFile.StartColumn;
-
-            var error = new AntlrParserError(offendingSymbol, line, charPositionInLine, msg, e);
-            string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
-            int start = SourceCodeFile.GetLinearFromLineColumn(line, charPositionInLine);
-            Logger.LogError(new ParsingException(SourceCodeFile.RelativeName, message: errorText)
-                { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
+            ProcessError(offendingSymbol.StartIndex, offendingSymbol.StopIndex, msg);
         }
 
-        private string FixLineNumber(string errorText, int line, int charPositionInLine)
+        private void ProcessError(int startIndex, int stopIndex, string msg)
         {
-            if (LineOffset != 0)
+            int lineLinearIndex = SourceCodeFile.GetLineLinearIndex(LineOffset);
+            startIndex = startIndex + lineLinearIndex;
+            stopIndex = stopIndex + 1 + lineLinearIndex;
+            if (stopIndex <= startIndex)
             {
-                int atLastIndexOf = errorText.LastIndexOf("at");
-                if (atLastIndexOf != -1)
-                {
-                    errorText = errorText.Remove(atLastIndexOf) + $"at {LineOffset + line}:{charPositionInLine}";
-                }
+                startIndex = stopIndex - 1;
             }
+            TextSpan textSpan = TextSpan.FromBounds(startIndex, stopIndex);
 
-            return errorText;
+            string errorMessage = $"{msg} at {SourceCodeFile.GetLineColumnTextSpan(textSpan)}";
+
+            Logger.LogError(new ParsingException(SourceCodeFile, message: errorMessage)
+            {
+                TextSpan = textSpan,
+                IsPattern = IsPattern
+            });
         }
     }
 }

@@ -10,6 +10,7 @@ namespace PT.PM.Common
         private int[] lineIndexes;
 
         public const int StartLine = 1;
+
         public const int StartColumn = 1;
 
         public static SourceCodeFile Empty = new SourceCodeFile("");
@@ -60,6 +61,13 @@ namespace PT.PM.Common
             InitLineIndexesIfRequired();
 
             return lineIndexes[line - StartLine] + column - StartColumn;
+        }
+
+        public int GetLineLinearIndex(int lineIndex)
+        {
+            InitLineIndexesIfRequired();
+
+            return lineIndexes[lineIndex];
         }
 
         public int GetLinesCount()

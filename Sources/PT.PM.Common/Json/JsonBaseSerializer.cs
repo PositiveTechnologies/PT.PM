@@ -66,7 +66,7 @@ namespace PT.PM.Common.Json
                     new SourceCodeFileJsonConverter
                     {
                         ExcludeDefaults = ExcludeDefaults,
-                        IncludeCode = IncludeCode
+                        IncludeCode = IncludeCode,
                     }
                 }
             };
