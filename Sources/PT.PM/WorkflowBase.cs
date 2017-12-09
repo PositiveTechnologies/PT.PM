@@ -272,7 +272,7 @@ namespace PT.PM
             Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
 
             workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-            workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
+            workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
             workflowResult.AddReadTime(stopwatch.ElapsedTicks);
             workflowResult.AddResultEntity(sourceCodeFile);
 

@@ -28,7 +28,7 @@ namespace PT.PM.Common.Nodes
 
         public RootUst(SourceCodeFile sourceCodeFile, Language language)
         {
-            SourceCodeFile = sourceCodeFile ?? new SourceCodeFile();
+            SourceCodeFile = sourceCodeFile ?? new SourceCodeFile(string.Empty);
             Language = language;
         }
 

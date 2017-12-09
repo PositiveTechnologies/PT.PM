@@ -24,22 +24,9 @@ namespace PT.PM.Common
             EndColumn = endColumn;
         }
 
-        /// <summary>
-        /// TODO: move implementation to SourceCodeFile.
-        /// </summary>
-        public LineColumnTextSpan(TextSpan textSpan, string text)
-        {
-            textSpan.Start.ToLineColumn(text, out int beginLine, out int beginColumn);
-            textSpan.End.ToLineColumn(text, out int endLine, out int endColumn);
-            BeginLine = beginLine;
-            BeginColumn = beginColumn;
-            EndLine = endLine;
-            EndColumn = endColumn;
-        }
-
         public override string ToString()
         {
-            return $"[{BeginLine};{BeginColumn})-[{EndLine};{EndColumn})";
+            return $"[{BeginLine};{BeginColumn}]-[{EndLine};{EndColumn})";
         }
 
         public override int GetHashCode()

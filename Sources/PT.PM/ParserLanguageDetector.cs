@@ -27,7 +27,7 @@ namespace PT.PM
                 langs.Remove(langs.FirstOrDefault(l => l.Key == "Aspx"));
                 langs.Remove(langs.FirstOrDefault(l => l.Key == "Html"));
             }
-            var sourceCodeFile = new SourceCodeFile() { Code = sourceCode };
+            var sourceCodeFile = new SourceCodeFile(sourceCode);
             var parseUnits = new Queue<Tuple<Language, ParserUnit>>(langs.Count);
 
             langs = langs

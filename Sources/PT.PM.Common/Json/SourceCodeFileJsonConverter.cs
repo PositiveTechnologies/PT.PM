@@ -41,12 +41,11 @@ namespace PT.PM.Common.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject obj = JObject.Load(reader);
-            SourceCodeFile result = new SourceCodeFile
+            SourceCodeFile result = new SourceCodeFile((string)obj[nameof(SourceCodeFile.Code)] ?? "")
             {
                 RootPath = (string)obj[nameof(SourceCodeFile.RootPath)] ?? "",
                 RelativePath = (string)obj[nameof(SourceCodeFile.RelativePath)] ?? "",
                 Name = (string)obj[nameof(SourceCodeFile.Name)] ?? "",
-                Code = (string)obj[nameof(SourceCodeFile.Code)] ?? ""
             };
 
             return result;
