@@ -11,9 +11,7 @@ namespace PT.PM.AntlrUtils
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public string FileName { get; set; }
-
-        public string FileData { get; set; }
+        public SourceCodeFile SourceCodeFile { get; set; }
 
         public bool IsPattern { get; set; }
 
@@ -26,17 +24,19 @@ namespace PT.PM.AntlrUtils
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             var error = new AntlrLexerError(offendingSymbol, line, charPositionInLine, msg, e);
-            int start = TextUtils.LineColumnToLinear(FileData, line, charPositionInLine);
             string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
-            Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
+            int start = SourceCodeFile.GetLinearFromLineColumn(line, charPositionInLine);
+            Logger.LogError(new ParsingException(SourceCodeFile.RelativeName, message: errorText)
+                { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }
 
         public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             var error = new AntlrParserError(offendingSymbol, line, charPositionInLine, msg, e);
             string errorText = FixLineNumber(error.ToString(), line, charPositionInLine);
-            int start = TextUtils.LineColumnToLinear(FileData, line, charPositionInLine);
-            Logger.LogError(new ParsingException(FileName, message: errorText) { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
+            int start = SourceCodeFile.GetLinearFromLineColumn(line, charPositionInLine);
+            Logger.LogError(new ParsingException(SourceCodeFile.RelativeName, message: errorText)
+                { TextSpan = new TextSpan(start, 1), IsPattern = IsPattern });
         }
 
         private string FixLineNumber(string errorText, int line, int charPositionInLine)

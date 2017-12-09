@@ -103,7 +103,7 @@ namespace PT.PM.AntlrUtils
             {
                 if (tree is ParserRuleContext parserRuleContext)
                 {
-                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile.RelativeName, root.SourceCodeFile.Code);
+                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile);
                 }
                 return DefaultResult;
             }

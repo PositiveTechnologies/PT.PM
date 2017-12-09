@@ -60,12 +60,11 @@ namespace PT.PM.AntlrUtils
         {
             AntlrParseTree result = null;
 
-            var filePath = Path.Combine(sourceCodeFile.RelativePath, sourceCodeFile.Name);
+            var filePath = sourceCodeFile.RelativeName;
             if (sourceCodeFile.Code != null)
             {
                 var errorListener = new AntlrMemoryErrorListener();
-                errorListener.FileName = filePath;
-                errorListener.FileData = sourceCodeFile.Code;
+                errorListener.SourceCodeFile = sourceCodeFile;
                 errorListener.Logger = Logger;
                 errorListener.LineOffset = LineOffset;
                 try
