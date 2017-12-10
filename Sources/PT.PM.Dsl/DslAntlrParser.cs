@@ -17,11 +17,11 @@ namespace PT.PM.Dsl
         public DslParser.PatternContext Parse(string data)
         {
             DslParser.PatternContext pattern = null;
-            var codeFile = new SourceCodeFile(data) { Name = "Pattern" };
+            var codeFile = new CodeFile(data) { Name = "Pattern", IsPattern = true };
             var errorListener = new AntlrMemoryErrorListener()
             {
                 IsPattern = true,
-                SourceCodeFile = codeFile,
+                CodeFile = codeFile,
                 Logger = Logger
             };
             try
@@ -40,7 +40,7 @@ namespace PT.PM.Dsl
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ParsingException(codeFile, ex) { IsPattern = true });
+                Logger.LogError(new ParsingException(codeFile, ex));
                 throw;
             }
 

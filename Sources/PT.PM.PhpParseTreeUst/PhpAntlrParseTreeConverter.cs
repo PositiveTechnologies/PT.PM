@@ -133,7 +133,7 @@ namespace PT.PM.PhpParseTreeUst
                 Logger = Logger,
                 LineOffset = Tokens[jsStartCodeInd].Line - 1
             };
-            var sourceCodeFile = new SourceCodeFile(jsCode.ToString())
+            var sourceCodeFile = new CodeFile(jsCode.ToString())
             {
                 Name = root.SourceCodeFile.Name,
                 RelativePath = root.SourceCodeFile.RelativePath,

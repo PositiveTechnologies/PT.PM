@@ -39,7 +39,7 @@ namespace PT.PM.PatternEditor
         private GuiLogger patternLogger;
         private DslProcessor dslProcessor = new DslProcessor();
         private StringBuilder log = new StringBuilder();
-        private SourceCodeFile patternFile;
+        private CodeFile patternFile;
 
         public PatternViewModel(PatternUserControl patternUserControl)
         {
@@ -450,7 +450,7 @@ namespace PT.PM.PatternEditor
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
 
-                patternFile = SourceCodeFile.Empty;
+                patternFile = CodeFile.Empty;
                 PatternRoot patternNode = null;
                 try
                 {

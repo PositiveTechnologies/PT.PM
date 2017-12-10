@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PT.PM.Common
 {
-    public class SourceCodeFile
+    public class CodeFile
     {
         private readonly object lockObj = new object();
         private int[] lineIndexes;
@@ -13,7 +13,7 @@ namespace PT.PM.Common
 
         public const int StartColumn = 1;
 
-        public static SourceCodeFile Empty = new SourceCodeFile("");
+        public static CodeFile Empty = new CodeFile("");
 
         public string RootPath { get; set; } = "";
 
@@ -21,13 +21,15 @@ namespace PT.PM.Common
 
         public string Name { get; set; } = "";
 
+        public bool IsPattern { get; set; } = false;
+
         public string Code { get; }
 
         public string RelativeName => Path.Combine(RelativePath, Name);
 
         public string FullName => Path.Combine(RootPath, RelativePath, Name);
 
-        public SourceCodeFile(string code)
+        public CodeFile(string code)
         {
             Code = code ?? "";
         }

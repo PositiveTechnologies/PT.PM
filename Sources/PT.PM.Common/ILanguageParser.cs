@@ -4,7 +4,7 @@
     {
         Language Language { get; }
 
-        ParseTree Parse(SourceCodeFile sourceCodeFile);
+        ParseTree Parse(CodeFile sourceCodeFile);
 
         void ClearCache();
     }

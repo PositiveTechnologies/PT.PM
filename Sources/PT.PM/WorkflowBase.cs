@@ -129,7 +129,7 @@ namespace PT.PM
                     return null;
                 }
 
-                SourceCodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
+                CodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -248,10 +248,10 @@ namespace PT.PM
             }
         }
 
-        protected SourceCodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
+        protected CodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
         {
             var stopwatch = Stopwatch.StartNew();
-            SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
+            CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
             stopwatch.Stop();
 
             Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
@@ -301,10 +301,8 @@ namespace PT.PM
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ParsingException(SourceCodeFile.Empty, ex, "Patterns can not be deserialized")
-                {
-                    IsPattern = true
-                });
+                Logger.LogError(new ParsingException(
+                    new CodeFile("") { IsPattern = true }, ex, "Patterns can not be deserialized"));
             }
         }
 

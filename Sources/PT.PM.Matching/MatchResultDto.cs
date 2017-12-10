@@ -17,7 +17,7 @@ namespace PT.PM.Matching
 
         public MatchResultDto(MatchResult matchResult)
         {
-            SourceCodeFile sourceCodeFile = matchResult.SourceCodeFile;
+            CodeFile sourceCodeFile = matchResult.SourceCodeFile;
             string code = sourceCodeFile.Code;
             TextSpan = matchResult.TextSpans.Union();
             LineColumnTextSpan = sourceCodeFile.GetLineColumnTextSpan(TextSpan);

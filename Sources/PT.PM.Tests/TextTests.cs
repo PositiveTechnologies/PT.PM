@@ -14,7 +14,7 @@ namespace PT.PM.Tests
                           "row3\r" +
                           "row4";
 
-            var sourceCodeFile = new SourceCodeFile(text);
+            var sourceCodeFile = new CodeFile(text);
             int linearPos = sourceCodeFile.GetLinearFromLineColumn(4, 4);
             Assert.AreEqual('4', text[linearPos]);
 

@@ -10,7 +10,7 @@ namespace PT.PM.Common.Nodes
 
         public Language Language { get; }
 
-        public SourceCodeFile SourceCodeFile { get; set; }
+        public CodeFile SourceCodeFile { get; set; }
 
         public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
 
@@ -26,9 +26,9 @@ namespace PT.PM.Common.Nodes
 
         public int LineOffset { get; set; }
 
-        public RootUst(SourceCodeFile sourceCodeFile, Language language)
+        public RootUst(CodeFile sourceCodeFile, Language language)
         {
-            SourceCodeFile = sourceCodeFile ?? SourceCodeFile.Empty;
+            SourceCodeFile = sourceCodeFile ?? CodeFile.Empty;
             Language = language;
         }
 

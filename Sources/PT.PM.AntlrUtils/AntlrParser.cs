@@ -56,7 +56,7 @@ namespace PT.PM.AntlrUtils
             Parser = InitParser(null);
         }
 
-        public ParseTree Parse(SourceCodeFile sourceCodeFile)
+        public ParseTree Parse(CodeFile sourceCodeFile)
         {
             AntlrParseTree result = null;
 
@@ -64,7 +64,7 @@ namespace PT.PM.AntlrUtils
             if (sourceCodeFile.Code != null)
             {
                 var errorListener = new AntlrMemoryErrorListener();
-                errorListener.SourceCodeFile = sourceCodeFile;
+                errorListener.CodeFile = sourceCodeFile;
                 errorListener.Logger = Logger;
                 errorListener.LineOffset = LineOffset;
                 try
@@ -142,7 +142,7 @@ namespace PT.PM.AntlrUtils
             ClearCacheIfRequired(InitParser(null).Interpreter, parserLock, 1);
         }
 
-        protected ParserRuleContext ParseTokens(SourceCodeFile sourceCodeFile,
+        protected ParserRuleContext ParseTokens(CodeFile sourceCodeFile,
             AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
@@ -202,7 +202,7 @@ namespace PT.PM.AntlrUtils
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        protected virtual string PreprocessText(SourceCodeFile file)
+        protected virtual string PreprocessText(CodeFile file)
         {
             var text = file.Code;
             var result = new StringBuilder(text.Length);

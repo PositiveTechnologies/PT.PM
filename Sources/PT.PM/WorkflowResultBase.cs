@@ -12,7 +12,7 @@ namespace PT.PM
         where TStage : struct, IConvertible
         where TMatchResult : MatchResultBase<TPattern>
     {
-        private List<SourceCodeFile> sourceCodeFiles = new List<SourceCodeFile>();
+        private List<CodeFile> sourceCodeFiles = new List<CodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
         private List<RootUst> usts = new List<RootUst>();
         private List<TPattern> patterns = new List<TPattern>();
@@ -54,7 +54,7 @@ namespace PT.PM
 
         public int ErrorCount { get; set; }
 
-        public IReadOnlyList<SourceCodeFile> SourceCodeFiles => ValidateStageAndReturn(PM.Stage.File.ToString(), sourceCodeFiles);
+        public IReadOnlyList<CodeFile> SourceCodeFiles => ValidateStageAndReturn(PM.Stage.File.ToString(), sourceCodeFiles);
 
         public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
 
@@ -102,7 +102,7 @@ namespace PT.PM
 
         public int TotalFilesCount { get; set; }
 
-        public void AddResultEntity(SourceCodeFile sourceCodeFile)
+        public void AddResultEntity(CodeFile sourceCodeFile)
         {
             if (Stage.Is(PM.Stage.File) || IsIncludeIntermediateResult)
             {

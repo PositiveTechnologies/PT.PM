@@ -57,7 +57,7 @@ namespace PT.PM.Matching
 
         public PatternUst Node { get; set; } = PatternAny.Instance;
 
-        public SourceCodeFile CodeFile { get; set; } = SourceCodeFile.Empty;
+        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
 
         public PatternRoot()
         {

@@ -68,21 +68,21 @@ namespace PT.PM.PatternEditor
             {
                 if (!logError)
                 {
-                    logError = !parseException.IsPattern;
+                    logError = !parseException.CodeFile.IsPattern;
                 }
             }
             if (ex is ConversionException conversionException)
             {
                 if (!logError)
                 {
-                    logError = !conversionException.IsPattern;
+                    logError = !conversionException.CodeFile.IsPattern;
                 }
             }
             if (ex is MatchingException matchException)
             {
                 if (!logError)
                 {
-                    logError = !matchException.IsPattern;
+                    logError = !matchException.CodeFile.IsPattern;
                 }
             }
 

@@ -10,7 +10,7 @@ namespace PT.PM.Common.Json
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public SourceCodeFile SourceCodeFile { get; set; }
+        public CodeFile SourceCodeFile { get; set; }
 
         public bool IncludeTextSpans { get; set; } = true;
 

@@ -46,7 +46,7 @@ namespace PT.PM.PatternEditor
         private string ustJson;
         private string matchResultText = "MATCHINGS";
         private bool oldIsIncludeTextSpans;
-        private SourceCodeFile sourceCode;
+        private CodeFile sourceCode;
 
         public MainWindowViewModel(Window w)
         {

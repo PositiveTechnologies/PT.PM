@@ -7,7 +7,7 @@ namespace PT.PM.Matching
 {
     public class MatchResult : MatchResultBase<PatternRoot>, IMatchResultBase
     {
-        public SourceCodeFile SourceCodeFile => RootUst.SourceCodeFile;
+        public CodeFile SourceCodeFile => RootUst.SourceCodeFile;
 
         public TextSpan TextSpan => TextSpans.FirstOrDefault();
 

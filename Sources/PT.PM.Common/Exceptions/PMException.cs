@@ -7,19 +7,16 @@ namespace PT.PM.Common.Exceptions
     {
         public string ExceptionType => GetType().Name;
 
-        public SourceCodeFile SourceCodeFile { get; set; }
-
-        public bool IsPattern { get; set; }
+        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
 
         public PMException()
             : base()
         {
         }
 
-        public PMException(Exception innerException, string message = "", bool isPattern = false)
+        public PMException(Exception innerException, string message = "")
             : base(message, innerException)
         {
-            IsPattern = isPattern;
         }
 
         protected PMException(SerializationInfo info, StreamingContext context)
@@ -37,15 +34,15 @@ namespace PT.PM.Common.Exceptions
             string fileName = fileNameType == FileNameType.None
                 ? ""
                 : fileNameType == FileNameType.Full
-                ? SourceCodeFile.FullName
+                ? CodeFile.FullName
                 : fileNameType == FileNameType.Relative
-                ? SourceCodeFile.RelativeName
-                : SourceCodeFile.Name;
+                ? CodeFile.RelativeName
+                : CodeFile.Name;
 
             string fileNameString = !string.IsNullOrEmpty(fileName)
                 ? $@" in ""{fileName}"""
                 : "";
-            string patternString = IsPattern ? "Pattern " : "";
+            string patternString = CodeFile.IsPattern ? "Pattern " : "";
 
             string exceptionString = printStackTrace
                 ? InnerException?.FormatExceptionMessage() ?? Message

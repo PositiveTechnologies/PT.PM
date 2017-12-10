@@ -8,7 +8,7 @@ namespace PT.PM.AntlrUtils
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public SourceCodeFile SourceCodeFile { get; set; }
+        public CodeFile CodeFile { get; set; }
 
         public bool IsPattern { get; set; }
 
@@ -33,7 +33,7 @@ namespace PT.PM.AntlrUtils
 
         private void ProcessError(int startIndex, int stopIndex, string msg)
         {
-            int lineLinearIndex = SourceCodeFile.GetLineLinearIndex(LineOffset);
+            int lineLinearIndex = CodeFile.GetLineLinearIndex(LineOffset);
             startIndex = startIndex + lineLinearIndex;
             stopIndex = stopIndex + 1 + lineLinearIndex;
             if (stopIndex <= startIndex)
@@ -42,12 +42,11 @@ namespace PT.PM.AntlrUtils
             }
             TextSpan textSpan = TextSpan.FromBounds(startIndex, stopIndex);
 
-            string errorMessage = $"{msg} at {SourceCodeFile.GetLineColumnTextSpan(textSpan)}";
+            string errorMessage = $"{msg} at {CodeFile.GetLineColumnTextSpan(textSpan)}";
 
-            Logger.LogError(new ParsingException(SourceCodeFile, message: errorMessage)
+            Logger.LogError(new ParsingException(CodeFile, message: errorMessage)
             {
                 TextSpan = textSpan,
-                IsPattern = IsPattern
             });
         }
     }

@@ -12,13 +12,13 @@ namespace PT.PM.Common.Json
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(SourceCodeFile);
+            return objectType == typeof(CodeFile);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             JObject jObject = new JObject();
-            var sourceCodeFile = (SourceCodeFile)value;
+            var sourceCodeFile = (CodeFile)value;
 
             if (!ExcludeDefaults || !string.IsNullOrEmpty(sourceCodeFile.RootPath))
                 jObject.Add(nameof(sourceCodeFile.RootPath), sourceCodeFile.RootPath);
@@ -41,11 +41,11 @@ namespace PT.PM.Common.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject obj = JObject.Load(reader);
-            SourceCodeFile result = new SourceCodeFile((string)obj[nameof(SourceCodeFile.Code)] ?? "")
+            CodeFile result = new CodeFile((string)obj[nameof(CodeFile.Code)] ?? "")
             {
-                RootPath = (string)obj[nameof(SourceCodeFile.RootPath)] ?? "",
-                RelativePath = (string)obj[nameof(SourceCodeFile.RelativePath)] ?? "",
-                Name = (string)obj[nameof(SourceCodeFile.Name)] ?? "",
+                RootPath = (string)obj[nameof(CodeFile.RootPath)] ?? "",
+                RelativePath = (string)obj[nameof(CodeFile.RelativePath)] ?? "",
+                Name = (string)obj[nameof(CodeFile.Name)] ?? "",
             };
 
             return result;

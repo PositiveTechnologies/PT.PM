@@ -27,7 +27,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
             {
                 var phpParser = new PhpAntlrParser();
                 string code = fileText.Replace("\r\n", lineEnd);
-                var sourceCodeFile = new SourceCodeFile(code)
+                var sourceCodeFile = new CodeFile(code)
                 {
                     Name = "newLine.php",
                 };

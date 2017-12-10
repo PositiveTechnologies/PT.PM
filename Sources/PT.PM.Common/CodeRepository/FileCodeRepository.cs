@@ -26,12 +26,12 @@ namespace PT.PM.Common.CodeRepository
             return new string[] { fullName };
         }
 
-        public override SourceCodeFile ReadFile(string fileName)
+        public override CodeFile ReadFile(string fileName)
         {
-            SourceCodeFile result;
+            CodeFile result;
             try
             {
-                result = new SourceCodeFile(ReadCode(fileName))
+                result = new CodeFile(ReadCode(fileName))
                 {
                     RootPath = RootPath,
                     Name = Path.GetFileName(fileName)
@@ -39,7 +39,7 @@ namespace PT.PM.Common.CodeRepository
             }
             catch (Exception ex)
             {
-                result = new SourceCodeFile("")
+                result = new CodeFile("")
                 {
                     RootPath = RootPath,
                     Name = Path.GetFileName(fileName)

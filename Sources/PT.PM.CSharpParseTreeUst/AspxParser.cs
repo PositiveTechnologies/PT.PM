@@ -12,7 +12,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public Language Language => Aspx.Language;
 
-        public ParseTree Parse(SourceCodeFile sourceCodeFile)
+        public ParseTree Parse(CodeFile sourceCodeFile)
         {
             ParseTree result = null;
 

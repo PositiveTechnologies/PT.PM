@@ -50,7 +50,7 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public override SourceCodeFile ReadFile(string fileName)
+        public override CodeFile ReadFile(string fileName)
         {
             string name = Path.GetFileName(fileName);
             string relativePath;
@@ -72,10 +72,10 @@ namespace PT.PM.Common.CodeRepository
             }
             relativePath = relativePath.Substring(substringIndex);
 
-            SourceCodeFile result;
+            CodeFile result;
             try
             {
-                result = new SourceCodeFile(File.ReadAllText(fileName))
+                result = new CodeFile(File.ReadAllText(fileName))
                 {
                     RootPath = RootPath,
                     RelativePath = relativePath,
@@ -84,7 +84,7 @@ namespace PT.PM.Common.CodeRepository
             }
             catch (Exception ex)
             {
-                result = new SourceCodeFile("")
+                result = new CodeFile("")
                 {
                     RootPath = RootPath,
                     RelativePath = relativePath,

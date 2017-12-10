@@ -18,13 +18,10 @@ namespace PT.PM.Dsl
 
         public PatternRoot Deserialize(string data)
         {
-            var codeFile = new SourceCodeFile(data) { Name = "Pattern" };
+            var codeFile = new CodeFile(data) { Name = "Pattern", IsPattern = true };
             if (string.IsNullOrEmpty(data))
             {
-                throw new ParsingException(codeFile, message: "Pattern value can not be empty.")
-                {
-                    IsPattern = true
-                };
+                throw new ParsingException(codeFile, message: "Pattern value can not be empty.");
             }
 
             var parser = new DslAntlrParser() { Logger = Logger };

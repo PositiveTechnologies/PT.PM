@@ -26,7 +26,7 @@ namespace PT.PM.Common
 
         public abstract void DumpTree(ParseTree parseTree);
 
-        protected void Dump(string data, SourceCodeFile sourceCodeFile, bool tokens)
+        protected void Dump(string data, CodeFile sourceCodeFile, bool tokens)
         {
             Directory.CreateDirectory(DumpDir);
             string name = string.IsNullOrEmpty(sourceCodeFile.Name) ? "" : sourceCodeFile.Name + ".";

@@ -21,7 +21,7 @@ namespace PT.PM.Dsl
 
         public bool PatternExpressionInsideStatement { get; set; } = true;
 
-        public SourceCodeFile Data { get; set; }
+        public CodeFile Data { get; set; }
 
         public PatternRoot Convert(DslParser.PatternContext pattern)
         {
@@ -39,7 +39,7 @@ namespace PT.PM.Dsl
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(Data, ex) { IsPattern = true });
+                Logger.LogError(new ConversionException(Data, ex));
                 throw;
             }
         }

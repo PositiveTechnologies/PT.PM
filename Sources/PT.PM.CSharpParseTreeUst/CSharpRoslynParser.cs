@@ -15,7 +15,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public Language Language => CSharp.Language;
 
-        public ParseTree Parse(SourceCodeFile sourceCodeFile)
+        public ParseTree Parse(CodeFile sourceCodeFile)
         {
             CSharpRoslynParseTree result = null;
 
