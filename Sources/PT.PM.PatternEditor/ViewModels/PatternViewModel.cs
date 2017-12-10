@@ -463,7 +463,7 @@ namespace PT.PM.PatternEditor
                 catch
                 {
                 }
-                patternFile = patternNode.CodeFile;
+                patternFile = patternNode?.CodeFile;
 
                 if (patternLogger.ErrorCount == 0)
                 {

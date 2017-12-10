@@ -1,11 +1,15 @@
-﻿using PT.PM.Common.Nodes;
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace PT.PM
 {
-    public class StageRenderer
+    public class StageRenderer : ILoggable
     {
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
+
         public string DumpDir { get; set; } = "";
 
         public HashSet<Stage> Stages { get; set; } = new HashSet<Stage>();
@@ -25,25 +29,33 @@ namespace PT.PM
 
         public void Render()
         {
+
             foreach (RootUst ust in WorkflowResult.Usts)
             {
-                var renderer = new StageDotRenderer
+                try
                 {
-                    RenderStages = Stages,
-                    IncludeHiddenTokens = IncludeHiddenTokens,
-                    RenderDirection = RenderDirection
-                };
+                    var renderer = new StageDotRenderer
+                    {
+                        RenderStages = Stages,
+                        IncludeHiddenTokens = IncludeHiddenTokens,
+                        RenderDirection = RenderDirection
+                    };
 
-                string dotGraph = renderer.Render(ust);
+                    string dotGraph = renderer.Render(ust);
 
-                string fileName = 
-                    (!string.IsNullOrEmpty(Path.GetFileName(ust.SourceCodeFile.Name)) ? ust.SourceCodeFile.Name + "." : "")
-                    + "ust";
-                var graph = new GraphvizGraph(dotGraph)
+                    string fileName =
+                        (!string.IsNullOrEmpty(Path.GetFileName(ust.SourceCodeFile.Name)) ? ust.SourceCodeFile.Name + "." : "")
+                        + "ust";
+                    var graph = new GraphvizGraph(dotGraph)
+                    {
+                        OutputFormat = RenderFormat
+                    };
+                    graph.Render(Path.Combine(DumpDir, fileName));
+                }
+                catch (Exception ex)
                 {
-                    OutputFormat = RenderFormat
-                };
-                graph.Render(Path.Combine(DumpDir, fileName));
+                    Logger.LogError(ex);
+                }
             }
         }
     }

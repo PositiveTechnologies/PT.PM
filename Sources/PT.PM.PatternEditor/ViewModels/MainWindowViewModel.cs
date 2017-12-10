@@ -36,7 +36,6 @@ namespace PT.PM.PatternEditor
         private string oldSourceCode = "";
         private Stage oldEndStage;
         private JavaScriptType oldJavaScriptType;
-        private int sourceCodeSelectionStart, sourceCodeSelectionEnd;
         private LanguageDetector languageDetector = new ParserLanguageDetector();
         private string tokensHeader;
         private string parseTreeHeader;
@@ -141,24 +140,10 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(SelectedLanguage));
             this.RaisePropertyChanged(nameof(OpenedFileName));
 
-            sourceCodeTextBox.GetObservable(TextBox.CaretIndexProperty)
-                .Subscribe(UpdateSourceCodeCaretIndex);
             sourceCodeTextBox.GetObservable(TextBox.SelectionStartProperty)
-                .Subscribe(selectionStart =>
-                {
-                    if (sourceCodeTextBox.IsFocused)
-                    {
-                        sourceCodeSelectionStart = selectionStart;
-                    }
-                });
+                .Subscribe(UpdateSourceCodeSelection);
             sourceCodeTextBox.GetObservable(TextBox.SelectionEndProperty)
-                .Subscribe(selectionEnd =>
-                {
-                    if (sourceCodeTextBox.IsFocused)
-                    {
-                        sourceCodeSelectionEnd = selectionEnd;
-                    }
-                });
+                .Subscribe(UpdateSourceCodeSelection);
 
             sourceCodeTextBox.GetObservable(TextBox.TextProperty)
                 .Throttle(TimeSpan.FromMilliseconds(500))
@@ -240,12 +225,21 @@ namespace PT.PM.PatternEditor
                 });
         }
 
-        private void UpdateSourceCodeCaretIndex(int caretIndex)
+        private void UpdateSourceCodeSelection(int index)
         {
             if (sourceCode != null)
             {
-                sourceCode.GetLineColumnFromLinear(caretIndex, out int line, out int column);
-                SourceCodeTextBoxPosition = $"Caret: {line}:{column}";
+                int start = sourceCodeTextBox.SelectionStart;
+                int end = sourceCodeTextBox.SelectionEnd;
+                if (start > end)
+                {
+                    int t = start;
+                    start = end;
+                    end = t;
+                }
+                var textSpan = TextSpan.FromBounds(start, end);
+                var lineColumnTextSpan = sourceCode.GetLineColumnTextSpan(textSpan);
+                SourceCodeTextBoxPosition = $"Range: {lineColumnTextSpan}";
             }
             else
             {
@@ -638,8 +632,8 @@ namespace PT.PM.PatternEditor
 
             if (IsDeveloperMode)
             {
-                string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, "tokens");
-                string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, "parseTree");
+                string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.TokensSuffix);
+                string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.ParseTreeSuffix);
                 Tokens = File.Exists(tokensFileName) ? File.ReadAllText(tokensFileName) : "";
                 ParseTree = File.Exists(parseTreeFileName) ? File.ReadAllText(parseTreeFileName) : "";
 
@@ -648,7 +642,7 @@ namespace PT.PM.PatternEditor
 
                 if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
                 {
-                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", "ust.json"));
+                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
                 }
             }
 

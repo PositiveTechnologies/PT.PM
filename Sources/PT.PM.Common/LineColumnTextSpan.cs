@@ -26,7 +26,7 @@ namespace PT.PM.Common
 
         public override string ToString()
         {
-            if (BeginLine == EndLine && EndColumn == BeginColumn + 1)
+            if (BeginLine == EndLine && EndColumn == BeginColumn)
             {
                 return $"[{BeginLine};{BeginColumn})";
             }

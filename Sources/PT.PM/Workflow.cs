@@ -136,7 +136,7 @@ namespace PT.PM
                         cancellationToken.ThrowIfCancellationRequested();
                     }
 
-                    DumpGraphs(workflowResult);
+                    RenderGraphs(workflowResult);
                 }
             }
             catch (OperationCanceledException)
@@ -166,12 +166,13 @@ namespace PT.PM
             }
         }
 
-        private void DumpGraphs(WorkflowResult result)
+        private void RenderGraphs(WorkflowResult result)
         {
             if (result.RenderStages.Any())
             {
                 var renderer = new StageRenderer(result)
                 {
+                    Logger = Logger,
                     DumpDir = DumpDir,
                     Stages = RenderStages,
                     RenderFormat = RenderFormat,
