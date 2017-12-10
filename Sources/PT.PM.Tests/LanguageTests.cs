@@ -5,6 +5,8 @@ using System.IO;
 using PT.PM.SqlParseTreeUst;
 using PT.PM.JavaParseTreeUst;
 using System.Collections.Generic;
+using System.Linq;
+using PT.PM.CSharpParseTreeUst;
 
 namespace PT.PM.Tests
 {
@@ -28,6 +30,9 @@ namespace PT.PM.Tests
             CollectionAssert.DoesNotContain(notJavaSqlLangs, Java.Language);
             CollectionAssert.DoesNotContain(notJavaSqlLangs, TSql.Language);
             CollectionAssert.DoesNotContain(notJavaSqlLangs, PlSql.Language);
+
+            HashSet<Language> cSharpLang = "c#".ParseLanguages();
+            Assert.AreEqual(CSharp.Language, cSharpLang.First());
         }
 
         [TestCase("CSharp", "Patterns.cs")]

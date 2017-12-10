@@ -71,6 +71,8 @@ namespace PT.PM.Common
                     converters.Add(subConverter.Key, subConverter.Value);
                 }
             }
+
+            Languages.Add(Uncertain.Language.Key, Uncertain.Language);
         }
 
         private static void ProcessAssembly(Assembly assembly,
@@ -197,7 +199,8 @@ namespace PT.PM.Common
                 {
                     bool result = isSql
                         ? language.IsSql
-                        : string.Equals(language.Key, langStr, StringComparison.OrdinalIgnoreCase);
+                        : (string.Equals(language.Key, langStr, StringComparison.OrdinalIgnoreCase) ||
+                           string.Equals(language.Title, langStr, StringComparison.OrdinalIgnoreCase));
                     if (negation)
                     {
                         containsNegation = true;

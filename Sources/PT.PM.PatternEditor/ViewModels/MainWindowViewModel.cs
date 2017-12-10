@@ -321,9 +321,10 @@ namespace PT.PM.PatternEditor
         {
             get
             {
-                if (LanguageUtils.Languages.TryGetValue(Settings.SourceCodeLanguage, out Language language))
+                HashSet<Language> languages = LanguageUtils.ParseLanguages(Settings.SourceCodeLanguage);
+                if (Languages.Count > 0)
                 {
-                    return language;
+                    return languages.First();
                 }
                 return CSharp.Language;
             }
