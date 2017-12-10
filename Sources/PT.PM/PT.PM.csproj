@@ -57,7 +57,7 @@
     <Compile Include="Stage.cs" />
     <Compile Include="StageDotRenderer.cs" />
     <Compile Include="StageRenderer.cs" />
-    <Compile Include="StageHelper.cs" />
+    <Compile Include="StageUtils.cs" />
     <Compile Include="StandardArchiveExtractor.cs" />
     <Compile Include="StringCompressorEscaper.cs" />
     <Compile Include="UstSimplifier.cs" />

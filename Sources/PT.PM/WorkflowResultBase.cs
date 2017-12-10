@@ -32,14 +32,11 @@ namespace PT.PM
         private int totalProcessedCharsCount;
         private int totalProcessedLinesCount;
 
-        protected StageHelper<TStage> stageExt;
-
         public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
         {
             AnalyzedLanguages = languages.ToList();
             ThreadCount = threadCount;
             Stage = stage;
-            stageExt = new StageHelper<TStage>(stage);
             IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
@@ -65,7 +62,7 @@ namespace PT.PM
         {
             get
             {
-                if (!stageExt.IsUst && !stageExt.IsSimplifiedUst && !IsIncludeIntermediateResult &&
+                if (!Stage.Is(PM.Stage.Ust) && !Stage.Is(PM.Stage.SimplifiedUst) && !IsIncludeIntermediateResult &&
                     RenderStages.All(stage => Convert.ToInt32(stage) != (int)PM.Stage.Ust))
                 {
                     ThrowInvalidStageException(PM.Stage.Ust.ToString());
@@ -80,7 +77,7 @@ namespace PT.PM
         {
             get
             {
-                if (!stageExt.IsPattern && (stageExt.IsLessThanMatch || !IsIncludeIntermediateResult))
+                if (!Stage.Is(PM.Stage.Pattern) && (Stage.IsLess(PM.Stage.Match) || !IsIncludeIntermediateResult))
                 {
                     ThrowInvalidStageException(PM.Stage.Pattern.ToString());
                 }
@@ -107,7 +104,7 @@ namespace PT.PM
 
         public void AddResultEntity(SourceCodeFile sourceCodeFile)
         {
-            if (stageExt.IsFile || IsIncludeIntermediateResult)
+            if (Stage.Is(PM.Stage.File) || IsIncludeIntermediateResult)
             {
                 AddEntity(sourceCodeFiles, sourceCodeFile);
             }
@@ -115,7 +112,7 @@ namespace PT.PM
 
         public void AddResultEntity(ParseTree parseTree)
         {
-            if (stageExt.IsParseTree || IsIncludeIntermediateResult ||
+            if (Stage.Is(PM.Stage.ParseTree) || IsIncludeIntermediateResult ||
                 RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.ParseTree))
             {
                 AddEntity(parseTrees, parseTree);
@@ -124,7 +121,7 @@ namespace PT.PM
 
         public void AddResultEntity(RootUst ust, bool convert)
         {
-            if (IsIncludeIntermediateResult || (convert && stageExt.IsUst) || (!convert && stageExt.IsSimplifiedUst) ||
+            if (IsIncludeIntermediateResult || (convert && Stage.Is(PM.Stage.Ust)) || (!convert && Stage.Is(PM.Stage.SimplifiedUst)) ||
                 RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.Ust))
             {
                 int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
