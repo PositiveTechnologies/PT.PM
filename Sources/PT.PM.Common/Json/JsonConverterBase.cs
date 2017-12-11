@@ -4,6 +4,7 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace PT.PM.Common.Json
@@ -99,14 +100,14 @@ namespace PT.PM.Common.Json
             JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
 
             string ustKind = jObject != null
-                ? ((string)jObject[KindName])
+                ? (string)jObject.GetValueIgnoreCase(KindName)
                 : jToken != null
-                ? ((string)jToken[KindName])
+                ? (string)jToken[KindName]
                 : "";
 
             Type type;
             if (string.IsNullOrEmpty(ustKind) ||
-                !ReflectionCache.UstKindFullClassName.Value.TryGetValue(ustKind, out type))
+                !ReflectionCache.TryGetClassType(ustKind, out type))
             {
                 int errorLineNumber = (jObjectOrToken as IJsonLineInfo)?.LineNumber ?? 0;
                 string errorMessage = $"Line: {errorLineNumber}; {KindName} field ";
@@ -121,14 +122,14 @@ namespace PT.PM.Common.Json
             if (type == typeof(RootUst))
             {
                 string languageString = jObject != null
-                    ? ((string)jObject[nameof(RootUst.Language)])
+                    ? (string)jObject.GetValueIgnoreCase(nameof(RootUst.Language))
                     : jToken != null
                     ? ((string)jToken[nameof(RootUst.Language)])
                     : "";
                 Language language = Uncertain.Language;
                 if (!string.IsNullOrEmpty(languageString))
-                { 
-                    LanguageUtils.Languages.TryGetValue(languageString, out language);
+                {
+                    language = languageString.ParseLanguages().FirstOrDefault();
                 }
                 ust = (Ust)Activator.CreateInstance(type, null, language);
             }

@@ -6,7 +6,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     {
         public override string TextValue => Text;
 
-        public virtual string Text { get; set; }
+        public virtual string Text { get; set; } = "";
 
         public int EscapeCharsLength { get; set; } = 1;
 

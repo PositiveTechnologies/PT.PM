@@ -22,14 +22,14 @@ namespace PT.PM.Common.Json
             }
 
             JObject jObject = JObject.Load(reader);
-            string kind = jObject[KindName].ToString();
+            string kind = jObject.GetValueIgnoreCase(KindName).ToString();
 
             Ust target;
             JsonReader newReader = null;
-            if (!ReflectionCache.UstKindFullClassName.Value.ContainsKey(kind))
+            if (!ReflectionCache.ContainsKind(kind))
             {
                 // Try load from Ust subfield.
-                JToken jToken = jObject[nameof(Ust)];
+                JToken jToken = jObject.GetValueIgnoreCase(nameof(Ust));
                 target = CreateUst(jToken);
                 if (target == null)
                 {

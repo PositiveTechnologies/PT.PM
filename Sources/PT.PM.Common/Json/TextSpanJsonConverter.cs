@@ -51,8 +51,8 @@ namespace PT.PM.Common.Json
             else
             {
                 var jObject = JObject.Load(reader);
-                int start = jObject[nameof(TextSpan.Start)]?.ToObject<int>() ?? 0;
-                int length = jObject[nameof(TextSpan.Length)]?.ToObject<int>() ?? 0;
+                int start = jObject.GetValueIgnoreCase(nameof(TextSpan.Start))?.ToObject<int>() ?? 0;
+                int length = jObject.GetValueIgnoreCase(nameof(TextSpan.Length))?.ToObject<int>() ?? 0;
                 return new TextSpan(start, length);
             }
         }
