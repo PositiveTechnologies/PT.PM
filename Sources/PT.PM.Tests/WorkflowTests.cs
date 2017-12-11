@@ -29,7 +29,7 @@ namespace PT.PM.Tests
 
             // Convert case to upper for checking correct deserialization
             var code = File.ReadAllText(Path.Combine(TestUtility.TestsOutputPath, inputFileName + ".ust.json"));
-            code = code.ToUpperInvariant();
+            code = code.ToUpperInvariant().Replace("\\R", "\\r").Replace("\\N", "\\n");
 
             // Deserialization
             SourceCodeRepository sourceCodeRepository = new MemoryCodeRepository(code, inputFileName + ".ust.json")
