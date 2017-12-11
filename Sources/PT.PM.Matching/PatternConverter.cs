@@ -53,7 +53,7 @@ namespace PT.PM.Matching
             foreach (PatternDto patternDto in patternsDto)
             {
                 IPatternSerializer serializer = Serializers
-                    .FirstOrDefault(s => string.Equals(s.Format, patternDto.DataFormat, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault(s => s.Format.EqualsIgnoreCase(patternDto.DataFormat))
                     ?? Serializers.First();
                 if (serializer == null)
                 {

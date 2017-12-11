@@ -193,14 +193,13 @@ namespace PT.PM.Common
                     negation = true;
                     langStr = langStr.Substring(1);
                 }
-                bool isSql = langStr.Equals("sql", StringComparison.OrdinalIgnoreCase);
+                bool isSql = langStr.EqualsIgnoreCase("sql");
 
                 foreach (Language language in languages)
                 {
                     bool result = isSql
                         ? language.IsSql
-                        : (string.Equals(language.Key, langStr, StringComparison.OrdinalIgnoreCase) ||
-                           string.Equals(language.Title, langStr, StringComparison.OrdinalIgnoreCase));
+                        : (language.Key.EqualsIgnoreCase(langStr) || language.Title.EqualsIgnoreCase(langStr));
                     if (negation)
                     {
                         containsNegation = true;

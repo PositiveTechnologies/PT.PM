@@ -102,7 +102,7 @@ namespace PT.PM.Common.Json
             string ustKind = jObject != null
                 ? (string)jObject.GetValueIgnoreCase(KindName)
                 : jToken != null
-                ? (string)jToken[KindName]
+                ? (string)jToken.GetValueIgnoreCase(KindName)
                 : "";
 
             Type type;
@@ -124,7 +124,7 @@ namespace PT.PM.Common.Json
                 string languageString = jObject != null
                     ? (string)jObject.GetValueIgnoreCase(nameof(RootUst.Language))
                     : jToken != null
-                    ? ((string)jToken[nameof(RootUst.Language)])
+                    ? (string)jToken.GetValueIgnoreCase(nameof(RootUst.Language))
                     : "";
                 Language language = Uncertain.Language;
                 if (!string.IsNullOrEmpty(languageString))

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,11 @@ namespace PT.PM.Common
         private const int StartColumn = 1;
 
         public static readonly Regex HttpRegex = new Regex("^https?://", RegexOptions.Compiled);
+
+        public static bool EqualsIgnoreCase(this string str1, string str2)
+        {
+            return str1.Equals(str2, StringComparison.OrdinalIgnoreCase);
+        }
 
         public static int LastIndexOf(this string str, int index, bool whitespace)
         {
