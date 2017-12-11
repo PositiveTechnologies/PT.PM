@@ -57,7 +57,7 @@ namespace PT.PM.Common.Json
                 {
                     stringEnumConverter,
                     jsonConverterBase,
-                    new LanguageJsonConverter(),
+                    LanguageJsonConverter.Instance,
                     new TextSpanJsonConverter
                     {
                         ShortFormat = ShortTextSpans,

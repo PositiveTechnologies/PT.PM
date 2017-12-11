@@ -6,6 +6,8 @@ namespace PT.PM.Common.Json
 {
     public class LanguageJsonConverter : JsonConverter
     {
+        public static LanguageJsonConverter Instance = new LanguageJsonConverter();
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(Language);
