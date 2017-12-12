@@ -4,11 +4,13 @@ using Newtonsoft.Json.Linq;
 
 namespace PT.PM.Common.Json
 {
-    public class SourceCodeFileJsonConverter : JsonConverter
+    public class CodeFileJsonConverter : JsonConverter
     {
         public bool IncludeCode { get; set; } = false;
 
         public bool ExcludeDefaults { get; set; } = true;
+
+        public CodeFile CodeFile { get; private set; } = CodeFile.Empty;
 
         public override bool CanConvert(Type objectType)
         {
@@ -48,6 +50,7 @@ namespace PT.PM.Common.Json
                 Name = (string)obj.GetValueIgnoreCase(nameof(CodeFile.Name)) ?? "",
             };
 
+            CodeFile = result;
             return result;
         }
     }

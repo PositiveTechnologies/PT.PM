@@ -16,6 +16,11 @@ namespace PT.PM.Common
         {
         }
 
+        public LineColumnTextSpan(int line, int column)
+            : this(line, column, line, column)
+        {
+        }
+
         public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn)
         {
             BeginLine = beginLine;

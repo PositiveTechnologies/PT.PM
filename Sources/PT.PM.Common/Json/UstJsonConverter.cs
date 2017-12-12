@@ -8,6 +8,11 @@ namespace PT.PM.Common.Json
 {
     public class UstJsonConverter : JsonConverterBase
     {
+        public UstJsonConverter(CodeFile jsonFile)
+            : base(jsonFile)
+        {
+        }
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(Ust) || objectType.IsSubclassOf(typeof(Ust));

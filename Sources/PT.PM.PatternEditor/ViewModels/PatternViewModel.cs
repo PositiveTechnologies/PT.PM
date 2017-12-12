@@ -456,7 +456,7 @@ namespace PT.PM.PatternEditor
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
-                        patternNode = dslProcessor.Deserialize(patternTextBox.Text);
+                        patternNode = dslProcessor.Deserialize(new CodeFile(patternTextBox.Text) { IsPattern = true });
                         patternNode.Languages = Languages.ParseLanguages(allByDefault: false, patternLanguages: true);
                     }
                 }

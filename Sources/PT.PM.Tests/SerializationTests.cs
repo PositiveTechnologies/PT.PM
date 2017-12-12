@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
@@ -56,10 +57,11 @@ namespace PT.PM.Tests
             };
 
             string json = jsonSerializer.Serialize(patternNode);
-            PatternRoot nodeFromJson = jsonSerializer.Deserialize(json);
+            PatternRoot nodeFromJson = jsonSerializer.Deserialize(new CodeFile(json) { IsPattern = true });
 
             var dslSeializer = new DslProcessor() { PatternExpressionInsideStatement = false };
-            var nodeFromDsl = dslSeializer.Deserialize("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);");
+            var nodeFromDsl = dslSeializer.Deserialize(
+                new CodeFile("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);") { IsPattern = true });
 
             Assert.IsTrue(nodeFromJson.Node.Equals(patternNode.Node));
             Assert.IsTrue(nodeFromJson.Node.Equals(nodeFromDsl.Node));

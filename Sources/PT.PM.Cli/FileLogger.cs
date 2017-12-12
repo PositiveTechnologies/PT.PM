@@ -28,7 +28,10 @@ namespace PT.PM.Cli
             CutWords = false
         };
 
-        protected PrettyPrinter MessagePrinter { get; } = new PrettyPrinter();
+        protected PrettyPrinter MessagePrinter { get; } = new PrettyPrinter()
+        {
+            MaxMessageLength = 300,
+        };
 
         protected PrettyPrinter CodePrinter { get; } = new PrettyPrinter
         {

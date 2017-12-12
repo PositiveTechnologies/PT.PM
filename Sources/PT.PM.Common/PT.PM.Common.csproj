@@ -48,7 +48,7 @@
     <Compile Include="Json\JsonConverterBase.cs" />
     <Compile Include="Json\JsonUtils.cs" />
     <Compile Include="Json\LanguageJsonConverter.cs" />
-    <Compile Include="Json\SourceCodeFileJsonConverter.cs" />
+    <Compile Include="Json\CodeFileJsonConverter.cs" />
     <Compile Include="Json\TextSpanJsonConverter.cs" />
     <Compile Include="LanguageUtils.cs" />
     <Compile Include="Nodes\Collections\Collection.cs" />

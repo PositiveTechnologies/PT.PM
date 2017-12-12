@@ -15,9 +15,16 @@ namespace PT.PM.Common.Json
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
+        public CodeFile JsonFile { get; } = CodeFile.Empty;
+
         public bool IncludeTextSpans { get; set; } = false;
 
         public bool ExcludeDefaults { get; set; } = true;
+
+        public JsonConverterBase(CodeFile jsonFile)
+        {
+            JsonFile = jsonFile;
+        }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -109,12 +116,9 @@ namespace PT.PM.Common.Json
             if (string.IsNullOrEmpty(ustKind) ||
                 !ReflectionCache.TryGetClassType(ustKind, out type))
             {
-                int errorLineNumber = (jObjectOrToken as IJsonLineInfo)?.LineNumber ?? 0;
-                string errorMessage = $"Line: {errorLineNumber}; {KindName} field ";
-                errorMessage += ustKind == null
-                    ? "undefined"
-                    : $"incorrect ({ustKind})";
-                Logger.LogError(new ConversionException(CodeFile.Empty, null, errorMessage));
+                string errorMessage = $"{KindName} field " +
+                    (ustKind == null ? "undefined" : $"incorrect ({ustKind})");
+                LogError(jObjectOrToken as IJsonLineInfo, errorMessage);
                 return null;
             }
 
@@ -139,6 +143,35 @@ namespace PT.PM.Common.Json
             }
 
             return ust;
+        }
+
+        protected void LogError(IJsonLineInfo jsonLineInfo, Exception ex)
+        {
+            string errorMessage = GenerateErrorPositionMessage(jsonLineInfo, out TextSpan errorTextSpan);
+            errorMessage += "; " + ex.FormatExceptionMessage();
+            Logger.LogError(new ConversionException(JsonFile, null, errorMessage) { TextSpan = errorTextSpan });
+        }
+
+        protected void LogError(IJsonLineInfo jsonLineInfo, string message)
+        {
+            string errorMessage = GenerateErrorPositionMessage(jsonLineInfo, out TextSpan errorTextSpan);
+            errorMessage += "; " + message;
+            Logger.LogError(new ConversionException(JsonFile, null, errorMessage) { TextSpan = errorTextSpan });
+        }
+
+        protected string GenerateErrorPositionMessage(IJsonLineInfo jsonLineInfo, out TextSpan errorTextSpan)
+        {
+            int errorLine = CodeFile.StartLine;
+            int errorColumn = CodeFile.StartColumn;
+            if (jsonLineInfo != null)
+            {
+                errorLine = jsonLineInfo.LineNumber;
+                errorColumn = jsonLineInfo.LinePosition;
+            }
+            errorTextSpan = new TextSpan(
+                JsonFile.GetLinearFromLineColumn(errorLine, errorColumn), 0);
+            LineColumnTextSpan lcTextSpan = new LineColumnTextSpan(errorLine, errorColumn);
+            return $"File position: {lcTextSpan}";
         }
 
         private object GetDefaultValue(Type t)

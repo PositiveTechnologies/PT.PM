@@ -10,8 +10,6 @@ namespace PT.PM.Common.Json
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public CodeFile SourceCodeFile { get; set; }
-
         public bool IncludeTextSpans { get; set; } = true;
 
         public bool Indented { get; set; } = false;
@@ -24,12 +22,15 @@ namespace PT.PM.Common.Json
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
-        protected abstract JsonConverterBase CreateConverterBase();
+        public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
-        public virtual T Deserialize(string data)
+        protected abstract JsonConverterBase CreateConverterBase(CodeFile jsonFile);
+
+        public virtual T Deserialize(CodeFile jsonFile)
         {
+            JsonFile = jsonFile;
             JsonSerializerSettings jsonSettings = PrepareSettings();
-            return JsonConvert.DeserializeObject<T>(data, jsonSettings);
+            return JsonConvert.DeserializeObject<T>(jsonFile.Code, jsonSettings);
         }
 
         public virtual string Serialize(T node)
@@ -46,7 +47,7 @@ namespace PT.PM.Common.Json
 
         public JsonSerializerSettings PrepareSettings()
         {
-            JsonConverterBase jsonConverterBase = CreateConverterBase();
+            JsonConverterBase jsonConverterBase = CreateConverterBase(JsonFile);
             jsonConverterBase.IncludeTextSpans = IncludeTextSpans;
             jsonConverterBase.ExcludeDefaults = ExcludeDefaults;
             jsonConverterBase.Logger = Logger;
@@ -63,7 +64,7 @@ namespace PT.PM.Common.Json
                         ShortFormat = ShortTextSpans,
                         EmptyTextSpanFormat = EmptyTextSpanFormat,
                     },
-                    new SourceCodeFileJsonConverter
+                    new CodeFileJsonConverter
                     {
                         ExcludeDefaults = ExcludeDefaults,
                         IncludeCode = IncludeCode,

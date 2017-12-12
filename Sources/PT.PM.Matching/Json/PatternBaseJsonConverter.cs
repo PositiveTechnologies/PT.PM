@@ -11,6 +11,11 @@ namespace PT.PM.Matching.Json
 {
     public class PatternJsonConverter : JsonConverterBase
     {
+        public PatternJsonConverter(CodeFile jsonFile)
+            : base(jsonFile)
+        {
+        }
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(PatternUst) ||

@@ -192,7 +192,7 @@ namespace PT.PM
                         else
                         {
                             var jsonUstSerializer = new JsonUstSerializer() { Logger = Logger };
-                            result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile.Code);
+                            result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
                                 Logger.LogInfo($"File {fileName} has been ignored.");

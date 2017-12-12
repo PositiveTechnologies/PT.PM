@@ -29,7 +29,7 @@ namespace PT.PM.Matching.Tests
             };
 
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(pattern);
+            PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { IsPattern = true });
             patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageUtils.PatternLanguages.Values);
             patternNode.DebugInfo = pattern;
             var patternsConverter = new PatternConverter();

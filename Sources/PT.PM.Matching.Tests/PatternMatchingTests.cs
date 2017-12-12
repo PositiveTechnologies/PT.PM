@@ -62,7 +62,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternExpressionsInCalls(string patternData, params int[] matchMethodNumbers)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(patternData);
+            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { IsPattern = true });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
@@ -81,7 +81,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternVarWithRegex(string patternData)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(patternData);
+            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { IsPattern = true });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
@@ -96,7 +96,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PasswordCheckInsideStatement(string patternData)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(patternData);
+            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { IsPattern = true });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             WorkflowResult workflowResult = workflow.Process();

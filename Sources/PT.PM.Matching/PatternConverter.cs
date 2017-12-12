@@ -52,20 +52,26 @@ namespace PT.PM.Matching
             var result = new List<PatternRoot>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
             {
+                CodeFile patternFile = new CodeFile(patternDto.Value)
+                {
+                    Name = patternDto.Name,
+                    IsPattern = true
+                };
+
                 IPatternSerializer serializer = Serializers
                     .FirstOrDefault(s => s.Format.EqualsIgnoreCase(patternDto.DataFormat))
                     ?? Serializers.First();
                 if (serializer == null)
                 {
                     Logger.LogError(new ConversionException(
-                        new CodeFile("") { IsPattern = true},
+                        patternFile,
                         null, $"Serializer for {patternDto.DataFormat} has not been found"));
                     continue;
                 }
 
                 try
                 {
-                    PatternRoot pattern = serializer.Deserialize(patternDto.Value);
+                    PatternRoot pattern = serializer.Deserialize(patternFile);
                     HashSet<Language> languages = patternDto.Languages.ParseLanguages(patternLanguages: true);
 
                     if (languages.Count == 0)
@@ -84,7 +90,7 @@ namespace PT.PM.Matching
                 catch (Exception ex)
                 {
                     Logger.LogError(new ConversionException(
-                        new CodeFile("") { IsPattern = true },
+                        patternFile,
                         ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) "));
                 }
             }
