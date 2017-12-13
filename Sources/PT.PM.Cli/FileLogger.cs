@@ -16,11 +16,11 @@ namespace PT.PM.Cli
 
         public int ErrorCount => errorCount;
 
-        protected NLog.Logger FileInternalLogger => NLog.LogManager.GetLogger("file");
+        public NLog.Logger FileInternalLogger => NLog.LogManager.GetLogger("file");
 
-        protected NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
+        public NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
 
-        protected NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
+        public NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
 
         protected PrettyPrinter ErrorPrinter { get; } = new PrettyPrinter
         {
