@@ -22,6 +22,7 @@ namespace PT.PM.Common
         {
             parsers = new Dictionary<Language, Type>();
             converters = new Dictionary<Language, Type>();
+
             Languages = new Dictionary<string, Language>();
             PatternLanguages = new Dictionary<string, Language>();
             SqlLanguages = new Dictionary<string, Language>();
@@ -73,6 +74,7 @@ namespace PT.PM.Common
             }
 
             Languages.Add(Uncertain.Language.Key, Uncertain.Language);
+            PatternLanguages.Add(Uncertain.Language.Key, Uncertain.Language);
         }
 
         private static void ProcessAssembly(Assembly assembly,
