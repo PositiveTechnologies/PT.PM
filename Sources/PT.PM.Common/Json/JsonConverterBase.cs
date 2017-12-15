@@ -145,18 +145,18 @@ namespace PT.PM.Common.Json
             return ust;
         }
 
-        protected void LogError(IJsonLineInfo jsonLineInfo, Exception ex)
+        protected void LogError(IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
         {
             string errorMessage = GenerateErrorPositionMessage(jsonLineInfo, out TextSpan errorTextSpan);
             errorMessage += "; " + ex.FormatExceptionMessage();
-            Logger.LogError(new ConversionException(JsonFile, null, errorMessage) { TextSpan = errorTextSpan });
+            LogErrorOrWarning(isError, errorMessage, errorTextSpan);
         }
 
-        protected void LogError(IJsonLineInfo jsonLineInfo, string message)
+        protected void LogError(IJsonLineInfo jsonLineInfo, string message, bool isError = true)
         {
             string errorMessage = GenerateErrorPositionMessage(jsonLineInfo, out TextSpan errorTextSpan);
             errorMessage += "; " + message;
-            Logger.LogError(new ConversionException(JsonFile, null, errorMessage) { TextSpan = errorTextSpan });
+            LogErrorOrWarning(isError, errorMessage, errorTextSpan);
         }
 
         protected string GenerateErrorPositionMessage(IJsonLineInfo jsonLineInfo, out TextSpan errorTextSpan)
@@ -172,6 +172,19 @@ namespace PT.PM.Common.Json
                 JsonFile.GetLinearFromLineColumn(errorLine, errorColumn), 0);
             LineColumnTextSpan lcTextSpan = new LineColumnTextSpan(errorLine, errorColumn);
             return $"File position: {lcTextSpan}";
+        }
+
+        private void LogErrorOrWarning(bool isError, string errorMessage, TextSpan errorTextSpan)
+        {
+            var exception = new ConversionException(JsonFile, null, errorMessage) { TextSpan = errorTextSpan };
+            if (isError)
+            {
+                Logger.LogError(exception);
+            }
+            else
+            {
+                Logger.LogInfo($"{JsonFile}: " + errorMessage);
+            }
         }
 
         private object GetDefaultValue(Type t)
