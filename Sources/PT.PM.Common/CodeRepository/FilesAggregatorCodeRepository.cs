@@ -42,11 +42,18 @@ namespace PT.PM.Common.CodeRepository
                 return Enumerable.Empty<string>();
             }
 
-            var result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+            IEnumerable<string> result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+
+            if (LoadJson)
+            {
+                result = result.Where(name => Path.GetExtension(name).EqualsIgnoreCase(".json"));
+            }
+
             if (SearchPredicate != null)
             {
                 result = result.Where(SearchPredicate);
             }
+
             return result;
         }
 
