@@ -138,7 +138,7 @@ namespace PT.PM.AntlrUtils
 
         public void ClearCache()
         {
-            ClearCacheIfRequired(InitLexer(null).Interpreter, lexerLock, 1);
+            ClearCacheIfRequired(InitLexer(null).Interpreter, lexerLock, 1, false);
             ClearCacheIfRequired(InitParser(null).Interpreter, parserLock, 1);
         }
 
