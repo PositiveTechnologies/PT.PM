@@ -87,12 +87,9 @@ namespace PT.PM
                 {
                     Logger.LogInfo("Scan has been cancelled");
                 }
-
-                /*foreach (var pair in ParserConverterSets) // TODO: cache clearint at the end.
-                {
-                    pair.Value?.Parser.ClearCache();
-                }*/
             }
+
+            ClearCache();
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;

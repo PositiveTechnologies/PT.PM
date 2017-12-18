@@ -334,5 +334,16 @@ namespace PT.PM
                 CancellationToken = cancellationToken
             };
         }
+
+        protected void ClearCache()
+        {
+            Language antlrLanguage = BaseLanguages.FirstOrDefault(language => language.HaveAntlrParser);
+            if (antlrLanguage != null)
+            {
+                var antlrParser = (AntlrParser)antlrLanguage.CreateParser();
+                antlrParser.MemoryConsumptionMb = 0;
+                antlrParser.ClearCache();
+            }
+        }
     }
 }
