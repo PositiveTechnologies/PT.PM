@@ -2,7 +2,7 @@
 
 namespace PT.PM.Common.Json
 {
-    public class JsonUstSerializer : JsonBaseSerializer<Ust>
+    public class UstJsonSerializer : JsonBaseSerializer<Ust>
     {
         public override Ust Deserialize(CodeFile jsonFile)
         {

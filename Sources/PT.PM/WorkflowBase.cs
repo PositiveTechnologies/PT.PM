@@ -191,7 +191,7 @@ namespace PT.PM
                         }
                         else
                         {
-                            var jsonUstSerializer = new JsonUstSerializer() { Logger = Logger };
+                            var jsonUstSerializer = new UstJsonSerializer() { Logger = Logger };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
@@ -235,7 +235,7 @@ namespace PT.PM
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust)))
             {
-                var serializer = new JsonUstSerializer
+                var serializer = new UstJsonSerializer
                 {
                     Indented = IndentedDump,
                     IncludeTextSpans = DumpWithTextSpans,
