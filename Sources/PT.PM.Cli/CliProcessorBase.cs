@@ -84,10 +84,13 @@ namespace PT.PM.Cli
                     pmStage = Stage.Match;
                 }
 
+                bool loadJson = !string.IsNullOrEmpty(parameters.StartStage) &&
+                    !parameters.StartStage.EqualsIgnoreCase(Stage.File.ToString());
+
                 HashSet<Language> languages = parameters.Languages.ParseLanguages();
                 SourceCodeRepository sourceCodeRepository = RepositoryFactory.
                     CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir,
-                    !parameters.StartStage.EqualsIgnoreCase(Stage.File.ToString()));
+                    loadJson);
 
                 logger.SourceCodeRepository = sourceCodeRepository;
 
