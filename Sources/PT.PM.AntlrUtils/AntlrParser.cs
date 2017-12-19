@@ -1,20 +1,19 @@
-﻿using PT.PM.Common;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
+using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Threading;
-using PT.PM.Common.Exceptions;
 
 namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrParser : ILanguageParser
     {
-        private int processedFilesCount = 1;
+        private static int processedFilesCount = 1;
         private static ReaderWriterLockSlim lexerLock = new ReaderWriterLockSlim();
         private static ReaderWriterLockSlim parserLock = new ReaderWriterLockSlim();
 
@@ -276,10 +275,7 @@ namespace PT.PM.AntlrUtils
         protected void IncrementProcessedFilesCount()
         {
             int newValue = Interlocked.Increment(ref processedFilesCount);
-            if (newValue == int.MaxValue)
-            {
-                processedFilesCount = 1;
-            }
+            processedFilesCount = newValue == int.MaxValue ? 1 : newValue;
         }
     }
 }
