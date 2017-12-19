@@ -335,14 +335,17 @@ namespace PT.PM
             };
         }
 
-        protected void ClearCache()
+        protected void ClearCacheIfRequired(TWorkflowResult result)
         {
-            Language antlrLanguage = BaseLanguages.FirstOrDefault(language => language.HaveAntlrParser);
-            if (antlrLanguage != null)
+            if (result.TotalProcessedFilesCount > 1)
             {
-                var antlrParser = (AntlrParser)antlrLanguage.CreateParser();
-                antlrParser.MemoryConsumptionMb = 0;
-                antlrParser.ClearCache();
+                Language antlrLanguage = BaseLanguages.FirstOrDefault(language => language.HaveAntlrParser);
+                if (antlrLanguage != null)
+                {
+                    var antlrParser = (AntlrParser)antlrLanguage.CreateParser();
+                    antlrParser.MemoryConsumptionMb = 0;
+                    antlrParser.ClearCache();
+                }
             }
         }
     }

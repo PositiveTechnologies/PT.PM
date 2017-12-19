@@ -56,14 +56,18 @@ namespace PT.PM
             else
             {
                 IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
-                if (!(fileNames is IList<string>))
+                if (fileNames is IList<string> fileNamesList)
+                {
+                    result.TotalFilesCount = fileNamesList.Count;
+                }
+                else
                 {
                     filesCountTask = Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
                 }
 
                 try
                 {
-                    if (ThreadCount == 1 || (fileNames is IList<string> fileNamesList && fileNamesList.Count == 1))
+                    if (ThreadCount == 1 || (fileNames is IList<string> && result.TotalFilesCount == 1))
                     {
                         foreach (string fileName in fileNames)
                         {
@@ -89,7 +93,7 @@ namespace PT.PM
                 }
             }
 
-            ClearCache();
+            ClearCacheIfRequired(result);
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;
