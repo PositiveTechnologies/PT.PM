@@ -26,6 +26,7 @@ namespace PT.PM.Cli
                 DumpStages = new HashSet<Stage>(parameters.DumpStages.ParseCollection<Stage>()),
                 IndentedDump = parameters.IndentedDump,
                 DumpWithTextSpans = parameters.IncludeTextSpansInDump,
+                LineColumnTextSpans = parameters.LineColumnTextSpans,
                 RenderStages = new HashSet<Stage>(parameters.RenderStages.ParseCollection<Stage>()),
                 RenderFormat = parameters.RenderFormat.ParseEnum<GraphvizOutputFormat>(),
                 RenderDirection = parameters.RenderDirection.ParseEnum<GraphvizDirection>(),

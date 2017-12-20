@@ -104,7 +104,9 @@ namespace PT.PM
 
         public bool DumpWithTextSpans { get; set; } = true;
 
-        public bool IncludeCodeInDump { get; set; } = false;
+        public bool IncludeCodeInDump { get; set; } = true;
+
+        public bool LineColumnTextSpans { get; set; } = false;
 
         public string LogsDir { get; set; } = "";
 
@@ -191,7 +193,11 @@ namespace PT.PM
                         }
                         else
                         {
-                            var jsonUstSerializer = new UstJsonSerializer() { Logger = Logger };
+                            var jsonUstSerializer = new UstJsonSerializer()
+                            {
+                                Logger = Logger,
+                                LineColumnTextSpans = LineColumnTextSpans
+                            };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
@@ -237,9 +243,11 @@ namespace PT.PM
             {
                 var serializer = new UstJsonSerializer
                 {
+                    Logger = Logger,
                     Indented = IndentedDump,
                     IncludeTextSpans = DumpWithTextSpans,
-                    IncludeCode = IncludeCodeInDump
+                    IncludeCode = IncludeCodeInDump,
+                    LineColumnTextSpans = LineColumnTextSpans
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
