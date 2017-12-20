@@ -26,6 +26,8 @@ namespace PT.PM.Common.Json
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
+        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
+
         public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
         protected abstract JsonConverterBase CreateConverterBase(CodeFile jsonFile);
@@ -39,13 +41,13 @@ namespace PT.PM.Common.Json
 
         public virtual string Serialize(T node)
         {
-            JsonSerializerSettings jsonSettings = PrepareSettings((node as Ust).GetCodeFile());
+            JsonSerializerSettings jsonSettings = PrepareSettings();
             return JsonConvert.SerializeObject(node, jsonSettings);
         }
 
         public string Serialize(IEnumerable<T> nodes)
         {
-            JsonSerializerSettings jsonSettings = PrepareSettings((nodes.FirstOrDefault() as Ust).GetCodeFile());
+            JsonSerializerSettings jsonSettings = PrepareSettings();
             return JsonConvert.SerializeObject(nodes, jsonSettings);
         }
 
@@ -61,7 +63,7 @@ namespace PT.PM.Common.Json
                 ShortFormat = ShortTextSpans,
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
                 IsLineColumn = LineColumnTextSpans,
-                CodeFile = codeFile
+                CodeFile = CodeFile
             };
 
             var jsonSettings = new JsonSerializerSettings

@@ -247,7 +247,8 @@ namespace PT.PM
                     Indented = IndentedDump,
                     IncludeTextSpans = DumpWithTextSpans,
                     IncludeCode = IncludeCodeInDump,
-                    LineColumnTextSpans = LineColumnTextSpans
+                    LineColumnTextSpans = LineColumnTextSpans,
+                    CodeFile = result.SourceCodeFile
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";

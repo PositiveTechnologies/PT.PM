@@ -81,10 +81,6 @@ namespace PT.PM.Tests
             {
                 Assert.AreEqual(TextSpan.FromBounds(6, 51), match.TextSpan);
             }
-            else
-            {
-                Assert.IsNotNull(match);
-            }
         }
     }
 }
