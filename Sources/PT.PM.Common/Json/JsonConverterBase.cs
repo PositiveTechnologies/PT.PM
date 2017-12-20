@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
@@ -118,7 +117,7 @@ namespace PT.PM.Common.Json
             {
                 string errorMessage = $"{KindName} field " +
                     (ustKind == null ? "undefined" : $"incorrect ({ustKind})");
-                LogError(jObjectOrToken as IJsonLineInfo, errorMessage);
+                Logger.LogError(JsonFile, jObjectOrToken as IJsonLineInfo, errorMessage);
                 return null;
             }
 
@@ -143,48 +142,6 @@ namespace PT.PM.Common.Json
             }
 
             return ust;
-        }
-
-        protected void LogError(IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
-        {
-            string errorMessage = GenerateErrorPositionMessage(jsonLineInfo, out TextSpan errorTextSpan);
-            errorMessage += "; " + ex.FormatExceptionMessage();
-            LogErrorOrWarning(isError, errorMessage, errorTextSpan);
-        }
-
-        protected void LogError(IJsonLineInfo jsonLineInfo, string message, bool isError = true)
-        {
-            string errorMessage = GenerateErrorPositionMessage(jsonLineInfo, out TextSpan errorTextSpan);
-            errorMessage += "; " + message;
-            LogErrorOrWarning(isError, errorMessage, errorTextSpan);
-        }
-
-        protected string GenerateErrorPositionMessage(IJsonLineInfo jsonLineInfo, out TextSpan errorTextSpan)
-        {
-            int errorLine = CodeFile.StartLine;
-            int errorColumn = CodeFile.StartColumn;
-            if (jsonLineInfo != null)
-            {
-                errorLine = jsonLineInfo.LineNumber;
-                errorColumn = jsonLineInfo.LinePosition;
-            }
-            errorTextSpan = new TextSpan(
-                JsonFile.GetLinearFromLineColumn(errorLine, errorColumn), 0);
-            LineColumnTextSpan lcTextSpan = new LineColumnTextSpan(errorLine, errorColumn);
-            return $"File position: {lcTextSpan}";
-        }
-
-        private void LogErrorOrWarning(bool isError, string errorMessage, TextSpan errorTextSpan)
-        {
-            var exception = new ConversionException(JsonFile, null, errorMessage) { TextSpan = errorTextSpan };
-            if (isError)
-            {
-                Logger.LogError(exception);
-            }
-            else
-            {
-                Logger.LogInfo($"{JsonFile}: " + errorMessage);
-            }
         }
 
         private object GetDefaultValue(Type t)
