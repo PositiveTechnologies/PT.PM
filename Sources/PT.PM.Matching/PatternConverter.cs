@@ -52,18 +52,26 @@ namespace PT.PM.Matching
             var result = new List<PatternRoot>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
             {
+                CodeFile patternFile = new CodeFile(patternDto.Value)
+                {
+                    Name = patternDto.Name,
+                    IsPattern = true
+                };
+
                 IPatternSerializer serializer = Serializers
-                    .FirstOrDefault(s => string.Equals(s.Format, patternDto.DataFormat, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault(s => s.Format.EqualsIgnoreCase(patternDto.DataFormat))
                     ?? Serializers.First();
                 if (serializer == null)
                 {
-                    Logger.LogError(new ConversionException("", null, $"Serializer for {patternDto.DataFormat} has not been found", true));
+                    Logger.LogError(new ConversionException(
+                        patternFile,
+                        null, $"Serializer for {patternDto.DataFormat} has not been found"));
                     continue;
                 }
 
                 try
                 {
-                    PatternRoot pattern = serializer.Deserialize(patternDto.Value);
+                    PatternRoot pattern = serializer.Deserialize(patternFile);
                     HashSet<Language> languages = patternDto.Languages.ParseLanguages(patternLanguages: true);
 
                     if (languages.Count == 0)
@@ -81,7 +89,9 @@ namespace PT.PM.Matching
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException("", ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) ", true));
+                    Logger.LogError(new ConversionException(
+                        patternFile,
+                        ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) "));
                 }
             }
             return result.ToArray();
@@ -110,7 +120,7 @@ namespace PT.PM.Matching
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException("", ex, $"Error while \"{pattern.Key}\" pattern serialising", true));
+                    Logger.LogError(new ConversionException(pattern.CodeFile, ex, $"Error while \"{pattern.Key}\" pattern serialising"));
                 }
             }
             return result.ToArray();

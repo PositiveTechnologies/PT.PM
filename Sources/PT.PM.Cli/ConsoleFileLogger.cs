@@ -13,7 +13,7 @@ namespace PT.PM.Cli
             base.LogError(ex);
             if (IsLogErrors)
             {
-                NLogConsoleLogger.Error(MessageTruncater.Trunc(ex.GetPrettyErrorMessage(FileNameType.Short)));
+                NLogConsoleLogger.Error(MessagePrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Relative)));
             }
         }
 
@@ -27,7 +27,7 @@ namespace PT.PM.Cli
         {
             if (IsLogDebugs)
             {
-                string truncatedMessage = MessageTruncater.Trunc(message);
+                string truncatedMessage = MessagePrinter.Print(message);
                 base.LogDebug(truncatedMessage);
                 NLogConsoleLogger.Debug(PrepareForConsole(truncatedMessage));
             }

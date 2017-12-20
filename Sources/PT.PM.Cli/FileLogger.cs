@@ -16,21 +16,24 @@ namespace PT.PM.Cli
 
         public int ErrorCount => errorCount;
 
-        protected NLog.Logger FileInternalLogger => NLog.LogManager.GetLogger("file");
+        public NLog.Logger FileInternalLogger => NLog.LogManager.GetLogger("file");
 
-        protected NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
+        public NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
 
-        protected NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
+        public NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
 
-        protected TextTruncater ErrorTruncater { get; } = new TextTruncater
+        protected PrettyPrinter ErrorPrinter { get; } = new PrettyPrinter
         {
             MaxMessageLength = 300,
             CutWords = false
         };
 
-        protected TextTruncater MessageTruncater { get; } = new TextTruncater();
+        protected PrettyPrinter MessagePrinter { get; } = new PrettyPrinter()
+        {
+            MaxMessageLength = 300,
+        };
 
-        protected TextTruncater CodeTruncater { get; } = new TextTruncater
+        protected PrettyPrinter CodePrinter { get; } = new PrettyPrinter
         {
             ReduceWhitespaces = true
         };
@@ -63,7 +66,7 @@ namespace PT.PM.Cli
 
         public virtual void LogError(Exception ex)
         {
-            var exString = ErrorTruncater.Trunc(ex.GetPrettyErrorMessage(FileNameType.Full));
+            var exString = ErrorPrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Full));
             ErrorsLogger.Error(exString);
             FileInternalLogger.Error(exString);
             Interlocked.Increment(ref errorCount);
@@ -80,12 +83,12 @@ namespace PT.PM.Cli
                 if (infoObj is MatchResult matchResult)
                 {
                     var matchResultDto = new MatchResultDto(matchResult);
-                    string matchedCode = CodeTruncater.Trunc(matchResultDto.MatchedCode);
+                    string matchedCode = CodePrinter.Print(matchResultDto.MatchedCode);
 
                     var message = new StringBuilder();
                     message.AppendLine("---------------------");
                     message.AppendLine($"{nameof(MatchResultDto.MatchedCode)}: {matchedCode}");
-                    message.AppendLine($"Location: [{matchResultDto.BeginLine};{matchResultDto.BeginColumn}] - [{matchResultDto.EndLine};{matchResultDto.EndColumn}]");
+                    message.AppendLine($"Location: {matchResultDto.LineColumnTextSpan}");
                     message.AppendLine($"{nameof(MatchResultDto.PatternKey)}: {matchResultDto.PatternKey}");
                     message.AppendLine($"{nameof(MatchResultDto.SourceFile)}: {matchResultDto.SourceFile}");
                     string result = message.ToString();
@@ -114,7 +117,7 @@ namespace PT.PM.Cli
         {
             if (IsLogDebugs)
             {
-                FileInternalLogger.Debug(MessageTruncater.Trunc(message));
+                FileInternalLogger.Debug(MessagePrinter.Print(message));
             }
         }
     }

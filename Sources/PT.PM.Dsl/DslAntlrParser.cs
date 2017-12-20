@@ -17,10 +17,13 @@ namespace PT.PM.Dsl
         public DslParser.PatternContext Parse(string data)
         {
             DslParser.PatternContext pattern = null;
-            var errorListener = new AntlrMemoryErrorListener() { IsPattern = true };
-            errorListener.FileName = "Pattern";
-            errorListener.FileData = data;
-            errorListener.Logger = Logger;
+            var codeFile = new CodeFile(data) { Name = "Pattern", IsPattern = true };
+            var errorListener = new AntlrMemoryErrorListener()
+            {
+                IsPattern = true,
+                CodeFile = codeFile,
+                Logger = Logger
+            };
             try
             {
                 var inputStream = new AntlrInputStream(data);
@@ -37,7 +40,7 @@ namespace PT.PM.Dsl
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ParsingException("Pattern", ex) { IsPattern = true });
+                Logger.LogError(new ParsingException(codeFile, ex));
                 throw;
             }
 

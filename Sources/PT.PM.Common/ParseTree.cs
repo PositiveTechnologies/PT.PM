@@ -4,6 +4,6 @@
     {
         public abstract Language SourceLanguage { get; }
 
-        public SourceCodeFile SourceCodeFile { get; set; }
+        public CodeFile SourceCodeFile { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System;
@@ -22,7 +21,7 @@ namespace PT.PM.Dsl
 
         public bool PatternExpressionInsideStatement { get; set; } = true;
 
-        public string Data { get; set; }
+        public CodeFile Data { get; set; }
 
         public PatternRoot Convert(DslParser.PatternContext pattern)
         {
@@ -40,7 +39,7 @@ namespace PT.PM.Dsl
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException("Pattern", ex) { IsPattern = true });
+                Logger.LogError(new ConversionException(Data, ex));
                 throw;
             }
         }
@@ -476,9 +475,10 @@ namespace PT.PM.Dsl
                 string id = context.PatternVar().GetText().Substring(1);
                 if (values.Count() > 0 && patternVars.TryGetValue(id, out PatternVar existedPatternVar))
                 {
-                    var lcTextSpan = new LineColumnTextSpan(existedPatternVar.TextSpan, Data);
+                    LineColumnTextSpan lcTextSpan = Data.GetLineColumnTextSpan(existedPatternVar.TextSpan);
                     throw new ConversionException(
-                            $"DSL Error: PatternVar {id} with the same Id already defined earlier at {lcTextSpan}")
+                        Data,
+                        message: $"DSL Error: PatternVar {id} with the same Id already defined earlier at {lcTextSpan}")
                     {
                         TextSpan = context.PatternVar().GetTextSpan()
                     };

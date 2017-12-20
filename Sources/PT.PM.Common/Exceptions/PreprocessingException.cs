@@ -4,10 +4,10 @@ namespace PT.PM.Common.Exceptions
 {
     public class PreprocessingException : PMException
     {
-        public PreprocessingException(string fileName, Exception ex = null, string message = "")
+        public PreprocessingException(CodeFile codeFile, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            FileName = fileName;
+            CodeFile = codeFile ?? CodeFile.Empty;
         }
     }
 }

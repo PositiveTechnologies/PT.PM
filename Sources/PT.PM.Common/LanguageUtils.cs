@@ -22,6 +22,7 @@ namespace PT.PM.Common
         {
             parsers = new Dictionary<Language, Type>();
             converters = new Dictionary<Language, Type>();
+
             Languages = new Dictionary<string, Language>();
             PatternLanguages = new Dictionary<string, Language>();
             SqlLanguages = new Dictionary<string, Language>();
@@ -71,6 +72,9 @@ namespace PT.PM.Common
                     converters.Add(subConverter.Key, subConverter.Value);
                 }
             }
+
+            Languages.Add(Uncertain.Language.Key, Uncertain.Language);
+            PatternLanguages.Add(Uncertain.Language.Key, Uncertain.Language);
         }
 
         private static void ProcessAssembly(Assembly assembly,
@@ -191,13 +195,13 @@ namespace PT.PM.Common
                     negation = true;
                     langStr = langStr.Substring(1);
                 }
-                bool isSql = langStr.Equals("sql", StringComparison.OrdinalIgnoreCase);
+                bool isSql = langStr.EqualsIgnoreCase("sql");
 
                 foreach (Language language in languages)
                 {
                     bool result = isSql
                         ? language.IsSql
-                        : string.Equals(language.Key, langStr, StringComparison.OrdinalIgnoreCase);
+                        : (language.Key.EqualsIgnoreCase(langStr) || language.Title.EqualsIgnoreCase(langStr));
                     if (negation)
                     {
                         containsNegation = true;

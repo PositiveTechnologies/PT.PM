@@ -4,7 +4,6 @@ using Avalonia.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PT.PM.Common;
-using PT.PM.Common.Json;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
@@ -21,12 +20,6 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        private JsonUstSerializer jsonUstSerializer = new JsonUstSerializer
-        {
-            IncludeTextSpans = false,
-            ExcludeDefaults = true,
-            Indented = true
-        };
         private JsonPatternSerializer jsonPatternSerializer = new JsonPatternSerializer
         {
             IncludeTextSpans = false,
@@ -46,6 +39,7 @@ namespace PT.PM.PatternEditor
         private GuiLogger patternLogger;
         private DslProcessor dslProcessor = new DslProcessor();
         private StringBuilder log = new StringBuilder();
+        private CodeFile patternFile;
 
         public PatternViewModel(PatternUserControl patternUserControl)
         {
@@ -456,18 +450,20 @@ namespace PT.PM.PatternEditor
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
 
+                patternFile = CodeFile.Empty;
                 PatternRoot patternNode = null;
                 try
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
-                        patternNode = dslProcessor.Deserialize(patternTextBox.Text);
+                        patternNode = dslProcessor.Deserialize(new CodeFile(patternTextBox.Text) { IsPattern = true });
                         patternNode.Languages = Languages.ParseLanguages(allByDefault: false, patternLanguages: true);
                     }
                 }
                 catch
                 {
                 }
+                patternFile = patternNode?.CodeFile;
 
                 if (patternLogger.ErrorCount == 0)
                 {
@@ -521,8 +517,15 @@ namespace PT.PM.PatternEditor
 
         private void UpdatePatternCaretIndex(int caretIndex)
         {
-            caretIndex.ToLineColumn(patternTextBox.Text ?? "", out int line, out int column);
-            PatternTextBoxPosition = $"Caret: {line}:{column-1}";
+            if (patternFile != null)
+            {
+                patternFile.GetLineColumnFromLinear(caretIndex, out int line, out int column);
+                PatternTextBoxPosition = $"Caret: {line}:{column}";
+            }
+            else
+            {
+                PatternTextBoxPosition = "";
+            }
             Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(PatternTextBoxPosition)));
         }
 

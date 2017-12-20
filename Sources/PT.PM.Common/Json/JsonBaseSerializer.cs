@@ -8,7 +8,7 @@ namespace PT.PM.Common.Json
     {
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool IncludeTextSpans { get; set; } = true;
 
@@ -22,12 +22,15 @@ namespace PT.PM.Common.Json
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
-        protected abstract JsonConverterBase CreateConverterBase();
+        public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
-        public virtual T Deserialize(string data)
+        protected abstract JsonConverterBase CreateConverterBase(CodeFile jsonFile);
+
+        public virtual T Deserialize(CodeFile jsonFile)
         {
+            JsonFile = jsonFile;
             JsonSerializerSettings jsonSettings = PrepareSettings();
-            return JsonConvert.DeserializeObject<T>(data, jsonSettings);
+            return JsonConvert.DeserializeObject<T>(jsonFile.Code, jsonSettings);
         }
 
         public virtual string Serialize(T node)
@@ -44,9 +47,10 @@ namespace PT.PM.Common.Json
 
         public JsonSerializerSettings PrepareSettings()
         {
-            JsonConverterBase jsonConverterBase = CreateConverterBase();
+            JsonConverterBase jsonConverterBase = CreateConverterBase(JsonFile);
             jsonConverterBase.IncludeTextSpans = IncludeTextSpans;
             jsonConverterBase.ExcludeDefaults = ExcludeDefaults;
+            jsonConverterBase.Logger = Logger;
             var jsonSettings = new JsonSerializerSettings
             {
                 Formatting = Indented ? Formatting.Indented : Formatting.None,
@@ -54,16 +58,16 @@ namespace PT.PM.Common.Json
                 {
                     stringEnumConverter,
                     jsonConverterBase,
-                    new LanguageJsonConverter(),
+                    LanguageJsonConverter.Instance,
                     new TextSpanJsonConverter
                     {
                         ShortFormat = ShortTextSpans,
-                        EmptyTextSpanFormat = EmptyTextSpanFormat
+                        EmptyTextSpanFormat = EmptyTextSpanFormat,
                     },
-                    new SourceCodeFileJsonConverter
+                    new CodeFileJsonConverter
                     {
                         ExcludeDefaults = ExcludeDefaults,
-                        IncludeCode = IncludeCode
+                        IncludeCode = IncludeCode,
                     }
                 }
             };

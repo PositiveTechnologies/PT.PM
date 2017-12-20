@@ -48,9 +48,6 @@
     <Compile Include="AntlrUtils.cs" />
     <Compile Include="AntlrMemoryErrorListener.cs" />
     <Compile Include="AntlrParser.cs" />
-    <Compile Include="AntlrError.cs" />
-    <Compile Include="AntlrParserError.cs" />
-    <Compile Include="AntlrLexerError.cs" />
     <Compile Include="AntlrConverter.cs" />
     <Compile Include="CaseInsensitiveType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

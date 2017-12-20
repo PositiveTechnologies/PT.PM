@@ -1,20 +1,19 @@
-﻿using PT.PM.Common;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
+using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Threading;
-using PT.PM.Common.Exceptions;
 
 namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrParser : ILanguageParser
     {
-        private int processedFilesCount = 1;
+        private static int processedFilesCount = 1;
         private static ReaderWriterLockSlim lexerLock = new ReaderWriterLockSlim();
         private static ReaderWriterLockSlim parserLock = new ReaderWriterLockSlim();
 
@@ -56,16 +55,15 @@ namespace PT.PM.AntlrUtils
             Parser = InitParser(null);
         }
 
-        public ParseTree Parse(SourceCodeFile sourceCodeFile)
+        public ParseTree Parse(CodeFile sourceCodeFile)
         {
             AntlrParseTree result = null;
 
-            var filePath = Path.Combine(sourceCodeFile.RelativePath, sourceCodeFile.Name);
+            var filePath = sourceCodeFile.RelativeName;
             if (sourceCodeFile.Code != null)
             {
                 var errorListener = new AntlrMemoryErrorListener();
-                errorListener.FileName = filePath;
-                errorListener.FileData = sourceCodeFile.Code;
+                errorListener.CodeFile = sourceCodeFile;
                 errorListener.Logger = Logger;
                 errorListener.LineOffset = LineOffset;
                 try
@@ -120,7 +118,7 @@ namespace PT.PM.AntlrUtils
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ParsingException(filePath, ex));
+                    Logger.LogError(new ParsingException(sourceCodeFile, ex));
 
                     if (result == null)
                     {
@@ -139,11 +137,11 @@ namespace PT.PM.AntlrUtils
 
         public void ClearCache()
         {
-            ClearCacheIfRequired(InitLexer(null).Interpreter, lexerLock, 1);
+            ClearCacheIfRequired(InitLexer(null).Interpreter, lexerLock, 1, false);
             ClearCacheIfRequired(InitParser(null).Interpreter, parserLock, 1);
         }
 
-        protected ParserRuleContext ParseTokens(SourceCodeFile sourceCodeFile,
+        protected ParserRuleContext ParseTokens(CodeFile sourceCodeFile,
             AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
@@ -203,7 +201,7 @@ namespace PT.PM.AntlrUtils
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        protected virtual string PreprocessText(SourceCodeFile file)
+        protected virtual string PreprocessText(CodeFile file)
         {
             var text = file.Code;
             var result = new StringBuilder(text.Length);
@@ -277,10 +275,7 @@ namespace PT.PM.AntlrUtils
         protected void IncrementProcessedFilesCount()
         {
             int newValue = Interlocked.Increment(ref processedFilesCount);
-            if (newValue == int.MaxValue)
-            {
-                processedFilesCount = 1;
-            }
+            processedFilesCount = newValue == int.MaxValue ? 1 : newValue;
         }
     }
 }

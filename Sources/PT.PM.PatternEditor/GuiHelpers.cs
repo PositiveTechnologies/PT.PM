@@ -1,6 +1,5 @@
-﻿using PT.PM.Common;
+﻿using Avalonia.Controls;
 using PT.PM.Common.Exceptions;
-using Avalonia.Controls;
 
 namespace PT.PM.PatternEditor
 {
@@ -9,16 +8,14 @@ namespace PT.PM.PatternEditor
         internal static void ProcessErrorOnDoubleClick(ListBox errorsListBox, TextBox inputTextBox)
         {
             errorsListBox.Focus();
-            ParsingException parsingException;
-            ConversionException conversionException;
-            MatchingException matchException;
             int selectionStart = -1, selectionEnd = -1;
-            if ((parsingException = errorsListBox.SelectedItem as ParsingException) != null)
+
+            if (errorsListBox.SelectedItem is ParsingException parsingException)
             {
                 selectionStart = parsingException.TextSpan.Start;
                 selectionEnd = parsingException.TextSpan.End;
             }
-            else if ((conversionException = errorsListBox.SelectedItem as ConversionException) != null)
+            else if (errorsListBox.SelectedItem is ConversionException conversionException)
             {
                 var textSpan = conversionException.TextSpan;
                 if (textSpan != null)
@@ -27,7 +24,7 @@ namespace PT.PM.PatternEditor
                     selectionEnd = textSpan.End;
                 }
             }
-            else if ((matchException = errorsListBox.SelectedItem as MatchingException) != null)
+            else if (errorsListBox.SelectedItem is MatchingException matchException)
             {
                 var textSpan = matchException.TextSpan;
                 if (textSpan != null)
@@ -36,10 +33,11 @@ namespace PT.PM.PatternEditor
                     selectionEnd = textSpan.End;
                 }
             }
+
             if (selectionStart != -1)
             {
-                inputTextBox.SelectionStart = selectionStart + 1;
-                inputTextBox.SelectionEnd = selectionEnd + 1;
+                inputTextBox.SelectionStart = selectionStart;
+                inputTextBox.SelectionEnd = selectionEnd;
                 inputTextBox.CaretIndex = inputTextBox.SelectionEnd + 1;
             }
         }

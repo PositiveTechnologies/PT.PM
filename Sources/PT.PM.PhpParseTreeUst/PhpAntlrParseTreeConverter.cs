@@ -133,11 +133,10 @@ namespace PT.PM.PhpParseTreeUst
                 Logger = Logger,
                 LineOffset = Tokens[jsStartCodeInd].Line - 1
             };
-            var sourceCodeFile = new SourceCodeFile
+            var sourceCodeFile = new CodeFile(jsCode.ToString())
             {
                 Name = root.SourceCodeFile.Name,
                 RelativePath = root.SourceCodeFile.RelativePath,
-                Code = jsCode.ToString()
             };
             var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
 
@@ -184,7 +183,7 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitPhpBlock(PhpParser.PhpBlockContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
-            var namespaceName = new StringLiteral(CommonUtils.Prefix + "default", textSpan);
+            var namespaceName = new StringLiteral("", textSpan);
             UsingDeclaration[] usingDeclarations = context.importStatement()
                 .Select(importStatement => (UsingDeclaration)Visit(importStatement))
                 .Where(stmt => stmt != null)

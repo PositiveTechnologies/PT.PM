@@ -19,6 +19,8 @@ namespace PT.PM.Matching.Patterns
 
         public PatternUst Parent { get; set; }
 
+        public LineColumnTextSpan LineColumnTextSpan => Root?.CodeFile.GetLineColumnTextSpan(TextSpan);
+
         public TextSpan TextSpan { get; set; }
 
         public bool Equals(PatternUst other)

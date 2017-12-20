@@ -60,7 +60,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException(filePath, ex));
+                    Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
                     result = new RootUst(langParseTree.SourceCodeFile, Language);
                 }
             }

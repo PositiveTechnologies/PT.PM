@@ -10,7 +10,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
     {
         public TypeToken ReturnType { get; set; }
 
-        public List<ParameterDeclaration> Parameters { get; set; }
+        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
         public BlockStatement Body { get; set; }
 

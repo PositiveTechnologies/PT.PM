@@ -42,15 +42,22 @@ namespace PT.PM.Common.CodeRepository
                 return Enumerable.Empty<string>();
             }
 
-            var result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+            IEnumerable<string> result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+
+            if (LoadJson)
+            {
+                result = result.Where(name => Path.GetExtension(name).EqualsIgnoreCase(".json"));
+            }
+
             if (SearchPredicate != null)
             {
                 result = result.Where(SearchPredicate);
             }
+
             return result;
         }
 
-        public override SourceCodeFile ReadFile(string fileName)
+        public override CodeFile ReadFile(string fileName)
         {
             string name = Path.GetFileName(fileName);
             string relativePath;
@@ -72,20 +79,25 @@ namespace PT.PM.Common.CodeRepository
             }
             relativePath = relativePath.Substring(substringIndex);
 
-            var result = new SourceCodeFile
-            {
-                RootPath = RootPath,
-                RelativePath = relativePath,
-                Name = name
-            };
+            CodeFile result;
             try
             {
-                result.Code = File.ReadAllText(fileName);
-                return result;
+                result = new CodeFile(File.ReadAllText(fileName))
+                {
+                    RootPath = RootPath,
+                    RelativePath = relativePath,
+                    Name = name
+                };
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ReadException(fileName, ex));
+                result = new CodeFile("")
+                {
+                    RootPath = RootPath,
+                    RelativePath = relativePath,
+                    Name = name
+                };
+                Logger.LogError(new ReadException(result, ex));
             }
             return result;
         }

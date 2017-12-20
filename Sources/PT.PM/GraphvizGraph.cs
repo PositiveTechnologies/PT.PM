@@ -30,7 +30,7 @@ namespace PT.PM
             DotGraph = dotGraph;
         }
 
-        public void Dump(string filePath)
+        public void Render(string filePath)
         {
             if (!File.Exists(GraphvizPath))
             {

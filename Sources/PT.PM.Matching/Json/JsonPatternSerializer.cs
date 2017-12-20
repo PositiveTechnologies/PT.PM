@@ -7,11 +7,11 @@ namespace PT.PM.Matching.Json
     {
         public string Format => "Json";
 
-        protected override JsonConverterBase CreateConverterBase() => new PatternJsonConverter();
+        protected override JsonConverterBase CreateConverterBase(CodeFile jsonFile) => new PatternJsonConverter(jsonFile);
 
-        public override PatternRoot Deserialize(string data)
+        public override PatternRoot Deserialize(CodeFile jsonFile)
         {
-            var result = base.Deserialize(data);
+            var result = base.Deserialize(jsonFile);
             var filler = new PatternAscendantsFiller(result);
             filler.FillAscendants();
             return result;

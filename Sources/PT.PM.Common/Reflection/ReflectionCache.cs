@@ -12,7 +12,7 @@ namespace PT.PM.Common.Reflection
         private static ConcurrentDictionary<Type, PropertyInfo[]> ustNodeProperties
             = new ConcurrentDictionary<Type, PropertyInfo[]>();
 
-        public static Lazy<Dictionary<string, Type>> UstKindFullClassName =
+        private static Lazy<Dictionary<string, Type>> UstKindClassType =
             new Lazy<Dictionary<string, Type>>(() =>
             {
                 var result = new Dictionary<string, Type>();
@@ -24,12 +24,22 @@ namespace PT.PM.Common.Reflection
                             .Where(myType => myType.IsClass && !myType.IsAbstract &&
                             myType.GetInterfaces().Contains(typeof(IUst))))
                         {
-                            result.Add(type.Name, type);
+                            result.Add(type.Name.ToLowerInvariant(), type);
                         }
                     }
                 }
                 return result;
             });
+
+        public static bool ContainsKind(string kind)
+        {
+            return UstKindClassType.Value.ContainsKey(kind.ToLowerInvariant());
+        }
+
+        public static bool TryGetClassType(string kind, out Type type)
+        {
+            return UstKindClassType.Value.TryGetValue(kind.ToLowerInvariant(), out type);
+        }
 
         public static PropertyInfo[] GetReadWriteClassProperties(this Type objectType)
         {

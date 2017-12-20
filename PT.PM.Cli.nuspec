@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>PT.PM.Cli</id>
-    <version>1.5</version>
+    <version>1.5.1</version>
     <description>An engine with CLI for searching patterns in the source code, based on Unified AST or UST. At present time C#, Java, PHP, PL/SQL, T-SQL, and JavaScript are supported. Patterns can be described within the code or using a DSL.</description>
     <authors>Positive Technologies</authors>
     

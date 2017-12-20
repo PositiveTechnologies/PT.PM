@@ -3,7 +3,7 @@ using System.IO.Compression;
 
 namespace PT.PM
 {
-    public class StandartArchiveExtractor : IArchiveExtractor
+    public class StandardArchiveExtractor : IArchiveExtractor
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 

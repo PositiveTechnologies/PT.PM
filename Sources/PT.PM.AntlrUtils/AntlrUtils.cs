@@ -67,7 +67,7 @@ namespace PT.PM.AntlrUtils
         }
 
         public static void LogConversionError(this ILogger logger, Exception ex,
-            ParserRuleContext context, string currentFileName, string currentFileData)
+            ParserRuleContext context, CodeFile currentFileData)
         {
             StackTrace stackTrace = new StackTrace(ex, true);
             int frameNumber = 0;
@@ -88,17 +88,16 @@ namespace PT.PM.AntlrUtils
 
             var textSpan = context.GetTextSpan();
             string exceptionText;
-            int sourceCodeLine, sourceCodeColumn;
-            textSpan.Start.ToLineColumn(currentFileData, out sourceCodeLine, out sourceCodeColumn);
+            LineColumnTextSpan lineColumnTextSpan = currentFileData.GetLineColumnTextSpan(textSpan);
             if (fileName != null)
             {
-                exceptionText = $"{ex.Message} at method \"{methodName}\" {line}:{column} at position {sourceCodeLine}:{sourceCodeColumn} in source file";
+                exceptionText = $"{ex.Message} at method \"{methodName}\" {line}:{column} at position {lineColumnTextSpan.BeginLine}:{lineColumnTextSpan.BeginColumn} in source file";
             }
             else
             {
-                exceptionText = $"{ex.Message} at position {sourceCodeLine}:{sourceCodeColumn} in source file";
+                exceptionText = $"{ex.Message} at position {lineColumnTextSpan.BeginLine}:{lineColumnTextSpan.BeginColumn} in source file";
             }
-            logger.LogError(new ConversionException(currentFileName, message: exceptionText) { TextSpan = textSpan });
+            logger.LogError(new ConversionException(currentFileData, message: exceptionText) { TextSpan = textSpan });
         }
     }
 }

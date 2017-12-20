@@ -3,7 +3,8 @@
     public enum FileNameType
     {
         None,
-        Short,
+        Name,
+        Relative,
         Full
     }
 }

@@ -15,7 +15,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public Language Language => CSharp.Language;
 
-        public ParseTree Parse(SourceCodeFile sourceCodeFile)
+        public ParseTree Parse(CodeFile sourceCodeFile)
         {
             CSharpRoslynParseTree result = null;
 
@@ -40,13 +40,13 @@ namespace PT.PM.CSharpParseTreeUst
                     }).ToArray();
 
                     IEnumerable<Diagnostic> diagnostics = root.GetDiagnostics();
-                    foreach (var diagnostic in diagnostics)
+                    foreach (Diagnostic diagnostic in diagnostics)
                     {
                         if (diagnostic.Severity == DiagnosticSeverity.Error &&
                             diagnostic.Id != "CS1029")
                         {
                             var textSpan = diagnostic.Location.ToTextSpan();
-                            Logger.LogError(new ParsingException(filePath, message: diagnostic.ToString())
+                            Logger.LogError(new ParsingException(sourceCodeFile, message: diagnostic.ToString())
                             {
                                 TextSpan = textSpan
                             });
@@ -55,7 +55,7 @@ namespace PT.PM.CSharpParseTreeUst
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ParsingException(filePath, ex));
+                    Logger.LogError(new ParsingException(sourceCodeFile, ex));
                     result = new CSharpRoslynParseTree();
                 }
             }

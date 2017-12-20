@@ -43,9 +43,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(ex.Message)
+                Logger.LogError(new ConversionException(root?.SourceCodeFile, message: ex.Message)
                 {
-                    FileName = root?.SourceCodeFile?.FullName ?? "",
                     TextSpan = node.GetTextSpan()
                 });
                 return null;

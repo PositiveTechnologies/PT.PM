@@ -11,6 +11,11 @@ namespace PT.PM.Matching.Json
 {
     public class PatternJsonConverter : JsonConverterBase
     {
+        public PatternJsonConverter(CodeFile jsonFile)
+            : base(jsonFile)
+        {
+        }
+
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(PatternUst) ||
@@ -28,22 +33,22 @@ namespace PT.PM.Matching.Json
                 object target = null;
                 if (objectType == typeof(PatternRoot))
                 {
-                    var languagesArray = (JArray)jObject[nameof(PatternDto.Languages)];
+                    var languagesArray = (JArray)jObject.GetValueIgnoreCase(nameof(PatternDto.Languages));
                     HashSet<Language> resultLanguages = languagesArray.Values<string>().ParseLanguages(patternLanguages: true);
 
                     target = new PatternRoot
                     {
-                        Key = (string)jObject[nameof(PatternRoot.Key)] ?? "",
-                        FilenameWildcard = (string)jObject[nameof(PatternRoot.FilenameWildcard)] ?? "",
+                        Key = (string)jObject.GetValueIgnoreCase(nameof(PatternRoot.Key)) ?? "",
+                        FilenameWildcard = (string)jObject.GetValueIgnoreCase(nameof(PatternRoot.FilenameWildcard)) ?? "",
                         Languages = resultLanguages,
-                        DataFormat = (string)jObject[nameof(PatternRoot.DataFormat)] ?? "",
-                        Node = jObject[nameof(PatternRoot.Node)].ToObject<PatternUst>(serializer)
+                        DataFormat = (string)jObject.GetValueIgnoreCase(nameof(PatternRoot.DataFormat)) ?? "",
+                        Node = jObject.GetValueIgnoreCase(nameof(PatternRoot.Node)).ToObject<PatternUst>(serializer)
                     };
                 }
                 else if (objectType == typeof(PatternUst) || objectType.IsSubclassOf(typeof(PatternUst)))
                 {
-                    var kind = (string)jObject[KindName];
-                    var type = ReflectionCache.UstKindFullClassName.Value[kind];
+                    var kind = (string)jObject.GetValueIgnoreCase(KindName);
+                    ReflectionCache.TryGetClassType(kind, out Type type);
                     target = Activator.CreateInstance(type);
                     serializer.Populate(jObject.CreateReader(), target);
                 }

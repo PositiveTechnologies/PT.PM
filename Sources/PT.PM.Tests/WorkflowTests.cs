@@ -27,9 +27,12 @@ namespace PT.PM.Tests
             };
             WorkflowResult result = workflow.Process();
 
+            // Convert case to upper for checking correct deserialization
+            var code = File.ReadAllText(Path.Combine(TestUtility.TestsOutputPath, inputFileName + ".ust.json"));
+            code = code.ToUpperInvariant().Replace("\\R", "\\r").Replace("\\N", "\\n");
+
             // Deserialization
-            SourceCodeRepository sourceCodeRepository =
-                new FileCodeRepository(Path.Combine(TestUtility.TestsOutputPath, inputFileName + ".ust.json"))
+            SourceCodeRepository sourceCodeRepository = new MemoryCodeRepository(code, inputFileName + ".ust.json")
             {
                 LoadJson = true
             };
@@ -38,10 +41,10 @@ namespace PT.PM.Tests
                 StartStage = Stage.Ust,
                 IsAsyncPatternsConversion = false
             };
-            var newResult = workflow.Process();
+            var newResult = newWorkflow.Process();
 
-            Assert.GreaterOrEqual(result.MatchResults.Count, 1);
-            MatchResult match = result.MatchResults.First();
+            Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
+            MatchResult match = newResult.MatchResults.First();
             Assert.IsFalse(match.TextSpan.IsEmpty);
         }
     }

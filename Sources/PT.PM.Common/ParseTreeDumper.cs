@@ -4,6 +4,12 @@ namespace PT.PM.Common
 {
     public abstract class ParseTreeDumper
     {
+        public static string TokensSuffix { get; set; } = "tokens.txt";
+
+        public static string ParseTreeSuffix { get; set; } = "parseTree.txt";
+
+        public static string UstSuffix { get; set; } = "ust.json";
+
         public string DumpDir { get; set; } = "";
 
         public int IndentSize { get; set; } = 2;
@@ -20,10 +26,11 @@ namespace PT.PM.Common
 
         public abstract void DumpTree(ParseTree parseTree);
 
-        protected void Dump(string data, SourceCodeFile sourceCodeFile, bool tokens)
+        protected void Dump(string data, CodeFile sourceCodeFile, bool tokens)
         {
+            Directory.CreateDirectory(DumpDir);
             string name = string.IsNullOrEmpty(sourceCodeFile.Name) ? "" : sourceCodeFile.Name + ".";
-            File.WriteAllText(Path.Combine(DumpDir, $"{name}{(tokens ? "tokens" : "parseTree")}"), data);
+            File.WriteAllText(Path.Combine(DumpDir, $"{name}{(tokens ? TokensSuffix : ParseTreeSuffix)}"), data);
         }
     }
 }

@@ -29,23 +29,9 @@ namespace PT.PM
 
         protected Language[] languages;
 
-        protected StageHelper<TStage> stageHelper;
-
-        protected StageHelper<TStage> startStageHelper = new StageHelper<TStage>(default(TStage));
-
         public TStage Stage { get; set; }
 
-        public TStage StartStage
-        {
-            get
-            {
-                return startStageHelper.Stage;
-            }
-            set
-            {
-                startStageHelper = new StageHelper<TStage>(value);
-            }
-        }
+        public TStage StartStage { get; set; }
 
         public SourceCodeRepository SourceCodeRepository { get; set; }
 
@@ -129,14 +115,13 @@ namespace PT.PM
         public WorkflowBase(TStage stage)
         {
             Stage = stage;
-            stageHelper = new StageHelper<TStage>(stage);
         }
 
         protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
             RootUst result = null;
             var stopwatch = new Stopwatch();
-            if (stageHelper.IsContainsFile)
+            if (Stage.IsGreaterOrEqual(PM.Stage.File))
             {
                 if (SourceCodeRepository.IsFileIgnored(fileName))
                 {
@@ -144,18 +129,18 @@ namespace PT.PM
                     return null;
                 }
 
-                SourceCodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
+                CodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
                 string shortFileName = sourceCodeFile.Name;
 
-                if (stageHelper.IsContainsParseTree)
+                if (Stage.IsGreaterOrEqual(PM.Stage.ParseTree))
                 {
                     ParseTree parseTree = null;
                     Language detectedLanguage = null;
 
-                    if (startStageHelper.IsFile)
+                    if (StartStage.Is(PM.Stage.File))
                     {
                         stopwatch.Restart();
                         detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
@@ -191,11 +176,11 @@ namespace PT.PM
                         cancellationToken.ThrowIfCancellationRequested();
                     }
 
-                    if (stageHelper.IsContainsUst)
+                    if (Stage.IsGreaterOrEqual(PM.Stage.Ust))
                     {
                         stopwatch.Restart();
 
-                        if (!startStageHelper.IsUst)
+                        if (!StartStage.Is(PM.Stage.Ust))
                         {
                             IParseTreeToUstConverter converter = detectedLanguage.CreateConverter();
                             converter.Logger = Logger;
@@ -206,8 +191,8 @@ namespace PT.PM
                         }
                         else
                         {
-                            var jsonUstSerializer = new JsonUstSerializer();
-                            result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile.Code);
+                            var jsonUstSerializer = new UstJsonSerializer() { Logger = Logger };
+                            result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
                                 Logger.LogInfo($"File {fileName} has been ignored.");
@@ -229,7 +214,7 @@ namespace PT.PM
 
         private void DumpTokensAndParseTree(ParseTree parseTree)
         {
-            if (DumpStages.Any(stage => StageHelper<TStage>.FromStage(stage).IsParseTree))
+            if (DumpStages.Any(stage => stage.Is(PM.Stage.ParseTree)))
             {
                 ParseTreeDumper dumper;
                 if (parseTree.SourceLanguage.HaveAntlrParser)
@@ -248,9 +233,9 @@ namespace PT.PM
 
         private void DumpUst(RootUst result)
         {
-            if (DumpStages.Any(stage => StageHelper<TStage>.FromStage(stage).IsUst))
+            if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust)))
             {
-                var serializer = new JsonUstSerializer
+                var serializer = new UstJsonSerializer
                 {
                     Indented = IndentedDump,
                     IncludeTextSpans = DumpWithTextSpans,
@@ -259,20 +244,20 @@ namespace PT.PM
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
                 Directory.CreateDirectory(DumpDir);
-                File.WriteAllText(Path.Combine(DumpDir, name + "ust.json"), json);
+                File.WriteAllText(Path.Combine(DumpDir, name + ParseTreeDumper.UstSuffix), json);
             }
         }
 
-        protected SourceCodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
+        protected CodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
         {
             var stopwatch = Stopwatch.StartNew();
-            SourceCodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
+            CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
             stopwatch.Stop();
 
             Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
 
             workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-            workflowResult.AddProcessedLinesCount(sourceCodeFile.Code.GetLinesCount());
+            workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
             workflowResult.AddReadTime(stopwatch.ElapsedTicks);
             workflowResult.AddResultEntity(sourceCodeFile);
 
@@ -283,7 +268,7 @@ namespace PT.PM
         {
             if (IsAsyncPatternsConversion)
             {
-                if (stageHelper.IsPattern || stageHelper.IsContainsMatch)
+                if (Stage.Is(PM.Stage.Pattern)|| Stage.IsGreaterOrEqual(PM.Stage.Match))
                 {
                     convertPatternsTask = new Task(() => ConvertPatterns(workflowResult));
                     convertPatternsTask.Start();
@@ -316,7 +301,8 @@ namespace PT.PM
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ParsingException("", ex, "Patterns can not be deserialized") { IsPattern = true });
+                Logger.LogError(new ParsingException(
+                    new CodeFile("") { IsPattern = true }, ex, "Patterns can not be deserialized"));
             }
         }
 
@@ -347,6 +333,20 @@ namespace PT.PM
                 MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
                 CancellationToken = cancellationToken
             };
+        }
+
+        protected void ClearCacheIfRequired(TWorkflowResult result)
+        {
+            if (result.TotalProcessedFilesCount > 1)
+            {
+                Language antlrLanguage = BaseLanguages.FirstOrDefault(language => language.HaveAntlrParser);
+                if (antlrLanguage != null)
+                {
+                    var antlrParser = (AntlrParser)antlrLanguage.CreateParser();
+                    antlrParser.MemoryConsumptionMb = 0;
+                    antlrParser.ClearCache();
+                }
+            }
         }
     }
 }

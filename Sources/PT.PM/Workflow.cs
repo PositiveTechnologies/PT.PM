@@ -56,14 +56,18 @@ namespace PT.PM
             else
             {
                 IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
-                if (!(fileNames is IList<string>))
+                if (fileNames is IList<string> fileNamesList)
+                {
+                    result.TotalFilesCount = fileNamesList.Count;
+                }
+                else
                 {
                     filesCountTask = Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
                 }
 
                 try
                 {
-                    if (ThreadCount == 1 || (fileNames is IList<string> fileNamesList && fileNamesList.Count == 1))
+                    if (ThreadCount == 1 || (fileNames is IList<string> && result.TotalFilesCount == 1))
                     {
                         foreach (string fileName in fileNames)
                         {
@@ -87,12 +91,9 @@ namespace PT.PM
                 {
                     Logger.LogInfo("Scan has been cancelled");
                 }
-
-                /*foreach (var pair in ParserConverterSets) // TODO: cache clearint at the end.
-                {
-                    pair.Value?.Parser.ClearCache();
-                }*/
             }
+
+            ClearCacheIfRequired(result);
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;
@@ -136,7 +137,7 @@ namespace PT.PM
                         cancellationToken.ThrowIfCancellationRequested();
                     }
 
-                    DumpGraphs(workflowResult);
+                    RenderGraphs(workflowResult);
                 }
             }
             catch (OperationCanceledException)
@@ -166,18 +167,19 @@ namespace PT.PM
             }
         }
 
-        private void DumpGraphs(WorkflowResult result)
+        private void RenderGraphs(WorkflowResult result)
         {
             if (result.RenderStages.Any())
             {
-                var dumper = new StageDumper(result)
+                var renderer = new StageRenderer(result)
                 {
+                    Logger = Logger,
                     DumpDir = DumpDir,
                     Stages = RenderStages,
                     RenderFormat = RenderFormat,
                     RenderDirection = RenderDirection
                 };
-                dumper.Dump();
+                renderer.Render();
             }
         }
     }

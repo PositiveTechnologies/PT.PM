@@ -46,8 +46,9 @@
     <Compile Include="Exceptions\ReadException.cs" />
     <Compile Include="Json\JsonBaseSerializer.cs" />
     <Compile Include="Json\JsonConverterBase.cs" />
+    <Compile Include="Json\JsonUtils.cs" />
     <Compile Include="Json\LanguageJsonConverter.cs" />
-    <Compile Include="Json\SourceCodeFileJsonConverter.cs" />
+    <Compile Include="Json\CodeFileJsonConverter.cs" />
     <Compile Include="Json\TextSpanJsonConverter.cs" />
     <Compile Include="LanguageUtils.cs" />
     <Compile Include="Nodes\Collections\Collection.cs" />
@@ -58,11 +59,12 @@
     <Compile Include="Reflection\PropertyComparer.cs" />
     <Compile Include="Reflection\PropertyVisitor.cs" />
     <Compile Include="Reflection\ReflectionUtils.cs" />
-    <Compile Include="TextTruncater.cs" />
+    <Compile Include="PrettyPrinter.cs" />
     <Compile Include="Nodes\UstLinq.cs" />
     <Compile Include="Nodes\UstRefComparer.cs" />
     <Compile Include="Nodes\UstVisitor.cs" />
     <Compile Include="TokenValueDisplayMode.cs" />
+    <Compile Include="Uncertain.cs" />
     <Compile Include="WildcardConverter.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="ILoggable.cs" />
@@ -82,7 +84,7 @@
     <Compile Include="IParseTreeToUstConverter.cs" />
     <Compile Include="ILanguageParser.cs" />
     <Compile Include="CodeRepository\SourceCodeRepository.cs" />
-    <Compile Include="Json\JsonUstSerializer.cs" />
+    <Compile Include="Json\UstJsonSerializer.cs" />
     <Compile Include="ParseTree.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="LoggerMessageCounter.cs" />
@@ -176,7 +178,7 @@
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>
-    <Compile Include="SourceCodeFile.cs" />
+    <Compile Include="CodeFile.cs" />
     <Compile Include="CommonUtils.cs" />
   </ItemGroup>
   <ItemGroup>

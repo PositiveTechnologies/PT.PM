@@ -15,7 +15,7 @@ namespace PT.PM.CSharpParseTreeUst
     public class AspxConverter : DepthFirstAspxWithoutCloseTagVisitor<Ust>, IParseTreeToUstConverter
     {
         private Stack<bool> runAtServer = new Stack<bool>();
-        private SourceCodeFile sourceCodeFile;
+        private CodeFile sourceCodeFile;
         private int namespaceDepth;
 
         public Language Language => Aspx.Language;
@@ -56,7 +56,7 @@ namespace PT.PM.CSharpParseTreeUst
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile.FullName, ex));
+                Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile, ex));
                 result = new RootUst(langParseTree.SourceCodeFile, Language);
             }
 

@@ -66,7 +66,7 @@ namespace PT.PM.AntlrUtils
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(new ConversionException(filePath, ex));
+                    Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
 
                     if (result == null)
                     {
@@ -103,7 +103,7 @@ namespace PT.PM.AntlrUtils
             {
                 if (tree is ParserRuleContext parserRuleContext)
                 {
-                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile.RelativeName, root.SourceCodeFile.Code);
+                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile);
                 }
                 return DefaultResult;
             }

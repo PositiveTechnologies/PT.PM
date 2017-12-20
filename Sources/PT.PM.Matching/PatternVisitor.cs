@@ -208,10 +208,9 @@ namespace PT.PM.Matching
             }
             catch (Exception ex)
             {
-                Logger.LogError(new ConversionException(patternBase.Root?.SourceCodeFile?.FullName ?? "", ex)
+                Logger.LogError(new ConversionException(patternBase.Root?.CodeFile, ex)
                 {
-                    TextSpan = patternBase.TextSpan,
-                    IsPattern = true
+                    TextSpan = patternBase.TextSpan
                 });
                 return default(T);
             }

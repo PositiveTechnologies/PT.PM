@@ -1,16 +1,13 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
-using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes.Tokens
 {
     public abstract class Token : Expression
     {
-        [JsonIgnore]
         public abstract string TextValue { get; }
 
         public override bool IsTerminal => true;
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Expression Expression { get; set; }
 
         protected Token(TextSpan textSpan)

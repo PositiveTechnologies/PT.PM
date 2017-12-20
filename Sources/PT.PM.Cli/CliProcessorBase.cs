@@ -83,15 +83,14 @@ namespace PT.PM.Cli
                 {
                     pmStage = Stage.Match;
                 }
-                if (!Enum.TryParse(parameters.StartStage, true, out Stage pmStartStage))
-                {
-                    pmStartStage = Stage.File;
-                }
+
+                bool loadJson = !string.IsNullOrEmpty(parameters.StartStage) &&
+                    !parameters.StartStage.EqualsIgnoreCase(Stage.File.ToString());
 
                 HashSet<Language> languages = parameters.Languages.ParseLanguages();
                 SourceCodeRepository sourceCodeRepository = RepositoryFactory.
                     CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir,
-                    pmStartStage != Stage.File);
+                    loadJson);
 
                 logger.SourceCodeRepository = sourceCodeRepository;
 

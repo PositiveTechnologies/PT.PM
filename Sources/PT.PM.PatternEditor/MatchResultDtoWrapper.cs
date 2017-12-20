@@ -5,19 +5,19 @@ namespace PT.PM.PatternEditor
 {
     public class MatchResultDtoWrapper
     {
-        private TextTruncater textTruncater = new TextTruncater() { MaxMessageLength = 32 };
+        private PrettyPrinter textPrinter = new PrettyPrinter() { MaxMessageLength = 32 };
 
-        public MatchResultDto MatchingResult { get; set; }
+        public MatchResultDto MatchResult { get; set; }
 
         public MatchResultDtoWrapper(MatchResultDto matchResult)
         {
-            MatchingResult = matchResult;
+            MatchResult = matchResult;
         }
 
         public override string ToString()
         {
-            var codeFragment = textTruncater.Trunc(MatchingResult.MatchedCode);
-            return $"\"{codeFragment}\" matched at ({MatchingResult.BeginLine};{MatchingResult.BeginColumn})-({MatchingResult.EndLine};{MatchingResult.EndColumn})";
+            var codeFragment = textPrinter.Print(MatchResult.MatchedCode);
+            return $"\"{codeFragment}\" matched at {MatchResult.LineColumnTextSpan}";
         }
     }
 }

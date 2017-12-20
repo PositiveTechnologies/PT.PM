@@ -87,13 +87,6 @@ namespace PT.PM.Common
             return new TextSpan(start, end - start);
         }
 
-        public static TextSpan FromTextAndLineColumn(string text, int startLine, int startColumn, int endLine, int endColumn)
-        {
-            int start = TextUtils.LineColumnToLinear(text, startLine, startColumn);
-            int end = TextUtils.LineColumnToLinear(text, endLine, endColumn);
-            return FromBounds(start, end);
-        }
-
         public static TextSpan Parse(string text)
         {
             string range = text.Substring(1, text.Length - 2);

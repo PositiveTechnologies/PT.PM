@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.Serialization;
 
 namespace PT.PM.Common.Exceptions
@@ -8,19 +7,16 @@ namespace PT.PM.Common.Exceptions
     {
         public string ExceptionType => GetType().Name;
 
-        public string FileName { get; set; }
-
-        public bool IsPattern { get; set; }
+        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
 
         public PMException()
             : base()
         {
         }
 
-        public PMException(Exception innerException, string message = "", bool isPattern = false)
+        public PMException(Exception innerException, string message = "")
             : base(message, innerException)
         {
-            IsPattern = isPattern;
         }
 
         protected PMException(SerializationInfo info, StreamingContext context)
@@ -30,21 +26,23 @@ namespace PT.PM.Common.Exceptions
 
         public override string ToString()
         {
-            return ToString(FileNameType.Short, false);
+            return ToString(FileNameType.Relative, false);
         }
 
-        public string ToString(FileNameType fileNameType = FileNameType.Short, bool printStackTrace = false)
+        public string ToString(FileNameType fileNameType = FileNameType.Relative, bool printStackTrace = false)
         {
             string fileName = fileNameType == FileNameType.None
                 ? ""
                 : fileNameType == FileNameType.Full
-                ? FileName
-                : Path.GetFileName(FileName);
+                ? CodeFile.FullName
+                : fileNameType == FileNameType.Relative
+                ? CodeFile.RelativeName
+                : CodeFile.Name;
 
             string fileNameString = !string.IsNullOrEmpty(fileName)
                 ? $@" in ""{fileName}"""
                 : "";
-            string patternString = IsPattern ? "Pattern " : "";
+            string patternString = CodeFile.IsPattern ? "Pattern " : "";
 
             string exceptionString = printStackTrace
                 ? InnerException?.FormatExceptionMessage() ?? Message

@@ -46,10 +46,10 @@ namespace PT.PM.Dsl.Tests
         [TestCase("PoorLoggingPractice.ptpm")]
         public void Process_Dsl_EqualsToHardcoded(string fileName)
         {
-            var data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
+            string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger, PatternExpressionInsideStatement = false };
-            PatternRoot result = processor.Deserialize(data);
+            PatternRoot result = processor.Deserialize(new CodeFile(data) { IsPattern = true });
             if (fileName == "DebugInfo.ptpm")
             {
                 new HashSet<Language>() { Php.Language };
@@ -72,10 +72,10 @@ namespace PT.PM.Dsl.Tests
         [TestCase("Range.ptpm")]
         public void Parse_Dsl_WithoutErrors(string fileName)
         {
-            var data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
+            string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger };
-            PatternRoot result = processor.Deserialize(data);
+            PatternRoot result = processor.Deserialize(new CodeFile(data) { IsPattern = true });
             Assert.AreEqual(0, logger.ErrorCount);
         }
 
@@ -85,7 +85,7 @@ namespace PT.PM.Dsl.Tests
             var logger = new LoggerMessageCounter();
             var data = "(?i)password(?-i)]> = <[\"\\w*\" || null]>";
             var processor = new DslProcessor() { Logger = logger };
-            PatternRoot result = processor.Deserialize(data);
+            PatternRoot result = processor.Deserialize(new CodeFile(data) { IsPattern = true });
             Assert.AreEqual(5, logger.ErrorCount);
         }
 
@@ -96,7 +96,7 @@ namespace PT.PM.Dsl.Tests
             Assert.Throws(typeof(ConversionException), () =>
             {
                 var processor = new DslProcessor();
-                PatternRoot result = processor.Deserialize(data);
+                PatternRoot result = processor.Deserialize(new CodeFile(data) { IsPattern = true });
             });
         }
     }

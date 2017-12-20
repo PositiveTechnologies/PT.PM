@@ -19,7 +19,7 @@ namespace PT.PM.Tests
             var fileCodeRepository = new FileCodeRepository(fullName);
             IEnumerable<string> fileNames = fileCodeRepository.GetFileNames();
 
-            SourceCodeFile sourceCode = fileCodeRepository.ReadFile(fileNames.Single());
+            CodeFile sourceCode = fileCodeRepository.ReadFile(fileNames.Single());
 
             Assert.AreEqual("1.cs", sourceCode.Name);
             Assert.AreEqual("", sourceCode.RelativePath);

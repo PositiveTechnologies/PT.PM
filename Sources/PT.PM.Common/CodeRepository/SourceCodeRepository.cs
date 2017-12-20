@@ -16,7 +16,7 @@ namespace PT.PM.Common.CodeRepository
 
         public abstract IEnumerable<string> GetFileNames();
 
-        public abstract SourceCodeFile ReadFile(string fileName);
+        public abstract CodeFile ReadFile(string fileName);
 
         public virtual bool IsFileIgnored(string fileName)
         {
