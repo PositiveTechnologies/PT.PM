@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using PT.PM.Common.Nodes;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Json
 {
@@ -16,9 +18,11 @@ namespace PT.PM.Common.Json
 
         public bool ExcludeDefaults { get; set; } = true;
 
-        public bool IncludeCode { get; set; } = false;
+        public bool IncludeCode { get; set; } = true;
 
         public bool ShortTextSpans { get; set; } = true;
+
+        public bool LineColumnTextSpans { get; set; } = false;
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
@@ -35,22 +39,31 @@ namespace PT.PM.Common.Json
 
         public virtual string Serialize(T node)
         {
-            JsonSerializerSettings jsonSettings = PrepareSettings();
+            JsonSerializerSettings jsonSettings = PrepareSettings((node as Ust).GetCodeFile());
             return JsonConvert.SerializeObject(node, jsonSettings);
         }
 
         public string Serialize(IEnumerable<T> nodes)
         {
-            JsonSerializerSettings jsonSettings = PrepareSettings();
+            JsonSerializerSettings jsonSettings = PrepareSettings((nodes.FirstOrDefault() as Ust).GetCodeFile());
             return JsonConvert.SerializeObject(nodes, jsonSettings);
         }
 
-        public JsonSerializerSettings PrepareSettings()
+        public JsonSerializerSettings PrepareSettings(CodeFile codeFile = null)
         {
             JsonConverterBase jsonConverterBase = CreateConverterBase(JsonFile);
             jsonConverterBase.IncludeTextSpans = IncludeTextSpans;
             jsonConverterBase.ExcludeDefaults = ExcludeDefaults;
             jsonConverterBase.Logger = Logger;
+
+            var textSpanJsonConverter = new TextSpanJsonConverter
+            {
+                ShortFormat = ShortTextSpans,
+                EmptyTextSpanFormat = EmptyTextSpanFormat,
+                IsLineColumn = LineColumnTextSpans,
+                CodeFile = codeFile
+            };
+
             var jsonSettings = new JsonSerializerSettings
             {
                 Formatting = Indented ? Formatting.Indented : Formatting.None,
@@ -59,18 +72,16 @@ namespace PT.PM.Common.Json
                     stringEnumConverter,
                     jsonConverterBase,
                     LanguageJsonConverter.Instance,
-                    new TextSpanJsonConverter
-                    {
-                        ShortFormat = ShortTextSpans,
-                        EmptyTextSpanFormat = EmptyTextSpanFormat,
-                    },
+                    textSpanJsonConverter,
                     new CodeFileJsonConverter
                     {
+                        TextSpanJsonConverter = textSpanJsonConverter,
                         ExcludeDefaults = ExcludeDefaults,
                         IncludeCode = IncludeCode,
                     }
                 }
             };
+
             return jsonSettings;
         }
     }

@@ -147,5 +147,20 @@ namespace PT.PM.Common.Nodes
 
             return 0;
         }
+
+        public static CodeFile GetCodeFile(this Ust ust)
+        {
+            if (ust == null)
+            {
+                return null;
+            }
+
+            if (ust is RootUst rootUst)
+            {
+                return rootUst.SourceCodeFile;
+            }
+
+            return ust.Root?.SourceCodeFile;
+        }
     }
 }

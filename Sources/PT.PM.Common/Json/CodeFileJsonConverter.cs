@@ -6,11 +6,13 @@ namespace PT.PM.Common.Json
 {
     public class CodeFileJsonConverter : JsonConverter
     {
-        public bool IncludeCode { get; set; } = false;
+        public bool IncludeCode { get; set; } = true;
 
         public bool ExcludeDefaults { get; set; } = true;
 
         public CodeFile CodeFile { get; private set; } = CodeFile.Empty;
+
+        public TextSpanJsonConverter TextSpanJsonConverter { get; set; }
 
         public override bool CanConvert(Type objectType)
         {
@@ -51,6 +53,10 @@ namespace PT.PM.Common.Json
             };
 
             CodeFile = result;
+            if (TextSpanJsonConverter != null)
+            {
+                TextSpanJsonConverter.CodeFile = result;
+            }
             return result;
         }
     }
