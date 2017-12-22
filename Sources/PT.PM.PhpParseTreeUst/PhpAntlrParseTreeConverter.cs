@@ -14,7 +14,6 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.JavaScriptParseTreeUst;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
