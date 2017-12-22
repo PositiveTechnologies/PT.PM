@@ -193,7 +193,7 @@ namespace PT.PM.PhpParseTreeUst
                 .Select(topStatement => (Statement)Visit(topStatement))
                 .Where(stmt => stmt != null)
                 .ToArray();
-            var statementsNode = new BlockStatement(topStatements, default(TextSpan));
+            var statementsNode = new BlockStatement(topStatements);
             var members = new List<Ust>();
             members.AddRange(usingDeclarations);
             members.Add(statementsNode);
@@ -1820,7 +1820,6 @@ namespace PT.PM.PhpParseTreeUst
             if (context.VarName() != null)
             {
                 left = ConvertVar(context.VarName());
-                left.TextSpan = context.GetTextSpan();
             }
             else
             {
