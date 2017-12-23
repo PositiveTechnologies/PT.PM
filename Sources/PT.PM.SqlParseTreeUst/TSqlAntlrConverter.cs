@@ -191,15 +191,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="ExpressionStatement"/></returns>
         public Ust VisitRaiseerror_statement([NotNull] TSqlParser.Raiseerror_statementContext context)
         {
-            var msg = (Token)ExtractLiteral(context.msg);
-            var args = new List<Expression>() { msg,
-                (Expression)Visit(context.severity),
-                (Expression)Visit(context.state) };
-            for (int i = 2; i < context.constant_LOCAL_ID().Length; i++)
-                args.Add((Expression)Visit(context.constant_LOCAL_ID()[i]));
-            InvocationExpression invoke = CreateSpecialInvocation(context.RAISERROR(), context, args);
-            var result = new ExpressionStatement(invoke);
-            return result;
+            return VisitChildren(context);
         }
 
         #endregion

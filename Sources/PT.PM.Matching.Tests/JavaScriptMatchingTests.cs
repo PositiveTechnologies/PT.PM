@@ -81,7 +81,8 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_PhpInJsInPhp_CorrectMatching()
         {
-            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "php-js-php.php"));
+            string fileName = Path.Combine(TestUtility.GrammarsDirectory, "php", "examples", "php-js-php.php");
+            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var matchResults = PatternMatchingUtils.GetMatches(code, "<[GLOBALS|frame_content]>",
                 new[] { Php.Language, JavaScript.Language },
                 new[] { Php.Language, JavaScript.Language });

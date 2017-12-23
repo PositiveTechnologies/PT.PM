@@ -6,6 +6,7 @@ using PT.PM.Matching.Patterns;
 using PT.PM.TestUtils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -29,7 +30,8 @@ namespace PT.PM.Tests
         [Test]
         public void Check_AllDescendants_HaveParentsAfterConvert()
         {
-            WorkflowResult result = TestUtility.CheckFile("AllInOne.cs", Stage.Ust);
+            string fileName = Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs");
+            WorkflowResult result = TestUtility.CheckFile(fileName, Stage.Ust);
 
             IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().WhereDescendants().Skip(1);
             foreach (var descendant in descendantsExceptFirst)

@@ -12,7 +12,8 @@ namespace PT.PM.TestUtils
         public const string GithubUrlPrefix = "https://github.com/";
         public const string TooLongTestDurationMessage = "Too long test duration.";
 
-        private static string repositoryDirectory;
+        public static string RepositoryDirectory;
+        public static string GrammarsDirectory = "Sources/antlr-grammars-v4";
         public static string TestsPath = $@"Tests/Unit/bin/{(IsDebug ? "Debug" : "Release")}";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
@@ -30,15 +31,16 @@ namespace PT.PM.TestUtils
         {
             GetRepositoryDirectory();
 
-            TestsPath = Path.Combine(repositoryDirectory, TestsPath).NormDirSeparator();
-            TestsDataPath = Path.Combine(repositoryDirectory, TestsDataPath).NormDirSeparator();
-            TestsOutputPath = Path.Combine(repositoryDirectory, TestsOutputPath).NormDirSeparator();
+            GrammarsDirectory = Path.Combine(RepositoryDirectory, GrammarsDirectory).NormDirSeparator();
+            TestsPath = Path.Combine(RepositoryDirectory, TestsPath).NormDirSeparator();
+            TestsDataPath = Path.Combine(RepositoryDirectory, TestsDataPath).NormDirSeparator();
+            TestsOutputPath = Path.Combine(RepositoryDirectory, TestsOutputPath).NormDirSeparator();
             if (!Directory.Exists(TestsOutputPath))
             {
                 Directory.CreateDirectory(TestsOutputPath);
             }
-            GraphvizPath = CommonUtils.IsRunningOnLinux ? "dot" : Path.Combine(repositoryDirectory, GraphvizPath).NormDirSeparator();
-            SevenZipPath = CommonUtils.IsRunningOnLinux ? "7z" : Path.Combine(repositoryDirectory, SevenZipPath).NormDirSeparator();
+            GraphvizPath = CommonUtils.IsRunningOnLinux ? "dot" : Path.Combine(RepositoryDirectory, GraphvizPath).NormDirSeparator();
+            SevenZipPath = CommonUtils.IsRunningOnLinux ? "7z" : Path.Combine(RepositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
         public static WorkflowResult CheckFile(string fileName, Stage endStage,
@@ -99,7 +101,7 @@ namespace PT.PM.TestUtils
         /// <param name="thisFilePath"></param>
         private static void GetRepositoryDirectory([CallerFilePath]string thisFilePath = null)
         {
-            repositoryDirectory = Path.GetFullPath(Path.Combine(thisFilePath, "..", "..", ".."));
+            RepositoryDirectory = Path.GetFullPath(Path.Combine(thisFilePath, "..", "..", ".."));
         }
     }
 }

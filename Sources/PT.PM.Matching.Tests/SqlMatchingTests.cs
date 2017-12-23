@@ -14,13 +14,13 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_TestPatternsPlSql_MatchedAllDefault()
         {
-            Match_TestPatternsSql_MatchedAllDefault(PlSql.Language, "PlSql/plsql_patterns.sql");
+            Match_TestPatternsSql_MatchedAllDefault(PlSql.Language, "plsql_patterns.sql");
         }
 
         [Test]
         public void Match_TestPatternsTSql_MatchedAllDefault()
         {
-            Match_TestPatternsSql_MatchedAllDefault(TSql.Language, "TSql/tsql_patterns.sql");
+            Match_TestPatternsSql_MatchedAllDefault(TSql.Language, "tsql_patterns.sql");
         }
 
         private void Match_TestPatternsSql_MatchedAllDefault(Language language, string patternsFileName)

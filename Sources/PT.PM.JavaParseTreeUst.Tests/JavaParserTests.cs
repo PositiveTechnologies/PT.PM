@@ -1,6 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.TestUtils;
 using NUnit.Framework;
+using System.IO;
 
 namespace PT.PM.JavaParseTreeUst.Tests
 {
@@ -18,7 +19,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [TestCase("AllInOne8.java")]
         public void Parser_JavaFile_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Stage.ParseTree);
+            TestUtility.CheckFile(Path.Combine(TestUtility.GrammarsDirectory, "java", "examples", fileName), Stage.ParseTree);
         }
     }
 }

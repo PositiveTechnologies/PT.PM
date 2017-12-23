@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using PT.PM.TestUtils;
 using NUnit.Framework;
 using PT.PM.Common.Nodes.GeneralScope;
+using System.IO;
 
 namespace PT.PM.JavaParseTreeUst.Tests
 {
@@ -20,7 +21,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
-            TestUtility.CheckFile(fileName, Stage.Ust);
+            TestUtility.CheckFile(Path.Combine(TestUtility.GrammarsDirectory, "java", "examples", fileName), Stage.Ust);
         }
 
         [Test]
@@ -111,7 +112,8 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [Test]
         public void Convert_Java_BaseTypesExist()
         {
-            var workflowResults = TestUtility.CheckFile("AllInOne7.java", Stage.Ust);
+            string fileName = Path.Combine(TestUtility.GrammarsDirectory, "Java", "examples", "AllInOne7.java");
+            var workflowResults = TestUtility.CheckFile(fileName, Stage.Ust);
             var ust = workflowResults.Usts.First();
             bool result = ust.AnyDescendant(descendant =>
             {

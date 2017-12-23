@@ -38,8 +38,8 @@ namespace PT.PM.Tests
         [TestCase("CSharp", "Patterns.cs")]
         [TestCase("Java", "Patterns.java")]
         [TestCase("Php", "Patterns.php")]
-        [TestCase("PlSql", "PlSql/plsql_patterns.sql")]
-        [TestCase("TSql", "TSql/tsql_patterns.sql")]
+        [TestCase("PlSql", "plsql_patterns.sql")]
+        [TestCase("TSql", "tsql_patterns.sql")]
         [TestCase("Aspx", "Patterns.aspx")]
         [TestCase("JavaScript", "Patterns.js")]
         public void Detect_SourceCode_CorrectLanguage(string expectedLanguage, string fileName)

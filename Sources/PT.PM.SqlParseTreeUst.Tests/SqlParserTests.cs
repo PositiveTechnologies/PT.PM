@@ -10,13 +10,15 @@ namespace PT.PM.SqlParseTreeUst.Tests
         [Test]
         public void Parse_PlSqlFiles_WithoutErrors()
         {
-            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "PlSql"), PlSql.Language, Stage.ParseTree);
+            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "plsql", "examples"),
+                PlSql.Language, Stage.ParseTree);
         }
 
         [Test]
         public void Parse_TSqlSyntax_WithoutErrors()
         {
-            TestUtility.CheckProject(Path.Combine(TestUtility.TestsDataPath, "TSql"), TSql.Language, Stage.ParseTree);
+            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "tsql", "examples"),
+                TSql.Language, Stage.ParseTree);
         }
     }
 }
