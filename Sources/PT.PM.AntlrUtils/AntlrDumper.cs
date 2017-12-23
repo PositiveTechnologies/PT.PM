@@ -45,9 +45,8 @@ namespace PT.PM.AntlrUtils
             builder.PadLeft(currentLevelStringLength);
             if (parseTree is RuleContext ruleContext)
             {
-                builder.AppendLine("(");
-                builder.PadLeft(currentLevelStringLength);
-                builder.AppendLine(parser.RuleNames[ruleContext.RuleIndex]);
+                builder.Append(parser.RuleNames[ruleContext.RuleIndex]);
+                builder.AppendLine(" (");
 
                 for (int i = 0; i < ruleContext.ChildCount; i++)
                 {
@@ -60,7 +59,7 @@ namespace PT.PM.AntlrUtils
             }
             else
             {
-                builder.Append('\'' + parseTree.GetText() + '\''); // TODO: replace with RenderToken.
+                builder.Append('\'' + parseTree.GetText().Replace(@"\", @"\\").Replace(@"'", @"\'") + '\''); // TODO: replace with RenderToken.
             }
         }
 

@@ -16,7 +16,7 @@ namespace PT.PM.Common.Nodes.Collections
         {
         }
 
-        public ArgsUst(List<Expression> args)
+        public ArgsUst(IEnumerable<Expression> args)
             : base(args)
         {
         }
