@@ -1474,12 +1474,17 @@ namespace PT.PM.PhpParseTreeUst
         {
             if (context.constantArrayItemList() != null)
             {
-                List<Expression> inits = context.constantArrayItemList().constantArrayItem()
+                IEnumerable<Expression> inits = context.constantArrayItemList().constantArrayItem()
                     .Select(item => (Expression)Visit(item))
-                    .Where(item => item != null).ToList();
+                    .Where(item => item != null);
                 var result = new ArrayCreationExpression(null, Enumerable.Empty<Expression>(), inits,
                     context.GetTextSpan());
                 return result;
+            }
+
+            if (context.Array() != null)
+            {
+                return new ArrayCreationExpression(null, Enumerable.Empty<Expression>(), Enumerable.Empty<Expression>(), context.GetTextSpan());
             }
 
             if (context.constantInititalizer() != null)
@@ -1773,8 +1778,7 @@ namespace PT.PM.PhpParseTreeUst
                 target = (Expression)Visit(context.keyedVariable(0));
                 if (context.keyedVariable().Length == 1)
                 {
-                    var idToken = target as IdToken;
-                    if (idToken != null && idToken.TextValue == "this")
+                    if (target is IdToken idToken && idToken.TextValue == "this")
                     {
                         return new ThisReferenceToken(textSpan);
                     }
