@@ -1,4 +1,6 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
@@ -282,37 +284,8 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public Ust VisitStatement([NotNull] PlSqlParser.StatementContext context)
         {
-            Statement result;
-            if (context.CREATE() != null || context.ALTER() != null || context.GRANT() != null || context.TRUNCATE() != null)
-            {
-                string str = context.GetChild(0).GetText().ToLowerInvariant();
-                if (context.ALL() != null)
-                {
-                    str += "_" + context.ALL().GetText().ToLowerInvariant();
-                }
-                var args = (ArgsUst)Visit(context.swallow_to_semi());
-                var funcName = new IdToken(str, context.GetTextSpan());
-                result = new ExpressionStatement(new InvocationExpression(funcName, args, context.GetTextSpan()));
-            }
-            else
-            {
-                var node = Visit(context.GetChild(0));
-                Statement resultStatement;
-                Expression resultExpression;
-                if ((resultStatement = node as Statement) != null)
-                {
-                    result = resultStatement;
-                }
-                else if ((resultExpression = node as Expression) != null)
-                {
-                    result = new ExpressionStatement(resultExpression);
-                }
-                else
-                {
-                    result = new WrapperStatement(node);
-                }
-            }
-            return result;
+            Ust result = Visit(context.GetChild(0));
+            return result.ToStatementIfRequired();
         }
 
         public Ust VisitAssignment_statement([NotNull] PlSqlParser.Assignment_statementContext context)
@@ -389,33 +362,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                var cursorLoopParam = context.cursor_loop_param();
-                if (context.cursor_loop_param()?.lower_bound() != null)
-                {
-                    var varName = (IdToken)Visit(cursorLoopParam.index_name());
-                    bool reverse = cursorLoopParam.REVERSE() != null;
-                    var lowerBound = (Expression)Visit(cursorLoopParam.lower_bound());
-                    var upperBound = (Expression)Visit(cursorLoopParam.upper_bound());
-                    if (reverse)
-                    {
-                        Expression t = lowerBound;
-                        lowerBound = upperBound;
-                        upperBound = t;
-                    }
-                    var init = new ExpressionStatement(new AssignmentExpression(varName, lowerBound, varName.TextSpan.Union(lowerBound.TextSpan)));
-                    var condition = new BinaryOperatorExpression(varName,
-                        new BinaryOperatorLiteral(BinaryOperator.Less, cursorLoopParam.range.GetTextSpan()), upperBound,
-                        lowerBound.TextSpan.Union(upperBound.TextSpan));
-                    var iterator = new UnaryOperatorExpression(
-                        new UnaryOperatorLiteral(UnaryOperator.PostIncrement, default(TextSpan)), varName,
-                        cursorLoopParam.range.GetTextSpan());
-                    result = new ForStatement(new Statement[] { init }, condition, new Expression[] { iterator },
-                        block, textSpan);
-                }
-                else
-                {
-                    result = VisitChildren(context);
-                }
+                result = VisitChildren(context);
             }
             return result;
         }
@@ -1415,6 +1362,1427 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitExpressions([NotNull] PlSqlParser.ExpressionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCluster_index_clause([NotNull] PlSqlParser.Cluster_index_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCluster_name([NotNull] PlSqlParser.Cluster_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTable_index_clause([NotNull] PlSqlParser.Table_index_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBitmap_join_index_clause([NotNull] PlSqlParser.Bitmap_join_index_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_expr([NotNull] PlSqlParser.Index_exprContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_properties([NotNull] PlSqlParser.Index_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDomain_index_clause([NotNull] PlSqlParser.Domain_index_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLocal_domain_index_clause([NotNull] PlSqlParser.Local_domain_index_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitXmlindex_clause([NotNull] PlSqlParser.Xmlindex_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLocal_xmlindex_clause([NotNull] PlSqlParser.Local_xmlindex_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitGlobal_partitioned_index([NotNull] PlSqlParser.Global_partitioned_indexContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_partitioning_clause([NotNull] PlSqlParser.Index_partitioning_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLocal_partitioned_index([NotNull] PlSqlParser.Local_partitioned_indexContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOn_range_partitioned_table([NotNull] PlSqlParser.On_range_partitioned_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOn_list_partitioned_table([NotNull] PlSqlParser.On_list_partitioned_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOn_hash_partitioned_table([NotNull] PlSqlParser.On_hash_partitioned_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOn_comp_partitioned_table([NotNull] PlSqlParser.On_comp_partitioned_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_subpartition_clause([NotNull] PlSqlParser.Index_subpartition_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOdci_parameters([NotNull] PlSqlParser.Odci_parametersContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndextype([NotNull] PlSqlParser.IndextypeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_index_ops_set1([NotNull] PlSqlParser.Alter_index_ops_set1Context context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_index_ops_set2([NotNull] PlSqlParser.Alter_index_ops_set2Context context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitVisible_or_invisible([NotNull] PlSqlParser.Visible_or_invisibleContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMonitoring_nomonitoring([NotNull] PlSqlParser.Monitoring_nomonitoringContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRebuild_clause([NotNull] PlSqlParser.Rebuild_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_index_partitioning([NotNull] PlSqlParser.Alter_index_partitioningContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_index_default_attrs([NotNull] PlSqlParser.Modify_index_default_attrsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_hash_index_partition([NotNull] PlSqlParser.Add_hash_index_partitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCoalesce_index_partition([NotNull] PlSqlParser.Coalesce_index_partitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_index_partition([NotNull] PlSqlParser.Modify_index_partitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_index_partitions_ops([NotNull] PlSqlParser.Modify_index_partitions_opsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRename_index_partition([NotNull] PlSqlParser.Rename_index_partitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_index_partition([NotNull] PlSqlParser.Drop_index_partitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSplit_index_partition([NotNull] PlSqlParser.Split_index_partitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_partition_description([NotNull] PlSqlParser.Index_partition_descriptionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_index_subpartition([NotNull] PlSqlParser.Modify_index_subpartitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPartition_name_old([NotNull] PlSqlParser.Partition_name_oldContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNew_partition_name([NotNull] PlSqlParser.New_partition_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNew_index_name([NotNull] PlSqlParser.New_index_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_user([NotNull] PlSqlParser.Create_userContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_user([NotNull] PlSqlParser.Alter_userContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_identified_by([NotNull] PlSqlParser.Alter_identified_byContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIdentified_by([NotNull] PlSqlParser.Identified_byContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIdentified_other_clause([NotNull] PlSqlParser.Identified_other_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUser_tablespace_clause([NotNull] PlSqlParser.User_tablespace_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitQuota_clause([NotNull] PlSqlParser.Quota_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitProfile_clause([NotNull] PlSqlParser.Profile_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRole_clause([NotNull] PlSqlParser.Role_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUser_default_role_clause([NotNull] PlSqlParser.User_default_role_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPassword_expire_clause([NotNull] PlSqlParser.Password_expire_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUser_lock_clause([NotNull] PlSqlParser.User_lock_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUser_editions_clause([NotNull] PlSqlParser.User_editions_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_user_editions_clause([NotNull] PlSqlParser.Alter_user_editions_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitProxy_clause([NotNull] PlSqlParser.Proxy_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitContainer_names([NotNull] PlSqlParser.Container_namesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSet_container_data([NotNull] PlSqlParser.Set_container_dataContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_rem_container_data([NotNull] PlSqlParser.Add_rem_container_dataContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitContainer_data_clause([NotNull] PlSqlParser.Container_data_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitGrant_statement([NotNull] PlSqlParser.Grant_statementContext context)
+        {
+            string funcName = "grant";
+            TextSpan textSpan = context.GRANT(0).GetTextSpan();
+            var allKeyword = context.object_privilege()?.FirstOrDefault(priv => priv.ALL() != null);
+            if (allKeyword != null)
+            {
+                funcName += "_all";
+                textSpan = textSpan.Union(allKeyword.GetTextSpan());
+            }
+            var funcId = new IdToken(funcName, textSpan);
+            var args = new ArgsUst(VisitList(context.children.Skip(1).ToArray()).ToExpressionIfRequired());
+            var result = new ExpressionStatement(new InvocationExpression(funcId, args, context.GetTextSpan()));
+            return result;
+        }
+
+        public Ust VisitContainer_clause([NotNull] PlSqlParser.Container_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_directory([NotNull] PlSqlParser.Create_directoryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDirectory_name([NotNull] PlSqlParser.Directory_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDirectory_path([NotNull] PlSqlParser.Directory_pathContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_view([NotNull] PlSqlParser.Create_viewContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitView_options([NotNull] PlSqlParser.View_optionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitView_alias_constraint([NotNull] PlSqlParser.View_alias_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitObject_view_clause([NotNull] PlSqlParser.Object_view_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitInline_constraint([NotNull] PlSqlParser.Inline_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitInline_ref_constraint([NotNull] PlSqlParser.Inline_ref_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOut_of_line_ref_constraint([NotNull] PlSqlParser.Out_of_line_ref_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOut_of_line_constraint([NotNull] PlSqlParser.Out_of_line_constraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitConstraint_state([NotNull] PlSqlParser.Constraint_stateContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_tablespace([NotNull] PlSqlParser.Create_tablespaceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPermanent_tablespace_clause([NotNull] PlSqlParser.Permanent_tablespace_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTablespace_encryption_spec([NotNull] PlSqlParser.Tablespace_encryption_specContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLogging_clause([NotNull] PlSqlParser.Logging_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitExtent_management_clause([NotNull] PlSqlParser.Extent_management_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSegment_management_clause([NotNull] PlSqlParser.Segment_management_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitFlashback_mode_clause([NotNull] PlSqlParser.Flashback_mode_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTemporary_tablespace_clause([NotNull] PlSqlParser.Temporary_tablespace_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTablespace_group_clause([NotNull] PlSqlParser.Tablespace_group_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUndo_tablespace_clause([NotNull] PlSqlParser.Undo_tablespace_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTablespace_retention_clause([NotNull] PlSqlParser.Tablespace_retention_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDatafile_specification([NotNull] PlSqlParser.Datafile_specificationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTempfile_specification([NotNull] PlSqlParser.Tempfile_specificationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDatafile_tempfile_spec([NotNull] PlSqlParser.Datafile_tempfile_specContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRedo_log_file_spec([NotNull] PlSqlParser.Redo_log_file_specContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAutoextend_clause([NotNull] PlSqlParser.Autoextend_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMaxsize_clause([NotNull] PlSqlParser.Maxsize_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBuild_clause([NotNull] PlSqlParser.Build_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitParallel_clause([NotNull] PlSqlParser.Parallel_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_materialized_view_log([NotNull] PlSqlParser.Create_materialized_view_logContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNew_values_clause([NotNull] PlSqlParser.New_values_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMv_log_purge_clause([NotNull] PlSqlParser.Mv_log_purge_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_materialized_view([NotNull] PlSqlParser.Create_materialized_viewContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_mv_refresh([NotNull] PlSqlParser.Create_mv_refreshContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_context([NotNull] PlSqlParser.Create_contextContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNamespace([NotNull] PlSqlParser.NamespaceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_cluster([NotNull] PlSqlParser.Create_clusterContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitXmltype_table([NotNull] PlSqlParser.Xmltype_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitXmltype_virtual_columns([NotNull] PlSqlParser.Xmltype_virtual_columnsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitXmltype_column_properties([NotNull] PlSqlParser.Xmltype_column_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitXmltype_storage([NotNull] PlSqlParser.Xmltype_storageContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitXmlschema_spec([NotNull] PlSqlParser.Xmlschema_specContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitObject_table([NotNull] PlSqlParser.Object_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOid_index_clause([NotNull] PlSqlParser.Oid_index_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOid_clause([NotNull] PlSqlParser.Oid_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitObject_properties([NotNull] PlSqlParser.Object_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitObject_table_substitution([NotNull] PlSqlParser.Object_table_substitutionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRelational_table([NotNull] PlSqlParser.Relational_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRelational_properties([NotNull] PlSqlParser.Relational_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTable_partitioning_clauses([NotNull] PlSqlParser.Table_partitioning_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRange_partitions([NotNull] PlSqlParser.Range_partitionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitList_partitions([NotNull] PlSqlParser.List_partitionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitHash_partitions([NotNull] PlSqlParser.Hash_partitionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndividual_hash_partitions([NotNull] PlSqlParser.Individual_hash_partitionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitHash_partitions_by_quantity([NotNull] PlSqlParser.Hash_partitions_by_quantityContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitHash_partition_quantity([NotNull] PlSqlParser.Hash_partition_quantityContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitComposite_range_partitions([NotNull] PlSqlParser.Composite_range_partitionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitComposite_list_partitions([NotNull] PlSqlParser.Composite_list_partitionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitComposite_hash_partitions([NotNull] PlSqlParser.Composite_hash_partitionsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitReference_partitioning([NotNull] PlSqlParser.Reference_partitioningContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitReference_partition_desc([NotNull] PlSqlParser.Reference_partition_descContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSystem_partitioning([NotNull] PlSqlParser.System_partitioningContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRange_partition_desc([NotNull] PlSqlParser.Range_partition_descContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitList_partition_desc([NotNull] PlSqlParser.List_partition_descContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSubpartition_template([NotNull] PlSqlParser.Subpartition_templateContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitHash_subpartition_quantity([NotNull] PlSqlParser.Hash_subpartition_quantityContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSubpartition_by_range([NotNull] PlSqlParser.Subpartition_by_rangeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSubpartition_by_list([NotNull] PlSqlParser.Subpartition_by_listContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSubpartition_by_hash([NotNull] PlSqlParser.Subpartition_by_hashContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSubpartition_name([NotNull] PlSqlParser.Subpartition_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRange_subpartition_desc([NotNull] PlSqlParser.Range_subpartition_descContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitList_subpartition_desc([NotNull] PlSqlParser.List_subpartition_descContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndividual_hash_subparts([NotNull] PlSqlParser.Individual_hash_subpartsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitHash_subparts_by_quantity([NotNull] PlSqlParser.Hash_subparts_by_quantityContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRange_values_clause([NotNull] PlSqlParser.Range_values_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitList_values_clause([NotNull] PlSqlParser.List_values_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTable_partition_description([NotNull] PlSqlParser.Table_partition_descriptionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPartitioning_storage_clause([NotNull] PlSqlParser.Partitioning_storage_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_partitioning_storage([NotNull] PlSqlParser.Lob_partitioning_storageContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDatatype_null_enable([NotNull] PlSqlParser.Datatype_null_enableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTable_compression([NotNull] PlSqlParser.Table_compressionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPhysical_attributes_clause([NotNull] PlSqlParser.Physical_attributes_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitStorage_clause([NotNull] PlSqlParser.Storage_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDeferred_segment_creation([NotNull] PlSqlParser.Deferred_segment_creationContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSegment_attributes_clause([NotNull] PlSqlParser.Segment_attributes_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPhysical_properties([NotNull] PlSqlParser.Physical_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRow_movement_clause([NotNull] PlSqlParser.Row_movement_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitFlashback_archive_clause([NotNull] PlSqlParser.Flashback_archive_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLog_grp([NotNull] PlSqlParser.Log_grpContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSupplemental_table_logging([NotNull] PlSqlParser.Supplemental_table_loggingContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSupplemental_log_grp_clause([NotNull] PlSqlParser.Supplemental_log_grp_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSupplemental_id_key_clause([NotNull] PlSqlParser.Supplemental_id_key_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAllocate_extent_clause([NotNull] PlSqlParser.Allocate_extent_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDeallocate_unused_clause([NotNull] PlSqlParser.Deallocate_unused_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitShrink_clause([NotNull] PlSqlParser.Shrink_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRecords_per_block_clause([NotNull] PlSqlParser.Records_per_block_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUpgrade_table_clause([NotNull] PlSqlParser.Upgrade_table_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEnable_or_disable([NotNull] PlSqlParser.Enable_or_disableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAllow_or_disallow([NotNull] PlSqlParser.Allow_or_disallowContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_cluster([NotNull] PlSqlParser.Alter_clusterContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCache_or_nocache([NotNull] PlSqlParser.Cache_or_nocacheContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDatabase_name([NotNull] PlSqlParser.Database_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_database([NotNull] PlSqlParser.Alter_databaseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitStartup_clauses([NotNull] PlSqlParser.Startup_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitResetlogs_or_noresetlogs([NotNull] PlSqlParser.Resetlogs_or_noresetlogsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUpgrade_or_downgrade([NotNull] PlSqlParser.Upgrade_or_downgradeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRecovery_clauses([NotNull] PlSqlParser.Recovery_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitBegin_or_end([NotNull] PlSqlParser.Begin_or_endContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitGeneral_recovery([NotNull] PlSqlParser.General_recoveryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitFull_database_recovery([NotNull] PlSqlParser.Full_database_recoveryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPartial_database_recovery([NotNull] PlSqlParser.Partial_database_recoveryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitManaged_standby_recovery([NotNull] PlSqlParser.Managed_standby_recoveryContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDb_name([NotNull] PlSqlParser.Db_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDatabase_file_clauses([NotNull] PlSqlParser.Database_file_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCreate_datafile_clause([NotNull] PlSqlParser.Create_datafile_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_datafile_clause([NotNull] PlSqlParser.Alter_datafile_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_tempfile_clause([NotNull] PlSqlParser.Alter_tempfile_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLogfile_clauses([NotNull] PlSqlParser.Logfile_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_logfile_clauses([NotNull] PlSqlParser.Add_logfile_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_logfile_clauses([NotNull] PlSqlParser.Drop_logfile_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSwitch_logfile_clause([NotNull] PlSqlParser.Switch_logfile_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSupplemental_db_logging([NotNull] PlSqlParser.Supplemental_db_loggingContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_or_drop([NotNull] PlSqlParser.Add_or_dropContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSupplemental_plsql_clause([NotNull] PlSqlParser.Supplemental_plsql_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLogfile_descriptor([NotNull] PlSqlParser.Logfile_descriptorContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitControlfile_clauses([NotNull] PlSqlParser.Controlfile_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTrace_file_clause([NotNull] PlSqlParser.Trace_file_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitStandby_database_clauses([NotNull] PlSqlParser.Standby_database_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitActivate_standby_db_clause([NotNull] PlSqlParser.Activate_standby_db_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMaximize_standby_db_clause([NotNull] PlSqlParser.Maximize_standby_db_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRegister_logfile_clause([NotNull] PlSqlParser.Register_logfile_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCommit_switchover_clause([NotNull] PlSqlParser.Commit_switchover_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitStart_standby_clause([NotNull] PlSqlParser.Start_standby_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitStop_standby_clause([NotNull] PlSqlParser.Stop_standby_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitConvert_database_clause([NotNull] PlSqlParser.Convert_database_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDefault_settings_clause([NotNull] PlSqlParser.Default_settings_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTablespace_group_name([NotNull] PlSqlParser.Tablespace_group_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSet_time_zone_clause([NotNull] PlSqlParser.Set_time_zone_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitInstance_clauses([NotNull] PlSqlParser.Instance_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSecurity_clause([NotNull] PlSqlParser.Security_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDomain([NotNull] PlSqlParser.DomainContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDatabase([NotNull] PlSqlParser.DatabaseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEdition_name([NotNull] PlSqlParser.Edition_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitFilenumber([NotNull] PlSqlParser.FilenumberContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitFilename([NotNull] PlSqlParser.FilenameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_table_properties([NotNull] PlSqlParser.Alter_table_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_table_properties_1([NotNull] PlSqlParser.Alter_table_properties_1Context context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_iot_clauses([NotNull] PlSqlParser.Alter_iot_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_mapping_table_clause([NotNull] PlSqlParser.Alter_mapping_table_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_overflow_clause([NotNull] PlSqlParser.Alter_overflow_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_overflow_clause([NotNull] PlSqlParser.Add_overflow_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEnable_disable_clause([NotNull] PlSqlParser.Enable_disable_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUsing_index_clause([NotNull] PlSqlParser.Using_index_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_attributes([NotNull] PlSqlParser.Index_attributesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSort_or_nosort([NotNull] PlSqlParser.Sort_or_nosortContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitExceptions_clause([NotNull] PlSqlParser.Exceptions_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMove_table_clause([NotNull] PlSqlParser.Move_table_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_org_table_clause([NotNull] PlSqlParser.Index_org_table_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMapping_table_clause([NotNull] PlSqlParser.Mapping_table_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitKey_compression([NotNull] PlSqlParser.Key_compressionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitIndex_org_overflow_clause([NotNull] PlSqlParser.Index_org_overflow_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitColumn_clauses([NotNull] PlSqlParser.Column_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_collection_retrieval([NotNull] PlSqlParser.Modify_collection_retrievalContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitCollection_item([NotNull] PlSqlParser.Collection_itemContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRename_column_clause([NotNull] PlSqlParser.Rename_column_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOld_column_name([NotNull] PlSqlParser.Old_column_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNew_column_name([NotNull] PlSqlParser.New_column_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_modify_drop_column_clauses([NotNull] PlSqlParser.Add_modify_drop_column_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_column_clause([NotNull] PlSqlParser.Drop_column_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_column_clauses([NotNull] PlSqlParser.Modify_column_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_col_properties([NotNull] PlSqlParser.Modify_col_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_col_substitutable([NotNull] PlSqlParser.Modify_col_substitutableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAdd_column_clause([NotNull] PlSqlParser.Add_column_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlter_varray_col_properties([NotNull] PlSqlParser.Alter_varray_col_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitVarray_col_properties([NotNull] PlSqlParser.Varray_col_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitVarray_storage_clause([NotNull] PlSqlParser.Varray_storage_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_segname([NotNull] PlSqlParser.Lob_segnameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_item([NotNull] PlSqlParser.Lob_itemContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_storage_parameters([NotNull] PlSqlParser.Lob_storage_parametersContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_storage_clause([NotNull] PlSqlParser.Lob_storage_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_lob_storage_clause([NotNull] PlSqlParser.Modify_lob_storage_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitModify_lob_parameters([NotNull] PlSqlParser.Modify_lob_parametersContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_parameters([NotNull] PlSqlParser.Lob_parametersContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_deduplicate_clause([NotNull] PlSqlParser.Lob_deduplicate_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_compression_clause([NotNull] PlSqlParser.Lob_compression_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLob_retention_clause([NotNull] PlSqlParser.Lob_retention_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitEncryption_spec([NotNull] PlSqlParser.Encryption_specContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitTablespace([NotNull] PlSqlParser.TablespaceContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitVarray_item([NotNull] PlSqlParser.Varray_itemContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitColumn_properties([NotNull] PlSqlParser.Column_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitColumn_definition([NotNull] PlSqlParser.Column_definitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitVirtual_column_definition([NotNull] PlSqlParser.Virtual_column_definitionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOut_of_line_part_storage([NotNull] PlSqlParser.Out_of_line_part_storageContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNested_table_col_properties([NotNull] PlSqlParser.Nested_table_col_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNested_item([NotNull] PlSqlParser.Nested_itemContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSubstitutable_column_clause([NotNull] PlSqlParser.Substitutable_column_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPartition_name([NotNull] PlSqlParser.Partition_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSupplemental_logging_props([NotNull] PlSqlParser.Supplemental_logging_propsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitColumn_or_attribute([NotNull] PlSqlParser.Column_or_attributeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitObject_type_col_properties([NotNull] PlSqlParser.Object_type_col_propertiesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitConstraint_clauses([NotNull] PlSqlParser.Constraint_clausesContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOld_constraint_name([NotNull] PlSqlParser.Old_constraint_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNew_constraint_name([NotNull] PlSqlParser.New_constraint_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_constraint_clause([NotNull] PlSqlParser.Drop_constraint_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDrop_primary_key_or_unique_or_generic_clause([NotNull] PlSqlParser.Drop_primary_key_or_unique_or_generic_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSeq_of_declare_specs([NotNull] PlSqlParser.Seq_of_declare_specsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitOffset_clause([NotNull] PlSqlParser.Offset_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitFetch_clause([NotNull] PlSqlParser.Fetch_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLiteral([NotNull] PlSqlParser.LiteralContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitContainer_tableview_name([NotNull] PlSqlParser.Container_tableview_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitGrantee_name([NotNull] PlSqlParser.Grantee_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitRole_name([NotNull] PlSqlParser.Role_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitDir_object_name([NotNull] PlSqlParser.Dir_object_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUser_object_name([NotNull] PlSqlParser.User_object_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitGrant_object_name([NotNull] PlSqlParser.Grant_object_nameContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitColumn_list([NotNull] PlSqlParser.Column_listContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitParen_column_list([NotNull] PlSqlParser.Paren_column_listContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitObject_privilege([NotNull] PlSqlParser.Object_privilegeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSystem_privilege([NotNull] PlSqlParser.System_privilegeContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNon_reserved_keywords([NotNull] PlSqlParser.Non_reserved_keywordsContext context)
         {
             return VisitChildren(context);
         }

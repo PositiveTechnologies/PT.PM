@@ -144,6 +144,29 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
+        public Ust VisitList(IList<IParseTree> nodes)
+        {
+            var exprs = new List<Expression>();
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var child = Visit(nodes[i]);
+                if (child != null)
+                {
+                    // Ignore null.
+                    if (child is Expression childExpression)
+                    {
+                        exprs.Add(childExpression);
+                    }
+                    else
+                    {
+                        exprs.Add(new WrapperExpression(child));
+                    }
+                }
+            }
+            var result = new MultichildExpression(exprs);
+            return result;
+        }
+
         public virtual Ust VisitTerminal(ITerminalNode node)
         {
             Token result;

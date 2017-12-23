@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
@@ -352,12 +353,12 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.for_clause() != null)
             {
-                exprs.Add((InvocationExpression)Visit(context.for_clause()));
+                exprs.Add(Visit(context.for_clause()).ToExpressionIfRequired());
             }
 
             if (context.option_clause() != null)
             {
-                exprs.Add((InvocationExpression)Visit(context.option_clause()));
+                exprs.Add(Visit(context.option_clause()).ToExpressionIfRequired());
             }
 
             var selectLiteral = new IdToken("select", default(TextSpan));
@@ -749,36 +750,22 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public Ust VisitExecute_statement([NotNull] TSqlParser.Execute_statementContext context)
         {
-            var first = context.GetChild<ITerminalNode>(0);
-            var argsNode = new ArgsUst();
-            Expression expr;
-            if (context.func_proc_name() != null)
+            Expression target;
+            IEnumerable<Expression> exprs;
+            var executeBody = context.execute_body();
+
+            if (executeBody.func_proc_name() != null || executeBody.expression() != null)
             {
-                var funcName = (IdToken)Visit(context.func_proc_name());
-                for (int i = 0; i < context.execute_statement_arg().Length; i++)
-                {
-                    argsNode.Collection.Add((Expression)Visit(context.execute_statement_arg(i)));
-                }
-                expr = new InvocationExpression(funcName, argsNode, context.GetTextSpan());
+                target = (Expression)Visit((ParserRuleContext)executeBody.func_proc_name() ?? executeBody.expression());
+                exprs = executeBody.execute_statement_arg().Select(arg => Visit(arg).ToExpressionIfRequired());
             }
             else
             {
-                var executeName = new IdToken("exec", first.GetTextSpan());
-                expr = (Expression)Visit(context.execute_var_string(0));
-                for (int i = 1; i < context.execute_var_string().Length; i++)
-                {
-                    var right = (Expression)Visit(context.execute_var_string(i));
-                    var binatyOpLiteral = new BinaryOperatorLiteral(BinaryOperator.Plus,
-                        context.execute_var_string(i).GetTextSpan());
-                    expr = new BinaryOperatorExpression(expr, binatyOpLiteral, right,
-                        context.execute_var_string(0).GetTextSpan().Union(
-                            context.execute_var_string(i).GetTextSpan()));
-                }
-                argsNode.Collection.Add(expr);
-                expr = new InvocationExpression(executeName, argsNode, context.GetTextSpan());
+                target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan());
+                exprs = executeBody.execute_var_string().Select(var => Visit(var).ToExpressionIfRequired());
             }
-            var result = new ExpressionStatement(expr);
-            return result;
+
+            return new InvocationExpression(target, new ArgsUst(exprs), context.GetTextSpan());
         }
 
         /// <returns><see cref="Expression"/></returns>
@@ -1492,13 +1479,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="InvocationExpression"/></returns>
         public Ust VisitFor_clause([NotNull] TSqlParser.For_clauseContext context)
         {
-            var exprs = new List<Expression>();
-            if (context.STRING() != null)
-            {
-                exprs.Add((Token)Visit(context.STRING()));
-            }
-            InvocationExpression result = CreateSpecialInvocation(context.FOR(), context, exprs);
-            return result;
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="IdToken"/></returns>
@@ -3859,6 +3840,31 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitSql_union([NotNull] TSqlParser.Sql_unionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLock_table([NotNull] TSqlParser.Lock_tableContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitUpdate_statistics([NotNull] TSqlParser.Update_statisticsContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitExecute_body([NotNull] TSqlParser.Execute_bodyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitSetuser_statement([NotNull] TSqlParser.Setuser_statementContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitMaterialized_column_definition([NotNull] TSqlParser.Materialized_column_definitionContext context)
         {
             return VisitChildren(context);
         }
