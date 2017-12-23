@@ -71,6 +71,16 @@ namespace PT.PM.Common
 
         public TextSpan Union(TextSpan span)
         {
+            if (Equals(Empty))
+            {
+                return span;
+            }
+
+            if (span.Equals(Empty))
+            {
+                return this;
+            }
+
             int unionStart = Math.Min(Start, span.Start);
             int unionEnd = Math.Max(End, span.End);
 
