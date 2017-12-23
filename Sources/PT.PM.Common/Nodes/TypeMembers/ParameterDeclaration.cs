@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Expressions;
+using System.Text;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
@@ -25,10 +25,28 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public override Ust[] GetChildren()
         {
-            var result = new List<Ust>{ Name };
-            return result.ToArray();
+            return new Ust[] { Type, Name, Initializer };
         }
 
-        public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
+        public override string ToString()
+        {
+            var result = new StringBuilder();
+
+            if (Type != null)
+            {
+                result.Append(Type);
+                result.Append(' ');
+            }
+
+            result.Append(Name);
+
+            if (Initializer != null)
+            {
+                result.Append(' ');
+                result.Append(Initializer);
+            }
+
+            return result.ToString();
+        }
     }
 }
