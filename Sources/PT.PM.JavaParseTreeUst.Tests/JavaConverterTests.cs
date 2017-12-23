@@ -112,7 +112,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [Test]
         public void Convert_Java_BaseTypesExist()
         {
-            string fileName = Path.Combine(TestUtility.GrammarsDirectory, "Java", "examples", "AllInOne7.java");
+            string fileName = Path.Combine(TestUtility.GrammarsDirectory, "java", "examples", "AllInOne7.java");
             var workflowResults = TestUtility.CheckFile(fileName, Stage.Ust);
             var ust = workflowResults.Usts.First();
             bool result = ust.AnyDescendant(descendant =>
