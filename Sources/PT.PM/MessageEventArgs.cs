@@ -6,17 +6,17 @@ namespace PT.PM
     {
         public MessageType MessageType { get; set; }
 
-        public string FileName { get; set; }
+        public string FullFileName { get; set; }
 
-        public MessageEventArgs(MessageType messageType, string fileName)
+        public MessageEventArgs(MessageType messageType, string fullFileName)
         {
             MessageType = messageType;
-            FileName = fileName;
+            FullFileName = fullFileName;
         }
 
         public override string ToString()
         {
-            return $"{MessageType}: {FileName}";
+            return $"{MessageType}: {FullFileName}";
         }
     }
 }

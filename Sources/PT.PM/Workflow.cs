@@ -150,12 +150,11 @@ namespace PT.PM
             }
             finally
             {
-                string shortFileName = ust?.SourceCodeFile.Name ?? System.IO.Path.GetFileName(fileName);
                 workflowResult.AddProcessedFilesCount(1);
                 double progress = workflowResult.TotalFilesCount == 0
                     ? workflowResult.TotalProcessedFilesCount
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
-                Logger.LogInfo(new ProgressEventArgs(progress, shortFileName));
+                Logger.LogInfo(new ProgressEventArgs(progress, fileName));
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
 
                 if (ust == null)
