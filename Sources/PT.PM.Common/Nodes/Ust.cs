@@ -1,5 +1,7 @@
-﻿using System;
+using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 using System.Text;
 
 namespace PT.PM.Common.Nodes
@@ -28,6 +30,13 @@ namespace PT.PM.Common.Nodes
         public Ust[] Children => GetChildren();
 
         public string ToStringWithoutLineBreaks() => debuggerPrinter.Print(ToString());
+
+        /// <summary>
+        /// If string concatenation is reduced we lose information about
+        /// initial text spans, so we use this field to store with information
+        /// </summary>
+        [JsonIgnore]
+        public List<TextSpan> InitialTextSpans { get; set; } = new List<TextSpan>();
 
         protected Ust()
         {

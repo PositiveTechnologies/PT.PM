@@ -42,7 +42,10 @@ namespace PT.PM.Matching.Tests
                 "\n" +
                 "$password2 = \"1234\";\n" +
                 "if ($password2->Length > 0) { }\n" +
-                "test_call_5(1, $password2, 2);",
+                "test_call_5(1, $password2, 2);\n" +
+                "$concat = \"111\" .\n" +
+                "   \"222222222\"   .  \n" +
+                "  \"333\";",
 
                 "samples.php"
             );
@@ -52,9 +55,9 @@ namespace PT.PM.Matching.Tests
             };
         }
 
-        [TestCase("#()", new [] { 0 })]
-        [TestCase("#(a)", new [] { 1 })]
-        [TestCase("#(#*)", new [] { 0, 1, 2, 3, 4 })]
+        [TestCase("#()", new[] { 0 })]
+        [TestCase("#(a)", new[] { 1 })]
+        [TestCase("#(#*)", new[] { 0, 1, 2, 3, 4 })]
         [TestCase("#(a, #*)", new[] { 1, 2 })]
         [TestCase("#(#*, a)", new[] { 1, 3 })]
         [TestCase("#(#*, a, #*)", new[] { 1, 2, 3, 4 })]
@@ -151,6 +154,23 @@ namespace PT.PM.Matching.Tests
             Assert.AreEqual(5, textSpan2.BeginColumn);
             Assert.AreEqual(7, textSpan2.EndLine);
             Assert.AreEqual(16, textSpan2.EndColumn);
+        }
+
+        [Test]
+        public void Match_Reduce_CorrectMatchingPosition()
+        {
+            var processor = new DslProcessor();
+            PatternRoot patternNode = processor.Deserialize(new CodeFile("<[ \"\\d+\" ]>") { IsPattern = true });
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
+            WorkflowResult workflowResult = workflow.Process();
+            List<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto().ToList();
+            patternsRepository.Clear();
+
+            LineColumnTextSpan textSpan = matchResults[1].LineColumnTextSpan;
+            Assert.AreEqual(14, textSpan.BeginLine);
+            Assert.AreEqual(12, textSpan.BeginColumn);
+            Assert.AreEqual(16, textSpan.EndLine);
+            Assert.AreEqual(7, textSpan.EndColumn);
         }
 
         [Test]

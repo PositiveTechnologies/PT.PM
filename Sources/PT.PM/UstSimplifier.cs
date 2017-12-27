@@ -67,12 +67,17 @@ namespace PT.PM
             {
                 if (op.BinaryOperator == BinaryOperator.Plus)
                 {
+                    List<TextSpan> initialTextSpans = new List<TextSpan>();
+                    initialTextSpans.Populate(leftString);
+                    initialTextSpans.Populate(rightString);
+
                     string resultText = leftString.Text + rightString.Text;
                     result = new StringLiteral
                     {
                         Text = resultText,
                         Root = binaryOperatorExpression.Root,
-                        TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan)
+                        TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan),
+                        InitialTextSpans = initialTextSpans
                     };
                     Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {result.TextSpan}");
                 }
