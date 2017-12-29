@@ -32,10 +32,11 @@ namespace PT.PM.Common.Nodes
         public string ToStringWithoutLineBreaks() => debuggerPrinter.Print(ToString());
 
         /// <summary>
-        /// If string concatenation is reduced we lose information about
-        /// initial text spans, so we use this field to store with information
+        /// The list of text spans before any UST transformation or reduction.
+        /// For example it won't be empty for concatenation of several strings,
+        /// i.e. "1" + "2" + "3" -> "123".
+        /// These spans map on an original source code.
         /// </summary>
-        [JsonIgnore]
         public List<TextSpan> InitialTextSpans { get; set; } = new List<TextSpan>();
 
         protected Ust()

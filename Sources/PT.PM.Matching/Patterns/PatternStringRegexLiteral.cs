@@ -36,13 +36,15 @@ namespace PT.PM.Matching.Patterns
             if (stringLiteral.InitialTextSpans.Any())
             {
                 List<TextSpan> result = new List<TextSpan>();
-                stringLiteral.InitialTextSpans.Sort();
+                var initialTextSpans = stringLiteral.InitialTextSpans.OrderBy(el => el.Start).ToList();
+                var escapeLength = stringLiteral.EscapeCharsLength;
 
-                foreach (var location in matches)
+                foreach (TextSpan location in matches)
                 {
                     int offset = 0;
                     int leftBound = 1;
-                    int rightBound = stringLiteral.InitialTextSpans[0].Length - 1; // - 2 because of quotes and then + 1
+                    int rightBound =
+                        initialTextSpans[0].Length - 2 * escapeLength + 1; // - quotes length and then + 1
                     TextSpan textSpan = TextSpan.Empty;
 
                     // Check first initial textspan separately
@@ -51,13 +53,13 @@ namespace PT.PM.Matching.Patterns
                         textSpan = location;
                     }
 
-                    for (int i = 1; i < stringLiteral.InitialTextSpans.Count; i++)
+                    for (int i = 1; i < initialTextSpans.Count; i++)
                     {
-                        var initTextSpan = stringLiteral.InitialTextSpans[i];
-                        var prevTextSpan = stringLiteral.InitialTextSpans[i - 1];
-                        leftBound += prevTextSpan.Length - 2;
-                        rightBound += initTextSpan.Length - 2;
-                        offset += initTextSpan.Start - prevTextSpan.End + 2;
+                        var initTextSpan = initialTextSpans[i];
+                        var prevTextSpan = initialTextSpans[i - 1];
+                        leftBound += prevTextSpan.Length - 2 * escapeLength;
+                        rightBound += initTextSpan.Length - 2 * escapeLength;
+                        offset += initTextSpan.Start - prevTextSpan.End + 2 * escapeLength;
 
                         if (location.Start < leftBound && location.End < leftBound)
                         {

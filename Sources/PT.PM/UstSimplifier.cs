@@ -77,7 +77,7 @@ namespace PT.PM
                         Text = resultText,
                         Root = binaryOperatorExpression.Root,
                         TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan),
-                        InitialTextSpans = initialTextSpans
+                        InitialTextSpans = new List<TextSpan>(initialTextSpans)
                     };
                     Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {result.TextSpan}");
                 }
