@@ -45,8 +45,11 @@ namespace PT.PM.Cli
         [Option("indented", HelpText = "Is dump trees indented")]
         public bool IndentedDump { get; set; } = true;
 
-        [Option("text-spans", HelpText = "Is include text spans in dump trees")]
+        [Option("text-spans", HelpText = "Are include text spans in dump trees")]
         public bool IncludeTextSpansInDump { get; set; } = true;
+
+        [Option("line-column", HelpText = "Are text spans have a line-column format")]
+        public bool LineColumnTextSpans { get; set; } = false;
 
         [Option("start-stage", HelpText = "Start stage to process (File or Ust)")]
         public string StartStage { get; set; } = "";

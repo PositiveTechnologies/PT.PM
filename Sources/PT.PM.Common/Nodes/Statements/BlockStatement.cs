@@ -11,14 +11,7 @@ namespace PT.PM.Common.Nodes.Statements
         public BlockStatement(IEnumerable<Statement> statements)
         {
             Statements = statements as List<Statement> ?? statements.ToList();
-            if (Statements.Count > 0)
-            {
-                TextSpan = Statements.First().TextSpan.Union(Statements.Last().TextSpan);
-            }
-            else
-            {
-                TextSpan = default(TextSpan);
-            }
+            TextSpan = Statements.GetTextSpan();
         }
 
         public BlockStatement(IEnumerable<Statement> statements, TextSpan textSpan)

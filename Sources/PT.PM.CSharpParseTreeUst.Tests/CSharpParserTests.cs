@@ -1,17 +1,17 @@
-﻿using System.Linq;
+﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.TestUtils;
-using NUnit.Framework;
+using System.IO;
 
 namespace PT.PM.CSharpParseTreeUst.Tests
 {
     [TestFixture]
     public class CSharpParserTests
     {
-        [TestCase("AllInOne.cs")]
-        public void Parse_CSharpWithRoslyn(string fileName)
+        public void Parse_CSharpWithRoslyn()
         {
-            TestUtility.CheckFile(fileName, Stage.ParseTree);
+            TestUtility.CheckFile(Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs"),
+                Stage.ParseTree);
         }
 
         [Test]

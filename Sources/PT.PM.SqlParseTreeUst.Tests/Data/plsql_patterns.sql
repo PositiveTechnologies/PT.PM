@@ -88,10 +88,10 @@ END;
 
 CREATE PROCEDURE trust_boundary_violation IS BEGIN
 IF (OWA_COOKIE.get('usrname').num_vals != 0) THEN
-usrname := OWA_COOKIE.get('usrname').vals(1);
+    usrname := OWA_COOKIE.get('usrname').vals(1);
 END IF;
 IF (v('ATTR_USR') IS null) THEN
-HTMLDB_UTIL.set_session_state('ATTR_USR', usrname);
+    HTMLDB_UTIL.set_session_state('ATTR_USR', usrname);
 END IF;
 END;
 
@@ -354,12 +354,7 @@ END;
 -- Privilege Management: Overly Broad Grant
 -- Granting all privileges on an object may give users more privileges than expected.
 
-CREATE PROCEDURE overly_broad_grant AS
-DECLARE
-    pwd VARCHAR(20);
-BEGIN
-    GRANT ALL ON employees TO john_doe;
-END;
+GRANT ALL ON employees TO john_doe;
 
 -----------------------------------------------------------------------
 -- Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)

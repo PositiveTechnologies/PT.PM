@@ -71,6 +71,16 @@ namespace PT.PM.Common
 
         public TextSpan Union(TextSpan span)
         {
+            if (Equals(Empty))
+            {
+                return span;
+            }
+
+            if (span.Equals(Empty))
+            {
+                return this;
+            }
+
             int unionStart = Math.Min(Start, span.Start);
             int unionEnd = Math.Max(End, span.End);
 
@@ -91,9 +101,16 @@ namespace PT.PM.Common
         {
             string range = text.Substring(1, text.Length - 2);
             int index = range.IndexOf("..");
-            int start = int.Parse(range.Remove(index));
-            int end = int.Parse(range.Substring(index + 2));
-            return FromBounds(start, end);
+            if (index != -1)
+            {
+                int start = int.Parse(range.Remove(index));
+                int end = int.Parse(range.Substring(index + 2));
+                return FromBounds(start, end);
+            }
+            else
+            {
+                return new TextSpan(int.Parse(range), 0);
+            }
         }
 
         public static bool operator ==(TextSpan left, TextSpan right)
@@ -123,6 +140,10 @@ namespace PT.PM.Common
 
         public override string ToString()
         {
+            if (Start == End)
+            {
+                return $"[{Start})";
+            }
             return $"[{Start}..{End})"; 
         }
 

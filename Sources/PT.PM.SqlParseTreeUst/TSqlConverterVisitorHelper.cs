@@ -84,48 +84,49 @@ namespace PT.PM.SqlParseTreeUst
         {
             string text = token.Text;
             TextSpan textSpan = token.GetTextSpan();
-            Token result;
-            double floatValue;
-            if (text.StartsWith("@"))
+            Token result = null;
+
+            try
             {
-                result = new IdToken(text.Substring(1), textSpan);
-            }
-            else if (text.StartsWith("\"") || text.StartsWith("["))
-            {
-                result = new IdToken(text.Substring(1, text.Length - 2), textSpan);
-            }
-            else if (text.EndsWith("'"))
-            {
-                if (text.StartsWith("N"))
+                if (text.StartsWith("@"))
                 {
-                    text = text.Substring(1);
+                    result = new IdToken(text.Substring(1), textSpan);
                 }
-                text = text.Substring(1, text.Length - 2);
-                result = new StringLiteral(text, textSpan);
-            }
-            else if (text.All(c => char.IsDigit(c)))
-            {
-                result = new IntLiteral(long.Parse(text), textSpan);
-            }
-            else if (text.StartsWith("0X") || text.StartsWith("0x"))
-            {
-                result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
-            }
-            else if (double.TryParse(text, out floatValue))
-            {
-                result = new FloatLiteral(floatValue, textSpan);
-            }
-            else
-            {
-                if (text.Any(c => char.IsLetterOrDigit(c) || c == '_'))
+                else if (text.StartsWith("\"") || text.StartsWith("["))
                 {
-                    result = new IdToken(text, textSpan);
+                    result = new IdToken(text.Substring(1, text.Length - 2), textSpan);
                 }
-                else
+                else if (text.EndsWith("'"))
                 {
-                    result = null;
+                    if (text.StartsWith("N"))
+                    {
+                        text = text.Substring(1);
+                    }
+                    text = text.Substring(1, text.Length - 2);
+                    result = new StringLiteral(text, textSpan);
+                }
+                else if (text.All(c => char.IsDigit(c)))
+                {
+                    result = new IntLiteral(long.Parse(text), textSpan);
+                }
+                else if (text.StartsWith("0X", StringComparison.OrdinalIgnoreCase))
+                {
+                    result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
+                }
+                else if (double.TryParse(text, out double floatValue))
+                {
+                    result = new FloatLiteral(floatValue, textSpan);
                 }
             }
+            catch
+            {
+            }
+
+            if (result == null && (text.Any(c => char.IsLetterOrDigit(c) || c == '_')))
+            {
+                result = new IdToken(text, textSpan);
+            }
+
             return result;
         }
     }

@@ -13,8 +13,8 @@ namespace PT.PM.PhpParseTreeUst.Tests
     {
         public void Parse_PhpSyntax_WithoutErrors()
         {
-            TestUtility.CheckProject(TestUtility.TestsDataPath, Php.Language, Stage.ParseTree,
-               searchPredicate: fileName => !fileName.Contains("Error"));
+            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "php", "examples"),
+                Php.Language, Stage.ParseTree, searchPredicate: fileName => !fileName.Contains("Error"));
         }
 
         [Test]

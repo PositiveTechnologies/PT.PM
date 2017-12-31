@@ -3,22 +3,23 @@ using PT.PM.Common;
 using PT.PM.TestUtils;
 using NUnit.Framework;
 using PT.PM.Common.Nodes.GeneralScope;
+using System.IO;
 
 namespace PT.PM.CSharpParseTreeUst.Tests
 {
     [TestFixture]
     public class CSharpConverterTests
     {
-        [TestCase("AllInOne.cs")]
-        [TestCase("ConvertError.cs")]
-        public void Convert_CSharp_WithoutErrors(string fileName)
+        [Test]
+        public void Convert_CSharpAllInOne_WithoutErrors()
         {
-            TestUtility.CheckFile(fileName, Stage.Ust);
+            TestUtility.CheckFile(Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs"), Stage.Ust);
         }
 
-        [TestCase("AllInOne.cs")]
-        public void Convert_CSharp_BaseTypesExist(string fileName)
+        [Test]
+        public void Convert_CSharp_BaseTypesExist()
         {
+            string fileName = Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs");
             var workflowResults = TestUtility.CheckFile(fileName, Stage.Ust);
             var ust = workflowResults.Usts.First();
             bool result = ust.AnyDescendant(descendant =>

@@ -18,7 +18,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
             get
             {
-                var paramsString = string.Join(",", Parameters.Select(p => p.Type?.TypeText ?? ""));
+                var paramsString = string.Join(",", Parameters.Select(p => p.Type?.TypeText ?? "Any"));
                 return $"{Name.TextValue}({paramsString})";
             }
         }

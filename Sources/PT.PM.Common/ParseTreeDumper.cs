@@ -6,7 +6,7 @@ namespace PT.PM.Common
     {
         public static string TokensSuffix { get; set; } = "tokens.txt";
 
-        public static string ParseTreeSuffix { get; set; } = "parseTree.txt";
+        public static string ParseTreeSuffix { get; set; } = "parseTree.lisp";
 
         public static string UstSuffix { get; set; } = "ust.json";
 

@@ -14,6 +14,30 @@ namespace PT.PM.Tests
     public class SerializationTests
     {
         [Test]
+        public void Parse_TextSpan()
+        {
+            var textSpan = new TextSpan(42, 0);
+            string textSpanString = textSpan.ToString();
+            Assert.AreEqual(textSpan, TextSpan.Parse(textSpanString));
+
+            textSpan = new TextSpan(42, 5);
+            textSpanString = textSpan.ToString();
+            Assert.AreEqual(textSpan, TextSpan.Parse(textSpanString));
+        }
+
+        [Test]
+        public void Parse_LineColumnTextSpan()
+        {
+            var lcTextSpan = new LineColumnTextSpan(42, 1, 42, 1);
+            string textSpanString = lcTextSpan.ToString();
+            Assert.AreEqual(lcTextSpan, LineColumnTextSpan.Parse(textSpanString));
+
+            lcTextSpan = new LineColumnTextSpan(42, 1, 41, 5);
+            textSpanString = lcTextSpan.ToString();
+            Assert.AreEqual(lcTextSpan, LineColumnTextSpan.Parse(textSpanString));
+        }
+
+        [Test]
         public void CompressEscape_TestString_UnescapedDecompressedIsEqual()
         {
             var testData = "test_string0-9`,привет мир!{\"'}";

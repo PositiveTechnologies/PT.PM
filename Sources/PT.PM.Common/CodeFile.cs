@@ -58,6 +58,14 @@ namespace PT.PM.Common
             line += StartLine;
         }
 
+        public TextSpan GetTextSpan(LineColumnTextSpan textSpan)
+        {
+            int start = GetLinearFromLineColumn(textSpan.BeginLine, textSpan.BeginColumn);
+            int end = GetLinearFromLineColumn(textSpan.EndLine, textSpan.EndColumn);
+
+            return TextSpan.FromBounds(start, end);
+        }
+
         public int GetLinearFromLineColumn(int line, int column)
         {
             InitLineIndexesIfRequired();
