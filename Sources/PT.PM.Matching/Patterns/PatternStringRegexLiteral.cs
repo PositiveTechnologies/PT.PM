@@ -36,7 +36,7 @@ namespace PT.PM.Matching.Patterns
             if (stringLiteral.InitialTextSpans.Any())
             {
                 List<TextSpan> result = new List<TextSpan>();
-                var initialTextSpans = stringLiteral.InitialTextSpans.OrderBy(el => el.Start).ToList();
+                var initialTextSpans = stringLiteral.InitialTextSpans.OrderBy(el => el).ToList();
                 var escapeLength = stringLiteral.EscapeCharsLength;
 
                 foreach (TextSpan location in matches)
