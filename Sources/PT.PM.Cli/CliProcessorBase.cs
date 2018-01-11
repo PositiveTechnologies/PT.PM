@@ -56,12 +56,9 @@ namespace PT.PM.Cli
 
             try
             {
-                if (parameters.ShowVersion)
-                {
-                    AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-                    string name = assemblyName.Name.Replace(".Cli", "");
-                    logger.LogInfo($"{name} version: {assemblyName.Version}");
-                }
+                AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+                string name = assemblyName.Name.Replace(".Cli", "");
+                logger.LogInfo($"{name} version: {assemblyName.Version}");
 
                 if (logger is FileLogger abstractLogger)
                 {
@@ -76,7 +73,7 @@ namespace PT.PM.Cli
 
                 if (string.IsNullOrEmpty(parameters.InputFileNameOrDirectory) && string.IsNullOrEmpty(parameters.Patterns))
                 {
-                    throw new ArgumentException("at least --files or --patterns parameter required");
+                    throw new ArgumentException("at least -f or -p parameter required");
                 }
 
                 if (!Enum.TryParse(parameters.Stage, true, out Stage pmStage))
