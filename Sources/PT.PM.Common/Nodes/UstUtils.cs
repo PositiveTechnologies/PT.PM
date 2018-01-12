@@ -7,18 +7,18 @@ namespace PT.PM.Common.Nodes
 {
     public static class UstUtils
     {
-        public static Statement ToStatementIfRequired(this Ust node)
+        public static Statement ToStatementIfRequired(this Ust ust)
         {
-            Statement result = node as Statement;
+            Statement result = ust as Statement;
             if (result == null)
             {
-                if (node is Expression expr)
+                if (ust is Expression expr)
                 {
                     result = new ExpressionStatement(expr);
                 }
-                else if (node != null)
+                else if (ust != null)
                 {
-                    result = new WrapperStatement(node);
+                    result = new WrapperStatement(ust);
                 }
                 else
                 {
@@ -28,43 +28,49 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static Expression ToExpressionIfRequired(this Ust node)
+        public static Expression ToExpressionIfRequired(this Ust ust)
         {
-            if (node == null)
+            if (ust == null)
             {
                 return null;
             }
 
-            Expression result = node as Expression;
+            Expression result = ust as Expression;
             if (result == null)
             {
-                result = new WrapperExpression(node);
+                result = new WrapperExpression(ust);
             }
             return result;
         }
 
-        public static BlockStatement ToBlockStatementIfRequired(this Statement statement)
+        public static bool IsInsideSingleBlockStatement(this Ust ust)
         {
-            if (statement is BlockStatement blockStatement)
+            Ust parent = ust;
+            while (parent != null && !(parent is Statement))
             {
-                return blockStatement;
+                parent = parent.Parent;
             }
-            else
+
+            if (parent == null)
             {
-                return new BlockStatement(new Statement[] { statement });
+                return false;
             }
+
+            Statement statement = (Statement)parent;
+
+            return statement.Parent is Statement parentStatement && !(parentStatement is BlockStatement);
         }
 
-        public static Ust[] SelectAnalyzedNodes(this Ust ustNode, Language language, HashSet<Language> analyzedLanguages)
+        public static Ust[] SelectAnalyzedNodes(this Ust ust, Language language, HashSet<Language> analyzedLanguages)
         {
             Ust[] result;
             if (analyzedLanguages.Contains(language))
             {
-                result = new Ust[] { ustNode };
+                result = new Ust[] { ust };
             }
             else
             {
-                result = ustNode.WhereDescendants(
+                result = ust.WhereDescendants(
                     node => node is RootUst rootUst && analyzedLanguages.Contains(rootUst.Language))
                     .Cast<RootUst>()
                     .ToArray();
@@ -72,22 +78,22 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static void FillAscendants(this Ust ustNode)
+        public static void FillAscendants(this Ust ust)
         {
-            if (ustNode == null)
+            if (ust == null)
             {
                 return;
             }
 
-            FillAscendantsLocal(ustNode, ustNode as RootUst);
+            FillAscendantsLocal(ust, ust as RootUst);
 
-            void FillAscendantsLocal(Ust node, RootUst root)
+            void FillAscendantsLocal(Ust localUst, RootUst root)
             {
-                foreach (Ust child in node.Children)
+                foreach (Ust child in localUst.Children)
                 {
                     if (child != null)
                     {
-                        child.Parent = node;
+                        child.Parent = localUst;
                         child.Root = root;
                         if (child is RootUst rootUstChild)
                         {
@@ -102,15 +108,15 @@ namespace PT.PM.Common.Nodes
             }
         }
 
-        public static TextSpan GetTextSpan(this IEnumerable<Ust> nodes)
+        public static TextSpan GetTextSpan(this IEnumerable<Ust> usts)
         {
-            if (nodes.Count() == 0)
+            if (usts.Count() == 0)
             {
                 return default(TextSpan);
             }
             else
             {
-                return nodes.First().TextSpan.Union(nodes.Last().TextSpan);
+                return usts.First().TextSpan.Union(usts.Last().TextSpan);
             }
         }
 
