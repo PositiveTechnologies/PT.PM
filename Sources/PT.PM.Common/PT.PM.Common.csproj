@@ -51,6 +51,7 @@
     <Compile Include="Json\CodeFileJsonConverter.cs" />
     <Compile Include="Json\TextSpanJsonConverter.cs" />
     <Compile Include="LanguageUtils.cs" />
+    <Compile Include="MultiMap.cs" />
     <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Nodes\IUst.cs" />
     <Compile Include="Nodes\IUstVisitor.cs" />
