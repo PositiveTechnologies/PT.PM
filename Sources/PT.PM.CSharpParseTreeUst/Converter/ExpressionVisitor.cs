@@ -12,7 +12,6 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens.Literals;
-//using Microsoft.CodeAnalysis.FindSymbols;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
