@@ -23,7 +23,11 @@
 
         public override string ToString()
         {
-            return Right == null ? Left.ToString() : $"{Left} = {Right}";
+            return Right == null
+                ? Left == null
+                ? " = "
+                : Left.ToString()
+                : $"{Left} = {Right}";
         }
     }
 }

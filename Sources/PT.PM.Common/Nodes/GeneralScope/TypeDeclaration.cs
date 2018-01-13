@@ -34,6 +34,8 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public TypeDeclaration()
         {
+            BaseTypes = new List<TypeToken>();
+            TypeMembers = new List<EntityDeclaration>();
         }
 
         public override Ust[] GetChildren()
