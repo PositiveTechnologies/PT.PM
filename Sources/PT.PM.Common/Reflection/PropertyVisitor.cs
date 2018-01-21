@@ -49,10 +49,20 @@ namespace PT.PM.Common.Reflection
                 else if (propType.GetInterfaces().Contains(typeof(IEnumerable)))
                 {
                     Type itemType = propType.GetGenericArguments()[0];
-                    var sourceCollection = (IEnumerable<object>)prop.GetValue(node);
                     IList destCollection = null;
-                    if (sourceCollection != null)
+                    var collection = prop.GetValue(node);
+                    if (collection != null)
                     {
+                        IEnumerable<object> sourceCollection;
+                        if (collection is IEnumerable<object> refCollection)
+                        {
+                            sourceCollection = refCollection;
+                        }
+                        else
+                        {
+                            sourceCollection = ((IEnumerable)collection).Cast<object>();
+                        }
+
                         destCollection = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(itemType));
                         foreach (object item in sourceCollection)
                         {

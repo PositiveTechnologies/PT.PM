@@ -28,8 +28,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 node.Declaration.Variables.Select(v => (AssignmentExpression)VisitAndReturnNullIfError(v))
                 .ToArray();
 
-            var resultExpression = new VariableDeclarationExpression(type, variables, node.GetTextSpan());
-            var result = new ExpressionStatement(resultExpression);
+            var resultExpression = new VariableDeclarationExpression(type, variables, node.Declaration.GetTextSpan());
+            var result = new ExpressionStatement(resultExpression, node.GetTextSpan());
             return result;
         }
 

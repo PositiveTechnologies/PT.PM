@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -10,7 +11,11 @@ namespace PT.PM.Common.Json
 {
     public abstract class JsonConverterBase : JsonConverter, ILoggable
     {
+        private MultiMap<TextSpan, Ust> existingUsts = new MultiMap<TextSpan, Ust>();
+
         protected const string KindName = "Kind";
+
+        protected JsonSerializer jsonSerializer;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -100,7 +105,7 @@ namespace PT.PM.Common.Json
             return jObject;
         }
 
-        protected Ust CreateUst(object jObjectOrToken)
+        protected Ust CreateOrGetUst(object jObjectOrToken)
         {
             JObject jObject = jObjectOrToken as JObject;
             JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
@@ -121,6 +126,26 @@ namespace PT.PM.Common.Json
                 return null;
             }
 
+            JToken textSpanToken = jObject != null
+                ? jObject.GetValueIgnoreCase(nameof(Ust.TextSpan))
+                : jToken != null
+                ? jToken.GetValueIgnoreCase(nameof(Ust.TextSpan))
+                : null;
+
+            TextSpan textSpan = TextSpan.Empty;
+            if (textSpanToken != null)
+            {
+                textSpan = textSpanToken.ToObject<TextSpan>(jsonSerializer);
+                if (!textSpan.IsEmpty && existingUsts.TryGetValue(textSpan, out List<Ust> usts))
+                {
+                    var sameTypeUst = usts.FirstOrDefault(u => u.GetType() == type);
+                    if (sameTypeUst != null)
+                    {
+                        return sameTypeUst;
+                    }
+                }
+            }
+
             Ust ust;
             if (type == typeof(RootUst))
             {
@@ -139,6 +164,12 @@ namespace PT.PM.Common.Json
             else
             {
                 ust = (Ust)Activator.CreateInstance(type);
+            }
+
+            if (!textSpan.IsEmpty)
+            {
+                ust.TextSpan = textSpan;
+                existingUsts.Add(textSpan, ust);
             }
 
             return ust;

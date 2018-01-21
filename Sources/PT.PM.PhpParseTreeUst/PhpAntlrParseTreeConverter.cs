@@ -1636,7 +1636,10 @@ namespace PT.PM.PhpParseTreeUst
             Expression result;
             if (context.StringPart() != null)
             {
-                result = new StringLiteral(context.StringPart().GetText(), context.GetTextSpan());
+                // TextSpan should include quotes
+                var oldTextSpan = context.GetTextSpan();
+                var textSpan = new TextSpan(oldTextSpan.Start - 1, oldTextSpan.Length + 2);
+                result = new StringLiteral(context.StringPart().GetText(), textSpan);
             }
             else
             {

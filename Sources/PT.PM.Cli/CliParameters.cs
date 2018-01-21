@@ -9,10 +9,10 @@ namespace PT.PM.Cli
         [Option('f', "files", HelpText = "Input file or directory to be processed")]
         public string InputFileNameOrDirectory { get; set; } = "";
 
-        [Option('l', "languages", HelpText = "Languages to be processed")]
+        [Option('l', "languages", HelpText = "Languages to be processed (at least -f or -p parameter required)")]
         public string Languages { get; set; } = "";
 
-        [Option('p', "patterns", HelpText = "Patterns to be processed (json or base64 encoded)")]
+        [Option('p', "patterns", HelpText = "Patterns to be processed (at least -f or -p parameter required)")]
         public string Patterns { get; set; } = "";
 
         [Option('t', "threads", HelpText = "Number of processing threads")]
@@ -56,9 +56,6 @@ namespace PT.PM.Cli
 
         [Option('d', "dump", HelpText = "Stages to be dumped (ParseTree, Ust)")]
         public string DumpStages { get; set; } = "";
-
-        [Option('v', "version", HelpText = "Show version or not")]
-        public bool ShowVersion { get; set; } = true;
 
         [Option('r', "render", HelpText = "Stages to be rendered")]
         public string RenderStages { get; set; } = "";

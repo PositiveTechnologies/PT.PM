@@ -1,5 +1,7 @@
-﻿using System;
+using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 using System.Text;
 
 namespace PT.PM.Common.Nodes
@@ -28,6 +30,14 @@ namespace PT.PM.Common.Nodes
         public Ust[] Children => GetChildren();
 
         public string ToStringWithoutLineBreaks() => debuggerPrinter.Print(ToString());
+
+        /// <summary>
+        /// The list of text spans before any UST transformation or reduction.
+        /// For example it won't be empty for concatenation of several strings,
+        /// i.e. "1" + "2" + "3" -> "123".
+        /// These spans map on an original source code.
+        /// </summary>
+        public List<TextSpan> InitialTextSpans { get; set; } = new List<TextSpan>();
 
         protected Ust()
         {

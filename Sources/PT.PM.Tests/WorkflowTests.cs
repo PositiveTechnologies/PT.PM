@@ -61,6 +61,7 @@ namespace PT.PM.Tests
             }
 
             // Deserialization
+            var logger = new LoggerMessageCounter();
             SourceCodeRepository sourceCodeRepository = new MemoryCodeRepository(code, inputFileName + ".ust.json")
             {
                 LoadJson = true
@@ -71,10 +72,12 @@ namespace PT.PM.Tests
                 IsAsyncPatternsConversion = false,
                 IndentedDump = indented,
                 DumpWithTextSpans = includeTextSpans,
-                LineColumnTextSpans = lineColumnTextSpans
+                LineColumnTextSpans = lineColumnTextSpans,
+                Logger = logger
             };
             var newResult = newWorkflow.Process();
 
+            Assert.AreEqual(0, logger.ErrorCount);
             Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
             MatchResult match = newResult.MatchResults.FirstOrDefault();
             if (includeTextSpans)

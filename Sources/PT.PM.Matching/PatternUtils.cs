@@ -14,7 +14,7 @@ namespace PT.PM.Matching
             foreach (Match match in matches)
             {
                 TextSpan textSpan = match.GetTextSpan(text, escapeCharsLength);
-                if (!textSpan.IsEmpty)
+                if (match.Success)
                     result.Add(textSpan);
             }
             return result.ToArray();

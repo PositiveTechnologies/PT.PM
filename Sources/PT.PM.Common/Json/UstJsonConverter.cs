@@ -21,6 +21,8 @@ namespace PT.PM.Common.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
+            jsonSerializer = serializer;
+
             if (reader.TokenType == JsonToken.Null)
             {
                 return null;
@@ -35,7 +37,7 @@ namespace PT.PM.Common.Json
             {
                 // Try load from Ust subfield.
                 JToken jToken = jObject.GetValueIgnoreCase(nameof(Ust));
-                target = CreateUst(jToken);
+                target = CreateOrGetUst(jToken);
                 if (target == null)
                 {
                     return null;
@@ -44,7 +46,7 @@ namespace PT.PM.Common.Json
             }
             else
             {
-                target = CreateUst(jObject);
+                target = CreateOrGetUst(jObject);
                 if (target == null)
                 {
                     return null;
