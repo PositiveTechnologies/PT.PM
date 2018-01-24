@@ -78,7 +78,7 @@
     <Compile Include="Exceptions\PreprocessingException.cs" />
     <Compile Include="Json\UstJsonConverter.cs" />
     <Compile Include="CodeRepository\FileCodeRepository.cs" />
-    <Compile Include="CodeRepository\FilesAggregatorCodeRepository.cs" />
+    <Compile Include="CodeRepository\DirectoryCodeRepository.cs" />
     <Compile Include="Exceptions\ConversionException.cs" />
     <Compile Include="Exceptions\MatchingException.cs" />
     <Compile Include="Exceptions\ShouldNotBeVisitedException.cs" />

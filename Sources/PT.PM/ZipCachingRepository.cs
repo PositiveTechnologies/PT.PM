@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace PT.PM
 {
-    public class ZipCachingRepository : FilesAggregatorCodeRepository
+    public class ZipCachingRepository : DirectoryCodeRepository
     {
         public bool Rewrite { get; set; } = false;
 

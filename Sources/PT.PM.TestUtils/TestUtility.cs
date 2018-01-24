@@ -78,7 +78,7 @@ namespace PT.PM.TestUtils
             string searchPattern = "*.*", Func<string, bool> searchPredicate = null)
         {
             var logger = new LoggerMessageCounter() { LogToConsole = false };
-            var repository = new FilesAggregatorCodeRepository(projectPath, language)
+            var repository = new DirectoryCodeRepository(projectPath, language)
             {
                 SearchPattern = searchPattern,
                 SearchPredicate = searchPredicate

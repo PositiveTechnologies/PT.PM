@@ -16,7 +16,7 @@ namespace PT.PM
             SourceCodeRepository sourceCodeRepository;
             if (Directory.Exists(path))
             {
-                sourceCodeRepository = new FilesAggregatorCodeRepository(path);
+                sourceCodeRepository = new DirectoryCodeRepository(path);
             }
             else if (File.Exists(path))
             {
