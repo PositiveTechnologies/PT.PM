@@ -7,24 +7,23 @@ namespace PT.PM.Common.CodeRepository
 {
     public class FileCodeRepository : SourceCodeRepository
     {
-        protected string fullName;
+        protected IEnumerable<string> fullNames;
 
         public FileCodeRepository(string fileName, Language language = null)
+            : this(new string[] { fileName }, language)
         {
-            RootPath = !string.IsNullOrEmpty(fileName)
-                ? Path.GetDirectoryName(fileName)
-                : "";
-            fullName = fileName;
+        }
+
+        public FileCodeRepository(IEnumerable<string> fileNames, Language language = null)
+        {
+            fullNames = fileNames;
             if (language != null)
             {
                 Languages = new HashSet<Language>() { language };
             }
         }
 
-        public override IEnumerable<string> GetFileNames()
-        {
-            return new string[] { fullName };
-        }
+        public override IEnumerable<string> GetFileNames() => fullNames;
 
         public override CodeFile ReadFile(string fileName)
         {
@@ -33,7 +32,7 @@ namespace PT.PM.Common.CodeRepository
             {
                 result = new CodeFile(ReadCode(fileName))
                 {
-                    RootPath = RootPath,
+                    RootPath = !string.IsNullOrEmpty(fileName) ? Path.GetDirectoryName(fileName): "",
                     Name = Path.GetFileName(fileName)
                 };
             }
@@ -41,7 +40,7 @@ namespace PT.PM.Common.CodeRepository
             {
                 result = new CodeFile("")
                 {
-                    RootPath = RootPath,
+                    RootPath = !string.IsNullOrEmpty(fileName) ? Path.GetDirectoryName(fileName) : "",
                     Name = Path.GetFileName(fileName)
                 };
                 Logger.LogError(new ReadException(result, ex));

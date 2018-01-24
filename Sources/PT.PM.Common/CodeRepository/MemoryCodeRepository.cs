@@ -1,11 +1,18 @@
-﻿namespace PT.PM.Common.CodeRepository
+﻿using System.Collections.Generic;
+
+namespace PT.PM.Common.CodeRepository
 {
     public class MemoryCodeRepository : FileCodeRepository
     {
-        public string Code { get; set; }
+        public Dictionary<string, string> Code { get; set; }
 
         public MemoryCodeRepository(string code, string fileName = "", Language language = null)
-            : base(fileName, language)
+            : this(new Dictionary<string, string>() { [fileName] = code }, language)
+        {
+        }
+
+        public MemoryCodeRepository(Dictionary<string, string> code, Language language = null)
+            : base(code.Keys, language)
         {
             Code = code;
         }
@@ -20,6 +27,8 @@
             return base.IsFileIgnored(fileName);
         }
 
-        protected override string ReadCode(string fileName) => Code;
+        public override IEnumerable<string> GetFileNames() => Code.Keys;
+
+        protected override string ReadCode(string fileName) => Code[fileName];
     }
 }
