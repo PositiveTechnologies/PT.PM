@@ -31,7 +31,7 @@ namespace PT.PM.Cli
         public int Memory { get; set; } = 300;
 
         [Option("logs-dir", HelpText = "Logs directory")]
-        public string LogsDir { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM", "Logs");
+        public string LogsDir { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
 
         [Option("temp-dir", HelpText = "Temp directory")]
         public string TempDir { get; set; } = Path.GetTempPath();

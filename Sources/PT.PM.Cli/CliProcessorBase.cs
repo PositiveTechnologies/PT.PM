@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace PT.PM.Cli
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
         where TMatchResult : MatchResultBase<TPattern>
     {
-        public int ParseAndConvert(string[] args)
+        public int ParseAndConvert(string[] args, string coreName)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -28,6 +29,11 @@ namespace PT.PM.Cli
 
             var result = parserResult.MapResult(
                 cliParams => {
+                    if (!string.IsNullOrEmpty(cliParams.LogsDir) && !cliParams.LogsDir.EndsWith(coreName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cliParams.LogsDir = Path.Combine(cliParams.LogsDir, coreName);
+                    }
+
                     int convertResult = 0;
                     if (cliParams.MaxStackSize == 0)
                     {

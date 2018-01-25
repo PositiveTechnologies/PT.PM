@@ -8,7 +8,7 @@ namespace PT.PM.Cli
         private static int Main(string[] args)
         {
             var cliProcessor = new CliProcessor();
-            int result = cliProcessor.ParseAndConvert(args);
+            int result = cliProcessor.ParseAndConvert(args, "PT.PM");
 
             if (Debugger.IsAttached)
             {
