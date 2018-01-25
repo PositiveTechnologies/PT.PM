@@ -55,6 +55,7 @@
     <Compile Include="Nodes\Collections\Collection.cs" />
     <Compile Include="Nodes\IUst.cs" />
     <Compile Include="Nodes\IUstVisitor.cs" />
+    <Compile Include="Nodes\Specific\CommaExpression.cs" />
     <Compile Include="ParseTreeDumper.cs" />
     <Compile Include="Reflection\PropertyCloner.cs" />
     <Compile Include="Reflection\PropertyComparer.cs" />

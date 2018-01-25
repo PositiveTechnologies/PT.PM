@@ -107,6 +107,11 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(variableDeclarationExpression);
         }
 
+        public virtual T Visit(CommaExpression colonExpression)
+        {
+            return VisitChildren(colonExpression);
+        }
+
         public virtual T Visit(NamespaceDeclaration namespaceDeclaration)
         {
             return VisitChildren(namespaceDeclaration);

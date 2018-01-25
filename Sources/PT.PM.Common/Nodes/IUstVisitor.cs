@@ -43,6 +43,7 @@ namespace PT.PM.Common.Nodes
         T Visit(ObjectCreateExpression objectCreateExpression);
         T Visit(UnaryOperatorExpression unaryOperatorExpression);
         T Visit(VariableDeclarationExpression variableDeclarationExpression);
+        T Visit(CommaExpression colonExpression);
 
         #endregion
 
