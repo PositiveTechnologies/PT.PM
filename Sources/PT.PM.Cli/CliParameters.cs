@@ -36,7 +36,7 @@ namespace PT.PM.Cli
         [Option("temp-dir", HelpText = "Temp directory")]
         public string TempDir { get; set; } = Path.GetTempPath();
 
-        [Option("log-errors", HelpText = "Is log errors to console")]
+        [Option('e', "log-errors", HelpText = "Is log errors to console")]
         public bool IsLogErrors { get; set; } = false;
 
         [Option("log-debugs", HelpText = "Is log debug messages")]
