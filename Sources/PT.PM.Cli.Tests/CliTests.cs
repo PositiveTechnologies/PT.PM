@@ -40,7 +40,7 @@ namespace PT.PM.Cli.Tests
 
             string patternsStr = PreparePatternsString();
 
-            string logPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(exeName));
+            string logPath = Path.Combine(Path.GetTempPath(), "PT.PM");
             try
             {
                 if (Directory.Exists(logPath))
