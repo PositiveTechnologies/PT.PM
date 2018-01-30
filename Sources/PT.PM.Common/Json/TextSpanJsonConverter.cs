@@ -76,48 +76,88 @@ namespace PT.PM.Common.Json
             IJsonLineInfo jsonLineInfo = null;
             try
             {
-                if (ShortFormat)
+                if (TryDeserializeTextSpan(reader, ShortFormat, IsLineColumn, out result))
                 {
-                    string textSpanString = (string)reader.Value;
-                    if (!IsLineColumn)
-                    {
-                        result = textSpanString == EmptyTextSpanFormat
-                            ? TextSpan.Empty
-                            : TextSpan.Parse(textSpanString);
-                    }
-                    else
-                    {
-                        result = textSpanString == EmptyTextSpanFormat
-                             ? TextSpan.Empty
-                             : CodeFile.GetTextSpan(LineColumnTextSpan.Parse(textSpanString));
-                    }
+                    return result;
                 }
-                else
+
+                if (TryDeserializeTextSpan(reader, ShortFormat, !IsLineColumn, out result))
                 {
-                    var jObject = JObject.Load(reader);
-                    jsonLineInfo = jObject as IJsonLineInfo;
-                    if (!IsLineColumn)
-                    {
-                        int start = jObject.GetValueIgnoreCase(nameof(TextSpan.Start))?.ToObject<int>() ?? 0;
-                        int length = jObject.GetValueIgnoreCase(nameof(TextSpan.Length))?.ToObject<int>() ?? 0;
-                        result = new TextSpan(start, length);
-                    }
-                    else
-                    {
-                        int beginLine = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.BeginLine))?.ToObject<int>() ?? CodeFile.StartLine;
-                        int beginColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.BeginColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
-                        int endLine = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndLine))?.ToObject<int>() ?? CodeFile.StartLine;
-                        int endColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
-                        var lcTextSpan = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
-                        result = CodeFile.GetTextSpan(lcTextSpan);
-                    }
+                    IsLineColumn = !IsLineColumn;
+                    return result;
                 }
+
+                if (TryDeserializeTextSpan(reader, !ShortFormat, IsLineColumn, out result))
+                {
+                    ShortFormat = !ShortFormat;
+                    return result;
+                }
+
+                DeserializeTextSpan(reader, !ShortFormat, !IsLineColumn, out result);
+                ShortFormat = !ShortFormat;
+                IsLineColumn = !IsLineColumn;
+
+                return result;
             }
             catch (Exception ex)
             {
                 Logger.LogError(JsonFile, jsonLineInfo, ex);
             }
             return result;
+        }
+
+        private bool TryDeserializeTextSpan(JsonReader reader, bool shortFormat, bool isLineColumn, out TextSpan result, bool throwException = false)
+        {
+            try
+            {
+                DeserializeTextSpan(reader, shortFormat, isLineColumn, out result);
+                return true;
+            }
+            catch
+            {
+                result = TextSpan.Empty;
+                return false;
+            }
+        }
+
+        private void DeserializeTextSpan(JsonReader reader, bool shortFormat, bool isLineColumn, out TextSpan result)
+        {
+            result = TextSpan.Empty;
+            if (shortFormat)
+            {
+                string textSpanString = (string)reader.Value;
+                if (!isLineColumn)
+                {
+                    result = textSpanString == EmptyTextSpanFormat
+                        ? TextSpan.Empty
+                        : TextSpan.Parse(textSpanString);
+                }
+                else
+                {
+                    result = textSpanString == EmptyTextSpanFormat
+                         ? TextSpan.Empty
+                         : CodeFile.GetTextSpan(LineColumnTextSpan.Parse(textSpanString));
+                }
+            }
+            else
+            {
+                var jObject = JObject.Load(reader);
+                if (!isLineColumn)
+                {
+                    int start = jObject.GetValueIgnoreCase(nameof(TextSpan.Start))?.ToObject<int>() ?? 0;
+                    int length = jObject.GetValueIgnoreCase(nameof(TextSpan.Length))?.ToObject<int>() ?? 0;
+                    result = new TextSpan(start, length);
+                }
+                else
+                {
+                    int beginLine = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.BeginLine))?.ToObject<int>() ?? CodeFile.StartLine;
+                    int beginColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.BeginColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
+                    int endLine = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndLine))?.ToObject<int>() ?? CodeFile.StartLine;
+                    int endColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
+                    var lcTextSpan = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
+                    result = CodeFile.GetTextSpan(lcTextSpan);
+                }
+            }
         }
     }
 }
