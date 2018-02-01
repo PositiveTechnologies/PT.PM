@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PT.PM.Matching.Tests</RootNamespace>
     <AssemblyName>PT.PM.Matching.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,12 +53,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
+      <Project>{82402704-16f1-476b-8670-6836340612f3}</Project>
+      <Name>PT.PM.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj">
       <Project>{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}</Project>
       <Name>PT.PM.CSharpParseTreeUst</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj">
-      <Project>{F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB}</Project>
+      <Project>{aa275980-e6c1-4d84-a505-26703cf8e15a}</Project>
       <Name>PT.PM.JavaParseTreeUst</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj">
@@ -76,14 +80,6 @@
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
-      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
-      <Name>PT.PM.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.CSharpParseTreeUst.Tests\PT.PM.CSharpParseTreeUst.Tests.csproj">
-      <Project>{e3db8014-0bfb-4399-9b49-a8be446c5049}</Project>
-      <Name>PT.PM.CSharpParseTreeUst.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
       <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>

@@ -24,7 +24,7 @@ namespace PT.PM.Prebuild
     /// </summary>
     class Program
     {
-        const string AntlrJarFileName = @"packages\Antlr4.CodeGenerator.4.6.3\tools\antlr4-csharp-4.6.3-complete.jar";
+        const string AntlrJarFileName = @"packages\Antlr4.CodeGenerator.4.6.4\tools\antlr4-csharp-4.6.4-complete.jar";
         static string AntlrFullJarFileName;
 
         static void Main(string[] args)

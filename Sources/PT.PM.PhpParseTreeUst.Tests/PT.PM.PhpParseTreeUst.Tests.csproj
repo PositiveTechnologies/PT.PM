@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PT.PM.PhpParseTreeUst.Tests</RootNamespace>
     <AssemblyName>PT.PM.PhpParseTreeUst.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Antlr4.Runtime.4.6.3\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Antlr4.Runtime.4.6.4\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,8 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj">
-      <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
+      <Project>{0fbee2ff-027b-4489-b94f-b5f6cac26799}</Project>
       <Name>PT.PM.AntlrUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
+      <Project>{82402704-16f1-476b-8670-6836340612f3}</Project>
+      <Name>PT.PM.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
       <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
@@ -59,10 +63,6 @@
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
       <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
       <Name>PT.PM.TestUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
-      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
-      <Name>PT.PM.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
       <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
@@ -90,7 +90,6 @@
     <Content Include="Data\PatternsWithParseErrors.php">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="app.config" />
     <None Include="Data\newLine -r-n.php">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

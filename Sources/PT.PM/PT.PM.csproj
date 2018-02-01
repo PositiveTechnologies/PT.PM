@@ -1,134 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ECB44673-2FB0-49E1-811F-973E3FA4DD22}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM</RootNamespace>
-    <AssemblyName>PT.PM</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
-    <Reference Include="System.IO.Compression.FileSystem" />
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
+    <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj" />
+    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj" />
+    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj" />
+
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="GraphvizGraph.cs" />
-    <Compile Include="GraphvizDirection.cs" />
-    <Compile Include="GraphvizOutputFormat.cs" />
-    <Compile Include="IArchiveExtractor.cs" />
-    <Compile Include="LanguageDetector.cs" />
-    <Compile Include="MessageEventArgs.cs" />
-    <Compile Include="MessageType.cs" />
-    <Compile Include="ParserLanguageDetector.cs" />
-    <Compile Include="ParserUnit.cs" />
-    <Compile Include="ParserUnitLogger.cs" />
-    <Compile Include="DetectionResult.cs" />
-    <Compile Include="RepositoryFactory.cs" />
-    <Compile Include="SevenZipExtractor.cs" />
-    <Compile Include="Stage.cs" />
-    <Compile Include="StageDotRenderer.cs" />
-    <Compile Include="StageRenderer.cs" />
-    <Compile Include="StageUtils.cs" />
-    <Compile Include="StandardArchiveExtractor.cs" />
-    <Compile Include="UstSimplifier.cs" />
-    <Compile Include="Workflow.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\AssemblyInfoCommon.cs">
-      <Link>Properties\AssemblyInfoCommon.cs</Link>
-    </Compile>
-    <Compile Include="WorkflowBase.cs" />
-    <Compile Include="WorkflowResult.cs" />
-    <Compile Include="WorkflowResultBase.cs" />
-    <Compile Include="ZipAtUrlCachingRepository.cs" />
-    <Compile Include="ZipCachingRepository.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AspxParser\AspxParser\AspxParser.csproj">
-      <Project>{88AF3957-A64A-4715-ADE5-3BE099034BDD}</Project>
-      <Name>AspxParser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj">
-      <Project>{2b5519c9-4566-4743-a14a-66234299cdb8}</Project>
-      <Name>PT.PM.AntlrUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
-      <Project>{0b10dbae-c18d-4007-b799-0b3b1e00376e}</Project>
-      <Name>PT.PM.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj">
-      <Project>{3b09e6ec-8069-4ed3-aad8-145953fd7dca}</Project>
-      <Name>PT.PM.CSharpParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
-      <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
-      <Name>PT.PM.Dsl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj">
-      <Project>{f5e3ce00-6854-4fa8-add2-0248df6d85db}</Project>
-      <Name>PT.PM.JavaParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj">
-      <Project>{98727837-F9FA-476C-B0B5-88845B53FDDF}</Project>
-      <Name>PT.PM.JavaScriptParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
-      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
-      <Name>PT.PM.Matching</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
-      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
-      <Name>PT.PM.Patterns</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj">
-      <Project>{08fbc341-ac44-4cae-ae71-9462f7885e3e}</Project>
-      <Name>PT.PM.PhpParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj">
-      <Project>{8f34670a-b91d-460b-9d67-7a03f7194673}</Project>
-      <Name>PT.PM.SqlParseTreeUst</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
