@@ -64,16 +64,7 @@ namespace PT.PM
                 }
             }
 
-            string dotFilePath;
-            if (SaveDot)
-            {
-                dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
-            }
-            else
-            {
-                dotFilePath = Path.GetTempFileName();
-            }
-            
+            string dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
             File.WriteAllText(dotFilePath, DotGraph);
             var process = Process.Start(new ProcessStartInfo
             {
