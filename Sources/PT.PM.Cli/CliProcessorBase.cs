@@ -98,6 +98,8 @@ namespace PT.PM.Cli
                 logger.SourceCodeRepository = sourceCodeRepository;
 
                 IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns);
+                patternsRepository.Identifiers = parameters.PatternIds.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => id.Trim());
 
                 var stopwatch = Stopwatch.StartNew();
                 TWorkflowResult workflowResult =

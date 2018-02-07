@@ -15,6 +15,9 @@ namespace PT.PM.Cli
         [Option('p', "patterns", HelpText = "Patterns to be processed (at least -f or -p parameter required)")]
         public string Patterns { get; set; } = "";
 
+        [Option("pattern-ids", HelpText = "Pattern identifiers to be processed")]
+        public string PatternIds { get; set; } = "";
+
         [Option('t', "threads", HelpText = "Number of processing threads")]
         public int ThreadCount { get; set; } = 1;
 
