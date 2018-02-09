@@ -11,7 +11,7 @@ namespace PT.PM.Matching
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public IEnumerable<PatternRoot> Patterns { get; set; }
+        public List<PatternRoot> Patterns { get; set; }
 
         public bool IsIgnoreFilenameWildcards { get; set; }
 
@@ -19,7 +19,7 @@ namespace PT.PM.Matching
         {
         }
 
-        public PatternMatcher(IEnumerable<PatternRoot> patterns)
+        public PatternMatcher(List<PatternRoot> patterns)
         {
             Patterns = patterns;
         }

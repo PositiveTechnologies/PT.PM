@@ -8,7 +8,7 @@ namespace PT.PM.Matching
     {
         bool IsIgnoreFilenameWildcards { get; set; }
 
-        IEnumerable<TPattern> Patterns { get; set; }
+        List<TPattern> Patterns { get; set; }
 
         List<TMatchResult> Match(TInputGraph ust);
     }

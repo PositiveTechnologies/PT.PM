@@ -69,7 +69,6 @@ namespace PT.PM.Tests
             var newWorkflow = new Workflow(sourceCodeRepository)
             {
                 StartStage = Stage.Ust,
-                IsAsyncPatternsConversion = false,
                 IndentedDump = indented,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = lineColumnTextSpans,

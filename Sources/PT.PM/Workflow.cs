@@ -29,7 +29,6 @@ namespace PT.PM
         {
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
-            UstPatternMatcher = new PatternMatcher();
             IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();
             IPatternSerializer dslNodeSerializer = new DslProcessor();
             PatternConverter = new PatternConverter(jsonNodeSerializer, dslNodeSerializer);
@@ -48,10 +47,9 @@ namespace PT.PM
             result.BaseLanguages = BaseLanguages.ToArray();
             result.RenderStages = RenderStages;
 
-            StartConvertPatternsTaskIfRequired(result);
             if (Stage == Stage.Pattern)
             {
-                WaitOrConverterPatterns(result);
+                ConvertPatterns(result);
             }
             else
             {
@@ -67,11 +65,18 @@ namespace PT.PM
 
                 try
                 {
+                    var patternMatcher = new PatternMatcher
+                    {
+                        Logger = Logger,
+                        Patterns = ConvertPatterns(result),
+                        IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards
+                    };
+
                     if (ThreadCount == 1 || (fileNames is IList<string> && result.TotalFilesCount == 1))
                     {
                         foreach (string fileName in fileNames)
                         {
-                            ProcessFile(fileName, result, cancellationToken);
+                            ProcessFile(fileName, patternMatcher, result, cancellationToken);
                         }
                     }
                     else
@@ -83,7 +88,7 @@ namespace PT.PM
                             fileName =>
                             {
                                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                                ProcessFile(fileName, result, parallelOptions.CancellationToken);
+                                ProcessFile(fileName, patternMatcher, result, parallelOptions.CancellationToken);
                             });
                     }
                 }
@@ -99,7 +104,7 @@ namespace PT.PM
             return result;
         }
 
-        private void ProcessFile(string fileName, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        private void ProcessFile(string fileName, PatternMatcher patternMatcher, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
         {
             RootUst ust = null;
             try
@@ -125,10 +130,8 @@ namespace PT.PM
 
                     if (Stage >= Stage.Match)
                     {
-                        WaitOrConverterPatterns(workflowResult);
-
                         stopwatch.Restart();
-                        IEnumerable<MatchResult> matchResults = UstPatternMatcher.Match(ust);
+                        IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
                         stopwatch.Stop();
                         Logger.LogInfo($"File {ust.SourceCodeFile.Name} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddMatchTime(stopwatch.ElapsedTicks);

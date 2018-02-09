@@ -47,7 +47,7 @@ namespace PT.PM.Matching
             Serializers = serializers.ToList();
         }
 
-        public PatternRoot[] Convert(IEnumerable<PatternDto> patternsDto)
+        public List<PatternRoot> Convert(IEnumerable<PatternDto> patternsDto)
         {
             var result = new List<PatternRoot>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
@@ -94,10 +94,10 @@ namespace PT.PM.Matching
                         ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) "));
                 }
             }
-            return result.ToArray();
+            return result;
         }
 
-        public PatternDto[] ConvertBack(IEnumerable<PatternRoot> patterns)
+        public List<PatternDto> ConvertBack(IEnumerable<PatternRoot> patterns)
         {
             var result = new List<PatternDto>();
             foreach (PatternRoot pattern in patterns)
@@ -123,7 +123,7 @@ namespace PT.PM.Matching
                     Logger.LogError(new ConversionException(pattern.CodeFile, ex, $"Error while \"{pattern.Key}\" pattern serialising"));
                 }
             }
-            return result.ToArray();
+            return result;
         }
     }
 }

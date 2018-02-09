@@ -15,7 +15,7 @@ namespace PT.PM.Dsl.Tests
     public class DslParseTests
     {
         private DefaultPatternRepository patternsRepository;
-        private PatternRoot[] patterns;
+        private List<PatternRoot> patterns;
 
         [SetUp]
         public void Init()

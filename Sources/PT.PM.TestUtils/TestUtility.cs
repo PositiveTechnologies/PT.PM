@@ -50,10 +50,7 @@ namespace PT.PM.TestUtils
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, stage: endStage);
-            if (workflow.UstPatternMatcher != null)
-            {
-                workflow.UstPatternMatcher.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
-            }
+            workflow.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
             workflow.Logger = log;
             WorkflowResult workflowResult = workflow.Process();
 
