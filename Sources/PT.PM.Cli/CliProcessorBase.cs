@@ -14,10 +14,11 @@ using System.Threading;
 
 namespace PT.PM.Cli
 {
-    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchResult>
+    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
         where TMatchResult : MatchResultBase<TPattern>
+        where TParameters : CliParameters
     {
         public int ParseAndConvert(string[] args, string coreName)
         {
@@ -25,7 +26,7 @@ namespace PT.PM.Cli
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
             var parser = new Parser(config => config.HelpWriter = Console.Out);
-            ParserResult<CliParameters> parserResult = parser.ParseArguments<CliParameters>(args);
+            ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(args);
 
             var result = parserResult.MapResult(
                 cliParams => {
@@ -56,7 +57,7 @@ namespace PT.PM.Cli
             return result;
         }
 
-        public int Convert(string[] args, CliParameters parameters)
+        public int Convert(string[] args, TParameters parameters)
         {
             ILogger logger = new ConsoleFileLogger();
 
@@ -146,7 +147,7 @@ namespace PT.PM.Cli
             return 0;
         }
 
-        protected abstract TWorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
+        protected abstract TWorkflowResult InitWorkflowAndProcess(TParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
 
         protected abstract void LogStatistics(ILogger logger, TWorkflowResult workflowResult);
 
