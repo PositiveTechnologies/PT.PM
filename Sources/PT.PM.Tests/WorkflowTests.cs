@@ -78,7 +78,7 @@ namespace PT.PM.Tests
 
             Assert.AreEqual(0, logger.ErrorCount);
             Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
-            MatchResult match = newResult.MatchResults.FirstOrDefault();
+            var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
             if (includeTextSpans)
             {
                 Assert.AreEqual(TextSpan.FromBounds(6, 51), match.TextSpan);
