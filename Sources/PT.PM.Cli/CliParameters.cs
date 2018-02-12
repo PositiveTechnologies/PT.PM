@@ -12,8 +12,8 @@ namespace PT.PM.Cli
         [Option('l', "languages", HelpText = "Languages to be processed (at least -f or -p parameter required)")]
         public string Languages { get; set; } = "";
 
-        [Option('p', "patterns", HelpText = "Patterns to be processed (at least -f or -p parameter required)")]
-        public string Patterns { get; set; } = "";
+        [Option("patterns", HelpText = "Patterns to be processed (at least -f or -p parameter required)")]
+        public virtual string Patterns { get; set; } = "";
 
         [Option("pattern-ids", HelpText = "Pattern identifiers to be processed")]
         public string PatternIds { get; set; } = "";
