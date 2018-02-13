@@ -9,10 +9,10 @@ namespace PT.PM.Cli
         [Option('f', "files", HelpText = "Input file or directory to be processed")]
         public string InputFileNameOrDirectory { get; set; } = "";
 
-        [Option('l', "languages", HelpText = "Languages to be processed (at least -f or -p parameter required)")]
+        [Option('l', "languages", HelpText = "Languages to be processed")]
         public string Languages { get; set; } = "";
 
-        [Option("patterns", HelpText = "Patterns to be processed (at least -f or -p parameter required)")]
+        [Option("patterns", HelpText = "Patterns to be processed")]
         public virtual string Patterns { get; set; } = "";
 
         [Option("pattern-ids", HelpText = "Pattern identifiers to be processed")]

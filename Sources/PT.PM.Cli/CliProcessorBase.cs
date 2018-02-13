@@ -78,11 +78,6 @@ namespace PT.PM.Cli
                     abstractLogger.LogInfo(commandLineArguments);
                 }
 
-                if (string.IsNullOrEmpty(parameters.InputFileNameOrDirectory) && string.IsNullOrEmpty(parameters.Patterns))
-                {
-                    throw new ArgumentException("at least -f or -p parameter required");
-                }
-
                 if (!Enum.TryParse(parameters.Stage, true, out Stage pmStage))
                 {
                     pmStage = Stage.Match;
