@@ -21,8 +21,8 @@ namespace PT.PM.Common.Nodes
 
         #region Collections
 
-        T Visit(ArgsUst argsNode);
-        T Visit(EntitiesUst entitiesNode);
+        T Visit(ArgsUst argsUst);
+        T Visit(EntitiesUst entitiesUst);
 
         #endregion
 
@@ -123,7 +123,7 @@ namespace PT.PM.Common.Nodes
 
         #region Other
 
-        T Visit(RootUst fileNode);
+        T Visit(RootUst rootUst);
         T Visit(NotImplementedUst notImplementedNode);
         T Visit(Collection collection);
 

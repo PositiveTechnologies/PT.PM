@@ -7,12 +7,12 @@ namespace PT.PM.Common
     {
         public static UstRefComparer Instance = new UstRefComparer();
 
-        public bool Equals(Nodes.Ust x, Nodes.Ust y)
+        public bool Equals(Ust x, Ust y)
         {
             return ReferenceEquals(x, y);
         }
 
-        public int GetHashCode(Nodes.Ust obj)
+        public int GetHashCode(Ust obj)
         {
             return obj.GetHashCode();
         }
