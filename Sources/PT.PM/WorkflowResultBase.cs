@@ -205,11 +205,13 @@ namespace PT.PM
             AddTicks(ref totalParserTicks, ticks);
         }
 
-        public long GetTotalTimeTicks()
-        {
-            return totalReadTicks + totalParseTicks + totalConvertTicks +
-                   totalSimplifyTicks + totalMatchTicks + totalPatternsTicks;
-        }
+        public virtual long TotalTimeTicks =>
+            totalReadTicks +
+            totalParseTicks +
+            totalConvertTicks +
+            totalSimplifyTicks +
+            totalMatchTicks +
+            totalPatternsTicks;
 
         protected Result ValidateStageAndReturn<Result>(string stage, Result result)
         {

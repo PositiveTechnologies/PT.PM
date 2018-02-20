@@ -25,7 +25,7 @@ namespace PT.PM.Cli
             Logger.LogInfo($"{"Files count:",-22} {WorkflowResult.TotalProcessedFilesCount}");
             Logger.LogInfo($"{"Chars count:",-22} {WorkflowResult.TotalProcessedCharsCount}");
             Logger.LogInfo($"{"Lines count:",-22} {WorkflowResult.TotalProcessedLinesCount}");
-            long totalTimeTicks = WorkflowResult.GetTotalTimeTicks();
+            long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
                 if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.File)
@@ -53,7 +53,6 @@ namespace PT.PM.Cli
 
         protected void LogStageTime(string stage)
         {
-            long totalTimeTicks = WorkflowResult.GetTotalTimeTicks();
             long ticks = 0;
             switch (stage)
             {
@@ -66,6 +65,9 @@ namespace PT.PM.Cli
                 case nameof(Stage.Ust):
                     ticks = WorkflowResult.TotalConvertTicks;
                     break;
+                case nameof(Stage.SimplifiedUst):
+                    ticks = WorkflowResult.TotalSimplifyTicks;
+                    break;
                 case nameof(Stage.Match):
                     ticks = WorkflowResult.TotalMatchTicks;
                     break;
@@ -77,7 +79,7 @@ namespace PT.PM.Cli
                     break;
             }
             Logger.LogInfo
-                ($"{"Total " + stage.ToString().ToLowerInvariant() + " time:",-22} {new TimeSpan(ticks)} {CalculatePercent(ticks, totalTimeTicks):00.00}%");
+                ($"{"Total " + stage.ToString().ToLowerInvariant() + " time:",-22} {new TimeSpan(ticks)} {CalculatePercent(ticks, WorkflowResult.TotalTimeTicks):00.00}%");
             if (stage == nameof(Stage.ParseTree))
             {
                 LogAdditionalParserInfo();
