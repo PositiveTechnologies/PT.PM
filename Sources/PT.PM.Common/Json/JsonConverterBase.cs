@@ -56,7 +56,8 @@ namespace PT.PM.Common.Json
                     include =
                         propName != nameof(Ust.Root) &&
                         propName != nameof(Ust.Parent) &&
-                        propName != nameof(ILoggable.Logger);
+                        propName != nameof(ILoggable.Logger) &&
+                        propName != nameof(Ust.InitialTextSpans);
                     if (include)
                     {
                         if (ExcludeDefaults)
@@ -70,6 +71,10 @@ namespace PT.PM.Common.Json
                             else if (propType == typeof(string))
                             {
                                 include = !string.IsNullOrEmpty(((string)propValue));
+                            }
+                            else if (propType.IsArray)
+                            {
+                                include = ((Array)propValue).Length > 0;
                             }
                             else
                             {
