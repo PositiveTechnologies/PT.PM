@@ -30,6 +30,7 @@ namespace PT.PM.Cli
                 RenderStages = new HashSet<Stage>(parameters.RenderStages.ParseCollection<Stage>()),
                 RenderFormat = parameters.RenderFormat.ParseEnum<GraphvizOutputFormat>(),
                 RenderDirection = parameters.RenderDirection.ParseEnum<GraphvizDirection>(),
+                IncludeCodeInDump = parameters.IncludeCodeInDump
             };
 
             WorkflowResult workflowResult = workflow.Process();

@@ -54,6 +54,9 @@ namespace PT.PM.Cli
         [Option("line-column", HelpText = "Use line-column format for text spans in dump")]
         public bool LineColumnTextSpans { get; set; } = false;
 
+        [Option("dump-code", HelpText = "Dump content of source code file to dump")]
+        public bool IncludeCodeInDump { get; set; } = false;
+
         [Option("start-stage", HelpText = "Start stage to process (File or Ust)")]
         public string StartStage { get; set; } = "";
 
