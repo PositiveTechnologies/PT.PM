@@ -1,16 +1,21 @@
 ﻿using System;
+using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace PT.PM.Common.Json
 {
-    public class CodeFileJsonConverter : JsonConverter
+    public class CodeFileJsonConverter : JsonConverter, ILoggable
     {
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
+
         public bool IncludeCode { get; set; } = true;
 
         public bool ExcludeDefaults { get; set; } = true;
 
         public CodeFile CodeFile { get; private set; } = CodeFile.Empty;
+
+        public CodeFile JsonFile { get; set; } = CodeFile.Empty;
 
         public TextSpanJsonConverter TextSpanJsonConverter { get; set; }
 
@@ -45,11 +50,31 @@ namespace PT.PM.Common.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject obj = JObject.Load(reader);
-            CodeFile result = new CodeFile((string)obj.GetValueIgnoreCase(nameof(CodeFile.Code)) ?? "")
+
+            string code = (string)obj.GetValueIgnoreCase(nameof(CodeFile.Code));
+            string rootPath = (string)obj.GetValueIgnoreCase(nameof(CodeFile.RootPath)) ?? "";
+            string relativePath = (string)obj.GetValueIgnoreCase(nameof(CodeFile.RelativePath)) ?? "";
+            string name = (string)obj.GetValueIgnoreCase(nameof(CodeFile.Name)) ?? "";
+
+            if (code == null)
             {
-                RootPath = (string)obj.GetValueIgnoreCase(nameof(CodeFile.RootPath)) ?? "",
-                RelativePath = (string)obj.GetValueIgnoreCase(nameof(CodeFile.RelativePath)) ?? "",
-                Name = (string)obj.GetValueIgnoreCase(nameof(CodeFile.Name)) ?? "",
+                string fullName = Path.Combine(rootPath, relativePath, name);
+                try
+                {
+                    code = fullName != "" ? File.ReadAllText(fullName) : "";
+                }
+                catch
+                {
+                    code = "";
+                    Logger.LogError(JsonFile, obj, $"File {fullName} can not be read");
+                }
+            }
+
+            CodeFile result = new CodeFile(code)
+            {
+                RootPath = rootPath,
+                RelativePath = relativePath,
+                Name = name
             };
 
             CodeFile = result;

@@ -61,7 +61,8 @@ namespace PT.PM.Common.Json
                 ShortFormat = ShortTextSpans,
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
                 IsLineColumn = LineColumnTextSpans,
-                CodeFile = CodeFile
+                CodeFile = CodeFile,
+                JsonFile = JsonFile
             };
 
             var jsonSettings = new JsonSerializerSettings
@@ -78,6 +79,7 @@ namespace PT.PM.Common.Json
                         TextSpanJsonConverter = textSpanJsonConverter,
                         ExcludeDefaults = ExcludeDefaults,
                         IncludeCode = IncludeCode,
+                        JsonFile = JsonFile
                     }
                 }
             };
