@@ -21,8 +21,8 @@ namespace PT.PM.Cli
         [Option('t', "threads", HelpText = "Number of processing threads")]
         public int ThreadCount { get; set; } = 1;
 
-        [Option("preprocess-ust", HelpText = "Is include ust simplification stage")]
-        public bool IsPreprocessUst { get; set; } = true;
+        [Option("not-preprocess-ust", HelpText = "Do not include ust simplification stage")]
+        public bool NotPreprocessUst { get; set; } = false;
 
         [Option('s', "stage", HelpText = "End processing stage. By default: Match")]
         public string Stage { get; set; } = PM.Stage.Match.ToString();
@@ -39,19 +39,19 @@ namespace PT.PM.Cli
         [Option("temp-dir", HelpText = "Temp directory")]
         public string TempDir { get; set; } = Path.GetTempPath();
 
-        [Option('e', "log-errors", HelpText = "Is log errors to console")]
+        [Option('e', "log-errors", HelpText = "Log errors to console")]
         public bool IsLogErrors { get; set; } = false;
 
-        [Option("log-debugs", HelpText = "Is log debug messages")]
+        [Option("log-debugs", HelpText = "Log debug messages")]
         public bool IsLogDebugs { get; set; } = false;
 
-        [Option("indented", HelpText = "Is dump trees indented")]
-        public bool IndentedDump { get; set; } = true;
+        [Option("no-indents", HelpText = "Do not indent dump trees")]
+        public bool NoIndentedDump { get; set; } = false;
 
-        [Option("text-spans", HelpText = "Are include text spans in dump trees")]
-        public bool IncludeTextSpansInDump { get; set; } = true;
+        [Option("no-text-spans", HelpText = "Do not include text spans in dump trees")]
+        public bool NotIncludeTextSpansInDump { get; set; } = false;
 
-        [Option("line-column", HelpText = "Are text spans have a line-column format")]
+        [Option("line-column", HelpText = "Use line-column format for text spans in dump")]
         public bool LineColumnTextSpans { get; set; } = false;
 
         [Option("start-stage", HelpText = "Start stage to process (File or Ust)")]
