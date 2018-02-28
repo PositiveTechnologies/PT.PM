@@ -21,8 +21,8 @@ namespace PT.PM.Common.Nodes
 
         #region Collections
 
-        T Visit(ArgsUst argsNode);
-        T Visit(EntitiesUst entitiesNode);
+        T Visit(ArgsUst argsUst);
+        T Visit(EntitiesUst entitiesUst);
 
         #endregion
 
@@ -43,6 +43,7 @@ namespace PT.PM.Common.Nodes
         T Visit(ObjectCreateExpression objectCreateExpression);
         T Visit(UnaryOperatorExpression unaryOperatorExpression);
         T Visit(VariableDeclarationExpression variableDeclarationExpression);
+        T Visit(CommaExpression colonExpression);
 
         #endregion
 
@@ -122,7 +123,7 @@ namespace PT.PM.Common.Nodes
 
         #region Other
 
-        T Visit(RootUst fileNode);
+        T Visit(RootUst rootUst);
         T Visit(NotImplementedUst notImplementedNode);
         T Visit(Collection collection);
 

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PT.PM.Common.CodeRepository
 {
-    public class FilesAggregatorCodeRepository : SourceCodeRepository
+    public class DirectoryCodeRepository : SourceCodeRepository
     {
         public string SearchPattern { get; set; } = "*.*";
 
@@ -16,12 +16,12 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
-        public FilesAggregatorCodeRepository(string directoryPath, params Language[] languages)
+        public DirectoryCodeRepository(string directoryPath, params Language[] languages)
             : this(directoryPath, (IEnumerable<Language>)languages)
         {
         }
 
-        public FilesAggregatorCodeRepository(string directoryPath, IEnumerable<Language> languages)
+        public DirectoryCodeRepository(string directoryPath, IEnumerable<Language> languages)
             : base()
         {
             RootPath = directoryPath;

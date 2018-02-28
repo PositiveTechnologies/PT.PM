@@ -12,6 +12,8 @@ namespace PT.PM.Matching.PatternsRepository
 
         protected List<PatternDto> PatternDtos { get; set; }
 
+        public IEnumerable<string> Identifiers { get; set; } = Enumerable.Empty<string>();
+
         public MemoryPatternsRepository()
         {
         }
@@ -21,6 +23,11 @@ namespace PT.PM.Matching.PatternsRepository
             if (PatternDtos == null)
             {
                 PatternDtos = InitPatterns();
+            }
+
+            if (Identifiers.Count() > 0)
+            {
+                PatternDtos = PatternDtos.Where(dto => Identifiers.Contains(dto.Key)).ToList();
             }
 
             return PatternDtos;
@@ -34,16 +41,6 @@ namespace PT.PM.Matching.PatternsRepository
             }
 
             PatternDtos.AddRange(pattern);
-        }
-
-        public PatternDto GetByName(string name)
-        {
-            if (PatternDtos == null)
-            {
-                PatternDtos = InitPatterns();
-            }
-
-            return PatternDtos.FirstOrDefault(p => p.Description == name);
         }
 
         public void Clear()

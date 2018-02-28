@@ -69,5 +69,21 @@ namespace PT.PM.Common
         {
             builder.Append(' ', totalWidth);
         }
+
+        public static string RemoveWhitespaces(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return "";
+            }
+
+            var result = new StringBuilder(str.Length);
+            foreach (char c in str)
+            {
+                if (!char.IsWhiteSpace(c))
+                    result.Append(c);
+            }
+            return result.ToString();
+        }
     }
 }

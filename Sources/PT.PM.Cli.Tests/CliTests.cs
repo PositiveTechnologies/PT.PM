@@ -14,6 +14,7 @@ namespace PT.PM.Cli.Tests
     public class CliTests
     {
         private readonly static string exeName = Path.Combine(TestUtility.TestsPath, "PT.PM.Cli.exe");
+        private readonly static string patternsFileName = Path.Combine(TestUtility.TestsOutputPath, "patterns.json");
 
         [Test]
         public void CheckCli_Patterns_CorrectErrorMessages()
@@ -23,8 +24,8 @@ namespace PT.PM.Cli.Tests
                 Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
             }
 
-            string patternsStr = PreparePatternsString();
-            var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsStr} --log-errors");
+            PrepareAndSaveTestPatterns();
+            var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
 
             Assert.AreEqual("Pattern ParsingException in \"Pattern\": token recognition error at: '>' at [1;19]-[1;20).", result.Output[2]);
             Assert.AreEqual("Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at [1;2]-[1;3).", result.Output[3]);
@@ -38,16 +39,15 @@ namespace PT.PM.Cli.Tests
                 Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
             }
 
-            string patternsStr = PreparePatternsString();
-
-            string logPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(exeName));
+            PrepareAndSaveTestPatterns();
+            string logPath = Path.Combine(Path.GetTempPath(), "PT.PM");
             try
             {
                 if (Directory.Exists(logPath))
                 {
                     Directory.Delete(logPath, true);
                 }
-                var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsStr} --logs-dir \"{logPath}\"");
+                var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsFileName} --logs-dir \"{logPath}\"");
                 var logFiles = Directory.GetFiles(logPath, "*.*");
                 Assert.Greater(logFiles.Length, 0);
             }
@@ -130,7 +130,7 @@ namespace PT.PM.Cli.Tests
             }
         }
 
-        private static string PreparePatternsString()
+        private static void PrepareAndSaveTestPatterns()
         {
             List<PatternDto> patternDtos = new List<PatternDto>()
             {
@@ -141,8 +141,8 @@ namespace PT.PM.Cli.Tests
                     Value = "(?i)password(?-i)]> = <[\"\\w*\" || null]>"
                 }
             };
-            var patternsStr = StringCompressorEscaper.CompressEscape(JsonConvert.SerializeObject(patternDtos, Formatting.None, new StringEnumConverter()));
-            return patternsStr;
+
+            File.WriteAllText(patternsFileName, JsonConvert.SerializeObject(patternDtos, Formatting.None, new StringEnumConverter()));
         }
     }
 }

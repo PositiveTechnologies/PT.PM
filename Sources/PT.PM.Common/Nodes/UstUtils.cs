@@ -46,8 +46,11 @@ namespace PT.PM.Common.Nodes
         public static bool IsInsideSingleBlockStatement(this Ust ust)
         {
             Ust parent = ust;
-            while (parent != null && !(parent is Statement))
+            Ust prev = ust;
+            while (parent != null && !(parent is Statement) &&
+                 !(parent is ConditionalExpression conditionalExpression && !ReferenceEquals(conditionalExpression.Condition, prev)))
             {
+                prev = parent;
                 parent = parent.Parent;
             }
 
@@ -56,8 +59,12 @@ namespace PT.PM.Common.Nodes
                 return false;
             }
 
-            Statement statement = (Statement)parent;
+            if (parent is ConditionalExpression)
+            {
+                return true;
+            }
 
+            Statement statement = (Statement)parent;
             return statement.Parent is Statement parentStatement && !(parentStatement is BlockStatement);
         }
 

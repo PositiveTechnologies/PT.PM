@@ -36,8 +36,14 @@ namespace PT.PM.Tests
             CheckSerialization(lineColumnTextSpans: true);
         }
 
+        [Test]
+        public void Process_JsonUst_WithoutCode()
+        {
+            CheckSerialization(includeCode: false);
+        }
+
         private static void CheckSerialization(bool lineColumnTextSpans = false,
-            bool includeTextSpans = true, bool indented = true, bool upperCase = false)
+            bool includeTextSpans = true, bool indented = true, bool upperCase = false, bool includeCode = true)
         {
             // Serialization
             string inputFileName = "empty-try-catch.php";
@@ -46,10 +52,10 @@ namespace PT.PM.Tests
             {
                 DumpStages = new HashSet<Stage>() { Stage.Ust },
                 DumpDir = TestUtility.TestsOutputPath,
-                IncludeCodeInDump = true,
+                IncludeCodeInDump = includeCode,
                 IndentedDump = indented,
                 DumpWithTextSpans = includeTextSpans,
-                LineColumnTextSpans = lineColumnTextSpans
+                LineColumnTextSpans = lineColumnTextSpans,
             };
             WorkflowResult result = workflow.Process();
 
@@ -69,7 +75,6 @@ namespace PT.PM.Tests
             var newWorkflow = new Workflow(sourceCodeRepository)
             {
                 StartStage = Stage.Ust,
-                IsAsyncPatternsConversion = false,
                 IndentedDump = indented,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = lineColumnTextSpans,
@@ -79,7 +84,7 @@ namespace PT.PM.Tests
 
             Assert.AreEqual(0, logger.ErrorCount);
             Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
-            MatchResult match = newResult.MatchResults.FirstOrDefault();
+            var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
             if (includeTextSpans)
             {
                 Assert.AreEqual(TextSpan.FromBounds(6, 51), match.TextSpan);

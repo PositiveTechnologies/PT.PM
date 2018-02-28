@@ -38,16 +38,6 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void CompressEscape_TestString_UnescapedDecompressedIsEqual()
-        {
-            var testData = "test_string0-9`,привет мир!{\"'}";
-            var compressed = StringCompressorEscaper.CompressEscape(testData);
-            var decompressed = StringCompressorEscaper.UnescapeDecompress(compressed);
-
-            Assert.AreEqual(testData, decompressed);
-        }
-
-        [Test]
         public void JsonSerialize_PatternWithVar_JsonEqualsToDsl()
         {
             var patternNode = new PatternRoot

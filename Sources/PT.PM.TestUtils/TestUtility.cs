@@ -50,10 +50,7 @@ namespace PT.PM.TestUtils
 
             var log = logger ?? new LoggerMessageCounter();
             var workflow = new Workflow(codeRep, stage: endStage);
-            if (workflow.UstPatternMatcher != null)
-            {
-                workflow.UstPatternMatcher.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
-            }
+            workflow.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
             workflow.Logger = log;
             WorkflowResult workflowResult = workflow.Process();
 
@@ -78,7 +75,7 @@ namespace PT.PM.TestUtils
             string searchPattern = "*.*", Func<string, bool> searchPredicate = null)
         {
             var logger = new LoggerMessageCounter() { LogToConsole = false };
-            var repository = new FilesAggregatorCodeRepository(projectPath, language)
+            var repository = new DirectoryCodeRepository(projectPath, language)
             {
                 SearchPattern = searchPattern,
                 SearchPredicate = searchPredicate

@@ -7,27 +7,34 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Cli
 {
-    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchResult>
+    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
         where TMatchResult : MatchResultBase<TPattern>
+        where TParameters : CliParameters
     {
-        public int ParseAndConvert(string[] args)
+        public int ParseAndConvert(string[] args, string coreName)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
             var parser = new Parser(config => config.HelpWriter = Console.Out);
-            ParserResult<CliParameters> parserResult = parser.ParseArguments<CliParameters>(args);
+            ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(args);
 
             var result = parserResult.MapResult(
                 cliParams => {
+                    if (!string.IsNullOrEmpty(cliParams.LogsDir) && !cliParams.LogsDir.EndsWith(coreName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cliParams.LogsDir = Path.Combine(cliParams.LogsDir, coreName);
+                    }
+
                     int convertResult = 0;
                     if (cliParams.MaxStackSize == 0)
                     {
@@ -50,7 +57,7 @@ namespace PT.PM.Cli
             return result;
         }
 
-        public int Convert(string[] args, CliParameters parameters)
+        public int Convert(string[] args, TParameters parameters)
         {
             ILogger logger = new ConsoleFileLogger();
 
@@ -71,11 +78,6 @@ namespace PT.PM.Cli
                     abstractLogger.LogInfo(commandLineArguments);
                 }
 
-                if (string.IsNullOrEmpty(parameters.InputFileNameOrDirectory) && string.IsNullOrEmpty(parameters.Patterns))
-                {
-                    throw new ArgumentException("at least -f or -p parameter required");
-                }
-
                 if (!Enum.TryParse(parameters.Stage, true, out Stage pmStage))
                 {
                     pmStage = Stage.Match;
@@ -92,6 +94,8 @@ namespace PT.PM.Cli
                 logger.SourceCodeRepository = sourceCodeRepository;
 
                 IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns);
+                patternsRepository.Identifiers = parameters.PatternIds.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => id.Trim());
 
                 var stopwatch = Stopwatch.StartNew();
                 TWorkflowResult workflowResult =
@@ -138,7 +142,7 @@ namespace PT.PM.Cli
             return 0;
         }
 
-        protected abstract TWorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
+        protected abstract TWorkflowResult InitWorkflowAndProcess(TParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
 
         protected abstract void LogStatistics(ILogger logger, TWorkflowResult workflowResult);
 

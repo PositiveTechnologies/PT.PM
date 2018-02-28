@@ -6,9 +6,9 @@ namespace PT.PM.Common.Nodes.Statements.Switch
 {
     public class SwitchSection : Ust
     {
-        public List<Expression> CaseLabels { get; set; }
+        public List<Expression> CaseLabels { get; set; } = new List<Expression>();
 
-        public List<Statement> Statements { get; set; }
+        public List<Statement> Statements { get; set; } = new List<Statement>();
 
         public SwitchSection(IEnumerable<Expression> caseLabels, IEnumerable<Statement> statements, TextSpan textSpan)
             : base(textSpan)

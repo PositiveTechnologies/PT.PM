@@ -16,7 +16,7 @@ namespace PT.PM
             SourceCodeRepository sourceCodeRepository;
             if (Directory.Exists(path))
             {
-                sourceCodeRepository = new FilesAggregatorCodeRepository(path);
+                sourceCodeRepository = new DirectoryCodeRepository(path);
             }
             else if (File.Exists(path))
             {
@@ -71,14 +71,13 @@ namespace PT.PM
             {
                 patternsRepository = new DefaultPatternRepository();
             }
-            else if (patternsString.EndsWith(".json"))
+            else if (patternsString.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             {
                 patternsRepository = new FilePatternsRepository(patternsString);
             }
             else
             {
-                var patterns = StringCompressorEscaper.UnescapeDecompress(patternsString);
-                patternsRepository = new JsonPatternsRepository(patterns);
+                throw new FormatException("Patterns should be loaded from *.json file");
             }
             return patternsRepository;
         }

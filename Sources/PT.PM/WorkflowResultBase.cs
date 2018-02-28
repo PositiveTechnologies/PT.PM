@@ -16,7 +16,7 @@ namespace PT.PM
         private List<ParseTree> parseTrees = new List<ParseTree>();
         private List<RootUst> usts = new List<RootUst>();
         private List<TPattern> patterns = new List<TPattern>();
-        private List<TMatchResult> matchResults = new List<TMatchResult>();
+        private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
 
         private long totalReadTicks;
         private long totalParseTicks;
@@ -71,7 +71,7 @@ namespace PT.PM
             }
         }
 
-        public IReadOnlyList<TMatchResult> MatchResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchResults);
+        public IReadOnlyList<IMatchResultBase> MatchResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchResults);
 
         public IReadOnlyList<TPattern> Patterns
         {
@@ -140,7 +140,7 @@ namespace PT.PM
             }
         }
 
-        public void AddResultEntity(IEnumerable<TMatchResult> matchResults)
+        public void AddResultEntity(IEnumerable<IMatchResultBase> matchResults)
         {
             AddEntities(this.matchResults, matchResults);
         }
@@ -205,11 +205,13 @@ namespace PT.PM
             AddTicks(ref totalParserTicks, ticks);
         }
 
-        public long GetTotalTimeTicks()
-        {
-            return totalReadTicks + totalParseTicks + totalConvertTicks +
-                   totalSimplifyTicks + totalMatchTicks + totalPatternsTicks;
-        }
+        public virtual long TotalTimeTicks =>
+            totalReadTicks +
+            totalParseTicks +
+            totalConvertTicks +
+            totalSimplifyTicks +
+            totalMatchTicks +
+            totalPatternsTicks;
 
         protected Result ValidateStageAndReturn<Result>(string stage, Result result)
         {

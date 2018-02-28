@@ -1,6 +1,6 @@
 [submodule "Sources/AspxParser"]
 	path = Sources/AspxParser
-	url = https://github.com/PositiveTechnologies/AspxParser.git
+	url = ../AspxParser.git
 [submodule "Sources/antlr-grammars-v4"]
 	path = Sources/antlr-grammars-v4
-	url = https://github.com/PositiveTechnologies/grammars-v4.git
+	url = ../grammars-v4.git

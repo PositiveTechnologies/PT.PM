@@ -59,7 +59,7 @@ namespace PT.PM.Common.Nodes
 
         public override string ToString()
         {
-            return $"{Language}: {base.ToString()}";
+            return $"{SourceCodeFile.Name}: {base.ToString()}";
         }
     }
 }

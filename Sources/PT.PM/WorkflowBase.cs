@@ -25,7 +25,7 @@ namespace PT.PM
     {
         protected ILogger logger = DummyLogger.Instance;
         protected Task filesCountTask;
-        protected Task convertPatternsTask;
+        protected Task<TPattern[]> convertPatternsTask;
 
         protected Language[] languages;
 
@@ -39,17 +39,15 @@ namespace PT.PM
 
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
-        public IUstPatternMatcher<TInputGraph, TPattern, TMatchResult> UstPatternMatcher { get; set; }
-
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
         public bool IsIncludeIntermediateResult { get; set; }
 
         public bool IsIncludePreprocessing { get; set; } = true;
 
-        public bool IsAsyncPatternsConversion { get; set; } = true;
-
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
+
+        public bool IsIgnoreFilenameWildcards { get; set; } = false;
 
         public ILogger Logger
         {
@@ -68,10 +66,6 @@ namespace PT.PM
                 if (PatternConverter != null)
                 {
                     PatternConverter.Logger = logger;
-                }
-                if (UstPatternMatcher != null)
-                {
-                    UstPatternMatcher.Logger = logger;
                 }
                 if (LanguageDetector != null)
                 {
@@ -273,45 +267,23 @@ namespace PT.PM
             return sourceCodeFile;
         }
 
-        protected void StartConvertPatternsTaskIfRequired(TWorkflowResult workflowResult)
-        {
-            if (IsAsyncPatternsConversion)
-            {
-                if (Stage.Is(PM.Stage.Pattern)|| Stage.IsGreaterOrEqual(PM.Stage.Match))
-                {
-                    convertPatternsTask = new Task(() => ConvertPatterns(workflowResult));
-                    convertPatternsTask.Start();
-                }
-            }
-        }
-
-        protected void WaitOrConverterPatterns(TWorkflowResult result)
-        {
-            if (IsAsyncPatternsConversion)
-            {
-                convertPatternsTask.Wait();
-            }
-            else
-            {
-                ConvertPatterns(result);
-            }
-        }
-
-        protected void ConvertPatterns(TWorkflowResult workflowResult)
+        protected List<TPattern> ConvertPatterns(TWorkflowResult workflowResult)
         {
             try
             {
                 var stopwatch = Stopwatch.StartNew();
                 IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                UstPatternMatcher.Patterns = PatternConverter.Convert(patternDtos);
+                var patterns = PatternConverter.Convert(patternDtos);
                 stopwatch.Stop();
                 workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                workflowResult.AddResultEntity(UstPatternMatcher.Patterns);
+                workflowResult.AddResultEntity(patterns);
+                return patterns;
             }
             catch (Exception ex)
             {
                 Logger.LogError(new ParsingException(
                     new CodeFile("") { IsPattern = true }, ex, "Patterns can not be deserialized"));
+                return new List<TPattern>(0);
             }
         }
 

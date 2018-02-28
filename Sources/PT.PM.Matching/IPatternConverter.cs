@@ -7,8 +7,8 @@ namespace PT.PM.Matching
     {
         List<IPatternSerializer> Serializers { get; set; }
 
-        TPattern[] Convert(IEnumerable<PatternDto> patternDtos);
+        List<TPattern> Convert(IEnumerable<PatternDto> patternDtos);
 
-        PatternDto[] ConvertBack(IEnumerable<TPattern> patterns);
+        List<PatternDto> ConvertBack(IEnumerable<TPattern> patterns);
     }
 }

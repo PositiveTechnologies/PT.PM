@@ -6,7 +6,7 @@ using PT.PM.Matching.PatternsRepository;
 
 namespace PT.PM.Cli
 {
-    public class CliProcessor : CliProcessorBase<Stage, WorkflowResult, PatternRoot, MatchResult>
+    public class CliProcessor : CliProcessorBase<Stage, WorkflowResult, PatternRoot, MatchResult, CliParameters>
     {
         protected override WorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository)
         {
@@ -19,17 +19,18 @@ namespace PT.PM.Cli
                 Logger = logger,
                 ThreadCount = parameters.ThreadCount,
                 MemoryConsumptionMb = parameters.Memory,
-                IsIncludePreprocessing = parameters.IsPreprocessUst,
+                IsIncludePreprocessing = !parameters.NotPreprocessUst,
                 LogsDir = parameters.LogsDir,
                 DumpDir = parameters.LogsDir,
                 StartStage = parameters.StartStage.ParseEnum(Stage.File),
                 DumpStages = new HashSet<Stage>(parameters.DumpStages.ParseCollection<Stage>()),
-                IndentedDump = parameters.IndentedDump,
-                DumpWithTextSpans = parameters.IncludeTextSpansInDump,
+                IndentedDump = !parameters.NoIndentedDump,
+                DumpWithTextSpans = !parameters.NotIncludeTextSpansInDump,
                 LineColumnTextSpans = parameters.LineColumnTextSpans,
                 RenderStages = new HashSet<Stage>(parameters.RenderStages.ParseCollection<Stage>()),
                 RenderFormat = parameters.RenderFormat.ParseEnum<GraphvizOutputFormat>(),
                 RenderDirection = parameters.RenderDirection.ParseEnum<GraphvizDirection>(),
+                IncludeCodeInDump = parameters.IncludeCodeInDump
             };
 
             WorkflowResult workflowResult = workflow.Process();

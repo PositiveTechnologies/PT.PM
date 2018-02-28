@@ -13,23 +13,23 @@ namespace PT.PM.Common.Nodes
 {
     public class UstVisitor<T> : IUstVisitor<T>
     {
-        public virtual T Visit(Ust ustNode)
+        public virtual T Visit(Ust ust)
         {
-            if (ustNode == null)
+            if (ust == null)
             {
                 return default(T);
             }
-            return Visit((dynamic)ustNode);
+            return Visit((dynamic)ust);
         }
 
-        public virtual T Visit(ArgsUst argsNode)
+        public virtual T Visit(ArgsUst argsUst)
         {
-            return VisitChildren(argsNode);
+            return VisitChildren(argsUst);
         }
 
-        public virtual T Visit(EntitiesUst entitiesNode)
+        public virtual T Visit(EntitiesUst entitiesUst)
         {
-            return VisitChildren(entitiesNode);
+            return VisitChildren(entitiesUst);
         }
 
         public virtual T Visit(AnonymousMethodExpression anonymousMethodExpression)
@@ -105,6 +105,11 @@ namespace PT.PM.Common.Nodes
         public virtual T Visit(VariableDeclarationExpression variableDeclarationExpression)
         {
             return VisitChildren(variableDeclarationExpression);
+        }
+
+        public virtual T Visit(CommaExpression colonExpression)
+        {
+            return VisitChildren(colonExpression);
         }
 
         public virtual T Visit(NamespaceDeclaration namespaceDeclaration)

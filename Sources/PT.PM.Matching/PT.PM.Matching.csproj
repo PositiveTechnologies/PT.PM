@@ -52,6 +52,7 @@
     <Compile Include="MatchContext.cs" />
     <Compile Include="PatternNormalizer.cs" />
     <Compile Include="IPatternSerializer.cs" />
+    <Compile Include="PatternsRepository\CombiningPatternsRepository.cs" />
     <Compile Include="PatternsRepository\MemoryPatternsRepository.cs" />
     <Compile Include="PatternsRepository\FilePatternsRepository.cs" />
     <Compile Include="PatternsRepository\IPatternsRepository.cs" />
