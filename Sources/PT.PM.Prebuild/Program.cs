@@ -57,7 +57,7 @@ namespace PT.PM.Prebuild
                 if (string.IsNullOrEmpty(solutionDir))
                 {
                     string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    AntlrFullJarFileName = Path.Combine(currentPath, "..", "..", "Sources", AntlrJarFileName);
+                    AntlrFullJarFileName = Path.Combine(currentPath, "..", "..", "..", "..", "Sources", AntlrJarFileName);
                 }
                 else
                 {
@@ -200,7 +200,8 @@ namespace PT.PM.Prebuild
                 process.StartInfo.WorkingDirectory = grammarFileDir;
                 string visitorListenerStr = (listener ? "-listener " : "-no-listener ") + "-visitor";
                 string superClassParam = string.IsNullOrEmpty(superClass) ? "" : $"-DsuperClass={superClass}";
-                process.StartInfo.Arguments = $@"-jar ""{AntlrFullJarFileName}"" -o ""{outputDirectory}"" ""{shortGrammarFileName}"" -Dlanguage=CSharp_v4_5 {visitorListenerStr} {superClassParam} -Werror -package {packageName}";
+                string packageParam = string.IsNullOrEmpty(packageName) ? "" : $"-package {packageName}";
+                process.StartInfo.Arguments = $@"-jar ""{AntlrFullJarFileName}"" -o ""{outputDirectory}"" ""{shortGrammarFileName}"" -Dlanguage=CSharp_v4_5 {visitorListenerStr} {superClassParam} -Werror {packageParam}";
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.UseShellExecute = false;
