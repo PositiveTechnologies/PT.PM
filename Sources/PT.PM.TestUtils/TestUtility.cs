@@ -14,6 +14,7 @@ namespace PT.PM.TestUtils
         public const string TooLongTestDurationMessage = "Too long test duration.";
 
         public static string RepositoryDirectory;
+        public static string PtPmExePath = $@"bin/{(IsDebug ? "Debug" : "Release")}/net462/win/PT.PM.Cli.exe";
         public static string GrammarsDirectory = "Sources/antlr-grammars-v4";
         public static string TestsPath = $@"Tests/Unit/bin/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.0";
         public static string TestsDataPath = $@"{TestsPath}/Data";
@@ -32,6 +33,7 @@ namespace PT.PM.TestUtils
         {
             GetRepositoryDirectory();
 
+            PtPmExePath = Path.Combine(RepositoryDirectory, PtPmExePath);
             GrammarsDirectory = Path.Combine(RepositoryDirectory, GrammarsDirectory).NormDirSeparator();
             TestsPath = Path.Combine(RepositoryDirectory, TestsPath).NormDirSeparator();
             TestsDataPath = Path.Combine(RepositoryDirectory, TestsDataPath).NormDirSeparator();

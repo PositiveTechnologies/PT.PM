@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Matching", "PT.PM.Mat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Patterns", "PT.PM.Patterns\PT.PM.Patterns.csproj", "{2A6F7AC9-92AA-48B8-A53B-50770424C9B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli", "PT.PM.Cli\PT.PM.Cli.csproj", "{349B2AEF-FA81-401F-A8BD-C53EE7231544}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.CSharpParseTreeUst", "PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj", "{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PhpParseTreeUst", "PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj", "{08FBC341-AC44-4CAE-AE71-9462F7885E3E}"
@@ -43,21 +41,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Prebuild", "PT.PM.Pre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.CSharpParseTreeUst.Tests", "PT.PM.CSharpParseTreeUst.Tests\PT.PM.CSharpParseTreeUst.Tests.csproj", "{3B48BBD7-FC67-4B78-825A-193024561631}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaParseTreeUst.Tests", "PT.PM.JavaParseTreeUst.Tests\PT.PM.JavaParseTreeUst.Tests.csproj", "{91EF6715-8D6B-4DD2-A1CF-F15838B844BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.JavaParseTreeUst.Tests", "PT.PM.JavaParseTreeUst.Tests\PT.PM.JavaParseTreeUst.Tests.csproj", "{91EF6715-8D6B-4DD2-A1CF-F15838B844BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst.Tests", "PT.PM.JavaScriptParseTreeUst.Tests\PT.PM.JavaScriptParseTreeUst.Tests.csproj", "{F57458AA-3144-4EA8-AC8A-1C2554651988}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.JavaScriptParseTreeUst.Tests", "PT.PM.JavaScriptParseTreeUst.Tests\PT.PM.JavaScriptParseTreeUst.Tests.csproj", "{F57458AA-3144-4EA8-AC8A-1C2554651988}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Matching.Tests", "PT.PM.Matching.Tests\PT.PM.Matching.Tests.csproj", "{F81096DB-27A8-407B-96C1-D82E72413025}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Matching.Tests", "PT.PM.Matching.Tests\PT.PM.Matching.Tests.csproj", "{F81096DB-27A8-407B-96C1-D82E72413025}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PhpParseTreeUst.Tests", "PT.PM.PhpParseTreeUst.Tests\PT.PM.PhpParseTreeUst.Tests.csproj", "{F0501372-F5A0-481E-9B15-379028016D5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PhpParseTreeUst.Tests", "PT.PM.PhpParseTreeUst.Tests\PT.PM.PhpParseTreeUst.Tests.csproj", "{F0501372-F5A0-481E-9B15-379028016D5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst.Tests", "PT.PM.SqlParseTreeUst.Tests\PT.PM.SqlParseTreeUst.Tests.csproj", "{5D0C1070-A0CF-41D5-977B-F2427C297F57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.SqlParseTreeUst.Tests", "PT.PM.SqlParseTreeUst.Tests\PT.PM.SqlParseTreeUst.Tests.csproj", "{5D0C1070-A0CF-41D5-977B-F2427C297F57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Tests", "PT.PM.Tests\PT.PM.Tests.csproj", "{2CE9940C-7773-4275-9E9F-D92F6D400ADF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Tests", "PT.PM.Tests\PT.PM.Tests.csproj", "{2CE9940C-7773-4275-9E9F-D92F6D400ADF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Dsl.Tests", "PT.PM.Dsl.Tests\PT.PM.Dsl.Tests.csproj", "{40CFBDF0-A515-4FF9-8C82-4EB7456F685B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Dsl.Tests", "PT.PM.Dsl.Tests\PT.PM.Dsl.Tests.csproj", "{40CFBDF0-A515-4FF9-8C82-4EB7456F685B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli.Tests", "PT.PM.Cli.Tests\PT.PM.Cli.Tests.csproj", "{79923883-1FC8-4000-A1E8-CBE48F1B7844}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli.Tests", "PT.PM.Cli.Tests\PT.PM.Cli.Tests.csproj", "{79923883-1FC8-4000-A1E8-CBE48F1B7844}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli", "PT.PM.Cli\PT.PM.Cli.csproj", "{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,18 +105,6 @@ Global
 		{2A6F7AC9-92AA-48B8-A53B-50770424C9B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A6F7AC9-92AA-48B8-A53B-50770424C9B6}.Release|x86.ActiveCfg = Release|Any CPU
 		{2A6F7AC9-92AA-48B8-A53B-50770424C9B6}.Release|x86.Build.0 = Release|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Debug|x86.Build.0 = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.DebugGraphviz|Any CPU.ActiveCfg = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.DebugGraphviz|Any CPU.Build.0 = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.DebugGraphviz|x86.ActiveCfg = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.DebugGraphviz|x86.Build.0 = Debug|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Release|Any CPU.Build.0 = Release|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Release|x86.ActiveCfg = Release|Any CPU
-		{349B2AEF-FA81-401F-A8BD-C53EE7231544}.Release|x86.Build.0 = Release|Any CPU
 		{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -369,6 +357,18 @@ Global
 		{79923883-1FC8-4000-A1E8-CBE48F1B7844}.Release|Any CPU.Build.0 = Release|Any CPU
 		{79923883-1FC8-4000-A1E8-CBE48F1B7844}.Release|x86.ActiveCfg = Release|Any CPU
 		{79923883-1FC8-4000-A1E8-CBE48F1B7844}.Release|x86.Build.0 = Release|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Debug|x86.Build.0 = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.DebugGraphviz|Any CPU.ActiveCfg = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.DebugGraphviz|Any CPU.Build.0 = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.DebugGraphviz|x86.ActiveCfg = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.DebugGraphviz|x86.Build.0 = Debug|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Release|x86.ActiveCfg = Release|Any CPU
+		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

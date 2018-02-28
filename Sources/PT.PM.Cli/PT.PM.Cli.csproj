@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
     <ApplicationIcon>..\PT.PM.ico</ApplicationIcon>
     <OutputType>Exe</OutputType>
     <StartupObject />
@@ -15,6 +16,10 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net462|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
 
@@ -24,6 +29,15 @@
     <ProjectReference Include="..\PT.PM\PT.PM.csproj" />
 
     <None Include="..\PT.PM.ico" Link="PT.PM.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="PT.PM.Cli.runtimeconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
