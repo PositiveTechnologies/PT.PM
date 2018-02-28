@@ -11,10 +11,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
-  </PropertyGroup>
 
     <Compile Include="..\antlr-grammars-v4\plsql\CSharp\PlSqlBaseLexer.cs">
       <Link>PlSqlBaseLexer.cs</Link>
@@ -23,11 +19,11 @@
       <Link>PlSqlBaseParser.cs</Link>
     </Compile>
   <Target Name="GeneratePlSqlAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\plsql\PlSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\plsql\PlSqlParser.g4&quot; --package PT.PM.PlSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
+    <Exec Command="dotnet &quot;$(ProjectDir)..\..\bin\PrebuildUtils\net462\win\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\plsql\PlSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\plsql\PlSqlParser.g4&quot; --package PT.PM.PlSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
   </Target>
   
   <Target Name="GenerateTSqlAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlParser.g4&quot; --package PT.PM.TSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
+    <Exec Command="dotnet &quot;$(ProjectDir)..\..\bin\PrebuildUtils\net462\win\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlParser.g4&quot; --package PT.PM.TSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
   </Target>
   
   <ItemGroup>
@@ -39,6 +35,6 @@
     <None Include="..\antlr-grammars-v4\tsql\TSqlParser.g4" Link="TSqlParser.g4" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
+    <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj" />
   </ItemGroup>
-  
 </Project>

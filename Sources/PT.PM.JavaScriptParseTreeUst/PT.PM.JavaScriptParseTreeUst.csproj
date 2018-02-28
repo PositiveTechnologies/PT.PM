@@ -11,24 +11,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
-  </PropertyGroup>
 
   <Target Name="GenerateJavaScriptAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptParser.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
+    <Exec Command="dotnet &quot;$(ProjectDir)..\..\bin\PrebuildUtils\net462\win\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptParser.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
   </Target>
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
     <Compile Include="..\antlr-grammars-v4\javascript\CSharpSharwell\JavaScriptBaseLexer.cs" Link="JavaScriptBaseLexer.cs" />
     <Compile Include="..\antlr-grammars-v4\javascript\CSharpSharwell\JavaScriptBaseParser.cs" Link="JavaScriptBaseParser.cs" />
-    
-	<None Include="..\antlr-grammars-v4\javascript\JavaScriptLexer.g4" Link="JavaScriptLexer.g4" />
+
+    <None Include="..\antlr-grammars-v4\javascript\JavaScriptLexer.g4" Link="JavaScriptLexer.g4" />
     <None Include="..\antlr-grammars-v4\javascript\JavaScriptParser.g4" Link="JavaScriptParser.g4" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
+
+    <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj" />
   </ItemGroup>
 
 </Project>

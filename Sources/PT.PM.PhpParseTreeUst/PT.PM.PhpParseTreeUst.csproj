@@ -11,13 +11,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
-  </PropertyGroup>
 
   <Target Name="GeneratePhpAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PhpLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\php\PhpParser.g4&quot; --package PT.PM.PhpParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
+    <Exec Command="dotnet &quot;$(ProjectDir)..\..\bin\PrebuildUtils\net462\win\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PhpLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\php\PhpParser.g4&quot; --package PT.PM.PhpParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
   </Target>
 
   <ItemGroup>
@@ -32,5 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
     <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj" />
+    <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj" />
   </ItemGroup>
 </Project>

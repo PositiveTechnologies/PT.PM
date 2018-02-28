@@ -11,13 +11,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <ExecToolPath Condition="'$(OS)' != 'Windows_NT' ">mono</ExecToolPath>
-  </PropertyGroup>
 
   <Target Name="GenerateDslParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="$(ExecToolPath) &quot;$(ProjectDir)..\..\bin\PrebuildUtils\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)DslLexer.g4&quot; --parser &quot;$(ProjectDir)DslParser.g4&quot; --package PT.PM.Dsl --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
+    <Exec Command="dotnet &quot;$(ProjectDir)..\..\bin\PrebuildUtils\net462\win\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)DslLexer.g4&quot; --parser &quot;$(ProjectDir)DslParser.g4&quot; --package PT.PM.Dsl --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
   </Target>
 
   <ItemGroup>
@@ -27,5 +23,7 @@
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj" />
     <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj" />
+
+    <ProjectReference Include="..\PT.PM.Prebuild\PT.PM.Prebuild.csproj" />
   </ItemGroup>
 </Project>
