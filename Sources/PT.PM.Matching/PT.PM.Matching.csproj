@@ -14,6 +14,5 @@
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-    <Compile Include="PatternsRepository\CombiningPatternsRepository.cs" />
   </ItemGroup>
 </Project>
