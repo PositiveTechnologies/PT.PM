@@ -15,7 +15,7 @@ namespace PT.PM.TestUtils
 
         public static string RepositoryDirectory;
         public static string GrammarsDirectory = "Sources/antlr-grammars-v4";
-        public static string TestsPath = $@"Tests/Unit/bin/{(IsDebug ? "Debug" : "Release")}";
+        public static string TestsPath = $@"Tests/Unit/bin/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.0";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
         public static string GraphvizPath = "Sources/packages/Graphviz.2.38.0.2/dot.exe";

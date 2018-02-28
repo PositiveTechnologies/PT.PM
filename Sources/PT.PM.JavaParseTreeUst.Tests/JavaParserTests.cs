@@ -1,6 +1,5 @@
-﻿using PT.PM.Common;
+﻿using NUnit.Framework;
 using PT.PM.TestUtils;
-using NUnit.Framework;
 using System.IO;
 
 namespace PT.PM.JavaParseTreeUst.Tests

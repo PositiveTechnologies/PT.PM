@@ -1,155 +1,111 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{370AF0EE-1080-4785-A65C-6F471E64B6D2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.Dsl.Tests</RootNamespace>
-    <AssemblyName>PT.PM.Dsl.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\Tests\Unit\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\Tests\Unit\bin\Debug</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\Tests\Unit\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Antlr4.Runtime.4.6.4\lib\net45\Antlr4.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <packagereference Include="NUnit" Version="3.9.0"></packagereference>
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="DslParseTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\AssemblyInfoCommon.cs">
-      <Link>Properties\AssemblyInfoCommon.cs</Link>
-    </Compile>
+    <None Remove="Data\AndroidHostnameVerificationDisabled.ptpm" />
+    <None Remove="Data\AndroidPermissionCheck.ptpm" />
+    <None Remove="Data\AttributesCodeInsideElementEvent.ptpm" />
+    <None Remove="Data\CookieNotSentOverSSL.ptpm" />
+    <None Remove="Data\CookieSecurityOverlyBroadDomain.ptpm" />
+    <None Remove="Data\DebugInfo.ptpm" />
+    <None Remove="Data\ExtendingSecurityManagerWithoutFinal.ptpm" />
+    <None Remove="Data\HardcodedPassword.ptpm" />
+    <None Remove="Data\ImproperValidationEmptyMethodFull.ptpm" />
+    <None Remove="Data\InadequateRSAPadding.ptpm" />
+    <None Remove="Data\InsecureRandomness.ptpm" />
+    <None Remove="Data\InsecureTransport.ptpm" />
+    <None Remove="Data\KeyManagementNullEncryptionKey.ptpm" />
+    <None Remove="Data\MissingBroadcasterPermission.ptpm" />
+    <None Remove="Data\PasswordInComment.ptpm" />
+    <None Remove="Data\PoorLoggingPractice.ptpm" />
+    <None Remove="Data\Range.ptpm" />
+    <None Remove="Data\UsingCloneWithoutCloneable.ptpm" />
+    <None Remove="Data\WeakCryptographicHash.ptpm" />
+    <None Remove="Data\XmlExternalEntity.ptpm" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="Data\AndroidHostnameVerificationDisabled.ptpm">
+    <Content Include="Data\AndroidHostnameVerificationDisabled.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\AndroidPermissionCheck.ptpm">
+    </Content>
+    <Content Include="Data\AndroidPermissionCheck.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\CookieNotSentOverSSL.ptpm">
+    </Content>
+    <Content Include="Data\AttributesCodeInsideElementEvent.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\CookieSecurityOverlyBroadDomain.ptpm">
+    </Content>
+    <Content Include="Data\CookieNotSentOverSSL.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\DebugInfo.ptpm">
+    </Content>
+    <Content Include="Data\CookieSecurityOverlyBroadDomain.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\HardcodedPassword.ptpm">
+    </Content>
+    <Content Include="Data\DebugInfo.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\InadequateRSAPadding.ptpm">
+    </Content>
+    <Content Include="Data\ExtendingSecurityManagerWithoutFinal.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\InsecureRandomness.ptpm">
+    </Content>
+    <Content Include="Data\HardcodedPassword.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\InsecureTransport.ptpm">
+    </Content>
+    <Content Include="Data\ImproperValidationEmptyMethodFull.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\MissingBroadcasterPermission.ptpm">
+    </Content>
+    <Content Include="Data\InadequateRSAPadding.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\PasswordInComment.ptpm">
+    </Content>
+    <Content Include="Data\InsecureRandomness.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\WeakCryptographicHash.ptpm">
+    </Content>
+    <Content Include="Data\InsecureTransport.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\XmlExternalEntity.ptpm">
+    </Content>
+    <Content Include="Data\KeyManagementNullEncryptionKey.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\KeyManagementNullEncryptionKey.ptpm">
+    </Content>
+    <Content Include="Data\MissingBroadcasterPermission.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\AttributesCodeInsideElementEvent.ptpm">
+    </Content>
+    <Content Include="Data\PasswordInComment.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\Range.ptpm">
+    </Content>
+    <Content Include="Data\PoorLoggingPractice.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\ExtendingSecurityManagerWithoutFinal.ptpm">
+    </Content>
+    <Content Include="Data\Range.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\ImproperValidationEmptyMethodFull.ptpm">
+    </Content>
+    <Content Include="Data\UsingCloneWithoutCloneable.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\UsingCloneWithoutCloneable.ptpm">
+    </Content>
+    <Content Include="Data\WeakCryptographicHash.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\PoorLoggingPractice.ptpm">
+    </Content>
+    <Content Include="Data\XmlExternalEntity.ptpm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
+    </Content>
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
-      <Project>{82402704-16f1-476b-8670-6836340612f3}</Project>
-      <Name>PT.PM.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
-      <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
-      <Name>PT.PM.Dsl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
-      <Project>{9215DF23-07BE-49AA-90A0-ED1C542C388C}</Project>
-      <Name>PT.PM.Matching</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
-      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
-      <Name>PT.PM.Patterns</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj">
-      <Project>{08FBC341-AC44-4CAE-AE71-9462F7885E3E}</Project>
-      <Name>PT.PM.PhpParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
-      <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
-      <Name>PT.PM.TestUtils</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

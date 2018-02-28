@@ -1,81 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EEBBE595-2478-40B1-A147-7F44E40A2686}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.SqlParseTreeUst.Tests</RootNamespace>
-    <AssemblyName>PT.PM.SqlParseTreeUst.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\Tests\Unit\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\Tests\Unit\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\Tests\Unit\bin\Release</OutputPath>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <packagereference Include="NUnit" Version="3.9.0"></packagereference>
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\AssemblyInfoCommon.cs">
-      <Link>Properties\AssemblyInfoCommon.cs</Link>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlConverterTests.cs" />
-    <Compile Include="SqlParserTests.cs" />
+    <None Remove="Data\plsql_patterns.sql" />
+    <None Remove="Data\tsql_patterns.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
-      <Project>{82402704-16f1-476b-8670-6836340612f3}</Project>
-      <Name>PT.PM.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
-      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
-      <Name>PT.PM.Matching</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
-      <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
-      <Name>PT.PM.TestUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
-      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
-      <Name>PT.PM.Patterns</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj">
-      <Project>{8f34670a-b91d-460b-9d67-7a03f7194673}</Project>
-      <Name>PT.PM.SqlParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM\PT.PM.csproj">
-      <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>
-      <Name>PT.PM</Name>
-    </ProjectReference>
-  </ItemGroup>
+
   <ItemGroup>
     <Content Include="Data\plsql_patterns.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -84,18 +31,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -1,124 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F9D784D4-36E4-49F8-BEA4-38BDBB6910D8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PT.PM.Matching.Tests</RootNamespace>
-    <AssemblyName>PT.PM.Matching.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\Tests\Unit\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\Tests\Unit\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\Tests\Unit\bin\Release</OutputPath>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <packagereference Include="NUnit" Version="3.9.0"></packagereference>
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="CSharpMatchingTests.cs" />
-    <Compile Include="HtmlTests.cs" />
-    <Compile Include="JavaMatchingTests.cs" />
-    <Compile Include="JavaScriptMatchingTests.cs" />
-    <Compile Include="FileNameMatchingTests.cs" />
-    <Compile Include="PatternMatchingTests.cs" />
-    <Compile Include="PatternMatchingUtils.cs" />
-    <Compile Include="PhpMatchingTests.cs" />
-    <Compile Include="Global.cs" />
-    <Compile Include="SqlMatchingTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\AssemblyInfoCommon.cs">
-      <Link>Properties\AssemblyInfoCommon.cs</Link>
-    </Compile>
+    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj">
-      <Project>{82402704-16f1-476b-8670-6836340612f3}</Project>
-      <Name>PT.PM.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj">
-      <Project>{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}</Project>
-      <Name>PT.PM.CSharpParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj">
-      <Project>{aa275980-e6c1-4d84-a505-26703cf8e15a}</Project>
-      <Name>PT.PM.JavaParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj">
-      <Project>{98727837-F9FA-476C-B0B5-88845B53FDDF}</Project>
-      <Name>PT.PM.JavaScriptParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj">
-      <Project>{08FBC341-AC44-4CAE-AE71-9462F7885E3E}</Project>
-      <Name>PT.PM.PhpParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj">
-      <Project>{8F34670A-B91D-460B-9D67-7A03F7194673}</Project>
-      <Name>PT.PM.SqlParseTreeUst</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj">
-      <Project>{FEC55A64-1B65-4D39-B5FA-D559D55BB190}</Project>
-      <Name>PT.PM.TestUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj">
-      <Project>{0cc3091c-db40-49d1-ac8f-3accabcad952}</Project>
-      <Name>PT.PM.Dsl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.JavaParseTreeUst.Tests\PT.PM.JavaParseTreeUst.Tests.csproj">
-      <Project>{47f5b401-e788-494e-89c8-a8ca0b6917c4}</Project>
-      <Name>PT.PM.JavaParseTreeUst.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj">
-      <Project>{9215df23-07be-49aa-90a0-ed1c542c388c}</Project>
-      <Name>PT.PM.Matching</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj">
-      <Project>{2a6f7ac9-92aa-48b8-a53b-50770424c9b6}</Project>
-      <Name>PT.PM.Patterns</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM.PhpParseTreeUst.Tests\PT.PM.PhpParseTreeUst.Tests.csproj">
-      <Project>{933dcca3-b5d1-45ae-acab-1672d71bc349}</Project>
-      <Name>PT.PM.PhpParseTreeUst.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PT.PM\PT.PM.csproj">
-      <Project>{ecb44673-2fb0-49e1-811f-973e3fa4dd22}</Project>
-      <Name>PT.PM</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
