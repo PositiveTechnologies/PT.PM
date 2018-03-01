@@ -14,6 +14,7 @@ namespace PT.PM.Cli.Tests
     public class CliTests
     {
         private readonly static string patternsFileName = Path.Combine(TestUtility.TestsOutputPath, "patterns.json");
+
         [Test]
         public void CheckCli_Patterns_CorrectErrorMessages()
         {
@@ -23,7 +24,7 @@ namespace PT.PM.Cli.Tests
             }
 
             PrepareAndSaveTestPatterns();
-            var result = ProcessUtils.SetupHiddenProcessAndStart(TestUtility.PtPmExePath, $"--stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
+            var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
 
             Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", result.Output[2]);
             Assert.AreEqual($"Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", result.Output[3]);
@@ -45,7 +46,7 @@ namespace PT.PM.Cli.Tests
                 {
                     Directory.Delete(logPath, true);
                 }
-                var result = ProcessUtils.SetupHiddenProcessAndStart(TestUtility.PtPmExePath, $"--stage {Stage.Pattern} --patterns {patternsFileName} --logs-dir \"{logPath}\"");
+                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --logs-dir \"{logPath}\"");
                 var logFiles = Directory.GetFiles(logPath, "*.*");
                 Assert.Greater(logFiles.Length, 0);
             }
@@ -67,7 +68,8 @@ namespace PT.PM.Cli.Tests
                 Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
             }
 
-            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(TestUtility.PtPmExePath,
+            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+                $"{TestUtility.PtPmExePath} " +
                 $"-f \"{TestUtility.TestsDataPath}\" " +
                 $"-l PlSql,TSql " +
                 $"--stage {Stage.ParseTree} --log-debugs");
@@ -76,7 +78,8 @@ namespace PT.PM.Cli.Tests
             Assert.IsTrue(result.Output.Any(line => line.Contains(".php has not been read")));
             Assert.IsTrue(result.Output.Any(line => line.Contains("has been detected")));
 
-            result = ProcessUtils.SetupHiddenProcessAndStart(TestUtility.PtPmExePath,
+            result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+                $"{TestUtility.PtPmExePath} " +
                 $"-f \"{TestUtility.TestsDataPath}\" " +
                 $"-l PlSql " +
                 $"--stage {Stage.ParseTree} --log-debugs");
@@ -95,7 +98,8 @@ namespace PT.PM.Cli.Tests
 
             var patternTempFile = Path.GetTempFileName() + ".json";
             File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
-            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(TestUtility.PtPmExePath,
+            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+               $"{TestUtility.PtPmExePath} " +
                $"--stage {Stage.Pattern} " +
                $"--patterns {patternTempFile} " +
                $"--log-debugs --log-errors");
@@ -116,8 +120,8 @@ namespace PT.PM.Cli.Tests
             File.WriteAllText(patternsFileName, "[{\"Key\":\"1\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\"}]");
             try
             {
-                var result = ProcessUtils.SetupHiddenProcessAndStart(TestUtility.PtPmExePath,
-                    $"-f \"{Path.Combine(TestUtility.TestsDataPath, "Patterns.cs")}\" " +
+                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+                    $"{TestUtility.PtPmExePath} -f \"{Path.Combine(TestUtility.TestsDataPath, "Patterns.cs")}\" " +
                     $"--patterns \"{patternsFileName}\"");
 
                 Assert.IsTrue(result.Output.Any(str => str.Contains("Pattern matched")));

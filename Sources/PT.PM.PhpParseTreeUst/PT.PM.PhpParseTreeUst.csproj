@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <Target Name="GeneratePhpAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="dotnet &quot;$(ProjectDir)..\..\bin\PrebuildUtils\net462\win\PT.PM.Prebuild.exe&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PhpLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\php\PhpParser.g4&quot; --package PT.PM.PhpParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
+    <Exec Command="dotnet &quot;$(ProjectDir)..\..\bin\PrebuildUtils\netcoreapp2.0\PT.PM.Prebuild.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\php\CSharpSharwell\PhpLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\php\PhpParser.g4&quot; --package PT.PM.PhpParseTreeUst --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
   </Target>
 
   <ItemGroup>
