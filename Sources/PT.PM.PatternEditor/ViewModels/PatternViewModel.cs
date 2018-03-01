@@ -75,9 +75,18 @@ namespace PT.PM.PatternEditor
                 }
             });
 
+            Action openPatternAction = () =>
+            {
+                if (patternsListBox.SelectedItem != null)
+                {
+                    var patternDto = (PatternDto)patternsListBox.SelectedItem;
+                    SelectedPattern = patternDto;
+                }
+            };
+
             patternsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                OpenPattern.Execute(sender);
+                openPatternAction();
             };
 
             patternErrorsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
@@ -96,7 +105,7 @@ namespace PT.PM.PatternEditor
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(str => Value = str);
 
-            OpenPatterns.Subscribe(async _ =>
+            OpenPatterns = ReactiveCommand.Create(async () =>
             {
                 SavePatterns();
                 var openFileDialog = new OpenFileDialog
@@ -121,7 +130,7 @@ namespace PT.PM.PatternEditor
                 }
             });
 
-            CreatePattern.Subscribe(_ =>
+            CreatePattern = ReactiveCommand.Create(() =>
             {
                 SavePatterns();
                 var newPattern = new PatternDto
@@ -135,7 +144,7 @@ namespace PT.PM.PatternEditor
                 SavePatterns();
             });
 
-            RemovePattern.Subscribe(async _ =>
+            RemovePattern = ReactiveCommand.Create(async () =>
             {
                 if (SelectedPattern != null && await MessageBox.ShowDialog($"Do you want to remove {SelectedPattern}?", messageBoxType: MessageBoxType.YesNo))
                 {
@@ -143,33 +152,22 @@ namespace PT.PM.PatternEditor
                     SelectedPattern = Patterns.LastOrDefault();
                     SavePatterns();
                 }
-                
             });
 
-            OpenPattern.Subscribe(_ =>
-            {
-                if (patternsListBox.SelectedItem != null)
-                {
-                    var patternDto = (PatternDto)patternsListBox.SelectedItem;
-                    SelectedPattern = patternDto;
-                }
-            });
+            OpenPattern = ReactiveCommand.Create(openPatternAction);
 
-            SavePattern.Subscribe(_ =>
-            {
-                SavePatterns();
-            });
+            SavePattern = ReactiveCommand.Create(() => SavePatterns());
         }
 
-        public ReactiveCommand<object> OpenPatterns { get; } = ReactiveCommand.Create();
+        public ReactiveCommand OpenPatterns { get; }
 
-        public ReactiveCommand<object> CreatePattern { get; } = ReactiveCommand.Create();
+        public ReactiveCommand CreatePattern { get; }
 
-        public ReactiveCommand<object> RemovePattern { get; } = ReactiveCommand.Create();
+        public ReactiveCommand RemovePattern { get; }
 
-        public ReactiveCommand<object> OpenPattern { get; } = ReactiveCommand.Create();
+        public ReactiveCommand OpenPattern { get; }
 
-        public ReactiveCommand<object> SavePattern { get; } = ReactiveCommand.Create();
+        public ReactiveCommand SavePattern { get; }
 
         public string PatternsFileName
         {

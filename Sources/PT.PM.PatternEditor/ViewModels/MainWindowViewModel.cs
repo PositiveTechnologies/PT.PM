@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM.PatternEditor
 {
-    public class MainWindowViewModel: ReactiveObject
+    public class MainWindowViewModel : ReactiveObject
     {
         private Window window;
         private ColumnDefinition patternsPanelColumn;
@@ -83,7 +83,7 @@ namespace PT.PM.PatternEditor
             sourceCodeLogger = new GuiLogger(SourceCodeErrors) { LogPatternErrors = false };
             languageDetector.Logger = sourceCodeLogger;
 
-            OpenSourceCodeFile.Subscribe(async _ =>
+            OpenSourceCodeFile = ReactiveCommand.Create(async () =>
             {
                 var dialog = new OpenFileDialog();
                 string[] fileNames = await dialog.ShowAsync(window);
@@ -96,7 +96,7 @@ namespace PT.PM.PatternEditor
                 }
             });
 
-            SaveSourceCodeFile.Subscribe(_ =>
+            SaveSourceCodeFile = ReactiveCommand.Create(() =>
             {
                 if (!string.IsNullOrEmpty(sourceCodeFileName))
                 {
@@ -104,7 +104,7 @@ namespace PT.PM.PatternEditor
                 }
             });
 
-            ReloadFile.Subscribe(_ =>
+            ReloadFile = ReactiveCommand.Create(() =>
             {
                 if (!string.IsNullOrEmpty(sourceCodeFileName))
                 {
@@ -112,16 +112,13 @@ namespace PT.PM.PatternEditor
                 }
             });
 
-            Reset.Subscribe(_ =>
+            Reset = ReactiveCommand.Create(() =>
             {
                 OpenedFileName = "";
                 sourceCodeTextBox.Text = "";
             });
 
-            OpenDumpDirectory.Subscribe(_ =>
-            {
-                Process.Start(ServiceLocator.TempDirectory);
-            });
+            OpenDumpDirectory = ReactiveCommand.Create(() => Process.Start(ServiceLocator.TempDirectory));
 
             if (string.IsNullOrEmpty(Settings.SourceCodeFile) || !File.Exists(Settings.SourceCodeFile))
             {
@@ -372,15 +369,15 @@ namespace PT.PM.PatternEditor
 
         public bool IsJavaScriptTypeVisible => SelectedLanguage == JavaScript.Language;
 
-        public ReactiveCommand<object> OpenSourceCodeFile { get; } = ReactiveCommand.Create();
+        public ReactiveCommand OpenSourceCodeFile { get; }
 
-        public ReactiveCommand<object> SaveSourceCodeFile { get; } = ReactiveCommand.Create();
+        public ReactiveCommand SaveSourceCodeFile { get; }
 
-        public ReactiveCommand<object> ReloadFile { get; } = ReactiveCommand.Create();
+        public ReactiveCommand ReloadFile { get; }
 
-        public ReactiveCommand<object> Reset { get; } = ReactiveCommand.Create();
+        public ReactiveCommand Reset { get; }
 
-        public ReactiveCommand<object> OpenDumpDirectory { get; } = ReactiveCommand.Create();
+        public ReactiveCommand OpenDumpDirectory { get; }
 
         public string OpenedFullFileName => sourceCodeFileName;
 

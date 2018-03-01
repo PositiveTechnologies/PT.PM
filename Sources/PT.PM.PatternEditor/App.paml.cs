@@ -20,6 +20,7 @@ namespace PT.PM.PatternEditor
         {
             InitializeLogging();
             AppBuilder.Configure<App>()
+                .UseReactiveUI()
                 .UsePlatformDetect()
                 .Start<MainWindow>();
         }
