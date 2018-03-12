@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PT.PM.Common
 {
-    public class CodeFile
+    public class CodeFile : IEquatable<CodeFile>
     {
         private readonly object lockObj = new object();
         private int[] lineIndexes;
@@ -130,6 +130,46 @@ namespace PT.PM.Common
             }
 
             lineIndexes = lineIndexesBuffer.ToArray();
+        }
+
+        public static bool operator ==(CodeFile codeFile1, CodeFile codeFile2)
+        {
+            if (codeFile1 == null)
+            {
+                return codeFile2 == null;
+            }
+
+            return codeFile1.Equals(codeFile2);
+        }
+
+        public static bool operator !=(CodeFile codeFile1, CodeFile codeFile2)
+        {
+            if (codeFile1 == null)
+            {
+                return codeFile2 != null;
+            }
+
+            return !codeFile1.Equals(codeFile2);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj as CodeFile);
+        }
+
+        public bool Equals(CodeFile other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return FullName == other.FullName;
+        }
+
+        public override int GetHashCode()
+        {
+            return FullName.GetHashCode();
         }
     }
 }
