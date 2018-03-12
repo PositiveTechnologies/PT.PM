@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
     <ProjectReference Include="..\PT.PM.Dsl\PT.PM.Dsl.csproj" />
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj" />

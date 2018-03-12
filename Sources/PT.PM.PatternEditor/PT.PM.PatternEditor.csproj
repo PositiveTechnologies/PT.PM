@@ -46,6 +46,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="..\PT.PM.ico" Link="PT.PM.ico" />
   </ItemGroup>
 
