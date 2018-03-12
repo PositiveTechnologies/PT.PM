@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.SqlParseTreeUst", "PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj", "{8F34670A-B91D-460B-9D67-7A03F7194673}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspxParser", "AspxParser\AspxParser\AspxParser.csproj", "{88AF3957-A64A-4715-ADE5-3BE099034BDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspxParser", "AspxParser\AspxParser\AspxParser.csproj", "{88AF3957-A64A-4715-ADE5-3BE099034BDD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.JavaScriptParseTreeUst", "PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj", "{98727837-F9FA-476C-B0B5-88845B53FDDF}"
 EndProject
@@ -55,9 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli.Tests", "PT.PM.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli", "PT.PM.Cli\PT.PM.Cli.csproj", "{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Prebuild", "PT.PM.Prebuild\PT.PM.Prebuild.csproj", "{60E56C57-7C56-4495-8B7C-6422455E1784}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PatternEditor", "PT.PM.PatternEditor\PT.PM.PatternEditor.csproj", "{4B81E50D-478F-47E6-8D41-2649703B707A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PatternEditor", "PT.PM.PatternEditor\PT.PM.PatternEditor.csproj", "{4B81E50D-478F-47E6-8D41-2649703B707A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -345,18 +343,6 @@ Global
 		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Release|x86.ActiveCfg = Release|Any CPU
 		{6216A5F2-5F20-47EA-ADF0-98FB7A596CD3}.Release|x86.Build.0 = Release|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Debug|x86.Build.0 = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.DebugGraphviz|Any CPU.ActiveCfg = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.DebugGraphviz|Any CPU.Build.0 = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.DebugGraphviz|x86.ActiveCfg = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.DebugGraphviz|x86.Build.0 = Debug|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Release|Any CPU.Build.0 = Release|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Release|x86.ActiveCfg = Release|Any CPU
-		{60E56C57-7C56-4495-8B7C-6422455E1784}.Release|x86.Build.0 = Release|Any CPU
 		{4B81E50D-478F-47E6-8D41-2649703B707A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B81E50D-478F-47E6-8D41-2649703B707A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B81E50D-478F-47E6-8D41-2649703B707A}.Debug|x86.ActiveCfg = Debug|Any CPU
