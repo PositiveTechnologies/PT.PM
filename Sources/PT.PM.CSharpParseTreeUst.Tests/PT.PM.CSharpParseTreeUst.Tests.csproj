@@ -5,11 +5,11 @@
   </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\Tests\Unit\bin\Debug\</OutputPath>
+    <OutputPath>..\..\Tests\Debug\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\Tests\Unit\bin\Release\</OutputPath>
+    <OutputPath>..\..\Tests\Release\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
