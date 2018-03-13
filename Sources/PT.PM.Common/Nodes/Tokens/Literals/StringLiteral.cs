@@ -41,19 +41,4 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
         public override string ToString() => $"\"{Text}\"";
     }
-
-    public static class InitialTextSpanPopulate
-    {
-        public static void Populate(this List<TextSpan> textSpans, StringLiteral stringLiteral)
-        {
-            if(stringLiteral.InitialTextSpans.Any())
-            {
-                textSpans.AddRange(stringLiteral.InitialTextSpans);
-            }
-            else
-            {
-                textSpans.Add(stringLiteral.TextSpan);
-            }
-        }
-    }
 }

@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Patterns
             IEnumerable<TextSpan> matches = StringRegex
                 .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength);
 
-            if (stringLiteral.InitialTextSpans.Any())
+            if (stringLiteral.InitialTextSpans?.Any() ?? false)
             {
                 List<TextSpan> result = new List<TextSpan>();
                 var initialTextSpans = stringLiteral.InitialTextSpans.OrderBy(el => el).ToList();

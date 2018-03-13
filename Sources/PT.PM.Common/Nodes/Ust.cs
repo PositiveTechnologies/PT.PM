@@ -37,7 +37,19 @@ namespace PT.PM.Common.Nodes
         /// i.e. "1" + "2" + "3" -> "123".
         /// These spans map on an original source code.
         /// </summary>
-        public List<TextSpan> InitialTextSpans { get; set; } = new List<TextSpan>();
+        public List<TextSpan> InitialTextSpans { get; set; }
+
+        public List<TextSpan> GetRealTextSpans()
+        {
+            if (InitialTextSpans != null && InitialTextSpans.Count > 0)
+            {
+                return InitialTextSpans;
+            }
+            else
+            {
+                return new List<TextSpan>() { TextSpan };
+            }
+        }
 
         protected Ust()
         {

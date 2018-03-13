@@ -67,18 +67,8 @@ namespace PT.PM
             {
                 if (op.BinaryOperator == BinaryOperator.Plus)
                 {
-                    List<TextSpan> initialTextSpans = new List<TextSpan>();
-                    initialTextSpans.Populate(leftString);
-                    initialTextSpans.Populate(rightString);
-
                     string resultText = leftString.Text + rightString.Text;
-                    result = new StringLiteral
-                    {
-                        Text = resultText,
-                        Root = binaryOperatorExpression.Root,
-                        TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan),
-                        InitialTextSpans = new List<TextSpan>(initialTextSpans)
-                    };
+                    result = new StringLiteral(resultText);
                     Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {result.TextSpan}");
                 }
             }
@@ -123,26 +113,31 @@ namespace PT.PM
                                 folded = false;
                                 break;
                         }
+
+                        if (folded)
+                        {
+                            result = new IntLiteral(resultValue);
+                            Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} has been folded to {resultValue} at {result.TextSpan}");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    folded = false;
                     Logger.LogDebug($"Error while constant folding: {ex}");
-                }
-                if (folded)
-                {
-                    result = new IntLiteral
-                    {
-                        Value = resultValue,
-                        Root = binaryOperatorExpression.Root,
-                        TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan)
-                    };
-                    Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} has been folded to {resultValue} at {result.TextSpan}");
                 }
             }
 
-            if (result == null)
+            if (result != null)
+            {
+                List<TextSpan> textSpans = new List<TextSpan>();
+                textSpans.AddRange(leftExpression.GetRealTextSpans());
+                textSpans.AddRange(rightExpression.GetRealTextSpans());
+
+                result.TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan);
+                result.InitialTextSpans = textSpans;
+                result.Root = binaryOperatorExpression.Root;
+            }
+            else
             {
                 result = new BinaryOperatorExpression(leftExpression, op, rightExpression,
                     new TextSpan(binaryOperatorExpression.TextSpan));
