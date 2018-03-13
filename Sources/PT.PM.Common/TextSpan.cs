@@ -2,9 +2,6 @@
 
 namespace PT.PM.Common
 {
-    /// <summary>
-    /// Source: Roslyn, http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis/Text/TextSpan.cs
-    /// </summary>
     public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
         public readonly static TextSpan Empty = default(TextSpan);
@@ -23,17 +20,21 @@ namespace PT.PM.Common
 
             Start = start;
             Length = length;
+            CodeFile = null;
         }
 
         public TextSpan(TextSpan textSpan)
         {
             Start = textSpan.Start;
             Length = textSpan.Length;
+            CodeFile = textSpan.CodeFile;
         }
 
         public int Start { get; }
 
         public int Length { get; }
+
+        public CodeFile CodeFile { get; set; }
 
         public int End => Start + Length;
 
@@ -113,38 +114,49 @@ namespace PT.PM.Common
             }
         }
 
-        public static bool operator ==(TextSpan left, TextSpan right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(TextSpan left, TextSpan right) => left.Equals(right);
 
-        public static bool operator !=(TextSpan left, TextSpan right)
-        {
-            return !left.Equals(right);
-        }
-
-        public bool Equals(TextSpan other)
-        {
-            return Start == other.Start && Length == other.Length;
-        }
+        public static bool operator !=(TextSpan left, TextSpan right) => !left.Equals(right);
 
         public override bool Equals(object obj)
         {
             return obj is TextSpan && Equals((TextSpan)obj);
         }
 
+        public bool Equals(TextSpan other)
+        {
+            if (CodeFile != other.CodeFile)
+            {
+                return false;
+            }
+
+            return Start == other.Start && Length == other.Length;
+        }
+
         public override int GetHashCode()
         {
-            return Hash.Combine(Start, Length);
+            int result = Hash.Combine(Start, Length);
+
+            if (!ReferenceEquals(CodeFile, null))
+            {
+                result = Hash.Combine(CodeFile.GetHashCode(), result);
+            }
+
+            return result;
         }
 
         public override string ToString()
         {
-            if (Start == End)
+            string result = Start == End
+                ? $"[{Start})"
+                : $"[{Start}..{End})";
+
+            if (!ReferenceEquals(CodeFile, null))
             {
-                return $"[{Start})";
+                result = $"{result}; {CodeFile.RelativeName}";
             }
-            return $"[{Start}..{End})"; 
+
+            return result;
         }
 
         public int CompareTo(object obj)
@@ -153,12 +165,20 @@ namespace PT.PM.Common
             {
                 return CompareTo(otherTextSpan);
             }
+
             return 1;
         }
 
         public int CompareTo(TextSpan other)
         {
-            var diff = Start - other.Start;
+            if (CodeFile != other.CodeFile)
+            {
+                return CodeFile != null
+                    ? CodeFile.CompareTo(other.CodeFile)
+                    : 1;
+            }
+
+            int diff = Start - other.Start;
             if (diff != 0)
             {
                 return diff;

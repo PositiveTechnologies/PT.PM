@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PT.PM.Common
 {
-    public class CodeFile : IEquatable<CodeFile>
+    public class CodeFile : IEquatable<CodeFile>, IComparable<CodeFile>, IComparable
     {
         private readonly object lockObj = new object();
         private int[] lineIndexes;
@@ -23,7 +23,7 @@ namespace PT.PM.Common
 
         public bool IsPattern { get; set; } = false;
 
-        public string Code { get; }
+        public string Code { get; } = "";
 
         public string RelativeName => Path.Combine(RelativePath, Name);
 
@@ -132,36 +132,18 @@ namespace PT.PM.Common
             lineIndexes = lineIndexesBuffer.ToArray();
         }
 
-        public static bool operator ==(CodeFile codeFile1, CodeFile codeFile2)
-        {
-            if (codeFile1 == null)
-            {
-                return codeFile2 == null;
-            }
-
-            return codeFile1.Equals(codeFile2);
-        }
-
-        public static bool operator !=(CodeFile codeFile1, CodeFile codeFile2)
-        {
-            if (codeFile1 == null)
-            {
-                return codeFile2 != null;
-            }
-
-            return !codeFile1.Equals(codeFile2);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj as CodeFile);
-        }
+        public override bool Equals(object obj) => Equals(obj as CodeFile);
 
         public bool Equals(CodeFile other)
         {
-            if (other == null)
+            if (ReferenceEquals(other, null))
             {
                 return false;
+            }
+
+            if (string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(other.FullName))
+            {
+                return Code == other.Code;
             }
 
             return FullName == other.FullName;
@@ -169,7 +151,26 @@ namespace PT.PM.Common
 
         public override int GetHashCode()
         {
-            return FullName.GetHashCode();
+            return string.IsNullOrEmpty(FullName)
+                ? Code.GetHashCode()
+                : FullName.GetHashCode();
+        }
+
+        public int CompareTo(object obj) => CompareTo(obj as CodeFile);
+
+        public int CompareTo(CodeFile other)
+        {
+            if (ReferenceEquals(other, null))
+            {
+                return 1;
+            }
+
+            if (string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(other.FullName))
+            {
+                return Code.CompareTo(other.Code);
+            }
+
+            return FullName.CompareTo(other.FullName);
         }
     }
 }
