@@ -46,7 +46,7 @@ namespace PT.PM.Matching.Patterns
                 if (token.Root.Language.IsCaseInsensitive)
                 {
                     TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan(tokenText);
-                    if (!textSpan.IsEmpty)
+                    if (!textSpan.IsZero)
                     {
                         newContext = context.AddMatch(token);
                     }

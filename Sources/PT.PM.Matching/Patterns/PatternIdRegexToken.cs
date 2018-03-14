@@ -59,7 +59,7 @@ namespace PT.PM.Matching.Patterns
             string tokenText = token.TextValue;
             TextSpan textSpan = regex.Match(tokenText).GetTextSpan(tokenText);
 
-            return !textSpan.IsEmpty
+            return !textSpan.IsZero
                 ? context.AddMatch(token)
                 : context.Fail();
         }

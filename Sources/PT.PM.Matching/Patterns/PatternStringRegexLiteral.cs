@@ -45,7 +45,7 @@ namespace PT.PM.Matching.Patterns
                     int leftBound = 1;
                     int rightBound =
                         initialTextSpans[0].Length - 2 * escapeLength + 1; // - quotes length and then + 1
-                    TextSpan textSpan = TextSpan.Empty;
+                    TextSpan textSpan = TextSpan.Zero;
 
                     // Check first initial textspan separately
                     if (location.Start < rightBound && location.End > rightBound)
@@ -76,14 +76,14 @@ namespace PT.PM.Matching.Patterns
                             }
                         }
 
-                        if (!textSpan.IsEmpty && location.End <= rightBound)
+                        if (!textSpan.IsZero && location.End <= rightBound)
                         {
                             result.Add(new TextSpan(textSpan.Start, location.Length + offset));
                             break;
                         }
                     }
 
-                    if (textSpan.IsEmpty)
+                    if (textSpan.IsZero)
                     {
                         result.Add(location);
                     }

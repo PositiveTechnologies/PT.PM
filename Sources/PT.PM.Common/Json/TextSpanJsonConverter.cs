@@ -33,13 +33,13 @@ namespace PT.PM.Common.Json
                     string textSpanString;
                     if (!IsLineColumn)
                     {
-                        textSpanString = textSpan.IsEmpty && EmptyTextSpanFormat != null
+                        textSpanString = textSpan.IsZero && EmptyTextSpanFormat != null
                             ? EmptyTextSpanFormat
                             : textSpan.ToString();
                     }
                     else
                     {
-                        textSpanString = textSpan.IsEmpty && EmptyTextSpanFormat != null
+                        textSpanString = textSpan.IsZero && EmptyTextSpanFormat != null
                             ? EmptyTextSpanFormat
                             : CodeFile.GetLineColumnTextSpan(textSpan).ToString();
                     }
@@ -72,7 +72,7 @@ namespace PT.PM.Common.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            TextSpan result = TextSpan.Empty;
+            TextSpan result = TextSpan.Zero;
             IJsonLineInfo jsonLineInfo = null;
             try
             {
@@ -115,27 +115,27 @@ namespace PT.PM.Common.Json
             }
             catch
             {
-                result = TextSpan.Empty;
+                result = TextSpan.Zero;
                 return false;
             }
         }
 
         private void DeserializeTextSpan(JsonReader reader, bool shortFormat, bool isLineColumn, out TextSpan result)
         {
-            result = TextSpan.Empty;
+            result = TextSpan.Zero;
             if (shortFormat)
             {
                 string textSpanString = (string)reader.Value;
                 if (!isLineColumn)
                 {
                     result = textSpanString == EmptyTextSpanFormat
-                        ? TextSpan.Empty
+                        ? TextSpan.Zero
                         : TextSpan.Parse(textSpanString);
                 }
                 else
                 {
                     result = textSpanString == EmptyTextSpanFormat
-                         ? TextSpan.Empty
+                         ? TextSpan.Zero
                          : CodeFile.GetTextSpan(LineColumnTextSpan.Parse(textSpanString));
                 }
             }

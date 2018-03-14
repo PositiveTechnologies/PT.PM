@@ -42,9 +42,9 @@ namespace PT.PM.Common
 
         public static TextSpan Union(this IEnumerable<TextSpan> textSpans)
         {
-            if (textSpans.Count() == 0)
+            if (textSpans == null || textSpans.Count() == 0)
             {
-                return TextSpan.Empty;
+                return TextSpan.Zero;
             }
 
             var resultTextSpan = textSpans.First();
@@ -57,6 +57,7 @@ namespace PT.PM.Common
             {
                 resultTextSpan = resultTextSpan.Union(textSpan);
             }
+
             return resultTextSpan;
         }
 

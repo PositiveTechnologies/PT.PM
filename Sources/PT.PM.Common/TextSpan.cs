@@ -4,7 +4,7 @@ namespace PT.PM.Common
 {
     public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
-        public readonly static TextSpan Empty = default(TextSpan);
+        public readonly static TextSpan Zero = default(TextSpan);
 
         public TextSpan(int start, int length)
         {
@@ -38,46 +38,21 @@ namespace PT.PM.Common
 
         public int End => Start + Length;
 
-        public bool IsEmpty => Length == 0;
-
-        public bool Contains(int position)
-        {
-            return unchecked((uint)(position - Start) < (uint)Length);
-        }
-
-        public bool Contains(TextSpan span)
-        {
-            return span.Start >= Start && span.End <= End;
-        }
-
-        public bool IntersectsWith(TextSpan span)
-        {
-            return span.Start <= this.End && span.End >= Start;
-        }
-
-        public bool IntersectsWith(int position)
-        {
-            return unchecked((uint)(position - Start) <= (uint)Length);
-        }
-
-        public TextSpan Intersection(TextSpan span)
-        {
-            int intersectStart = Math.Max(Start, span.Start);
-            int intersectEnd = Math.Min(End, span.End);
-
-            return intersectStart <= intersectEnd
-                ? TextSpan.FromBounds(intersectStart, intersectEnd)
-                : default(TextSpan);
-        }
+        public bool IsZero => Start == 0 && Length == 0;
 
         public TextSpan Union(TextSpan span)
         {
-            if (Equals(Empty))
+            if (CodeFile != span.CodeFile)
+            {
+                return IsZero ? span : this;
+            }
+
+            if (IsZero)
             {
                 return span;
             }
 
-            if (span.Equals(Empty))
+            if (span.IsZero)
             {
                 return this;
             }
