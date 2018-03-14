@@ -132,10 +132,35 @@ namespace PT.PM.Common
             lineIndexes = lineIndexesBuffer.ToArray();
         }
 
+        public static bool operator ==(CodeFile codeFile1, CodeFile codeFile2)
+        {
+            if (ReferenceEquals(codeFile1, null))
+            {
+                return ReferenceEquals(codeFile2, null);
+            }
+
+            return codeFile1.Equals(codeFile2);
+        }
+
+        public static bool operator !=(CodeFile codeFile1, CodeFile codeFile2)
+        {
+            if (ReferenceEquals(codeFile1, null))
+            {
+                return !ReferenceEquals(codeFile2, null);
+            }
+
+            return !codeFile1.Equals(codeFile2);
+        }
+
         public override bool Equals(object obj) => Equals(obj as CodeFile);
 
         public bool Equals(CodeFile other)
         {
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             if (ReferenceEquals(other, null))
             {
                 return false;
