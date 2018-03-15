@@ -183,7 +183,10 @@ namespace PT.PM
                             converter.AnalyzedLanguages = AnalyzedLanguages;
                             result = converter.Convert(parseTree);
 
-                            DumpUst(result);
+                            if (Stage.IsLess(PM.Stage.SimplifiedUst))
+                            {
+                                DumpUst(result);
+                            }
                         }
                         else
                         {
@@ -231,9 +234,9 @@ namespace PT.PM
             }
         }
 
-        private void DumpUst(RootUst result)
+        protected void DumpUst(RootUst result)
         {
-            if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust)))
+            if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust) || stage.Is(PM.Stage.SimplifiedUst)))
             {
                 var serializer = new UstJsonSerializer
                 {
