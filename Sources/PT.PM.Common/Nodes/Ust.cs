@@ -25,11 +25,12 @@ namespace PT.PM.Common.Nodes
 
         public LineColumnTextSpan LineColumnTextSpan => Root?.SourceCodeFile?.GetLineColumnTextSpan(TextSpan);
 
+        [JsonIgnore]
         public TextSpan TextSpan { get; set; }
 
         public Ust[] Children => GetChildren();
 
-        public string ToStringWithoutLineBreaks() => debuggerPrinter.Print(ToString());
+        public string ToStringWithoutLineBreaks() => debuggerPrinter?.Print(ToString()) ?? "";
 
         /// <summary>
         /// The list of text spans before any UST transformation or reduction.
@@ -86,8 +87,13 @@ namespace PT.PM.Common.Nodes
 
         public override string ToString()
         {
+            if (Children == null || Children.Length == 0)
+            {
+                return "";
+            }
+
             var result = new StringBuilder();
-            foreach (var child in Children)
+            foreach (Ust child in Children)
             {
                 result.Append(child);
                 result.Append(" ");

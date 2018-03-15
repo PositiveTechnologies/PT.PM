@@ -4,7 +4,9 @@ namespace PT.PM.Common
 {
     public class LineColumnTextSpan: IEquatable<LineColumnTextSpan>
     {
-        public static LineColumnTextSpan Empty => new LineColumnTextSpan(0, 0, 0, 0);
+        public static LineColumnTextSpan Zero => new LineColumnTextSpan(0, 0, 0, 0, null);
+
+        private static char[] semicolon = new char[] { ';' };
 
         public int BeginLine { get; set; }
 
@@ -14,38 +16,49 @@ namespace PT.PM.Common
 
         public int EndColumn { get; set; }
 
+        public string FileName { get; set; }
+
         public LineColumnTextSpan()
         {
         }
 
-        public LineColumnTextSpan(int line, int column)
-            : this(line, column, line, column)
+        public LineColumnTextSpan(int line, int column, string fileName = null)
+            : this(line, column, line, column, fileName)
         {
         }
 
-        public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn)
+        public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn, string fileName = null)
         {
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;
             EndColumn = endColumn;
+            FileName = fileName;
         }
 
         public static LineColumnTextSpan Parse(string text)
         {
+            string[] parts = text.Split(semicolon, 2);
+
+            string fileName = parts.Length == 2
+                ? parts[1].Trim()
+                : null;
+
             LineColumnTextSpan result;
-            var hyphenIndex = text.IndexOf('-');
+            string firstPart = parts[0].Trim();
+            var hyphenIndex = firstPart.IndexOf('-');
             if (hyphenIndex != -1)
             {
-                ParseLineColumn(text.Remove(hyphenIndex), out int begingLine, out int beginColumn);
-                ParseLineColumn(text.Substring(hyphenIndex + 1), out int endLine, out int endColumn);
-                result = new LineColumnTextSpan(begingLine, beginColumn, endLine, endColumn);
+                ParseLineColumn(firstPart.Remove(hyphenIndex), out int begingLine, out int beginColumn);
+                ParseLineColumn(firstPart.Substring(hyphenIndex + 1), out int endLine, out int endColumn);
+                result = new LineColumnTextSpan(begingLine, beginColumn, endLine, endColumn, fileName);
             }
             else
             {
-                ParseLineColumn(text, out int line, out int column);
-                result = new LineColumnTextSpan(line, column, line, column);
+                ParseLineColumn(firstPart, out int line, out int column);
+                result = new LineColumnTextSpan(line, column, line, column, fileName);
             }
+
             return result;
         }
 
@@ -53,9 +66,9 @@ namespace PT.PM.Common
         {
             if (BeginLine == EndLine && EndColumn == BeginColumn)
             {
-                return $"[{BeginLine};{BeginColumn})";
+                return $"[{BeginLine},{BeginColumn})";
             }
-            return $"[{BeginLine};{BeginColumn}]-[{EndLine};{EndColumn})";
+            return $"[{BeginLine},{BeginColumn}]-[{EndLine},{EndColumn})";
         }
 
         public override int GetHashCode()
@@ -73,7 +86,8 @@ namespace PT.PM.Common
 
         public bool Equals(LineColumnTextSpan other)
         {
-            return BeginLine == other.BeginLine &&
+            return FileName == other.FileName &&
+                   BeginLine == other.BeginLine &&
                    BeginColumn == other.BeginColumn &&
                    EndLine == other.EndLine &&
                    EndColumn == other.EndColumn;
@@ -82,9 +96,9 @@ namespace PT.PM.Common
         private static void ParseLineColumn(string text, out int line, out int column)
         {
             text = text.Substring(1, text.Length - 2);
-            int semicolonIndex = text.IndexOf(';');
-            line = int.Parse(text.Remove(semicolonIndex));
-            column = int.Parse(text.Substring(semicolonIndex + 1));
+            int commaIndex = text.IndexOf(',');
+            line = int.Parse(text.Remove(commaIndex));
+            column = int.Parse(text.Substring(commaIndex + 1));
         }
     }
 }

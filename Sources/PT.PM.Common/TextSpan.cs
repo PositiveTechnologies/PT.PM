@@ -6,7 +6,9 @@ namespace PT.PM.Common
     {
         public readonly static TextSpan Zero = default(TextSpan);
 
-        public TextSpan(int start, int length)
+        private static char[] semicolon = new char[] { ';' };
+
+        public TextSpan(int start, int length, string fileName = null)
         {
             if (start < 0)
             {
@@ -20,21 +22,21 @@ namespace PT.PM.Common
 
             Start = start;
             Length = length;
-            CodeFile = null;
+            FileName = fileName;
         }
 
         public TextSpan(TextSpan textSpan)
         {
             Start = textSpan.Start;
             Length = textSpan.Length;
-            CodeFile = textSpan.CodeFile;
+            FileName = textSpan.FileName;
         }
 
         public int Start { get; }
 
         public int Length { get; }
 
-        public CodeFile CodeFile { get; set; }
+        public string FileName { get; set; }
 
         public int End => Start + Length;
 
@@ -42,7 +44,7 @@ namespace PT.PM.Common
 
         public TextSpan Union(TextSpan span)
         {
-            if (CodeFile != span.CodeFile)
+            if (FileName != span.FileName)
             {
                 return IsZero ? span : this;
             }
@@ -65,28 +67,37 @@ namespace PT.PM.Common
 
         public TextSpan AddOffset(int offset)
         {
-            return new TextSpan(Start + offset, Length);
+            return new TextSpan(Start + offset, Length, FileName);
         }
 
-        public static TextSpan FromBounds(int start, int end)
+        public static TextSpan FromBounds(int start, int end, string fileName = null)
         {
-            return new TextSpan(start, end - start);
+            return new TextSpan(start, end - start, fileName);
         }
 
         public static TextSpan Parse(string text)
         {
-            string range = text.Substring(1, text.Length - 2);
+            string[] parts = text.Split(semicolon, 2);
+
+            string fileName = parts.Length == 2
+                ? parts[1].Trim()
+                : null;
+
+            TextSpan result;
+            string range = parts[0].Trim().Substring(1, parts[0].Length - 2);
             int index = range.IndexOf("..");
             if (index != -1)
             {
                 int start = int.Parse(range.Remove(index));
                 int end = int.Parse(range.Substring(index + 2));
-                return FromBounds(start, end);
+                result = FromBounds(start, end, fileName);
             }
             else
             {
-                return new TextSpan(int.Parse(range), 0);
+                result = new TextSpan(int.Parse(range), 0, fileName);
             }
+
+            return result;
         }
 
         public static bool operator ==(TextSpan left, TextSpan right) => left.Equals(right);
@@ -100,7 +111,7 @@ namespace PT.PM.Common
 
         public bool Equals(TextSpan other)
         {
-            if (CodeFile != other.CodeFile)
+            if (FileName != other.FileName)
             {
                 return false;
             }
@@ -112,9 +123,9 @@ namespace PT.PM.Common
         {
             int result = Hash.Combine(Start, Length);
 
-            if (!ReferenceEquals(CodeFile, null))
+            if (!(FileName is null))
             {
-                result = Hash.Combine(CodeFile.GetHashCode(), result);
+                result = Hash.Combine(FileName.GetHashCode(), result);
             }
 
             return result;
@@ -126,9 +137,9 @@ namespace PT.PM.Common
                 ? $"[{Start})"
                 : $"[{Start}..{End})";
 
-            if (!ReferenceEquals(CodeFile, null))
+            if (!(FileName is null))
             {
-                result = $"{result}; {CodeFile.RelativeName}";
+                result = $"{result}; {FileName}";
             }
 
             return result;
@@ -146,10 +157,10 @@ namespace PT.PM.Common
 
         public int CompareTo(TextSpan other)
         {
-            if (CodeFile != other.CodeFile)
+            if (FileName != other.FileName)
             {
-                return CodeFile != null
-                    ? CodeFile.CompareTo(other.CodeFile)
+                return FileName != null
+                    ? FileName.CompareTo(other.FileName)
                     : 1;
             }
 

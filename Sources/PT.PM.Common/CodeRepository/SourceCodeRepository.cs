@@ -48,8 +48,7 @@ namespace PT.PM.Common.CodeRepository
                 return false;
             }
 
-            HashSet<Language> superLanguages;
-            if (LanguageUtils.SuperLanguages.TryGetValue(language, out superLanguages))
+            if (LanguageUtils.SuperLanguages.TryGetValue(language, out HashSet<Language> superLanguages))
             {
                 foreach (Language superLanguage in superLanguages)
                 {

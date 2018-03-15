@@ -41,7 +41,7 @@ namespace PT.PM.Common
             GetLineColumnFromLinear(textSpan.Start, out int beginLine, out int beginColumn);
             GetLineColumnFromLinear(textSpan.End, out int endLine, out int endColumn);
 
-            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
+            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, textSpan.FileName);
         }
 
         public void GetLineColumnFromLinear(int position, out int line, out int column)
@@ -63,7 +63,9 @@ namespace PT.PM.Common
             int start = GetLinearFromLineColumn(textSpan.BeginLine, textSpan.BeginColumn);
             int end = GetLinearFromLineColumn(textSpan.EndLine, textSpan.EndColumn);
 
-            return TextSpan.FromBounds(start, end);
+            var result = TextSpan.FromBounds(start, end);
+            result.FileName = textSpan.FileName;
+            return result;
         }
 
         public int GetLinearFromLineColumn(int line, int column)
@@ -134,9 +136,9 @@ namespace PT.PM.Common
 
         public static bool operator ==(CodeFile codeFile1, CodeFile codeFile2)
         {
-            if (ReferenceEquals(codeFile1, null))
+            if (codeFile1 is null)
             {
-                return ReferenceEquals(codeFile2, null);
+                return codeFile2 is null;
             }
 
             return codeFile1.Equals(codeFile2);
@@ -144,9 +146,9 @@ namespace PT.PM.Common
 
         public static bool operator !=(CodeFile codeFile1, CodeFile codeFile2)
         {
-            if (ReferenceEquals(codeFile1, null))
+            if (codeFile1 is null)
             {
-                return !ReferenceEquals(codeFile2, null);
+                return !(codeFile2 is null);
             }
 
             return !codeFile1.Equals(codeFile2);
@@ -161,7 +163,7 @@ namespace PT.PM.Common
                 return true;
             }
 
-            if (ReferenceEquals(other, null))
+            if (other is null)
             {
                 return false;
             }
@@ -185,7 +187,7 @@ namespace PT.PM.Common
 
         public int CompareTo(CodeFile other)
         {
-            if (ReferenceEquals(other, null))
+            if (other is null)
             {
                 return 1;
             }
