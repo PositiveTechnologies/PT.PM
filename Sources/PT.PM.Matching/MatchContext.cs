@@ -51,7 +51,7 @@ namespace PT.PM.Matching
         {
             if (Success && !IgnoreLocations && !ust.TextSpan.IsZero)
             {
-                Locations.Add(ust.TextSpan);
+                Locations.AddRange(ust.GetRealTextSpans());
             }
             return this;
         }
@@ -61,7 +61,7 @@ namespace PT.PM.Matching
             Success = true;
             if (!IgnoreLocations && !ust.TextSpan.IsZero)
             {
-                Locations.Add(ust.TextSpan);
+                Locations.AddRange(ust.GetRealTextSpans());
             }
             return this;
         }

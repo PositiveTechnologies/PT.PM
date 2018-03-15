@@ -78,7 +78,7 @@ namespace PT.PM.Matching.Patterns
 
                         if (!textSpan.IsZero && location.End <= rightBound)
                         {
-                            result.Add(new TextSpan(textSpan.Start, location.Length + offset));
+                            result.Add(new TextSpan(textSpan.Start, location.Length + offset, textSpan.FileName));
                             break;
                         }
                     }

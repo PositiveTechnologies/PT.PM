@@ -52,6 +52,7 @@ namespace PT.PM
                     arrayCreationExpression.Initializers.OfType<StringLiteral>().Select(expr => expr.Text));
                 return new StringLiteral(value, arrayCreationExpression.TextSpan);
             }
+
             return VisitChildren(arrayCreationExpression);
         }
 
@@ -129,12 +130,11 @@ namespace PT.PM
 
             if (result != null)
             {
-                List<TextSpan> textSpans = new List<TextSpan>();
-                textSpans.AddRange(leftExpression.GetRealTextSpans());
+                List<TextSpan> textSpans = leftExpression.GetRealTextSpans();
                 textSpans.AddRange(rightExpression.GetRealTextSpans());
 
-                result.TextSpan = leftExpression.TextSpan.Union(rightExpression.TextSpan);
                 result.InitialTextSpans = textSpans;
+                result.TextSpan = textSpans.Union();
                 result.Root = binaryOperatorExpression.Root;
             }
             else
