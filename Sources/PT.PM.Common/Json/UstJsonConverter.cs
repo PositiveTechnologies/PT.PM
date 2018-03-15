@@ -33,7 +33,16 @@ namespace PT.PM.Common.Json
 
             Ust target;
             JsonReader newReader = null;
-            if (!ReflectionCache.ContainsKind(kind))
+            if (ReflectionCache.TryGetClassType(kind, out Type type))
+            {
+                target = CreateOrGetUst(jObject, type);
+                if (target == null)
+                {
+                    return null;
+                }
+                newReader = jObject.CreateReader();
+            }
+            else
             {
                 // Try load from Ust subfield.
                 JToken jToken = jObject.GetValueIgnoreCase(nameof(Ust));
@@ -43,15 +52,6 @@ namespace PT.PM.Common.Json
                     return null;
                 }
                 newReader = jToken.CreateReader();
-            }
-            else
-            {
-                target = CreateOrGetUst(jObject);
-                if (target == null)
-                {
-                    return null;
-                }
-                newReader = jObject.CreateReader();
             }
 
             serializer.Populate(newReader, target);

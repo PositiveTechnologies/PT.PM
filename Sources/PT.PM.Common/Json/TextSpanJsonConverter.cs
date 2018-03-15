@@ -146,7 +146,8 @@ namespace PT.PM.Common.Json
                 {
                     int start = jObject.GetValueIgnoreCase(nameof(TextSpan.Start))?.ToObject<int>() ?? 0;
                     int length = jObject.GetValueIgnoreCase(nameof(TextSpan.Length))?.ToObject<int>() ?? 0;
-                    result = new TextSpan(start, length);
+                    string fileName = jObject.GetValueIgnoreCase(nameof(TextSpan.FileName))?.ToObject<string>();
+                    result = new TextSpan(start, length, fileName);
                 }
                 else
                 {
@@ -154,7 +155,8 @@ namespace PT.PM.Common.Json
                     int beginColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.BeginColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
                     int endLine = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndLine))?.ToObject<int>() ?? CodeFile.StartLine;
                     int endColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
-                    var lcTextSpan = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
+                    string fileName = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.FileName))?.ToObject<string>();
+                    var lcTextSpan = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, fileName);
                     result = CodeFile.GetTextSpan(lcTextSpan);
                 }
             }
