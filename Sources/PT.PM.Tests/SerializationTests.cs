@@ -40,7 +40,7 @@ namespace PT.PM.Tests
         [Test]
         public void JsonSerialize_PatternWithVar_JsonEqualsToDsl()
         {
-            var patternNode = new PatternRoot
+            var patternRoot = new PatternRoot
             {
                 Node = new PatternStatements
                 {
@@ -70,14 +70,14 @@ namespace PT.PM.Tests
                 IncludeTextSpans = false
             };
 
-            string json = jsonSerializer.Serialize(patternNode);
+            string json = jsonSerializer.Serialize(patternRoot);
             PatternRoot nodeFromJson = jsonSerializer.Deserialize(new CodeFile(json) { IsPattern = true });
 
             var dslSeializer = new DslProcessor() { PatternExpressionInsideStatement = false };
             var nodeFromDsl = dslSeializer.Deserialize(
                 new CodeFile("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);") { IsPattern = true });
 
-            Assert.IsTrue(nodeFromJson.Node.Equals(patternNode.Node));
+            Assert.IsTrue(nodeFromJson.Node.Equals(patternRoot.Node));
             Assert.IsTrue(nodeFromJson.Node.Equals(nodeFromDsl.Node));
         }
 

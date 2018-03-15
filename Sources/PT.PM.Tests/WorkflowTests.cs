@@ -15,39 +15,56 @@ namespace PT.PM.Tests
         [Test]
         public void Process_JsonUst_InvariantCase()
         {
-            CheckSerialization(upperCase: true);
+            CheckSerialization("empty-try-catch.php", upperCase: true);
         }
 
         [Test]
         public void Process_JsonUst_NotIndented()
         {
-            CheckSerialization(indented: false);
+            CheckSerialization("empty-try-catch.php", indented: false);
         }
 
         [Test]
         public void Process_JsonUst_WithoutTextSpan()
         {
-            CheckSerialization(includeTextSpans: false);
+            CheckSerialization("empty-try-catch.php", includeTextSpans: false);
         }
 
         [Test]
         public void Process_JsonUst_LineColumnTextSpan()
         {
-            CheckSerialization(lineColumnTextSpans: true);
+            CheckSerialization("empty-try-catch.php", lineColumnTextSpans: true);
         }
 
         [Test]
         public void Process_JsonUst_WithoutCode()
         {
-            CheckSerialization(includeCode: false);
+            CheckSerialization("empty-try-catch.php", includeCode: false);
         }
 
-        private static void CheckSerialization(bool lineColumnTextSpans = false,
+        [Test]
+        public void Process_JsonUst_MultiTextSpan()
+        {
+            CheckSerialization("MultiTextSpan");
+        }
+
+        [Test]
+        public void Process_JsonUst_MultiTextSpanLineColumn()
+        {
+            CheckSerialization("MultiTextSpan", lineColumnTextSpans: true);
+        }
+
+        private static void CheckSerialization(string inputFileName, bool lineColumnTextSpans = false,
             bool includeTextSpans = true, bool indented = true, bool upperCase = false, bool includeCode = true)
         {
+            string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
+
             // Serialization
-            string inputFileName = "empty-try-catch.php";
-            var codeRepository = new MemoryCodeRepository("<?php try { echo 1/0; } \r\n catch (Exception $e) { } ?>", inputFileName);
+            string[] files = File.Exists(path)
+                           ? new string[] { path }
+                           : Directory.GetFiles(path);
+            var codeRepository = new FileCodeRepository(files);
+
             var workflow = new Workflow(codeRepository)
             {
                 DumpStages = new HashSet<Stage>() { Stage.Ust },
@@ -56,23 +73,49 @@ namespace PT.PM.Tests
                 IndentedDump = indented,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = lineColumnTextSpans,
+                Stage = Stage.SimplifiedUst
             };
             WorkflowResult result = workflow.Process();
 
             // Convert case to upper for checking correct deserialization
-            var code = File.ReadAllText(Path.Combine(TestUtility.TestsOutputPath, inputFileName + ".ust.json"));
-            if (upperCase)
+            var codes = new Dictionary<string, string>();
+            foreach (string file in files)
             {
-                code = code.ToUpperInvariant().Replace("\\R", "\\r").Replace("\\N", "\\n");
+                string shortFileName = Path.GetFileName(file) + ".ust.json";
+                string code = File.ReadAllText(
+                    Path.Combine(TestUtility.TestsOutputPath, shortFileName));
+
+                // Convert case to upper for checking correct deserialization
+                if (upperCase)
+                {
+                    code = code.ToUpperInvariant().Replace("\\R", "\\r").Replace("\\N", "\\n")
+                        .Replace("TRUE", "true").Replace("FALSE", "false");
+                }
+
+                if (file.Contains("preprocessed.php"))
+                {
+                    if (!lineColumnTextSpans)
+                    {
+                        code = code.Replace("\"[26..28)\"", "[ \"[26..28)\", \"[9..11); origin.php\" ]");
+                    }
+                    else
+                    {
+                        code = code.Replace("\"[4,1]-[4,3)\"", "[ \"[4,1]-[4,3)\", \"[3,1]-[3,3); origin.php\" ]");
+                    }
+                }
+
+                codes.Add(shortFileName, code);
             }
 
             // Deserialization
             var logger = new LoggerMessageCounter();
-            SourceCodeRepository sourceCodeRepository = new MemoryCodeRepository(code, inputFileName + ".ust.json")
+            SourceCodeRepository sourceCodeRepository = new MemoryCodeRepository(codes)
             {
                 LoadJson = true
             };
-            var newWorkflow = new Workflow(sourceCodeRepository)
+
+            var newWorkflow = new Workflow(sourceCodeRepository,
+                inputFileName == "MultiTextSpan" ? new DslPatternRepository("a", "php") : null)
             {
                 StartStage = Stage.Ust,
                 IndentedDump = indented,
@@ -80,14 +123,24 @@ namespace PT.PM.Tests
                 LineColumnTextSpans = lineColumnTextSpans,
                 Logger = logger
             };
-            var newResult = newWorkflow.Process();
+            WorkflowResult newResult = newWorkflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount);
             Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
-            var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
+
             if (includeTextSpans)
             {
-                Assert.AreEqual(TextSpan.FromBounds(6, 51), match.TextSpan);
+                if (inputFileName == "MultiTextSpan")
+                {
+                    var match = (MatchResult)newResult.MatchResults[1];
+                    Assert.AreEqual(2, match.TextSpans.Length);
+                    Assert.AreEqual(TextSpan.FromBounds(9, 11, "origin.php"), match.TextSpans[1]);
+                }
+                else
+                {
+                    var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
+                    Assert.AreEqual(TextSpan.FromBounds(7, 50), match.TextSpan);
+                }
             }
         }
     }

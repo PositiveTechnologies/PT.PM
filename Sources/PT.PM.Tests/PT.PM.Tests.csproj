@@ -78,6 +78,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="app.config" />
+    <None Include="Data\empty-try-catch.php">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\MultiTextSpan\origin.php">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\MultiTextSpan\preprocessed.php">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SourceCodeRepositoryTests.cs" />
