@@ -157,11 +157,7 @@ namespace PT.PM.Common.Json
 
             if (textSpanTokenWrapper != null)
             {
-                JToken[] textSpanTokens = textSpanTokenWrapper is JArray textSpanArray
-                    ? textSpanArray.Children().ToArray()
-                    : new JToken[] { textSpanTokenWrapper };
-
-                textSpans = textSpanTokens.Select(textSpanToken => textSpanToken.ToObject<TextSpan>(jsonSerializer)).ToList();
+                textSpans = GetCommonTextSpan(textSpanTokenWrapper).ToList();
                 TextSpan commonTextSpan = textSpans.Union();
 
                 if (!commonTextSpan.IsZero && existingUsts.TryGetValue(commonTextSpan, out List<Ust> usts))
@@ -209,6 +205,12 @@ namespace PT.PM.Common.Json
             }
 
             return ust;
+        }
+
+        protected IEnumerable<TextSpan> GetCommonTextSpan(JToken textSpanToken)
+        {
+            JToken[] textSpanTokens = textSpanToken.GetTokenOrTokensArray();
+            return textSpanTokens.Select(token => token.ToObject<TextSpan>(jsonSerializer));
         }
 
         private object GetDefaultValue(Type t)
