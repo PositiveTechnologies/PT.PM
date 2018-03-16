@@ -64,6 +64,8 @@ namespace PT.PM.PatternEditor
 
         public bool IsIncludeTextSpans { get; set; } = false;
 
+        public bool IsLineColumnTextSpans { get; set; } = false;
+
         public static Settings Load()
         { 
             if (File.Exists(settingsFileName))

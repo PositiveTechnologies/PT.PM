@@ -46,6 +46,7 @@ namespace PT.PM.PatternEditor
         private string ustJson;
         private string matchResultText = "MATCHINGS";
         private bool oldIsIncludeTextSpans;
+        private bool oldIsLineColumnTextSpans;
         private CodeFile sourceCode;
 
         public MainWindowViewModel(Window w)
@@ -564,13 +565,32 @@ namespace PT.PM.PatternEditor
             }
         }
 
+        public bool IsLineColumnTextSpans
+        {
+            get
+            {
+                return Settings.IsLineColumnTextSpans;
+            }
+            set
+            {
+                if (Settings.IsLineColumnTextSpans != value)
+                {
+                    Settings.IsLineColumnTextSpans = value;
+                    Settings.Save();
+                    this.RaisePropertyChanged();
+                    CheckSourceCode();
+                }
+            }
+        }
+
         private void CheckSourceCode()
         {
             if (oldSourceCode != sourceCodeTextBox.Text ||
                 oldSelectedLanguage != Settings.SourceCodeLanguage ||
                 oldEndStage != Settings.SelectedStage ||
                 oldJavaScriptType != Settings.JavaScriptType ||
-                oldIsIncludeTextSpans != Settings.IsIncludeTextSpans)
+                oldIsIncludeTextSpans != Settings.IsIncludeTextSpans ||
+                oldIsLineColumnTextSpans != Settings.IsLineColumnTextSpans)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
@@ -584,6 +604,7 @@ namespace PT.PM.PatternEditor
                 oldEndStage = Settings.SelectedStage;
                 oldJavaScriptType = Settings.JavaScriptType;
                 oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
+                oldIsLineColumnTextSpans = Settings.IsLineColumnTextSpans;
             }
         }
 
@@ -605,6 +626,7 @@ namespace PT.PM.PatternEditor
             {
                 IsIncludeIntermediateResult = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
+                LineColumnTextSpans = IsLineColumnTextSpans,
                 Logger = sourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,
                 DumpDir = ServiceLocator.TempDirectory,
