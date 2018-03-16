@@ -96,11 +96,13 @@ namespace PT.PM.Tests
                 {
                     if (!lineColumnTextSpans)
                     {
-                        code = code.Replace("\"[26..28)\"", "[ \"[26..28)\", \"[9..11); origin.php\" ]");
+                        string preprocessedTextSpan = "\"[26..28)\"";
+                        code = code.Replace(preprocessedTextSpan, $"[ {preprocessedTextSpan}, \"[9..11); origin.php\" ]");
                     }
                     else
                     {
-                        code = code.Replace("\"[4,1]-[4,3)\"", "[ \"[4,1]-[4,3)\", \"[3,1]-[3,3); origin.php\" ]");
+                        string preprocessedTextSpan = "\"[4,1]-[4,3)\"";
+                        code = code.Replace(preprocessedTextSpan, $"[ {preprocessedTextSpan}, \"[3,1]-[3,3); origin.php\" ]");
                     }
                 }
 
