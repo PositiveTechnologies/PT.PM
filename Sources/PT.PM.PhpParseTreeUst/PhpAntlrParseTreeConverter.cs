@@ -839,10 +839,10 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitEchoStatement(PhpParser.EchoStatementContext context)
         {
-            var name = new IdToken(context.Echo().GetText(), context.GetTextSpan());
-            var args = new ArgsUst(((MultichildExpression)Visit(context.expressionList())).Expressions.ToList(),
+            var name = new IdToken(context.Echo().GetText(), context.Echo().GetTextSpan());
+            var args = new ArgsUst(((MultichildExpression)Visit(context.expressionList())).Expressions,
                 context.expressionList().GetTextSpan());
-            var invocation = new InvocationExpression(name, args, context.GetTextSpan());
+            var invocation = new InvocationExpression(name, args, name.TextSpan.Union(args.TextSpan));
             var result = new ExpressionStatement(invocation, context.GetTextSpan());
             return result;
         }
