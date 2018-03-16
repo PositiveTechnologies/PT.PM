@@ -80,7 +80,7 @@ namespace PT.PM.Common.Json
             CodeFile = result;
             if (TextSpanJsonConverter != null)
             {
-                TextSpanJsonConverter.CodeFile = result;
+                TextSpanJsonConverter.AddCodeFile(result);
             }
             return result;
         }

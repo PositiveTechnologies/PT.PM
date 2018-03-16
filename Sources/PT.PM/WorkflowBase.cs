@@ -185,7 +185,7 @@ namespace PT.PM
 
                             if (Stage.IsLess(PM.Stage.SimplifiedUst))
                             {
-                                DumpUst(result);
+                                DumpUst(result, workflowResult.SourceCodeFiles);
                             }
                         }
                         else
@@ -193,7 +193,8 @@ namespace PT.PM
                             var jsonUstSerializer = new UstJsonSerializer()
                             {
                                 Logger = Logger,
-                                LineColumnTextSpans = LineColumnTextSpans
+                                LineColumnTextSpans = LineColumnTextSpans,
+                                CodeFiles = workflowResult.SourceCodeFiles
                             };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
@@ -234,7 +235,7 @@ namespace PT.PM
             }
         }
 
-        protected void DumpUst(RootUst result)
+        protected void DumpUst(RootUst result, IReadOnlyList<CodeFile> sourceCodeFiles)
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust) || stage.Is(PM.Stage.SimplifiedUst)))
             {
@@ -245,7 +246,8 @@ namespace PT.PM
                     IncludeTextSpans = DumpWithTextSpans,
                     IncludeCode = IncludeCodeInDump,
                     LineColumnTextSpans = LineColumnTextSpans,
-                    CodeFile = result.SourceCodeFile
+                    CodeFiles = sourceCodeFiles,
+                    CurrectCodeFile = result.SourceCodeFile
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";

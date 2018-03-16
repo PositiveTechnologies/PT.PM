@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Json
 {
@@ -14,9 +16,17 @@ namespace PT.PM.Common.Json
 
         public bool IsLineColumn { get; set; } = false;
 
-        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
+        public CodeFile CurrentCodeFile { get; set; }
+
+        public List<CodeFile> CodeFiles { get; set; } = new List<CodeFile>();
 
         public CodeFile JsonFile { get; set; } = CodeFile.Empty;
+
+        public void AddCodeFile(CodeFile codeFile)
+        {
+            CurrentCodeFile = codeFile;
+            CodeFiles.Add(codeFile);
+        }
 
         public override bool CanConvert(Type objectType)
         {
@@ -41,27 +51,27 @@ namespace PT.PM.Common.Json
                     {
                         textSpanString = textSpan.IsZero && EmptyTextSpanFormat != null
                             ? EmptyTextSpanFormat
-                            : CodeFile.GetLineColumnTextSpan(textSpan).ToString();
+                            : (GetCodeFile(textSpan.FileName, null)?.GetLineColumnTextSpan(textSpan).ToString() ?? EmptyTextSpanFormat);
                     }
                     writer.WriteValue(textSpanString);
                 }
                 else
                 {
-                    JObject pdgObject = new JObject();
+                    JObject jObject = new JObject();
                     if (!IsLineColumn)
                     {
-                        pdgObject.Add(nameof(textSpan.Start), textSpan.Start);
-                        pdgObject.Add(nameof(textSpan.Length), textSpan.Length);
+                        jObject.Add(nameof(textSpan.Start), textSpan.Start);
+                        jObject.Add(nameof(textSpan.Length), textSpan.Length);
                     }
                     else
                     {
-                        var lineColumnTextSpan = CodeFile.GetLineColumnTextSpan(textSpan);
-                        pdgObject.Add(nameof(LineColumnTextSpan.BeginLine), lineColumnTextSpan.BeginLine);
-                        pdgObject.Add(nameof(LineColumnTextSpan.BeginColumn), lineColumnTextSpan.BeginColumn);
-                        pdgObject.Add(nameof(LineColumnTextSpan.EndLine), lineColumnTextSpan.EndLine);
-                        pdgObject.Add(nameof(LineColumnTextSpan.EndColumn), lineColumnTextSpan.EndColumn);
+                        LineColumnTextSpan lineColumnTextSpan = GetCodeFile(textSpan.FileName, null)?.GetLineColumnTextSpan(textSpan) ?? LineColumnTextSpan.Zero;
+                        jObject.Add(nameof(LineColumnTextSpan.BeginLine), lineColumnTextSpan.BeginLine);
+                        jObject.Add(nameof(LineColumnTextSpan.BeginColumn), lineColumnTextSpan.BeginColumn);
+                        jObject.Add(nameof(LineColumnTextSpan.EndLine), lineColumnTextSpan.EndLine);
+                        jObject.Add(nameof(LineColumnTextSpan.EndColumn), lineColumnTextSpan.EndColumn);
                     }
-                    pdgObject.WriteTo(writer);
+                    jObject.WriteTo(writer);
                 }
             }
             catch (Exception ex)
@@ -134,14 +144,20 @@ namespace PT.PM.Common.Json
                 }
                 else
                 {
-                    result = textSpanString == EmptyTextSpanFormat
-                         ? TextSpan.Zero
-                         : CodeFile.GetTextSpan(LineColumnTextSpan.Parse(textSpanString));
+                    if (textSpanString == EmptyTextSpanFormat)
+                    {
+                        result = TextSpan.Zero;
+                    }
+                    else
+                    {
+                        LineColumnTextSpan textSpan = LineColumnTextSpan.Parse(textSpanString);
+                        result = GetCodeFile(textSpan.FileName, null)?.GetTextSpan(textSpan) ?? TextSpan.Zero;
+                    }
                 }
             }
             else
             {
-                var jObject = JObject.Load(reader);
+                JObject jObject = JObject.Load(reader);
                 if (!isLineColumn)
                 {
                     int start = jObject.GetValueIgnoreCase(nameof(TextSpan.Start))?.ToObject<int>() ?? 0;
@@ -157,9 +173,30 @@ namespace PT.PM.Common.Json
                     int endColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
                     string fileName = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.FileName))?.ToObject<string>();
                     var lcTextSpan = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, fileName);
-                    result = CodeFile.GetTextSpan(lcTextSpan);
+                    result = GetCodeFile(lcTextSpan.FileName, jObject)?.GetTextSpan(lcTextSpan) ?? TextSpan.Zero;
                 }
             }
+        }
+
+        private CodeFile GetCodeFile(string fileName, IJsonLineInfo jsonLineInfo)
+        {
+            CodeFile result = null;
+
+            if (fileName == null)
+            {
+                result = CurrentCodeFile;
+            }
+            else
+            {
+                result = CodeFiles.FirstOrDefault(codeFile => codeFile.RelativeName == fileName || codeFile.FullName == fileName);
+            }
+
+            if (result == null)
+            {
+                Logger.LogError(JsonFile, jsonLineInfo, $"File {fileName} is not loaded. Try using another load order or use existing file name");
+            }
+
+            return result;
         }
     }
 }
