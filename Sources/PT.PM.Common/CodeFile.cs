@@ -89,6 +89,8 @@ namespace PT.PM.Common
             return lineIndexes.Length;
         }
 
+        public bool IsEmpty => string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(Code);
+
         private void InitLineIndexesIfRequired()
         {
             if (lineIndexes == null)
@@ -173,14 +175,14 @@ namespace PT.PM.Common
                 return Code == other.Code;
             }
 
-            return FullName == other.FullName;
+            return RelativeName == other.RelativeName;
         }
 
         public override int GetHashCode()
         {
-            return string.IsNullOrEmpty(FullName)
+            return string.IsNullOrEmpty(RelativeName)
                 ? Code.GetHashCode()
-                : FullName.GetHashCode();
+                : RelativeName.GetHashCode();
         }
 
         public int CompareTo(object obj) => CompareTo(obj as CodeFile);
