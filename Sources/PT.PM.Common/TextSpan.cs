@@ -111,13 +111,15 @@ namespace PT.PM.Common
             return result;
         }
 
-        public override string ToString()
+        public override string ToString() => ToString(true);
+
+        public string ToString(bool includeFileName)
         {
             string result = Start == End
                 ? $"[{Start})"
                 : $"[{Start}..{End})";
 
-            if (!(CodeFile is null))
+            if (includeFileName && !(CodeFile is null))
             {
                 result = $"{result}; {CodeFile}";
             }

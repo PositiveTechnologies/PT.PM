@@ -34,13 +34,27 @@ namespace PT.PM.Common
             CodeFile = codeFile;
         }
 
-        public override string ToString()
+        public override string ToString() => ToString(true);
+
+        public string ToString(bool includeFileName)
         {
+            string result;
+
             if (BeginLine == EndLine && EndColumn == BeginColumn)
             {
-                return $"[{BeginLine},{BeginColumn})";
+                result = $"[{BeginLine},{BeginColumn})";
             }
-            return $"[{BeginLine},{BeginColumn}]-[{EndLine},{EndColumn})";
+            else
+            {
+                result = $"[{BeginLine},{BeginColumn}]-[{EndLine},{EndColumn})";
+            }
+
+            if (includeFileName && CodeFile != null)
+            {
+                result = $"{result}; {CodeFile}";
+            }
+
+            return result;
         }
 
         public override int GetHashCode()

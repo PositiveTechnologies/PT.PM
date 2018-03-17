@@ -131,11 +131,6 @@ namespace PT.PM.Common
                 result = codeFiles?.FirstOrDefault(codeFile => codeFile.RelativeName == fileName || codeFile.FullName == fileName);
             }
 
-            /*if (result == null)
-            {
-                Logger.LogError(JsonFile, jsonLineInfo, $"File {fileName} is not loaded. Try using another load order or use existing file name");
-            }*/
-
             return result;
         }
 

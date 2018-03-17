@@ -36,11 +36,13 @@ namespace PT.PM.Common.Json
                 var textSpan = (TextSpan)value;
 
                 string textSpanString;
+                bool includeFileName = textSpan.CodeFile != CurrentCodeFile;
+
                 if (!IsLineColumn)
                 {
                     textSpanString = textSpan.IsZero && EmptyTextSpanFormat != null
                         ? EmptyTextSpanFormat
-                        : textSpan.ToString();
+                        : textSpan.ToString(includeFileName);
                 }
                 else
                 {
@@ -53,12 +55,12 @@ namespace PT.PM.Common.Json
                         CodeFile codeFile = textSpan.CodeFile ?? CurrentCodeFile;
                         if (codeFile != null)
                         {
-                            textSpanString = codeFile.GetLineColumnTextSpan(textSpan).ToString();
+                            textSpanString = codeFile.GetLineColumnTextSpan(textSpan).ToString(includeFileName);
                         }
                         else
                         {
                             Logger.LogError(JsonFile, null, $"Unable convert {nameof(TextSpan)} to {nameof(LineColumnTextSpan)} due to undefined file");
-                            textSpanString = TextSpan.Zero.ToString();
+                            textSpanString = LineColumnTextSpan.Zero.ToString();
                         }
                     }
                 }
