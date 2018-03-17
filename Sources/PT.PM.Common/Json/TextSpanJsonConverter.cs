@@ -49,9 +49,23 @@ namespace PT.PM.Common.Json
                     }
                     else
                     {
-                        textSpanString = textSpan.IsZero && EmptyTextSpanFormat != null
-                            ? EmptyTextSpanFormat
-                            : (GetCodeFile(textSpan.FileName, null)?.GetLineColumnTextSpan(textSpan).ToString() ?? EmptyTextSpanFormat);
+                        if (textSpan.IsZero && EmptyTextSpanFormat != null)
+                        {
+                            textSpanString = EmptyTextSpanFormat;
+                        }
+                        else
+                        {
+                            CodeFile codeFile = textSpan.CodeFile ?? CurrentCodeFile;
+                            if (codeFile != null)
+                            {
+                                textSpanString = codeFile.GetLineColumnTextSpan(textSpan).ToString();
+                            }
+                            else
+                            {
+                                Logger.LogError(JsonFile, null, $"Unable convert {nameof(TextSpan)} to {nameof(LineColumnTextSpan)} due to undefined file");
+                                textSpanString = TextSpan.Zero.ToString();
+                            }
+                        }
                     }
                     writer.WriteValue(textSpanString);
                 }
@@ -60,16 +74,33 @@ namespace PT.PM.Common.Json
                     JObject jObject = new JObject();
                     if (!IsLineColumn)
                     {
-                        jObject.Add(nameof(textSpan.Start), textSpan.Start);
-                        jObject.Add(nameof(textSpan.Length), textSpan.Length);
+                        jObject.Add(nameof(TextSpan.Start), textSpan.Start);
+                        jObject.Add(nameof(TextSpan.Length), textSpan.Length);
+                        if (textSpan.CodeFile != null && textSpan.CodeFile != CurrentCodeFile)
+                        {
+                            jObject.Add(nameof(TextSpan.CodeFile), textSpan.CodeFile.RelativeName);
+                        }
                     }
                     else
                     {
-                        LineColumnTextSpan lineColumnTextSpan = GetCodeFile(textSpan.FileName, null)?.GetLineColumnTextSpan(textSpan) ?? LineColumnTextSpan.Zero;
-                        jObject.Add(nameof(LineColumnTextSpan.BeginLine), lineColumnTextSpan.BeginLine);
-                        jObject.Add(nameof(LineColumnTextSpan.BeginColumn), lineColumnTextSpan.BeginColumn);
-                        jObject.Add(nameof(LineColumnTextSpan.EndLine), lineColumnTextSpan.EndLine);
-                        jObject.Add(nameof(LineColumnTextSpan.EndColumn), lineColumnTextSpan.EndColumn);
+                        CodeFile codeFile = textSpan.CodeFile ?? CurrentCodeFile;
+                        if (codeFile != null)
+                        {
+                            LineColumnTextSpan lineColumnTextSpan = codeFile.GetLineColumnTextSpan(textSpan);
+                            jObject.Add(nameof(LineColumnTextSpan.BeginLine), lineColumnTextSpan.BeginLine);
+                            jObject.Add(nameof(LineColumnTextSpan.BeginColumn), lineColumnTextSpan.BeginColumn);
+                            jObject.Add(nameof(LineColumnTextSpan.EndLine), lineColumnTextSpan.EndLine);
+                            jObject.Add(nameof(LineColumnTextSpan.EndColumn), lineColumnTextSpan.EndColumn);
+
+                            if (lineColumnTextSpan.CodeFile != null && lineColumnTextSpan.CodeFile != CurrentCodeFile)
+                            {
+                                jObject.Add(nameof(LineColumnTextSpan.CodeFile), textSpan.CodeFile.RelativeName);
+                            }
+                        }
+                        else
+                        {
+                            Logger.LogError(JsonFile, null, $"Unable convert {nameof(TextSpan)} to {nameof(LineColumnTextSpan)} due to undefined file");
+                        }
                     }
                     jObject.WriteTo(writer);
                 }
@@ -136,22 +167,29 @@ namespace PT.PM.Common.Json
             if (shortFormat)
             {
                 string textSpanString = (string)reader.Value;
-                if (!isLineColumn)
+                if (textSpanString != EmptyTextSpanFormat)
                 {
-                    result = textSpanString == EmptyTextSpanFormat
-                        ? TextSpan.Zero
-                        : TextSpan.Parse(textSpanString);
-                }
-                else
-                {
-                    if (textSpanString == EmptyTextSpanFormat)
+                    if (!isLineColumn)
                     {
-                        result = TextSpan.Zero;
+                        result = TextUtils.ParseTextSpan(textSpanString, CurrentCodeFile, CodeFiles);
                     }
                     else
                     {
-                        LineColumnTextSpan textSpan = LineColumnTextSpan.Parse(textSpanString);
-                        result = GetCodeFile(textSpan.FileName, null)?.GetTextSpan(textSpan) ?? TextSpan.Zero;
+                        LineColumnTextSpan lineColumnTextSpan = TextUtils.ParseLineColumnTextSpan(textSpanString, CurrentCodeFile, CodeFiles);
+                        var codeFile = lineColumnTextSpan.CodeFile ?? CurrentCodeFile;
+                        if (codeFile != null)
+                        {
+                            result = codeFile.GetTextSpan(lineColumnTextSpan);
+                        }
+                        else
+                        {
+                            Logger.LogError(JsonFile, null, $"Unable convert {nameof(LineColumnTextSpan)} to {nameof(TextSpan)} due to undefined file");
+                        }
+                    }
+
+                    if (result.CodeFile == CurrentCodeFile)
+                    {
+                        result.CodeFile = null;
                     }
                 }
             }
@@ -162,8 +200,9 @@ namespace PT.PM.Common.Json
                 {
                     int start = jObject.GetValueIgnoreCase(nameof(TextSpan.Start))?.ToObject<int>() ?? 0;
                     int length = jObject.GetValueIgnoreCase(nameof(TextSpan.Length))?.ToObject<int>() ?? 0;
-                    string fileName = jObject.GetValueIgnoreCase(nameof(TextSpan.FileName))?.ToObject<string>();
-                    result = new TextSpan(start, length, fileName);
+                    string fileName = jObject.GetValueIgnoreCase(nameof(TextSpan.CodeFile))?.ToObject<string>();
+                    CodeFile codeFile = TextUtils.GetCodeFile(fileName, CurrentCodeFile, CodeFiles);
+                    result = new TextSpan(start, length, codeFile);
                 }
                 else
                 {
@@ -171,9 +210,10 @@ namespace PT.PM.Common.Json
                     int beginColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.BeginColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
                     int endLine = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndLine))?.ToObject<int>() ?? CodeFile.StartLine;
                     int endColumn = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.EndColumn))?.ToObject<int>() ?? CodeFile.StartColumn;
-                    string fileName = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.FileName))?.ToObject<string>();
-                    var lcTextSpan = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, fileName);
-                    result = GetCodeFile(lcTextSpan.FileName, jObject)?.GetTextSpan(lcTextSpan) ?? TextSpan.Zero;
+                    string fileName = jObject.GetValueIgnoreCase(nameof(LineColumnTextSpan.CodeFile))?.ToObject<string>();
+                    CodeFile codeFile = TextUtils.GetCodeFile(fileName, CurrentCodeFile, CodeFiles);
+                    var lcTextSpan = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, codeFile);
+                    result = codeFile.GetTextSpan(lcTextSpan);
                 }
             }
         }

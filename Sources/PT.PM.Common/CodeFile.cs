@@ -41,7 +41,7 @@ namespace PT.PM.Common
             GetLineColumnFromLinear(textSpan.Start, out int beginLine, out int beginColumn);
             GetLineColumnFromLinear(textSpan.End, out int endLine, out int endColumn);
 
-            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, textSpan.FileName);
+            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, textSpan.CodeFile);
         }
 
         public void GetLineColumnFromLinear(int position, out int line, out int column)
@@ -63,8 +63,7 @@ namespace PT.PM.Common
             int start = GetLinearFromLineColumn(textSpan.BeginLine, textSpan.BeginColumn);
             int end = GetLinearFromLineColumn(textSpan.EndLine, textSpan.EndColumn);
 
-            var result = TextSpan.FromBounds(start, end);
-            result.FileName = textSpan.FileName;
+            var result = TextSpan.FromBounds(start, end, textSpan.CodeFile);
             return result;
         }
 
