@@ -134,9 +134,13 @@ namespace PT.PM.Tests
             {
                 if (inputFileName == "MultiTextSpan")
                 {
-                    var match = (MatchResult)newResult.MatchResults[1];
-                    Assert.AreEqual(2, match.TextSpans.Length);
-                    Assert.AreEqual(TextSpan.FromBounds(9, 11, "origin.php"), match.TextSpans[1]);
+                    var matchResult = (MatchResult)newResult.MatchResults[1];
+                    Assert.AreEqual(2, matchResult.TextSpans.Length);
+
+                    var matchTextSpan = matchResult.TextSpans[1];
+                    Assert.AreEqual(9, matchTextSpan.Start);
+                    Assert.AreEqual(11, matchTextSpan.End);
+                    Assert.AreEqual("origin.php", matchTextSpan.CodeFile.RelativeName);
                 }
                 else
                 {
