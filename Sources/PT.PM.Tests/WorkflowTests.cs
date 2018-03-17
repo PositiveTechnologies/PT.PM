@@ -77,46 +77,53 @@ namespace PT.PM.Tests
             };
             WorkflowResult result = workflow.Process();
 
-            // Convert case to upper for checking correct deserialization
-            var codes = new Dictionary<string, string>();
+            var jsonFiles = new List<string>();
             foreach (string file in files)
             {
                 string shortFileName = Path.GetFileName(file) + ".ust.json";
-                string code = File.ReadAllText(
-                    Path.Combine(TestUtility.TestsOutputPath, shortFileName));
+                string jsonFile = Path.Combine(TestUtility.TestsOutputPath, shortFileName);
+                string json = File.ReadAllText(jsonFile);
 
                 // Convert case to upper for checking correct deserialization
                 if (upperCase)
                 {
-                    code = code.ToUpperInvariant().Replace("\\R", "\\r").Replace("\\N", "\\n")
+                    json = json.ToUpperInvariant().Replace("\\R", "\\r").Replace("\\N", "\\n")
                         .Replace("TRUE", "true").Replace("FALSE", "false");
                 }
 
                 if (file.Contains("preprocessed.php"))
                 {
+                    CodeFile preprocessedFile = result.SourceCodeFiles.First(f => f.Name == "preprocessed.php");
+                    CodeFile originFile = result.SourceCodeFiles.First(f => f.Name == "origin.php");
+
+                    LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3);
+                    LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
+
+                    string preprocessedTextSpanString, originTextSpanString;
+
                     if (!lineColumnTextSpans)
                     {
-                        string preprocessedTextSpan = "\"[26..28)\"";
-                        code = code.Replace(preprocessedTextSpan, $"[ {preprocessedTextSpan}, \"[9..11); origin.php\" ]");
+                        preprocessedTextSpanString = preprocessedFile.GetTextSpan(lcPreprocessedTextSpan).ToString();
+                        originTextSpanString = originFile.GetTextSpan(lcOriginTextSpan).ToString();
                     }
                     else
                     {
-                        string preprocessedTextSpan = "\"[4,1]-[4,3)\"";
-                        code = code.Replace(preprocessedTextSpan, $"[ {preprocessedTextSpan}, \"[3,1]-[3,3); origin.php\" ]");
+                        preprocessedTextSpanString = lcPreprocessedTextSpan.ToString();
+                        originTextSpanString = lcOriginTextSpan.ToString();
                     }
+
+                    json = json.Replace($"\"{preprocessedTextSpanString}\"", $"[ \"{lcPreprocessedTextSpan}\", \"{originTextSpanString}\" ]");
                 }
 
-                codes.Add(shortFileName, code);
+                File.WriteAllText(jsonFile, json);
+                jsonFiles.Add(jsonFile);
             }
 
             // Deserialization
             var logger = new LoggerMessageCounter();
-            SourceCodeRepository sourceCodeRepository = new MemoryCodeRepository(codes)
-            {
-                LoadJson = true
-            };
+            var newCodeRepository = new FileCodeRepository(jsonFiles);
 
-            var newWorkflow = new Workflow(sourceCodeRepository,
+            var newWorkflow = new Workflow(newCodeRepository,
                 inputFileName == "MultiTextSpan" ? new DslPatternRepository("a", "php") : null)
             {
                 StartStage = Stage.Ust,
