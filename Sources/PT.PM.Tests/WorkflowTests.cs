@@ -121,7 +121,7 @@ namespace PT.PM.Tests
 
             // Deserialization
             var logger = new LoggerMessageCounter();
-            var newCodeRepository = new FileCodeRepository(jsonFiles);
+            var newCodeRepository = new FileCodeRepository(jsonFiles) { LoadJson = true };
 
             var newWorkflow = new Workflow(newCodeRepository,
                 inputFileName == "MultiTextSpan" ? new DslPatternRepository("a", "php") : null)
