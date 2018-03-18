@@ -77,6 +77,12 @@ namespace PT.PM.Tests
             };
             WorkflowResult result = workflow.Process();
 
+            CodeFile preprocessedFile = result.SourceCodeFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
+            CodeFile originFile = result.SourceCodeFiles.FirstOrDefault(f => f.Name == "origin.php");
+
+            LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3);
+            LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
+
             var jsonFiles = new List<string>();
             foreach (string file in files)
             {
@@ -93,12 +99,6 @@ namespace PT.PM.Tests
 
                 if (file.Contains("preprocessed.php"))
                 {
-                    CodeFile preprocessedFile = result.SourceCodeFiles.First(f => f.Name == "preprocessed.php");
-                    CodeFile originFile = result.SourceCodeFiles.First(f => f.Name == "origin.php");
-
-                    LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3);
-                    LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
-
                     string preprocessedTextSpanString, originTextSpanString;
 
                     if (!lineColumnTextSpans)
@@ -144,15 +144,16 @@ namespace PT.PM.Tests
                     var matchResult = (MatchResult)newResult.MatchResults[1];
                     Assert.AreEqual(2, matchResult.TextSpans.Length);
 
-                    var matchTextSpan = matchResult.TextSpans[1];
-                    Assert.AreEqual(9, matchTextSpan.Start);
-                    Assert.AreEqual(11, matchTextSpan.End);
-                    Assert.AreEqual("origin.php", matchTextSpan.CodeFile.RelativeName);
+                    LineColumnTextSpan actualOriginTextSpan = originFile.GetLineColumnTextSpan(matchResult.TextSpans[1]);
+                    Assert.AreEqual(lcOriginTextSpan, actualOriginTextSpan);
+
+                    LineColumnTextSpan actualPreprocessedTextSpan = preprocessedFile.GetLineColumnTextSpan(matchResult.TextSpans[0]);
+                    Assert.AreEqual(lcPreprocessedTextSpan, actualPreprocessedTextSpan);
                 }
                 else
                 {
                     var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
-                    Assert.AreEqual(TextSpan.FromBounds(7, 50), match.TextSpan);
+                    Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), result.SourceCodeFiles[0].GetLineColumnTextSpan(match.TextSpan));
                 }
             }
         }
