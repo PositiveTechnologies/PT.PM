@@ -3,58 +3,58 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM", "PT.PM\PT.PM.csproj", "{ECB44673-2FB0-49E1-811F-973E3FA4DD22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM", "PT.PM\PT.PM.csproj", "{ECB44673-2FB0-49E1-811F-973E3FA4DD22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Tests", "PT.PM.Tests\PT.PM.Tests.csproj", "{104F9633-F7A6-4840-A3AD-8D9FD96B39BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Tests", "PT.PM.Tests\PT.PM.Tests.csproj", "{104F9633-F7A6-4840-A3AD-8D9FD96B39BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Matching", "PT.PM.Matching\PT.PM.Matching.csproj", "{9215DF23-07BE-49AA-90A0-ED1C542C388C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Matching", "PT.PM.Matching\PT.PM.Matching.csproj", "{9215DF23-07BE-49AA-90A0-ED1C542C388C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Patterns", "PT.PM.Patterns\PT.PM.Patterns.csproj", "{2A6F7AC9-92AA-48B8-A53B-50770424C9B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Patterns", "PT.PM.Patterns\PT.PM.Patterns.csproj", "{2A6F7AC9-92AA-48B8-A53B-50770424C9B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Matching.Tests", "PT.PM.Matching.Tests\PT.PM.Matching.Tests.csproj", "{F9D784D4-36E4-49F8-BEA4-38BDBB6910D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Matching.Tests", "PT.PM.Matching.Tests\PT.PM.Matching.Tests.csproj", "{F9D784D4-36E4-49F8-BEA4-38BDBB6910D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli", "PT.PM.Cli\PT.PM.Cli.csproj", "{349B2AEF-FA81-401F-A8BD-C53EE7231544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli", "PT.PM.Cli\PT.PM.Cli.csproj", "{349B2AEF-FA81-401F-A8BD-C53EE7231544}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Common", "PT.PM.Common\PT.PM.Common.csproj", "{0B10DBAE-C18D-4007-B799-0B3B1E00376E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Common", "PT.PM.Common\PT.PM.Common.csproj", "{0B10DBAE-C18D-4007-B799-0B3B1E00376E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.TestUtils", "PT.PM.TestUtils\PT.PM.TestUtils.csproj", "{FEC55A64-1B65-4D39-B5FA-D559D55BB190}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.TestUtils", "PT.PM.TestUtils\PT.PM.TestUtils.csproj", "{FEC55A64-1B65-4D39-B5FA-D559D55BB190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpParseTreeUst", "PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj", "{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.CSharpParseTreeUst", "PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj", "{3B09E6EC-8069-4ED3-AAD8-145953FD7DCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.CSharpParseTreeUst.Tests", "PT.PM.CSharpParseTreeUst.Tests\PT.PM.CSharpParseTreeUst.Tests.csproj", "{E3DB8014-0BFB-4399-9B49-A8BE446C5049}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.CSharpParseTreeUst.Tests", "PT.PM.CSharpParseTreeUst.Tests\PT.PM.CSharpParseTreeUst.Tests.csproj", "{E3DB8014-0BFB-4399-9B49-A8BE446C5049}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PhpParseTreeUst", "PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj", "{08FBC341-AC44-4CAE-AE71-9462F7885E3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PhpParseTreeUst", "PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj", "{08FBC341-AC44-4CAE-AE71-9462F7885E3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PhpParseTreeUst.Tests", "PT.PM.PhpParseTreeUst.Tests\PT.PM.PhpParseTreeUst.Tests.csproj", "{933DCCA3-B5D1-45AE-ACAB-1672D71BC349}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PhpParseTreeUst.Tests", "PT.PM.PhpParseTreeUst.Tests\PT.PM.PhpParseTreeUst.Tests.csproj", "{933DCCA3-B5D1-45AE-ACAB-1672D71BC349}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaParseTreeUst.Tests", "PT.PM.JavaParseTreeUst.Tests\PT.PM.JavaParseTreeUst.Tests.csproj", "{47F5B401-E788-494E-89C8-A8CA0B6917C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.JavaParseTreeUst.Tests", "PT.PM.JavaParseTreeUst.Tests\PT.PM.JavaParseTreeUst.Tests.csproj", "{47F5B401-E788-494E-89C8-A8CA0B6917C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.AntlrUtils", "PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj", "{2B5519C9-4566-4743-A14A-66234299CDB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.AntlrUtils", "PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj", "{2B5519C9-4566-4743-A14A-66234299CDB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaParseTreeUst", "PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj", "{F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.JavaParseTreeUst", "PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj", "{F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Dsl", "PT.PM.Dsl\PT.PM.Dsl.csproj", "{0CC3091C-DB40-49D1-AC8F-3ACCABCAD952}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Dsl", "PT.PM.Dsl\PT.PM.Dsl.csproj", "{0CC3091C-DB40-49D1-AC8F-3ACCABCAD952}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Dsl.Tests", "PT.PM.Dsl.Tests\PT.PM.Dsl.Tests.csproj", "{370AF0EE-1080-4785-A65C-6F471E64B6D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Dsl.Tests", "PT.PM.Dsl.Tests\PT.PM.Dsl.Tests.csproj", "{370AF0EE-1080-4785-A65C-6F471E64B6D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{553BE5D1-E6F1-4DDD-97E8-F7C73F4F684C}"
 	ProjectSection(SolutionItems) = preProject
 		AssemblyInfoCommon.cs = AssemblyInfoCommon.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst", "PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj", "{8F34670A-B91D-460B-9D67-7A03F7194673}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.SqlParseTreeUst.Tests", "PT.PM.SqlParseTreeUst.Tests\PT.PM.SqlParseTreeUst.Tests.csproj", "{EEBBE595-2478-40B1-A147-7F44E40A2686}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.SqlParseTreeUst.Tests", "PT.PM.SqlParseTreeUst.Tests\PT.PM.SqlParseTreeUst.Tests.csproj", "{EEBBE595-2478-40B1-A147-7F44E40A2686}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli.Tests", "PT.PM.Cli.Tests\PT.PM.Cli.Tests.csproj", "{836A5763-216D-4596-94B6-5F60E7F0655C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli.Tests", "PT.PM.Cli.Tests\PT.PM.Cli.Tests.csproj", "{836A5763-216D-4596-94B6-5F60E7F0655C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspxParser", "AspxParser\AspxParser\AspxParser.csproj", "{88AF3957-A64A-4715-ADE5-3BE099034BDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Prebuild", "PT.PM.Prebuild\PT.PM.Prebuild.csproj", "{0292CE45-BBA4-46B8-ADE4-3C39162C1F46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.JavaScriptParseTreeUst", "PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj", "{98727837-F9FA-476C-B0B5-88845B53FDDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspxParser", "AspxParser\AspxParser\AspxParser.csproj", "{88AF3957-A64A-4715-ADE5-3BE099034BDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.JavaScriptParseTreeUst.Tests", "PT.PM.JavaScriptParseTreeUst.Tests\PT.PM.JavaScriptParseTreeUst.Tests.csproj", "{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst", "PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj", "{98727837-F9FA-476C-B0B5-88845B53FDDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.TSqlParseTreeUst", "PT.PM.TSqlParseTreeUst\PT.PM.TSqlParseTreeUst.csproj", "{C9F6807F-902C-44FD-B15F-2554B11BE09D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.JavaScriptParseTreeUst.Tests", "PT.PM.JavaScriptParseTreeUst.Tests\PT.PM.JavaScriptParseTreeUst.Tests.csproj", "{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PlSqlParseTreeUst", "PT.PM.PlSqlParseTreeUst\PT.PM.PlSqlParseTreeUst.csproj", "{273D7A6B-6BAE-47C2-A6A5-CFC7DE2E9D3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,10 +130,6 @@ Global
 		{370AF0EE-1080-4785-A65C-6F471E64B6D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{370AF0EE-1080-4785-A65C-6F471E64B6D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{370AF0EE-1080-4785-A65C-6F471E64B6D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F34670A-B91D-460B-9D67-7A03F7194673}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F34670A-B91D-460B-9D67-7A03F7194673}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F34670A-B91D-460B-9D67-7A03F7194673}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F34670A-B91D-460B-9D67-7A03F7194673}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EEBBE595-2478-40B1-A147-7F44E40A2686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EEBBE595-2478-40B1-A147-7F44E40A2686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEBBE595-2478-40B1-A147-7F44E40A2686}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -142,10 +138,6 @@ Global
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{836A5763-216D-4596-94B6-5F60E7F0655C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0292CE45-BBA4-46B8-ADE4-3C39162C1F46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0292CE45-BBA4-46B8-ADE4-3C39162C1F46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0292CE45-BBA4-46B8-ADE4-3C39162C1F46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0292CE45-BBA4-46B8-ADE4-3C39162C1F46}.Release|Any CPU.Build.0 = Release|Any CPU
 		{88AF3957-A64A-4715-ADE5-3BE099034BDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{88AF3957-A64A-4715-ADE5-3BE099034BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88AF3957-A64A-4715-ADE5-3BE099034BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -158,8 +150,19 @@ Global
 		{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC787B80-B003-4F07-8DDD-0E7EF0E9E4CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9F6807F-902C-44FD-B15F-2554B11BE09D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9F6807F-902C-44FD-B15F-2554B11BE09D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9F6807F-902C-44FD-B15F-2554B11BE09D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9F6807F-902C-44FD-B15F-2554B11BE09D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{273D7A6B-6BAE-47C2-A6A5-CFC7DE2E9D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{273D7A6B-6BAE-47C2-A6A5-CFC7DE2E9D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{273D7A6B-6BAE-47C2-A6A5-CFC7DE2E9D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{273D7A6B-6BAE-47C2-A6A5-CFC7DE2E9D3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E226E13-CC53-43EE-BCD7-FA3B013FB58F}
 	EndGlobalSection
 EndGlobal

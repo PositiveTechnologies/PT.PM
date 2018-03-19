@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+  </PropertyGroup>
+
+  <Target Name="GenerateTSqlAntlrParser" BeforeTargets="Compile">
+    <Exec Command="dotnet &quot;$(SolutionDir)..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlParser.g4&quot; --package PT.PM.TSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot;" />
+  </Target>
+  
+  <ItemGroup>
+    <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+
+    <None Include="..\antlr-grammars-v4\tsql\TSqlLexer.g4" Link="TSqlLexer.g4" />
+    <None Include="..\antlr-grammars-v4\tsql\TSqlParser.g4" Link="TSqlParser.g4" />
+
+    <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
+  </ItemGroup>
+</Project>

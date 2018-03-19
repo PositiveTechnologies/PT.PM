@@ -19,7 +19,8 @@
     <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj" />
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj" />
     <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj" />
-    <ProjectReference Include="..\PT.PM.SqlParseTreeUst\PT.PM.SqlParseTreeUst.csproj" />
+    <ProjectReference Include="..\PT.PM.PlSqlParseTreeUst\PT.PM.PlSqlParseTreeUst.csproj" />
+    <ProjectReference Include="..\PT.PM.TSqlParseTreeUst\PT.PM.TSqlParseTreeUst.csproj" />
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
   </ItemGroup>
 

@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
@@ -11,14 +10,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
-
+  
     <Compile Include="..\antlr-grammars-v4\plsql\CSharp\PlSqlBaseLexer.cs">
       <Link>PlSqlBaseLexer.cs</Link>
     </Compile>
     <Compile Include="..\antlr-grammars-v4\plsql\CSharp\PlSqlBaseParser.cs">
       <Link>PlSqlBaseParser.cs</Link>
     </Compile>
-    <Exec Command="dotnet &quot;$(SolutionDir)..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlParser.g4&quot; --package PT.PM.TSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
   
   <ItemGroup>
@@ -26,8 +24,6 @@
 
     <None Include="..\antlr-grammars-v4\plsql\PlSqlLexer.g4" Link="PlSqlLexer.g4" />
     <None Include="..\antlr-grammars-v4\plsql\PlSqlParser.g4" Link="PlSqlParser.g4" />
-    <None Include="..\antlr-grammars-v4\tsql\TSqlLexer.g4" Link="TSqlLexer.g4" />
-    <None Include="..\antlr-grammars-v4\tsql\TSqlParser.g4" Link="TSqlParser.g4" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
   </ItemGroup>
