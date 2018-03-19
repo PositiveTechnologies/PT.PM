@@ -7,44 +7,16 @@ install:
 - cmd: git submodule update --init --recursive
 assembly_info:
   patch: true
-  file: Sources\AssemblyInfoCommon.cs;Sources\PT.PM.PatternEditor\Properties\AssemblyInfo.cs
+  file: Sources\AssemblyInfoCommon.cs;
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 before_build:
+- cmd: generate.cmd
+build_script:
+  - dotnet build Sources/PT.PM.Gui.sln -c %CONFIGURATION%
+test_script:
 - cmd: >-
-    nuget sources add -Name Avalonia -Source https://www.myget.org/F/avalonia-ci/api/v2
-
-    nuget restore Sources\PT.PM.Gui.sln
-build:
-  project: Sources\PT.PM.sln
-  verbosity: minimal
-  publish_nuget: true
-after_build:
-- cmd: >-
-    msbuild Sources\PT.PM.Gui.sln /verbosity:minimal /p:Configuration=Release /p:Platform=x86
-test:
-  assemblies:
-  - Tests\Unit\bin\$(configuration)\*.Tests.dll
-after_test:
-- cmd: >-
-    nuget pack PT.PM.nuspec -version %APPVEYOR_BUILD_VERSION%
+    cd Tests/%CONFIGURATION%/netcoreapp2.0
     
-    nuget pack PT.PM.Cli.nuspec -version %APPVEYOR_BUILD_VERSION%
-
-    cd bin\%CONFIGURATION%
-
-    7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.Cli.exe *.config
-
-    cd ..\PatternEditor%CONFIGURATION%
-
-    del atk-sharp.dll gdk-sharp.dll glib-sharp.dll gtk-sharp.dll pango-sharp.dll
-
-    7z a PT.PM.Gui-%APPVEYOR_BUILD_VERSION%.zip *.dll PT.PM.PatternEditor.exe PT.PM.PatternEditor.exe.config
-artifacts:
-- path: bin\$(configuration)\*.zip
-  name: PT.PM.Cli
-- path: '*.nupkg'
-  name: PT.PM.NuGet
-- path: bin\PatternEditor$(configuration)\*.zip
-  name: PT.PM.Gui
+    forfiles /p . /m *.Tests.dll /c "cmd /c dotnet vstest @file"
