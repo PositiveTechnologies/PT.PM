@@ -12,8 +12,8 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
-  <Target Name="GenerateJavaScriptAntlrParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="dotnet &quot;$(SolutionDir)..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptParser.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot; --solutionDir &quot;$(SolutionDir)&quot;" />
+  <Target Name="GenerateJavaScriptAntlrParser" BeforeTargets="Compile">
+    <Exec Command="dotnet &quot;$(SolutionDir)..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\javascript\JavaScriptParser.g4&quot; --package PT.PM.JavaScriptParseTreeUst.Parser --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 
   <ItemGroup>
