@@ -42,6 +42,7 @@ namespace PT.PM.Common.Json
             Type type = value.GetType();
             jObject.Add(KindName, type.Name);
             PropertyInfo[] properties = type.GetReadWriteClassProperties();
+
             if (type.Name == nameof(RootUst))
             {
                 jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.Key);
@@ -50,6 +51,7 @@ namespace PT.PM.Common.Json
             foreach (PropertyInfo prop in properties)
             {
                 string propName = prop.Name;
+
                 bool include = prop.CanWrite;
                 if (include)
                 {
@@ -98,10 +100,24 @@ namespace PT.PM.Common.Json
 
                 if (include)
                 {
-                    object propVal = prop.GetValue(value, null);
-                    if (propVal != null)
+                    JToken jToken = null;
+
+                    if (value is Ust ust && propName == nameof(Ust.TextSpan) &&
+                        ust.InitialTextSpans != null && ust.InitialTextSpans.Count > 0)
                     {
-                        JToken jToken = JToken.FromObject(propVal, serializer);
+                        jToken = JToken.FromObject(ust.InitialTextSpans, serializer);
+                    }
+                    else
+                    {
+                        object propVal = prop.GetValue(value, null);
+                        if (propVal != null)
+                        {
+                            jToken = JToken.FromObject(propVal, serializer);
+                        }
+                    }
+
+                    if (jToken != null)
+                    {
                         jObject.Add(propName, jToken);
                     }
                 }
@@ -110,40 +126,43 @@ namespace PT.PM.Common.Json
             return jObject;
         }
 
-        protected Ust CreateOrGetUst(object jObjectOrToken)
+        protected Ust CreateOrGetUst(object jObjectOrToken, Type type = null)
         {
             JObject jObject = jObjectOrToken as JObject;
             JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
 
-            string ustKind = jObject != null
-                ? (string)jObject.GetValueIgnoreCase(KindName)
-                : jToken != null
-                ? (string)jToken.GetValueIgnoreCase(KindName)
-                : "";
-
-            Type type;
-            if (string.IsNullOrEmpty(ustKind) ||
-                !ReflectionCache.TryGetClassType(ustKind, out type))
+            if (type == null)
             {
-                string errorMessage = $"{KindName} field " +
-                    (ustKind == null ? "undefined" : $"incorrect ({ustKind})");
-                Logger.LogError(JsonFile, jObjectOrToken as IJsonLineInfo, errorMessage);
-                return null;
+                string ustKind = jObject != null
+                    ? (string)jObject.GetValueIgnoreCase(KindName)
+                    : jToken != null
+                    ? (string)jToken.GetValueIgnoreCase(KindName)
+                    : "";
+
+                if (string.IsNullOrEmpty(ustKind) ||
+                    !ReflectionCache.TryGetClassType(ustKind, out type))
+                {
+                    string errorMessage = $"{KindName} field " +
+                        (ustKind == null ? "undefined" : $"incorrect ({ustKind})");
+                    Logger.LogError(JsonFile, jObjectOrToken as IJsonLineInfo, errorMessage);
+                    return null;
+                }
             }
 
-            JToken textSpanToken = jObject != null
+            JToken textSpanTokenWrapper = jObject != null
                 ? jObject.GetValueIgnoreCase(nameof(Ust.TextSpan))
-                : jToken != null
-                ? jToken.GetValueIgnoreCase(nameof(Ust.TextSpan))
-                : null;
+                : jToken?.GetValueIgnoreCase(nameof(Ust.TextSpan));
 
-            TextSpan textSpan = TextSpan.Empty;
-            if (textSpanToken != null)
+            List<TextSpan> textSpans = null;
+
+            if (textSpanTokenWrapper != null)
             {
-                textSpan = textSpanToken.ToObject<TextSpan>(jsonSerializer);
-                if (!textSpan.IsEmpty && existingUsts.TryGetValue(textSpan, out List<Ust> usts))
+                textSpans = GetCommonTextSpan(textSpanTokenWrapper).ToList();
+                TextSpan commonTextSpan = textSpans.Union();
+
+                if (!commonTextSpan.IsZero && existingUsts.TryGetValue(commonTextSpan, out List<Ust> usts))
                 {
-                    var sameTypeUst = usts.FirstOrDefault(u => u.GetType() == type);
+                    Ust sameTypeUst = usts.FirstOrDefault(u => u.GetType() == type);
                     if (sameTypeUst != null)
                     {
                         return sameTypeUst;
@@ -171,13 +190,27 @@ namespace PT.PM.Common.Json
                 ust = (Ust)Activator.CreateInstance(type);
             }
 
-            if (!textSpan.IsEmpty)
+            if (textSpans != null && textSpans.Count > 0)
             {
-                ust.TextSpan = textSpan;
-                existingUsts.Add(textSpan, ust);
+                if (textSpans.Count == 1)
+                {
+                    ust.TextSpan = textSpans[0];
+                }
+                else
+                {
+                    ust.InitialTextSpans = textSpans;
+                    ust.TextSpan = textSpans.Union();
+                }
+                existingUsts.Add(ust.TextSpan, ust);
             }
 
             return ust;
+        }
+
+        protected IEnumerable<TextSpan> GetCommonTextSpan(JToken textSpanToken)
+        {
+            JToken[] textSpanTokens = textSpanToken.GetTokenOrTokensArray();
+            return textSpanTokens.Select(token => token.ToObject<TextSpan>(jsonSerializer));
         }
 
         private object GetDefaultValue(Type t)

@@ -4,7 +4,7 @@ namespace PT.PM.Common
 {
     public class LineColumnTextSpan: IEquatable<LineColumnTextSpan>
     {
-        public static LineColumnTextSpan Empty => new LineColumnTextSpan(0, 0, 0, 0);
+        public static LineColumnTextSpan Zero => new LineColumnTextSpan(0, 0, 0, 0, null);
 
         public int BeginLine { get; set; }
 
@@ -14,48 +14,47 @@ namespace PT.PM.Common
 
         public int EndColumn { get; set; }
 
+        public CodeFile CodeFile { get; set; }
+
         public LineColumnTextSpan()
         {
         }
 
-        public LineColumnTextSpan(int line, int column)
-            : this(line, column, line, column)
+        public LineColumnTextSpan(int line, int column, CodeFile codeFile = null)
+            : this(line, column, line, column, codeFile)
         {
         }
 
-        public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn)
+        public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn, CodeFile codeFile = null)
         {
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;
             EndColumn = endColumn;
+            CodeFile = codeFile;
         }
 
-        public static LineColumnTextSpan Parse(string text)
+        public override string ToString() => ToString(true);
+
+        public string ToString(bool includeFileName)
         {
-            LineColumnTextSpan result;
-            var hyphenIndex = text.IndexOf('-');
-            if (hyphenIndex != -1)
+            string result;
+
+            if (BeginLine == EndLine && EndColumn == BeginColumn)
             {
-                ParseLineColumn(text.Remove(hyphenIndex), out int begingLine, out int beginColumn);
-                ParseLineColumn(text.Substring(hyphenIndex + 1), out int endLine, out int endColumn);
-                result = new LineColumnTextSpan(begingLine, beginColumn, endLine, endColumn);
+                result = $"[{BeginLine},{BeginColumn})";
             }
             else
             {
-                ParseLineColumn(text, out int line, out int column);
-                result = new LineColumnTextSpan(line, column, line, column);
+                result = $"[{BeginLine},{BeginColumn}]-[{EndLine},{EndColumn})";
             }
-            return result;
-        }
 
-        public override string ToString()
-        {
-            if (BeginLine == EndLine && EndColumn == BeginColumn)
+            if (includeFileName && CodeFile != null)
             {
-                return $"[{BeginLine};{BeginColumn})";
+                result = $"{result}; {CodeFile}";
             }
-            return $"[{BeginLine};{BeginColumn}]-[{EndLine};{EndColumn})";
+
+            return result;
         }
 
         public override int GetHashCode()
@@ -73,18 +72,11 @@ namespace PT.PM.Common
 
         public bool Equals(LineColumnTextSpan other)
         {
-            return BeginLine == other.BeginLine &&
+            return CodeFile == other.CodeFile &&
+                   BeginLine == other.BeginLine &&
                    BeginColumn == other.BeginColumn &&
                    EndLine == other.EndLine &&
                    EndColumn == other.EndColumn;
-        }
-
-        private static void ParseLineColumn(string text, out int line, out int column)
-        {
-            text = text.Substring(1, text.Length - 2);
-            int semicolonIndex = text.IndexOf(';');
-            line = int.Parse(text.Remove(semicolonIndex));
-            column = int.Parse(text.Substring(semicolonIndex + 1));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Json
 {
@@ -18,13 +19,13 @@ namespace PT.PM.Common.Json
 
         public bool IncludeCode { get; set; } = true;
 
-        public bool ShortTextSpans { get; set; } = true;
-
         public bool LineColumnTextSpans { get; set; } = false;
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
-        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
+        public CodeFile CurrectCodeFile { get; set; }
+
+        public IReadOnlyList<CodeFile> CodeFiles { get; set; } = new List<CodeFile>();
 
         public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
@@ -58,12 +59,13 @@ namespace PT.PM.Common.Json
 
             var textSpanJsonConverter = new TextSpanJsonConverter
             {
-                ShortFormat = ShortTextSpans,
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
                 IsLineColumn = LineColumnTextSpans,
-                CodeFile = CodeFile,
                 JsonFile = JsonFile
             };
+
+            textSpanJsonConverter.CodeFiles = CodeFiles as List<CodeFile> ?? CodeFiles.ToList();
+            textSpanJsonConverter.CurrentCodeFile = CurrectCodeFile;
 
             var jsonSettings = new JsonSerializerSettings
             {

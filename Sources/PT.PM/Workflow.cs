@@ -125,6 +125,8 @@ namespace PT.PM
                         workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(ust, false);
 
+                        DumpUst(ust, workflowResult.SourceCodeFiles);
+
                         cancellationToken.ThrowIfCancellationRequested();
                     }
 

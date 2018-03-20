@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PT.PM.Common
 {
-    public class CodeFile
+    public class CodeFile : IEquatable<CodeFile>, IComparable<CodeFile>, IComparable
     {
         private readonly object lockObj = new object();
         private int[] lineIndexes;
@@ -23,7 +23,7 @@ namespace PT.PM.Common
 
         public bool IsPattern { get; set; } = false;
 
-        public string Code { get; }
+        public string Code { get; } = "";
 
         public string RelativeName => Path.Combine(RelativePath, Name);
 
@@ -41,7 +41,7 @@ namespace PT.PM.Common
             GetLineColumnFromLinear(textSpan.Start, out int beginLine, out int beginColumn);
             GetLineColumnFromLinear(textSpan.End, out int endLine, out int endColumn);
 
-            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn);
+            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, textSpan.CodeFile);
         }
 
         public void GetLineColumnFromLinear(int position, out int line, out int column)
@@ -63,7 +63,8 @@ namespace PT.PM.Common
             int start = GetLinearFromLineColumn(textSpan.BeginLine, textSpan.BeginColumn);
             int end = GetLinearFromLineColumn(textSpan.EndLine, textSpan.EndColumn);
 
-            return TextSpan.FromBounds(start, end);
+            var result = TextSpan.FromBounds(start, end, textSpan.CodeFile);
+            return result;
         }
 
         public int GetLinearFromLineColumn(int line, int column)
@@ -86,6 +87,8 @@ namespace PT.PM.Common
 
             return lineIndexes.Length;
         }
+
+        public bool IsEmpty => string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(Code);
 
         private void InitLineIndexesIfRequired()
         {
@@ -130,6 +133,72 @@ namespace PT.PM.Common
             }
 
             lineIndexes = lineIndexesBuffer.ToArray();
+        }
+
+        public static bool operator ==(CodeFile codeFile1, CodeFile codeFile2)
+        {
+            if (codeFile1 is null)
+            {
+                return codeFile2 is null;
+            }
+
+            return codeFile1.Equals(codeFile2);
+        }
+
+        public static bool operator !=(CodeFile codeFile1, CodeFile codeFile2)
+        {
+            if (codeFile1 is null)
+            {
+                return !(codeFile2 is null);
+            }
+
+            return !codeFile1.Equals(codeFile2);
+        }
+
+        public override bool Equals(object obj) => Equals(obj as CodeFile);
+
+        public bool Equals(CodeFile other)
+        {
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(other.FullName))
+            {
+                return Code == other.Code;
+            }
+
+            return RelativeName == other.RelativeName;
+        }
+
+        public override int GetHashCode()
+        {
+            return string.IsNullOrEmpty(RelativeName)
+                ? Code.GetHashCode()
+                : RelativeName.GetHashCode();
+        }
+
+        public int CompareTo(object obj) => CompareTo(obj as CodeFile);
+
+        public int CompareTo(CodeFile other)
+        {
+            if (other is null)
+            {
+                return 1;
+            }
+
+            if (string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(other.FullName))
+            {
+                return Code.CompareTo(other.Code);
+            }
+
+            return FullName.CompareTo(other.FullName);
         }
     }
 }

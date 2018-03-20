@@ -183,14 +183,18 @@ namespace PT.PM
                             converter.AnalyzedLanguages = AnalyzedLanguages;
                             result = converter.Convert(parseTree);
 
-                            DumpUst(result);
+                            if (Stage.IsLess(PM.Stage.SimplifiedUst))
+                            {
+                                DumpUst(result, workflowResult.SourceCodeFiles);
+                            }
                         }
                         else
                         {
                             var jsonUstSerializer = new UstJsonSerializer()
                             {
                                 Logger = Logger,
-                                LineColumnTextSpans = LineColumnTextSpans
+                                LineColumnTextSpans = LineColumnTextSpans,
+                                CodeFiles = workflowResult.SourceCodeFiles
                             };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
@@ -231,9 +235,9 @@ namespace PT.PM
             }
         }
 
-        private void DumpUst(RootUst result)
+        protected void DumpUst(RootUst result, IReadOnlyList<CodeFile> sourceCodeFiles)
         {
-            if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust)))
+            if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust) || stage.Is(PM.Stage.SimplifiedUst)))
             {
                 var serializer = new UstJsonSerializer
                 {
@@ -242,7 +246,8 @@ namespace PT.PM
                     IncludeTextSpans = DumpWithTextSpans,
                     IncludeCode = IncludeCodeInDump,
                     LineColumnTextSpans = LineColumnTextSpans,
-                    CodeFile = result.SourceCodeFile
+                    CodeFiles = sourceCodeFiles,
+                    CurrectCodeFile = result.SourceCodeFile
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";

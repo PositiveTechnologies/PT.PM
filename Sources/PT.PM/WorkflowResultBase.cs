@@ -54,7 +54,7 @@ namespace PT.PM
 
         public int ErrorCount { get; set; }
 
-        public IReadOnlyList<CodeFile> SourceCodeFiles => ValidateStageAndReturn(PM.Stage.File.ToString(), sourceCodeFiles);
+        public IReadOnlyList<CodeFile> SourceCodeFiles => sourceCodeFiles;
 
         public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
 
@@ -104,10 +104,7 @@ namespace PT.PM
 
         public void AddResultEntity(CodeFile sourceCodeFile)
         {
-            if (Stage.Is(PM.Stage.File) || IsIncludeIntermediateResult)
-            {
-                AddEntity(sourceCodeFiles, sourceCodeFile);
-            }
+            AddEntity(sourceCodeFiles, sourceCodeFile);
         }
 
         public void AddResultEntity(ParseTree parseTree)

@@ -21,6 +21,11 @@ namespace PT.PM.Common.Json
                  ?.Value;
         }
 
+        public static JToken[] GetTokenOrTokensArray(this JToken jToken)
+        {
+            return jToken is JArray jArray ? jArray.Children().ToArray() : new JToken[] { jToken };
+        }
+
         public static void LogError(this ILogger logger, CodeFile jsonFile, IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
         {
             string errorMessage = GenerateErrorPositionMessage(jsonFile, jsonLineInfo, out TextSpan errorTextSpan);

@@ -9,6 +9,8 @@ namespace PT.PM.Common
 {
     public static class TextUtils
     {
+        private static char[] semicolon = new char[] { ';' };
+
         private const int StartLine = 1;
         private const int StartColumn = 1;
 
@@ -42,9 +44,9 @@ namespace PT.PM.Common
 
         public static TextSpan Union(this IEnumerable<TextSpan> textSpans)
         {
-            if (textSpans.Count() == 0)
+            if (textSpans == null || textSpans.Count() == 0)
             {
-                return TextSpan.Empty;
+                return TextSpan.Zero;
             }
 
             var resultTextSpan = textSpans.First();
@@ -57,7 +59,79 @@ namespace PT.PM.Common
             {
                 resultTextSpan = resultTextSpan.Union(textSpan);
             }
+
             return resultTextSpan;
+        }
+
+        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, List<CodeFile> codeFiles = null)
+        {
+            string[] parts = text.Split(semicolon, 2);
+
+            string fileName = parts.Length == 2
+                ? parts[1].Trim()
+                : null;
+
+            CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
+
+            TextSpan result;
+            string range = parts[0].Trim().Substring(1, parts[0].Length - 2);
+            int index = range.IndexOf("..");
+            if (index != -1)
+            {
+                int start = int.Parse(range.Remove(index));
+                int end = int.Parse(range.Substring(index + 2));
+                result = TextSpan.FromBounds(start, end, codeFile);
+            }
+            else
+            {
+                result = new TextSpan(int.Parse(range), 0, codeFile);
+            }
+
+            return result;
+        }
+
+        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, List<CodeFile> codeFiles = null)
+        {
+            string[] parts = text.Split(semicolon, 2);
+
+            string fileName = parts.Length == 2
+                ? parts[1].Trim()
+                : null;
+
+            CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
+
+            LineColumnTextSpan result;
+            string firstPart = parts[0].Trim();
+            var hyphenIndex = firstPart.IndexOf('-');
+            if (hyphenIndex != -1)
+            {
+                ParseLineColumn(firstPart.Remove(hyphenIndex), out int begingLine, out int beginColumn);
+                ParseLineColumn(firstPart.Substring(hyphenIndex + 1), out int endLine, out int endColumn);
+                result = new LineColumnTextSpan(begingLine, beginColumn, endLine, endColumn, codeFile);
+            }
+            else
+            {
+                ParseLineColumn(firstPart, out int line, out int column);
+                result = new LineColumnTextSpan(line, column, line, column, codeFile);
+            }
+
+            return result;
+        }
+
+        public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, List<CodeFile> codeFiles)
+        {
+            CodeFile result = null;
+
+            if (fileName == null)
+            {
+                result = currentCodeFile;
+            }
+            else
+            {
+                result = codeFiles?.FirstOrDefault(codeFile => codeFile.RelativeName == fileName || codeFile.FullName == fileName);
+            }
+
+            return result;
         }
 
         public static string Substring(this string str, TextSpan textSpan)
@@ -84,6 +158,14 @@ namespace PT.PM.Common
                     result.Append(c);
             }
             return result.ToString();
+        }
+
+        private static void ParseLineColumn(string text, out int line, out int column)
+        {
+            text = text.Substring(1, text.Length - 2);
+            int commaIndex = text.IndexOf(',');
+            line = int.Parse(text.Remove(commaIndex));
+            column = int.Parse(text.Substring(commaIndex + 1));
         }
     }
 }
