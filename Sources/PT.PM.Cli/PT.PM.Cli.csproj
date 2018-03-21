@@ -5,7 +5,6 @@
     <ApplicationIcon>..\PT.PM.ico</ApplicationIcon>
     <OutputType>Exe</OutputType>
     <StartupObject>PT.PM.Cli.Program</StartupObject>
-	<RunCommand>dotnet PT.PM.Cli.dll</RunCommand>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,18 +22,14 @@
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
 
-    <PackageReference Include="CommandLineParser" Version="2.2.1" />
-    <PackageReference Include="NLog" Version="4.5.0-rc04" />
-
-    <ProjectReference Include="..\PT.PM\PT.PM.csproj" />
-
     <None Include="..\PT.PM.ico" Link="PT.PM.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\PT.PM.Cli.Common\PT.PM.Cli.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="PT.PM.Cli.runtimeconfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

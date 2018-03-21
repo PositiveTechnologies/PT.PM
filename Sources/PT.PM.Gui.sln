@@ -55,9 +55,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli", "PT.PM.Cli\PT.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PatternEditor", "PT.PM.PatternEditor\PT.PM.PatternEditor.csproj", "{4B81E50D-478F-47E6-8D41-2649703B707A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.TSqlParseTreeUst", "PT.PM.TSqlParseTreeUst\PT.PM.TSqlParseTreeUst.csproj", "{7A043632-6783-4BA3-B517-82F41D80922D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.TSqlParseTreeUst", "PT.PM.TSqlParseTreeUst\PT.PM.TSqlParseTreeUst.csproj", "{7A043632-6783-4BA3-B517-82F41D80922D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PlSqlParseTreeUst", "PT.PM.PlSqlParseTreeUst\PT.PM.PlSqlParseTreeUst.csproj", "{608D165C-1E79-4DB4-85F2-0482822A9989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PlSqlParseTreeUst", "PT.PM.PlSqlParseTreeUst\PT.PM.PlSqlParseTreeUst.csproj", "{608D165C-1E79-4DB4-85F2-0482822A9989}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Cli.Common", "PT.PM.Cli.Common\PT.PM.Cli.Common.csproj", "{353E0423-A26D-48C6-804E-F134D7935399}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -369,6 +371,18 @@ Global
 		{608D165C-1E79-4DB4-85F2-0482822A9989}.Release|Any CPU.Build.0 = Release|Any CPU
 		{608D165C-1E79-4DB4-85F2-0482822A9989}.Release|x86.ActiveCfg = Release|Any CPU
 		{608D165C-1E79-4DB4-85F2-0482822A9989}.Release|x86.Build.0 = Release|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Debug|x86.Build.0 = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.DebugGraphviz|Any CPU.ActiveCfg = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.DebugGraphviz|Any CPU.Build.0 = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.DebugGraphviz|x86.ActiveCfg = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.DebugGraphviz|x86.Build.0 = Debug|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Release|x86.ActiveCfg = Release|Any CPU
+		{353E0423-A26D-48C6-804E-F134D7935399}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
