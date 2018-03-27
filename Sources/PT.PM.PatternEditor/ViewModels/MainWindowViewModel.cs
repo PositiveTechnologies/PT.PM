@@ -47,6 +47,7 @@ namespace PT.PM.PatternEditor
         private string matchResultText = "MATCHINGS";
         private bool oldIsIncludeTextSpans;
         private bool oldIsLineColumnTextSpans;
+        private bool oldIsIncludeCode;
         private CodeFile sourceCode;
 
         public MainWindowViewModel(Window w)
@@ -118,7 +119,17 @@ namespace PT.PM.PatternEditor
                 sourceCodeTextBox.Text = "";
             });
 
-            OpenDumpDirectory = ReactiveCommand.Create(() => Process.Start(ServiceLocator.TempDirectory));
+            OpenDumpDirectory = ReactiveCommand.Create(() =>
+            {
+                try
+                {
+                    Process.Start(ServiceLocator.TempDirectory);
+                }
+                catch (Exception ex)
+                {
+                    new MessageBox($"Unable to open {ServiceLocator.TempDirectory} due to {ex}").ShowDialog();
+                }
+            });
 
             if (string.IsNullOrEmpty(Settings.SourceCodeFile) || !File.Exists(Settings.SourceCodeFile))
             {
@@ -204,7 +215,7 @@ namespace PT.PM.PatternEditor
                 ev => window.Closed += ev, ev => window.Closed -= ev)
                 .Subscribe(ev =>
                 {
-                    ServiceLocator.PatternViewModel.SavePatterns();
+                    ServiceLocator.PatternsViewModel.SavePatterns();
                     Settings.PatternsPanelWidth = patternsPanelColumn.Width.Value;
                     Settings.Save();
                 });
@@ -270,13 +281,13 @@ namespace PT.PM.PatternEditor
                 {
                     Settings.IsDeveloperMode = value;
                     Settings.Save();
-                    
+
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
                     this.RaisePropertyChanged(nameof(IsTreeVisible));
                     this.RaisePropertyChanged(nameof(IsUstJsonVisible));
                     this.RaisePropertyChanged();
 
-                    ServiceLocator.PatternViewModel.UpdateDeveloperMode();
+                    ServiceLocator.PatternsViewModel.UpdateDeveloperMode();
                 }
             }
         }
@@ -461,10 +472,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsErrorsExpanded
         {
-            get
-            {
-                return Settings.IsErrorsExpanded;
-            }
+            get => Settings.IsErrorsExpanded;
             set
             {
                 if (Settings.IsErrorsExpanded != value)
@@ -478,10 +486,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsTokensExpanded
         {
-            get
-            {
-                return Settings.IsTokensExpanded;
-            }
+            get => Settings.IsTokensExpanded;
             set
             {
                 if (Settings.IsTokensExpanded != value)
@@ -495,10 +500,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsParseTreeExpanded
         {
-            get
-            {
-                return Settings.IsParseTreeExpanded;
-            }
+            get => Settings.IsParseTreeExpanded;
             set
             {
                 if (Settings.IsParseTreeExpanded != value)
@@ -512,10 +514,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsUstExpanded
         {
-            get
-            {
-                return Settings.IsUstExpanded;
-            }
+            get => Settings.IsUstExpanded;
             set
             {
                 if (Settings.IsUstExpanded != value)
@@ -529,10 +528,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsMatchingsExpanded
         {
-            get
-            {
-                return Settings.IsMatchingsExpanded;
-            }
+            get => Settings.IsMatchingsExpanded;
             set
             {
                 if (Settings.IsMatchingsExpanded != value)
@@ -546,10 +542,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsIncludeTextSpans
         {
-            get
-            {
-                return Settings.IsIncludeTextSpans;
-            }
+            get => Settings.IsIncludeTextSpans;
             set
             {
                 if (Settings.IsIncludeTextSpans != value)
@@ -564,15 +557,27 @@ namespace PT.PM.PatternEditor
 
         public bool IsLineColumnTextSpans
         {
-            get
-            {
-                return Settings.IsLineColumnTextSpans;
-            }
+            get => Settings.IsLineColumnTextSpans;
             set
             {
                 if (Settings.IsLineColumnTextSpans != value)
                 {
                     Settings.IsLineColumnTextSpans = value;
+                    Settings.Save();
+                    this.RaisePropertyChanged();
+                    CheckSourceCode();
+                }
+            }
+        }
+
+        public bool IsIncludeCode
+        {
+            get => Settings.IsIncludeCode;
+            set
+            {
+                if (Settings.IsIncludeCode != value)
+                {
+                    Settings.IsIncludeCode = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
                     CheckSourceCode();
@@ -587,7 +592,8 @@ namespace PT.PM.PatternEditor
                 oldEndStage != Settings.SelectedStage ||
                 oldJavaScriptType != Settings.JavaScriptType ||
                 oldIsIncludeTextSpans != Settings.IsIncludeTextSpans ||
-                oldIsLineColumnTextSpans != Settings.IsLineColumnTextSpans)
+                oldIsLineColumnTextSpans != Settings.IsLineColumnTextSpans ||
+                oldIsIncludeCode != Settings.IsIncludeCode)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
@@ -602,6 +608,7 @@ namespace PT.PM.PatternEditor
                 oldJavaScriptType = Settings.JavaScriptType;
                 oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
                 oldIsLineColumnTextSpans = Settings.IsLineColumnTextSpans;
+                oldIsIncludeCode = Settings.IsIncludeCode;
             }
         }
 
@@ -611,9 +618,10 @@ namespace PT.PM.PatternEditor
 
             var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text, language: SelectedLanguage ?? CSharp.Language);
             IPatternsRepository patternRepository;
-            if (!string.IsNullOrEmpty(ServiceLocator.PatternViewModel.Value))
+            if (!string.IsNullOrEmpty(ServiceLocator.PatternsViewModel.Value))
             {
-                patternRepository = new DslPatternRepository(ServiceLocator.PatternViewModel.Value, ServiceLocator.PatternViewModel.Languages);
+                patternRepository = new DslPatternRepository(ServiceLocator.PatternsViewModel.Value,
+                    ServiceLocator.PatternsViewModel.SelectedPattern.Languages);
             }
             else
             {
@@ -624,6 +632,7 @@ namespace PT.PM.PatternEditor
                 IsIncludeIntermediateResult = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
                 LineColumnTextSpans = IsLineColumnTextSpans,
+                IncludeCodeInDump = IsIncludeCode,
                 Logger = sourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,
                 DumpDir = ServiceLocator.TempDirectory,

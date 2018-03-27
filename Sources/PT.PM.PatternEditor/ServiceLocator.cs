@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using PT.PM.PatternEditor.Pattern;
 using System.IO;
 
 namespace PT.PM.PatternEditor
@@ -13,6 +14,6 @@ namespace PT.PM.PatternEditor
 
         internal static MainWindowViewModel MainWindowViewModel { get; set; }
 
-        internal static PatternViewModel PatternViewModel { get; set; }
+        internal static PatternsViewModel PatternsViewModel { get; set; }
     }
 }

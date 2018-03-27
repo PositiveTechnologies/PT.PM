@@ -18,7 +18,7 @@ namespace PT.PM.PatternEditor
 
             ServiceLocator.MainWindow = this;
             ServiceLocator.MainWindowViewModel = new MainWindowViewModel(this);
-            this.DataContext = ServiceLocator.MainWindowViewModel;
+            DataContext = ServiceLocator.MainWindowViewModel;
         }
 
         private void InitializeComponent()
