@@ -5,6 +5,12 @@ platform: Any CPU
 skip_branch_with_pr: true
 install:
 - cmd: git submodule update --init --recursive
+assembly_info:
+  patch: true
+  file: Sources\AssemblyInfoCommon.cs;
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
 before_build:
 - cmd: generate.cmd
 build_script: >-
@@ -46,5 +52,5 @@ after_test:
 artifacts:
 - path: bin/Publish/*.zip
   name: PT.PM.Cli
-- path: bin/PatternEditor$(configuration)/*.zip
+- path: bin/PatternEditor$(configuration)/netcoreapp2.0/*.zip
   name: PT.PM.Gui
