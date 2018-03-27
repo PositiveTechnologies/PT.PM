@@ -5,16 +5,12 @@ platform: Any CPU
 skip_branch_with_pr: true
 install:
 - cmd: git submodule update --init --recursive
-assembly_info:
-  patch: true
-  file: Sources\AssemblyInfoCommon.cs;
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
 before_build:
 - cmd: generate.cmd
-build_script:
-  - dotnet build Sources/PT.PM.Gui.sln -c %CONFIGURATION%
+build_script: >-
+    dotnet build Sources/PT.PM.Gui.sln -c %CONFIGURATION%
+
+    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c %CONFIGURATION% -o ../../bin/Publish
 test_script:
 - cmd: >-
     cd Tests/%CONFIGURATION%/netcoreapp2.0
@@ -36,3 +32,19 @@ test_script:
     dotnet vstest PT.PM.SqlParseTreeUst.Tests.dll
 
     dotnet vstest PT.PM.Tests.dll
+
+    cd ../../..
+after_test:
+- cmd: >-
+    cd bin/Publish
+
+    7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll *.config *.json runtimes
+
+    cd ../PatternEditor%CONFIGURATION%/netcoreapp2.0
+    
+    7z a PT.PM.Gui-%APPVEYOR_BUILD_VERSION%.zip *.dll *.config *.json runtimes
+artifacts:
+- path: bin/Publish/*.zip
+  name: PT.PM.Cli
+- path: bin/PatternEditor$(configuration)/*.zip
+  name: PT.PM.Gui
