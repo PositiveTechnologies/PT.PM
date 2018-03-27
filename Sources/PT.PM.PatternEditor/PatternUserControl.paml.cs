@@ -1,15 +1,16 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using PT.PM.PatternEditor.Pattern;
 
 namespace PT.PM.PatternEditor
 {
-    public class PatternUserControl: UserControl
+    public class PatternUserControl : UserControl
     {
         public PatternUserControl()
         {
             this.InitializeComponent();
-            ServiceLocator.PatternViewModel = new PatternViewModel(this);
-            this.DataContext = ServiceLocator.PatternViewModel;
+            ServiceLocator.PatternsViewModel = new PatternsViewModel(this);
+            this.DataContext = ServiceLocator.PatternsViewModel;
         }
 
         private void InitializeComponent()
