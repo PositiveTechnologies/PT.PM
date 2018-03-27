@@ -18,5 +18,21 @@ build_script:
 test_script:
 - cmd: >-
     cd Tests/%CONFIGURATION%/netcoreapp2.0
-    
-    forfiles /p . /m *.Tests.dll /c "cmd /c dotnet vstest @file"
+
+    dotnet vstest PT.PM.Cli.Tests.dll
+
+    dotnet vstest PT.PM.CSharpParseTreeUst.Tests.dll
+
+    dotnet vstest PT.PM.Dsl.Tests.dll
+
+    dotnet vstest PT.PM.JavaParseTreeUst.Tests.dll
+
+    dotnet vstest PT.PM.JavaScriptParseTreeUst.Tests.dll
+
+    dotnet vstest PT.PM.Matching.Tests.dll
+
+    dotnet vstest PT.PM.PhpParseTreeUst.Tests.dll
+
+    dotnet vstest PT.PM.SqlParseTreeUst.Tests.dll
+
+    dotnet vstest PT.PM.Tests.dll
