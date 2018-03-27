@@ -5,6 +5,7 @@
     <ApplicationIcon>..\PT.PM.ico</ApplicationIcon>
     <OutputType>Exe</OutputType>
     <StartupObject>PT.PM.Cli.Program</StartupObject>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -13,11 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-    <Compile Include="LoggerMessageCounter.cs" />
-  </ItemGroup>
 
-  <ItemGroup>
     <packagereference Include="NUnit" Version="3.9.0"></packagereference>
   </ItemGroup>
 
