@@ -16,7 +16,9 @@ before_build:
 build_script: >-
     dotnet build Sources/PT.PM.Gui.sln -c %CONFIGURATION%
 
-    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c %CONFIGURATION% -o ../../bin/Publish
+    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c %CONFIGURATION% -o ../../bin/Cli
+
+    dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c %CONFIGURATION% -o ../../bin/Gui
 test_script:
 - cmd: >-
     cd Tests/%CONFIGURATION%/netcoreapp2.0
@@ -42,15 +44,15 @@ test_script:
     cd ../../..
 after_test:
 - cmd: >-
-    cd bin/Publish
+    cd bin/Cli
 
     7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll *.config *.json runtimes
 
-    cd ../PatternEditor%CONFIGURATION%/netcoreapp2.0
+    cd ../Gui
     
     7z a PT.PM.Gui-%APPVEYOR_BUILD_VERSION%.zip *.dll *.config *.json runtimes
 artifacts:
-- path: bin/Publish/*.zip
+- path: bin/Cli/*.zip
   name: PT.PM.Cli
-- path: bin/PatternEditor$(configuration)/netcoreapp2.0/*.zip
+- path: bin/Gui/*.zip
   name: PT.PM.Gui
