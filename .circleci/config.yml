@@ -1,0 +1,23 @@
+dependencies:
+  pre:
+    - curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    - sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+    - sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-trusty-prod trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
+    - sudo apt-get update
+    - sudo apt-get install dotnet-sdk-2.0.2
+test:
+  pre:
+    - dotnet --version
+    - bash generate.cmd
+    - dotnet build Sources/PT.PM.sln -c Release
+  override:
+    - cd Tests/Release/netcoreapp2.0
+    - dotnet vstest PT.PM.Cli.Tests.dll
+    - dotnet vstest PT.PM.CSharpParseTreeUst.Tests.dll
+    - dotnet vstest PT.PM.Dsl.Tests.dll
+    - dotnet vstest PT.PM.JavaParseTreeUst.Tests.dll
+    - dotnet vstest PT.PM.JavaScriptParseTreeUst.Tests.dll
+    - dotnet vstest PT.PM.Matching.Tests.dll
+    - dotnet vstest PT.PM.PhpParseTreeUst.Tests.dll
+    - dotnet vstest PT.PM.SqlParseTreeUst.Tests.dll
+    - dotnet vstest PT.PM.Tests.dll
