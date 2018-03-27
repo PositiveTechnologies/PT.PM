@@ -14,7 +14,7 @@ assembly_info:
 before_build:
 - cmd: generate.cmd
 build_script: >-
-    dotnet build Sources/PT.PM.Gui.sln -c %CONFIGURATION%
+    dotnet build Sources/PT.PM.sln -c %CONFIGURATION%
 
     dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c %CONFIGURATION% -o ../../bin/Cli
 

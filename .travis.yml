@@ -5,4 +5,4 @@ dist: trusty
 dotnet: 2.0.0
 script:
     - bash generate.cmd
-    - dotnet build Sources/PT.PM.Gui.sln -c Release
+    - dotnet build Sources/PT.PM.sln -c Release
