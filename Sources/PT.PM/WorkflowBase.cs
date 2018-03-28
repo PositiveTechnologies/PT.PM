@@ -137,7 +137,7 @@ namespace PT.PM
                     if (StartStage.Is(PM.Stage.File))
                     {
                         stopwatch.Restart();
-                        detectionResult = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
+                        detectionResult = LanguageDetector.DetectIfRequired(sourceCodeFile, workflowResult.BaseLanguages);
 
                         if (detectionResult == null)
                         {
