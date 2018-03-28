@@ -116,10 +116,14 @@ namespace PT.PM
                 Thread thread = new Thread(() =>
                     ProcessFile(fileName, patternMatcher, result, cancellationToken));
                 thread.IsBackground = true;
+                thread.Priority = ThreadPriority.Highest;
                 thread.Start();
                 if (!thread.Join((int)FileTimeout.TotalMilliseconds))
                 {
-                    Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout {FileTimeout}"));
+                    Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
+                    FinalizeProcessing(fileName, result);
+
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
             }
         }
@@ -173,22 +177,25 @@ namespace PT.PM
             {
                 Logger.LogError(ex);
             }
-            finally
+
+            FinalizeProcessing(fileName, workflowResult);
+
+            if (ust == null)
             {
-                workflowResult.AddProcessedFilesCount(1);
-                double progress = workflowResult.TotalFilesCount == 0
-                    ? workflowResult.TotalProcessedFilesCount
-                    : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
-                Logger.LogInfo(new ProgressEventArgs(progress, fileName));
-                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
-
-                if (ust == null)
-                {
-                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
+                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
+        }
+
+        private void FinalizeProcessing(string fileName, WorkflowResult workflowResult)
+        {
+            workflowResult.AddProcessedFilesCount(1);
+            double progress = workflowResult.TotalFilesCount == 0
+                ? workflowResult.TotalProcessedFilesCount
+                : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
+            Logger.LogInfo(new ProgressEventArgs(progress, fileName));
+            Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
         }
 
         private void RenderGraphs(WorkflowResult result)
