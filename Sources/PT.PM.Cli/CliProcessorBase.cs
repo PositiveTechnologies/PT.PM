@@ -91,8 +91,6 @@ namespace PT.PM.Cli
                     CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir,
                     loadJson);
 
-                logger.SourceCodeRepository = sourceCodeRepository;
-
                 IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns, logger);
                 patternsRepository.Identifiers = parameters.PatternIds.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => id.Trim());
