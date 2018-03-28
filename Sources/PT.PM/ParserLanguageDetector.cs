@@ -33,7 +33,7 @@ namespace PT.PM
                 langs.Remove(langs.FirstOrDefault(l => l.Key == "Html"));
             }
             var sourceCodeFile = new CodeFile(sourceCode);
-            var parseUnits = new Queue<Tuple<Language, ParserUnit>>(langs.Count);
+            var parseUnits = new Queue<ParserUnit>(langs.Count);
 
             langs = langs
                 .GroupBy(l => l.CreateParser())
@@ -58,26 +58,26 @@ namespace PT.PM
                 thread.IsBackground = true;
                 thread.Start(languageParser);
 
-                parseUnits.Enqueue(Tuple.Create(language, new ParserUnit(languageParser, thread)));
+                parseUnits.Enqueue(new ParserUnit(language, languageParser, thread));
             }
 
             int checkParseResultMs = CheckParseResultTimeSpan.Milliseconds;
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             // Check every parseUnit completion every checkParseResultMs ms.
-            while (parseUnits.Any(parseUnit => parseUnit.Item2.IsAlive) &&
+            while (parseUnits.Any(parseUnit => parseUnit.IsAlive) &&
                    stopwatch.Elapsed < LanguageParseTimeout)
             {
-                Tuple<Language, ParserUnit> parseUnit = parseUnits.Dequeue();
+                ParserUnit parseUnit = parseUnits.Dequeue();
                 parseUnits.Enqueue(parseUnit);
 
-                if (parseUnit.Item2.IsAlive)
+                if (parseUnit.IsAlive)
                 {
                     Thread.Sleep(checkParseResultMs);
                 }
                 else
                 {
-                    if (parseUnit.Item2.ParseErrorCount == 0 && parseUnit.Item1.Key != "Aspx")
+                    if (parseUnit.ParseErrorCount == 0 && parseUnit.Language.Key != "Aspx")
                     {
                         break;
                     }
@@ -87,15 +87,15 @@ namespace PT.PM
             int minErrorCount = int.MaxValue;
             Language resultWithMinErrors = null;
 
-            foreach (Tuple<Language, ParserUnit> parseUnit in parseUnits)
+            foreach (ParserUnit parseUnit in parseUnits)
             {
-                parseUnit.Item2.Abort();
+                parseUnit.Abort();
 
-                int errorCount = parseUnit.Item2.ParseErrorCount;
+                int errorCount = parseUnit.ParseErrorCount;
                 if (errorCount < minErrorCount)
                 {
                     minErrorCount = errorCount;
-                    resultWithMinErrors = parseUnit.Item1;
+                    resultWithMinErrors = parseUnit.Language;
                 }
             }
 
