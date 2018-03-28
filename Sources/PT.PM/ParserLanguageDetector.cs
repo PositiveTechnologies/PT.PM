@@ -59,7 +59,7 @@ namespace PT.PM
                 parseUnits.Enqueue(parseUnit);
             }
 
-            int checkParseResultMs = CheckParseResultTimeSpan.Milliseconds;
+            int checkParseResultMs = (int)CheckParseResultTimeSpan.TotalMilliseconds;
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             // Check every parseUnit completion every checkParseResultMs ms.

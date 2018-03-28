@@ -78,6 +78,8 @@ namespace PT.PM
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
+        public TimeSpan FileTimeout { get; set; } = default(TimeSpan);
+
         public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
@@ -139,7 +141,7 @@ namespace PT.PM
 
                         if (detectionResult == null)
                         {
-                            Logger.LogInfo($"Input languages set is empty or {shortFileName} language has not been detected. File has not been converter.");
+                            Logger.LogInfo($"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File has not been converter.");
                             return null;
                         }
 

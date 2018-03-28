@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
 using PT.PM.Matching;
@@ -76,7 +77,7 @@ namespace PT.PM
                     {
                         foreach (string fileName in fileNames)
                         {
-                            ProcessFile(fileName, patternMatcher, result, cancellationToken);
+                            ProcessFileWithTimeout(fileName, patternMatcher, result, cancellationToken);
                         }
                     }
                     else
@@ -88,7 +89,7 @@ namespace PT.PM
                             fileName =>
                             {
                                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                                ProcessFile(fileName, patternMatcher, result, parallelOptions.CancellationToken);
+                                ProcessFileWithTimeout(fileName, patternMatcher, result, parallelOptions.CancellationToken);
                             });
                     }
                 }
@@ -102,6 +103,25 @@ namespace PT.PM
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;
+        }
+
+        private void ProcessFileWithTimeout(string fileName, PatternMatcher patternMatcher, WorkflowResult result, CancellationToken cancellationToken)
+        {
+            if (FileTimeout == default(TimeSpan))
+            {
+                ProcessFile(fileName, patternMatcher, result, cancellationToken);
+            }
+            else
+            {
+                Thread thread = new Thread(() =>
+                    ProcessFile(fileName, patternMatcher, result, cancellationToken));
+                thread.IsBackground = true;
+                thread.Start();
+                if (!thread.Join((int)FileTimeout.TotalMilliseconds))
+                {
+                    Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout {FileTimeout}"));
+                }
+            }
         }
 
         private void ProcessFile(string fileName, PatternMatcher patternMatcher, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
