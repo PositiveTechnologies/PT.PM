@@ -1,10 +1,10 @@
 ﻿using PT.PM.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PT.PM
 {
@@ -12,6 +12,10 @@ namespace PT.PM
     {
         private readonly static Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
         private readonly static Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
+
+        public TimeSpan LanguageParseTimeout = TimeSpan.FromSeconds(20);
+
+        public TimeSpan CheckParseResultTimeSpan = TimeSpan.FromMilliseconds(50);
 
         public override Language Detect(string sourceCode, IEnumerable<Language> languages = null)
         {
@@ -43,42 +47,55 @@ namespace PT.PM
 
             foreach (Language language in langs)
             {
-                var logger = new LoggerMessageCounter();
                 ILanguageParser languageParser = language.CreateParser();
 
-                var task = Task.Factory.StartNew(() =>
+                Thread thread = new Thread((object obj) =>
                 {
-                    languageParser.Logger = logger;
-                    languageParser.Parse(sourceCodeFile);
+                    var languageParser2 = (ILanguageParser)obj;
+                    languageParser2.Logger = new LoggerMessageCounter();
+                    languageParser2.Parse(sourceCodeFile);
                 });
+                thread.IsBackground = true;
+                thread.Start(languageParser);
 
-                parseUnits.Enqueue(Tuple.Create(language, new ParserUnit(languageParser, logger, task)));
+                parseUnits.Enqueue(Tuple.Create(language, new ParserUnit(languageParser, thread)));
+            }
+
+            int checkParseResultMs = CheckParseResultTimeSpan.Milliseconds;
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            // Check every parseUnit completion every checkParseResultMs ms.
+            while (parseUnits.Any(parseUnit => parseUnit.Item2.IsAlive) &&
+                   stopwatch.Elapsed < LanguageParseTimeout)
+            {
+                Tuple<Language, ParserUnit> parseUnit = parseUnits.Dequeue();
+                parseUnits.Enqueue(parseUnit);
+
+                if (parseUnit.Item2.IsAlive)
+                {
+                    Thread.Sleep(checkParseResultMs);
+                }
+                else
+                {
+                    if (parseUnit.Item2.ParseErrorCount == 0 && parseUnit.Item1.Key != "Aspx")
+                    {
+                        break;
+                    }
+                }
             }
 
             int minErrorCount = int.MaxValue;
             Language resultWithMinErrors = null;
 
-            // Check every parseUnit completion every 50 ms.
-            while (parseUnits.Count > 0)
+            foreach (Tuple<Language, ParserUnit> parseUnit in parseUnits)
             {
-                var pair = parseUnits.Dequeue();
-                if (!pair.Item2.Task.IsCompleted)
-                {
-                    parseUnits.Enqueue(pair);
-                    Thread.Sleep(50);
-                    continue;
-                }
+                parseUnit.Item2.Abort();
 
-                if (pair.Item2.Logger.ErrorCount == 0 && pair.Item1.Key != "Aspx")
-                {
-                    return pair.Item1;
-                }
-
-                var errorCount = pair.Item2.ParseErrorCount;
+                int errorCount = parseUnit.Item2.ParseErrorCount;
                 if (errorCount < minErrorCount)
                 {
                     minErrorCount = errorCount;
-                    resultWithMinErrors = pair.Item1;
+                    resultWithMinErrors = parseUnit.Item1;
                 }
             }
 

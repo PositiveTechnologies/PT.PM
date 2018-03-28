@@ -1,23 +1,25 @@
 ﻿using PT.PM.Common;
-using System.Threading.Tasks;
+using System;
+using System.Threading;
 
 namespace PT.PM
 {
     public class ParserUnit
     {
-        public ILanguageParser Parser { get; set; }
+        private Thread thread { get; set; }
 
-        public LoggerMessageCounter Logger { get; set; }
+        private ILanguageParser parser { get; set; }
 
-        public Task Task { get; set; }
+        public int ParseErrorCount => parser.Logger.ErrorCount;
 
-        public int ParseErrorCount => Logger.ErrorCount;
+        public bool IsAlive => thread.IsAlive;
 
-        public ParserUnit(ILanguageParser parser, LoggerMessageCounter logger, Task task)
+        public void Abort() => thread.Abort();
+
+        public ParserUnit(ILanguageParser parser, Thread thread)
         {
-            Parser = parser;
-            Logger = logger;
-            Task = task;
+            this.parser = parser ?? throw new NullReferenceException(nameof(parser));
+            this.thread = thread ?? throw new NullReferenceException(nameof(thread));
         }
     }
 }
