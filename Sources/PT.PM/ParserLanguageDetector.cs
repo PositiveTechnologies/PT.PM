@@ -15,9 +15,9 @@ namespace PT.PM
 
         public TimeSpan LanguageParseTimeout = TimeSpan.FromSeconds(20);
 
-        public TimeSpan CheckParseResultTimeSpan = TimeSpan.FromMilliseconds(50);
+        public TimeSpan CheckParseResultTimeSpan = TimeSpan.FromMilliseconds(100);
 
-        public override Language Detect(string sourceCode, IEnumerable<Language> languages = null)
+        public override DetectionResult Detect(string sourceCode, IEnumerable<Language> languages = null)
         {
             List<Language> langs = (languages ?? LanguageUtils.Languages.Values).ToList();
             langs.Remove(Uncertain.Language);
@@ -42,23 +42,21 @@ namespace PT.PM
 
             if (langs.Count == 1)
             {
-                return langs[0];
+                return new DetectionResult(langs[0]);
             }
 
             foreach (Language language in langs)
             {
-                ILanguageParser languageParser = language.CreateParser();
-
                 Thread thread = new Thread((object obj) =>
                 {
-                    var languageParser2 = (ILanguageParser)obj;
-                    languageParser2.Logger = new LoggerMessageCounter();
-                    languageParser2.Parse(sourceCodeFile);
+                    ((ParserUnit)obj).Parse(sourceCodeFile);
                 });
                 thread.IsBackground = true;
-                thread.Start(languageParser);
 
-                parseUnits.Enqueue(new ParserUnit(language, languageParser, thread));
+                ParserUnit parseUnit = new ParserUnit(language, thread);
+                thread.Start(parseUnit);
+
+                parseUnits.Enqueue(parseUnit);
             }
 
             int checkParseResultMs = CheckParseResultTimeSpan.Milliseconds;
@@ -85,7 +83,7 @@ namespace PT.PM
             }
 
             int minErrorCount = int.MaxValue;
-            Language resultWithMinErrors = null;
+            ParserUnit resultWithMinErrors = null;
 
             foreach (ParserUnit parseUnit in parseUnits)
             {
@@ -95,11 +93,17 @@ namespace PT.PM
                 if (errorCount < minErrorCount)
                 {
                     minErrorCount = errorCount;
-                    resultWithMinErrors = parseUnit.Language;
+                    resultWithMinErrors = parseUnit;
                 }
             }
 
-            return resultWithMinErrors;
+            if (resultWithMinErrors != null)
+            {
+                return new DetectionResult(resultWithMinErrors.Language, resultWithMinErrors.ParseTree,
+                    resultWithMinErrors.Errors, resultWithMinErrors.Infos, resultWithMinErrors.Debugs);
+            }
+
+            return null;
         }
     }
 }

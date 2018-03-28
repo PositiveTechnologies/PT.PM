@@ -45,9 +45,9 @@ namespace PT.PM.Tests
         public void Detect_SourceCode_CorrectLanguage(string expectedLanguage, string fileName)
         {
             string sourceCode = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormDirSeparator()));
-            Language detectedLanguage = new ParserLanguageDetector().Detect(sourceCode);
+            DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(sourceCode);
             Assert.NotNull(detectedLanguage);
-            Assert.AreEqual(expectedLanguage, detectedLanguage.Key);
+            Assert.AreEqual(expectedLanguage, detectedLanguage.Language.Key);
         }
     }
 }

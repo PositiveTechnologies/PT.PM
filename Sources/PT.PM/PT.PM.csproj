@@ -52,6 +52,8 @@
     <Compile Include="MessageType.cs" />
     <Compile Include="ParserLanguageDetector.cs" />
     <Compile Include="ParserUnit.cs" />
+    <Compile Include="ParserUnitLogger.cs" />
+    <Compile Include="DetectionResult.cs" />
     <Compile Include="RepositoryFactory.cs" />
     <Compile Include="SevenZipExtractor.cs" />
     <Compile Include="Stage.cs" />

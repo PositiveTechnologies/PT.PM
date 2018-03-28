@@ -394,7 +394,7 @@ namespace PT.PM.PatternEditor
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    SelectedLanguage = languageDetector.DetectIfRequired(value);
+                    SelectedLanguage = languageDetector.DetectIfRequired(value).Language;
                 }
                 Settings.SourceCodeFile = value;
                 Settings.Save();
@@ -699,7 +699,7 @@ namespace PT.PM.PatternEditor
             {
                 Task.Factory.StartNew(() =>
                 {
-                    Language detectedLanguage = languageDetector.Detect(newSourceCode);
+                    Language detectedLanguage = languageDetector.Detect(newSourceCode).Language;
                     Dispatcher.UIThread.InvokeAsync(() => SelectedLanguage = detectedLanguage);
                 });
                 Dispatcher.UIThread.InvokeAsync(() => OpenedFileName = "");
