@@ -13,8 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-
-    <packagereference Include="NUnit" Version="3.9.0"></packagereference>
+    <packagereference Include="NUnit" Version="3.10.1"></packagereference>
   </ItemGroup>
 
   <ItemGroup>
