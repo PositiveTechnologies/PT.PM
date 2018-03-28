@@ -33,6 +33,9 @@ namespace PT.PM.Cli
         [Option('m', "memory", HelpText = "Approximate max memory consumption in megabytes")]
         public int Memory { get; set; } = 300;
 
+        [Option("timeout", HelpText = "Max spent time per file in seconds")]
+        public int FileTimeout { get; set; } = 0;
+
         [Option("logs-dir", HelpText = "Logs directory")]
         public string LogsDir { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
 
