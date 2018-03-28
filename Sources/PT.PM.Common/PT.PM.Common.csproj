@@ -89,7 +89,6 @@
     <Compile Include="Json\UstJsonSerializer.cs" />
     <Compile Include="ParseTree.cs" />
     <Compile Include="Language.cs" />
-    <Compile Include="LoggerMessageCounter.cs" />
     <Compile Include="Nodes\Collections\ArgsUst.cs" />
     <Compile Include="Nodes\Collections\CollectionUst.cs" />
     <Compile Include="Nodes\Collections\EntitiesUst.cs" />

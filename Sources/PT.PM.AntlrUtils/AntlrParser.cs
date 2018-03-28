@@ -93,7 +93,7 @@ namespace PT.PM.AntlrUtils
 
                     ClearCacheIfRequired(lexer.Interpreter, lexerLock, ClearCacheLexerFilesCount);
 
-                    foreach (var token in tokens)
+                    foreach (IToken token in tokens)
                     {
                         if (token.Channel == CommentsChannel)
                         {
