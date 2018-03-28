@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,9 +14,11 @@ namespace PT.PM
         private readonly static Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
         private readonly static Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
 
-        public TimeSpan LanguageParseTimeout = TimeSpan.FromSeconds(20);
+        private Language previousLanguage;
 
-        public TimeSpan CheckParseResultTimeSpan = TimeSpan.FromMilliseconds(100);
+        public TimeSpan LanguageParseTimeout { get; set; } = TimeSpan.FromSeconds(10);
+
+        public TimeSpan CheckParseResultTimeSpan { get; set; } = TimeSpan.FromMilliseconds(100);
 
         public override DetectionResult Detect(string sourceCode, IEnumerable<Language> languages = null)
         {
@@ -51,6 +54,7 @@ namespace PT.PM
                 {
                     ((ParserUnit)obj).Parse(sourceCodeFile);
                 });
+                thread.Priority = ThreadPriority.Highest;
                 thread.IsBackground = true;
 
                 ParserUnit parseUnit = new ParserUnit(language, thread);
@@ -82,25 +86,46 @@ namespace PT.PM
                 }
             }
 
-            int minErrorCount = int.MaxValue;
-            ParserUnit resultWithMinErrors = null;
+            int resultLastErrorOffset = 0;
+            ParserUnit result = null;
+            int resultErrorsCount = int.MaxValue;
 
             foreach (ParserUnit parseUnit in parseUnits)
             {
                 parseUnit.Abort();
 
-                int errorCount = parseUnit.ParseErrorCount;
-                if (errorCount < minErrorCount)
+                List<ParsingException> parseErrors = parseUnit.Errors.Where(error =>
+                     error is ParsingException parsingException && !(parsingException.InnerException is ThreadAbortException))
+                    .Cast<ParsingException>()
+                    .ToList();
+
+                int currentLastErrorOffset = parseErrors.LastOrDefault()?.TextSpan.End ?? int.MaxValue;
+                if (currentLastErrorOffset > resultLastErrorOffset)
                 {
-                    minErrorCount = errorCount;
-                    resultWithMinErrors = parseUnit;
+                    resultLastErrorOffset = currentLastErrorOffset;
+                    result = parseUnit;
+                }
+                else if (currentLastErrorOffset == resultLastErrorOffset)
+                {
+                    int errorCount = parseErrors.Count;
+                    if (errorCount < resultErrorsCount)
+                    {
+                        resultErrorsCount = errorCount;
+                        result = parseUnit;
+                    }
+                    else if (errorCount == resultErrorsCount && previousLanguage != null)
+                    {
+                        result = new ParserUnit(previousLanguage, null);
+                    }
                 }
             }
 
-            if (resultWithMinErrors != null)
+            if (result != null)
             {
-                return new DetectionResult(resultWithMinErrors.Language, resultWithMinErrors.ParseTree,
-                    resultWithMinErrors.Errors, resultWithMinErrors.Infos, resultWithMinErrors.Debugs);
+                previousLanguage = result.Language;
+
+                return new DetectionResult(result.Language, result.ParseTree,
+                    result.Errors, result.Infos, result.Debugs);
             }
 
             return null;

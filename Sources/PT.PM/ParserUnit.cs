@@ -25,9 +25,9 @@ namespace PT.PM
 
         public List<string> Debugs => logger.Debugs;
 
-        public bool IsAlive => thread.IsAlive;
+        public bool IsAlive => thread?.IsAlive ?? false;
 
-        public void Abort() => thread.Abort();
+        public void Abort() => thread?.Abort();
 
         public ParserUnit(Language language, Thread thread)
         {
@@ -35,7 +35,7 @@ namespace PT.PM
             parser = language.CreateParser();
             logger = new ParserUnitLogger();
             parser.Logger = logger;
-            this.thread = thread ?? throw new NullReferenceException(nameof(thread));
+            this.thread = thread;
         }
 
         public void Parse(CodeFile codeFile)
@@ -45,7 +45,7 @@ namespace PT.PM
 
         public override string ToString()
         {
-            return $"{Language}; Errors: {ParseErrorCount}; IsAlive: {thread.IsAlive}";
+            return $"{Language}; Errors: {ParseErrorCount}; IsAlive: {IsAlive}";
         }
     }
 }
