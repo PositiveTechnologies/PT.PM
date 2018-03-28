@@ -149,7 +149,7 @@ namespace PT.PM
                             parser.Logger = Logger;
                             if (parser is AntlrParser antlrParser)
                             {
-                                antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
+                                AntlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
                                 if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
                                 {
                                     javaScriptAntlrParser.JavaScriptType = JavaScriptType;
@@ -347,7 +347,7 @@ namespace PT.PM
                 if (antlrLanguage != null)
                 {
                     var antlrParser = (AntlrParser)antlrLanguage.CreateParser();
-                    antlrParser.MemoryConsumptionMb = 0;
+                    AntlrParser.MemoryConsumptionMb = 0;
                     antlrParser.ClearCache();
                 }
             }

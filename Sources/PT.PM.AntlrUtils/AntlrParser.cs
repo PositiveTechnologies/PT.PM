@@ -29,11 +29,11 @@ namespace PT.PM.AntlrUtils
 
         public bool UseFastParseStrategyAtFirst { get; set; } = true;
 
-        public int ClearCacheLexerFilesCount { get; set; } = 100;
+        public static int ClearCacheLexerFilesCount { get; set; } = 100;
 
-        public int ClearCacheParserFilesCount { get; set; } = 50;
+        public static int ClearCacheParserFilesCount { get; set; } = 50;
 
-        public long MemoryConsumptionMb { get; set; } = 300;
+        public static long MemoryConsumptionMb { get; set; } = 300;
 
         public abstract Lexer InitLexer(ICharStream inputStream);
 
@@ -247,7 +247,7 @@ namespace PT.PM.AntlrUtils
             return tokens;
         }
 
-        protected void ClearCacheIfRequired(ATNSimulator interpreter, ReaderWriterLockSlim interpreterLock,
+        protected static void ClearCacheIfRequired(ATNSimulator interpreter, ReaderWriterLockSlim interpreterLock,
             int interpreterFilesCount, bool startGC = true)
         {
             if (processedFilesCount % interpreterFilesCount == 0)
@@ -272,7 +272,7 @@ namespace PT.PM.AntlrUtils
             }
         }
 
-        protected void IncrementProcessedFilesCount()
+        protected static void IncrementProcessedFilesCount()
         {
             int newValue = Interlocked.Increment(ref processedFilesCount);
             processedFilesCount = newValue == int.MaxValue ? 1 : newValue;
