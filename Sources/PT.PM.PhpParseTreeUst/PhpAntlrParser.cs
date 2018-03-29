@@ -19,25 +19,14 @@ namespace PT.PM.PhpParseTreeUst
 
         protected override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
 
-        public override Lexer InitLexer(ICharStream inputStream)
-        {
-            return new PhpLexer(inputStream);
-        }
+        protected override Lexer InitLexer(ICharStream inputStream) => new PhpLexer(inputStream);
 
-        public override Parser InitParser(ITokenStream inputStream)
-        {
-            return new PhpParser(inputStream);
-        }
+        protected override Parser InitParser(ITokenStream inputStream) => new PhpParser(inputStream);
 
-        protected override ParserRuleContext Parse(Parser parser)
-        {
-            return ((PhpParser)parser).htmlDocument();
-        }
+        protected override ParserRuleContext Parse(Parser parser) => ((PhpParser)parser).htmlDocument();
 
-        protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
-        {
-            return new PhpAntlrParseTree((PhpParser.HtmlDocumentContext)syntaxTree);
-        }
+        protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
+            new PhpAntlrParseTree((PhpParser.HtmlDocumentContext)syntaxTree);
 
         protected override string PreprocessText(CodeFile file)
         {
@@ -70,5 +59,9 @@ namespace PT.PM.PhpParseTreeUst
 
             return result;
         }
+
+        protected override string LexerSerializedATN => PhpLexer._serializedATN;
+
+        protected override string ParserSerializedATN => PhpParser._serializedATN;
     }
 }
