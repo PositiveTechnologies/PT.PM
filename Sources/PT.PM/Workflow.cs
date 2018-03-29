@@ -1,4 +1,5 @@
-﻿using PT.PM.Common;
+﻿using PT.PM.AntlrUtils;
+using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
@@ -99,7 +100,10 @@ namespace PT.PM
                 }
             }
 
-            ClearCacheIfRequired(result);
+            if (result.TotalProcessedFilesCount > 1)
+            {
+                AntlrParser.ClearCacheIfRequired();
+            }
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;
@@ -190,6 +194,8 @@ namespace PT.PM
 
         private void FinalizeProcessing(string fileName, WorkflowResult workflowResult)
         {
+            AntlrParser.ClearCacheIfRequired();
+
             workflowResult.AddProcessedFilesCount(1);
             double progress = workflowResult.TotalFilesCount == 0
                 ? workflowResult.TotalProcessedFilesCount

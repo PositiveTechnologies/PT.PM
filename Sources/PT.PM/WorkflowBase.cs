@@ -45,13 +45,13 @@ namespace PT.PM
 
         public bool IsIncludePreprocessing { get; set; } = true;
 
-        public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
-
         public bool IsIgnoreFilenameWildcards { get; set; } = false;
+
+        public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
         public ILogger Logger
         {
-            get { return logger; }
+            get => logger;
             set
             {
                 logger = value;
@@ -71,6 +71,7 @@ namespace PT.PM
                 {
                     LanguageDetector.Logger = logger;
                 }
+                AntlrParser.StaticLogger = logger;
             }
         }
 
@@ -151,7 +152,7 @@ namespace PT.PM
                             parser.Logger = Logger;
                             if (parser is AntlrParser antlrParser)
                             {
-                                AntlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
+                                AntlrParser.MemoryConsumptionBytes = MemoryConsumptionMb * 1000 * 1000;
                                 if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
                                 {
                                     javaScriptAntlrParser.JavaScriptType = JavaScriptType;
@@ -339,20 +340,6 @@ namespace PT.PM
                 MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
                 CancellationToken = cancellationToken
             };
-        }
-
-        protected void ClearCacheIfRequired(TWorkflowResult result)
-        {
-            if (result.TotalProcessedFilesCount > 1)
-            {
-                Language antlrLanguage = BaseLanguages.FirstOrDefault(language => language.HaveAntlrParser);
-                if (antlrLanguage != null)
-                {
-                    var antlrParser = (AntlrParser)antlrLanguage.CreateParser();
-                    AntlrParser.MemoryConsumptionMb = 0;
-                    antlrParser.ClearCache();
-                }
-            }
         }
     }
 }
