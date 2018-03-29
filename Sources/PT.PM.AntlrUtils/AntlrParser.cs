@@ -14,6 +14,7 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrParser : ILanguageParser
     {
+        private static long processedFilesCount = 0;
         private static long processedBytesCount = 0;
         private static long lexerCheckNumber = 0;
         private static long parserCheckNumber = 0;
@@ -36,9 +37,13 @@ namespace PT.PM.AntlrUtils
 
         public bool UseFastParseStrategyAtFirst { get; set; } = true;
 
-        public static int ClearCacheLexerFilesBytes { get; set; } = 100 * 1000 * 1000;
+        public static int ClearCacheLexerFilesBytes { get; set; } = 40 * 1000 * 1000;
 
-        public static int ClearCacheParserFilesBytes { get; set; } = 50 * 1000 * 1000;
+        public static int ClearCacheParserFilesBytes { get; set; } = 20 * 1000 * 1000;
+
+        public static int ClearCacheLexerFilesCount { get; set; } = 80;
+
+        public static int ClearCacheParserFilesCount { get; set; } = 40;
 
         public static long MemoryConsumptionBytes { get; set; } = 300 * 1000 * 1000;
 
@@ -91,8 +96,6 @@ namespace PT.PM.AntlrUtils
                     }
                     inputStream.name = filePath;
 
-                    Interlocked.Add(ref processedBytesCount, sourceCodeFile.Code.Length);
-
                     Lexer lexer = InitLexer(inputStream);
                     lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(true));
                     lexer.RemoveErrorListeners();
@@ -133,6 +136,11 @@ namespace PT.PM.AntlrUtils
                     {
                         result = Create(null);
                     }
+                }
+                finally
+                {
+                    Interlocked.Increment(ref processedFilesCount);
+                    Interlocked.Add(ref processedBytesCount, sourceCodeFile.Code.Length);
                 }
             }
             else
@@ -228,14 +236,17 @@ namespace PT.PM.AntlrUtils
 
         protected static void ClearCacheIfRequired(bool lexer)
         {
-            long interpreterBytesCount = lexer ? ClearCacheLexerFilesBytes : ClearCacheParserFilesBytes;
+            long bytesCount = lexer ? ClearCacheLexerFilesBytes : ClearCacheParserFilesBytes;
             long processedCheckNumber = lexer ? lexerCheckNumber : parserCheckNumber;
+            long filesCount = lexer ? ClearCacheLexerFilesCount : ClearCacheParserFilesCount;
 
-            long checkNumber = interpreterBytesCount != 0
-                ? processedBytesCount / interpreterBytesCount
+            long checkNumber = bytesCount != 0
+                ? processedBytesCount / bytesCount
                 : processedCheckNumber + 1;
 
-            if (interpreterBytesCount == 0 || checkNumber > processedCheckNumber)
+            if (bytesCount == 0 ||
+                checkNumber > processedCheckNumber ||
+                processedFilesCount % filesCount == 0)
             {
                 if (lexer)
                 {

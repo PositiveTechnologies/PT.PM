@@ -95,7 +95,7 @@ namespace PT.PM
                 parseUnit.Abort();
 
                 List<ParsingException> parseErrors = parseUnit.Errors.Where(error =>
-                     error is ParsingException parsingException && !(parsingException.InnerException is ThreadAbortException))
+                     error is ParsingException parsingException && parsingException.InnerException == null)
                     .Cast<ParsingException>()
                     .ToList();
 
