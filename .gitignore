@@ -208,3 +208,4 @@ FakesAssemblies/
 # ANTLR Generated files
 **/Generated/*
 
+launchSettings.json

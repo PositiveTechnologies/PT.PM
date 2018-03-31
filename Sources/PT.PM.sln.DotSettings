@@ -1,6 +1,0 @@
-﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:Boolean x:Key="/Default/CodeInspection/ExcludedFiles/FileMasksToSkip/=_002AGenerated/@EntryIndexedValue">False</s:Boolean>
-	<s:Boolean x:Key="/Default/CodeInspection/ExcludedFiles/FileMasksToSkip/=_002AGenerated/@EntryIndexRemoved">True</s:Boolean>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=08FBC341_002DAC44_002D4CAE_002DAE71_002D9462F7885E3E_002Fd_003AGenerated/@EntryIndexedValue">08FBC341-AC44-4CAE-AE71-9462F7885E3E/d:Generated</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=8F34670A_002DB91D_002D460B_002D9D67_002D7A03F7194673_002Fd_003AGenerated/@EntryIndexedValue">8F34670A-B91D-460B-9D67-7A03F7194673/d:Generated</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/GeneratedFilesAndFolders/=F5E3CE00_002D6854_002D4FA8_002DADD2_002D0248DF6D85DB_002Fd_003AGenerated/@EntryIndexedValue">F5E3CE00-6854-4FA8-ADD2-0248DF6D85DB/d:Generated</s:String></wpf:ResourceDictionary>
