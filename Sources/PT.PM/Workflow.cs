@@ -119,11 +119,11 @@ namespace PT.PM
             {
                 Thread thread = new Thread(() =>
                     ProcessFile(fileName, patternMatcher, result, cancellationToken));
-                thread.IsBackground = true;
-                thread.Priority = ThreadPriority.Highest;
                 thread.Start();
                 if (!thread.Join((int)FileTimeout.TotalMilliseconds))
                 {
+                    thread.Abort();
+
                     Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
                     FinalizeProcessing(fileName, result);
 
