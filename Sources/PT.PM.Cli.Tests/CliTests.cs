@@ -27,8 +27,8 @@ namespace PT.PM.Cli.Tests
             PrepareAndSaveTestPatterns();
             var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
 
-            Assert.AreEqual("Pattern ParsingException in \"Pattern\": token recognition error at: '>' at [1,19]-[1,20).", result.Output[2]);
-            Assert.AreEqual("Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at [1,2]-[1,3).", result.Output[3]);
+            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", result.Output[2]);
+            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", result.Output[3]);
         }
 
         [Test]

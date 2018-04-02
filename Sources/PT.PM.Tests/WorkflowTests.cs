@@ -15,46 +15,46 @@ namespace PT.PM.Tests
         [Test]
         public void Process_JsonUst_InvariantCase()
         {
-            CheckSerialization("empty-try-catch.php", upperCase: true);
+            CheckJsonSerialization("empty-try-catch.php", upperCase: true);
         }
 
         [Test]
         public void Process_JsonUst_NotIndented()
         {
-            CheckSerialization("empty-try-catch.php", indented: false);
+            CheckJsonSerialization("empty-try-catch.php", indented: false);
         }
 
         [Test]
         public void Process_JsonUst_WithoutTextSpan()
         {
-            CheckSerialization("empty-try-catch.php", includeTextSpans: false);
+            CheckJsonSerialization("empty-try-catch.php", includeTextSpans: false);
         }
 
         [Test]
         public void Process_JsonUst_LineColumnTextSpan()
         {
-            CheckSerialization("empty-try-catch.php", lineColumnTextSpans: true);
+            CheckJsonSerialization("empty-try-catch.php", lineColumnTextSpans: true);
         }
 
         [Test]
         public void Process_JsonUst_WithoutCode()
         {
-            CheckSerialization("empty-try-catch.php", includeCode: false);
+            CheckJsonSerialization("empty-try-catch.php", includeCode: false);
         }
 
         [Test]
         public void Process_JsonUst_MultiTextSpan()
         {
-            CheckSerialization("MultiTextSpan");
+            CheckJsonSerialization("MultiTextSpan");
         }
 
         [Test]
         public void Process_JsonUst_MultiTextSpanLineColumn()
         {
-            CheckSerialization("MultiTextSpan", lineColumnTextSpans: true);
+            CheckJsonSerialization("MultiTextSpan", lineColumnTextSpans: true);
         }
 
-        private static void CheckSerialization(string inputFileName, bool lineColumnTextSpans = false,
+        private static void CheckJsonSerialization(string inputFileName, bool lineColumnTextSpans = false,
             bool includeTextSpans = true, bool indented = true, bool upperCase = false, bool includeCode = true)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
