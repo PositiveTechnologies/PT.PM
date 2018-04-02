@@ -67,9 +67,5 @@ namespace PT.PM.CSharpParseTreeUst
 
             return result;
         }
-
-        public void ClearCache()
-        {
-        }
     }
 }
