@@ -29,7 +29,7 @@ namespace PT.PM.Common
             return i;
         }
 
-        public static int FirstIndexOf(this  string str, int index, bool whitespace)
+        public static int FirstIndexOf(this string str, int index, bool whitespace)
         {
             int i = index;
             while (i < str.Length && (whitespace ? char.IsWhiteSpace(str[i]) : !char.IsWhiteSpace(str[i])))
@@ -74,17 +74,41 @@ namespace PT.PM.Common
             CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
 
             TextSpan result;
-            string range = parts[0].Trim().Substring(1, parts[0].Length - 2);
-            int index = range.IndexOf("..");
-            if (index != -1)
+            try
             {
-                int start = int.Parse(range.Remove(index));
-                int end = int.Parse(range.Substring(index + 2));
+                string range = parts[0].Trim().Substring(1, parts[0].Length - 2);
+                int index = range.IndexOf("..");
+
+                int start, end;
+                if (index != -1)
+                {
+                    string value = range.Remove(index);
+                    if (!int.TryParse(value, out start))
+                    {
+                        throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
+                    }
+
+                    value = range.Substring(index + 2);
+                    if (!int.TryParse(value, out end))
+                    {
+                        throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
+                    }
+                }
+                else
+                {
+                    if (!int.TryParse(range, out start))
+                    {
+                        throw new FormatException($"Invalid or too big value {range} while {nameof(TextSpan)} parsing.");
+                    }
+
+                    end = start;
+                }
+
                 result = TextSpan.FromBounds(start, end, codeFile);
             }
-            else
+            catch (Exception ex) when (!(ex is FormatException))
             {
-                result = new TextSpan(int.Parse(range), 0, codeFile);
+                throw new FormatException($"{nameof(TextSpan)} should be written in [start..end) format.");
             }
 
             return result;
@@ -101,18 +125,30 @@ namespace PT.PM.Common
             CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
 
             LineColumnTextSpan result;
-            string firstPart = parts[0].Trim();
-            var hyphenIndex = firstPart.IndexOf('-');
-            if (hyphenIndex != -1)
+            string firstPart = parts[0].Trim().Substring(1, parts[0].Length - 2);
+
+            try
             {
-                ParseLineColumn(firstPart.Remove(hyphenIndex), out int begingLine, out int beginColumn);
-                ParseLineColumn(firstPart.Substring(hyphenIndex + 1), out int endLine, out int endColumn);
-                result = new LineColumnTextSpan(begingLine, beginColumn, endLine, endColumn, codeFile);
+                int beginLine, beginColumn, endLine, endColumn;
+
+                var index = firstPart.IndexOf("..");
+                if (index != -1)
+                {
+                    ParseLineColumn(firstPart.Remove(index), out beginLine, out beginColumn);
+                    ParseLineColumn(firstPart.Substring(index + 2), out endLine, out endColumn);
+                }
+                else
+                {
+                    ParseLineColumn(firstPart, out beginLine, out beginColumn);
+                    endLine = beginLine;
+                    endColumn = beginColumn;
+                }
+
+                result = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, codeFile);
             }
-            else
+            catch (Exception ex) when (!(ex is FormatException))
             {
-                ParseLineColumn(firstPart, out int line, out int column);
-                result = new LineColumnTextSpan(line, column, line, column, codeFile);
+                throw new FormatException($"{nameof(LineColumnTextSpan)} should be written in [start-line,start-column..end-line,end-column) format.");
             }
 
             return result;
@@ -129,6 +165,10 @@ namespace PT.PM.Common
             else
             {
                 result = codeFiles?.FirstOrDefault(codeFile => codeFile.RelativeName == fileName || codeFile.FullName == fileName);
+                if (result == null)
+                {
+                    throw new FileNotFoundException($"File {fileName} is not found.", fileName);
+                }
             }
 
             return result;
@@ -162,10 +202,23 @@ namespace PT.PM.Common
 
         private static void ParseLineColumn(string text, out int line, out int column)
         {
-            text = text.Substring(1, text.Length - 2);
             int commaIndex = text.IndexOf(',');
-            line = int.Parse(text.Remove(commaIndex));
-            column = int.Parse(text.Substring(commaIndex + 1));
+            if (commaIndex == -1)
+            {
+                throw new FormatException($"Begin position for line-column format should have line,column format instead of {text}.");
+            }
+
+            string value = text.Remove(commaIndex);
+            if (!int.TryParse(value, out line))
+            {
+                throw new FormatException($"Invalid or too big line value {value} while {nameof(LineColumnTextSpan)} parsing.");
+            }
+
+            value = text.Substring(commaIndex + 1);
+            if (!int.TryParse(value, out column))
+            {
+                throw new FormatException($"Invalid or too big column value {value} while {nameof(LineColumnTextSpan)} parsing.");
+            }
         }
     }
 }
