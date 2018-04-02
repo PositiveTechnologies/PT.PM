@@ -1,5 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.CSharpParseTreeUst;
+using PT.PM.PhpParseTreeUst;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,13 +29,13 @@ namespace PT.PM
             // Any PHP file contains start tag.
             if (!sourceCode.Contains("<?"))
             {
-                langs.Remove(langs.FirstOrDefault(l => l.Key == "Php"));
+                langs.Remove(langs.FirstOrDefault(l => l == Php.Language));
             }
             // Aspx and html code contains at least one tag.
             if (!openTagRegex.IsMatch(sourceCode) || !closeTagRegex.IsMatch(sourceCode))
             {
-                langs.Remove(langs.FirstOrDefault(l => l.Key == "Aspx"));
-                langs.Remove(langs.FirstOrDefault(l => l.Key == "Html"));
+                langs.Remove(langs.FirstOrDefault(l => l == Aspx.Language));
+                langs.Remove(langs.FirstOrDefault(l => l == Html.Language));
             }
             var sourceCodeFile = new CodeFile(sourceCode);
             var parseUnits = new Queue<ParserUnit>(langs.Count);
@@ -54,7 +56,6 @@ namespace PT.PM
                 {
                     ((ParserUnit)obj).Parse(sourceCodeFile);
                 });
-                thread.Priority = ThreadPriority.Highest;
                 thread.IsBackground = true;
 
                 ParserUnit parseUnit = new ParserUnit(language, thread);
@@ -79,7 +80,7 @@ namespace PT.PM
                 }
                 else
                 {
-                    if (parseUnit.ParseErrorCount == 0 && parseUnit.Language.Key != "Aspx")
+                    if (parseUnit.ParseErrorCount == 0 && parseUnit.Language != Aspx.Language)
                     {
                         break;
                     }
