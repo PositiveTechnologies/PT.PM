@@ -61,7 +61,8 @@ namespace PT.PM.Common.Json
             {
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
                 IsLineColumn = LineColumnTextSpans,
-                JsonFile = JsonFile
+                JsonFile = JsonFile,
+                Logger = Logger
             };
 
             textSpanJsonConverter.CodeFiles = CodeFiles as List<CodeFile> ?? CodeFiles.ToList();
@@ -81,7 +82,8 @@ namespace PT.PM.Common.Json
                         TextSpanJsonConverter = textSpanJsonConverter,
                         ExcludeDefaults = ExcludeDefaults,
                         IncludeCode = IncludeCode,
-                        JsonFile = JsonFile
+                        JsonFile = JsonFile,
+                        Logger = Logger
                     }
                 }
             };
