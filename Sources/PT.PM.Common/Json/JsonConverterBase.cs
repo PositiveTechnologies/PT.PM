@@ -134,9 +134,9 @@ namespace PT.PM.Common.Json
             if (type == null)
             {
                 string ustKind = jObject != null
-                    ? (string)jObject.GetValueIgnoreCase(KindName)
+                    ? (string)jObject[KindName]
                     : jToken != null
-                    ? (string)jToken.GetValueIgnoreCase(KindName)
+                    ? (string)jToken[KindName]
                     : "";
 
                 if (string.IsNullOrEmpty(ustKind) ||
@@ -150,8 +150,8 @@ namespace PT.PM.Common.Json
             }
 
             JToken textSpanTokenWrapper = jObject != null
-                ? jObject.GetValueIgnoreCase(nameof(Ust.TextSpan))
-                : jToken?.GetValueIgnoreCase(nameof(Ust.TextSpan));
+                ? jObject[nameof(Ust.TextSpan)]
+                : jToken?[nameof(Ust.TextSpan)];
 
             List<TextSpan> textSpans = null;
 
@@ -174,9 +174,9 @@ namespace PT.PM.Common.Json
             if (type == typeof(RootUst))
             {
                 string languageString = jObject != null
-                    ? (string)jObject.GetValueIgnoreCase(nameof(RootUst.Language))
+                    ? (string)jObject[nameof(RootUst.Language)]
                     : jToken != null
-                    ? (string)jToken.GetValueIgnoreCase(nameof(RootUst.Language))
+                    ? (string)jToken[nameof(RootUst.Language)]
                     : "";
                 Language language = Uncertain.Language;
                 if (!string.IsNullOrEmpty(languageString))

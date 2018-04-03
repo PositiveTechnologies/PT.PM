@@ -29,7 +29,7 @@ namespace PT.PM.Common.Json
             }
 
             JObject jObject = JObject.Load(reader);
-            string kind = jObject.GetValueIgnoreCase(KindName).ToString();
+            string kind = jObject[KindName].ToString();
 
             Ust target;
             JsonReader newReader = null;
@@ -45,7 +45,7 @@ namespace PT.PM.Common.Json
             else
             {
                 // Try load from Ust subfield.
-                JToken jToken = jObject.GetValueIgnoreCase(nameof(Ust));
+                JToken jToken = jObject[nameof(Ust)];
                 target = CreateOrGetUst(jToken);
                 if (target == null)
                 {

@@ -51,10 +51,10 @@ namespace PT.PM.Common.Json
         {
             JObject obj = JObject.Load(reader);
 
-            string code = (string)obj.GetValueIgnoreCase(nameof(CodeFile.Code));
-            string rootPath = (string)obj.GetValueIgnoreCase(nameof(CodeFile.RootPath)) ?? "";
-            string relativePath = (string)obj.GetValueIgnoreCase(nameof(CodeFile.RelativePath)) ?? "";
-            string name = (string)obj.GetValueIgnoreCase(nameof(CodeFile.Name)) ?? "";
+            string code = (string)obj[nameof(CodeFile.Code)];
+            string rootPath = (string)obj[nameof(CodeFile.RootPath)] ?? "";
+            string relativePath = (string)obj[nameof(CodeFile.RelativePath)] ?? "";
+            string name = (string)obj[nameof(CodeFile.Name)] ?? "";
 
             if (code == null)
             {

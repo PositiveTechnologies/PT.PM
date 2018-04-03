@@ -13,12 +13,6 @@ namespace PT.PM.Tests
     public class WorkflowTests
     {
         [Test]
-        public void Process_JsonUst_InvariantCase()
-        {
-            CheckJsonSerialization("empty-try-catch.php", upperCase: true);
-        }
-
-        [Test]
         public void Process_JsonUst_NotIndented()
         {
             CheckJsonSerialization("empty-try-catch.php", indented: false);
@@ -55,7 +49,7 @@ namespace PT.PM.Tests
         }
 
         private static void CheckJsonSerialization(string inputFileName, bool lineColumnTextSpans = false,
-            bool includeTextSpans = true, bool indented = true, bool upperCase = false, bool includeCode = true)
+            bool includeTextSpans = true, bool indented = true, bool includeCode = true)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
 
@@ -89,13 +83,6 @@ namespace PT.PM.Tests
                 string shortFileName = Path.GetFileName(file) + ".ust.json";
                 string jsonFile = Path.Combine(TestUtility.TestsOutputPath, shortFileName);
                 string json = File.ReadAllText(jsonFile);
-
-                // Convert case to upper for checking correct deserialization
-                if (upperCase)
-                {
-                    json = json.ToUpperInvariant().Replace("\\R", "\\r").Replace("\\N", "\\n")
-                        .Replace("TRUE", "true").Replace("FALSE", "false");
-                }
 
                 if (file.Contains("preprocessed.php"))
                 {
