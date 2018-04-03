@@ -21,6 +21,7 @@ namespace PT.PM.Cli
                 ThreadCount = parameters.ThreadCount,
                 MemoryConsumptionMb = parameters.Memory,
                 FileTimeout = TimeSpan.FromSeconds(parameters.FileTimeout),
+                MaxStackSize = parameters.MaxStackSize,
                 IsIncludePreprocessing = !parameters.NotPreprocessUst,
                 LogsDir = parameters.LogsDir,
                 DumpDir = parameters.LogsDir,

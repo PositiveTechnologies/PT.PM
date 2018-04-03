@@ -55,7 +55,8 @@ namespace PT.PM
                 Thread thread = new Thread((object obj) =>
                 {
                     ((ParserUnit)obj).Parse(sourceCodeFile);
-                });
+                },
+                MaxStackSize);
                 thread.IsBackground = true;
 
                 ParserUnit parseUnit = new ParserUnit(language, thread);

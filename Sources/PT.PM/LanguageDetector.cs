@@ -9,6 +9,8 @@ namespace PT.PM
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
+        public int MaxStackSize { get; set; } = 0;
+
         public DetectionResult DetectIfRequired(string codeFileName)
         {
             var codeFile = new CodeFile(File.ReadAllText(codeFileName))

@@ -111,23 +111,31 @@ namespace PT.PM
 
         private void ProcessFileWithTimeout(string fileName, PatternMatcher patternMatcher, WorkflowResult result, CancellationToken cancellationToken)
         {
-            if (FileTimeout == default(TimeSpan))
+            if (FileTimeout == default(TimeSpan) && MaxStackSize == 0)
             {
                 ProcessFile(fileName, patternMatcher, result, cancellationToken);
             }
             else
             {
                 Thread thread = new Thread(() =>
-                    ProcessFile(fileName, patternMatcher, result, cancellationToken));
+                    ProcessFile(fileName, patternMatcher, result, cancellationToken), MaxStackSize);
                 thread.Start();
-                if (!thread.Join((int)FileTimeout.TotalMilliseconds))
+
+                if (FileTimeout == default(TimeSpan))
                 {
-                    thread.Abort();
+                    thread.Join();
+                }
+                else
+                {
+                    if (!thread.Join((int)FileTimeout.TotalMilliseconds))
+                    {
+                        thread.Abort();
 
-                    Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
-                    FinalizeProcessing(fileName, result);
+                        Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
+                        FinalizeProcessing(fileName, result);
 
-                    cancellationToken.ThrowIfCancellationRequested();
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
                 }
             }
         }

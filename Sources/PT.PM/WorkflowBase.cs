@@ -81,6 +81,8 @@ namespace PT.PM
 
         public TimeSpan FileTimeout { get; set; } = default(TimeSpan);
 
+        public int MaxStackSize { get; set; } = 0;
+
         public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
@@ -138,6 +140,7 @@ namespace PT.PM
                     if (StartStage.Is(PM.Stage.File))
                     {
                         stopwatch.Restart();
+                        LanguageDetector.MaxStackSize = MaxStackSize;
                         detectionResult = LanguageDetector.DetectIfRequired(sourceCodeFile, workflowResult.BaseLanguages);
 
                         if (detectionResult == null)
