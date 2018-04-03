@@ -45,7 +45,7 @@ namespace PT.PM.AntlrUtils
 
         public static int ClearCacheParserFilesCount { get; set; } = 40;
 
-        public static long MemoryConsumptionBytes { get; set; } = 300 * 1000 * 1000;
+        public static long MemoryConsumptionBytes { get; set; } = 500 * 1000 * 1000;
 
         protected abstract Lexer InitLexer(ICharStream inputStream);
 
