@@ -130,11 +130,6 @@ namespace PT.PM
                     if (!thread.Join((int)FileTimeout.TotalMilliseconds))
                     {
                         thread.Abort();
-
-                        Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
-                        FinalizeProcessing(fileName, result);
-
-                        cancellationToken.ThrowIfCancellationRequested();
                     }
                 }
             }
@@ -185,31 +180,32 @@ namespace PT.PM
             {
                 Logger.LogInfo($"{fileName} processing has been cancelled");
             }
+            catch (ThreadAbortException)
+            {
+                Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
+            }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
             }
-
-            FinalizeProcessing(fileName, workflowResult);
-
-            if (ust == null)
+            finally
             {
-                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
+                AntlrParser.ClearCacheIfRequired();
+
+                workflowResult.AddProcessedFilesCount(1);
+                double progress = workflowResult.TotalFilesCount == 0
+                    ? workflowResult.TotalProcessedFilesCount
+                    : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
+                Logger.LogInfo(new ProgressEventArgs(progress, fileName));
+                Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
+
+                if (ust == null)
+                {
+                    Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
             }
-
-            cancellationToken.ThrowIfCancellationRequested();
-        }
-
-        private void FinalizeProcessing(string fileName, WorkflowResult workflowResult)
-        {
-            AntlrParser.ClearCacheIfRequired();
-
-            workflowResult.AddProcessedFilesCount(1);
-            double progress = workflowResult.TotalFilesCount == 0
-                ? workflowResult.TotalProcessedFilesCount
-                : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;
-            Logger.LogInfo(new ProgressEventArgs(progress, fileName));
-            Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
         }
 
         private void RenderGraphs(WorkflowResult result)
