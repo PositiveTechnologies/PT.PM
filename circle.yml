@@ -13,12 +13,5 @@ jobs:
       - run: bash generate.cmd
       - run: dotnet build Sources/PT.PM.sln -c Release
       - cd Tests/Release/netcoreapp2.0
-      - run: dotnet vstest PT.PM.Cli.Tests.dll
-      - run: dotnet vstest PT.PM.CSharpParseTreeUst.Tests.dll
-      - run: dotnet vstest PT.PM.Dsl.Tests.dll
-      - run: dotnet vstest PT.PM.JavaParseTreeUst.Tests.dll
-      - run: dotnet vstest PT.PM.JavaScriptParseTreeUst.Tests.dll
-      - run: dotnet vstest PT.PM.PhpParseTreeUst.Tests.dll
-      - run: dotnet vstest PT.PM.SqlParseTreeUst.Tests.dll
-      - run: dotnet vstest PT.PM.Tests.dll
+      - run: dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll
       - cd ../../..

@@ -23,23 +23,7 @@ test_script:
 - cmd: >-
     cd Tests/%CONFIGURATION%/netcoreapp2.0
 
-    dotnet vstest PT.PM.Cli.Tests.dll
-
-    dotnet vstest PT.PM.CSharpParseTreeUst.Tests.dll
-
-    dotnet vstest PT.PM.Dsl.Tests.dll
-
-    dotnet vstest PT.PM.JavaParseTreeUst.Tests.dll
-
-    dotnet vstest PT.PM.JavaScriptParseTreeUst.Tests.dll
-
-    dotnet vstest PT.PM.Matching.Tests.dll
-
-    dotnet vstest PT.PM.PhpParseTreeUst.Tests.dll
-
-    dotnet vstest PT.PM.SqlParseTreeUst.Tests.dll
-
-    dotnet vstest PT.PM.Tests.dll
+    dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll
 
     cd ../../..
 after_test:
