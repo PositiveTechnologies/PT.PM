@@ -69,7 +69,7 @@ namespace PT.PM.Common.Json
 
                 writer.WriteValue(textSpanString);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(JsonFile, (writer as JTokenWriter)?.CurrentToken, ex);
             }
@@ -91,7 +91,7 @@ namespace PT.PM.Common.Json
                     IsLineColumn = !IsLineColumn;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(JsonFile, (reader as JTokenReader)?.CurrentToken, ex);
             }

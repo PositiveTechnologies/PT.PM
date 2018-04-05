@@ -6,6 +6,7 @@ using PT.PM.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using PT.PM.Common.Exceptions;
+using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -53,7 +54,7 @@ namespace PT.PM.CSharpParseTreeUst
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ParsingException(sourceCodeFile, ex));
                     result = new CSharpRoslynParseTree();

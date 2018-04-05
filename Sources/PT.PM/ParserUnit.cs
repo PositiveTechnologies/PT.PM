@@ -29,6 +29,12 @@ namespace PT.PM
 
         public void Abort() => thread?.Abort();
 
+        public void Wait(TimeSpan timeout) => thread?.Join(timeout);
+
+        public void Wait(int millisecondsTimeout) => thread?.Join(millisecondsTimeout);
+
+        public void Wait() => thread?.Join();
+
         public ParserUnit(Language language, Thread thread)
         {
             Language = language ?? throw new NullReferenceException(nameof(language));

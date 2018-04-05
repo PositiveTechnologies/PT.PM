@@ -4,6 +4,7 @@ using System.Diagnostics;
 using PT.PM.Common;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace PT.PM
 {
@@ -47,7 +48,7 @@ namespace PT.PM
                     errorMessage = $"Error while extracting {extractPath}.";
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 errorMessage = $"Error while extracting {extractPath}: {ex.Message}";
             }

@@ -9,6 +9,7 @@ using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace PT.PM.Dsl
 {
@@ -37,7 +38,7 @@ namespace PT.PM.Dsl
                 ascendantsFiller.FillAscendants();
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ConversionException(Data, ex));
                 throw;

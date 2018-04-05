@@ -308,7 +308,7 @@ namespace PT.PM
                 workflowResult.AddResultEntity(patterns);
                 return patterns;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ParsingException(
                     new CodeFile("") { IsPattern = true }, ex, $"Patterns can not be deserialized: {ex.FormatExceptionMessage()}"));

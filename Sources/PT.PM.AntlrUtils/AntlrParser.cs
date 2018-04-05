@@ -128,7 +128,7 @@ namespace PT.PM.AntlrUtils
                     result.Tokens = tokens;
                     result.Comments = commentTokens;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ParsingException(sourceCodeFile, ex));
 
@@ -260,14 +260,11 @@ namespace PT.PM.AntlrUtils
                 long memory = Process.GetCurrentProcess().PrivateMemorySize64;
                 if (memory > MemoryConsumptionBytes)
                 {
-                    //GetOrCreateAtn(lexer, true);
                     ConcurrentDictionary<Language, ATN> atns = lexer ? lexerAtns : parserAtns;
                     if (atns.Count > 0)
                     {
-                        StaticLogger.LogDebug("Garbarage collection started...");
                         atns.Clear();
-                        GC.Collect();
-                        StaticLogger.LogDebug("Garbarage collection completed.");
+                        StaticLogger.LogInfo("Memory cleared.");
                     }
                 }
             }

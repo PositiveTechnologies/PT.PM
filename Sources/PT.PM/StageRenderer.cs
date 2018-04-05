@@ -3,6 +3,7 @@ using PT.PM.Common.Nodes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace PT.PM
 {
@@ -52,7 +53,7 @@ namespace PT.PM
                     };
                     graph.Render(Path.Combine(DumpDir, fileName));
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(ex);
                 }

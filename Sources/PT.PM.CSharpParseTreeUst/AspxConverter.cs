@@ -9,6 +9,7 @@ using PT.PM.Common.Nodes.Collections;
 using PT.PM.CSharpParseTreeUst.RoslynUstVisitor;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -54,7 +55,7 @@ namespace PT.PM.CSharpParseTreeUst
                 }
                 result.FillAscendants();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile, ex));
                 result = new RootUst(langParseTree.SourceCodeFile, Language);

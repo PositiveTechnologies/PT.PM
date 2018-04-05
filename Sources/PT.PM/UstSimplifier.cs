@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace PT.PM
 {
@@ -137,7 +138,7 @@ namespace PT.PM
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogDebug($"Error while constant folding: {ex}");
                 }
@@ -210,7 +211,7 @@ namespace PT.PM
             {
                 return propertyEnumerator.VisitProperties(ust, Visit);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ConversionException(ust.Root?.SourceCodeFile, ex)
                 {

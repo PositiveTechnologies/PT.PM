@@ -4,6 +4,7 @@ using PT.PM.Common.Nodes.Tokens;
 using Microsoft.CodeAnalysis;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -41,7 +42,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             {
                 return base.Visit(node);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ConversionException(root?.SourceCodeFile, message: ex.Message)
                 {
