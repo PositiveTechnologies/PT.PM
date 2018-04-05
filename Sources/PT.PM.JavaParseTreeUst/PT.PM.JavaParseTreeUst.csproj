@@ -16,6 +16,10 @@
   <Target Name="GenerateJavaAntlrParser" BeforeTargets="Compile">
     <Exec Command="dotnet &quot;$(ProjectDir)..\..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\java\JavaLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\java\JavaParser.g4&quot; --package PT.PM.JavaParseTreeUst  --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
+
+  <ItemGroup>
+    <Compile Remove="Generated\JavaParserBaseVisitor.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />

@@ -18,6 +18,10 @@
   </Target>
 
   <ItemGroup>
+    <Compile Remove="Generated\DslParserBaseVisitor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />

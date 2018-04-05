@@ -18,6 +18,10 @@
   </Target>
 
   <ItemGroup>
+    <Compile Remove="Generated\JavaScriptParserBaseVisitor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
     <Compile Include="..\antlr-grammars-v4\javascript\CSharpSharwell\JavaScriptBaseLexer.cs" Link="JavaScriptBaseLexer.cs" />
     <Compile Include="..\antlr-grammars-v4\javascript\CSharpSharwell\JavaScriptBaseParser.cs" Link="JavaScriptBaseParser.cs" />

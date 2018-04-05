@@ -18,6 +18,10 @@
   </Target>
 
   <ItemGroup>
+    <Compile Remove="Generated\PhpParserBaseVisitor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
   </ItemGroup>
 
