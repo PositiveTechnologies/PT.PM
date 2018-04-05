@@ -127,9 +127,10 @@ namespace PT.PM
                 }
                 else
                 {
-                    if (!thread.Join((int)FileTimeout.TotalMilliseconds))
+                    if (!thread.Join(FileTimeout))
                     {
                         thread.Abort();
+                        thread.Join((int)FileTimeout.TotalMilliseconds / 4);
                     }
                 }
             }
@@ -178,14 +179,18 @@ namespace PT.PM
             }
             catch (OperationCanceledException)
             {
+                workflowResult.AddTerminatedFilesCount(1);
                 Logger.LogInfo($"{fileName} processing has been cancelled");
             }
             catch (ThreadAbortException)
             {
+                workflowResult.AddTerminatedFilesCount(1);
                 Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
+                Thread.ResetAbort();
             }
             catch (Exception ex)
             {
+                workflowResult.AddTerminatedFilesCount(1);
                 Logger.LogError(ex);
             }
             finally

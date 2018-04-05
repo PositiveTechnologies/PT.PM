@@ -95,6 +95,7 @@ namespace PT.PM
             foreach (ParserUnit parseUnit in parseUnits)
             {
                 parseUnit.Abort();
+                parseUnit.Wait((int)LanguageParseTimeout.TotalMilliseconds / 4);
 
                 List<ParsingException> parseErrors = parseUnit.Errors.Where(error =>
                      error is ParsingException parsingException && parsingException.InnerException == null)
