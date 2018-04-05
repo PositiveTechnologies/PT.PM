@@ -52,30 +52,43 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 {
                     case JavaParser.DOT: // '.'
                         target = (Expression)Visit(context.expression(0));
-                        var id = context.IDENTIFIER();
-                        if (id != null)
+
+                        if (context.methodCall() != null)
                         {
-                            result = new MemberReferenceExpression(target, (IdToken)Visit(id), textSpan);
-                            return result;
+                            var invocation = (InvocationExpression)Visit(context.methodCall());
+                            return new InvocationExpression(
+                                new MemberReferenceExpression(target, invocation.Target, target.TextSpan.Union(invocation.TextSpan)),
+                                invocation.Arguments,
+                                textSpan);
                         }
 
-                        var explicitGenericInvocation = context.explicitGenericInvocation();
-                        if (explicitGenericInvocation != null)
+                        // TODO: implement base processing
+
+                        Expression rightPart = null;
+                        if (context.IDENTIFIER() != null)
                         {
-                            return VisitChildren(context).ToExpressionIfRequired();
+                            rightPart = (IdToken)Visit(context.IDENTIFIER());
+                        }
+                        else if (context.THIS() != null)
+                        {
+                            rightPart = new ThisReferenceToken(context.THIS().GetTextSpan());
                         }
 
-                        var child2Terminal = context.GetChild<ITerminalNode>(1);
-                        // TODO: implement
-                        switch (child2Terminal.Symbol.Type)
+                        if (rightPart != null)
                         {
-                            case JavaParser.THIS:
-                                break;
-                            case JavaParser.NEW:
-                                break;
-                            case JavaParser.SUPER:
-                                break;
+                            return new MemberReferenceExpression(target, rightPart, textSpan);
                         }
+
+                        if (context.innerCreator() != null)
+                        {
+                            return Visit(context.innerCreator());
+                        }
+
+                        if (context.explicitGenericInvocation() != null)
+                        {
+                            return VisitChildren(context.explicitGenericInvocation()).ToExpressionIfRequired();
+                        }
+
                         break;
 
                     case JavaParser.LBRACK: // '['
@@ -84,23 +97,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
 
                         result = new IndexerExpression(target, args, textSpan);
-                        return result;
-
-                    case JavaParser.LPAREN: // '('
-                        target = (Expression)Visit(context.expression(0));
-                        // TODO: fix with ArgsNode
-                        JavaParser.ExpressionListContext expressionList = context.expressionList();
-
-                        if (expressionList != null)
-                        {
-                            args = (ArgsUst)Visit(expressionList);
-                        }
-                        else
-                        {
-                            args = new ArgsUst();
-                        }
-
-                        result = new InvocationExpression(target, args, textSpan);
                         return result;
 
                     case JavaParser.INSTANCEOF: // x instanceof y -> (y)x != null
@@ -254,7 +250,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitInnerCreator(JavaParser.InnerCreatorContext context)
         {
-            return VisitChildren(context);
+            ArgsUst args = (ArgsUst)Visit(context.classCreatorRest().arguments());
+            return new ObjectCreateExpression(
+                    new TypeToken(context.IDENTIFIER().GetText(), context.IDENTIFIER().GetTextSpan()), args,
+                    context.GetTextSpan());
         }
 
         public Ust VisitNonWildcardTypeArguments(JavaParser.NonWildcardTypeArgumentsContext context)

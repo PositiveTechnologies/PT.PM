@@ -14,6 +14,7 @@ using Antlr4.Runtime.Misc;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.Expressions;
 using Antlr4.Runtime;
+using PT.PM.Common.Nodes.Collections;
 
 namespace PT.PM.JavaParseTreeUst.Converter
 {
@@ -389,6 +390,12 @@ namespace PT.PM.JavaParseTreeUst.Converter
             }
 
             return result;
+        }
+
+        public Ust VisitMethodCall([NotNull] JavaParser.MethodCallContext context)
+        {
+            return new InvocationExpression((Expression)Visit(context.IDENTIFIER()), (ArgsUst)Visit(context.expressionList()),
+                context.GetTextSpan());
         }
     }
 }
