@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <packagereference Include="NUnit" Version="3.10.1"></packagereference>
+    <PackageReference Include="NunitXml.TestLogger" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
