@@ -32,6 +32,8 @@ namespace PT.PM
         private int totalProcessedCharsCount;
         private int totalProcessedLinesCount;
 
+        private int totalTerminatedFilesCount;
+
         public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
         {
             AnalyzedLanguages = languages.ToList();
@@ -100,6 +102,8 @@ namespace PT.PM
         public int TotalProcessedCharsCount => totalProcessedCharsCount;
         public int TotalProcessedLinesCount => totalProcessedLinesCount;
 
+        public int TotalTerminatedFilesCount => totalTerminatedFilesCount;
+
         public int TotalFilesCount { get; set; }
 
         public void AddResultEntity(CodeFile sourceCodeFile)
@@ -160,6 +164,11 @@ namespace PT.PM
         public void AddProcessedLinesCount(int linesCount)
         {
             AddInt(ref totalProcessedLinesCount, linesCount);
+        }
+
+        public void AddTerminatedFilesCount(int filesCount)
+        {
+            AddInt(ref totalTerminatedFilesCount, filesCount);
         }
 
         public void AddReadTime(long readTicks)
