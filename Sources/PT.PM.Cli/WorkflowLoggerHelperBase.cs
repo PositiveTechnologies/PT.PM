@@ -2,6 +2,7 @@
 using PT.PM.Matching;
 using System;
 using System.Linq;
+using static PT.PM.Cli.WorkflowLoggerHelper;
 
 namespace PT.PM.Cli
 {
@@ -22,9 +23,10 @@ namespace PT.PM.Cli
 
         public void LogStatistics()
         {
-            Logger.LogInfo($"{"Files count:",-22} {WorkflowResult.TotalProcessedFilesCount}");
-            Logger.LogInfo($"{"Chars count:",-22} {WorkflowResult.TotalProcessedCharsCount}");
-            Logger.LogInfo($"{"Lines count:",-22} {WorkflowResult.TotalProcessedLinesCount}");
+            Logger.LogInfo($"{"Terminated files count:",Align} {WorkflowResult.TotalTerminatedFilesCount}");
+            Logger.LogInfo($"{"Files count:",Align} {WorkflowResult.TotalProcessedFilesCount}");
+            Logger.LogInfo($"{"Chars count:",Align} {WorkflowResult.TotalProcessedCharsCount}");
+            Logger.LogInfo($"{"Lines count:",Align} {WorkflowResult.TotalProcessedLinesCount}");
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
@@ -79,7 +81,7 @@ namespace PT.PM.Cli
                     break;
             }
             Logger.LogInfo
-                ($"{"Total " + stage.ToString().ToLowerInvariant() + " time:",-22} {new TimeSpan(ticks)} {CalculatePercent(ticks, WorkflowResult.TotalTimeTicks):00.00}%");
+                ($"{"Total " + stage.ToString().ToLowerInvariant() + " time:",Align} {new TimeSpan(ticks)} {CalculatePercent(ticks, WorkflowResult.TotalTimeTicks):00.00}%");
             if (stage == nameof(Stage.ParseTree))
             {
                 LogAdditionalParserInfo();
@@ -96,8 +98,8 @@ namespace PT.PM.Cli
                 TimeSpan parserTimeSpan = new TimeSpan(WorkflowResult.TotalParserTicks);
                 double lexerPercent = CalculatePercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalParseTicks);
                 double parserPercent = CalculatePercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalParseTicks);
-                Logger.LogInfo($"{"  ANTLR lexing time: ",-22} {lexerTimeSpan} {lexerPercent:00.00}%");
-                Logger.LogInfo($"{"  ANTLR parisng time: ",-22} {parserTimeSpan} {parserPercent:00.00}%");
+                Logger.LogInfo($"{"  ANTLR lexing time: ",Align} {lexerTimeSpan} {lexerPercent:00.00}%");
+                Logger.LogInfo($"{"  ANTLR parisng time: ",Align} {parserTimeSpan} {parserPercent:00.00}%");
             }
         }
 
