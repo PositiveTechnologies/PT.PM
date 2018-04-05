@@ -13,12 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.2" />
-    <packagereference Include="NUnit" Version="3.10.1"></packagereference>
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Data\plsql_patterns.sql" />
     <None Remove="Data\tsql_patterns.sql" />
   </ItemGroup>
@@ -30,6 +24,11 @@
     <Content Include="Data\tsql_patterns.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
 
   <ItemGroup>

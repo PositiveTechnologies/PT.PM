@@ -13,12 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.2" />
-    <packagereference Include="NUnit" Version="3.10.1"></packagereference>
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Data\ParseError.cs" />
     <Compile Remove="Data\Patterns.cs" />
   </ItemGroup>
@@ -49,6 +43,11 @@
     <Content Include="Data\TestAspxParser.aspx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
 
   <ItemGroup>
