@@ -34,7 +34,9 @@ namespace PT.PM.Common
             Code = code ?? "";
         }
 
-        public override string ToString() => RelativeName;
+        public override string ToString() => !string.IsNullOrEmpty(RelativeName)
+            ? RelativeName
+            : Code;
 
         public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)
         {
