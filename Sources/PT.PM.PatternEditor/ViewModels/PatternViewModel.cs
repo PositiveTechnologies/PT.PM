@@ -25,6 +25,7 @@ namespace PT.PM.PatternEditor
             IncludeTextSpans = false,
             ExcludeDefaults = true,
             Indented = true,
+            LineColumnTextSpans = true
         };
         private static JsonConverter[] jsonConverters = new JsonConverter[] { new StringEnumConverter() };
 
