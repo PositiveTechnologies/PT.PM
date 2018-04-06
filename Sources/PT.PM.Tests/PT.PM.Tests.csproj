@@ -43,6 +43,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PatternTests.cs" />
     <Compile Include="SampleTree.cs" />
     <Compile Include="UstPreprocessorTests.cs" />
     <Compile Include="TextTests.cs" />
@@ -88,7 +89,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <Compile Include="SerializationTests.cs" />
+    <Compile Include="TextSpanTests.cs" />
     <Compile Include="SourceCodeRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
