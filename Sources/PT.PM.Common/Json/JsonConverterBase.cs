@@ -13,7 +13,7 @@ namespace PT.PM.Common.Json
     {
         private MultiMap<TextSpan, Ust> existingUsts = new MultiMap<TextSpan, Ust>();
 
-        protected const string KindName = "Kind";
+        public const string KindName = "Kind";
 
         protected JsonSerializer jsonSerializer;
 

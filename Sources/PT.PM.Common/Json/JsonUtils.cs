@@ -46,6 +46,7 @@ namespace PT.PM.Common.Json
         private static void LogErrorOrWarning(this ILogger logger, CodeFile jsonFile, bool isError, string errorMessage, TextSpan errorTextSpan)
         {
             var exception = new ConversionException(jsonFile, null, errorMessage) { TextSpan = errorTextSpan };
+
             if (isError)
             {
                 logger.LogError(exception);
