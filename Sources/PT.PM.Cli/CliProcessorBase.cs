@@ -93,7 +93,7 @@ namespace PT.PM.Cli
 
                 logger.SourceCodeRepository = sourceCodeRepository;
 
-                IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns);
+                IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns, logger);
                 patternsRepository.Identifiers = parameters.PatternIds.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => id.Trim());
 

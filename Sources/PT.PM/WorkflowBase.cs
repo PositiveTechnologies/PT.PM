@@ -287,7 +287,7 @@ namespace PT.PM
             catch (Exception ex)
             {
                 Logger.LogError(new ParsingException(
-                    new CodeFile("") { IsPattern = true }, ex, "Patterns can not be deserialized"));
+                    new CodeFile("") { IsPattern = true }, ex, $"Patterns can not be deserialized: {ex.FormatExceptionMessage()}"));
                 return new List<TPattern>(0);
             }
         }
