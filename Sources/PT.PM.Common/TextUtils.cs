@@ -157,7 +157,6 @@ namespace PT.PM.Common
         public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, List<CodeFile> codeFiles)
         {
             CodeFile result = null;
-
             if (fileName == null)
             {
                 result = currentCodeFile;
@@ -167,10 +166,23 @@ namespace PT.PM.Common
                 result = codeFiles?.FirstOrDefault(codeFile => codeFile.RelativeName == fileName || codeFile.FullName == fileName);
                 if (result == null)
                 {
-                    throw new FileNotFoundException($"File {fileName} is not found.", fileName);
+                    if (!File.Exists(fileName))
+                    {
+                        throw new FileNotFoundException($"File {fileName} is not found.", fileName);
+                    }
+                    else
+                    {
+                        var code = File.ReadAllText(fileName);
+                        result = new CodeFile(code)
+                        {
+                            RootPath = fileName,
+                            RelativePath = fileName,
+                            Name = fileName
+                        };
+                        codeFiles.Add(result);
+                    }
                 }
             }
-
             return result;
         }
 
