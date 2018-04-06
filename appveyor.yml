@@ -1,10 +1,12 @@
-os: Visual Studio 2017
-version: 1.5.3.{build}
+image:
+- Visual Studio 2017
+- Ubuntu
+version: 1.5.1.{build}
 configuration: Release
 platform: Any CPU
 skip_branch_with_pr: true
 install:
-- cmd: git submodule update --init --recursive
+- git submodule update --init --recursive
 assembly_info:
   patch: true
   file: Sources\AssemblyInfoCommon.cs;
@@ -13,32 +15,34 @@ assembly_info:
   assembly_informational_version: '{version}'
 before_build:
 - cmd: generate.cmd
-build_script: >-
-    dotnet build Sources/PT.PM.sln -c %CONFIGURATION%
+- sh: bash generate.cmd
+build_script:
+- ps: >-
+    dotnet build Sources/PT.PM.sln -c Release
 
-    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c %CONFIGURATION% -o ../../bin/Cli
+    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c Release -o ../../bin/Cli
 
-    dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c %CONFIGURATION% -o ../../bin/Gui
+    dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c Release -o ../../bin/Gui
 test_script:
-- cmd: >-
-    cd Tests/%CONFIGURATION%/netcoreapp2.0
+- ps: >-
+    cd Tests/Release/netcoreapp2.0
 
-    dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll --logger:nunit;LogFilePath=TestResult.xml
+    dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll --logger:nunit
 
     cd ../../..
-- ps: >-
+
     $wc = New-Object 'System.Net.WebClient'
 
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path ./Tests/$($env:CONFIGURATION)/netcoreapp2.0/TestResult.xml))
+    $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path ./Tests/Release/netcoreapp2.0/TestResults/TestResults.xml))
 after_test:
-- cmd: >-
+- ps: >-
     cd bin/Cli
 
-    7z a PT.PM.Cli-%APPVEYOR_BUILD_VERSION%.zip *.dll *.config *.json runtimes
+    7z a PT.PM.Cli-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
 
     cd ../Gui
     
-    7z a PT.PM.Gui-%APPVEYOR_BUILD_VERSION%.zip *.dll *.config *.json runtimes
+    7z a PT.PM.Gui-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
 artifacts:
 - path: bin/Cli/*.zip
   name: PT.PM.Cli
