@@ -140,7 +140,7 @@ namespace PT.PM.Tests
                 else
                 {
                     var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
-                    Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), result.SourceCodeFiles[0].GetLineColumnTextSpan(match.TextSpan));
+                    Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), result.SourceCodeFiles.First().GetLineColumnTextSpan(match.TextSpan));
                 }
             }
         }
