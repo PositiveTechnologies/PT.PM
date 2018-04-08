@@ -16,7 +16,7 @@ namespace PT.PM.Common.Json
 
         public CodeFile CurrentCodeFile { get; set; }
 
-        public List<CodeFile> CodeFiles { get; set; } = new List<CodeFile>();
+        public HashSet<CodeFile> CodeFiles { get; set; } = new HashSet<CodeFile>();
 
         public CodeFile JsonFile { get; set; } = CodeFile.Empty;
 

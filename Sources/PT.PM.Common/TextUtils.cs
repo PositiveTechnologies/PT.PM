@@ -63,7 +63,7 @@ namespace PT.PM.Common
             return resultTextSpan;
         }
 
-        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, List<CodeFile> codeFiles = null)
+        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -114,7 +114,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, List<CodeFile> codeFiles = null)
+        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -154,7 +154,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, List<CodeFile> codeFiles)
+        public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
         {
             CodeFile result = null;
             if (fileName == null)
