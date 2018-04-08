@@ -175,9 +175,8 @@ namespace PT.PM.Common
                         var code = File.ReadAllText(fileName);
                         result = new CodeFile(code)
                         {
-                            RootPath = fileName,
-                            RelativePath = fileName,
-                            Name = fileName
+                            RootPath = Path.GetDirectoryName(fileName),
+                            Name = Path.GetFileName(fileName)
                         };
                         codeFiles.Add(result);
                     }
