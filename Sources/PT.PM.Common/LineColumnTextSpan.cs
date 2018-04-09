@@ -46,7 +46,7 @@ namespace PT.PM.Common
             }
             else
             {
-                result = $"[{BeginLine},{BeginColumn}]-[{EndLine},{EndColumn})";
+                result = $"[{BeginLine},{BeginColumn}..{EndLine},{EndColumn})";
             }
 
             if (includeFileName && CodeFile != null)

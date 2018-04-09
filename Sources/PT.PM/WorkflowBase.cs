@@ -235,7 +235,7 @@ namespace PT.PM
             }
         }
 
-        protected void DumpUst(RootUst result, IReadOnlyList<CodeFile> sourceCodeFiles)
+        protected void DumpUst(RootUst result, HashSet<CodeFile> sourceCodeFiles)
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust) || stage.Is(PM.Stage.SimplifiedUst)))
             {
@@ -287,7 +287,7 @@ namespace PT.PM
             catch (Exception ex)
             {
                 Logger.LogError(new ParsingException(
-                    new CodeFile("") { IsPattern = true }, ex, "Patterns can not be deserialized"));
+                    new CodeFile("") { IsPattern = true }, ex, $"Patterns can not be deserialized: {ex.FormatExceptionMessage()}"));
                 return new List<TPattern>(0);
             }
         }

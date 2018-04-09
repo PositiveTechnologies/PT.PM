@@ -24,7 +24,7 @@ namespace PT.PM.Matching
 
         public override string ToString()
         {
-            return $"Pattern {Pattern} mathched at {(string.Join(", ", TextSpans))}";
+            return $"Pattern {Pattern} mathched at {(string.Join(", ", TextSpans.Select(textSpan => SourceCodeFile.GetLineColumnTextSpan(textSpan))))}";
         }
     }
 }

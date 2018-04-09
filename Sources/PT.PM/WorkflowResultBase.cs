@@ -12,7 +12,7 @@ namespace PT.PM
         where TStage : struct, IConvertible
         where TMatchResult : MatchResultBase<TPattern>
     {
-        private List<CodeFile> sourceCodeFiles = new List<CodeFile>();
+        private HashSet<CodeFile> sourceCodeFiles = new HashSet<CodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
         private List<RootUst> usts = new List<RootUst>();
         private List<TPattern> patterns = new List<TPattern>();
@@ -54,7 +54,7 @@ namespace PT.PM
 
         public int ErrorCount { get; set; }
 
-        public IReadOnlyList<CodeFile> SourceCodeFiles => sourceCodeFiles;
+        public HashSet<CodeFile> SourceCodeFiles => sourceCodeFiles;
 
         public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
 
@@ -222,7 +222,7 @@ namespace PT.PM
             throw new InvalidOperationException($"Set {stage} as a final Stage or activate {nameof(IsIncludeIntermediateResult)} property");
         }
 
-        protected void AddEntity<T>(List<T> collection, T entity)
+        protected void AddEntity<T>(ICollection<T> collection, T entity)
         {
             if (ThreadCount == 1)
             {

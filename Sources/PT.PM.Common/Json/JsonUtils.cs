@@ -8,19 +8,6 @@ namespace PT.PM.Common.Json
 {
     public static class JsonUtils
     {
-        public static JToken GetValueIgnoreCase(this JObject jObject, string propertyName)
-        {
-            return jObject.GetValue(propertyName, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static JToken GetValueIgnoreCase(this JToken jToken, string propertyName)
-        {
-            return ((jToken.Children()
-                .FirstOrDefault(token =>
-                 token is JProperty jProperty && jProperty.Name.EqualsIgnoreCase(propertyName))) as JProperty)
-                 ?.Value;
-        }
-
         public static JToken[] GetTokenOrTokensArray(this JToken jToken)
         {
             return jToken is JArray jArray ? jArray.Children().ToArray() : new JToken[] { jToken };
@@ -59,6 +46,7 @@ namespace PT.PM.Common.Json
         private static void LogErrorOrWarning(this ILogger logger, CodeFile jsonFile, bool isError, string errorMessage, TextSpan errorTextSpan)
         {
             var exception = new ConversionException(jsonFile, null, errorMessage) { TextSpan = errorTextSpan };
+
             if (isError)
             {
                 logger.LogError(exception);
