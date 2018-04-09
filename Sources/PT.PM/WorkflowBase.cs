@@ -235,7 +235,7 @@ namespace PT.PM
             }
         }
 
-        protected void DumpUst(RootUst result, IReadOnlyList<CodeFile> sourceCodeFiles)
+        protected void DumpUst(RootUst result, HashSet<CodeFile> sourceCodeFiles)
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust) || stage.Is(PM.Stage.SimplifiedUst)))
             {

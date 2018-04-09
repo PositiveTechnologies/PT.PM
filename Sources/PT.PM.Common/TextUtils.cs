@@ -63,7 +63,7 @@ namespace PT.PM.Common
             return resultTextSpan;
         }
 
-        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, List<CodeFile> codeFiles = null)
+        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -114,7 +114,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, List<CodeFile> codeFiles = null)
+        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -154,10 +154,9 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, List<CodeFile> codeFiles)
+        public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
         {
             CodeFile result = null;
-
             if (fileName == null)
             {
                 result = currentCodeFile;
@@ -167,10 +166,22 @@ namespace PT.PM.Common
                 result = codeFiles?.FirstOrDefault(codeFile => codeFile.RelativeName == fileName || codeFile.FullName == fileName);
                 if (result == null)
                 {
-                    throw new FileNotFoundException($"File {fileName} is not found.", fileName);
+                    if (!File.Exists(fileName))
+                    {
+                        throw new FileNotFoundException($"File {fileName} is not found.", fileName);
+                    }
+                    else
+                    {
+                        var code = File.ReadAllText(fileName);
+                        result = new CodeFile(code)
+                        {
+                            RootPath = Path.GetDirectoryName(fileName),
+                            Name = Path.GetFileName(fileName)
+                        };
+                        codeFiles.Add(result);
+                    }
                 }
             }
-
             return result;
         }
 

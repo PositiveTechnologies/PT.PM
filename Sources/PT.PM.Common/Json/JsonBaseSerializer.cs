@@ -25,7 +25,7 @@ namespace PT.PM.Common.Json
 
         public CodeFile CurrectCodeFile { get; set; }
 
-        public IReadOnlyList<CodeFile> CodeFiles { get; set; } = new List<CodeFile>();
+        public HashSet<CodeFile> CodeFiles { get; set; } = new HashSet<CodeFile>();
 
         public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
@@ -65,7 +65,7 @@ namespace PT.PM.Common.Json
                 Logger = Logger
             };
 
-            textSpanJsonConverter.CodeFiles = CodeFiles as List<CodeFile> ?? CodeFiles.ToList();
+            textSpanJsonConverter.CodeFiles = CodeFiles;
             textSpanJsonConverter.CurrentCodeFile = CurrectCodeFile;
 
             var jsonSettings = new JsonSerializerSettings
