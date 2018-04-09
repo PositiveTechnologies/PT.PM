@@ -1,8 +1,0 @@
-language: csharp
-os:
-  - linux
-dist: trusty
-dotnet: 2.0.0
-script:
-    - bash generate.cmd
-    - dotnet build Sources/PT.PM.sln -c Release
