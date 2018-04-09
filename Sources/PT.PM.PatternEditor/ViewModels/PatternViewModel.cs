@@ -471,7 +471,7 @@ namespace PT.PM.PatternEditor
                     PatternErrorsText = "";
                     if (IsDeveloperMode && patternNode != null)
                     {
-                        jsonPatternSerializer.CodeFiles = new List<CodeFile>() { patternNode.CodeFile };
+                        jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>() { patternNode.CodeFile };
                         jsonPatternSerializer.CurrectCodeFile = patternNode.CodeFile;
                         PatternJson = jsonPatternSerializer.Serialize(patternNode);
                         File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "Pattern UST.json"), PatternJson);
