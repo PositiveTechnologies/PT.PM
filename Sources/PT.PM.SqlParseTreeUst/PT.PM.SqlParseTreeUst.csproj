@@ -50,6 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\antlr-grammars-v4\plsql\CSharp\PlSqlBaseLexer.cs">
+      <Link>PlSqlBaseLexer.cs</Link>
+    </Compile>
+    <Compile Include="..\antlr-grammars-v4\plsql\CSharp\PlSqlBaseParser.cs">
+      <Link>PlSqlBaseParser.cs</Link>
+    </Compile>
     <Compile Include="..\AssemblyInfoCommon.cs">
       <Link>Properties\AssemblyInfoCommon.cs</Link>
     </Compile>

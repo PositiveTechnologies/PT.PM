@@ -1,11 +1,11 @@
-﻿using System;
+﻿using PT.PM.Common;
+using PT.PM.Common.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Exceptions;
 
-namespace PT.PM.Common
+namespace PT.PM.TestUtils
 {
     public class LoggerMessageCounter : ILogger
     {
@@ -24,8 +24,6 @@ namespace PT.PM.Common
         public bool LogToConsole { get; set; }
 
         public string ErrorsString => string.Join(", " + Environment.NewLine, errorMessages);
-
-        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public void LogError(Exception ex)
         {

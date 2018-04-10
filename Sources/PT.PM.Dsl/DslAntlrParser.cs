@@ -3,6 +3,7 @@ using PT.PM.Common;
 using Antlr4.Runtime;
 using System;
 using PT.PM.Common.Exceptions;
+using System.Threading;
 
 namespace PT.PM.Dsl
 {
@@ -38,7 +39,7 @@ namespace PT.PM.Dsl
                 parser.AddErrorListener(errorListener);
                 pattern = parser.pattern();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ParsingException(codeFile, ex));
                 throw;

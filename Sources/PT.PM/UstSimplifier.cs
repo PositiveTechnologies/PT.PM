@@ -8,6 +8,8 @@ using PT.PM.Common.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading;
 
 namespace PT.PM
 {
@@ -46,14 +48,28 @@ namespace PT.PM
 
         public override Ust Visit(ArrayCreationExpression arrayCreationExpression)
         {
+            Ust result;
+
             if (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false)
             {
-                string value = String.Concat(
-                    arrayCreationExpression.Initializers.OfType<StringLiteral>().Select(expr => expr.Text));
-                return new StringLiteral(value, arrayCreationExpression.TextSpan);
+                var value = new StringBuilder();
+                var textSpans = new List<TextSpan>();
+                foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
+                {
+                    value.Append(stringLiteral.Text);
+                    textSpans.Add(stringLiteral.TextSpan);
+                }
+                result = new StringLiteral(value.ToString(), textSpans.Union())
+                {
+                    InitialTextSpans = textSpans
+                };
+            }
+            else
+            {
+                result = VisitChildren(arrayCreationExpression);
             }
 
-            return VisitChildren(arrayCreationExpression);
+            return result;
         }
 
         public override Ust Visit(BinaryOperatorExpression binaryOperatorExpression)
@@ -70,7 +86,7 @@ namespace PT.PM
                 {
                     string resultText = leftString.Text + rightString.Text;
                     result = new StringLiteral(resultText);
-                    Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {result.TextSpan}");
+                    Logger.LogDebug($"Strings {binaryOperatorExpression} has been concatenated to \"{resultText}\" at {binaryOperatorExpression.TextSpan}");
                 }
             }
             else if (leftExpression is IntLiteral leftInt &&
@@ -118,11 +134,11 @@ namespace PT.PM
                         if (folded)
                         {
                             result = new IntLiteral(resultValue);
-                            Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} has been folded to {resultValue} at {result.TextSpan}");
+                            Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} has been folded to {resultValue} at {binaryOperatorExpression.TextSpan}");
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogDebug($"Error while constant folding: {ex}");
                 }
@@ -150,37 +166,43 @@ namespace PT.PM
         {
             UnaryOperatorLiteral op = unaryOperatorExpression.Operator;
             Expression expression = unaryOperatorExpression.Expression;
+            Ust result = null;
 
             if (op.UnaryOperator == UnaryOperator.Minus)
             {
+                string foldedValue = "";
                 if (expression is IntLiteral intLiteral)
                 {
                     long intValue = intLiteral.Value;
-                    Ust result = new IntLiteral
-                    {
-                        Value = -intValue,
-                        Root = unaryOperatorExpression.Root,
-                        TextSpan = op.TextSpan.Union(expression.TextSpan)
-                    };
-                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-intValue} at {result.TextSpan}");
-                    return result;
+                    result = new IntLiteral(-intValue);
+                    foldedValue = (-intValue).ToString();
+                }
+                else if (expression is FloatLiteral floatLiteral)
+                {
+                    double floatValue = floatLiteral.Value;
+                    result = new FloatLiteral(-floatValue);
+                    foldedValue = (-floatValue).ToString();
                 }
 
-                if (expression is FloatLiteral floatLiteral)
+                if (result != null)
                 {
-                    double doubleValue = floatLiteral.Value;
-                    Ust result = new FloatLiteral
-                    {
-                        Value = -doubleValue,
-                        Root = unaryOperatorExpression.Root,
-                        TextSpan = op.TextSpan.Union(expression.TextSpan)
-                    };
-                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {-doubleValue} at {result.TextSpan}");
-                    return result;
+                    List<TextSpan> textSpans = expression.GetRealTextSpans();
+                    textSpans.Add(op.TextSpan);
+
+                    result.InitialTextSpans = textSpans;
+                    result.TextSpan = textSpans.Union();
+                    result.Root = unaryOperatorExpression.Root;
+
+                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} has been folded to {foldedValue} at {result.TextSpan}");
                 }
             }
+            
+            if (result == null)
+            {
+                result = VisitChildren(unaryOperatorExpression);
+            }
 
-            return VisitChildren(unaryOperatorExpression);
+            return result;
         }
 
         protected override Ust VisitChildren(Ust ust)
@@ -189,7 +211,7 @@ namespace PT.PM
             {
                 return propertyEnumerator.VisitProperties(ust, Visit);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ConversionException(ust.Root?.SourceCodeFile, ex)
                 {

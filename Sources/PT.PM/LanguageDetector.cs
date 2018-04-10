@@ -9,52 +9,60 @@ namespace PT.PM
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language DetectIfRequired(string sourceCodeFileName)
+        public int MaxStackSize { get; set; } = 0;
+
+        public DetectionResult DetectIfRequired(string codeFileName)
         {
-            return DetectIfRequired(sourceCodeFileName, File.ReadAllText(sourceCodeFileName));
+            var codeFile = new CodeFile(File.ReadAllText(codeFileName))
+            {
+                Name = codeFileName
+            };
+            return DetectIfRequired(codeFile);
         }
 
-        public Language DetectIfRequired(string sourceCodeFileName, string sourceCode, IEnumerable<Language> languages = null)
+        public DetectionResult DetectIfRequired(CodeFile codeFile, IEnumerable<Language> languages = null)
         {
-            Language result = null;
+            DetectionResult result = null;
+
             if ((languages?.Count() ?? 0) == 1)
             {
-                result = languages.First();
+                result = new DetectionResult(languages.First());
             }
-            else if (!string.IsNullOrEmpty(sourceCodeFileName))
+            else if (!string.IsNullOrEmpty(codeFile.Name))
             {
-                string[] extensions = GetExtensions(sourceCodeFileName);
+                string[] extensions = GetExtensions(codeFile.Name);
                 List<Language> finalLanguages = GetLanguagesIntersection(extensions, languages);
                 if (finalLanguages.Count == 1 || finalLanguages.Any(final => final.Key == "CSharp"))
                 {
-                    result = finalLanguages[0];
+                    result = new DetectionResult(finalLanguages[0]);
                 }
                 else if (finalLanguages.Count > 1)
                 {
-                    result = Detect(sourceCode, finalLanguages);
-                    LogDetection(result, finalLanguages, sourceCodeFileName);
+                    result = Detect(codeFile.Code, finalLanguages);
+                    LogDetection(result, finalLanguages, codeFile);
                 }
             }
             else
             {
-                result = Detect(sourceCode, languages);
-                LogDetection(result, languages ?? LanguageUtils.Languages.Values, sourceCodeFileName);
+                result = Detect(codeFile.Code, languages);
+                LogDetection(result, languages ?? LanguageUtils.Languages.Values, codeFile);
             }
+
             return result;
         }
 
-        public abstract Language Detect(string sourceCode, IEnumerable<Language> languages = null);
+        public abstract DetectionResult Detect(string sourceCode, IEnumerable<Language> languages = null);
 
-        protected void LogDetection(Language detectedLanguage, IEnumerable<Language> languages, string sourceCodeFileName)
+        protected void LogDetection(DetectionResult detectionResult, IEnumerable<Language> languages, CodeFile codeFile)
         {
             string languagesString = string.Join(", ", languages.Select(lang => lang.Title));
-            if (detectedLanguage != null)
+            if (detectionResult != null)
             {
-                Logger.LogDebug($"Language {detectedLanguage} (from {languagesString}) has been detected for file \"{sourceCodeFileName}\". ");
+                Logger.LogDebug($"Language {detectionResult.Language} (from {languagesString}) has been detected for file \"{codeFile}\". ");
             }
             else
             {
-                Logger.LogDebug($"Language has not been recognized from ({languagesString}) for file \"{sourceCodeFileName}\". ");
+                Logger.LogDebug($"Language has not been detected from ({languagesString}) for file \"{codeFile}\". ");
             }
         }
 

@@ -91,8 +91,6 @@ namespace PT.PM.Cli
                     CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir,
                     loadJson);
 
-                logger.SourceCodeRepository = sourceCodeRepository;
-
                 IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns, logger);
                 patternsRepository.Identifiers = parameters.PatternIds.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => id.Trim());
@@ -107,16 +105,20 @@ namespace PT.PM.Cli
                     logger.LogInfo("Scan completed.");
                     if (pmStage == Stage.Match)
                     {
-                        logger.LogInfo($"{"Matches count: ",-22} {workflowResult.MatchResults.Count()}");
+                        logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {workflowResult.MatchResults.Count()}");
                     }
                 }
                 else
                 {
                     logger.LogInfo("Patterns checked.");
                 }
-                logger.LogInfo($"{"Errors count: ",-22} {workflowResult.ErrorCount}");
+
+                if (workflowResult.ErrorCount > 0)
+                {
+                    logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
+                }
                 LogStatistics(logger, workflowResult);
-                logger.LogInfo($"{"Time elapsed:",-22} {stopwatch.Elapsed}");
+                logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
             }
             catch (Exception ex)
             {

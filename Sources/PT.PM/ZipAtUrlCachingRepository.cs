@@ -80,7 +80,7 @@ namespace PT.PM
                             Logger.LogInfo($"{Name} already downloaded and unpacked.");
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!(ex is ThreadAbortException))
                     {
                         RootPath = null;
                         Logger.LogError(ex);

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace PT.PM.Matching
 {
@@ -144,7 +145,7 @@ namespace PT.PM.Matching
             {
                 return propertyEnumerator.VisitProperties(patternBase, Visit);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ConversionException(patternBase.Root?.CodeFile, ex)
                 {

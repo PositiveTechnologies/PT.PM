@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
+using System.Threading;
 
 namespace PT.PM.AntlrUtils
 {
@@ -64,7 +65,7 @@ namespace PT.PM.AntlrUtils
                     }
                     result.FillAscendants();
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
 
@@ -99,7 +100,7 @@ namespace PT.PM.AntlrUtils
 
                 return tree.Accept(this);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 if (tree is ParserRuleContext parserRuleContext)
                 {
@@ -125,7 +126,7 @@ namespace PT.PM.AntlrUtils
                 var exprs = new List<Expression>();
                 for (int i = 0; i < node.ChildCount; i++)
                 {
-                    var child = Visit(node.GetChild(i));
+                    Ust child = Visit(node.GetChild(i));
                     if (child != null)
                     {
                         // Ignore null.

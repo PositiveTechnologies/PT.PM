@@ -13,6 +13,7 @@ using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Exceptions;
+using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -58,7 +59,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                         new CommentLiteral(c.ToString(), c.GetTextSpan())).ToArray();
                     result.FillAscendants();
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
                     result = new RootUst(langParseTree.SourceCodeFile, Language);

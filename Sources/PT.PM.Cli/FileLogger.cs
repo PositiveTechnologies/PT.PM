@@ -62,8 +62,6 @@ namespace PT.PM.Cli
 
         public bool IsLogDebugs { get; set; } = false;
 
-        public SourceCodeRepository SourceCodeRepository { get; set; }
-
         public virtual void LogError(Exception ex)
         {
             var exString = ErrorPrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Full));

@@ -1,23 +1,57 @@
 ﻿using PT.PM.Common;
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace PT.PM
 {
     public class ParserUnit
     {
-        public ILanguageParser Parser { get; set; }
+        private Thread thread;
 
-        public LoggerMessageCounter Logger { get; set; }
+        private ParserUnitLogger logger;
 
-        public Task Task { get; set; }
+        private ILanguageParser parser;
 
-        public int ParseErrorCount => Logger.ErrorCount;
+        public Language Language { get; }
 
-        public ParserUnit(ILanguageParser parser, LoggerMessageCounter logger, Task task)
+        public ParseTree ParseTree { get; private set; }
+
+        public int ParseErrorCount => parser.Logger.ErrorCount;
+
+        public List<Exception> Errors => logger.Errors;
+
+        public List<object> Infos => logger.Infos;
+
+        public List<string> Debugs => logger.Debugs;
+
+        public bool IsAlive => thread?.IsAlive ?? false;
+
+        public void Abort() => thread?.Abort();
+
+        public void Wait(TimeSpan timeout) => thread?.Join(timeout);
+
+        public void Wait(int millisecondsTimeout) => thread?.Join(millisecondsTimeout);
+
+        public void Wait() => thread?.Join();
+
+        public ParserUnit(Language language, Thread thread)
         {
-            Parser = parser;
-            Logger = logger;
-            Task = task;
+            Language = language ?? throw new NullReferenceException(nameof(language));
+            parser = language.CreateParser();
+            logger = new ParserUnitLogger();
+            parser.Logger = logger;
+            this.thread = thread;
+        }
+
+        public void Parse(CodeFile codeFile)
+        {
+            ParseTree = parser.Parse(codeFile);
+        }
+
+        public override string ToString()
+        {
+            return $"{Language}; Errors: {ParseErrorCount}; IsAlive: {IsAlive}";
         }
     }
 }

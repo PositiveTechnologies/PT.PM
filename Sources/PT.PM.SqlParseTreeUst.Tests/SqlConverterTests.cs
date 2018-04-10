@@ -25,13 +25,15 @@ namespace PT.PM.SqlParseTreeUst.Tests
         [Test]
         public void Convert_PlSqlPattern_WithoutErrors()
         {
-            TestUtility.CheckFile(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql"), Stage.Ust);
+            TestUtility.CheckFile(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql"), Stage.Ust,
+                language: PlSql.Language);
         }
 
         [Test]
         public void Convert_TSqlPattern_WithoutErrors()
         {
-            TestUtility.CheckFile(Path.Combine(TestUtility.TestsDataPath, "tsql_patterns.sql"), Stage.Ust);
+            TestUtility.CheckFile(Path.Combine(TestUtility.TestsDataPath, "tsql_patterns.sql"), Stage.Ust,
+                language: TSql.Language);
         }
     }
 }

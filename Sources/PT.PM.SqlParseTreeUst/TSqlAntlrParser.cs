@@ -19,24 +19,17 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override IVocabulary Vocabulary => TSqlLexer.DefaultVocabulary;
 
-        public override Lexer InitLexer(ICharStream inputStream)
-        {
-            return new TSqlLexer(inputStream);
-        }
+        protected override Lexer InitLexer(ICharStream inputStream) => new TSqlLexer(inputStream);
 
-        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
-        {
-            return new TSqlParser(inputStream);
-        }
+        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) => new TSqlParser(inputStream);
 
-        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
-        {
-            return ((TSqlParser) parser).tsql_file();
-        }
+        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser) => ((TSqlParser) parser).tsql_file();
 
-        protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
-        {
-            return new TSqlAntlrParseTree((TSqlParser.Tsql_fileContext)syntaxTree);
-        }
+        protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
+            new TSqlAntlrParseTree((TSqlParser.Tsql_fileContext)syntaxTree);
+
+        protected override string LexerSerializedATN => TSqlLexer._serializedATN;
+
+        protected override string ParserSerializedATN => TSqlParser._serializedATN;
     }
 }

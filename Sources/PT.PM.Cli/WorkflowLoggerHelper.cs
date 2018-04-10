@@ -5,6 +5,8 @@ namespace PT.PM.Cli
 {
     public class WorkflowLoggerHelper : WorkflowLoggerHelperBase<Stage, WorkflowResult, PatternRoot, MatchResult>
     {
+        public const int Align = -25;
+
         public WorkflowLoggerHelper(ILogger logger, WorkflowResult workflowResult)
             : base(logger, workflowResult)
         {

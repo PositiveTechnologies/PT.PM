@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace PT.PM.Common.CodeRepository
 {
@@ -89,7 +90,7 @@ namespace PT.PM.Common.CodeRepository
                     Name = name
                 };
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 result = new CodeFile("")
                 {

@@ -4,6 +4,7 @@ using PT.PM.Matching.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace PT.PM.Matching
 {
@@ -87,7 +88,7 @@ namespace PT.PM.Matching
 
                     result.Add(pattern);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ConversionException(
                         patternFile,
@@ -118,7 +119,7 @@ namespace PT.PM.Matching
                     };
                     result.Add(patternDto);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ConversionException(pattern.CodeFile, ex, $"Error while \"{pattern.Key}\" pattern serialising"));
                 }

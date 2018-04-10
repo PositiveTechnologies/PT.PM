@@ -3,6 +3,7 @@ using AspxParser;
 using System;
 using System.IO;
 using PT.PM.Common.Exceptions;
+using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -33,7 +34,7 @@ namespace PT.PM.CSharpParseTreeUst
                     }
                     result = new AspxParseTree(aspxTree.RootNode);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ParsingException(sourceCodeFile, ex));
                     result = new CSharpRoslynParseTree();

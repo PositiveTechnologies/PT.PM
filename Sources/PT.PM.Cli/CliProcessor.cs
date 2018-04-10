@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Matching;
@@ -19,6 +20,8 @@ namespace PT.PM.Cli
                 Logger = logger,
                 ThreadCount = parameters.ThreadCount,
                 MemoryConsumptionMb = parameters.Memory,
+                FileTimeout = TimeSpan.FromSeconds(parameters.FileTimeout),
+                MaxStackSize = parameters.MaxStackSize,
                 IsIncludePreprocessing = !parameters.NotPreprocessUst,
                 LogsDir = parameters.LogsDir,
                 DumpDir = parameters.LogsDir,

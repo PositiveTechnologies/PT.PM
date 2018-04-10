@@ -13,40 +13,24 @@ namespace PT.PM.JavaParseTreeUst
         {
         }
 
-        public override Lexer InitLexer(ICharStream inputStream)
-        {
-            return new JavaLexer(inputStream);
-        }
+        protected override Lexer InitLexer(ICharStream inputStream) =>
+            new JavaLexer(inputStream);
 
-        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
-        {
-            return new JavaParser(inputStream);
-        }
+        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) =>
+            new JavaParser(inputStream);
 
-        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
-        {
-            return ((JavaParser)parser).compilationUnit();
-        }
+        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser) =>
+            ((JavaParser)parser).compilationUnit();
 
-        protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
-        {
-            return new JavaAntlrParseTree((JavaParser.CompilationUnitContext)syntaxTree);
-        }
+        protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
+            new JavaAntlrParseTree((JavaParser.CompilationUnitContext)syntaxTree);
 
-        protected override IVocabulary Vocabulary
-        {
-            get
-            {
-                return JavaLexer.DefaultVocabulary;
-            }
-        }
+        protected override IVocabulary Vocabulary => JavaLexer.DefaultVocabulary;
 
-        protected override int CommentsChannel
-        {
-            get
-            {
-                return JavaLexer.Hidden;
-            }
-        }
+        protected override int CommentsChannel => JavaLexer.Hidden;
+
+        protected override string LexerSerializedATN => JavaLexer._serializedATN;
+
+        protected override string ParserSerializedATN => JavaParser._serializedATN;
     }
 }

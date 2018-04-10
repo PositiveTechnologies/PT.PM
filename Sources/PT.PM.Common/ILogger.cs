@@ -1,13 +1,10 @@
-﻿using PT.PM.Common.CodeRepository;
-using System;
+﻿using System;
 
 namespace PT.PM.Common
 {
     public interface ILogger
     {
         int ErrorCount { get; }
-
-        SourceCodeRepository SourceCodeRepository { get; set; }
 
         void LogError(Exception ex);
 

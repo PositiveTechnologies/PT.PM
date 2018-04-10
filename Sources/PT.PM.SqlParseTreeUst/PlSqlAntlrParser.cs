@@ -24,19 +24,14 @@ namespace PT.PM.SqlParseTreeUst
             return new PlSqlAntlrParseTree((PlSqlParser.Sql_scriptContext)syntaxTree);
         }
 
-        public override Lexer InitLexer(ICharStream inputStream)
-        {
-            return new PlSqlLexer(inputStream);
-        }
+        protected override Lexer InitLexer(ICharStream inputStream) => new PlSqlLexer(inputStream);
 
-        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
-        {
-            return new PlSqlParser(inputStream);
-        }
+        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) => new PlSqlParser(inputStream);
 
-        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
-        {
-            return ((PlSqlParser)parser).sql_script();
-        }
+        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser) => ((PlSqlParser)parser).sql_script();
+
+        protected override string LexerSerializedATN => PlSqlLexer._serializedATN;
+
+        protected override string ParserSerializedATN => PlSqlParser._serializedATN;
     }
 }

@@ -12,6 +12,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -58,7 +59,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     var assignment = new AssignmentExpression(left, right, init.GetTextSpan());
                     return assignment;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
                     Logger.LogError(new ConversionException(root?.SourceCodeFile, message: ex.Message));
                     return null;

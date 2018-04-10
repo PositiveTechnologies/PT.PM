@@ -16,11 +16,9 @@ namespace PT.PM.JavaScriptParseTreeUst
         protected override IVocabulary Vocabulary => JavaScriptParser.DefaultVocabulary;
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
-        {
-            return new JavaScriptAntlrParseTree((JavaScriptParser.ProgramContext)syntaxTree);
-        }
+            => new JavaScriptAntlrParseTree((JavaScriptParser.ProgramContext)syntaxTree);
 
-        public override Lexer InitLexer(ICharStream inputStream)
+        protected override Lexer InitLexer(ICharStream inputStream)
         {
             var lexer = new JavaScriptLexer(inputStream);
             if (JavaScriptType != JavaScriptType.Undefined)
@@ -31,14 +29,14 @@ namespace PT.PM.JavaScriptParseTreeUst
             return lexer;
         }
 
-        public override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
-        {
-            return new JavaScriptParser(inputStream);
-        }
+        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
+            => new JavaScriptParser(inputStream);
 
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
-        {
-            return ((JavaScriptParser)parser).program();
-        }
+            => ((JavaScriptParser)parser).program();
+
+        protected override string LexerSerializedATN => JavaScriptLexer._serializedATN;
+
+        protected override string ParserSerializedATN => JavaScriptParser._serializedATN;
     }
 }

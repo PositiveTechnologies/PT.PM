@@ -4,6 +4,7 @@ using PT.PM.Common.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace PT.PM.Matching
 {
@@ -45,7 +46,7 @@ namespace PT.PM.Matching
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new MatchingException(ust.SourceCodeFile, ex));
                 return new List<MatchResult>();

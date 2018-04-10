@@ -45,13 +45,13 @@ namespace PT.PM
 
         public bool IsIncludePreprocessing { get; set; } = true;
 
-        public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
-
         public bool IsIgnoreFilenameWildcards { get; set; } = false;
+
+        public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
         public ILogger Logger
         {
-            get { return logger; }
+            get => logger;
             set
             {
                 logger = value;
@@ -71,16 +71,17 @@ namespace PT.PM
                 {
                     LanguageDetector.Logger = logger;
                 }
-                if (logger != null)
-                {
-                    logger.SourceCodeRepository = SourceCodeRepository;
-                }
+                AntlrParser.StaticLogger = logger;
             }
         }
 
         public int ThreadCount { get; set; }
 
         public long MemoryConsumptionMb { get; set; } = 300;
+
+        public TimeSpan FileTimeout { get; set; } = default(TimeSpan);
+
+        public int MaxStackSize { get; set; } = 0;
 
         public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 
@@ -134,28 +135,51 @@ namespace PT.PM
                 if (Stage.IsGreaterOrEqual(PM.Stage.ParseTree))
                 {
                     ParseTree parseTree = null;
-                    Language detectedLanguage = null;
+                    DetectionResult detectionResult = null;
 
                     if (StartStage.Is(PM.Stage.File))
                     {
                         stopwatch.Restart();
-                        detectedLanguage = LanguageDetector.DetectIfRequired(sourceCodeFile.Name, sourceCodeFile.Code, workflowResult.BaseLanguages);
-                        if (detectedLanguage == null)
+                        LanguageDetector.MaxStackSize = MaxStackSize;
+                        detectionResult = LanguageDetector.DetectIfRequired(sourceCodeFile, workflowResult.BaseLanguages);
+
+                        if (detectionResult == null)
                         {
-                            Logger.LogInfo($"Input languages set is empty or {shortFileName} language has not been detected. File has not been converter.");
+                            Logger.LogInfo($"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File has not been converter.");
                             return null;
                         }
-                        var parser = detectedLanguage.CreateParser();
-                        parser.Logger = Logger;
-                        if (parser is AntlrParser antlrParser)
+
+                        if (detectionResult.ParseTree == null)
                         {
-                            antlrParser.MemoryConsumptionMb = MemoryConsumptionMb;
-                            if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
+                            var parser = detectionResult.Language.CreateParser();
+                            parser.Logger = Logger;
+                            if (parser is AntlrParser antlrParser)
                             {
-                                javaScriptAntlrParser.JavaScriptType = JavaScriptType;
+                                AntlrParser.MemoryConsumptionBytes = MemoryConsumptionMb * 1000 * 1000;
+                                if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
+                                {
+                                    javaScriptAntlrParser.JavaScriptType = JavaScriptType;
+                                }
                             }
+                            parseTree = parser.Parse(sourceCodeFile);
                         }
-                        parseTree = parser.Parse(sourceCodeFile);
+                        else
+                        {
+                            foreach (string debug in detectionResult.Debugs)
+                            {
+                                Logger.LogDebug(debug);
+                            }
+                            foreach (object info in detectionResult.Infos)
+                            {
+                                Logger.LogInfo(info);
+                            }
+                            foreach (Exception error in detectionResult.Errors)
+                            {
+                                Logger.LogError(error);
+                            }
+                            parseTree = detectionResult.ParseTree;
+                        }
+
                         stopwatch.Stop();
                         Logger.LogInfo($"File {shortFileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddParseTime(stopwatch.ElapsedTicks);
@@ -178,7 +202,7 @@ namespace PT.PM
 
                         if (!StartStage.Is(PM.Stage.Ust))
                         {
-                            IParseTreeToUstConverter converter = detectedLanguage.CreateConverter();
+                            IParseTreeToUstConverter converter = detectionResult.Language.CreateConverter();
                             converter.Logger = Logger;
                             converter.AnalyzedLanguages = AnalyzedLanguages;
                             result = converter.Convert(parseTree);
@@ -284,7 +308,7 @@ namespace PT.PM
                 workflowResult.AddResultEntity(patterns);
                 return patterns;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new ParsingException(
                     new CodeFile("") { IsPattern = true }, ex, $"Patterns can not be deserialized: {ex.FormatExceptionMessage()}"));
@@ -319,20 +343,6 @@ namespace PT.PM
                 MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
                 CancellationToken = cancellationToken
             };
-        }
-
-        protected void ClearCacheIfRequired(TWorkflowResult result)
-        {
-            if (result.TotalProcessedFilesCount > 1)
-            {
-                Language antlrLanguage = BaseLanguages.FirstOrDefault(language => language.HaveAntlrParser);
-                if (antlrLanguage != null)
-                {
-                    var antlrParser = (AntlrParser)antlrLanguage.CreateParser();
-                    antlrParser.MemoryConsumptionMb = 0;
-                    antlrParser.ClearCache();
-                }
-            }
         }
     }
 }

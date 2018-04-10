@@ -1,5 +1,7 @@
-﻿using PT.PM.Common;
+﻿using PT.PM.AntlrUtils;
+using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Dsl;
 using PT.PM.Matching;
@@ -76,7 +78,7 @@ namespace PT.PM
                     {
                         foreach (string fileName in fileNames)
                         {
-                            ProcessFile(fileName, patternMatcher, result, cancellationToken);
+                            ProcessFileWithTimeout(fileName, patternMatcher, result, cancellationToken);
                         }
                     }
                     else
@@ -88,7 +90,7 @@ namespace PT.PM
                             fileName =>
                             {
                                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                                ProcessFile(fileName, patternMatcher, result, parallelOptions.CancellationToken);
+                                ProcessFileWithTimeout(fileName, patternMatcher, result, parallelOptions.CancellationToken);
                             });
                     }
                 }
@@ -98,10 +100,43 @@ namespace PT.PM
                 }
             }
 
-            ClearCacheIfRequired(result);
+            if (result.TotalProcessedFilesCount > 1)
+            {
+                AntlrParser.ClearCacheIfRequired();
+            }
 
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;
+        }
+
+        private void ProcessFileWithTimeout(string fileName, PatternMatcher patternMatcher, WorkflowResult result, CancellationToken cancellationToken)
+        {
+            if (FileTimeout == default(TimeSpan) && MaxStackSize == 0)
+            {
+                ProcessFile(fileName, patternMatcher, result, cancellationToken);
+            }
+            else
+            {
+                Thread thread = new Thread(() =>
+                    ProcessFile(fileName, patternMatcher, result, cancellationToken), MaxStackSize)
+                {
+                    IsBackground = true
+                };
+                thread.Start();
+
+                if (FileTimeout == default(TimeSpan))
+                {
+                    thread.Join();
+                }
+                else
+                {
+                    if (!thread.Join(FileTimeout))
+                    {
+                        thread.Abort();
+                        thread.Join((int)FileTimeout.TotalMilliseconds / 4);
+                    }
+                }
+            }
         }
 
         private void ProcessFile(string fileName, PatternMatcher patternMatcher, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
@@ -147,14 +182,24 @@ namespace PT.PM
             }
             catch (OperationCanceledException)
             {
+                workflowResult.AddTerminatedFilesCount(1);
                 Logger.LogInfo($"{fileName} processing has been cancelled");
+            }
+            catch (ThreadAbortException)
+            {
+                workflowResult.AddTerminatedFilesCount(1);
+                Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
+                Thread.ResetAbort();
             }
             catch (Exception ex)
             {
+                workflowResult.AddTerminatedFilesCount(1);
                 Logger.LogError(ex);
             }
             finally
             {
+                AntlrParser.ClearCacheIfRequired();
+
                 workflowResult.AddProcessedFilesCount(1);
                 double progress = workflowResult.TotalFilesCount == 0
                     ? workflowResult.TotalProcessedFilesCount

@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -44,12 +45,17 @@ namespace PT.PM.TestUtils
         }
 
         public static WorkflowResult CheckFile(string fileName, Stage endStage,
-            ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false)
+            ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
+            Language language = null)
         {
-            var codeRep = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
+            var codeRepository = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
+            if (language != null)
+            {
+                codeRepository.Languages = new HashSet<Language>() { language };
+            }
 
             var log = logger ?? new LoggerMessageCounter();
-            var workflow = new Workflow(codeRep, stage: endStage);
+            var workflow = new Workflow(codeRepository, stage: endStage);
             workflow.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
             workflow.Logger = log;
             WorkflowResult workflowResult = workflow.Process();

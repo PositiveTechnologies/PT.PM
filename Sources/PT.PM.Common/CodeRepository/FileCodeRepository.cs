@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace PT.PM.Common.CodeRepository
 {
@@ -36,7 +37,7 @@ namespace PT.PM.Common.CodeRepository
                     Name = Path.GetFileName(fileName)
                 };
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 result = new CodeFile("")
                 {
