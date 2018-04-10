@@ -27,7 +27,17 @@ namespace PT.PM
 
         public bool IsAlive => thread?.IsAlive ?? false;
 
-        public void Abort() => thread?.Abort();
+        public void AbortIfPossibly()
+        {
+            if (CommonUtils.IsSupportThreadAbort)
+            {
+                thread?.Abort();
+            }
+            else
+            {
+                logger.LogInfo("Thread.Abort is not supported int .NET Core");
+            }
+        }
 
         public void Wait(TimeSpan timeout) => thread?.Join(timeout);
 

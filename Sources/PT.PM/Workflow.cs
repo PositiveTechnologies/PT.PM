@@ -132,7 +132,10 @@ namespace PT.PM
                 {
                     if (!thread.Join(FileTimeout))
                     {
-                        thread.Abort();
+                        if (CommonUtils.IsSupportThreadAbort)
+                        {
+                            thread.Abort();
+                        }
                         thread.Join((int)FileTimeout.TotalMilliseconds / 4);
                     }
                 }

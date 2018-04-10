@@ -4,12 +4,15 @@ using PT.PM.Common.Nodes.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace PT.PM.Common
 {
     public static class CommonUtils
     {
         private static readonly char[] Separators = new char[] { ',', ' ', '\t', '\r', '\n' };
+        private static bool? isSupportThreadAbort = null;
+
         public const string Prefix = "pt.pm_";
 
         public static string FormatJson(string json)
@@ -40,6 +43,28 @@ namespace PT.PM.Common
             {
                 int p = (int)Environment.OSVersion.Platform;
                 return (p == 4) || (p == 6) || (p == 128);
+            }
+        }
+
+        public static bool IsSupportThreadAbort
+        {
+            get
+            {
+                if (!isSupportThreadAbort.HasValue)
+                {
+                    Thread thread = new Thread(() => { });
+                    try
+                    {
+                        thread.Abort();
+                        isSupportThreadAbort = true;
+                    }
+                    catch (PlatformNotSupportedException)
+                    {
+                        isSupportThreadAbort = false;
+                    }
+                }
+
+                return isSupportThreadAbort.Value;
             }
         }
 
