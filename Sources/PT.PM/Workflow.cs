@@ -118,7 +118,10 @@ namespace PT.PM
             else
             {
                 Thread thread = new Thread(() =>
-                    ProcessFile(fileName, patternMatcher, result, cancellationToken), MaxStackSize);
+                    ProcessFile(fileName, patternMatcher, result, cancellationToken), MaxStackSize)
+                {
+                    IsBackground = true
+                };
                 thread.Start();
 
                 if (FileTimeout == default(TimeSpan))
