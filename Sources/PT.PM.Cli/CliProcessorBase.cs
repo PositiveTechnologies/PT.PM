@@ -112,7 +112,11 @@ namespace PT.PM.Cli
                 {
                     logger.LogInfo("Patterns checked.");
                 }
-                logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
+
+                if (workflowResult.ErrorCount > 0)
+                {
+                    logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
+                }
                 LogStatistics(logger, workflowResult);
                 logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
             }

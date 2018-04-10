@@ -23,7 +23,10 @@ namespace PT.PM.Cli
 
         public void LogStatistics()
         {
-            Logger.LogInfo($"{"Terminated files count:",Align} {WorkflowResult.TotalTerminatedFilesCount}");
+            if (WorkflowResult.TotalTerminatedFilesCount > 0)
+            {
+                Logger.LogInfo($"{"Terminated files count:",Align} {WorkflowResult.TotalTerminatedFilesCount}");
+            }
             Logger.LogInfo($"{"Files count:",Align} {WorkflowResult.TotalProcessedFilesCount}");
             Logger.LogInfo($"{"Chars count:",Align} {WorkflowResult.TotalProcessedCharsCount}");
             Logger.LogInfo($"{"Lines count:",Align} {WorkflowResult.TotalProcessedLinesCount}");
