@@ -392,7 +392,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitMethodCall([NotNull] JavaParser.MethodCallContext context)
         {
-            return new InvocationExpression((Expression)Visit(context.IDENTIFIER()), (ArgsUst)Visit(context.expressionList()),
+            return new InvocationExpression((Expression)Visit(context.IDENTIFIER()),
+                (ArgsUst)Visit(context.expressionList()) ?? new ArgsUst(),
                 context.GetTextSpan());
         }
     }

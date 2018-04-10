@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common.Nodes.Collections;
+using System;
 using System.Collections.Generic;
 
 namespace PT.PM.Common.Nodes.Expressions
@@ -7,7 +8,7 @@ namespace PT.PM.Common.Nodes.Expressions
     {
         public Expression Target { get; set; }
 
-        public ArgsUst Arguments { get; set; }
+        public ArgsUst Arguments { get; set; } = new ArgsUst();
 
         public InvocationExpression()
         {
@@ -17,7 +18,7 @@ namespace PT.PM.Common.Nodes.Expressions
             : base(textSpan)
         {
             Target = target;
-            Arguments = arguments;
+            Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
         }
 
         public int GetIndexOfArg(Ust ustNode)
