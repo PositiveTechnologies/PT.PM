@@ -8,7 +8,6 @@ namespace PT.PM.PatternEditor
     public class PatternViewModel : ReactiveObject
     {
         public PatternDto patternDto { get; }
-            LineColumnTextSpans = true
 
         public PatternViewModel(PatternDto patternDto)
         {
