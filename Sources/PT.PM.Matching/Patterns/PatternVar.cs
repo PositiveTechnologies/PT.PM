@@ -60,7 +60,7 @@ namespace PT.PM.Matching.Patterns
             }
             else
             {
-                newContext = newContext.Vars.ContainsKey(Id)
+                newContext = newContext.Vars.TryGetValue(Id, out IdToken value) && value.Equals(idToken)
                     ? newContext.AddMatch(idToken)
                     : newContext.Fail();
             }
