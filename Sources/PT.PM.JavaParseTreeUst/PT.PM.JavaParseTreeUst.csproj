@@ -13,7 +13,7 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
-  <Target Name="GenerateJavaAntlrParser" BeforeTargets="Compile">
+  <Target Name="GenerateJavaAntlrParser" AfterTargets="AfterResolveReferences">
     <Exec Command="dotnet &quot;$(ProjectDir)..\..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\java\JavaLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\java\JavaParser.g4&quot; --package PT.PM.JavaParseTreeUst  --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 

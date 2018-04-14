@@ -13,7 +13,7 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
-  <Target Name="GenerateDslParser" BeforeTargets="Compile">
+  <Target Name="GenerateDslParser" AfterTargets="AfterResolveReferences">
     <Exec Command="dotnet &quot;$(ProjectDir)..\..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)DslLexer.g4&quot; --parser &quot;$(ProjectDir)DslParser.g4&quot; --package PT.PM.Dsl --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 

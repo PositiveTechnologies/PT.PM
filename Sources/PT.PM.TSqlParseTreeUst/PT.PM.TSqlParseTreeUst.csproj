@@ -13,7 +13,7 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
-  <Target Name="GenerateTSqlAntlrParser" BeforeTargets="Compile">
+  <Target Name="GenerateTSqlAntlrParser" AfterTargets="AfterResolveReferences">
     <Exec Command="dotnet &quot;$(ProjectDir)..\..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlLexer.g4&quot; --parser &quot;$(ProjectDir)..\antlr-grammars-v4\tsql\TSqlParser.g4&quot; --package PT.PM.TSqlParseTreeUst --output &quot;$(ProjectDir)Generated&quot;" />
   </Target>
 
