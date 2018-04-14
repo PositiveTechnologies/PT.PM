@@ -13,20 +13,22 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
-  <Target Name="GenerateDslParser" AfterTargets="AfterResolveReferences">
-    <Exec Command="dotnet &quot;$(ProjectDir)..\..\AntlrGen\AntlrGen.dll&quot; --lexer &quot;$(ProjectDir)DslLexer.g4&quot; --parser &quot;$(ProjectDir)DslParser.g4&quot; --package PT.PM.Dsl --output &quot;$(ProjectDir)Generated&quot;" />
-  </Target>
-
-  <ItemGroup>
-    <Compile Remove="Generated\DslParserBaseVisitor.cs" />
-  </ItemGroup>
-
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+    <PackageReference Include="Antlr4" Version="4.6.5-beta002" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj" />
     <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Update="DslLexer.g4">
+      <Listener>false</Listener>
+    </Antlr4>
+    <Antlr4 Update="DslParser.g4">
+      <Listener>false</Listener>
+    </Antlr4>
   </ItemGroup>
 </Project>

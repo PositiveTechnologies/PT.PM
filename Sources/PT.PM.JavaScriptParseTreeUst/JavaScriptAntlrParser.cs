@@ -1,7 +1,7 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using Antlr4.Runtime;
-using PT.PM.JavaScriptParseTreeUst.Parser;
+using static PT.PM.JavaScriptParseTreeUst.JavaScriptParser;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {

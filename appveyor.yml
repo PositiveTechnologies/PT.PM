@@ -3,7 +3,6 @@ image:
 - Ubuntu
 version: 1.5.1.{build}
 configuration: Release
-platform: Any CPU
 skip_branch_with_pr: true
 install:
 - git submodule update --init --recursive
@@ -13,9 +12,6 @@ assembly_info:
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
-before_build:
-- cmd: generate.cmd
-- sh: bash generate.cmd
 build_script:
 - ps: >-
     dotnet build Sources/PT.PM.sln -c Release
@@ -33,7 +29,7 @@ test_script:
 
     $wc = New-Object 'System.Net.WebClient'
 
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path ./Tests/Release/netcoreapp2.0/TestResults/TestResults.xml))
+    $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$env:APPVEYOR_JOB_ID", (Resolve-Path ./Tests/Release/netcoreapp2.0/TestResults/TestResults.xml))
 after_test:
 - ps: >-
     cd bin/Cli
