@@ -7,20 +7,13 @@
     <StartupObject />
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\Tests\Debug\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutputPath>..\..\Tests\Release\</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Data\ParseError.java" />
-    <None Remove="Data\Patterns.java" />
-    <None Remove="Data\PatternsWithParseErrors.java" />
-    <None Remove="Data\XxeSample.java" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Data\ParseError.java">

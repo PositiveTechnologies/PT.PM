@@ -4,18 +4,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\Tests\Debug\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutputPath>..\..\Tests\Release\</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Data\JavaScriptTestPatternsInsidePhp.php" />
-    <None Remove="Data\Patterns.js" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Data\JavaScriptTestPatternsInsidePhp.php">

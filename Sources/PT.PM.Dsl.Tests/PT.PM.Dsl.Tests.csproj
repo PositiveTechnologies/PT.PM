@@ -4,36 +4,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\Tests\Debug</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutputPath>..\..\Tests\Release\</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Data\AndroidHostnameVerificationDisabled.ptpm" />
-    <None Remove="Data\AndroidPermissionCheck.ptpm" />
-    <None Remove="Data\AttributesCodeInsideElementEvent.ptpm" />
-    <None Remove="Data\CookieNotSentOverSSL.ptpm" />
-    <None Remove="Data\CookieSecurityOverlyBroadDomain.ptpm" />
-    <None Remove="Data\DebugInfo.ptpm" />
-    <None Remove="Data\ExtendingSecurityManagerWithoutFinal.ptpm" />
-    <None Remove="Data\HardcodedPassword.ptpm" />
-    <None Remove="Data\ImproperValidationEmptyMethodFull.ptpm" />
-    <None Remove="Data\InadequateRSAPadding.ptpm" />
-    <None Remove="Data\InsecureRandomness.ptpm" />
-    <None Remove="Data\InsecureTransport.ptpm" />
-    <None Remove="Data\KeyManagementNullEncryptionKey.ptpm" />
-    <None Remove="Data\MissingBroadcasterPermission.ptpm" />
-    <None Remove="Data\PasswordInComment.ptpm" />
-    <None Remove="Data\PoorLoggingPractice.ptpm" />
-    <None Remove="Data\Range.ptpm" />
-    <None Remove="Data\UsingCloneWithoutCloneable.ptpm" />
-    <None Remove="Data\WeakCryptographicHash.ptpm" />
-    <None Remove="Data\XmlExternalEntity.ptpm" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Data\AndroidHostnameVerificationDisabled.ptpm">

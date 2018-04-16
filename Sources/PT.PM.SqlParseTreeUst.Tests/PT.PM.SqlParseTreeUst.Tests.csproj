@@ -4,27 +4,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\Tests\Debug\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutputPath>..\..\Tests\Release</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Data\plsql_patterns.sql" />
-    <None Remove="Data\tsql_patterns.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Data\plsql_patterns.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\tsql_patterns.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
@@ -33,5 +19,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\plsql_patterns.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\tsql_patterns.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

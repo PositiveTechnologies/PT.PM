@@ -4,20 +4,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\Tests\Debug\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutputPath>..\..\Tests\Release</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Data\newLine -r-n.php" />
-    <None Remove="Data\Patterns.html" />
-    <None Remove="Data\Patterns.php" />
-    <None Remove="Data\PatternsWithParseErrors.php" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Data\newLine -r-n.php">

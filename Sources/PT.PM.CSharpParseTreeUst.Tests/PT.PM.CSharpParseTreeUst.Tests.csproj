@@ -4,24 +4,17 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\Tests\Debug\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutputPath>..\..\Tests\Release\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Data\ParseError.cs" />
     <Compile Remove="Data\Patterns.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Data\AllInOne.aspx.txt" />
-    <None Remove="Data\HardcodedPassword.aspx" />
-    <None Remove="Data\Patterns.aspx" />
-    <None Remove="Data\TestAspxParser.aspx" />
   </ItemGroup>
 
   <ItemGroup>

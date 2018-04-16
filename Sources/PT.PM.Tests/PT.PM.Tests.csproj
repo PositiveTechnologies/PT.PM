@@ -4,27 +4,13 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\Tests\Debug\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <OutputPath>..\..\Tests\Release\</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Data\Test Project\1.cs" />
-    <Compile Remove="Data\Test Project\2.cs" />
-    <Compile Remove="Data\Test Project\Folder\1.cs" />
-    <Compile Remove="Data\Test Project\Folder\2.cs" />
-    <Compile Remove="Data\Test Project\Folder\3.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Data\TaintPoc.cs.txt" />
-    <None Remove="Data\Test Project\3.java" />
-    <None Remove="Data\Test Project\4.php" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Data\TaintPoc.cs.txt">
