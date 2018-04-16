@@ -13,18 +13,20 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 build_script:
-- ps: >-
+- ps: |
     dotnet build Sources/PT.PM.sln -c Release
 
     dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c Release -o ../../bin/Cli/netcoreapp2.0 -f netcoreapp2.0
 
-    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c Release -o ../../bin/Cli/net462 -f net462
-
     dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c Release -o ../../bin/Gui/netcoreapp2.0 -f netcoreapp2.0
 
-    dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c Release -o ../../bin/Gui/net462 -f net462
+    if ($isWindows) {
+        dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c Release -o ../../bin/Cli/net462 -f net462
+
+        dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c Release -o ../../bin/Gui/net462 -f net462
+    }
 test_script:
-- ps: >-
+- ps: |
     cd Tests/Release/netcoreapp2.0
 
     dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll --logger:nunit
@@ -35,28 +37,31 @@ test_script:
 
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$env:APPVEYOR_JOB_ID", (Resolve-Path ./Tests/Release/netcoreapp2.0/TestResults/TestResults.xml))
 after_test:
-- ps: >-
+- ps: |
     cd bin/Cli/netcoreapp2.0
 
     7z a PT.PM.Cli-netcoreapp2.0-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
 
-    cd ../Cli/net462
+    Push-AppveyorArtifact PT.PM.Cli-netcoreapp2.0-$env:APPVEYOR_BUILD_VERSION.zip
 
-    7z a PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
-
-    cd ../Gui/netcoreapp2.0
+    cd ../../Gui/netcoreapp2.0
 
     7z a PT.PM.Gui-netcoreapp2.0-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
 
-    cd ../Gui/net462
+    Push-AppveyorArtifact PT.PM.Gui-netcoreapp2.0-$env:APPVEYOR_BUILD_VERSION.zip
 
-    7z a PT.PM.Gui-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
-artifacts:
-- path: bin/Cli/netcoreapp2.0/*.zip
-  name: PT.PM.Cli-netcoreapp2.0
-- path: bin/Cli/net462/*.zip
-  name: PT.PM.Cli-net462
-- path: bin/Gui/netcoreapp2.0/*.zip
-  name: PT.PM.Gui-netcoreapp2.0
-- path: bin/Gui/net462/*.zip
-  name: PT.PM.Gui-net462
+    if ($isWindows) {
+
+        cd ../../Cli/net462
+
+        7z a PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
+
+        Push-AppveyorArtifact PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip
+
+        cd ../../Gui/net462
+
+        7z a PT.PM.Gui-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
+
+        Push-AppveyorArtifact PT.PM.Gui-net462-$env:APPVEYOR_BUILD_VERSION.zip
+
+    }
