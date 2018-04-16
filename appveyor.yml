@@ -16,9 +16,13 @@ build_script:
 - ps: >-
     dotnet build Sources/PT.PM.sln -c Release
 
-    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c Release -o ../../bin/Cli
+    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c Release -o ../../bin/Cli/netcoreapp2.0 -f netcoreapp2.0
 
-    dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c Release -o ../../bin/Gui
+    dotnet publish Sources/PT.PM.Cli/PT.PM.Cli.csproj -c Release -o ../../bin/Cli/net462 -f net462
+
+    dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c Release -o ../../bin/Gui/netcoreapp2.0 -f netcoreapp2.0
+
+    dotnet publish Sources/PT.PM.PatternEditor/PT.PM.PatternEditor.csproj -c Release -o ../../bin/Gui/net462 -f net462
 test_script:
 - ps: >-
     cd Tests/Release/netcoreapp2.0
@@ -32,15 +36,27 @@ test_script:
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$env:APPVEYOR_JOB_ID", (Resolve-Path ./Tests/Release/netcoreapp2.0/TestResults/TestResults.xml))
 after_test:
 - ps: >-
-    cd bin/Cli
+    cd bin/Cli/netcoreapp2.0
 
-    7z a PT.PM.Cli-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
+    7z a PT.PM.Cli-netcoreapp2.0-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
 
-    cd ../Gui
-    
-    7z a PT.PM.Gui-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
+    cd ../Cli/net462
+
+    7z a PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
+
+    cd ../Gui/netcoreapp2.0
+
+    7z a PT.PM.Gui-netcoreapp2.0-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json runtimes
+
+    cd ../Gui/net462
+
+    7z a PT.PM.Gui-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
 artifacts:
-- path: bin/Cli/*.zip
-  name: PT.PM.Cli
-- path: bin/Gui/*.zip
-  name: PT.PM.Gui
+- path: bin/Cli/netcoreapp2.0/*.zip
+  name: PT.PM.Cli-netcoreapp2.0
+- path: bin/Cli/net462/*.zip
+  name: PT.PM.Cli-net462
+- path: bin/Gui/netcoreapp2.0/*.zip
+  name: PT.PM.Gui-netcoreapp2.0
+- path: bin/Gui/net462/*.zip
+  name: PT.PM.Gui-net462
