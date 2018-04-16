@@ -54,13 +54,13 @@ after_test:
 
         cd ../../Cli/net462
 
-        7z a PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
+        7z a PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip *.exe *.dll *.config
 
         Push-AppveyorArtifact PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip
 
         cd ../../Gui/net462
 
-        7z a PT.PM.Gui-net462-$env:APPVEYOR_BUILD_VERSION.zip *.dll *.config *.json
+        7z a PT.PM.Gui-net462-$env:APPVEYOR_BUILD_VERSION.zip *.exe *.dll *.config
 
         Push-AppveyorArtifact PT.PM.Gui-net462-$env:APPVEYOR_BUILD_VERSION.zip
 
