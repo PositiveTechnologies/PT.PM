@@ -52,8 +52,6 @@ after_test:
 
     if ($isWindows) {
 
-        cd ../../Cli/net462
-
         7z a PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip *.exe *.dll *.config
 
         Push-AppveyorArtifact PT.PM.Cli-net462-$env:APPVEYOR_BUILD_VERSION.zip
