@@ -18,11 +18,6 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_Patterns_CorrectErrorMessages()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             PrepareAndSaveTestPatterns();
             var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
 
@@ -33,11 +28,6 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_LogPath_FilesInProperDirectory()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             PrepareAndSaveTestPatterns();
             string logPath = Path.Combine(Path.GetTempPath(), "PT.PM");
             try
@@ -63,11 +53,6 @@ namespace PT.PM.Cli.Tests
         [Ignore("TODO: fix on CI")]
         public void CheckCli_SeveralLanguages_OnlyPassedLanguagesProcessed()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
                 $"{TestUtility.PtPmExePath} " +
                 $"-f \"{TestUtility.TestsDataPath}\" " +
@@ -91,11 +76,6 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_FakeLanguage_CorrectlyProcessed()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             var patternTempFile = Path.GetTempFileName() + ".json";
             File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
             ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
@@ -111,11 +91,6 @@ namespace PT.PM.Cli.Tests
         [Ignore("TODO: fix on CI")]
         public void CheckCli_FilePatternsRepository_CorrectlyProcessed()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             var patternsFileName = Path.Combine(Path.GetTempPath(), "patterns.json");
             File.WriteAllText(patternsFileName, "[{\"Key\":\"1\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\"}]");
             try
