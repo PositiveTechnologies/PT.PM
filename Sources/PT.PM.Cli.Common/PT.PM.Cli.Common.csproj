@@ -15,9 +15,16 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-    <PackageReference Include="Antlr4.Runtime" Version="4.6.5-beta002" />
-    
-    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
+
+    <PackageReference Include="CommandLineParser" Version="2.2.1" />
+    <PackageReference Include="NLog" Version="4.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PT.PM\PT.PM.csproj" />
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

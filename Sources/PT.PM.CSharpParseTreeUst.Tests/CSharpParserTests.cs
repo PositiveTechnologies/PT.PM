@@ -8,6 +8,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
     [TestFixture]
     public class CSharpParserTests
     {
+        [Test]
         public void Parse_CSharpWithRoslyn()
         {
             TestUtility.CheckFile(Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs"),

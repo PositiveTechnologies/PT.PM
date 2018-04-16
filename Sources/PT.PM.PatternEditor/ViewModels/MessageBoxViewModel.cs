@@ -17,22 +17,12 @@ namespace PT.PM.PatternEditor
 
             if (MessageBoxType == MessageBoxType.Ok)
             {
-                OkCommand.Subscribe(_ =>
-                {
-                    this.window.Close(true);
-                });
+                OkCommand = ReactiveCommand.Create(() => this.window.Close(true));
             }
             else if (MessageBoxType == MessageBoxType.YesNo)
             {
-                YesCommand.Subscribe(_ =>
-                {
-                    this.window.Close(true);
-                });
-
-                NoCommand.Subscribe(_ =>
-                {
-                    this.window.Close(false);
-                });
+                YesCommand = ReactiveCommand.Create(() => this.window.Close(true));
+                NoCommand = ReactiveCommand.Create(() => this.window.Close(false));
             }
         }
 
@@ -46,10 +36,10 @@ namespace PT.PM.PatternEditor
 
         public bool YesNoButtonVisible => MessageBoxType == MessageBoxType.YesNo;
 
-        public ReactiveCommand<object> OkCommand { get; } = ReactiveCommand.Create();
+        public ReactiveCommand OkCommand { get; }
 
-        public ReactiveCommand<object> YesCommand { get; } = ReactiveCommand.Create();
+        public ReactiveCommand YesCommand { get; }
 
-        public ReactiveCommand<object> NoCommand { get; } = ReactiveCommand.Create();
+        public ReactiveCommand NoCommand { get; }
     }
 }

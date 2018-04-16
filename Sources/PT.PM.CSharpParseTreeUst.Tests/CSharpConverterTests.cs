@@ -4,6 +4,7 @@ using PT.PM.TestUtils;
 using NUnit.Framework;
 using PT.PM.Common.Nodes.GeneralScope;
 using System.IO;
+using System;
 
 namespace PT.PM.CSharpParseTreeUst.Tests
 {
@@ -25,7 +26,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             bool result = ust.AnyDescendant(descendant =>
             {
                 return descendant is TypeDeclaration typeDeclaration &&
-                       typeDeclaration.BaseTypes.Any(type => type.TypeText == "IDisposable");
+                       typeDeclaration.BaseTypes.Any(type => type.TypeText == nameof(IDisposable));
             });
             Assert.IsTrue(result, "Ust doesn't contain type declaration node with IDisposable base type");
         }

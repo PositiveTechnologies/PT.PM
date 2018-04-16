@@ -13,19 +13,13 @@ namespace PT.PM.Cli.Tests
     [TestFixture]
     public class CliTests
     {
-        private readonly static string exeName = Path.Combine(TestUtility.TestsPath, "PT.PM.Cli.exe");
         private readonly static string patternsFileName = Path.Combine(TestUtility.TestsOutputPath, "patterns.json");
 
         [Test]
         public void CheckCli_Patterns_CorrectErrorMessages()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             PrepareAndSaveTestPatterns();
-            var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
+            var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
 
             Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", result.Output[2]);
             Assert.AreEqual($"Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", result.Output[3]);
@@ -34,11 +28,6 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_LogPath_FilesInProperDirectory()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             PrepareAndSaveTestPatterns();
             string logPath = Path.Combine(Path.GetTempPath(), "PT.PM");
             try
@@ -47,7 +36,7 @@ namespace PT.PM.Cli.Tests
                 {
                     Directory.Delete(logPath, true);
                 }
-                var result = ProcessUtils.SetupHiddenProcessAndStart(exeName, $"--stage {Stage.Pattern} --patterns {patternsFileName} --logs-dir \"{logPath}\"");
+                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --logs-dir \"{logPath}\"");
                 var logFiles = Directory.GetFiles(logPath, "*.*");
                 Assert.Greater(logFiles.Length, 0);
             }
@@ -64,12 +53,8 @@ namespace PT.PM.Cli.Tests
         [Ignore("TODO: fix on CI")]
         public void CheckCli_SeveralLanguages_OnlyPassedLanguagesProcessed()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
-            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
+            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+                $"{TestUtility.PtPmExePath} " +
                 $"-f \"{TestUtility.TestsDataPath}\" " +
                 $"-l PlSql,TSql " +
                 $"--stage {Stage.ParseTree} --log-debugs");
@@ -78,7 +63,8 @@ namespace PT.PM.Cli.Tests
             Assert.IsTrue(result.Output.Any(line => line.Contains(".php has not been read")));
             Assert.IsTrue(result.Output.Any(line => line.Contains("has been detected")));
 
-            result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
+            result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+                $"{TestUtility.PtPmExePath} " +
                 $"-f \"{TestUtility.TestsDataPath}\" " +
                 $"-l PlSql " +
                 $"--stage {Stage.ParseTree} --log-debugs");
@@ -90,14 +76,10 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_FakeLanguage_CorrectlyProcessed()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             var patternTempFile = Path.GetTempFileName() + ".json";
             File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
-            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
+            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+               $"{TestUtility.PtPmExePath} " +
                $"--stage {Stage.Pattern} " +
                $"--patterns {patternTempFile} " +
                $"--log-debugs --log-errors");
@@ -109,17 +91,12 @@ namespace PT.PM.Cli.Tests
         [Ignore("TODO: fix on CI")]
         public void CheckCli_FilePatternsRepository_CorrectlyProcessed()
         {
-            if (CommonUtils.IsRunningOnLinux)
-            {
-                Assert.Ignore("TODO: fix failed Cli unit-test on mono (Linux)");
-            }
-
             var patternsFileName = Path.Combine(Path.GetTempPath(), "patterns.json");
             File.WriteAllText(patternsFileName, "[{\"Key\":\"1\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\"}]");
             try
             {
-                var result = ProcessUtils.SetupHiddenProcessAndStart(exeName,
-                    $"-f \"{Path.Combine(TestUtility.TestsDataPath, "Patterns.cs")}\" " +
+                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
+                    $"{TestUtility.PtPmExePath} -f \"{Path.Combine(TestUtility.TestsDataPath, "Patterns.cs")}\" " +
                     $"--patterns \"{patternsFileName}\"");
 
                 Assert.IsTrue(result.Output.Any(str => str.Contains("Pattern matched")));

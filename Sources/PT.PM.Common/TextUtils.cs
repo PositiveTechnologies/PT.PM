@@ -163,23 +163,28 @@ namespace PT.PM.Common
             }
             else
             {
-                result = codeFiles?.FirstOrDefault(codeFile => codeFile.RelativeName == fileName || codeFile.FullName == fileName);
+                result = codeFiles?.FirstOrDefault(codeFile => codeFile.Equals(fileName) || codeFile.RelativeName.Equals(fileName));
                 if (result == null)
                 {
                     if (!File.Exists(fileName))
                     {
-                        throw new FileNotFoundException($"File {fileName} is not found.", fileName);
-                    }
-                    else
-                    {
-                        var code = File.ReadAllText(fileName);
-                        result = new CodeFile(code)
+                        if (currentCodeFile != null)
                         {
-                            RootPath = Path.GetDirectoryName(fileName),
-                            Name = Path.GetFileName(fileName)
-                        };
-                        codeFiles.Add(result);
+                            fileName = Path.Combine(currentCodeFile.RootPath, fileName);
+                            if (!File.Exists(fileName))
+                            {
+                                throw new FileNotFoundException($"File {fileName} is not found.", fileName);
+                            }
+                        }
                     }
+
+                    var code = File.ReadAllText(fileName);
+                    result = new CodeFile(code)
+                    {
+                        RootPath = Path.GetDirectoryName(fileName),
+                        Name = Path.GetFileName(fileName)
+                    };
+                    codeFiles.Add(result);
                 }
             }
             return result;

@@ -22,6 +22,8 @@ namespace PT.PM
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             GraphvizPath = CommonUtils.IsRunningOnLinux
                 ? "dot"
+                : CommonUtils.ExistsOnPath("dot.exe")
+                ? "dot.exe"
                 : Path.Combine(executingAssemblyPath, "Graphviz", "dot.exe");
         }
 
@@ -32,7 +34,7 @@ namespace PT.PM
 
         public void Render(string filePath)
         {
-            if (!File.Exists(GraphvizPath))
+            if (!CommonUtils.ExistsOnPath(GraphvizPath))
             {
                 throw new Exception($"dot.exe has not been found at {GraphvizPath}");
             }

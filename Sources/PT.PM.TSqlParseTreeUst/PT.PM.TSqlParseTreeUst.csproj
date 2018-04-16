@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -15,25 +15,17 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Antlr4 Include="..\antlr-grammars-v4\php\CSharpSharwell\PhpLexer.g4" Link="PhpLexer.g4">
-      <Listener>false</Listener>
-      <CustomToolNamespace>PT.PM.PhpParseTreeUst</CustomToolNamespace>
-    </Antlr4>
-    <Antlr4 Include="..\antlr-grammars-v4\php\PhpParser.g4" Link="PhpParser.g4">
-      <CustomToolNamespace>PT.PM.PhpParseTreeUst</CustomToolNamespace>
+    <Antlr4 Include="..\antlr-grammars-v4\tsql\TSqlLexer.g4" Link="TSqlLexer.g4">
+      <CustomToolNamespace>PT.PM.TSqlParseTreeUst</CustomToolNamespace>
       <Listener>false</Listener>
     </Antlr4>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Antlr4 Include="..\antlr-grammars-v4\tsql\TSqlParser.g4" Link="TSqlParser.g4">
+      <CustomToolNamespace>PT.PM.TSqlParseTreeUst</CustomToolNamespace>
+      <Listener>false</Listener>
+    </Antlr4>
     <PackageReference Include="Antlr4" Version="4.6.5-beta002" />
-  </ItemGroup>
-  
-  <ItemGroup>
+
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
-    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj" />
   </ItemGroup>
 </Project>

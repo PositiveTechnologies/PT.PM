@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 
 namespace PT.PM.PatternEditor
@@ -17,8 +18,8 @@ namespace PT.PM.PatternEditor
             }
             else if (errorsListBox.SelectedItem is ConversionException conversionException)
             {
-                var textSpan = conversionException.TextSpan;
-                if (textSpan != null)
+                TextSpan textSpan = conversionException.TextSpan;
+                if (!textSpan.IsZero)
                 {
                     selectionStart = textSpan.Start;
                     selectionEnd = textSpan.End;
@@ -26,8 +27,8 @@ namespace PT.PM.PatternEditor
             }
             else if (errorsListBox.SelectedItem is MatchingException matchException)
             {
-                var textSpan = matchException.TextSpan;
-                if (textSpan != null)
+                TextSpan textSpan = matchException.TextSpan;
+                if (!textSpan.IsZero)
                 {
                     selectionStart = textSpan.Start;
                     selectionEnd = textSpan.End;

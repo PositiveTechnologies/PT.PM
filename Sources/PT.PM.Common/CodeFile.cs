@@ -176,7 +176,7 @@ namespace PT.PM.Common
                 return Code == other.Code;
             }
 
-            return RelativeName == other.RelativeName;
+            return FullName == other.FullName;
         }
 
         public override int GetHashCode()

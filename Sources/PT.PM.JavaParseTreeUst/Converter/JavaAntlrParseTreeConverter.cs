@@ -3,10 +3,8 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.JavaParseTreeUst.Parser;
 using PT.PM.AntlrUtils;
 using Antlr4.Runtime.Tree;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -394,7 +392,8 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitMethodCall([NotNull] JavaParser.MethodCallContext context)
         {
-            return new InvocationExpression((Expression)Visit(context.IDENTIFIER()), (ArgsUst)Visit(context.expressionList()),
+            return new InvocationExpression((Expression)Visit(context.IDENTIFIER()),
+                (ArgsUst)Visit(context.expressionList()) ?? new ArgsUst(),
                 context.GetTextSpan());
         }
     }

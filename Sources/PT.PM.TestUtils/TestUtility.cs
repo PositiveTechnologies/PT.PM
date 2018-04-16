@@ -14,12 +14,11 @@ namespace PT.PM.TestUtils
         public const string TooLongTestDurationMessage = "Too long test duration.";
 
         public static string RepositoryDirectory;
+        public static string PtPmExePath = $@"bin/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.0/PT.PM.Cli.dll";
         public static string GrammarsDirectory = "Sources/antlr-grammars-v4";
-        public static string TestsPath = $@"Tests/Unit/bin/{(IsDebug ? "Debug" : "Release")}";
+        public static string TestsPath = $@"Tests/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.0";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
-        public static string GraphvizPath = "Sources/packages/Graphviz.2.38.0.2/dot.exe";
-        public static string SevenZipPath = "Sources/packages/7-Zip.x64.16.02.1/tools/7z.exe";
 
         internal static bool IsDebug =>
 #if DEBUG
@@ -32,6 +31,7 @@ namespace PT.PM.TestUtils
         {
             GetRepositoryDirectory();
 
+            PtPmExePath = Path.Combine(RepositoryDirectory, PtPmExePath);
             GrammarsDirectory = Path.Combine(RepositoryDirectory, GrammarsDirectory).NormDirSeparator();
             TestsPath = Path.Combine(RepositoryDirectory, TestsPath).NormDirSeparator();
             TestsDataPath = Path.Combine(RepositoryDirectory, TestsDataPath).NormDirSeparator();
@@ -40,8 +40,6 @@ namespace PT.PM.TestUtils
             {
                 Directory.CreateDirectory(TestsOutputPath);
             }
-            GraphvizPath = CommonUtils.IsRunningOnLinux ? "dot" : Path.Combine(RepositoryDirectory, GraphvizPath).NormDirSeparator();
-            SevenZipPath = CommonUtils.IsRunningOnLinux ? "7z" : Path.Combine(RepositoryDirectory, SevenZipPath).NormDirSeparator();
         }
 
         public static WorkflowResult CheckFile(string fileName, Stage endStage,

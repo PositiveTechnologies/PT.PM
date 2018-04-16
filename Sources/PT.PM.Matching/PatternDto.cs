@@ -39,6 +39,13 @@ namespace PT.PM.Matching
                 lang.Value.IsSql ? Languages.Contains(lang.Key) : true))
             {
                 languages = "SQL";
+                string rest = string.Join(", ", patternLanguages.Where(lang =>
+                    !lang.Value.IsSql && Languages.Contains(lang.Key))
+                    .Select(lang => lang.Key));
+                if (rest != "")
+                {
+                    languages += ", " + rest;
+                }
             }
             else
             {
