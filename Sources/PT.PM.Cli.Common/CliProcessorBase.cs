@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Matching;
@@ -25,11 +26,19 @@ namespace PT.PM.Cli
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
+            var logger = new ConsoleFileLogger();
+            logger.IsLogErrors = true;
+
             var parser = new Parser(config => config.HelpWriter = Console.Out);
             ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(args);
 
             var result = parserResult.MapResult(
-                cliParams => {
+                cliParams =>
+                {
+                    PopulateConfigFromJson(cliParams, logger);
+
+                    FillLoggerSettings(args, cliParams, logger);
+
                     if (!string.IsNullOrEmpty(cliParams.LogsDir) && !cliParams.LogsDir.EndsWith(coreName, StringComparison.OrdinalIgnoreCase))
                     {
                         cliParams.LogsDir = Path.Combine(cliParams.LogsDir, coreName);
@@ -38,13 +47,13 @@ namespace PT.PM.Cli
                     int convertResult = 0;
                     if (cliParams.MaxStackSize == 0)
                     {
-                        convertResult = Convert(args, cliParams);
+                        convertResult = Convert(args, cliParams, logger);
                     }
                     else
                     {
                         Thread thread = new Thread(() =>
                         {
-                            convertResult = Convert(args, cliParams);
+                            convertResult = Convert(args, cliParams, logger);
                         },
                         cliParams.MaxStackSize);
                         thread.Start();
@@ -57,27 +66,10 @@ namespace PT.PM.Cli
             return result;
         }
 
-        public int Convert(string[] args, TParameters parameters)
+        public int Convert(string[] args, TParameters parameters, ConsoleFileLogger logger)
         {
-            ILogger logger = new ConsoleFileLogger();
-
             try
             {
-                AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-                string name = assemblyName.Name.Replace(".Cli", "");
-                logger.LogInfo($"{name} version: {assemblyName.Version}");
-
-                if (logger is FileLogger abstractLogger)
-                {
-                    string commandLineArguments = "Command line arguments" + (args.Length > 0
-                       ? ": " + string.Join(" ", args)
-                       : " are not defined.");
-                    abstractLogger.LogsDir = parameters.LogsDir;
-                    abstractLogger.IsLogErrors = parameters.IsLogErrors;
-                    abstractLogger.IsLogDebugs = parameters.IsLogDebugs;
-                    abstractLogger.LogInfo(commandLineArguments);
-                }
-
                 if (!Enum.TryParse(parameters.Stage, true, out Stage pmStage))
                 {
                     pmStage = Stage.Match;
@@ -151,6 +143,53 @@ namespace PT.PM.Cli
         protected int ProcessErrors(IEnumerable<Error> errors)
         {
             return 1;
+        }
+
+        private static void PopulateConfigFromJson(TParameters cliParams, ConsoleFileLogger logger)
+        {
+            string configFile = File.Exists("config.json") ? "config.json" : cliParams.ConfigFile;
+            if (!string.IsNullOrEmpty(configFile))
+            {
+                logger.LogInfo($"Load settings from {configFile}...");
+
+                string content = null;
+                try
+                {
+                    content = File.ReadAllText(configFile);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex);
+                }
+
+                if (content != null)
+                {
+                    try
+                    {
+                        JsonConvert.PopulateObject(content, cliParams);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex);
+                    }
+                }
+            }
+        }
+
+        private static void FillLoggerSettings(string[] args, TParameters cliParams, ConsoleFileLogger logger)
+        {
+            AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+            string name = assemblyName.Name.Replace(".Cli", "");
+
+            string commandLineArguments = "Command line arguments: " + (args.Length > 0
+               ? string.Join(" ", args)
+               : "not defined.");
+
+            logger.LogInfo($"{name} version: {assemblyName.Version}");
+            logger.LogsDir = cliParams.LogsDir;
+            logger.IsLogErrors = cliParams.IsLogErrors;
+            logger.IsLogDebugs = cliParams.IsLogDebugs;
+            logger.LogInfo(commandLineArguments);
         }
     }
 }

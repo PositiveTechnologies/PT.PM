@@ -6,6 +6,9 @@ namespace PT.PM.Cli
 {
     public class CliParameters
     {
+        [Option('c', "config")]
+        public string ConfigFile { get; set; } = "";
+
         [Option('f', "files", HelpText = "Input file or directory to be processed")]
         public string InputFileNameOrDirectory { get; set; } = "";
 
