@@ -51,55 +51,48 @@ namespace PT.PM
             result.BaseLanguages = BaseLanguages.ToArray();
             result.RenderStages = RenderStages;
 
-            if (Stage == Stage.Pattern)
+            IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
+            if (fileNames is IList<string> fileNamesList)
             {
-                ConvertPatterns(result);
+                result.TotalFilesCount = fileNamesList.Count;
             }
             else
             {
-                IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
-                if (fileNames is IList<string> fileNamesList)
+                filesCountTask = Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
+            }
+
+            try
+            {
+                var patternMatcher = new PatternMatcher
                 {
-                    result.TotalFilesCount = fileNamesList.Count;
+                    Logger = Logger,
+                    Patterns = ConvertPatterns(result),
+                    IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards
+                };
+
+                if (ThreadCount == 1 || (fileNames is IList<string> && result.TotalFilesCount <= 1))
+                {
+                    foreach (string fileName in fileNames)
+                    {
+                        ProcessFileWithTimeout(fileName, patternMatcher, result, cancellationToken);
+                    }
                 }
                 else
                 {
-                    filesCountTask = Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
-                }
-
-                try
-                {
-                    var patternMatcher = new PatternMatcher
-                    {
-                        Logger = Logger,
-                        Patterns = ConvertPatterns(result),
-                        IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards
-                    };
-
-                    if (ThreadCount == 1 || (fileNames is IList<string> && result.TotalFilesCount == 1))
-                    {
-                        foreach (string fileName in fileNames)
+                    var parallelOptions = PrepareParallelOptions(cancellationToken);
+                    Parallel.ForEach(
+                        fileNames,
+                        parallelOptions,
+                        fileName =>
                         {
-                            ProcessFileWithTimeout(fileName, patternMatcher, result, cancellationToken);
-                        }
-                    }
-                    else
-                    {
-                        var parallelOptions = PrepareParallelOptions(cancellationToken);
-                        Parallel.ForEach(
-                            fileNames,
-                            parallelOptions,
-                            fileName =>
-                            {
-                                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                                ProcessFileWithTimeout(fileName, patternMatcher, result, parallelOptions.CancellationToken);
-                            });
-                    }
+                            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                            ProcessFileWithTimeout(fileName, patternMatcher, result, parallelOptions.CancellationToken);
+                        });
                 }
-                catch (OperationCanceledException)
-                {
-                    Logger.LogInfo("Scan has been cancelled");
-                }
+            }
+            catch (OperationCanceledException)
+            {
+                Logger.LogInfo("Scan has been cancelled");
             }
 
             if (result.TotalProcessedFilesCount > 1)

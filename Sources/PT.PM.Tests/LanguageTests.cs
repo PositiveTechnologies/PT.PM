@@ -25,7 +25,7 @@ namespace PT.PM.Tests
             CollectionAssert.IsSupersetOf(LanguageUtils.Languages.Values, notJavaLangs);
             CollectionAssert.DoesNotContain(notJavaLangs, Java.Language);
 
-            HashSet<Language> notJavaSqlLangs = "!Java|!Sql".ParseLanguages();
+            HashSet<Language> notJavaSqlLangs = "!Java,!Sql".ParseLanguages();
             CollectionAssert.IsSupersetOf(LanguageUtils.Languages.Values, notJavaSqlLangs);
             CollectionAssert.DoesNotContain(notJavaSqlLangs, Java.Language);
             CollectionAssert.DoesNotContain(notJavaSqlLangs, TSql.Language);

@@ -70,11 +70,6 @@ namespace PT.PM.Cli
         {
             try
             {
-                if (!Enum.TryParse(parameters.Stage, true, out Stage pmStage))
-                {
-                    pmStage = Stage.Match;
-                }
-
                 bool loadJson = !string.IsNullOrEmpty(parameters.StartStage) &&
                     !parameters.StartStage.EqualsIgnoreCase(Stage.File.ToString());
 
@@ -90,10 +85,10 @@ namespace PT.PM.Cli
                 TWorkflowResult workflowResult = workflow.Process();
                 stopwatch.Stop();
 
-                if (pmStage != Stage.Pattern)
+                if (!workflow.Stage.Is(Stage.Pattern))
                 {
                     logger.LogInfo("Scan completed.");
-                    if (pmStage == Stage.Match)
+                    if (workflow.Stage.Is(Stage.Match))
                     {
                         logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {workflowResult.MatchResults.Count()}");
                     }
