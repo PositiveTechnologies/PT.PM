@@ -78,6 +78,10 @@ namespace PT.PM
             {
                 patternsRepository = new DefaultPatternRepository();
             }
+            else if (patternsString.EqualsIgnoreCase("no"))
+            {
+                patternsRepository = new DummyPatternsRepository();
+            }
             else if (patternsString.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             {
                 patternsRepository = new JsonPatternsRepository(File.ReadAllText(patternsString));

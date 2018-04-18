@@ -37,7 +37,6 @@ namespace PT.PM
             IPatternSerializer dslNodeSerializer = new DslProcessor();
             PatternConverter = new PatternConverter(jsonNodeSerializer, dslNodeSerializer);
             Stage = stage;
-            ThreadCount = 1;
         }
 
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
