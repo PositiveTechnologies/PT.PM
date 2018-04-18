@@ -75,7 +75,7 @@ namespace PT.PM
             }
         }
 
-        public int ThreadCount { get; set; }
+        public int ThreadCount { get; set; } = 0;
 
         public long MemoryConsumptionMb { get; set; } = 300;
 
@@ -302,10 +302,14 @@ namespace PT.PM
             {
                 var stopwatch = Stopwatch.StartNew();
                 IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                var patterns = PatternConverter.Convert(patternDtos);
+                List<TPattern> patterns = PatternConverter.Convert(patternDtos);
                 stopwatch.Stop();
-                workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                workflowResult.AddResultEntity(patterns);
+                if (patterns.Count > 0)
+                {
+                    workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
+                    workflowResult.AddResultEntity(patterns);
+                    workflowResult.AddProcessedPatternsCount(patterns.Count);
+                }
                 return patterns;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
