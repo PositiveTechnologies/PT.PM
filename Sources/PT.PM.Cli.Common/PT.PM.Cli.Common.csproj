@@ -22,9 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PT.PM\PT.PM.csproj" />
-    <None Update="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
