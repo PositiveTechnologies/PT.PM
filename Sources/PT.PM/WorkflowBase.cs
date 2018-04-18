@@ -99,9 +99,9 @@ namespace PT.PM
 
         public bool DumpWithTextSpans { get; set; } = true;
 
-        public bool IncludeCodeInDump { get; set; } = true;
+        public bool IncludeCodeInDump { get; set; } = false;
 
-        public bool LineColumnTextSpans { get; set; } = false;
+        public bool LineColumnTextSpans { get; set; } = true;
 
         public string LogsDir { get; set; } = "";
 

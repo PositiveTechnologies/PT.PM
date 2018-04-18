@@ -15,7 +15,7 @@ using System.Threading;
 
 namespace PT.PM.Cli
 {
-    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
+    public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
         where TMatchResult : MatchResultBase<TPattern>
@@ -45,7 +45,7 @@ namespace PT.PM.Cli
                     }
 
                     int convertResult = 0;
-                    if (cliParams.MaxStackSize == 0)
+                    if (cliParams.MaxStackSize == null || cliParams.MaxStackSize == 0)
                     {
                         convertResult = Convert(args, cliParams, logger);
                     }
@@ -55,7 +55,7 @@ namespace PT.PM.Cli
                         {
                             convertResult = Convert(args, cliParams, logger);
                         },
-                        cliParams.MaxStackSize);
+                        cliParams.MaxStackSize.Value);
                         thread.Start();
                         thread.Join();
                     }
@@ -78,18 +78,16 @@ namespace PT.PM.Cli
                 bool loadJson = !string.IsNullOrEmpty(parameters.StartStage) &&
                     !parameters.StartStage.EqualsIgnoreCase(Stage.File.ToString());
 
-                HashSet<Language> languages = parameters.Languages.ParseLanguages();
+                HashSet<Language> languages = parameters.Languages?.ParseLanguages() ?? new HashSet<Language>(LanguageUtils.Languages.Values);
                 SourceCodeRepository sourceCodeRepository = RepositoryFactory.
-                    CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir,
-                    loadJson);
+                    CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir, loadJson);
 
-                IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns, logger);
-                patternsRepository.Identifiers = parameters.PatternIds.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(id => id.Trim());
+                IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns, parameters.PatternIds, logger);
 
                 var stopwatch = Stopwatch.StartNew();
-                TWorkflowResult workflowResult =
-                    InitWorkflowAndProcess(parameters, logger, sourceCodeRepository, patternsRepository);
+                var workflow =
+                    InitWorkflow(parameters, logger, sourceCodeRepository, patternsRepository);
+                TWorkflowResult workflowResult = workflow.Process();
                 stopwatch.Stop();
 
                 if (pmStage != Stage.Pattern)
@@ -136,14 +134,94 @@ namespace PT.PM.Cli
             return 0;
         }
 
-        protected abstract TWorkflowResult InitWorkflowAndProcess(TParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
-
         protected abstract void LogStatistics(ILogger logger, TWorkflowResult workflowResult);
 
         protected int ProcessErrors(IEnumerable<Error> errors)
         {
             return 1;
         }
+
+        protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult>
+            InitWorkflow(TParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository)
+        {
+            var workflow = CreateWorkflow(parameters, sourceCodeRepository, patternsRepository);
+            workflow.Logger = logger;
+
+            if (parameters.Stage != null)
+            {
+                workflow.Stage = parameters.Stage.ParseEnum<TStage>();
+            }
+            else if (string.IsNullOrEmpty(parameters.InputFileNameOrDirectory))
+            {
+                workflow.Stage = nameof(Stage.Pattern).ParseEnum<TStage>();
+            }
+            if (parameters.ThreadCount.HasValue)
+            {
+                workflow.ThreadCount = parameters.ThreadCount.Value;
+            }
+            if (parameters.NotPreprocessUst.HasValue)
+            {
+                workflow.IsIncludePreprocessing = !parameters.NotPreprocessUst.Value;
+            }
+            if (parameters.MaxStackSize.HasValue)
+            {
+                workflow.MaxStackSize = parameters.MaxStackSize.Value;
+            }
+            if (parameters.Memory.HasValue)
+            {
+                workflow.MemoryConsumptionMb = parameters.Memory.Value;
+            }
+            if (parameters.FileTimeout.HasValue)
+            {
+                workflow.FileTimeout = TimeSpan.FromSeconds(parameters.FileTimeout.Value);
+            }
+            if (parameters.LogsDir != null)
+            {
+                workflow.LogsDir = parameters.LogsDir;
+                workflow.DumpDir = parameters.LogsDir;
+            }
+            if (parameters.NoIndentedDump.HasValue)
+            {
+                workflow.IndentedDump = !parameters.NoIndentedDump.Value;
+            }
+            if (parameters.NotIncludeTextSpansInDump.HasValue)
+            {
+                workflow.DumpWithTextSpans = !parameters.NotIncludeTextSpansInDump.Value;
+            }
+            if (parameters.LineColumnTextSpans.HasValue)
+            {
+                workflow.LineColumnTextSpans = parameters.LineColumnTextSpans.Value;
+            }
+            if (parameters.IncludeCodeInDump.HasValue)
+            {
+                workflow.IncludeCodeInDump = parameters.IncludeCodeInDump.Value;
+            }
+            if (parameters.StartStage != null)
+            {
+                workflow.StartStage = parameters.StartStage.ParseEnum<TStage>();
+            }
+            if (parameters.DumpStages != null)
+            {
+                workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.ParseCollection<TStage>());
+            }
+            if (parameters.RenderStages != null)
+            {
+                workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.ParseCollection<TStage>());
+            }
+            if (parameters.RenderFormat != null)
+            {
+                workflow.RenderFormat = parameters.RenderFormat.ParseEnum<GraphvizOutputFormat>();
+            }
+            if (parameters.RenderDirection != null)
+            {
+                workflow.RenderDirection = parameters.RenderDirection.ParseEnum<GraphvizDirection>();
+            }
+
+            return workflow;
+        }
+
+        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> CreateWorkflow
+            (TParameters parameters, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
 
         private static void PopulateConfigFromJson(TParameters cliParams, ConsoleFileLogger logger)
         {
@@ -186,9 +264,12 @@ namespace PT.PM.Cli
                : "not defined.");
 
             logger.LogInfo($"{name} version: {assemblyName.Version}");
-            logger.LogsDir = cliParams.LogsDir;
-            logger.IsLogErrors = cliParams.IsLogErrors;
-            logger.IsLogDebugs = cliParams.IsLogDebugs;
+            if (cliParams.LogsDir != null)
+            {
+                logger.LogsDir = cliParams.LogsDir;
+            }
+            logger.IsLogErrors = cliParams.IsLogErrors.HasValue ? cliParams.IsLogErrors.Value : false;
+            logger.IsLogDebugs = cliParams.IsLogDebugs.HasValue ? cliParams.IsLogDebugs.Value : false;
             logger.LogInfo(commandLineArguments);
         }
     }

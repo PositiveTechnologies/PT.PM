@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace PT.PM
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : base(stage)
         {
+            LogsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM");
+            DumpDir = LogsDir;
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
             IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();

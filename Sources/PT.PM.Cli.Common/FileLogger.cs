@@ -1,4 +1,5 @@
-﻿using PT.PM.Common;
+﻿using NLog.Targets;
+using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Matching;
 using System;
@@ -27,7 +28,7 @@ namespace PT.PM.Cli
             CutWords = false
         };
 
-        protected PrettyPrinter MessagePrinter { get; } = new PrettyPrinter()
+        protected PrettyPrinter MessagePrinter { get; } = new PrettyPrinter
         {
             MaxMessageLength = 300,
         };
@@ -39,15 +40,15 @@ namespace PT.PM.Cli
 
         public string LogsDir
         {
-            get { return logPath; }
+            get => logPath;
             set
             {
                 logPath = value;
                 if (!string.IsNullOrEmpty(logPath))
                 {
-                    foreach (var target in NLog.LogManager.Configuration.AllTargets)
+                    foreach (Target target in NLog.LogManager.Configuration.AllTargets)
                     {
-                        if (target is NLog.Targets.FileTarget fileTarget)
+                        if (target is FileTarget fileTarget)
                         {
                             string fullFileName = fileTarget.FileName.ToString().Replace("'", "");
                             fileTarget.FileName = Path.Combine(logPath, Path.GetFileName(fullFileName));
