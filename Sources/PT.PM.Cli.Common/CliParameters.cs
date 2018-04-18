@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using System.Collections.Generic;
 
 namespace PT.PM.Cli
 {
@@ -10,14 +11,14 @@ namespace PT.PM.Cli
         [Option('f', "files", HelpText = "Input file or directory to be processed")]
         public string InputFileNameOrDirectory { get; set; }
 
-        [Option('l', "languages", HelpText = "Languages to be processed")]
-        public string Languages { get; set; }
+        [Option('l', "languages", HelpText = "Languages to be processed", Separator = ',')]
+        public IEnumerable<string> Languages { get; set; }
 
         [Option("patterns", HelpText = "Patterns to be processed")]
         public string Patterns { get; set; }
 
-        [Option("pattern-ids", HelpText = "Pattern identifiers to be processed")]
-        public string PatternIds { get; set; }
+        [Option("pattern-ids", HelpText = "Pattern identifiers to be processed", Separator = ',')]
+        public IEnumerable<string> PatternIds { get; set; }
 
         [Option('t', "threads", HelpText = "Number of processing threads")]
         public int? ThreadCount { get; set; }
@@ -64,11 +65,11 @@ namespace PT.PM.Cli
         [Option("start-stage", HelpText = "Start stage to process (File or Ust)")]
         public string StartStage { get; set; }
 
-        [Option('d', "dump", HelpText = "Stages to be dumped (ParseTree, Ust)")]
-        public string DumpStages { get; set; }
+        [Option('d', "dump", HelpText = "Stages to be dumped (ParseTree, Ust)", Separator = ',')]
+        public IEnumerable<string> DumpStages { get; set; }
 
-        [Option('r', "render", HelpText = "Stages to be rendered")]
-        public string RenderStages { get; set; }
+        [Option('r', "render", HelpText = "Stages to be rendered", Separator = ',')]
+        public IEnumerable<string> RenderStages { get; set; }
 
         [Option("render-format", HelpText = "Graph render format (Png, Svg, etc.)")]
         public string RenderFormat { get; set; }

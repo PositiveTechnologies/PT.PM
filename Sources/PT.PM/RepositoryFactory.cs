@@ -66,7 +66,7 @@ namespace PT.PM
             return sourceCodeRepository;
         }
 
-        public static IPatternsRepository CreatePatternsRepository(string patternsString, ILogger logger)
+        public static IPatternsRepository CreatePatternsRepository(string patternsString, IEnumerable<string> identifiers, ILogger logger)
         {
             IPatternsRepository patternsRepository;
 
@@ -116,6 +116,11 @@ namespace PT.PM
             if (logger != null)
             {
                 patternsRepository.Logger = logger;
+            }
+
+            if (identifiers != null)
+            {
+                patternsRepository.Identifiers = identifiers;
             }
 
             return patternsRepository;

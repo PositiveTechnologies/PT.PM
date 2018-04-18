@@ -202,11 +202,11 @@ namespace PT.PM.Cli
             }
             if (parameters.DumpStages != null)
             {
-                workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.ParseCollection<TStage>());
+                workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.Select(stage => stage.ParseEnum<TStage>()));
             }
             if (parameters.RenderStages != null)
             {
-                workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.ParseCollection<TStage>());
+                workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.Select(stage => stage.ParseEnum<TStage>()));
             }
             if (parameters.RenderFormat != null)
             {
