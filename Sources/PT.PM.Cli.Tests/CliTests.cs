@@ -19,7 +19,7 @@ namespace PT.PM.Cli.Tests
         public void CheckCli_Patterns_CorrectErrorMessages()
         {
             PrepareAndSaveTestPatterns();
-            var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --log-errors");
+            var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --log-errors true");
 
             Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", result.Output[2]);
             Assert.AreEqual($"Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", result.Output[3]);
@@ -82,7 +82,7 @@ namespace PT.PM.Cli.Tests
                $"{TestUtility.PtPmExePath} " +
                $"--stage {Stage.Pattern} " +
                $"--patterns {patternTempFile} " +
-               $"--log-debugs --log-errors");
+               $"--log-debugs true --log-errors true");
 
             Assert.AreEqual("PatternNode \"1\" doesn't have proper target languages.", result.Output[2]);
         }

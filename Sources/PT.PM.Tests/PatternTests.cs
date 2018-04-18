@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
+using PT.PM.Cli.Common;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Dsl;
@@ -139,7 +140,7 @@ namespace PT.PM.Tests
         private void Check(string patternsString)
         {
             var logger = new LoggerMessageCounter();
-            var patternsRepository = RepositoryFactory.CreatePatternsRepository(patternsString, logger);
+            var patternsRepository = RepositoryFactory.CreatePatternsRepository(patternsString, null, logger);
 
             var workflow = new Workflow(codeRepository)
             {

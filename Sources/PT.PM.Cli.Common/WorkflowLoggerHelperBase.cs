@@ -2,9 +2,9 @@
 using PT.PM.Matching;
 using System;
 using System.Linq;
-using static PT.PM.Cli.WorkflowLoggerHelper;
+using static PT.PM.Cli.Common.WorkflowLoggerHelper;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
     public abstract class WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchResult> : ILoggable
         where TStage : struct, IConvertible

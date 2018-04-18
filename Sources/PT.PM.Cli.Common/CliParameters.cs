@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using System.Collections.Generic;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
     public class CliParameters
     {

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PT.PM
+namespace PT.PM.Cli.Common
 {
     public static class RepositoryFactory
     {
@@ -46,13 +46,13 @@ namespace PT.PM
 
                 if (!url.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (urlWithoutHttp.StartsWith("github.com"))
+                    if (urlWithoutHttp.StartsWith("github.com", StringComparison.OrdinalIgnoreCase))
                     {
                         url = url + "/archive/master.zip";
                     }
                 }
 
-                if (urlWithoutHttp.StartsWith("github.com"))
+                if (urlWithoutHttp.StartsWith("github.com", StringComparison.OrdinalIgnoreCase))
                 {
                     projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
                 }

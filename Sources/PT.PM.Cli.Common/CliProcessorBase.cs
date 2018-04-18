@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
     public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
         where TStage : struct, IConvertible

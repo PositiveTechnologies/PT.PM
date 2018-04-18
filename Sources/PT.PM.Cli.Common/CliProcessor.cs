@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
     public class CliProcessor : CliProcessorBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, CliParameters>
     {

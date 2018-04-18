@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
     public class FileLogger : ILogger
     {
