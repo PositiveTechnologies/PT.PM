@@ -16,7 +16,11 @@ namespace PT.PM
         public static SourceCodeRepository CreateSourceCodeRepository(string path, IEnumerable<Language> languages, string tempDir, bool isStartUstStage)
         {
             SourceCodeRepository sourceCodeRepository;
-            if (Directory.Exists(path))
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                sourceCodeRepository = new DummyCodeRepository();
+            }
+            else if (Directory.Exists(path))
             {
                 sourceCodeRepository = new DirectoryCodeRepository(path);
             }
