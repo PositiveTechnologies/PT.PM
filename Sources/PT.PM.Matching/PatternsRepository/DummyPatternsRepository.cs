@@ -6,15 +6,27 @@ namespace PT.PM.Matching.PatternsRepository
 {
     public class DummyPatternsRepository : IPatternsRepository
     {
-        public string Path { get; set; } = "";
+        public static DummyPatternsRepository Instance = new DummyPatternsRepository();
 
-        public IEnumerable<string> Identifiers { get; set; } = ArrayUtils<string>.EmptyArray;
+        public string Path
+        {
+            get => "";
+            set => new InvalidOperationException($"Unable to change {nameof(DummyPatternsRepository)}");
+        }
+
+        public IEnumerable<string> Identifiers
+        {
+            get => ArrayUtils<string>.EmptyArray;
+            set => new InvalidOperationException($"Unable to change {nameof(DummyPatternsRepository)}");
+        }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public void Add(IEnumerable<PatternDto> pattern) => throw new InvalidOperationException("Should not be called");
+        public void Add(IEnumerable<PatternDto> pattern) =>
+            throw new InvalidOperationException($"Unable to change {nameof(DummyPatternsRepository)}");
 
-        public void Clear() => throw new InvalidOperationException("Should not be called");
+        public void Clear() =>
+            throw new InvalidOperationException($"Unable to change {nameof(DummyPatternsRepository)}");
 
         public IEnumerable<PatternDto> GetAll() => ArrayUtils<PatternDto>.EmptyArray;
     }

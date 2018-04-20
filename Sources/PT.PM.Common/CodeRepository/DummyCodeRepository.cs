@@ -5,10 +5,12 @@ namespace PT.PM.Common.CodeRepository
 {
     public class DummyCodeRepository : SourceCodeRepository
     {
+        public static DummyCodeRepository Instance = new DummyCodeRepository();
+
         public override IEnumerable<string> GetFileNames() => ArrayUtils<string>.EmptyArray;
 
-        public override bool IsFileIgnored(string fileName) => throw new InvalidOperationException("Should not be called");
+        public override bool IsFileIgnored(string fileName) => throw new InvalidOperationException();
 
-        public override CodeFile ReadFile(string fileName) => throw new InvalidOperationException("Should not be called");
+        public override CodeFile ReadFile(string fileName) => throw new InvalidOperationException();
     }
 }

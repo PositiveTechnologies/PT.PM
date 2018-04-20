@@ -1,5 +1,4 @@
 ﻿using System;
-using PT.PM.Common.CodeRepository;
 
 namespace PT.PM.Common
 {
@@ -8,8 +7,6 @@ namespace PT.PM.Common
         public static DummyLogger Instance = new DummyLogger();
 
         public int ErrorCount => 0;
-
-        public SourceCodeRepository SourceCodeRepository { get; set; }
 
         public bool IsLogErrors { get; set; }
 

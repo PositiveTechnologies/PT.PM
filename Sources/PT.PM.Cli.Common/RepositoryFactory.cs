@@ -18,7 +18,7 @@ namespace PT.PM.Cli.Common
             SourceCodeRepository sourceCodeRepository;
             if (string.IsNullOrWhiteSpace(path))
             {
-                sourceCodeRepository = new DummyCodeRepository();
+                sourceCodeRepository = DummyCodeRepository.Instance;
             }
             else if (Directory.Exists(path))
             {
@@ -77,7 +77,7 @@ namespace PT.PM.Cli.Common
             }
             else if (patternsString.EqualsIgnoreCase("no"))
             {
-                patternsRepository = new DummyPatternsRepository();
+                patternsRepository = DummyPatternsRepository.Instance;
             }
             else if (patternsString.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             {
