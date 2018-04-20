@@ -25,7 +25,7 @@ namespace PT.PM
         {
         }
 
-        public Workflow(SourceCodeRepository sourceCodeRepository,
+        public Workflow(SourceCodeRepository sourceCodeRepository = null,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : base(stage)
         {

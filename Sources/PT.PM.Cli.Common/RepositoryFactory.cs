@@ -13,7 +13,7 @@ namespace PT.PM.Cli.Common
 {
     public static class RepositoryFactory
     {
-        public static SourceCodeRepository CreateSourceCodeRepository(string path, IEnumerable<Language> languages, string tempDir, bool isStartUstStage)
+        public static SourceCodeRepository CreateSourceCodeRepository(string path, string tempDir)
         {
             SourceCodeRepository sourceCodeRepository;
             if (string.IsNullOrWhiteSpace(path))
@@ -26,7 +26,7 @@ namespace PT.PM.Cli.Common
             }
             else if (File.Exists(path))
             {
-                if (Path.GetExtension(path) == ".zip")
+                if (Path.GetExtension(path).EqualsIgnoreCase(".zip"))
                 {
                     sourceCodeRepository = new ZipCachingRepository(path)
                     {
@@ -64,13 +64,10 @@ namespace PT.PM.Cli.Common
                 sourceCodeRepository = zipAtUrlCachedCodeRepository;
             }
 
-            sourceCodeRepository.Languages = new HashSet<Language>(languages);
-            sourceCodeRepository.LoadJson = isStartUstStage;
-
             return sourceCodeRepository;
         }
 
-        public static IPatternsRepository CreatePatternsRepository(string patternsString, IEnumerable<string> identifiers, ILogger logger)
+        public static IPatternsRepository CreatePatternsRepository(string patternsString, ILogger logger)
         {
             IPatternsRepository patternsRepository;
 
@@ -124,11 +121,6 @@ namespace PT.PM.Cli.Common
             if (logger != null)
             {
                 patternsRepository.Logger = logger;
-            }
-
-            if (identifiers != null)
-            {
-                patternsRepository.Identifiers = identifiers;
             }
 
             return patternsRepository;

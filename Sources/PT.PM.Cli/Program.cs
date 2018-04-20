@@ -1,22 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using PT.PM.Cli.Common;
 
 namespace PT.PM.Cli
 {
     class Program
     {
-        private static int Main(string[] args)
-        {
-            var cliProcessor = new CliProcessor();
-            int result = cliProcessor.ParseAndConvert(args, "PT.PM");
-
-            if (Debugger.IsAttached)
-            {
-                Console.WriteLine("Press Enter to exit");
-                Console.ReadLine();
-            }
-
-            return result;
-        }
+        static int Main(string[] args) => new CliProcessor().Process(args) ? 0 : 1;
     }
 }
