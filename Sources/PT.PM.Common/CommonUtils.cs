@@ -2,7 +2,6 @@
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -10,7 +9,6 @@ namespace PT.PM.Common
 {
     public static class CommonUtils
     {
-        private static readonly char[] Separators = new char[] { ',', ' ', '\t', '\r', '\n' };
         private static bool? isSupportThreadAbort = null;
 
         public const string Prefix = "pt.pm_";
@@ -91,28 +89,6 @@ namespace PT.PM.Common
         public static bool TryCheckIdTokenValue(Expression expr, string value)
         {
             return expr is IdToken idToken && idToken.TextValue == value;
-        }
-
-        public static TEnum[] ParseCollection<TEnum>(this string str)
-            where TEnum : struct
-        {
-            if (!string.IsNullOrEmpty(str))
-            {
-                var collection = new List<TEnum>();
-                string[] strings = str.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string elemString in strings)
-                {
-                    if (Enum.TryParse(elemString, true, out TEnum element))
-                    {
-                        collection.Add(element);
-                    }
-                }
-                return collection.ToArray();
-            }
-            else
-            {
-                return ArrayUtils<TEnum>.EmptyArray;
-            }
         }
 
         public static T ParseEnum<T>(this string str, T defaultValue = default(T))
