@@ -6,6 +6,12 @@ namespace PT.PM.Common
     {
         int ErrorCount { get; }
 
+        bool IsLogErrors { get; set; }
+
+        bool IsLogDebugs { get; set; }
+
+        string LogsDir { get; set; }
+
         void LogError(Exception ex);
 
         void LogInfo(string message);

@@ -3,13 +3,19 @@ using PT.PM.Common.CodeRepository;
 
 namespace PT.PM.Common
 {
-    public class DummyLogger: ILogger
+    public class DummyLogger : ILogger
     {
         public static DummyLogger Instance = new DummyLogger();
 
         public int ErrorCount => 0;
 
         public SourceCodeRepository SourceCodeRepository { get; set; }
+
+        public bool IsLogErrors { get; set; }
+
+        public bool IsLogDebugs { get; set; }
+
+        public string LogsDir { get; set; } = "";
 
         public void LogDebug(string message)
         {

@@ -20,6 +20,12 @@ namespace PT.PM.PatternEditor
 
         public SourceCodeRepository SourceCodeRepository { get; set; }
 
+        public bool IsLogErrors { get; set; }
+
+        public bool IsLogDebugs { get; set; }
+
+        public string LogsDir { get; set; } = "";
+
         public GuiLogger(ObservableCollection<object> errorsCollection)
         {
             ErrorsCollection = errorsCollection;
@@ -32,11 +38,19 @@ namespace PT.PM.PatternEditor
 
         public void LogDebug(string message)
         {
-            LogEvent?.Invoke(this, message);
+            if (IsLogDebugs)
+            {
+                LogEvent?.Invoke(this, message);
+            }
         }
 
         public void LogError(Exception ex)
         {
+            if (!IsLogErrors)
+            {
+                return;
+            }
+
             bool logError = WhetherLogError(ex);
             if (logError)
             {
@@ -64,25 +78,12 @@ namespace PT.PM.PatternEditor
         private bool WhetherLogError(Exception ex)
         {
             bool logError = LogPatternErrors;
-            if (ex is ParsingException parseException)
+
+            if (ex is PMException pmException)
             {
                 if (!logError)
                 {
-                    logError = !parseException.CodeFile.IsPattern;
-                }
-            }
-            if (ex is ConversionException conversionException)
-            {
-                if (!logError)
-                {
-                    logError = !conversionException.CodeFile.IsPattern;
-                }
-            }
-            if (ex is MatchingException matchException)
-            {
-                if (!logError)
-                {
-                    logError = !matchException.CodeFile.IsPattern;
+                    logError = !pmException.CodeFile.IsPattern;
                 }
             }
 
