@@ -30,13 +30,13 @@ namespace PT.PM.Cli.Common
         public string Stage { get; set; }
 
         [Option("max-stack-size", HelpText = "Thread stack size in bytes")]
-        public int? MaxStackSize { get; set; }
+        public uint? MaxStackSize { get; set; }
 
         [Option('m', "memory", HelpText = "Approximate max memory consumption in megabytes")]
-        public int? Memory { get; set; }
+        public uint? Memory { get; set; }
 
         [Option("timeout", HelpText = "Max spent time per file in seconds")]
-        public int? FileTimeout { get; set; }
+        public uint? FileTimeout { get; set; }
 
         [Option("logs-dir", HelpText = "Logs directory")]
         public string LogsDir { get; set; }

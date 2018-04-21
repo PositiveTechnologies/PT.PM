@@ -2,6 +2,8 @@
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -91,14 +93,71 @@ namespace PT.PM.Common
             return expr is IdToken idToken && idToken.TextValue == value;
         }
 
-        public static T ParseEnum<T>(this string str, T defaultValue = default(T))
+        public static List<T> ParseEnums<T>(this IEnumerable<string> values, bool ignoreIncorrectValues, ILogger logger = null)
+            where T : struct, IConvertible
         {
-            if (string.IsNullOrEmpty(str))
+            var result = new List<T>();
+            foreach (string value in values)
             {
-                return defaultValue;
+                if (ParseEnum(value, ignoreIncorrectValues, out T parsed, logger: logger))
+                {
+                    result.Add(parsed);
+                }
             }
+            return result;
+        }
 
-            return (T)Enum.Parse(typeof(T), str, true);
+        public static T ParseEnum<T>(this string str, bool ignoreIncorrectValue, T defaultValue = default(T), ILogger logger = null)
+            where T : struct, IConvertible
+        {
+            if (ParseEnum(str, ignoreIncorrectValue, out T parsed, defaultValue, logger))
+            {
+                return parsed;
+            }
+            return defaultValue;
+        }
+
+        public static bool ParseEnum<T>(this string str, bool ignoreIncorrectValue, out T result, T defaultValue = default(T), ILogger logger = null)
+            where T : struct, IConvertible
+        {
+            if (ignoreIncorrectValue)
+            {
+                if (Enum.TryParse(str, true, out T enumValue))
+                {
+                    result = enumValue;
+                }
+                else
+                {
+                    result = defaultValue;
+                    logger?.LogError(new ArgumentException($"Incorrect enum value {str}"));
+                    return false;
+                }
+            }
+            else
+            {
+                result = (T)Enum.Parse(typeof(T), str);
+            }
+            return true;
+        }
+
+        public static int ConvertToInt32(this object obj, bool ignoreIncorrectValue, int defaultValue = default(int), ILogger logger = null)
+        {
+            try
+            {
+                return Convert.ToInt32(obj);
+            }
+            catch
+            {
+                if (ignoreIncorrectValue)
+                {
+                    logger?.LogError(new ArgumentException($"Incorrect int value {obj}"));
+                    return defaultValue;
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 }

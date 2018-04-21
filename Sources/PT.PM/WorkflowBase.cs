@@ -77,7 +77,7 @@ namespace PT.PM
 
         public int ThreadCount { get; set; } = 0;
 
-        public long MemoryConsumptionMb { get; set; } = 300;
+        public int MemoryConsumptionMb { get; set; } = 300;
 
         public TimeSpan FileTimeout { get; set; } = default(TimeSpan);
 

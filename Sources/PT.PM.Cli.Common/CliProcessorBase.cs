@@ -61,6 +61,7 @@ namespace PT.PM.Cli.Common
                     }
                     else
                     {
+                        LogInfoAndErrors(args, errors);
                         result = false;
                     }
                 });
@@ -81,7 +82,7 @@ namespace PT.PM.Cli.Common
             bool result = false;
 
             int maxStackSize = parameters.MaxStackSize.HasValue
-                    ? parameters.MaxStackSize.Value
+                    ? parameters.MaxStackSize.Value.ConvertToInt32(ContinueWithInvalidArgs, DefaultMaxStackSize, Logger)
                     : DefaultMaxStackSize;
 
             if (maxStackSize == 0)
@@ -90,8 +91,7 @@ namespace PT.PM.Cli.Common
             }
             else
             {
-                Thread thread = new Thread(() => result = RunWorkflow(parameters),
-                    parameters.MaxStackSize ?? DefaultMaxStackSize);
+                Thread thread = new Thread(() => result = RunWorkflow(parameters), maxStackSize);
                 thread.Start();
                 thread.Join();
             }
@@ -123,12 +123,13 @@ namespace PT.PM.Cli.Common
 
             if (parameters.Stage != null)
             {
-                workflow.Stage = parameters.Stage.ParseEnum<TStage>();
+                workflow.Stage = parameters.Stage.ParseEnum(ContinueWithInvalidArgs, workflow.Stage, Logger);
             }
             else if (string.IsNullOrEmpty(parameters.InputFileNameOrDirectory))
             {
-                workflow.Stage = nameof(Stage.Pattern).ParseEnum<TStage>();
+                workflow.Stage = (TStage)Enum.Parse(typeof(TStage), nameof(Stage.Pattern));
             }
+
             if (parameters.ThreadCount.HasValue)
             {
                 workflow.ThreadCount = parameters.ThreadCount.Value;
@@ -139,11 +140,11 @@ namespace PT.PM.Cli.Common
             }
             if (parameters.MaxStackSize.HasValue)
             {
-                workflow.MaxStackSize = parameters.MaxStackSize.Value;
+                workflow.MaxStackSize = parameters.MaxStackSize.Value.ConvertToInt32(ContinueWithInvalidArgs, workflow.MaxStackSize, Logger);
             }
             if (parameters.Memory.HasValue)
             {
-                workflow.MemoryConsumptionMb = parameters.Memory.Value;
+                workflow.MemoryConsumptionMb = parameters.Memory.Value.ConvertToInt32(ContinueWithInvalidArgs, workflow.MemoryConsumptionMb, Logger);
             }
             if (parameters.FileTimeout.HasValue)
             {
@@ -172,23 +173,23 @@ namespace PT.PM.Cli.Common
             }
             if (parameters.StartStage != null)
             {
-                workflow.StartStage = parameters.StartStage.ParseEnum<TStage>();
+                workflow.StartStage = parameters.RenderFormat.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);
             }
             if (parameters.DumpStages?.Count() > 0)
             {
-                workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.Select(stage => stage.ParseEnum<TStage>()));
+                workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));
             }
             if (parameters.RenderStages?.Count() > 0)
             {
-                workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.Select(stage => stage.ParseEnum<TStage>()));
+                workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));
             }
             if (parameters.RenderFormat != null)
             {
-                workflow.RenderFormat = parameters.RenderFormat.ParseEnum<GraphvizOutputFormat>();
+                workflow.RenderFormat = parameters.RenderFormat.ParseEnum(ContinueWithInvalidArgs, workflow.RenderFormat, Logger);
             }
             if (parameters.RenderDirection != null)
             {
-                workflow.RenderDirection = parameters.RenderDirection.ParseEnum<GraphvizDirection>();
+                workflow.RenderDirection = parameters.RenderFormat.ParseEnum(ContinueWithInvalidArgs, workflow.RenderDirection, Logger);
             }
 
             return workflow;
@@ -232,16 +233,10 @@ namespace PT.PM.Cli.Common
                 Logger.LogInfo("Ignored some parameters from json");
             }
 
-            AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-            string commandLineArguments = "Command line arguments: " +
-                (args.Length > 0 ? string.Join(" ", args) : "not defined.");
-            Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
-            Logger.LogInfo(commandLineArguments);
-
+            LogInfoAndErrors(args, errors);
             if (errors != null)
             {
-                LogParseErrors(errors);
-                Logger.LogInfo("Ignore cli parameters, use default");
+                Logger.LogInfo("Ignored some cli parameters");
             }
 
             if (populateResult || ContinueWithInvalidArgs)
@@ -342,6 +337,20 @@ namespace PT.PM.Cli.Common
             }
 
             return true;
+        }
+
+        private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
+        {
+            AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+            string commandLineArguments = "Command line arguments: " +
+                (args.Length > 0 ? string.Join(" ", args) : "not defined.");
+            Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
+            Logger.LogInfo(commandLineArguments);
+
+            if (errors != null)
+            {
+                LogParseErrors(errors);
+            }
         }
 
         private void LogParseErrors(IEnumerable<Error> errors)
