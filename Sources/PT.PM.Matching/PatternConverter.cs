@@ -14,10 +14,7 @@ namespace PT.PM.Matching
 
         public ILogger Logger
         {
-            get
-            {
-                return logger;
-            }
+            get => logger;
             set
             {
                 logger = value;

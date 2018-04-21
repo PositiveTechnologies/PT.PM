@@ -81,7 +81,7 @@ namespace PT.PM
 
         public TimeSpan FileTimeout { get; set; } = default(TimeSpan);
 
-        public int MaxStackSize { get; set; } = 0;
+        public int MaxStackSize { get; set; } = Utils.DefaultMaxStackSize;
 
         public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 

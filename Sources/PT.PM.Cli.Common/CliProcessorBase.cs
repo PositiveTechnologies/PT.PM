@@ -28,6 +28,8 @@ namespace PT.PM.Cli.Common
 
         public virtual bool StopIfDebuggerAttached => true;
 
+        public virtual int DefaultMaxStackSize => Utils.DefaultMaxStackSize;
+
         public abstract string CoreName { get; }
 
         public bool Process(string[] args)
@@ -37,7 +39,12 @@ namespace PT.PM.Cli.Common
 
             Logger.IsLogErrors = true;
 
-            ParserResult<TParameters> parserResult = new Parser().ParseArguments<TParameters>(args);
+            var parser = new Parser(config =>
+            {
+                config.IgnoreUnknownArguments = ContinueWithInvalidArgs;
+                config.CaseInsensitiveEnumValues = true;
+            });
+            ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(args);
 
             bool result = true;
 
@@ -48,13 +55,9 @@ namespace PT.PM.Cli.Common
                 })
                 .WithNotParsed(errors =>
                 {
-                    LogParseErrors(errors);
-
                     if (ContinueWithInvalidArgs)
                     {
-                        Logger.LogInfo("Ignore cli parameters, use default");
-                        var parameters = new TParameters();
-                        result = ProcessJsonConfig(args, parameters);
+                        result = ProcessJsonConfig(args, null, errors);
                     }
                     else
                     {
@@ -73,87 +76,27 @@ namespace PT.PM.Cli.Common
             return result;
         }
 
-        protected bool ProcessJsonConfig(string[] args, TParameters parameters)
-        {
-            bool result = false;
-            bool populateResult = PopulateParamsFromJsonConfig(parameters);
-
-            if (populateResult || ContinueWithInvalidArgs)
-            {
-                if (!populateResult)
-                {
-                    Logger.LogInfo("Ignore parameters from json, use default");
-                }
-
-                FillLoggerSettings(args, parameters);
-
-                result = ProcessParameters(parameters);
-            }
-
-            return result;
-        }
-
         protected virtual bool ProcessParameters(TParameters parameters)
         {
             bool result = false;
 
-            if (!parameters.MaxStackSize.HasValue || parameters.MaxStackSize == 0)
+            int maxStackSize = parameters.MaxStackSize.HasValue
+                    ? parameters.MaxStackSize.Value
+                    : DefaultMaxStackSize;
+
+            if (maxStackSize == 0)
             {
                 result = RunWorkflow(parameters);
             }
             else
             {
-                Thread thread = new Thread(() => result = RunWorkflow(parameters), parameters.MaxStackSize.Value);
+                Thread thread = new Thread(() => result = RunWorkflow(parameters),
+                    parameters.MaxStackSize ?? DefaultMaxStackSize);
                 thread.Start();
                 thread.Join();
             }
 
             return result;
-        }
-
-        protected bool RunWorkflow(TParameters parameters)
-        {
-            try
-            {
-                var stopwatch = Stopwatch.StartNew();
-                var workflow = InitWorkflow(parameters);
-                TWorkflowResult workflowResult = workflow.Process();
-                stopwatch.Stop();
-
-                Logger.LogInfo($"Stage: {workflow.Stage}");
-                if (!workflow.Stage.Is(Stage.Pattern))
-                {
-                    Logger.LogInfo("Scan completed.");
-                    int matchedResultCount = workflowResult.MatchResults.Count();
-                    if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
-                    {
-                        Logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {matchedResultCount}");
-                    }
-                }
-                else
-                {
-                    Logger.LogInfo("Patterns checked.");
-                }
-
-                if (workflowResult.ErrorCount > 0)
-                {
-                    Logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
-                }
-                LogStatistics(workflowResult);
-                Logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
-            }
-            catch (Exception ex)
-            {
-                if (Logger != null)
-                {
-                    Logger.IsLogErrors = true;
-                    Logger.LogError(ex);
-                }
-
-                return false;
-            }
-
-            return true;
         }
 
         protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult>
@@ -251,8 +194,6 @@ namespace PT.PM.Cli.Common
             return workflow;
         }
 
-        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> CreateWorkflow(TParameters parameters);
-
         protected virtual SourceCodeRepository CreateSourceCodeRepository(TParameters parameters)
         {
             return RepositoryFactory
@@ -264,9 +205,62 @@ namespace PT.PM.Cli.Common
             return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, Logger);
         }
 
+        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> CreateWorkflow(TParameters parameters);
+
         protected abstract void LogStatistics(TWorkflowResult workflowResult);
 
         protected abstract bool IsLoadJson(string startStageString);
+
+        private bool ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
+        {
+            bool result = false;
+
+            if (parameters != null)
+            {
+                FillLoggerSettings(parameters);
+            }
+            else
+            {
+                parameters = new TParameters();
+            }
+
+            bool populateResult = PopulateParamsFromJsonConfig(parameters);
+            FillLoggerSettings(parameters);
+
+            if (!populateResult)
+            {
+                Logger.LogInfo("Ignored some parameters from json");
+            }
+
+            AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+            string commandLineArguments = "Command line arguments: " +
+                (args.Length > 0 ? string.Join(" ", args) : "not defined.");
+            Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
+            Logger.LogInfo(commandLineArguments);
+
+            if (errors != null)
+            {
+                LogParseErrors(errors);
+                Logger.LogInfo("Ignore cli parameters, use default");
+            }
+
+            if (populateResult || ContinueWithInvalidArgs)
+            {
+                result = ProcessParameters(parameters);
+            }
+
+            return result;
+        }
+
+        private void FillLoggerSettings(TParameters parameters)
+        {
+            if (parameters.LogsDir != null)
+            {
+                Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
+            }
+            Logger.IsLogErrors = parameters.IsLogErrors.HasValue ? parameters.IsLogErrors.Value : false;
+            Logger.IsLogDebugs = parameters.IsLogDebugs.HasValue ? parameters.IsLogDebugs.Value : false;
+        }
 
         private bool PopulateParamsFromJsonConfig(TParameters cliParams)
         {
@@ -305,21 +299,49 @@ namespace PT.PM.Cli.Common
             return result;
         }
 
-        private void FillLoggerSettings(string[] args, TParameters cliParams)
+        private bool RunWorkflow(TParameters parameters)
         {
-            AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-
-            string commandLineArguments = "Command line arguments: " +
-                (args.Length > 0 ? string.Join(" ", args) : "not defined.");
-
-            if (cliParams.LogsDir != null)
+            try
             {
-                Logger.LogsDir = NormalizeLogsDir(cliParams.LogsDir);
+                var stopwatch = Stopwatch.StartNew();
+                var workflow = InitWorkflow(parameters);
+                TWorkflowResult workflowResult = workflow.Process();
+                stopwatch.Stop();
+
+                Logger.LogInfo($"Stage: {workflow.Stage}");
+                if (!workflow.Stage.Is(Stage.Pattern))
+                {
+                    Logger.LogInfo("Scan completed.");
+                    int matchedResultCount = workflowResult.MatchResults.Count();
+                    if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
+                    {
+                        Logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {matchedResultCount}");
+                    }
+                }
+                else
+                {
+                    Logger.LogInfo("Patterns checked.");
+                }
+
+                if (workflowResult.ErrorCount > 0)
+                {
+                    Logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
+                }
+                LogStatistics(workflowResult);
+                Logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
             }
-            Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
-            Logger.IsLogErrors = cliParams.IsLogErrors.HasValue ? cliParams.IsLogErrors.Value : false;
-            Logger.IsLogDebugs = cliParams.IsLogDebugs.HasValue ? cliParams.IsLogDebugs.Value : false;
-            Logger.LogInfo(commandLineArguments);
+            catch (Exception ex)
+            {
+                if (Logger != null)
+                {
+                    Logger.IsLogErrors = true;
+                    Logger.LogError(ex);
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         private void LogParseErrors(IEnumerable<Error> errors)
