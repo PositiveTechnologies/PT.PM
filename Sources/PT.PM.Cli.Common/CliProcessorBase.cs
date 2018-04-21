@@ -214,37 +214,45 @@ namespace PT.PM.Cli.Common
 
         private bool ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
         {
-            bool result = false;
-
-            if (parameters != null)
+            try
             {
+                if (parameters != null)
+                {
+                    FillLoggerSettings(parameters);
+                }
+                else
+                {
+                    parameters = new TParameters();
+                }
+
+                bool populateResult = PopulateParamsFromJsonConfig(parameters);
                 FillLoggerSettings(parameters);
+
+                if (!populateResult)
+                {
+                    Logger.LogInfo("Ignored some parameters from json");
+                }
+
+                LogInfoAndErrors(args, errors);
+                if (errors != null)
+                {
+                    Logger.LogInfo("Ignored some cli parameters");
+                }
+
+                if (populateResult || ContinueWithInvalidArgs)
+                {
+                    return ProcessParameters(parameters);
+                }
+
+                return false;
             }
-            else
+            catch (Exception ex)
             {
-                parameters = new TParameters();
+                Logger.IsLogErrors = true;
+                Logger.LogError(ex);
+
+                return false;
             }
-
-            bool populateResult = PopulateParamsFromJsonConfig(parameters);
-            FillLoggerSettings(parameters);
-
-            if (!populateResult)
-            {
-                Logger.LogInfo("Ignored some parameters from json");
-            }
-
-            LogInfoAndErrors(args, errors);
-            if (errors != null)
-            {
-                Logger.LogInfo("Ignored some cli parameters");
-            }
-
-            if (populateResult || ContinueWithInvalidArgs)
-            {
-                result = ProcessParameters(parameters);
-            }
-
-            return result;
         }
 
         private void FillLoggerSettings(TParameters parameters)
@@ -324,19 +332,16 @@ namespace PT.PM.Cli.Common
                 }
                 LogStatistics(workflowResult);
                 Logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
+
+                return true;
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.IsLogErrors = true;
-                    Logger.LogError(ex);
-                }
+                Logger.IsLogErrors = true;
+                Logger.LogError(ex);
 
                 return false;
             }
-
-            return true;
         }
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
