@@ -54,7 +54,7 @@ namespace PT.PM.Dsl.Tests
             {
                 new HashSet<Language>() { Php.Language };
             }
-            Assert.AreEqual(0, logger.ErrorCount);
+            Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
             string patternName = Path.GetFileNameWithoutExtension(fileName);
             PatternRoot defaultPattern = patterns.FirstOrDefault(p => p.DebugInfo.StartsWith(patternName));
@@ -76,7 +76,7 @@ namespace PT.PM.Dsl.Tests
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor() { Logger = logger };
             PatternRoot result = processor.Deserialize(new CodeFile(data) { IsPattern = true });
-            Assert.AreEqual(0, logger.ErrorCount);
+            Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
         }
 
         [Test]

@@ -121,7 +121,7 @@ namespace PT.PM.Tests
             };
             WorkflowResult newResult = newWorkflow.Process();
 
-            Assert.AreEqual(0, logger.ErrorCount);
+            Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
             Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
 
             if (includeTextSpans)
