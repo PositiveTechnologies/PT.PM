@@ -140,7 +140,7 @@ namespace PT.PM.Common
             return true;
         }
 
-        public static int ConvertToInt32(this object obj, bool ignoreIncorrectValue, int defaultValue = default(int), ILogger logger = null)
+        public static int ConvertToInt32(this uint obj, bool ignoreIncorrectValue, int defaultValue = default(int), ILogger logger = null)
         {
             try
             {

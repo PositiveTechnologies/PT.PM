@@ -1,34 +1,39 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using PT.PM.Cli.Common;
 using PT.PM.Common;
-using PT.PM.Matching;
 using PT.PM.TestUtils;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PT.PM.Cli.Tests
 {
     [TestFixture]
     public class CliTests
     {
-        private readonly static string patternsFileName = Path.Combine(TestUtility.TestsOutputPath, "patterns.json");
+        private const string patterns = "(?i)password(?-i)]> = <[\"\"\\w*\"\" || null]>";
+
+        [Test]
+        public void CheckCli_String_CorrectlySplitted()
+        {
+            CollectionAssert.AreEqual(new string[0], "".SplitArguments());
+            CollectionAssert.AreEqual(new[] { "-a", "--param", "-c" }, "-a  --param -c    ".SplitArguments());
+            CollectionAssert.AreEqual(new[] { "-s", "a\"b c", "-d", "", "", "-e", "" }, "-s \"a\"\"b c\" -d \"\" \"\" -e \"\"".SplitArguments());
+            CollectionAssert.AreEqual(new[] { "sa", "b" }, "s\"a\" b".SplitArguments());
+        }
 
         [Test]
         public void CheckCli_Patterns_CorrectErrorMessages()
         {
-            PrepareAndSaveTestPatterns();
-            var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --log-errors true");
+            var cliProcessor = new TestsCliProcessor();
+            cliProcessor.Process($"--stage {Stage.Pattern} --patterns \"{patterns}\" --log-errors true");
 
-            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", result.Output[2]);
-            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", result.Output[3]);
+            var errors = (cliProcessor.Logger as LoggerMessageCounter).Errors;
+            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", errors[0]);
+            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", errors[1]);
         }
 
         [Test]
         public void CheckCli_LogPath_FilesInProperDirectory()
         {
-            PrepareAndSaveTestPatterns();
             string logPath = Path.Combine(Path.GetTempPath(), "PT.PM");
             try
             {
@@ -36,7 +41,7 @@ namespace PT.PM.Cli.Tests
                 {
                     Directory.Delete(logPath, true);
                 }
-                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns {patternsFileName} --logs-dir \"{logPath}\"");
+                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns \"{patterns}\" --logs-dir \"{logPath}\"");
                 var logFiles = Directory.GetFiles(logPath, "*.*");
                 Assert.Greater(logFiles.Length, 0);
             }
@@ -47,79 +52,6 @@ namespace PT.PM.Cli.Tests
                     Directory.Delete(logPath, true);
                 }
             }
-        }
-
-        [Test]
-        [Ignore("TODO: fix on CI")]
-        public void CheckCli_SeveralLanguages_OnlyPassedLanguagesProcessed()
-        {
-            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
-                $"{TestUtility.PtPmExePath} " +
-                $"-f \"{TestUtility.TestsDataPath}\" " +
-                $"-l PlSql,TSql " +
-                $"--stage {Stage.ParseTree} --log-debugs");
-
-            // Do not process php (csharp, java etc.) files.
-            Assert.IsTrue(result.Output.Any(line => line.Contains(".php has not been read")));
-            Assert.IsTrue(result.Output.Any(line => line.Contains("has been detected")));
-
-            result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
-                $"{TestUtility.PtPmExePath} " +
-                $"-f \"{TestUtility.TestsDataPath}\" " +
-                $"-l PlSql " +
-                $"--stage {Stage.ParseTree} --log-debugs");
-
-            // Do not detect language for only one language.
-            Assert.IsFalse(result.Output.Any(line => line.Contains("has been detected")));
-        }
-
-        [Test]
-        public void CheckCli_FakeLanguage_CorrectlyProcessed()
-        {
-            var patternTempFile = Path.GetTempFileName() + ".json";
-            File.WriteAllText(patternTempFile, "[{\"Name\":\"\",\"Key\":\"1\",\"Languages\":[\"Fake\"],\"DataFormat\":\"Dsl\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\", \"CweId\":\"\", \"Description\":\"\"}]");
-            ProcessExecutionResult result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
-               $"{TestUtility.PtPmExePath} " +
-               $"--stage {Stage.Pattern} " +
-               $"--patterns {patternTempFile} " +
-               $"--log-debugs true --log-errors true");
-
-            Assert.AreEqual("PatternNode \"1\" doesn't have proper target languages.", result.Output[2]);
-        }
-
-        [Test]
-        [Ignore("TODO: fix on CI")]
-        public void CheckCli_FilePatternsRepository_CorrectlyProcessed()
-        {
-            var patternsFileName = Path.Combine(Path.GetTempPath(), "patterns.json");
-            File.WriteAllText(patternsFileName, "[{\"Key\":\"1\",\"Value\":\"<[(?i)password(?-i)]> = <[\\\"\\\\w*\\\" || null]>\"}]");
-            try
-            {
-                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet",
-                    $"{TestUtility.PtPmExePath} -f \"{Path.Combine(TestUtility.TestsDataPath, "Patterns.cs")}\" " +
-                    $"--patterns \"{patternsFileName}\"");
-
-                Assert.IsTrue(result.Output.Any(str => str.Contains("Pattern matched")));
-            }
-            finally
-            {
-                File.Delete(patternsFileName);
-            }
-        }
-
-        private static void PrepareAndSaveTestPatterns()
-        {
-            List<PatternDto> patternDtos = new List<PatternDto>()
-            {
-                new PatternDto
-                {
-                    Key = "1",
-                    DataFormat = "Dsl",
-                    Value = "(?i)password(?-i)]> = <[\"\\w*\" || null]>"
-                }
-            };
-
-            File.WriteAllText(patternsFileName, JsonConvert.SerializeObject(patternDtos, Formatting.None, new StringEnumConverter()));
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PT.PM.Common.Json
 {
@@ -62,11 +61,10 @@ namespace PT.PM.Common.Json
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
                 IsLineColumn = LineColumnTextSpans,
                 JsonFile = JsonFile,
-                Logger = Logger
+                Logger = Logger,
+                CodeFiles = CodeFiles,
+                CurrentCodeFile = CurrectCodeFile
             };
-
-            textSpanJsonConverter.CodeFiles = CodeFiles;
-            textSpanJsonConverter.CurrentCodeFile = CurrectCodeFile;
 
             var jsonSettings = new JsonSerializerSettings
             {

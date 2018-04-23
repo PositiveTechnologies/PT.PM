@@ -21,6 +21,8 @@ namespace PT.PM.TestUtils
 
         public int InfoMessageCount => infoMessages.Count;
 
+        public List<string> Errors => errorMessages;
+
         public bool LogToConsole { get; set; }
 
         public string ErrorsString => string.Join(", " + Environment.NewLine, errorMessages);
