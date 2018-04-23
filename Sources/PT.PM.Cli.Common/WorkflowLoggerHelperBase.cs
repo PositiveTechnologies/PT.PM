@@ -27,16 +27,16 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogInfo($"{"Terminated files count:",Align} {WorkflowResult.TotalTerminatedFilesCount}");
             }
-            if (WorkflowResult.TotalProcessedFilesCount > 0)
+            if (!WorkflowResult.Stage.Is(Stage.Pattern) || WorkflowResult.TotalProcessedFilesCount > 0)
             {
                 Logger.LogInfo($"{"Files count:",Align} {WorkflowResult.TotalProcessedFilesCount}");
+            }
+            if (WorkflowResult.TotalProcessedFilesCount > 0)
+            {
                 Logger.LogInfo($"{"Chars count:",Align} {WorkflowResult.TotalProcessedCharsCount}");
                 Logger.LogInfo($"{"Lines count:",Align} {WorkflowResult.TotalProcessedLinesCount}");
             }
-            if (WorkflowResult.TotalProcessedPatternsCount > 0)
-            {
-                Logger.LogInfo($"{"Patterns count:",Align} {WorkflowResult.TotalProcessedPatternsCount}");
-            }
+            Logger.LogInfo($"{"Patterns count:",Align} {WorkflowResult.TotalProcessedPatternsCount}");
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
