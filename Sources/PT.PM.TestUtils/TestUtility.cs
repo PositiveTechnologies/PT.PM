@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace PT.PM.TestUtils
 {
@@ -44,7 +45,7 @@ namespace PT.PM.TestUtils
 
         public static WorkflowResult CheckFile(string fileName, Stage endStage,
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
-            Language language = null)
+            Language language = null, int maxStackSize = 0)
         {
             var codeRepository = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
             if (language != null)
@@ -53,10 +54,23 @@ namespace PT.PM.TestUtils
             }
 
             var log = logger ?? new LoggerMessageCounter();
-            var workflow = new Workflow(codeRepository, stage: endStage);
-            workflow.IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards;
-            workflow.Logger = log;
-            WorkflowResult workflowResult = workflow.Process();
+            var workflow = new Workflow(codeRepository, stage: endStage)
+            {
+                IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards,
+                Logger = log
+            };
+
+            WorkflowResult workflowResult = null;
+            if (maxStackSize == 0)
+            {
+                workflowResult = workflow.Process();
+            }
+            else
+            {
+                var thread = new Thread(() => workflowResult = workflow.Process(), maxStackSize);
+                thread.Start();
+                thread.Join();
+            }
 
             string errorString = string.Empty;
             if (log is LoggerMessageCounter loggerMessageCounter)

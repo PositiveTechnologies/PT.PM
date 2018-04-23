@@ -21,12 +21,8 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [TestCase("AllInOne8.java")]
         public void Convert_Java_WithoutErrors(string fileName)
         {
-            if (fileName == "ManyStringsConcat.java")
-            {
-                Assert.Ignore("Not sufficient stack size");
-            }
-
-            TestUtility.CheckFile(Path.Combine(TestUtility.GrammarsDirectory, "java", "examples", fileName), Stage.Ust);
+            TestUtility.CheckFile(Path.Combine(TestUtility.GrammarsDirectory, "java", "examples", fileName), Stage.Ust,
+                maxStackSize: fileName == "ManyStringsConcat.java" ? 4000000 : 0);
         }
 
         [Test]
