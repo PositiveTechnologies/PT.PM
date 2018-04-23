@@ -86,6 +86,17 @@ namespace PT.PM.Tests
         }
 
         [Test]
+        public void Check_IncorrectLanguageInPattern_CorrectlyProcessed()
+        {
+            string serialized = jsonPatternSerializer.Serialize(pattern);
+            serialized = serialized.Replace("\"Languages\": []", "\"Languages\": [ \"Fake\" ]");
+            string filePath = Path.Combine(TestUtility.TestsOutputPath, "pattern.json");
+            File.WriteAllText(filePath, serialized);
+
+            Check(filePath);
+        }
+
+        [Test]
         public void JsonSerialize_PatternWithVar_JsonEqualsToDsl()
         {
             var patternRoot = new PatternRoot
