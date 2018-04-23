@@ -32,9 +32,9 @@ namespace PT.PM.Cli.Common
 
         public abstract string CoreName { get; }
 
-        public bool Process(string args) => Process(args.SplitArguments());
+        public TWorkflowResult Process(string args) => Process(args.SplitArguments());
 
-        public bool Process(string[] args)
+        public TWorkflowResult Process(string[] args)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -48,7 +48,7 @@ namespace PT.PM.Cli.Common
             });
             ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(args);
 
-            bool result = true;
+            TWorkflowResult result = null;
 
             parserResult.WithParsed(
                 parameters =>
@@ -64,7 +64,6 @@ namespace PT.PM.Cli.Common
                     else
                     {
                         LogInfoAndErrors(args, errors);
-                        result = false;
                     }
                 });
 
@@ -79,9 +78,9 @@ namespace PT.PM.Cli.Common
             return result;
         }
 
-        protected virtual bool ProcessParameters(TParameters parameters)
+        protected virtual TWorkflowResult ProcessParameters(TParameters parameters)
         {
-            bool result = false;
+            TWorkflowResult result = null;
 
             int maxStackSize = parameters.MaxStackSize.HasValue
                     ? parameters.MaxStackSize.Value.ConvertToInt32(ContinueWithInvalidArgs, DefaultMaxStackSize, Logger)
@@ -214,7 +213,7 @@ namespace PT.PM.Cli.Common
 
         protected abstract bool IsLoadJson(string startStageString);
 
-        private bool ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
+        private TWorkflowResult ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
         {
             try
             {
@@ -276,14 +275,14 @@ namespace PT.PM.Cli.Common
                     return ProcessParameters(parameters);
                 }
 
-                return false;
+                return null;
             }
             catch (Exception ex)
             {
                 Logger.IsLogErrors = true;
                 Logger.LogError(ex);
 
-                return false;
+                return null;
             }
         }
 
@@ -297,7 +296,7 @@ namespace PT.PM.Cli.Common
             Logger.IsLogDebugs = parameters.IsLogDebugs.HasValue ? parameters.IsLogDebugs.Value : false;
         }
 
-        private bool RunWorkflow(TParameters parameters)
+        private TWorkflowResult RunWorkflow(TParameters parameters)
         {
             try
             {
@@ -328,14 +327,14 @@ namespace PT.PM.Cli.Common
                 LogStatistics(workflowResult);
                 Logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
 
-                return true;
+                return workflowResult;
             }
             catch (Exception ex)
             {
                 Logger.IsLogErrors = true;
                 Logger.LogError(ex);
 
-                return false;
+                return null;
             }
         }
 

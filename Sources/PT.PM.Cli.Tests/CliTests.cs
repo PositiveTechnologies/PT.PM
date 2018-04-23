@@ -53,5 +53,32 @@ namespace PT.PM.Cli.Tests
                 }
             }
         }
+
+        [Test]
+        public void CheckCli_DefaultParams()
+        {
+            string configFile = Path.Combine(TestUtility.TestsOutputPath, "config.json");
+            File.WriteAllText(configFile, @"{ ""Stage"": ""Pattern"" }");
+            var result = new TestsCliProcessor().Process($"-c {configFile}");
+            Assert.AreEqual(0, result.ThreadCount);
+        }
+
+        [Test]
+        public void CheckCli_ParamsFromCli()
+        {
+            string configFile = Path.Combine(TestUtility.TestsOutputPath, "config.json");
+            File.WriteAllText(configFile, @"{ ""Stage"": ""Pattern"" }");
+            var result = new TestsCliProcessor().Process($"-c {configFile} -t 2");
+            Assert.AreEqual(2, result.ThreadCount);
+        }
+
+        [Test]
+        public void CheckCli_ParamsFromConfigJson()
+        {
+            string configFile = Path.Combine(TestUtility.TestsOutputPath, "config.json");
+            File.WriteAllText(configFile, @"{ ""ThreadCount"": 4 }");
+            var result = new TestsCliProcessor().Process($"-c {configFile} -t 2");
+            Assert.AreEqual(4, result.ThreadCount);
+        }
     }
 }
