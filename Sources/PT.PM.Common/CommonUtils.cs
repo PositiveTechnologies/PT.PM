@@ -135,7 +135,7 @@ namespace PT.PM.Common
             }
             else
             {
-                result = (T)Enum.Parse(typeof(T), str);
+                result = (T)Enum.Parse(typeof(T), str, true);
             }
             return true;
         }

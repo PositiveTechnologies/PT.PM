@@ -225,12 +225,42 @@ namespace PT.PM.Cli.Common
                     parameters = new TParameters();
                 }
 
-                bool populateResult = PopulateParamsFromJsonConfig(parameters);
-                FillLoggerSettings(parameters);
-
-                if (!populateResult)
+                bool error = false;
+                string configFile = File.Exists("config.json") ? "config.json" : parameters.ConfigFile;
+                if (!string.IsNullOrEmpty(configFile))
                 {
-                    Logger.LogInfo("Ignored some parameters from json");
+                    string content = null;
+                    try
+                    {
+                        content = File.ReadAllText(configFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex);
+                        error = true;
+                    }
+
+                    if (content != null)
+                    {
+                        try
+                        {
+                            var settings = new JsonSerializerSettings();
+                            settings.MissingMemberHandling = ContinueWithInvalidArgs
+                                ? MissingMemberHandling.Ignore
+                                : MissingMemberHandling.Error;
+                            JsonConvert.PopulateObject(content, parameters, settings);
+                            FillLoggerSettings(parameters);
+                            Logger.LogInfo($"Load settings from {configFile}...");
+                            SplitOnLinesAndLog(content);
+                        }
+                        catch (JsonException ex)
+                        {
+                            FillLoggerSettings(parameters);
+                            Logger.LogError(ex);
+                            Logger.LogInfo("Ignored some parameters from json");
+                            error = true;
+                        }
+                    }
                 }
 
                 LogInfoAndErrors(args, errors);
@@ -239,7 +269,7 @@ namespace PT.PM.Cli.Common
                     Logger.LogInfo("Ignored some cli parameters");
                 }
 
-                if (populateResult || ContinueWithInvalidArgs)
+                if (!error || ContinueWithInvalidArgs)
                 {
                     return ProcessParameters(parameters);
                 }
@@ -263,43 +293,6 @@ namespace PT.PM.Cli.Common
             }
             Logger.IsLogErrors = parameters.IsLogErrors.HasValue ? parameters.IsLogErrors.Value : false;
             Logger.IsLogDebugs = parameters.IsLogDebugs.HasValue ? parameters.IsLogDebugs.Value : false;
-        }
-
-        private bool PopulateParamsFromJsonConfig(TParameters cliParams)
-        {
-            bool result = true;
-
-            string configFile = File.Exists("config.json") ? "config.json" : cliParams.ConfigFile;
-            if (!string.IsNullOrEmpty(configFile))
-            {
-                Logger.LogInfo($"Load settings from {configFile}...");
-
-                string content = null;
-                try
-                {
-                    content = File.ReadAllText(configFile);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex);
-                    result = false;
-                }
-
-                if (content != null)
-                {
-                    try
-                    {
-                        JsonConvert.PopulateObject(content, cliParams);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex);
-                        result = false;
-                    }
-                }
-            }
-
-            return result;
         }
 
         private bool RunWorkflow(TParameters parameters)
@@ -346,10 +339,14 @@ namespace PT.PM.Cli.Common
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
         {
-            AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+            if (errors == null || errors.FirstOrDefault() is VersionRequestedError)
+            {
+                AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+                Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
+            }
+
             string commandLineArguments = "Command line arguments: " +
-                (args.Length > 0 ? string.Join(" ", args) : "not defined.");
-            Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
+                    (args.Length > 0 ? string.Join(" ", args) : "not defined.");
             Logger.LogInfo(commandLineArguments);
 
             if (errors != null)
@@ -362,6 +359,11 @@ namespace PT.PM.Cli.Common
         {
             foreach (Error error in errors)
             {
+                if (error is HelpRequestedError || error is VersionRequestedError)
+                {
+                    continue;
+                }
+
                 string parameter = "";
                 if (error is NamedError namedError)
                 {
@@ -374,12 +376,18 @@ namespace PT.PM.Cli.Common
                 Logger.LogError(new Exception($"Launch Parameter {parameter} Error: {error.Tag}"));
             }
 
-            Logger.LogInfo("Launch Parameters Description:");
-            var paramsParseResult = new Parser().ParseArguments<TParameters>(new string[] { "--help" });
-            string paramsInfo = HelpText.AutoBuild(paramsParseResult, 100);
-            string[] cliParameterLines = paramsInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            if (!(errors.First() is VersionRequestedError))
+            {
+                var paramsParseResult = new Parser().ParseArguments<TParameters>(new string[] { "--help" });
+                string paramsInfo = HelpText.AutoBuild(paramsParseResult, 100);
+                SplitOnLinesAndLog(paramsInfo);
+            }
+        }
 
-            foreach (string line in cliParameterLines)
+        private void SplitOnLinesAndLog(string str)
+        {
+            string[] lines = str.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            foreach (string line in lines)
             {
                 Logger.LogInfo(line);
             }
