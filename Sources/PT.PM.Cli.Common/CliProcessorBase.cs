@@ -32,6 +32,8 @@ namespace PT.PM.Cli.Common
 
         public abstract string CoreName { get; }
 
+        public bool Process(string args) => Process(args.SplitArguments());
+
         public bool Process(string[] args)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
