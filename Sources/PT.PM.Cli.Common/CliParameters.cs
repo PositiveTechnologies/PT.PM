@@ -5,7 +5,7 @@ namespace PT.PM.Cli.Common
 {
     public class CliParameters
     {
-        [Option('c', "config")]
+        [Option('c', "config", HelpText = "Json file with settings")]
         public string ConfigFile { get; set; }
 
         [Option('f', "files", HelpText = "Input file or directory to be processed")]
