@@ -13,6 +13,7 @@ using PT.PM.Common.Exceptions;
 using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Threading;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -80,8 +81,25 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitArgument(ArgumentSyntax node)
         {
-            var result = (Expression)base.Visit(node.Expression);
+            var result = (Expression)VisitAndReturnNullIfError(node.Expression);
+            if (!node.RefKindKeyword.IsKind(SyntaxKind.None))
+            {
+                result = new ArgumentExpression(
+                    node.RefKindKeyword.IsKind(SyntaxKind.OutKeyword) ? ArgumentModifier.Out : ArgumentModifier.InOut,
+                    result);
+            }
             return result;
+        }
+
+        public override Ust VisitDeclarationExpression(DeclarationExpressionSyntax node)
+        {
+            var left = (Expression)VisitAndReturnNullIfError(node.Designation);
+            return new AssignmentExpression(left, null, node.GetTextSpan());
+        }
+
+        public override Ust VisitSingleVariableDesignation(SingleVariableDesignationSyntax node)
+        {
+            return ConvertId(node.Identifier);
         }
 
         public override Ust VisitArrowExpressionClause(ArrowExpressionClauseSyntax node)

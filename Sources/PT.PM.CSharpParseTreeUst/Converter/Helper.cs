@@ -12,8 +12,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
     {
         protected IdToken ConvertId(SyntaxToken node)
         {
-            string name = node.ValueText;
-            return new IdToken(name, node.GetTextSpan());
+            return new IdToken(node.ValueText, node.GetTextSpan());
         }
 
         protected ModifierLiteral ConvertModifier(SyntaxToken token)
