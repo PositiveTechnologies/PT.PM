@@ -27,6 +27,11 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(argsUst);
         }
 
+        public virtual T Visit(ArgumentExpression argumentExpression)
+        {
+            return VisitChildren(argumentExpression);
+        }
+
         public virtual T Visit(EntitiesUst entitiesUst)
         {
             return VisitChildren(entitiesUst);

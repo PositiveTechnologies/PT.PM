@@ -44,6 +44,7 @@ namespace PT.PM.Common.Nodes
         T Visit(UnaryOperatorExpression unaryOperatorExpression);
         T Visit(VariableDeclarationExpression variableDeclarationExpression);
         T Visit(CommaExpression colonExpression);
+        T Visit(ArgumentExpression argumentExpression);
 
         #endregion
 
