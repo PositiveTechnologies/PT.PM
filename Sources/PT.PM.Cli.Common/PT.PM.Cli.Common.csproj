@@ -17,7 +17,7 @@
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
 
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
-    <PackageReference Include="NLog" Version="4.5.2" />
+    <PackageReference Include="NLog" Version="4.5.3" />
   </ItemGroup>
 
   <ItemGroup>
