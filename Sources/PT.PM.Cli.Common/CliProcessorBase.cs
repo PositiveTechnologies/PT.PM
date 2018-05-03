@@ -174,7 +174,7 @@ namespace PT.PM.Cli.Common
             }
             if (parameters.StartStage != null)
             {
-                workflow.StartStage = parameters.RenderFormat.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);
+                workflow.StartStage = parameters.StartStage.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);
             }
             if (parameters.DumpStages?.Count() > 0)
             {
@@ -190,7 +190,7 @@ namespace PT.PM.Cli.Common
             }
             if (parameters.RenderDirection != null)
             {
-                workflow.RenderDirection = parameters.RenderFormat.ParseEnum(ContinueWithInvalidArgs, workflow.RenderDirection, Logger);
+                workflow.RenderDirection = parameters.RenderDirection.ParseEnum(ContinueWithInvalidArgs, workflow.RenderDirection, Logger);
             }
 
             return workflow;
