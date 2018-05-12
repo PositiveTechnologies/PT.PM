@@ -68,6 +68,8 @@ namespace PT.PM.PatternEditor
 
         public bool IsIncludeCode { get; set; } = false;
 
+        public bool IsLeftRightDir { get; set; } = false;
+
         public static Settings Load()
         { 
             if (File.Exists(settingsFileName))

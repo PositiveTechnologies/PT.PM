@@ -48,6 +48,7 @@ namespace PT.PM.PatternEditor
         private bool oldIsIncludeTextSpans;
         private bool oldIsLineColumnTextSpans;
         private bool oldIsIncludeCode;
+        private bool oldIsLeftRightDir;
         private CodeFile sourceCode;
 
         public MainWindowViewModel(Window w)
@@ -585,6 +586,21 @@ namespace PT.PM.PatternEditor
             }
         }
 
+        public bool IsLeftRightDir
+        {
+            get => Settings.IsLeftRightDir;
+            set
+            {
+                if (Settings.IsLeftRightDir != value)
+                {
+                    Settings.IsLeftRightDir = value;
+                    Settings.Save();
+                    this.RaisePropertyChanged();
+                    CheckSourceCode();
+                }
+            }
+        }
+
         private void CheckSourceCode()
         {
             if (oldSourceCode != sourceCodeTextBox.Text ||
@@ -593,7 +609,8 @@ namespace PT.PM.PatternEditor
                 oldJavaScriptType != Settings.JavaScriptType ||
                 oldIsIncludeTextSpans != Settings.IsIncludeTextSpans ||
                 oldIsLineColumnTextSpans != Settings.IsLineColumnTextSpans ||
-                oldIsIncludeCode != Settings.IsIncludeCode)
+                oldIsIncludeCode != Settings.IsIncludeCode ||
+                oldIsLeftRightDir != Settings.IsLeftRightDir)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
@@ -609,6 +626,7 @@ namespace PT.PM.PatternEditor
                 oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
                 oldIsLineColumnTextSpans = Settings.IsLineColumnTextSpans;
                 oldIsIncludeCode = Settings.IsIncludeCode;
+                oldIsLeftRightDir = Settings.IsLeftRightDir;
             }
         }
 
@@ -636,7 +654,8 @@ namespace PT.PM.PatternEditor
                 Logger = sourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,
                 DumpDir = ServiceLocator.TempDirectory,
-                RenderStages = new HashSet<Stage>() { Stage.Ust }
+                RenderStages = new HashSet<Stage>() { Stage.Ust },
+                RenderDirection = IsLeftRightDir ? GraphvizDirection.LeftRight : GraphvizDirection.TopBottom
             };
             if (SelectedLanguage == JavaScript.Language)
             {
