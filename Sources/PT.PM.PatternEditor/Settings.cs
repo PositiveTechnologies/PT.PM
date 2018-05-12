@@ -64,7 +64,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsIncludeTextSpans { get; set; } = false;
 
-        public bool IsLineColumnTextSpans { get; set; } = false;
+        public bool IsLinearTextSpans { get; set; } = false;
 
         public bool IsIncludeCode { get; set; } = false;
 
