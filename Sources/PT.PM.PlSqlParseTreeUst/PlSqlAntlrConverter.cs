@@ -245,7 +245,7 @@ namespace PT.PM.SqlParseTreeUst
                 typeToken = (TypeToken)Visit(context.type_spec());
             }
             var name = (IdToken)Visit(context.parameter_name());
-            result = new ParameterDeclaration(typeToken, name, context.GetTextSpan());
+            result = new ParameterDeclaration(null, typeToken, name, context.GetTextSpan());
             return result;
         }
 

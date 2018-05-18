@@ -489,7 +489,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var type = (TypeToken)Visit(context.data_type());
             var id = (IdToken)Visit(context.LOCAL_ID());
-            var result = new ParameterDeclaration(type, id, context.GetTextSpan());
+            var result = new ParameterDeclaration(null, type, id, context.GetTextSpan());
             return result;
         }
 

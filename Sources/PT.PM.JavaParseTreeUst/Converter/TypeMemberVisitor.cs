@@ -171,7 +171,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var type = (TypeToken)Visit(context.typeType());
             var id = (IdToken)Visit(context.variableDeclaratorId());
 
-            var result = new ParameterDeclaration(type, id, context.GetTextSpan());
+            var result = new ParameterDeclaration(null, type, id, context.GetTextSpan());
             return result;
         }
     }

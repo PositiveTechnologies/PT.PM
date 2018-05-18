@@ -802,7 +802,7 @@ namespace PT.PM.PhpParseTreeUst
 
             var varInit = (AssignmentExpression)Visit(context.variableInitializer());
 
-            var result = new ParameterDeclaration(type, (IdToken)varInit.Left, context.GetTextSpan());
+            var result = new ParameterDeclaration(null, type, (IdToken)varInit.Left, context.GetTextSpan());
             result.Initializer = varInit.Right;
             return result;
         }
