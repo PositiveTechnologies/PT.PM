@@ -1,6 +1,6 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿namespace PT.PM.Common.Nodes.Tokens
 {
-    public enum ArgumentModifier
+    public enum InOutModifier
     {
         In,    // default
         InOut, // ref in C#

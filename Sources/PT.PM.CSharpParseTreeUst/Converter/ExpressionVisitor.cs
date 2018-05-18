@@ -84,9 +84,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var result = (Expression)VisitAndReturnNullIfError(node.Expression);
             if (!node.RefKindKeyword.IsKind(SyntaxKind.None))
             {
-                result = new ArgumentExpression(
-                    node.RefKindKeyword.IsKind(SyntaxKind.OutKeyword) ? ArgumentModifier.Out : ArgumentModifier.InOut,
-                    result);
+                InOutModifierLiteral modifierLiteral = new InOutModifierLiteral(
+                    node.RefKindKeyword.IsKind(SyntaxKind.OutKeyword) ? InOutModifier.Out : InOutModifier.InOut,
+                    node.RefKindKeyword.GetTextSpan());
+                result = new ArgumentExpression(modifierLiteral, result, node.GetTextSpan());
             }
             return result;
         }

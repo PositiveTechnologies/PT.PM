@@ -66,7 +66,7 @@ namespace PT.PM.Common.Nodes
         T Visit(IntLiteral intLiteral);
         T Visit(ModifierLiteral modifierLiteral);
         T Visit(NullLiteral nullLiteral);
-        T Visit(ParameterModifierLiteral parameterModifierLiteral);
+        T Visit(InOutModifierLiteral parameterModifierLiteral);
         T Visit(StringLiteral stringLiteral);
         T Visit(ThisReferenceToken thisReferenceLiteral);
         T Visit(TypeToken typeToken);
@@ -80,7 +80,6 @@ namespace PT.PM.Common.Nodes
         T Visit(AsExpression asExpression);
         T Visit(CheckedExpression checkedExpression);
         T Visit(CheckedStatement checkedStatement);
-        T Visit(CSharpParameterDeclaration cSharpParameterDeclaration);
         T Visit(FixedStatement fixedStatement);
         T Visit(LockStatement lockStatement);
         T Visit(UnsafeStatement unsafeStatement);

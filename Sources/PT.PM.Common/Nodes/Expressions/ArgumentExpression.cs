@@ -1,12 +1,16 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿using PT.PM.Common.Nodes.Tokens.Literals;
+
+namespace PT.PM.Common.Nodes.Expressions
 {
     public class ArgumentExpression : Expression
     {
-        public ArgumentModifier Modifier { get; set; }
+        public InOutModifierLiteral Modifier { get; set; }
 
         public Expression Argument { get; set; }
 
-        public ArgumentExpression(ArgumentModifier argumentModifier, Expression argument)
+        public ArgumentExpression(InOutModifierLiteral argumentModifier, Expression argument,
+            TextSpan textSpan)
+            : base(textSpan)
         {
             Modifier = argumentModifier;
             Argument = argument;
@@ -22,7 +26,8 @@
 
         public override string ToString()
         {
-            return $"{Modifier} {Argument}";
+            string modifierString = Modifier != null ? Modifier + " " : "";
+            return $"{modifierString}{Argument}";
         }
     }
 }

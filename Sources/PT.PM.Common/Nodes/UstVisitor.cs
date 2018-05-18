@@ -172,7 +172,7 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(nullLiteral);
         }
 
-        public virtual T Visit(ParameterModifierLiteral parameterModifierLiteral)
+        public virtual T Visit(InOutModifierLiteral parameterModifierLiteral)
         {
             return VisitChildren(parameterModifierLiteral);
         }
@@ -215,11 +215,6 @@ namespace PT.PM.Common.Nodes
         public virtual T Visit(CheckedStatement checkedStatement)
         {
             return VisitChildren(checkedStatement);
-        }
-
-        public virtual T Visit(CSharpParameterDeclaration cSharpParameterDeclaration)
-        {
-            return VisitChildren(cSharpParameterDeclaration);
         }
 
         public virtual T Visit(FixedStatement fixedStatement)
