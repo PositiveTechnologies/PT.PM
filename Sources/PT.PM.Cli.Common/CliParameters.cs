@@ -56,8 +56,8 @@ namespace PT.PM.Cli.Common
         [Option("no-text-spans", HelpText = "Do not include text spans in dump trees")]
         public bool? NotIncludeTextSpansInDump { get; set; }
 
-        [Option("line-column", HelpText = "Use line-column format for text spans in dump")]
-        public bool? LineColumnTextSpans { get; set; } 
+        [Option("linear", HelpText = "Use linear format for text spans in dump")]
+        public bool? LinearTextSpans { get; set; } 
 
         [Option("dump-code", HelpText = "Dump content of source code file to dump")]
         public bool? IncludeCodeInDump { get; set; }

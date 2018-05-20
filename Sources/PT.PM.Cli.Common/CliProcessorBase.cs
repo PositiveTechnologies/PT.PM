@@ -164,9 +164,9 @@ namespace PT.PM.Cli.Common
             {
                 workflow.DumpWithTextSpans = !parameters.NotIncludeTextSpansInDump.Value;
             }
-            if (parameters.LineColumnTextSpans.HasValue)
+            if (parameters.LinearTextSpans.HasValue)
             {
-                workflow.LineColumnTextSpans = parameters.LineColumnTextSpans.Value;
+                workflow.LinearTextSpans = parameters.LinearTextSpans.Value;
             }
             if (parameters.IncludeCodeInDump.HasValue)
             {

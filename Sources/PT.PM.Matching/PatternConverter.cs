@@ -104,6 +104,10 @@ namespace PT.PM.Matching
                     ?? Serializers.First();
                 try
                 {
+                    if (serializer is JsonPatternSerializer jsonPatternSerializer)
+                    {
+                        jsonPatternSerializer.CurrectCodeFile = pattern.CodeFile;
+                    }
                     string serialized = serializer.Serialize(pattern);
                     PatternDto patternDto = new PatternDto
                     {

@@ -25,9 +25,9 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void Process_JsonUst_LineColumnTextSpan()
+        public void Process_JsonUst_LinearTextSpan()
         {
-            CheckJsonSerialization("empty-try-catch.php", lineColumnTextSpans: true);
+            CheckJsonSerialization("empty-try-catch.php", linearTextSpans: true);
         }
 
         [Test]
@@ -45,10 +45,10 @@ namespace PT.PM.Tests
         [Test]
         public void Process_JsonUst_MultiTextSpanLineColumn()
         {
-            CheckJsonSerialization("MultiTextSpan", lineColumnTextSpans: true);
+            CheckJsonSerialization("MultiTextSpan", linearTextSpans: true);
         }
 
-        private static void CheckJsonSerialization(string inputFileName, bool lineColumnTextSpans = false,
+        private static void CheckJsonSerialization(string inputFileName, bool linearTextSpans = false,
             bool includeTextSpans = true, bool indented = true, bool includeCode = true)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
@@ -66,7 +66,7 @@ namespace PT.PM.Tests
                 IncludeCodeInDump = includeCode,
                 IndentedDump = indented,
                 DumpWithTextSpans = includeTextSpans,
-                LineColumnTextSpans = lineColumnTextSpans,
+                LinearTextSpans = linearTextSpans,
                 Stage = Stage.SimplifiedUst
             };
             WorkflowResult result = workflow.Process();
@@ -88,7 +88,7 @@ namespace PT.PM.Tests
                 {
                     string preprocessedTextSpanString, originTextSpanString;
 
-                    if (!lineColumnTextSpans)
+                    if (linearTextSpans)
                     {
                         preprocessedTextSpanString = preprocessedFile.GetTextSpan(lcPreprocessedTextSpan).ToString();
                         originTextSpanString = originFile.GetTextSpan(lcOriginTextSpan).ToString();
@@ -116,7 +116,7 @@ namespace PT.PM.Tests
                 StartStage = Stage.Ust,
                 IndentedDump = indented,
                 DumpWithTextSpans = includeTextSpans,
-                LineColumnTextSpans = lineColumnTextSpans,
+                LinearTextSpans = linearTextSpans,
                 Logger = logger
             };
             WorkflowResult newResult = newWorkflow.Process();

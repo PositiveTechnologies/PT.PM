@@ -649,7 +649,7 @@ namespace PT.PM.PatternEditor
             {
                 IsIncludeIntermediateResult = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
-                LineColumnTextSpans = !IsLinearTextSpans,
+                LinearTextSpans = !IsLinearTextSpans,
                 IncludeCodeInDump = IsIncludeCode,
                 Logger = sourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,

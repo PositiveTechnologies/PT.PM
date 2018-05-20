@@ -101,7 +101,7 @@ namespace PT.PM
 
         public bool IncludeCodeInDump { get; set; } = false;
 
-        public bool LineColumnTextSpans { get; set; } = true;
+        public bool LinearTextSpans { get; set; } = false;
 
         public string LogsDir { get; set; } = "";
 
@@ -214,10 +214,10 @@ namespace PT.PM
                         }
                         else
                         {
-                            var jsonUstSerializer = new UstJsonSerializer()
+                            var jsonUstSerializer = new UstJsonSerializer
                             {
                                 Logger = Logger,
-                                LineColumnTextSpans = LineColumnTextSpans,
+                                LinearTextSpans = LinearTextSpans,
                                 CodeFiles = workflowResult.SourceCodeFiles
                             };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
@@ -269,7 +269,7 @@ namespace PT.PM
                     Indented = IndentedDump,
                     IncludeTextSpans = DumpWithTextSpans,
                     IncludeCode = IncludeCodeInDump,
-                    LineColumnTextSpans = LineColumnTextSpans,
+                    LinearTextSpans = LinearTextSpans,
                     CodeFiles = sourceCodeFiles,
                     CurrectCodeFile = result.SourceCodeFile
                 };

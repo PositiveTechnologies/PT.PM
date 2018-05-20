@@ -18,7 +18,7 @@ namespace PT.PM.Common.Json
 
         public bool IncludeCode { get; set; } = true;
 
-        public bool LineColumnTextSpans { get; set; } = false;
+        public bool LinearTextSpans { get; set; } = false;
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
@@ -59,7 +59,7 @@ namespace PT.PM.Common.Json
             var textSpanJsonConverter = new TextSpanJsonConverter
             {
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
-                IsLineColumn = LineColumnTextSpans,
+                IsLinear = LinearTextSpans,
                 JsonFile = JsonFile,
                 Logger = Logger,
                 CodeFiles = CodeFiles,
