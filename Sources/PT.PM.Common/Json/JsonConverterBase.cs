@@ -209,15 +209,16 @@ namespace PT.PM.Common.Json
 
         protected IEnumerable<TextSpan> GetCommonTextSpan(JToken textSpanToken)
         {
-            JToken[] textSpanTokens = textSpanToken.GetTokenOrTokensArray();
-            return textSpanTokens.Select(token => token.ToObject<TextSpan>(jsonSerializer));
+            return textSpanToken
+                .GetTokenOrTokensArray()
+                .Select(token => token.ToObject<TextSpan>(jsonSerializer));
         }
 
-        private object GetDefaultValue(Type t)
+        private object GetDefaultValue(Type type)
         {
-            if (t.IsValueType)
+            if (type.IsValueType)
             {
-                return Activator.CreateInstance(t);
+                return Activator.CreateInstance(type);
             }
 
             return null;

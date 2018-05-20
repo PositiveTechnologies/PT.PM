@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace PT.PM.Common.Json
 {
-    public class TextSpanJsonConverter : JsonConverter, ILoggable
+    public class TextSpanJsonConverter : JsonConverter<TextSpan>, ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -27,17 +27,10 @@ namespace PT.PM.Common.Json
             CodeFiles.Add(codeFile);
         }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(TextSpan);
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, TextSpan textSpan, JsonSerializer serializer)
         {
             try
             {
-                var textSpan = (TextSpan)value;
-
                 string textSpanString;
                 bool includeFileName = textSpan.CodeFile != CurrentCodeFile;
 
@@ -76,7 +69,7 @@ namespace PT.PM.Common.Json
             }
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override TextSpan ReadJson(JsonReader reader, Type objectType, TextSpan existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             TextSpan result = TextSpan.Zero;
 

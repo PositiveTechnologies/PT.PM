@@ -4,21 +4,16 @@ using System.Linq;
 
 namespace PT.PM.Common.Json
 {
-    public class LanguageJsonConverter : JsonConverter
+    public class LanguageJsonConverter : JsonConverter<Language>
     {
         public static LanguageJsonConverter Instance = new LanguageJsonConverter();
 
-        public override bool CanConvert(Type objectType)
+        public override void WriteJson(JsonWriter writer, Language language, JsonSerializer serializer)
         {
-            return objectType == typeof(Language);
+            writer.WriteValue(language.Key);
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            writer.WriteValue(((Language)value).Key);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override Language ReadJson(JsonReader reader, Type objectType, Language existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             return LanguageUtils.ParseLanguages((string)reader.Value).FirstOrDefault() ?? Uncertain.Language;
         }
