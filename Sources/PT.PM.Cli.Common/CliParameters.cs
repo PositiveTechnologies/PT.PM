@@ -62,6 +62,9 @@ namespace PT.PM.Cli.Common
         [Option("dump-code", HelpText = "Dump content of source code file to dump")]
         public bool? IncludeCodeInDump { get; set; }
 
+        [Option("not-strict", HelpText = "Not strict json deserialization if set true")]
+        public bool? NotStrictJson { get; set; }
+
         [Option("start-stage", HelpText = "Start stage to process (File or Ust)")]
         public string StartStage { get; set; }
 

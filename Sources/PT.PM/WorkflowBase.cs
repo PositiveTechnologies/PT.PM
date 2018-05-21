@@ -103,6 +103,8 @@ namespace PT.PM
 
         public bool LinearTextSpans { get; set; } = false;
 
+        public bool NotStrictJson { get; set; } = false;
+
         public string LogsDir { get; set; } = "";
 
         public string DumpDir { get; set; } = "";
@@ -218,6 +220,7 @@ namespace PT.PM
                             {
                                 Logger = Logger,
                                 LinearTextSpans = LinearTextSpans,
+                                NotStrict = NotStrictJson,
                                 CodeFiles = workflowResult.SourceCodeFiles
                             };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
@@ -270,6 +273,7 @@ namespace PT.PM
                     IncludeTextSpans = DumpWithTextSpans,
                     IncludeCode = IncludeCodeInDump,
                     LinearTextSpans = LinearTextSpans,
+                    NotStrict = NotStrictJson,
                     CodeFiles = sourceCodeFiles,
                     CurrectCodeFile = result.SourceCodeFile
                 };
