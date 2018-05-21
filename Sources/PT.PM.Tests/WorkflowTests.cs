@@ -120,7 +120,7 @@ namespace PT.PM.Tests
 
                     if (checkStrict)
                     {
-                        json = json.Replace("\"Kind\": \"IntLiteral\",", "\"Kind\": \"IntLiteral\", \"ExcessProperty\": \"value\",");
+                        json = json.Replace("\"Kind\": \"IntLiteral\"", "\"Kind\": \"IntLiteral\", \"ExcessProperty\": \"value\"");
                     }
 
                     File.WriteAllText(jsonFile, json);
