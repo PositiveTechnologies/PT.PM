@@ -31,9 +31,9 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void Process_JsonUst_WithoutCode()
+        public void Process_JsonUst_WithCode()
         {
-            CheckJsonSerialization("empty-try-catch.php", includeCode: false);
+            CheckJsonSerialization("empty-try-catch.php", includeCode: true);
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace PT.PM.Tests
         }
 
         private static void CheckJsonSerialization(string inputFileName, bool linearTextSpans = false,
-            bool includeTextSpans = true, bool indented = true, bool includeCode = true,
+            bool includeTextSpans = true, bool indented = true, bool includeCode = false,
             bool checkStrict = false, bool strict = true)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
