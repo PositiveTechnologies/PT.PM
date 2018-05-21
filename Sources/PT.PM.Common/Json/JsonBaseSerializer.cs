@@ -20,6 +20,8 @@ namespace PT.PM.Common.Json
 
         public bool LinearTextSpans { get; set; } = false;
 
+        public bool NotStrict { get; set; } = false;
+
         public string EmptyTextSpanFormat { get; set; } = null;
 
         public CodeFile CurrectCodeFile { get; set; }
@@ -68,6 +70,9 @@ namespace PT.PM.Common.Json
 
             var jsonSettings = new JsonSerializerSettings
             {
+                MissingMemberHandling = NotStrict
+                    ? MissingMemberHandling.Ignore
+                    : MissingMemberHandling.Error,
                 Formatting = Indented ? Formatting.Indented : Formatting.None,
                 Converters = new List<JsonConverter>
                 {

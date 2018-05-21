@@ -13,6 +13,8 @@ namespace PT.PM.Matching.Patterns
             IgnoredProperties = new HashSet<string>() { nameof(Parent), nameof(Root), nameof(TextSpan) }
         };
 
+        public string Kind => GetType().Name;
+
         public int KindId => GetType().Name.GetHashCode();
 
         public PatternRoot Root { get; set; }
