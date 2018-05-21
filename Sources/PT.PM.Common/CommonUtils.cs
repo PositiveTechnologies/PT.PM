@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -10,7 +11,6 @@ namespace PT.PM.Common
 {
     public static class CommonUtils
     {
-        private static readonly char[] Separators = new char[] { ',', ' ', '\t', '\r', '\n' };
         private static bool? isSupportThreadAbort = null;
 
         public const string Prefix = "pt.pm_";
@@ -93,36 +93,71 @@ namespace PT.PM.Common
             return expr is IdToken idToken && idToken.TextValue == value;
         }
 
-        public static TEnum[] ParseCollection<TEnum>(this string str)
-            where TEnum : struct
+        public static List<T> ParseEnums<T>(this IEnumerable<string> values, bool ignoreIncorrectValues, ILogger logger = null)
+            where T : struct, IConvertible
         {
-            if (!string.IsNullOrEmpty(str))
+            var result = new List<T>();
+            foreach (string value in values)
             {
-                var collection = new List<TEnum>();
-                string[] strings = str.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string elemString in strings)
+                if (ParseEnum(value, ignoreIncorrectValues, out T parsed, logger: logger))
                 {
-                    if (Enum.TryParse(elemString, true, out TEnum element))
-                    {
-                        collection.Add(element);
-                    }
+                    result.Add(parsed);
                 }
-                return collection.ToArray();
+            }
+            return result;
+        }
+
+        public static T ParseEnum<T>(this string str, bool ignoreIncorrectValue, T defaultValue = default(T), ILogger logger = null)
+            where T : struct, IConvertible
+        {
+            if (ParseEnum(str, ignoreIncorrectValue, out T parsed, defaultValue, logger))
+            {
+                return parsed;
+            }
+            return defaultValue;
+        }
+
+        public static bool ParseEnum<T>(this string str, bool ignoreIncorrectValue, out T result, T defaultValue = default(T), ILogger logger = null)
+            where T : struct, IConvertible
+        {
+            if (ignoreIncorrectValue)
+            {
+                if (Enum.TryParse(str, true, out T enumValue))
+                {
+                    result = enumValue;
+                }
+                else
+                {
+                    result = defaultValue;
+                    logger?.LogError(new ArgumentException($"Incorrect enum value {str}"));
+                    return false;
+                }
             }
             else
             {
-                return ArrayUtils<TEnum>.EmptyArray;
+                result = (T)Enum.Parse(typeof(T), str, true);
             }
+            return true;
         }
 
-        public static T ParseEnum<T>(this string str, T defaultValue = default(T))
+        public static int ConvertToInt32(this uint obj, bool ignoreIncorrectValue, int defaultValue = default(int), ILogger logger = null)
         {
-            if (string.IsNullOrEmpty(str))
+            try
             {
-                return defaultValue;
+                return Convert.ToInt32(obj);
             }
-
-            return (T)Enum.Parse(typeof(T), str, true);
+            catch
+            {
+                if (ignoreIncorrectValue)
+                {
+                    logger?.LogError(new ArgumentException($"Incorrect int value {obj}"));
+                    return defaultValue;
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 }

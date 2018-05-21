@@ -7,13 +7,13 @@ using System.Threading;
 
 namespace PT.PM.Common.Json
 {
-    public class TextSpanJsonConverter : JsonConverter, ILoggable
+    public class TextSpanJsonConverter : JsonConverter<TextSpan>, ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
-        public bool IsLineColumn { get; set; } = false;
+        public bool IsLinear { get; set; } = false;
 
         public CodeFile CurrentCodeFile { get; set; }
 
@@ -27,21 +27,14 @@ namespace PT.PM.Common.Json
             CodeFiles.Add(codeFile);
         }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(TextSpan);
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, TextSpan textSpan, JsonSerializer serializer)
         {
             try
             {
-                var textSpan = (TextSpan)value;
-
                 string textSpanString;
                 bool includeFileName = textSpan.CodeFile != CurrentCodeFile;
 
-                if (!IsLineColumn)
+                if (IsLinear)
                 {
                     textSpanString = textSpan.IsZero && EmptyTextSpanFormat != null
                         ? EmptyTextSpanFormat
@@ -76,7 +69,7 @@ namespace PT.PM.Common.Json
             }
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override TextSpan ReadJson(JsonReader reader, Type objectType, TextSpan existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             TextSpan result = TextSpan.Zero;
 
@@ -84,12 +77,12 @@ namespace PT.PM.Common.Json
             {
                 try
                 {
-                    result = DeserializeTextSpan(reader, IsLineColumn);
+                    result = DeserializeTextSpan(reader, IsLinear);
                 }
                 catch (FormatException)
                 {
-                    result = DeserializeTextSpan(reader, !IsLineColumn);
-                    IsLineColumn = !IsLineColumn;
+                    result = DeserializeTextSpan(reader, !IsLinear);
+                    IsLinear = !IsLinear;
                 }
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
@@ -100,14 +93,14 @@ namespace PT.PM.Common.Json
             return result;
         }
 
-        private TextSpan DeserializeTextSpan(JsonReader reader, bool isLineColumn)
+        private TextSpan DeserializeTextSpan(JsonReader reader, bool isLinear)
         {
             TextSpan result = TextSpan.Zero;
 
             string textSpanString = (string)reader.Value;
             if (textSpanString != EmptyTextSpanFormat)
             {
-                if (!isLineColumn)
+                if (isLinear)
                 {
                     try
                     {

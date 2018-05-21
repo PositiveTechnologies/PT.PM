@@ -1,7 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
     public class WorkflowLoggerHelper : WorkflowLoggerHelperBase<Stage, WorkflowResult, PatternRoot, MatchResult>
     {

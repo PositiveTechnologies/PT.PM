@@ -14,7 +14,7 @@ namespace PT.PM.UstPreprocessing.Tests
         {
             var result = new BlockStatement
             {
-                Statements = new List<Statement>()
+                Statements = new List<Statement>
                 {
                     new ExpressionStatement
                     {
@@ -53,7 +53,7 @@ namespace PT.PM.UstPreprocessing.Tests
                     },
                     new ForStatement
                     {
-                        Initializers = new List<Statement>()
+                        Initializers = new List<Statement>
                         {
                             new ExpressionStatement
                             {

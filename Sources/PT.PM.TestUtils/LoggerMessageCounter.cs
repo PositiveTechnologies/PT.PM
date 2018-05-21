@@ -21,12 +21,25 @@ namespace PT.PM.TestUtils
 
         public int InfoMessageCount => infoMessages.Count;
 
+        public List<string> Errors => errorMessages;
+
         public bool LogToConsole { get; set; }
 
         public string ErrorsString => string.Join(", " + Environment.NewLine, errorMessages);
 
+        public bool IsLogErrors { get; set; } = true;
+
+        public bool IsLogDebugs { get; set; } = true;
+
+        public string LogsDir { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
         public void LogError(Exception ex)
         {
+            if (!IsLogErrors)
+            {
+                return;
+            }
+
             string message = ex.ToString();
             lock (errorMessages)
             {
@@ -43,6 +56,11 @@ namespace PT.PM.TestUtils
 
         public void LogError(string message)
         {
+            if (!IsLogErrors)
+            {
+                return;
+            }
+
             lock (errorMessages)
             {
                 errorMessages.Add(message);
@@ -95,6 +113,11 @@ namespace PT.PM.TestUtils
 
         public void LogDebug(string message)
         {
+            if (!IsLogDebugs)
+            {
+                return;
+            }
+
             lock (debugMessages)
             {
                 debugMessages.Add(message);

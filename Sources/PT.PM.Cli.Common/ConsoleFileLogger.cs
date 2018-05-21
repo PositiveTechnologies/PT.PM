@@ -2,7 +2,7 @@
 using NLog;
 using PT.PM.Common.Exceptions;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
     public class ConsoleFileLogger : FileLogger
     {

@@ -2,8 +2,10 @@
 
 namespace PT.PM
 {
-    public static class StageUtils
+    public static class Utils
     {
+        public const int DefaultMaxStackSize = 0;
+
         public static bool Is<TStage>(this TStage stage, Stage pmStage)
             where TStage : struct, IConvertible
         {

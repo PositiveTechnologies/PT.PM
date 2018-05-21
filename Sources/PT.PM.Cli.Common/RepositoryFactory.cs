@@ -9,20 +9,24 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PT.PM
+namespace PT.PM.Cli.Common
 {
     public static class RepositoryFactory
     {
-        public static SourceCodeRepository CreateSourceCodeRepository(string path, IEnumerable<Language> languages, string tempDir, bool isStartUstStage)
+        public static SourceCodeRepository CreateSourceCodeRepository(string path, string tempDir)
         {
             SourceCodeRepository sourceCodeRepository;
-            if (Directory.Exists(path))
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                sourceCodeRepository = DummyCodeRepository.Instance;
+            }
+            else if (Directory.Exists(path))
             {
                 sourceCodeRepository = new DirectoryCodeRepository(path);
             }
             else if (File.Exists(path))
             {
-                if (Path.GetExtension(path) == ".zip")
+                if (Path.GetExtension(path).EqualsIgnoreCase(".zip"))
                 {
                     sourceCodeRepository = new ZipCachingRepository(path)
                     {
@@ -42,13 +46,13 @@ namespace PT.PM
 
                 if (!url.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (urlWithoutHttp.StartsWith("github.com"))
+                    if (urlWithoutHttp.StartsWith("github.com", StringComparison.OrdinalIgnoreCase))
                     {
                         url = url + "/archive/master.zip";
                     }
                 }
 
-                if (urlWithoutHttp.StartsWith("github.com"))
+                if (urlWithoutHttp.StartsWith("github.com", StringComparison.OrdinalIgnoreCase))
                 {
                     projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
                 }
@@ -60,9 +64,6 @@ namespace PT.PM
                 sourceCodeRepository = zipAtUrlCachedCodeRepository;
             }
 
-            sourceCodeRepository.Languages = new HashSet<Language>(languages);
-            sourceCodeRepository.LoadJson = isStartUstStage;
-
             return sourceCodeRepository;
         }
 
@@ -73,6 +74,10 @@ namespace PT.PM
             if (string.IsNullOrEmpty(patternsString))
             {
                 patternsRepository = new DefaultPatternRepository();
+            }
+            else if (patternsString.EqualsIgnoreCase("no"))
+            {
+                patternsRepository = DummyPatternsRepository.Instance;
             }
             else if (patternsString.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             {

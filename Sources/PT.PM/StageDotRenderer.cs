@@ -46,7 +46,28 @@ namespace PT.PM
             RenderNode(ust);
 
             var graphString = new StringBuilder();
-            graphString.AppendLine("digraph cfg {");
+            graphString.AppendLine("digraph ust {");
+            if (RenderDirection != GraphvizDirection.TopBottom)
+            {
+                string rankdir;
+                if (RenderDirection == GraphvizDirection.BottomTop)
+                {
+                    rankdir = "BT";
+                }
+                else if (RenderDirection == GraphvizDirection.LeftRight)
+                {
+                    rankdir = "LR";
+                }
+                else if (RenderDirection == GraphvizDirection.RightLeft)
+                {
+                    rankdir = "RL";
+                }
+                else
+                {
+                    rankdir = "TB";
+                }
+                graphString.AppendLine($"rankdir={rankdir};");
+            }
             graphString.Append(vertexesString.ToString());
             graphString.Append(edgesString.ToString());
             graphString.AppendLine("}");

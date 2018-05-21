@@ -46,8 +46,9 @@ namespace PT.PM.PatternEditor
         private string ustJson;
         private string matchResultText = "MATCHINGS";
         private bool oldIsIncludeTextSpans;
-        private bool oldIsLineColumnTextSpans;
+        private bool oldIsLinearTextSpans;
         private bool oldIsIncludeCode;
+        private bool oldIsLeftRightDir;
         private CodeFile sourceCode;
 
         public MainWindowViewModel(Window w)
@@ -555,14 +556,14 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public bool IsLineColumnTextSpans
+        public bool IsLinearTextSpans
         {
-            get => Settings.IsLineColumnTextSpans;
+            get => Settings.IsLinearTextSpans;
             set
             {
-                if (Settings.IsLineColumnTextSpans != value)
+                if (Settings.IsLinearTextSpans != value)
                 {
-                    Settings.IsLineColumnTextSpans = value;
+                    Settings.IsLinearTextSpans = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
                     CheckSourceCode();
@@ -585,6 +586,21 @@ namespace PT.PM.PatternEditor
             }
         }
 
+        public bool IsLeftRightDir
+        {
+            get => Settings.IsLeftRightDir;
+            set
+            {
+                if (Settings.IsLeftRightDir != value)
+                {
+                    Settings.IsLeftRightDir = value;
+                    Settings.Save();
+                    this.RaisePropertyChanged();
+                    CheckSourceCode();
+                }
+            }
+        }
+
         private void CheckSourceCode()
         {
             if (oldSourceCode != sourceCodeTextBox.Text ||
@@ -592,8 +608,9 @@ namespace PT.PM.PatternEditor
                 oldEndStage != Settings.SelectedStage ||
                 oldJavaScriptType != Settings.JavaScriptType ||
                 oldIsIncludeTextSpans != Settings.IsIncludeTextSpans ||
-                oldIsLineColumnTextSpans != Settings.IsLineColumnTextSpans ||
-                oldIsIncludeCode != Settings.IsIncludeCode)
+                oldIsLinearTextSpans != Settings.IsLinearTextSpans ||
+                oldIsIncludeCode != Settings.IsIncludeCode ||
+                oldIsLeftRightDir != Settings.IsLeftRightDir)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
                 string sourceCode = sourceCodeTextBox.Text;
@@ -607,8 +624,9 @@ namespace PT.PM.PatternEditor
                 oldEndStage = Settings.SelectedStage;
                 oldJavaScriptType = Settings.JavaScriptType;
                 oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
-                oldIsLineColumnTextSpans = Settings.IsLineColumnTextSpans;
+                oldIsLinearTextSpans = Settings.IsLinearTextSpans;
                 oldIsIncludeCode = Settings.IsIncludeCode;
+                oldIsLeftRightDir = Settings.IsLeftRightDir;
             }
         }
 
@@ -631,12 +649,13 @@ namespace PT.PM.PatternEditor
             {
                 IsIncludeIntermediateResult = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
-                LineColumnTextSpans = IsLineColumnTextSpans,
+                LinearTextSpans = !IsLinearTextSpans,
                 IncludeCodeInDump = IsIncludeCode,
                 Logger = sourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,
                 DumpDir = ServiceLocator.TempDirectory,
-                RenderStages = new HashSet<Stage>() { Stage.Ust }
+                RenderStages = new HashSet<Stage>() { Stage.Ust },
+                RenderDirection = IsLeftRightDir ? GraphvizDirection.LeftRight : GraphvizDirection.TopBottom
             };
             if (SelectedLanguage == JavaScript.Language)
             {

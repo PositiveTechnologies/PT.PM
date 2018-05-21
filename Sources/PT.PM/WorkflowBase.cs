@@ -75,13 +75,13 @@ namespace PT.PM
             }
         }
 
-        public int ThreadCount { get; set; }
+        public int ThreadCount { get; set; } = 0;
 
-        public long MemoryConsumptionMb { get; set; } = 300;
+        public int MemoryConsumptionMb { get; set; } = 300;
 
         public TimeSpan FileTimeout { get; set; } = default(TimeSpan);
 
-        public int MaxStackSize { get; set; } = 0;
+        public int MaxStackSize { get; set; } = Utils.DefaultMaxStackSize;
 
         public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 
@@ -99,9 +99,11 @@ namespace PT.PM
 
         public bool DumpWithTextSpans { get; set; } = true;
 
-        public bool IncludeCodeInDump { get; set; } = true;
+        public bool IncludeCodeInDump { get; set; } = false;
 
-        public bool LineColumnTextSpans { get; set; } = false;
+        public bool LinearTextSpans { get; set; } = false;
+
+        public bool NotStrictJson { get; set; } = false;
 
         public string LogsDir { get; set; } = "";
 
@@ -214,10 +216,11 @@ namespace PT.PM
                         }
                         else
                         {
-                            var jsonUstSerializer = new UstJsonSerializer()
+                            var jsonUstSerializer = new UstJsonSerializer
                             {
                                 Logger = Logger,
-                                LineColumnTextSpans = LineColumnTextSpans,
+                                LinearTextSpans = LinearTextSpans,
+                                NotStrict = NotStrictJson,
                                 CodeFiles = workflowResult.SourceCodeFiles
                             };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
@@ -269,7 +272,8 @@ namespace PT.PM
                     Indented = IndentedDump,
                     IncludeTextSpans = DumpWithTextSpans,
                     IncludeCode = IncludeCodeInDump,
-                    LineColumnTextSpans = LineColumnTextSpans,
+                    LinearTextSpans = LinearTextSpans,
+                    NotStrict = NotStrictJson,
                     CodeFiles = sourceCodeFiles,
                     CurrectCodeFile = result.SourceCodeFile
                 };
@@ -302,10 +306,14 @@ namespace PT.PM
             {
                 var stopwatch = Stopwatch.StartNew();
                 IEnumerable<PatternDto> patternDtos = PatternsRepository.GetAll();
-                var patterns = PatternConverter.Convert(patternDtos);
+                List<TPattern> patterns = PatternConverter.Convert(patternDtos);
                 stopwatch.Stop();
-                workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
-                workflowResult.AddResultEntity(patterns);
+                if (patterns.Count > 0)
+                {
+                    workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
+                    workflowResult.AddResultEntity(patterns);
+                    workflowResult.AddProcessedPatternsCount(patterns.Count);
+                }
                 return patterns;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))

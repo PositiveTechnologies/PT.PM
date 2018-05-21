@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PT.PM.Common.Json
 {
-    public class CodeFileJsonConverter : JsonConverter, ILoggable
+    public class CodeFileJsonConverter : JsonConverter<CodeFile>, ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -19,15 +19,9 @@ namespace PT.PM.Common.Json
 
         public TextSpanJsonConverter TextSpanJsonConverter { get; set; }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(CodeFile);
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, CodeFile sourceCodeFile, JsonSerializer serializer)
         {
             JObject jObject = new JObject();
-            var sourceCodeFile = (CodeFile)value;
 
             if (!ExcludeDefaults || !string.IsNullOrEmpty(sourceCodeFile.RootPath))
                 jObject.Add(nameof(sourceCodeFile.RootPath), sourceCodeFile.RootPath);
@@ -47,7 +41,7 @@ namespace PT.PM.Common.Json
             jObject.WriteTo(writer);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override CodeFile ReadJson(JsonReader reader, Type objectType, CodeFile existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             JObject obj = JObject.Load(reader);
 

@@ -15,6 +15,8 @@ namespace PT.PM.Common.Nodes
             ReduceWhitespaces = true
         };
 
+        public string Kind => GetType().Name;
+
         public int KindId => GetType().Name.GetHashCode();
 
         public RootUst Root { get; set; }

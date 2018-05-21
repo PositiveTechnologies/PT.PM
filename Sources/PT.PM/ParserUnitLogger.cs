@@ -14,6 +14,12 @@ namespace PT.PM
 
         public int ErrorCount => Errors.Count;
 
+        public bool IsLogErrors { get => true; set => throw new InvalidOperationException(); }
+
+        public bool IsLogDebugs { get => false; set => throw new InvalidOperationException(); }
+
+        public string LogsDir { get; set; } = "";
+
         public void LogDebug(string message)
         {
             lock (Debugs)

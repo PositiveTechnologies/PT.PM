@@ -1,50 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Matching;
-using PT.PM.Matching.PatternsRepository;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
-    public class CliProcessor : CliProcessorBase<Stage, WorkflowResult, PatternRoot, MatchResult, CliParameters>
+    public class CliProcessor : CliProcessorBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, CliParameters>
     {
-        protected override WorkflowResult InitWorkflowAndProcess(CliParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository)
+        public override string CoreName => "PT.PM";
+
+        protected override WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult> CreateWorkflow(CliParameters parameters)
         {
-            Stage stage = string.IsNullOrEmpty(parameters.InputFileNameOrDirectory)
-                ? Stage.Pattern
-                : parameters.Stage.ParseEnum(Stage.Match);
-
-            var workflow = new Workflow(sourceCodeRepository, patternsRepository, stage)
-            {
-                Logger = logger,
-                ThreadCount = parameters.ThreadCount,
-                MemoryConsumptionMb = parameters.Memory,
-                FileTimeout = TimeSpan.FromSeconds(parameters.FileTimeout),
-                MaxStackSize = parameters.MaxStackSize,
-                IsIncludePreprocessing = !parameters.NotPreprocessUst,
-                LogsDir = parameters.LogsDir,
-                DumpDir = parameters.LogsDir,
-                StartStage = parameters.StartStage.ParseEnum(Stage.File),
-                DumpStages = new HashSet<Stage>(parameters.DumpStages.ParseCollection<Stage>()),
-                IndentedDump = !parameters.NoIndentedDump,
-                DumpWithTextSpans = !parameters.NotIncludeTextSpansInDump,
-                LineColumnTextSpans = parameters.LineColumnTextSpans,
-                RenderStages = new HashSet<Stage>(parameters.RenderStages.ParseCollection<Stage>()),
-                RenderFormat = parameters.RenderFormat.ParseEnum<GraphvizOutputFormat>(),
-                RenderDirection = parameters.RenderDirection.ParseEnum<GraphvizDirection>(),
-                IncludeCodeInDump = parameters.IncludeCodeInDump
-            };
-
-            WorkflowResult workflowResult = workflow.Process();
-
-            return workflowResult;
+            return new Workflow();
         }
 
-        protected override void LogStatistics(ILogger logger, WorkflowResult workflowResult)
+        protected override void LogStatistics(WorkflowResult workflowResult)
         {
-            var workflowLoggerHelper = new WorkflowLoggerHelper(logger, workflowResult);
+            var workflowLoggerHelper = new WorkflowLoggerHelper(Logger, workflowResult);
             workflowLoggerHelper.LogStatistics();
+        }
+
+        protected override bool IsLoadJson(string startStageString)
+        {
+            Stage startStage = Stage.File;
+            if (startStageString != null)
+            {
+                startStage = startStageString.ParseEnum(ContinueWithInvalidArgs, startStage, Logger);
+            }
+
+            return startStage == Stage.Ust || startStage == Stage.SimplifiedUst;
         }
     }
 }

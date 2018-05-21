@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
+using PT.PM.Cli.Common;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Dsl;
@@ -82,6 +83,17 @@ namespace PT.PM.Tests
         public void Check_RepositoryFactory_Dsl()
         {
             Check("<[.*]> = #");
+        }
+
+        [Test]
+        public void Check_IncorrectLanguageInPattern_CorrectlyProcessed()
+        {
+            string serialized = jsonPatternSerializer.Serialize(pattern);
+            serialized = serialized.Replace("\"Languages\": []", "\"Languages\": [ \"Fake\" ]");
+            string filePath = Path.Combine(TestUtility.TestsOutputPath, "pattern.json");
+            File.WriteAllText(filePath, serialized);
+
+            Check(filePath);
         }
 
         [Test]

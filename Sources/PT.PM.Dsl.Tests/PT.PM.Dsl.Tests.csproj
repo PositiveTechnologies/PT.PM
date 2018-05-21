@@ -13,64 +13,64 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Data\AndroidHostnameVerificationDisabled.ptpm">
+    <Content Include="Data\AndroidHostnameVerificationDisabled.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\AndroidPermissionCheck.ptpm">
+    <Content Include="Data\AndroidPermissionCheck.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\AttributesCodeInsideElementEvent.ptpm">
+    <Content Include="Data\AttributesCodeInsideElementEvent.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\CookieNotSentOverSSL.ptpm">
+    <Content Include="Data\CookieNotSentOverSSL.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\CookieSecurityOverlyBroadDomain.ptpm">
+    <Content Include="Data\CookieSecurityOverlyBroadDomain.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\DebugInfo.ptpm">
+    <Content Include="Data\DebugInfo.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\ExtendingSecurityManagerWithoutFinal.ptpm">
+    <Content Include="Data\ExtendingSecurityManagerWithoutFinal.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\HardcodedPassword.ptpm">
+    <Content Include="Data\HardcodedPassword.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\ImproperValidationEmptyMethodFull.ptpm">
+    <Content Include="Data\ImproperValidationEmptyMethodFull.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\InadequateRSAPadding.ptpm">
+    <Content Include="Data\InadequateRSAPadding.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\InsecureRandomness.ptpm">
+    <Content Include="Data\InsecureRandomness.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\InsecureTransport.ptpm">
+    <Content Include="Data\InsecureTransport.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\KeyManagementNullEncryptionKey.ptpm">
+    <Content Include="Data\KeyManagementNullEncryptionKey.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\MissingBroadcasterPermission.ptpm">
+    <Content Include="Data\MissingBroadcasterPermission.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\PasswordInComment.ptpm">
+    <Content Include="Data\PasswordInComment.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\PoorLoggingPractice.ptpm">
+    <Content Include="Data\PoorLoggingPractice.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Range.ptpm">
+    <Content Include="Data\Range.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\UsingCloneWithoutCloneable.ptpm">
+    <Content Include="Data\UsingCloneWithoutCloneable.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\WeakCryptographicHash.ptpm">
+    <Content Include="Data\WeakCryptographicHash.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\XmlExternalEntity.ptpm">
+    <Content Include="Data\XmlExternalEntity.pattern">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

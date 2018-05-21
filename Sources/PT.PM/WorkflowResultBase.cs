@@ -32,6 +32,8 @@ namespace PT.PM
         private int totalProcessedCharsCount;
         private int totalProcessedLinesCount;
 
+        private int totalProcessedPatternsCount;
+
         private int totalTerminatedFilesCount;
 
         public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
@@ -101,6 +103,8 @@ namespace PT.PM
         public int TotalProcessedFilesCount => totalProcessedFilesCount;
         public int TotalProcessedCharsCount => totalProcessedCharsCount;
         public int TotalProcessedLinesCount => totalProcessedLinesCount;
+
+        public int TotalProcessedPatternsCount => totalProcessedPatternsCount;
 
         public int TotalTerminatedFilesCount => totalTerminatedFilesCount;
 
@@ -199,6 +203,11 @@ namespace PT.PM
         public void AddPatternsTime(long patternsTicks)
         {
             AddTicks(ref totalPatternsTicks, patternsTicks);
+        }
+
+        public void AddProcessedPatternsCount(int patternsCount)
+        {
+            AddInt(ref totalProcessedPatternsCount, patternsCount);
         }
 
         public void AddLexerTime(long ticks)

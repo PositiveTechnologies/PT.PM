@@ -69,11 +69,12 @@
         <ListBox Name="MatchingResult" MaxHeight="300" MinHeight="120" Items="{Binding MatchingResults}" />
       </Expander>
 
-      <Grid Grid.Row="7" ColumnDefinitions="170,170,170,170" Margin="0,5,0,0" IsVisible="{Binding DeveloperMode}">
+      <Grid Grid.Row="7" ColumnDefinitions="170,170,170,170,170" Margin="0,5,0,0" IsVisible="{Binding DeveloperMode}">
         <Button Command="{Binding OpenDumpDirectory}" Margin="0,0,5,0" Grid.Column="0" >Open Dump Directory</Button>
         <CheckBox Grid.Column="1" IsChecked="{Binding IsIncludeTextSpans}">Include Text Spans</CheckBox>
-        <CheckBox Grid.Column="2" IsChecked="{Binding IsLineColumnTextSpans}">Line-Column Text Spans</CheckBox>
+        <CheckBox Grid.Column="2" IsChecked="{Binding IsLinearTextSpans}">Linear Text Spans</CheckBox>
         <CheckBox Grid.Column="3" IsChecked="{Binding IsIncludeCode}">Include Code</CheckBox>
+        <CheckBox Grid.Column="4" IsChecked="{Binding IsLeftRightDir}">Left-Right Dir</CheckBox>
       </Grid>
     </Grid>
   </Grid>

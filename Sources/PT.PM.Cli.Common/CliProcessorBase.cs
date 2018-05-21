@@ -1,4 +1,6 @@
 ﻿using CommandLine;
+using CommandLine.Text;
+using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Matching;
@@ -12,145 +14,400 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-namespace PT.PM.Cli
+namespace PT.PM.Cli.Common
 {
-    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
+    public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
         where TStage : struct, IConvertible
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
         where TMatchResult : MatchResultBase<TPattern>
-        where TParameters : CliParameters
+        where TParameters : CliParameters, new()
     {
-        public int ParseAndConvert(string[] args, string coreName)
+        public ILogger Logger { get; protected set; } = new ConsoleFileLogger();
+
+        public virtual bool ContinueWithInvalidArgs => false;
+
+        public virtual bool StopIfDebuggerAttached => true;
+
+        public virtual int DefaultMaxStackSize => Utils.DefaultMaxStackSize;
+
+        public abstract string CoreName { get; }
+
+        public TWorkflowResult Process(string args) => Process(args.SplitArguments());
+
+        public TWorkflowResult Process(string[] args)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-            var parser = new Parser(config => config.HelpWriter = Console.Out);
+            Logger.IsLogErrors = true;
+
+            var parser = new Parser(config =>
+            {
+                config.IgnoreUnknownArguments = ContinueWithInvalidArgs;
+                config.CaseInsensitiveEnumValues = true;
+            });
             ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(args);
 
-            var result = parserResult.MapResult(
-                cliParams => {
-                    if (!string.IsNullOrEmpty(cliParams.LogsDir) && !cliParams.LogsDir.EndsWith(coreName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        cliParams.LogsDir = Path.Combine(cliParams.LogsDir, coreName);
-                    }
+            TWorkflowResult result = null;
 
-                    int convertResult = 0;
-                    if (cliParams.MaxStackSize == 0)
+            parserResult.WithParsed(
+                parameters =>
+                {
+                    result = ProcessJsonConfig(args, parameters);
+                })
+                .WithNotParsed(errors =>
+                {
+                    if (ContinueWithInvalidArgs)
                     {
-                        convertResult = Convert(args, cliParams);
+                        result = ProcessJsonConfig(args, null, errors);
                     }
                     else
                     {
-                        Thread thread = new Thread(() =>
-                        {
-                            convertResult = Convert(args, cliParams);
-                        },
-                        cliParams.MaxStackSize);
-                        thread.Start();
-                        thread.Join();
+                        LogInfoAndErrors(args, errors);
                     }
-                    return convertResult;
-                },
-                errors => ProcessErrors(errors));
+                });
+
+#if DEBUG
+            if (StopIfDebuggerAttached && Debugger.IsAttached)
+            {
+                Console.WriteLine("Press Enter to exit");
+                Console.ReadLine();
+            }
+#endif
 
             return result;
         }
 
-        public int Convert(string[] args, TParameters parameters)
+        protected virtual TWorkflowResult ProcessParameters(TParameters parameters)
         {
-            ILogger logger = new ConsoleFileLogger();
+            TWorkflowResult result = null;
 
+            int maxStackSize = parameters.MaxStackSize.HasValue
+                    ? parameters.MaxStackSize.Value.ConvertToInt32(ContinueWithInvalidArgs, DefaultMaxStackSize, Logger)
+                    : DefaultMaxStackSize;
+
+            if (maxStackSize == 0)
+            {
+                result = RunWorkflow(parameters);
+            }
+            else
+            {
+                Thread thread = new Thread(() => result = RunWorkflow(parameters), maxStackSize);
+                thread.Start();
+                thread.Join();
+            }
+
+            return result;
+        }
+
+        protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult>
+            InitWorkflow(TParameters parameters)
+        {
+            var workflow = CreateWorkflow(parameters);
+
+            workflow.SourceCodeRepository = CreateSourceCodeRepository(parameters);
+            workflow.SourceCodeRepository.LoadJson = IsLoadJson(parameters.StartStage);
+
+            if (parameters.Languages?.Count() > 0)
+            {
+                workflow.SourceCodeRepository.Languages = parameters.Languages.ParseLanguages();
+            }
+
+            workflow.PatternsRepository = CreatePatternsRepository(parameters);
+
+            if (parameters.PatternIds?.Count() > 0)
+            {
+                workflow.PatternsRepository.Identifiers = parameters.PatternIds;
+            }
+
+            workflow.Logger = Logger;
+
+            if (parameters.Stage != null)
+            {
+                workflow.Stage = parameters.Stage.ParseEnum(ContinueWithInvalidArgs, workflow.Stage, Logger);
+            }
+            else if (string.IsNullOrEmpty(parameters.InputFileNameOrDirectory))
+            {
+                workflow.Stage = (TStage)Enum.Parse(typeof(TStage), nameof(Stage.Pattern));
+            }
+
+            if (parameters.ThreadCount.HasValue)
+            {
+                workflow.ThreadCount = parameters.ThreadCount.Value;
+            }
+            if (parameters.NotPreprocessUst.HasValue)
+            {
+                workflow.IsIncludePreprocessing = !parameters.NotPreprocessUst.Value;
+            }
+            if (parameters.MaxStackSize.HasValue)
+            {
+                workflow.MaxStackSize = parameters.MaxStackSize.Value.ConvertToInt32(ContinueWithInvalidArgs, workflow.MaxStackSize, Logger);
+            }
+            if (parameters.Memory.HasValue)
+            {
+                workflow.MemoryConsumptionMb = parameters.Memory.Value.ConvertToInt32(ContinueWithInvalidArgs, workflow.MemoryConsumptionMb, Logger);
+            }
+            if (parameters.FileTimeout.HasValue)
+            {
+                workflow.FileTimeout = TimeSpan.FromSeconds(parameters.FileTimeout.Value);
+            }
+            if (parameters.LogsDir != null)
+            {
+                workflow.LogsDir = NormalizeLogsDir(parameters.LogsDir);
+                workflow.DumpDir = NormalizeLogsDir(parameters.LogsDir);
+            }
+            if (parameters.NoIndentedDump.HasValue)
+            {
+                workflow.IndentedDump = !parameters.NoIndentedDump.Value;
+            }
+            if (parameters.NotIncludeTextSpansInDump.HasValue)
+            {
+                workflow.DumpWithTextSpans = !parameters.NotIncludeTextSpansInDump.Value;
+            }
+            if (parameters.LinearTextSpans.HasValue)
+            {
+                workflow.LinearTextSpans = parameters.LinearTextSpans.Value;
+            }
+            if (parameters.IncludeCodeInDump.HasValue)
+            {
+                workflow.IncludeCodeInDump = parameters.IncludeCodeInDump.Value;
+            }
+            if (parameters.NotStrictJson.HasValue)
+            {
+                workflow.NotStrictJson = parameters.NotStrictJson.Value;
+            }
+            if (parameters.StartStage != null)
+            {
+                workflow.StartStage = parameters.StartStage.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);
+            }
+            if (parameters.DumpStages?.Count() > 0)
+            {
+                workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));
+            }
+            if (parameters.RenderStages?.Count() > 0)
+            {
+                workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));
+            }
+            if (parameters.RenderFormat != null)
+            {
+                workflow.RenderFormat = parameters.RenderFormat.ParseEnum(ContinueWithInvalidArgs, workflow.RenderFormat, Logger);
+            }
+            if (parameters.RenderDirection != null)
+            {
+                workflow.RenderDirection = parameters.RenderDirection.ParseEnum(ContinueWithInvalidArgs, workflow.RenderDirection, Logger);
+            }
+
+            return workflow;
+        }
+
+        protected virtual SourceCodeRepository CreateSourceCodeRepository(TParameters parameters)
+        {
+            return RepositoryFactory
+                .CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, parameters.TempDir);
+        }
+
+        protected virtual IPatternsRepository CreatePatternsRepository(TParameters parameters)
+        {
+            return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, Logger);
+        }
+
+        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> CreateWorkflow(TParameters parameters);
+
+        protected abstract void LogStatistics(TWorkflowResult workflowResult);
+
+        protected abstract bool IsLoadJson(string startStageString);
+
+        private TWorkflowResult ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
+        {
             try
             {
-                AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-                string name = assemblyName.Name.Replace(".Cli", "");
-                logger.LogInfo($"{name} version: {assemblyName.Version}");
-
-                if (logger is FileLogger abstractLogger)
+                if (parameters != null)
                 {
-                    string commandLineArguments = "Command line arguments" + (args.Length > 0
-                       ? ": " + string.Join(" ", args)
-                       : " are not defined.");
-                    abstractLogger.LogsDir = parameters.LogsDir;
-                    abstractLogger.IsLogErrors = parameters.IsLogErrors;
-                    abstractLogger.IsLogDebugs = parameters.IsLogDebugs;
-                    abstractLogger.LogInfo(commandLineArguments);
+                    FillLoggerSettings(parameters);
+                }
+                else
+                {
+                    parameters = new TParameters();
                 }
 
-                if (!Enum.TryParse(parameters.Stage, true, out Stage pmStage))
+                bool error = false;
+                string configFile = File.Exists("config.json") ? "config.json" : parameters.ConfigFile;
+                if (!string.IsNullOrEmpty(configFile))
                 {
-                    pmStage = Stage.Match;
+                    string content = null;
+                    try
+                    {
+                        content = File.ReadAllText(configFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex);
+                        error = true;
+                    }
+
+                    if (content != null)
+                    {
+                        try
+                        {
+                            var settings = new JsonSerializerSettings();
+                            settings.MissingMemberHandling = ContinueWithInvalidArgs
+                                ? MissingMemberHandling.Ignore
+                                : MissingMemberHandling.Error;
+                            JsonConvert.PopulateObject(content, parameters, settings);
+                            FillLoggerSettings(parameters);
+                            Logger.LogInfo($"Load settings from {configFile}...");
+                            SplitOnLinesAndLog(content);
+                        }
+                        catch (JsonException ex)
+                        {
+                            FillLoggerSettings(parameters);
+                            Logger.LogError(ex);
+                            Logger.LogInfo("Ignored some parameters from json");
+                            error = true;
+                        }
+                    }
                 }
 
-                bool loadJson = !string.IsNullOrEmpty(parameters.StartStage) &&
-                    !parameters.StartStage.EqualsIgnoreCase(Stage.File.ToString());
+                LogInfoAndErrors(args, errors);
+                if (errors != null)
+                {
+                    Logger.LogInfo("Ignored some cli parameters");
+                }
 
-                HashSet<Language> languages = parameters.Languages.ParseLanguages();
-                SourceCodeRepository sourceCodeRepository = RepositoryFactory.
-                    CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, languages, parameters.TempDir,
-                    loadJson);
+                if (!error || ContinueWithInvalidArgs)
+                {
+                    return ProcessParameters(parameters);
+                }
 
-                IPatternsRepository patternsRepository = RepositoryFactory.CreatePatternsRepository(parameters.Patterns, logger);
-                patternsRepository.Identifiers = parameters.PatternIds.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(id => id.Trim());
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.IsLogErrors = true;
+                Logger.LogError(ex);
 
+                return null;
+            }
+        }
+
+        private void FillLoggerSettings(TParameters parameters)
+        {
+            if (parameters.LogsDir != null)
+            {
+                Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
+            }
+            Logger.IsLogErrors = parameters.IsLogErrors.HasValue ? parameters.IsLogErrors.Value : false;
+            Logger.IsLogDebugs = parameters.IsLogDebugs.HasValue ? parameters.IsLogDebugs.Value : false;
+        }
+
+        private TWorkflowResult RunWorkflow(TParameters parameters)
+        {
+            try
+            {
                 var stopwatch = Stopwatch.StartNew();
-                TWorkflowResult workflowResult =
-                    InitWorkflowAndProcess(parameters, logger, sourceCodeRepository, patternsRepository);
+                var workflow = InitWorkflow(parameters);
+                TWorkflowResult workflowResult = workflow.Process();
                 stopwatch.Stop();
 
-                if (pmStage != Stage.Pattern)
+                Logger.LogInfo($"Stage: {workflow.Stage}");
+                if (!workflow.Stage.Is(Stage.Pattern))
                 {
-                    logger.LogInfo("Scan completed.");
-                    if (pmStage == Stage.Match)
+                    Logger.LogInfo("Scan completed.");
+                    int matchedResultCount = workflowResult.MatchResults.Count();
+                    if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
                     {
-                        logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {workflowResult.MatchResults.Count()}");
+                        Logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {matchedResultCount}");
                     }
                 }
                 else
                 {
-                    logger.LogInfo("Patterns checked.");
+                    Logger.LogInfo("Patterns checked.");
                 }
 
                 if (workflowResult.ErrorCount > 0)
                 {
-                    logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
+                    Logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
                 }
-                LogStatistics(logger, workflowResult);
-                logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
+                LogStatistics(workflowResult);
+                Logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
+
+                return workflowResult;
             }
             catch (Exception ex)
             {
-                if (logger != null)
-                {
-                    if (logger is FileLogger abstractLogger)
-                    {
-                        abstractLogger.IsLogErrors = true;
-                    }
-                    logger.LogError(ex);
-                }
+                Logger.IsLogErrors = true;
+                Logger.LogError(ex);
 
-                return 1;
+                return null;
             }
-            finally
-            {
-                if (logger is IDisposable disposableLogger)
-                {
-                    disposableLogger.Dispose();
-                }
-            }
-
-            return 0;
         }
 
-        protected abstract TWorkflowResult InitWorkflowAndProcess(TParameters parameters, ILogger logger, SourceCodeRepository sourceCodeRepository, IPatternsRepository patternsRepository);
-
-        protected abstract void LogStatistics(ILogger logger, TWorkflowResult workflowResult);
-
-        protected int ProcessErrors(IEnumerable<Error> errors)
+        private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
         {
-            return 1;
+            if (errors == null || errors.FirstOrDefault() is VersionRequestedError)
+            {
+                AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
+                Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
+            }
+
+            string commandLineArguments = "Command line arguments: " +
+                    (args.Length > 0 ? string.Join(" ", args) : "not defined.");
+            Logger.LogInfo(commandLineArguments);
+
+            if (errors != null)
+            {
+                LogParseErrors(errors);
+            }
+        }
+
+        private void LogParseErrors(IEnumerable<Error> errors)
+        {
+            foreach (Error error in errors)
+            {
+                if (error is HelpRequestedError || error is VersionRequestedError)
+                {
+                    continue;
+                }
+
+                string parameter = "";
+                if (error is NamedError namedError)
+                {
+                    parameter = $"({namedError.NameInfo.NameText})";
+                }
+                else if (error is TokenError tokenError)
+                {
+                    parameter = $"({tokenError.Token})";
+                }
+                Logger.LogError(new Exception($"Launch Parameter {parameter} Error: {error.Tag}"));
+            }
+
+            if (!(errors.First() is VersionRequestedError))
+            {
+                var paramsParseResult = new Parser().ParseArguments<TParameters>(new string[] { "--help" });
+                string paramsInfo = HelpText.AutoBuild(paramsParseResult, 100);
+                SplitOnLinesAndLog(paramsInfo);
+            }
+        }
+
+        private void SplitOnLinesAndLog(string str)
+        {
+            string[] lines = str.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            foreach (string line in lines)
+            {
+                Logger.LogInfo(line);
+            }
+        }
+
+        private string NormalizeLogsDir(string logsDir)
+        {
+            string shortCoreName = CoreName.Split('.').Last().ToLowerInvariant();
+
+            if (!Path.GetFileName(logsDir).ToLowerInvariant().Contains(shortCoreName))
+            {
+                return Path.Combine(logsDir, CoreName);
+            }
+
+            return logsDir;
         }
     }
 }

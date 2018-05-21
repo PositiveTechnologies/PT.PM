@@ -25,15 +25,15 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void Process_JsonUst_LineColumnTextSpan()
+        public void Process_JsonUst_LinearTextSpan()
         {
-            CheckJsonSerialization("empty-try-catch.php", lineColumnTextSpans: true);
+            CheckJsonSerialization("empty-try-catch.php", linearTextSpans: true);
         }
 
         [Test]
-        public void Process_JsonUst_WithoutCode()
+        public void Process_JsonUst_WithCode()
         {
-            CheckJsonSerialization("empty-try-catch.php", includeCode: false);
+            CheckJsonSerialization("empty-try-catch.php", includeCode: true);
         }
 
         [Test]
@@ -45,11 +45,24 @@ namespace PT.PM.Tests
         [Test]
         public void Process_JsonUst_MultiTextSpanLineColumn()
         {
-            CheckJsonSerialization("MultiTextSpan", lineColumnTextSpans: true);
+            CheckJsonSerialization("MultiTextSpan", linearTextSpans: true);
         }
 
-        private static void CheckJsonSerialization(string inputFileName, bool lineColumnTextSpans = false,
-            bool includeTextSpans = true, bool indented = true, bool includeCode = true)
+        [Test]
+        public void Process_JsonUst_ExcessPropertyInJson()
+        {
+            CheckJsonSerialization("empty-try-catch.php", checkStrict: true, strict: true);
+        }
+
+        [Test]
+        public void Process_JsonUst_ExcessPropertyInJsonNotStrict()
+        {
+            CheckJsonSerialization("empty-try-catch.php", checkStrict: true, strict: false);
+        }
+
+        private static void CheckJsonSerialization(string inputFileName, bool linearTextSpans = false,
+            bool includeTextSpans = true, bool indented = true, bool includeCode = false,
+            bool checkStrict = false, bool strict = true)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
 
@@ -65,8 +78,9 @@ namespace PT.PM.Tests
                 DumpDir = TestUtility.TestsOutputPath,
                 IncludeCodeInDump = includeCode,
                 IndentedDump = indented,
+                NotStrictJson = !strict,
                 DumpWithTextSpans = includeTextSpans,
-                LineColumnTextSpans = lineColumnTextSpans,
+                LinearTextSpans = linearTextSpans,
                 Stage = Stage.SimplifiedUst
             };
             WorkflowResult result = workflow.Process();
@@ -82,27 +96,36 @@ namespace PT.PM.Tests
             {
                 string shortFileName = Path.GetFileName(file) + ".ust.json";
                 string jsonFile = Path.Combine(TestUtility.TestsOutputPath, shortFileName);
-                string json = File.ReadAllText(jsonFile);
 
-                if (file.Contains("preprocessed.php"))
+                if (file.Contains("preprocessed.php") || checkStrict)
                 {
-                    string preprocessedTextSpanString, originTextSpanString;
-
-                    if (!lineColumnTextSpans)
+                    string json = File.ReadAllText(jsonFile);
+                    if (file.Contains("preprocessed.php"))
                     {
-                        preprocessedTextSpanString = preprocessedFile.GetTextSpan(lcPreprocessedTextSpan).ToString();
-                        originTextSpanString = originFile.GetTextSpan(lcOriginTextSpan).ToString();
-                    }
-                    else
-                    {
-                        preprocessedTextSpanString = lcPreprocessedTextSpan.ToString();
-                        originTextSpanString = lcOriginTextSpan.ToString();
+                        string preprocessedTextSpanString, originTextSpanString;
+
+                        if (linearTextSpans)
+                        {
+                            preprocessedTextSpanString = preprocessedFile.GetTextSpan(lcPreprocessedTextSpan).ToString();
+                            originTextSpanString = originFile.GetTextSpan(lcOriginTextSpan).ToString();
+                        }
+                        else
+                        {
+                            preprocessedTextSpanString = lcPreprocessedTextSpan.ToString();
+                            originTextSpanString = lcOriginTextSpan.ToString();
+                        }
+
+                        json = json.Replace($"\"{preprocessedTextSpanString}\"", $"[ \"{lcPreprocessedTextSpan}\", \"{originTextSpanString}\" ]");
                     }
 
-                    json = json.Replace($"\"{preprocessedTextSpanString}\"", $"[ \"{lcPreprocessedTextSpan}\", \"{originTextSpanString}\" ]");
+                    if (checkStrict)
+                    {
+                        json = json.Replace("\"Kind\": \"IntLiteral\"", "\"Kind\": \"IntLiteral\", \"ExcessProperty\": \"value\"");
+                    }
+
+                    File.WriteAllText(jsonFile, json);
                 }
 
-                File.WriteAllText(jsonFile, json);
                 jsonFiles.Add(jsonFile);
             }
 
@@ -115,32 +138,40 @@ namespace PT.PM.Tests
             {
                 StartStage = Stage.Ust,
                 IndentedDump = indented,
+                NotStrictJson = !strict,
                 DumpWithTextSpans = includeTextSpans,
-                LineColumnTextSpans = lineColumnTextSpans,
+                LinearTextSpans = linearTextSpans,
                 Logger = logger
             };
             WorkflowResult newResult = newWorkflow.Process();
 
-            Assert.AreEqual(0, logger.ErrorCount);
-            Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
-
-            if (includeTextSpans)
+            if (checkStrict && strict)
             {
-                if (inputFileName == "MultiTextSpan")
-                {
-                    var matchResult = (MatchResult)newResult.MatchResults[1];
-                    Assert.AreEqual(2, matchResult.TextSpans.Length);
+                Assert.IsTrue(logger.ErrorsString.Contains("ExcessProperty"));
+            }
+            else
+            {
+                Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
+                Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
 
-                    LineColumnTextSpan actualOriginTextSpan = originFile.GetLineColumnTextSpan(matchResult.TextSpans[1]);
-                    Assert.AreEqual(lcOriginTextSpan, actualOriginTextSpan);
-
-                    LineColumnTextSpan actualPreprocessedTextSpan = preprocessedFile.GetLineColumnTextSpan(matchResult.TextSpans[0]);
-                    Assert.AreEqual(lcPreprocessedTextSpan, actualPreprocessedTextSpan);
-                }
-                else
+                if (includeTextSpans)
                 {
-                    var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
-                    Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), result.SourceCodeFiles.First().GetLineColumnTextSpan(match.TextSpan));
+                    if (inputFileName == "MultiTextSpan")
+                    {
+                        var matchResult = (MatchResult)newResult.MatchResults[1];
+                        Assert.AreEqual(2, matchResult.TextSpans.Length);
+
+                        LineColumnTextSpan actualOriginTextSpan = originFile.GetLineColumnTextSpan(matchResult.TextSpans[1]);
+                        Assert.AreEqual(lcOriginTextSpan, actualOriginTextSpan);
+
+                        LineColumnTextSpan actualPreprocessedTextSpan = preprocessedFile.GetLineColumnTextSpan(matchResult.TextSpans[0]);
+                        Assert.AreEqual(lcPreprocessedTextSpan, actualPreprocessedTextSpan);
+                    }
+                    else
+                    {
+                        var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
+                        Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), result.SourceCodeFiles.First().GetLineColumnTextSpan(match.TextSpan));
+                    }
                 }
             }
         }

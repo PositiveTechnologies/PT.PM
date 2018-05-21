@@ -6,7 +6,7 @@
         ParseTree = 1,
         Ust = 2,
         SimplifiedUst = 3,
-        Match = 10,
-        Pattern = 16
+        Pattern = 10,
+        Match = 11
     }
 }

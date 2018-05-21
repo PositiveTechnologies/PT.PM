@@ -6,6 +6,8 @@
 
     public interface IUst<T, RootT>
     {
+        string Kind { get; }
+
         int KindId { get; }
 
         RootT Root { get; set; }

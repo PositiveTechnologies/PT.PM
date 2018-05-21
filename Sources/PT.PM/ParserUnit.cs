@@ -35,7 +35,7 @@ namespace PT.PM
             }
             else
             {
-                logger.LogInfo("Thread.Abort is not supported int .NET Core");
+                logger.LogInfo("Thread.Abort is not supported in .NET Core");
             }
         }
 

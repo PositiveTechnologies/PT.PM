@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PT.PM.Cli.Common\PT.PM.Cli.Common.csproj" />
     <ProjectReference Include="..\PT.PM.TestUtils\PT.PM.TestUtils.csproj" />
   </ItemGroup>
 </Project>
