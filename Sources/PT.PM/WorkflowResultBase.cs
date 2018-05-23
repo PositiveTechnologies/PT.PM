@@ -1,4 +1,6 @@
-﻿using PT.PM.Common;
+﻿using Newtonsoft.Json;
+using PT.PM.Common;
+using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using System;
@@ -58,10 +60,13 @@ namespace PT.PM
 
         public int ErrorCount { get; set; }
 
+        [JsonIgnore]
         public HashSet<CodeFile> SourceCodeFiles => sourceCodeFiles;
 
+        [JsonIgnore]
         public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
 
+        [JsonIgnore]
         public IReadOnlyList<RootUst> Usts
         {
             get
@@ -75,8 +80,10 @@ namespace PT.PM
             }
         }
 
+        [JsonIgnore]
         public IReadOnlyList<IMatchResultBase> MatchResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchResults);
 
+        [JsonIgnore]
         public IReadOnlyList<TPattern> Patterns
         {
             get
