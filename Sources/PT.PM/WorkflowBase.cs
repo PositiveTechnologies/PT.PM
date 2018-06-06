@@ -42,7 +42,7 @@ namespace PT.PM
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
-        public string DumpJsonOutputDir { get; set; } = null; 
+        public bool IsDumpJsonOutputDir { get; set; } = false; 
 
         public bool IsIncludeIntermediateResult { get; set; }
 
@@ -289,17 +289,11 @@ namespace PT.PM
 
         protected void DumpJsonOutput(TWorkflowResult workflow)
         {
-            if (DumpJsonOutputDir == null)
-            {
-                return;
-            }
-            else
+            if (IsDumpJsonOutputDir)
             {
                 string json = JsonConvert.SerializeObject(workflow, Formatting.Indented, LanguageJsonConverter.Instance);
-                var res = Directory.CreateDirectory(DumpJsonOutputDir);
-                string name = "Result.json";
-                File.WriteAllText(Path.Combine(DumpJsonOutputDir, name), json);
-                var f = File.OpenText(Path.Combine(DumpJsonOutputDir, name));
+                Directory.CreateDirectory(DumpDir);
+                File.WriteAllText(Path.Combine(DumpDir, "output.json"), json);
             }
         }
 

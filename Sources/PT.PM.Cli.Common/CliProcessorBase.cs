@@ -176,9 +176,9 @@ namespace PT.PM.Cli.Common
             {
                 workflow.NotStrictJson = parameters.NotStrictJson.Value;
             }
-            if (parameters.JsonOutputDir != null)
+            if (parameters.JsonOutputFileName.HasValue)
             {
-                workflow.DumpJsonOutputDir = NormalizeLogsDir(parameters.JsonOutputDir);
+                workflow.IsDumpJsonOutputDir = parameters.JsonOutputFileName.Value;
             }
             if (parameters.StartStage != null)
             {

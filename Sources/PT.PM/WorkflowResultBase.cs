@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using PT.PM.Common;
-using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using System;
@@ -81,7 +80,7 @@ namespace PT.PM
         }
 
         [JsonIgnore]
-        public IReadOnlyList<IMatchResultBase> MatchResults => ValidateStageAndReturn(PM.Stage.Match.ToString(), matchResults);
+        public IReadOnlyList<IMatchResultBase> MatchResults => matchResults;
 
         [JsonIgnore]
         public IReadOnlyList<TPattern> Patterns
@@ -105,6 +104,7 @@ namespace PT.PM
         public long TotalPatternsTicks => totalPatternsTicks;
 
         public long TotalLexerTicks => totalLexerTicks;
+        public int TotalMatchesCount => MatchResults.Count;
         public long TotalParserTicks => totalParserTicks;
 
         public int TotalProcessedFilesCount => totalProcessedFilesCount;
@@ -134,6 +134,7 @@ namespace PT.PM
         public void AddResultEntity(RootUst ust, bool convert)
         {
             if (IsIncludeIntermediateResult || (convert && Stage.Is(PM.Stage.Ust)) || (!convert && Stage.Is(PM.Stage.SimplifiedUst)) ||
+                Stage.Is(PM.Stage.Match) ||
                 RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.Ust))
             {
                 int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
