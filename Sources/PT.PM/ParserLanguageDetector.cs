@@ -22,22 +22,21 @@ namespace PT.PM
 
         public TimeSpan CheckParseResultTimeSpan { get; set; } = TimeSpan.FromMilliseconds(100);
 
-        public override DetectionResult Detect(string sourceCode, IEnumerable<Language> languages = null)
+        public override DetectionResult Detect(CodeFile codeFile, IEnumerable<Language> languages = null)
         {
             List<Language> langs = (languages ?? LanguageUtils.Languages.Values).ToList();
             langs.Remove(Uncertain.Language);
             // Any PHP file contains start tag.
-            if (!sourceCode.Contains("<?"))
+            if (!codeFile.Code.Contains("<?"))
             {
                 langs.Remove(langs.FirstOrDefault(l => l == Php.Language));
             }
             // Aspx and html code contains at least one tag.
-            if (!openTagRegex.IsMatch(sourceCode) || !closeTagRegex.IsMatch(sourceCode))
+            if (!openTagRegex.IsMatch(codeFile.Code) || !closeTagRegex.IsMatch(codeFile.Code))
             {
                 langs.Remove(langs.FirstOrDefault(l => l == Aspx.Language));
                 langs.Remove(langs.FirstOrDefault(l => l == Html.Language));
             }
-            var sourceCodeFile = new CodeFile(sourceCode);
             var parseUnits = new Queue<ParserUnit>(langs.Count);
 
             langs = langs
@@ -54,7 +53,7 @@ namespace PT.PM
             {
                 Thread thread = new Thread((object obj) =>
                 {
-                    ((ParserUnit)obj).Parse(sourceCodeFile);
+                    ((ParserUnit)obj).Parse(codeFile);
                 },
                 MaxStackSize);
                 thread.IsBackground = true;

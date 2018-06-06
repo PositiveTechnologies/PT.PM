@@ -38,20 +38,20 @@ namespace PT.PM
                 }
                 else if (finalLanguages.Count > 1)
                 {
-                    result = Detect(codeFile.Code, finalLanguages);
+                    result = Detect(codeFile, finalLanguages);
                     LogDetection(result, finalLanguages, codeFile);
                 }
             }
             else
             {
-                result = Detect(codeFile.Code, languages);
+                result = Detect(codeFile, languages);
                 LogDetection(result, languages ?? LanguageUtils.Languages.Values, codeFile);
             }
 
             return result;
         }
 
-        public abstract DetectionResult Detect(string sourceCode, IEnumerable<Language> languages = null);
+        public abstract DetectionResult Detect(CodeFile codeFile, IEnumerable<Language> languages = null);
 
         protected void LogDetection(DetectionResult detectionResult, IEnumerable<Language> languages, CodeFile codeFile)
         {

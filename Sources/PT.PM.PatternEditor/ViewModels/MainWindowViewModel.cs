@@ -719,12 +719,11 @@ namespace PT.PM.PatternEditor
 
         private void DetectLanguageIfRequired()
         {
-            string newSourceCode = sourceCodeTextBox.Text;
-            if (!fileOpened && (!string.IsNullOrEmpty(newSourceCode) && string.IsNullOrEmpty(oldSourceCode)))
+            if (!fileOpened && (!string.IsNullOrEmpty(sourceCodeTextBox.Text) && string.IsNullOrEmpty(oldSourceCode)))
             {
                 Task.Factory.StartNew(() =>
                 {
-                    Language detectedLanguage = languageDetector.Detect(newSourceCode).Language;
+                    Language detectedLanguage = languageDetector.Detect(new CodeFile(sourceCodeTextBox.Text)).Language;
                     Dispatcher.UIThread.InvokeAsync(() => SelectedLanguage = detectedLanguage);
                 });
                 Dispatcher.UIThread.InvokeAsync(() => OpenedFileName = "");

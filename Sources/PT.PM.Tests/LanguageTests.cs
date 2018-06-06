@@ -45,7 +45,8 @@ namespace PT.PM.Tests
         [TestCase("JavaScript", "Patterns.js")]
         public void DetectLanguage_SourceCode_CorrectLanguage(string expectedLanguage, string fileName)
         {
-            string sourceCode = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormDirSeparator()));
+            var sourceCode =
+                new CodeFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormDirSeparator())));
             DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(sourceCode);
             Assert.NotNull(detectedLanguage);
             Assert.AreEqual(expectedLanguage, detectedLanguage.Language.Key);
