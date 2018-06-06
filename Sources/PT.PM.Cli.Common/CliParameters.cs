@@ -72,7 +72,7 @@ namespace PT.PM.Cli.Common
         public IEnumerable<string> DumpStages { get; set; }
 
         [Option('j', "json-output", HelpText = "Serialize and dump results into json")]
-        public bool? JsonOutputFileName { get; set; }
+        public bool? IsDumpJsonOutput { get; set; }
 
         [Option('r', "render", HelpText = "Stages to be rendered", Separator = ',')]
         public IEnumerable<string> RenderStages { get; set; }

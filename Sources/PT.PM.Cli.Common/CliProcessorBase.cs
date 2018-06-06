@@ -176,9 +176,9 @@ namespace PT.PM.Cli.Common
             {
                 workflow.NotStrictJson = parameters.NotStrictJson.Value;
             }
-            if (parameters.JsonOutputFileName.HasValue)
+            if (parameters.IsDumpJsonOutput.HasValue)
             {
-                workflow.IsDumpJsonOutputDir = parameters.JsonOutputFileName.Value;
+                workflow.IsDumpJsonOutput = parameters.IsDumpJsonOutput.Value;
             }
             if (parameters.StartStage != null)
             {
