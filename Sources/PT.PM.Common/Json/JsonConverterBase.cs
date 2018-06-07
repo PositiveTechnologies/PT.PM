@@ -158,7 +158,7 @@ namespace PT.PM.Common.Json
             if (textSpanTokenWrapper != null)
             {
                 textSpans = GetCommonTextSpan(textSpanTokenWrapper).ToList();
-                TextSpan commonTextSpan = textSpans.Union();
+                TextSpan commonTextSpan = textSpans.FirstOrDefault();
 
                 if (!commonTextSpan.IsZero && existingUsts.TryGetValue(commonTextSpan, out List<Ust> usts))
                 {
