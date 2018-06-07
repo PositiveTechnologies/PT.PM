@@ -11,8 +11,6 @@ namespace PT.PM.Common.Json
 {
     public abstract class JsonConverterBase : JsonConverter, ILoggable
     {
-        private MultiMap<TextSpan, Ust> existingUsts = new MultiMap<TextSpan, Ust>();
-
         public const string KindName = "Kind";
 
         protected JsonSerializer jsonSerializer;
@@ -158,16 +156,6 @@ namespace PT.PM.Common.Json
             if (textSpanTokenWrapper != null)
             {
                 textSpans = GetCommonTextSpan(textSpanTokenWrapper).ToList();
-                TextSpan commonTextSpan = textSpans.FirstOrDefault();
-
-                if (!commonTextSpan.IsZero && existingUsts.TryGetValue(commonTextSpan, out List<Ust> usts))
-                {
-                    Ust sameTypeUst = usts.FirstOrDefault(u => u.GetType() == type);
-                    if (sameTypeUst != null)
-                    {
-                        return sameTypeUst;
-                    }
-                }
             }
 
             Ust ust;
@@ -201,7 +189,6 @@ namespace PT.PM.Common.Json
                     ust.InitialTextSpans = textSpans;
                     ust.TextSpan = textSpans.Union();
                 }
-                existingUsts.Add(ust.TextSpan, ust);
             }
 
             return ust;
