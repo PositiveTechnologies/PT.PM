@@ -1,4 +1,5 @@
-﻿using PT.PM.AntlrUtils;
+﻿using Newtonsoft.Json;
+using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
@@ -40,6 +41,8 @@ namespace PT.PM
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
+
+        public bool IsDumpJsonOutput { get; set; } = false; 
 
         public bool IsIncludeIntermediateResult { get; set; }
 
@@ -104,7 +107,7 @@ namespace PT.PM
         public bool LinearTextSpans { get; set; } = false;
 
         public bool NotStrictJson { get; set; } = false;
-
+ 
         public string LogsDir { get; set; } = "";
 
         public string DumpDir { get; set; } = "";
@@ -281,6 +284,16 @@ namespace PT.PM
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
                 Directory.CreateDirectory(DumpDir);
                 File.WriteAllText(Path.Combine(DumpDir, name + ParseTreeDumper.UstSuffix), json);
+            }
+        }
+
+        protected void DumpJsonOutput(TWorkflowResult workflow)
+        {
+            if (IsDumpJsonOutput)
+            {
+                string json = JsonConvert.SerializeObject(workflow, Formatting.Indented, LanguageJsonConverter.Instance);
+                Directory.CreateDirectory(DumpDir);
+                File.WriteAllText(Path.Combine(DumpDir, "output.json"), json);
             }
         }
 

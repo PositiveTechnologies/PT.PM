@@ -71,6 +71,9 @@ namespace PT.PM.Cli.Common
         [Option('d', "dump", HelpText = "Stages to be dumped (ParseTree, Ust)", Separator = ',')]
         public IEnumerable<string> DumpStages { get; set; }
 
+        [Option('j', "json-output", HelpText = "Serialize and dump results into json")]
+        public bool? IsDumpJsonOutput { get; set; }
+
         [Option('r', "render", HelpText = "Stages to be rendered", Separator = ',')]
         public IEnumerable<string> RenderStages { get; set; }
 

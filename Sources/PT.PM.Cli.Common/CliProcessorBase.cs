@@ -176,6 +176,10 @@ namespace PT.PM.Cli.Common
             {
                 workflow.NotStrictJson = parameters.NotStrictJson.Value;
             }
+            if (parameters.IsDumpJsonOutput.HasValue)
+            {
+                workflow.IsDumpJsonOutput = parameters.IsDumpJsonOutput.Value;
+            }
             if (parameters.StartStage != null)
             {
                 workflow.StartStage = parameters.StartStage.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);

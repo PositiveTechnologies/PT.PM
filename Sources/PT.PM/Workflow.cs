@@ -99,6 +99,7 @@ namespace PT.PM
                 AntlrParser.ClearCacheIfRequired();
             }
 
+            DumpJsonOutput(result);
             result.ErrorCount = logger?.ErrorCount ?? 0;
             return result;
         }
