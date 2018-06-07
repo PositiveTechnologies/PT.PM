@@ -70,9 +70,7 @@ namespace PT.PM.Common.Json
 
             var jsonSettings = new JsonSerializerSettings
             {
-                MissingMemberHandling = NotStrict
-                    ? MissingMemberHandling.Ignore
-                    : MissingMemberHandling.Error,
+                MissingMemberHandling = SetMissingMemberHandling(),
                 Formatting = Indented ? Formatting.Indented : Formatting.None,
                 Converters = new List<JsonConverter>
                 {
@@ -92,6 +90,12 @@ namespace PT.PM.Common.Json
             };
 
             return jsonSettings;
+        }
+
+        public virtual MissingMemberHandling SetMissingMemberHandling()
+        {
+            return NotStrict ? MissingMemberHandling.Ignore
+                             : MissingMemberHandling.Error;
         }
     }
 }
