@@ -70,6 +70,11 @@ namespace PT.PM.Common
             return FromBounds(unionStart, unionEnd);
         }
 
+        public bool Includes(TextSpan span)
+        {
+            return  Start <= span.Start && End >= span.End;
+        }
+
         public TextSpan AddOffset(int offset)
         {
             return new TextSpan(Start + offset, Length, CodeFile);
