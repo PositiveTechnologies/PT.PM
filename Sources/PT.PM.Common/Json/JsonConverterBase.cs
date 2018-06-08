@@ -124,7 +124,7 @@ namespace PT.PM.Common.Json
             return jObject;
         }
 
-        protected Ust CreateOrGetUst(object jObjectOrToken, Type type = null)
+        protected Ust CreateUst(object jObjectOrToken, Type type = null)
         {
             JObject jObject = jObjectOrToken as JObject;
             JToken jToken = jObject == null ? jObjectOrToken as JToken : null;

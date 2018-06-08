@@ -31,32 +31,25 @@ namespace PT.PM.Common.Json
             JObject jObject = JObject.Load(reader);
             string kind = jObject[KindName].ToString();
 
-            Ust target;
-            JsonReader newReader = null;
             if (ReflectionCache.TryGetClassType(kind, out Type type))
             {
-                target = CreateOrGetUst(jObject, type);
+                Ust target = CreateUst(jObject, type);
                 if (target == null)
                 {
                     return null;
                 }
-                newReader = jObject.CreateReader();
+
+                JsonReader newReader = jObject.CreateReader();
+                serializer.Populate(newReader, target);
+
+                return target;
             }
             else
             {
-                // Try load from Ust subfield.
-                JToken jToken = jObject[nameof(Ust)];
-                target = CreateOrGetUst(jToken);
-                if (target == null)
-                {
-                    return null;
-                }
-                newReader = jToken.CreateReader();
+                JsonUtils.LogError(Logger, JsonFile, jObject, $"Unknown UST {nameof(Ust.Kind)} {kind}");
             }
 
-            serializer.Populate(newReader, target);
-
-            return target;
+            return null;
         }
     }
 }
