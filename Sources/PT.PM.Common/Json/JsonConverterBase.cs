@@ -187,7 +187,7 @@ namespace PT.PM.Common.Json
                 else
                 {
                     ust.InitialTextSpans = textSpans;
-                    ust.TextSpan = textSpans.Union();
+                    ust.TextSpan = textSpans.First();
                 }
             }
 
