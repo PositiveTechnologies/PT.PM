@@ -96,12 +96,15 @@ namespace PT.PM.Cli.Common
                 }
                 else if (!(infoObj is MessageEventArgs))
                 {
-                    string message = infoObj.ToString();
+                    var message = new StringBuilder();
+                    message.AppendLine("---------------------");
+                    message.AppendLine(infoObj.ToString());
+                    string result = message.ToString();
                     if (infoObj is IMatchResultBase)
                     {
-                        MatchLogger.Info(message);
+                        MatchLogger.Info(result);
                     }
-                    LogInfo(message);
+                    LogInfo(result);
                 }
             }
         }
