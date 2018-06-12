@@ -151,12 +151,8 @@ namespace PT.PM.Common.Json
                 ? jObject[nameof(Ust.TextSpan)]
                 : jToken?[nameof(Ust.TextSpan)];
 
-            List<TextSpan> textSpans = null;
-
-            if (textSpanTokenWrapper != null)
-            {
-                textSpans = GetCommonTextSpan(textSpanTokenWrapper).ToList();
-            }
+            List<TextSpan> textSpans =
+                textSpanTokenWrapper?.ToTextSpans(jsonSerializer).ToList() ?? null;
 
             Ust ust;
             if (type == typeof(RootUst))
@@ -192,13 +188,6 @@ namespace PT.PM.Common.Json
             }
 
             return ust;
-        }
-
-        protected IEnumerable<TextSpan> GetCommonTextSpan(JToken textSpanToken)
-        {
-            return textSpanToken
-                .GetTokenOrTokensArray()
-                .Select(token => token.ToObject<TextSpan>(jsonSerializer));
         }
 
         private object GetDefaultValue(Type type)
