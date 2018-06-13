@@ -10,7 +10,7 @@ using System.Linq;
 namespace PT.PM.Tests
 {
     [TestFixture]
-    public class WorkflowTests
+    public class JsonTests
     {
         [Test]
         public void Process_JsonUst_NotIndented()
