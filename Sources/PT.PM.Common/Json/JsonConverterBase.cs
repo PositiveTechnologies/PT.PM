@@ -13,8 +13,6 @@ namespace PT.PM.Common.Json
     {
         public const string KindName = "Kind";
 
-        protected JsonSerializer jsonSerializer;
-
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public CodeFile JsonFile { get; } = CodeFile.Empty;
@@ -124,7 +122,7 @@ namespace PT.PM.Common.Json
             return jObject;
         }
 
-        protected Ust CreateUst(object jObjectOrToken, Type type = null)
+        protected Ust CreateUst(object jObjectOrToken, JsonSerializer serializer, Type type = null)
         {
             JObject jObject = jObjectOrToken as JObject;
             JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
@@ -152,7 +150,7 @@ namespace PT.PM.Common.Json
                 : jToken?[nameof(Ust.TextSpan)];
 
             List<TextSpan> textSpans =
-                textSpanTokenWrapper?.ToTextSpans(jsonSerializer).ToList() ?? null;
+                textSpanTokenWrapper?.ToTextSpans(serializer).ToList() ?? null;
 
             Ust ust;
             if (type == typeof(RootUst))
@@ -188,6 +186,27 @@ namespace PT.PM.Common.Json
             }
 
             return ust;
+        }
+
+        protected static bool WriteCollection<T>(JObject writeTo, string propertyName, IEnumerable<T> values, JsonSerializer jsonSerializer)
+        {
+            if (values == null)
+                return false;
+
+            List<T> valuesList = values.ToList();
+
+            JToken serializedObject = valuesList.Count == 0
+                ? null
+                : valuesList.Count == 1
+                ? JToken.FromObject(valuesList[0], jsonSerializer)
+                : JArray.FromObject(valuesList, jsonSerializer);
+
+            if (serializedObject == null)
+                return false;
+
+            writeTo.Add(propertyName, serializedObject);
+
+            return true;
         }
 
         private object GetDefaultValue(Type type)

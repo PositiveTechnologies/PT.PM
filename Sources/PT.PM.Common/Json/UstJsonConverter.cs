@@ -21,8 +21,6 @@ namespace PT.PM.Common.Json
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
-            jsonSerializer = serializer;
-
             if (reader.TokenType == JsonToken.Null)
             {
                 return null;
@@ -33,7 +31,7 @@ namespace PT.PM.Common.Json
 
             if (ReflectionCache.TryGetClassType(kind, out Type type))
             {
-                Ust target = CreateUst(jObject, type);
+                Ust target = CreateUst(jObject, serializer, type);
                 if (target == null)
                 {
                     return null;
