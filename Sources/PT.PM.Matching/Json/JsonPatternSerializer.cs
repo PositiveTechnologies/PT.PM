@@ -7,7 +7,15 @@ namespace PT.PM.Matching.Json
     {
         public string Format => "Json";
 
-        protected override JsonConverterBase CreateConverterBase(CodeFile jsonFile) => new PatternJsonConverter(jsonFile);
+        protected override UstJsonConverterReader CreateConverterReader(CodeFile jsonFile)
+        {
+            return new PatternJsonConverterReader(jsonFile);
+        }
+
+        protected override UstJsonConverterWriter CreateConverterWriter()
+        {
+            return new PatternJsonConverterWriter();
+        }
 
         public override PatternRoot Deserialize(CodeFile jsonFile)
         {

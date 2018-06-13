@@ -9,19 +9,14 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching.Json
 {
-    public class PatternJsonConverter : JsonConverterBase
+    public class PatternJsonConverterReader : UstJsonConverterReader
     {
-        public PatternJsonConverter(CodeFile jsonFile)
+        public PatternJsonConverterReader(CodeFile jsonFile)
             : base(jsonFile)
         {
         }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(PatternUst) ||
-                objectType.IsSubclassOf(typeof(PatternUst)) ||
-                objectType == typeof(PatternRoot);
-        }
+        public override bool CanConvert(Type objectType) => objectType.CanConvert();
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
@@ -48,7 +43,7 @@ namespace PT.PM.Matching.Json
                 }
                 else if (objectType == typeof(PatternUst) || objectType.IsSubclassOf(typeof(PatternUst)))
                 {
-                    var kind = (string)jObject[KindName];
+                    var kind = (string)jObject[UstJsonKeys.KindName];
                     ReflectionCache.TryGetClassType(kind, out Type type);
                     target = Activator.CreateInstance(type);
                     serializer.Populate(jObject.CreateReader(), target);

@@ -30,12 +30,12 @@ namespace PT.PM.Matching.PatternsRepository
                 try
                 {
                     PatternDto patternDto;
-                    if (token[JsonConverterBase.KindName] != null)
+                    if (token[UstJsonKeys.KindName] != null)
                     {
                         if (patternJsonSerializer == null)
                         {
                             patternJsonSerializer = new JsonSerializer();
-                            patternJsonSerializer.Converters.Add(new PatternJsonConverter(new CodeFile(patternsData)));
+                            patternJsonSerializer.Converters.Add(new PatternJsonConverterReader(new CodeFile(patternsData)));
                             var textSpanJsonConverter = new TextSpanJsonConverter();
                             patternJsonSerializer.Converters.Add(textSpanJsonConverter);
                             patternJsonSerializer.Converters.Add(new CodeFileJsonConverter() { TextSpanJsonConverter = textSpanJsonConverter });

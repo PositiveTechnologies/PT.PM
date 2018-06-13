@@ -30,33 +30,44 @@ namespace PT.PM.Common.Json
 
         public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
-        protected abstract JsonConverterBase CreateConverterBase(CodeFile jsonFile);
-
         public virtual T Deserialize(CodeFile jsonFile)
         {
             JsonFile = jsonFile;
-            JsonSerializerSettings jsonSettings = PrepareSettings();
+            JsonSerializerSettings jsonSettings = PrepareSettings(false, jsonFile);
             return JsonConvert.DeserializeObject<T>(jsonFile.Code, jsonSettings);
         }
 
         public virtual string Serialize(T node)
         {
-            JsonSerializerSettings jsonSettings = PrepareSettings();
+            JsonSerializerSettings jsonSettings = PrepareSettings(true, null);
             return JsonConvert.SerializeObject(node, jsonSettings);
         }
 
         public string Serialize(IEnumerable<T> nodes)
         {
-            JsonSerializerSettings jsonSettings = PrepareSettings();
+            JsonSerializerSettings jsonSettings = PrepareSettings(true, null);
             return JsonConvert.SerializeObject(nodes, jsonSettings);
         }
 
-        public JsonSerializerSettings PrepareSettings(CodeFile codeFile = null)
+        protected JsonSerializerSettings PrepareSettings(bool writer, CodeFile jsonFile)
         {
-            JsonConverterBase jsonConverterBase = CreateConverterBase(JsonFile);
-            jsonConverterBase.IncludeTextSpans = IncludeTextSpans;
-            jsonConverterBase.ExcludeDefaults = ExcludeDefaults;
-            jsonConverterBase.Logger = Logger;
+            JsonConverter jsonConverter;
+
+            if (writer)
+            {
+                UstJsonConverterWriter jsonConverterWriter = CreateConverterWriter();
+                jsonConverterWriter.IncludeTextSpans = IncludeTextSpans;
+                jsonConverterWriter.ExcludeDefaults = ExcludeDefaults;
+                jsonConverterWriter.Logger = Logger;
+
+                jsonConverter = jsonConverterWriter;
+            }
+            else
+            {
+                UstJsonConverterReader jsonConverterReader = CreateConverterReader(jsonFile);
+
+                jsonConverter = jsonConverterReader;
+            }
 
             var textSpanJsonConverter = new TextSpanJsonConverter
             {
@@ -75,7 +86,7 @@ namespace PT.PM.Common.Json
                 Converters = new List<JsonConverter>
                 {
                     stringEnumConverter,
-                    jsonConverterBase,
+                    jsonConverter,
                     LanguageJsonConverter.Instance,
                     textSpanJsonConverter,
                     new CodeFileJsonConverter
@@ -92,7 +103,11 @@ namespace PT.PM.Common.Json
             return jsonSettings;
         }
 
-        public virtual MissingMemberHandling SetMissingMemberHandling()
+        protected abstract UstJsonConverterReader CreateConverterReader(CodeFile jsonFile);
+
+        protected abstract UstJsonConverterWriter CreateConverterWriter();
+
+        protected virtual MissingMemberHandling SetMissingMemberHandling()
         {
             return NotStrict ? MissingMemberHandling.Ignore
                              : MissingMemberHandling.Error;

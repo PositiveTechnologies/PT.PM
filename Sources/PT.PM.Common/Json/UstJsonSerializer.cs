@@ -11,6 +11,14 @@ namespace PT.PM.Common.Json
             return result;
         }
 
-        protected override JsonConverterBase CreateConverterBase(CodeFile jsonFile) => new UstJsonConverter(JsonFile);
+        protected override UstJsonConverterReader CreateConverterReader(CodeFile jsonFile)
+        {
+            return new UstJsonConverterReader(jsonFile);
+        }
+
+        protected override UstJsonConverterWriter CreateConverterWriter()
+        {
+            return new UstJsonConverterWriter();
+        }
     }
 }
