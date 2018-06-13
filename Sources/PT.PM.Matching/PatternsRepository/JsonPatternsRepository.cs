@@ -20,7 +20,7 @@ namespace PT.PM.Matching.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            JToken[] jsonTokens = JToken.Parse(patternsData).GetTokenOrTokensArray();
+            JToken[] jsonTokens = JToken.Parse(patternsData).ReadArray();
 
             var result = new List<PatternDto>();
             JsonSerializer patternJsonSerializer = null;

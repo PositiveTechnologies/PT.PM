@@ -12,13 +12,17 @@ namespace PT.PM.Common.Json
         public static IEnumerable<TextSpan> ToTextSpans(this JToken textSpanToken, JsonSerializer jsonSerializer)
         {
             return textSpanToken
-                .GetTokenOrTokensArray()
+                .ReadArray()
                 .Select(token => token.ToObject<TextSpan>(jsonSerializer));
         }
 
-        public static JToken[] GetTokenOrTokensArray(this JToken jToken)
+        public static JToken[] ReadArray(this JToken jArrayOrToken)
         {
-            return jToken is JArray jArray ? jArray.Children().ToArray() : new JToken[] { jToken };
+            return jArrayOrToken is JArray jArray
+                ? jArray.Children().ToArray()
+                : jArrayOrToken is JToken jToken
+                ? new JToken[] { jToken }
+                : new JToken[0];
         }
 
         public static void LogError(this ILogger logger, CodeFile jsonFile, IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
