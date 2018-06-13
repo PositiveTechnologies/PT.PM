@@ -10,6 +10,9 @@ namespace PT.PM.Common.Json
 {
     public class UstJsonConverterReader : JsonConverter, ILoggable
     {
+        private Stack<RootUst> rootAncestors = new Stack<RootUst>();
+        private Stack<Ust> ancestors = new Stack<Ust>();
+
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public override bool CanWrite => false;
@@ -43,6 +46,7 @@ namespace PT.PM.Common.Json
                 return null;
             }
 
+            RootUst rootUst = null;
             Ust ust;
 
             if (type == typeof(RootUst))
@@ -52,7 +56,7 @@ namespace PT.PM.Common.Json
                     ? languageString.ParseLanguages().FirstOrDefault()
                     : Uncertain.Language;
 
-                var rootUst = (RootUst)Activator.CreateInstance(type, null, language);
+                rootUst = (RootUst)Activator.CreateInstance(type, null, language);
                 ProcessRootUst(rootUst);
 
                 ust = rootUst;
@@ -62,7 +66,22 @@ namespace PT.PM.Common.Json
                 ust = (Ust)Activator.CreateInstance(type);
             }
 
-            List<TextSpan> textSpans =
+            if (rootAncestors.Count > 0)
+            {
+                ust.Root = rootAncestors.Peek();
+            }
+            if (ancestors.Count > 0)
+            {
+                ust.Parent = ancestors.Peek();
+            }
+
+            if (rootUst != null)
+            {
+                rootAncestors.Push(rootUst);
+            }
+            ancestors.Push(ust);
+
+            List <TextSpan> textSpans =
                 jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList() ?? null;
 
             if (textSpans != null && textSpans.Count > 0)
@@ -81,6 +100,12 @@ namespace PT.PM.Common.Json
             serializer.Populate(jObject.CreateReader(), ust);
 
             ExtraProcess(ust, jObject);
+
+            if (rootUst != null)
+            {
+                rootAncestors.Pop();
+            }
+            ancestors.Pop();
 
             return ust;
         }

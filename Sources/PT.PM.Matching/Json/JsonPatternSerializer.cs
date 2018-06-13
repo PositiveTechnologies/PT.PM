@@ -16,13 +16,5 @@ namespace PT.PM.Matching.Json
         {
             return new PatternJsonConverterWriter();
         }
-
-        public override PatternRoot Deserialize(CodeFile jsonFile)
-        {
-            var result = base.Deserialize(jsonFile);
-            var filler = new PatternAscendantsFiller(result);
-            filler.FillAscendants();
-            return result;
-        }
     }
 }
