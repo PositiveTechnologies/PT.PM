@@ -35,83 +35,35 @@ namespace PT.PM.Common.Json
             }
 
             JObject jObject = JObject.Load(reader);
-            string kind = jObject[UstJsonKeys.KindName].ToString();
+            string kind = jObject[UstJsonKeys.KindName]?.ToString() ?? "";
 
-            if (ReflectionCache.TryGetClassType(kind, out Type type))
-            {
-                Ust target = CreateUst(jObject, serializer, type);
-                if (target == null)
-                {
-                    return null;
-                }
-
-                JsonReader newReader = jObject.CreateReader();
-                serializer.Populate(newReader, target);
-
-                return target;
-            }
-            else
+            if (!ReflectionCache.TryGetClassType(kind, out Type type))
             {
                 JsonUtils.LogError(Logger, JsonFile, jObject, $"Unknown UST {nameof(Ust.Kind)} {kind}");
+                return null;
             }
-
-            return null;
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new InvalidOperationException($"Use {(GetType().Name.Replace("Reader", "Writer"))} for JSON writing");
-        }
-
-        protected Ust CreateUst(object jObjectOrToken, JsonSerializer serializer, Type type = null)
-        {
-            JObject jObject = jObjectOrToken as JObject;
-            JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
-
-            if (type == null)
-            {
-                string ustKind = jObject != null
-                    ? (string)jObject[UstJsonKeys.KindName]
-                    : jToken != null
-                    ? (string)jToken[UstJsonKeys.KindName]
-                    : "";
-
-                if (string.IsNullOrEmpty(ustKind) ||
-                    !ReflectionCache.TryGetClassType(ustKind, out type))
-                {
-                    string errorMessage = $"{UstJsonKeys.KindName} field " +
-                        (ustKind == null ? "undefined" : $"incorrect ({ustKind})");
-                    Logger.LogError(JsonFile, jObjectOrToken as IJsonLineInfo, errorMessage);
-                    return null;
-                }
-            }
-
-            JToken textSpanTokenWrapper = jObject != null
-                ? jObject[nameof(Ust.TextSpan)]
-                : jToken?[nameof(Ust.TextSpan)];
-
-            List<TextSpan> textSpans =
-                textSpanTokenWrapper?.ToTextSpans(serializer).ToList() ?? null;
 
             Ust ust;
+
             if (type == typeof(RootUst))
             {
-                string languageString = jObject != null
-                    ? (string)jObject[nameof(RootUst.Language)]
-                    : jToken != null
-                    ? (string)jToken[nameof(RootUst.Language)]
-                    : "";
-                Language language = Uncertain.Language;
-                if (!string.IsNullOrEmpty(languageString))
-                {
-                    language = languageString.ParseLanguages().FirstOrDefault();
-                }
-                ust = (Ust)Activator.CreateInstance(type, null, language);
+                string languageString = (string)jObject?[nameof(RootUst.Language)] ?? "";
+                Language language = !string.IsNullOrEmpty(languageString)
+                    ? languageString.ParseLanguages().FirstOrDefault()
+                    : Uncertain.Language;
+
+                var rootUst = (RootUst)Activator.CreateInstance(type, null, language);
+                ProcessRootUst(rootUst);
+
+                ust = rootUst;
             }
             else
             {
                 ust = (Ust)Activator.CreateInstance(type);
             }
+
+            List<TextSpan> textSpans =
+                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList() ?? null;
 
             if (textSpans != null && textSpans.Count > 0)
             {
@@ -126,7 +78,24 @@ namespace PT.PM.Common.Json
                 }
             }
 
+            serializer.Populate(jObject.CreateReader(), ust);
+
+            ExtraProcess(ust, jObject);
+
             return ust;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new InvalidOperationException($"Use {(GetType().Name.Replace("Reader", "Writer"))} for JSON writing");
+        }
+
+        protected virtual void ProcessRootUst(RootUst rootUst)
+        {
+        }
+
+        protected virtual void ExtraProcess(Ust ust, JObject ustJObject)
+        {
         }
     }
 }
