@@ -40,6 +40,8 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.AddRange(javaScriptPatterns);
             var htmpPatterns = CreateHtmlPatterns();
             patterns.AddRange(htmpPatterns);
+            var clangsPatterns = CreateCLangsPatterns();
+            patterns.AddRange(clangsPatterns);
 
             var patternsConverter = new PatternConverter();
 
