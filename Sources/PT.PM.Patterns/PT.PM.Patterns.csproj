@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PT.PM.CLangsParseTreeUst\PT.PM.CLangsParseTreeUst.csproj" />
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
     <ProjectReference Include="..\PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj" />
     <ProjectReference Include="..\PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj" />
