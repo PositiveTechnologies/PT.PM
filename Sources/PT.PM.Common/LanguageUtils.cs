@@ -72,9 +72,6 @@ namespace PT.PM.Common
                     converters.Add(subConverter.Key, subConverter.Value);
                 }
             }
-
-            Languages.Add(Uncertain.Language.Key, Uncertain.Language);
-            PatternLanguages.Add(Uncertain.Language.Key, Uncertain.Language);
         }
 
         private static void ProcessAssembly(Assembly assembly,
@@ -87,28 +84,41 @@ namespace PT.PM.Common
             }
             visitedAssemblies.Add(assembly);
 
-            foreach (Type type in assembly.GetTypes().Where(type => type.IsClass && !type.IsAbstract))
+            foreach (Type type in assembly.GetTypes().Where(type => type.IsClass))
             {
-                var interfaces = type.GetInterfaces();
-                if (interfaces.Contains(typeof(ILanguageParser)))
+                if (type.IsAbstract)
                 {
-                    var parser = (ILanguageParser)Activator.CreateInstance(type);
-                    parsers.Add(parser.Language, parser.GetType());
-                    foreach (Language sublanguage in parser.Language.Sublanguages)
+                    var languageFields = type.GetFields()
+                        .Where(prop => prop.Attributes.HasFlag(FieldAttributes.Static | FieldAttributes.InitOnly)
+                        && prop.FieldType == typeof(Language));
+                    foreach (FieldInfo languageField in languageFields)
                     {
-                        subParsers.Add(sublanguage, type);
+                        ProcessLanguage(new[] { (Language)languageField.GetValue(null) });
                     }
-
-                    ProcessLanguage(new[] { parser.Language });
-                    ProcessLanguage(parser.Language.Sublanguages);
                 }
-                else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
+                else
                 {
-                    var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
-                    converters.Add(converter.Language, converter.GetType());
-                    foreach (Language sublanguage in converter.Language.Sublanguages)
+                    var interfaces = type.GetInterfaces();
+                    if (interfaces.Contains(typeof(ILanguageParser)))
                     {
-                        subConverters.Add(sublanguage, type);
+                        var parser = (ILanguageParser)Activator.CreateInstance(type);
+                        parsers.Add(parser.Language, parser.GetType());
+                        foreach (Language sublanguage in parser.Language.Sublanguages)
+                        {
+                            subParsers.Add(sublanguage, type);
+                        }
+
+                        ProcessLanguage(new[] { parser.Language });
+                        ProcessLanguage(parser.Language.Sublanguages);
+                    }
+                    else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
+                    {
+                        var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
+                        converters.Add(converter.Language, converter.GetType());
+                        foreach (Language sublanguage in converter.Language.Sublanguages)
+                        {
+                            subConverters.Add(sublanguage, type);
+                        }
                     }
                 }
             }
