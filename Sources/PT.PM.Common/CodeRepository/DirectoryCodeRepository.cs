@@ -103,7 +103,7 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public override bool IsFileIgnored(string fileName)
+        public override bool IsFileIgnored(string fileName, bool withParser)
         {
             bool result = IgnoredFiles.Any(fileName.EndsWith);
             if (result)
@@ -111,7 +111,7 @@ namespace PT.PM.Common.CodeRepository
                 return true;
             }
 
-            return base.IsFileIgnored(fileName);
+            return base.IsFileIgnored(fileName, withParser);
         }
     }
 }

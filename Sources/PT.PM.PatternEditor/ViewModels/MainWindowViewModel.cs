@@ -314,7 +314,7 @@ namespace PT.PM.PatternEditor
         }
 
         public ObservableCollection<Language> Languages { get; }
-            = new ObservableCollection<Language>(LanguageUtils.Languages.Values);
+            = new ObservableCollection<Language>(LanguageUtils.LanguagesWithParser);
 
         public Language SelectedLanguage
         {

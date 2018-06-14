@@ -17,6 +17,7 @@ namespace PT.PM.Common
         public readonly static Dictionary<string, Language> PatternLanguages;
         public readonly static Dictionary<string, Language> SqlLanguages;
         public readonly static Dictionary<Language, HashSet<Language>> SuperLanguages;
+        public readonly static HashSet<Language> LanguagesWithParser;
 
         static LanguageUtils()
         {
@@ -27,6 +28,7 @@ namespace PT.PM.Common
             PatternLanguages = new Dictionary<string, Language>();
             SqlLanguages = new Dictionary<string, Language>();
             SuperLanguages = new Dictionary<Language, HashSet<Language>>();
+            LanguagesWithParser = new HashSet<Language>();
 
             var subParsers = new Dictionary<Language, Type>();
             var subConverters = new Dictionary<Language, Type>();
@@ -72,90 +74,14 @@ namespace PT.PM.Common
                     converters.Add(subConverter.Key, subConverter.Value);
                 }
             }
-        }
 
-        private static void ProcessAssembly(Assembly assembly,
-            Dictionary<Language, Type> subParsers, Dictionary<Language, Type> subConverters,
-            List<Assembly> visitedAssemblies)
-        {
-            if (!assembly.IsActual() || visitedAssemblies.Contains(assembly))
+            foreach (var parser in parsers)
             {
-                return;
-            }
-            visitedAssemblies.Add(assembly);
-
-            foreach (Type type in assembly.GetTypes().Where(type => type.IsClass))
-            {
-                if (type.IsAbstract)
-                {
-                    var languageFields = type.GetFields()
-                        .Where(prop => prop.Attributes.HasFlag(FieldAttributes.Static | FieldAttributes.InitOnly)
-                        && prop.FieldType == typeof(Language));
-                    foreach (FieldInfo languageField in languageFields)
-                    {
-                        ProcessLanguage((Language)languageField.GetValue(null));
-                    }
-                }
-                else
-                {
-                    var interfaces = type.GetInterfaces();
-                    if (interfaces.Contains(typeof(ILanguageParser)))
-                    {
-                        var parser = (ILanguageParser)Activator.CreateInstance(type);
-                        parsers.Add(parser.Language, parser.GetType());
-                        foreach (Language sublanguage in parser.Language.Sublanguages)
-                        {
-                            subParsers.Add(sublanguage, type);
-                        };
-                    }
-                    else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
-                    {
-                        var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
-                        converters.Add(converter.Language, converter.GetType());
-                        foreach (Language sublanguage in converter.Language.Sublanguages)
-                        {
-                            subConverters.Add(sublanguage, type);
-                        }
-                    }
-                }
+                LanguagesWithParser.Add(parser.Key);
             }
         }
 
-        private static void ProcessLanguage(Language language)
-        {
-            string languageKey = language.Key;
-
-            if (Languages.ContainsKey(languageKey))
-            {
-                return;
-            }
-
-            foreach (Language Sublanguage in language.Sublanguages)
-            {
-                ProcessLanguage(Sublanguage);
-            }
-
-            Languages.Add(languageKey, language);
-            if (language.IsPattern)
-            {
-                PatternLanguages.Add(languageKey, language);
-            }
-            if (language.IsSql)
-            {
-                SqlLanguages.Add(languageKey, language);
-            }
-
-            foreach (Language sublanguage in language.Sublanguages)
-            {
-                if (!SuperLanguages.TryGetValue(sublanguage, out HashSet<Language> superLanguages))
-                {
-                    superLanguages = new HashSet<Language>();
-                    SuperLanguages.Add(sublanguage, superLanguages);
-                }
-
-                superLanguages.Add(language);
-            }
-        }
+        public static bool IsParserExists(this Language language) => LanguagesWithParser.Contains(language);
 
         public static ILanguageParser CreateParser(this Language language)
         {
@@ -252,6 +178,89 @@ namespace PT.PM.Common
             foreach (Language lang in language.Sublanguages)
                 result.Add(lang);
             return result;
+        }
+
+        private static void ProcessAssembly(Assembly assembly,
+            Dictionary<Language, Type> subParsers, Dictionary<Language, Type> subConverters,
+            List<Assembly> visitedAssemblies)
+        {
+            if (!assembly.IsActual() || visitedAssemblies.Contains(assembly))
+            {
+                return;
+            }
+            visitedAssemblies.Add(assembly);
+
+            foreach (Type type in assembly.GetTypes().Where(type => type.IsClass))
+            {
+                if (type.IsAbstract)
+                {
+                    var languageFields = type.GetFields()
+                        .Where(prop => prop.Attributes.HasFlag(FieldAttributes.Static | FieldAttributes.InitOnly)
+                        && prop.FieldType == typeof(Language));
+                    foreach (FieldInfo languageField in languageFields)
+                    {
+                        ProcessLanguage((Language)languageField.GetValue(null));
+                    }
+                }
+                else
+                {
+                    var interfaces = type.GetInterfaces();
+                    if (interfaces.Contains(typeof(ILanguageParser)))
+                    {
+                        var parser = (ILanguageParser)Activator.CreateInstance(type);
+                        parsers.Add(parser.Language, parser.GetType());
+                        foreach (Language sublanguage in parser.Language.Sublanguages)
+                        {
+                            subParsers.Add(sublanguage, type);
+                        };
+                    }
+                    else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
+                    {
+                        var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
+                        converters.Add(converter.Language, converter.GetType());
+                        foreach (Language sublanguage in converter.Language.Sublanguages)
+                        {
+                            subConverters.Add(sublanguage, type);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void ProcessLanguage(Language language)
+        {
+            string languageKey = language.Key;
+
+            if (Languages.ContainsKey(languageKey))
+            {
+                return;
+            }
+
+            foreach (Language Sublanguage in language.Sublanguages)
+            {
+                ProcessLanguage(Sublanguage);
+            }
+
+            Languages.Add(languageKey, language);
+            if (language.IsPattern)
+            {
+                PatternLanguages.Add(languageKey, language);
+            }
+            if (language.IsSql)
+            {
+                SqlLanguages.Add(languageKey, language);
+            }
+
+            foreach (Language sublanguage in language.Sublanguages)
+            {
+                if (!SuperLanguages.TryGetValue(sublanguage, out HashSet<Language> superLanguages))
+                {
+                    superLanguages = new HashSet<Language>();
+                    SuperLanguages.Add(sublanguage, superLanguages);
+                }
+
+                superLanguages.Add(language);
+            }
         }
     }
 }

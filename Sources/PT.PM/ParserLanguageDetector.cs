@@ -24,8 +24,8 @@ namespace PT.PM
 
         public override DetectionResult Detect(CodeFile codeFile, IEnumerable<Language> languages = null)
         {
-            List<Language> langs = (languages ?? LanguageUtils.Languages.Values).ToList();
-            langs.Remove(Uncertain.Language);
+            List<Language> langs = (languages ?? LanguageUtils.LanguagesWithParser).ToList();
+
             // Any PHP file contains start tag.
             if (!codeFile.Code.Contains("<?"))
             {

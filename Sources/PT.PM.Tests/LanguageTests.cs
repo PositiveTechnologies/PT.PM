@@ -57,7 +57,7 @@ namespace PT.PM.Tests
         {
             var sourceCodeRepository = new MemoryCodeRepository("");
             sourceCodeRepository.Languages = new HashSet<Language> { PlSql.Language, TSql.Language };
-            Assert.IsTrue(sourceCodeRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php")));
+            Assert.IsTrue(sourceCodeRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
         }
 
         [Test]
