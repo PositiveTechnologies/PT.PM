@@ -8,12 +8,40 @@ using System.Collections.Generic;
 using System.Linq;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.Common.CodeRepository;
+using PT.PM.CLangsParseTreeUst;
+using PT.PM.JavaScriptParseTreeUst;
+using PT.PM.PhpParseTreeUst;
 
 namespace PT.PM.Tests
 {
     [TestFixture]
     public class LanguageTests
     {
+        [Test]
+        public void CollectLanguages_Assemblies()
+        {
+            var languages = LanguageUtils.Languages.Values;
+
+            CollectionAssert.Contains(languages, C.Language);
+            CollectionAssert.Contains(languages, CPlusPlus.Language);
+            CollectionAssert.Contains(languages, ObjectiveC.Language);
+
+            CollectionAssert.Contains(languages, Aspx.Language);
+            CollectionAssert.Contains(languages, CSharp.Language);
+
+            CollectionAssert.Contains(languages, Java.Language);
+
+            CollectionAssert.Contains(languages, JavaScript.Language);
+
+            CollectionAssert.Contains(languages, Html.Language);
+            CollectionAssert.Contains(languages, Php.Language);
+
+            CollectionAssert.Contains(languages, PlSql.Language);
+            CollectionAssert.Contains(languages, TSql.Language);
+
+            CollectionAssert.Contains(languages, Uncertain.Language);
+        }
+
         [Test]
         public void Parse_String_CorrectLanguages()
         {
@@ -78,3 +106,4 @@ namespace PT.PM.Tests
         }
     }
 }
+
