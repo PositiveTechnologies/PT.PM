@@ -93,7 +93,7 @@ namespace PT.PM.Common
                         && prop.FieldType == typeof(Language));
                     foreach (FieldInfo languageField in languageFields)
                     {
-                        ProcessLanguage(new[] { (Language)languageField.GetValue(null) });
+                        ProcessLanguage((Language)languageField.GetValue(null));
                     }
                 }
                 else
@@ -106,10 +106,7 @@ namespace PT.PM.Common
                         foreach (Language sublanguage in parser.Language.Sublanguages)
                         {
                             subParsers.Add(sublanguage, type);
-                        }
-
-                        ProcessLanguage(new[] { parser.Language });
-                        ProcessLanguage(parser.Language.Sublanguages);
+                        };
                     }
                     else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
                     {
@@ -124,31 +121,39 @@ namespace PT.PM.Common
             }
         }
 
-        private static void ProcessLanguage(IEnumerable<Language> languages)
+        private static void ProcessLanguage(Language language)
         {
-            foreach (Language lang in languages)
-            {
-                string languageKey = lang.Key;
-                Languages[languageKey] = lang;
-                if (lang.IsPattern)
-                {
-                    PatternLanguages[languageKey] = lang;
-                }
-                if (lang.IsSql)
-                {
-                    SqlLanguages[languageKey] = lang;
-                }
-                
-                foreach (Language sublanguage in lang.Sublanguages)
-                {
-                    if (!SuperLanguages.TryGetValue(sublanguage, out HashSet<Language> superLanguages))
-                    {
-                        superLanguages = new HashSet<Language>();
-                        SuperLanguages.Add(sublanguage, superLanguages);
-                    }
+            string languageKey = language.Key;
 
-                    superLanguages.Add(lang);
+            if (Languages.ContainsKey(languageKey))
+            {
+                return;
+            }
+
+            foreach (Language Sublanguage in language.Sublanguages)
+            {
+                ProcessLanguage(Sublanguage);
+            }
+
+            Languages.Add(languageKey, language);
+            if (language.IsPattern)
+            {
+                PatternLanguages.Add(languageKey, language);
+            }
+            if (language.IsSql)
+            {
+                SqlLanguages.Add(languageKey, language);
+            }
+
+            foreach (Language sublanguage in language.Sublanguages)
+            {
+                if (!SuperLanguages.TryGetValue(sublanguage, out HashSet<Language> superLanguages))
+                {
+                    superLanguages = new HashSet<Language>();
+                    SuperLanguages.Add(sublanguage, superLanguages);
                 }
+
+                superLanguages.Add(language);
             }
         }
 
