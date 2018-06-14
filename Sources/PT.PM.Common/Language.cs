@@ -18,16 +18,16 @@
 
         public readonly bool IsSql;
 
-        public Language(string language, string extension, bool caseInsensitive, string title = null,
+        public Language(string key, string extension, bool caseInsensitive, string title = null,
             Language[] sublanguages = null, bool haveAntlrParser = true, bool isPattern = true, bool isSql = false)
-            :this(language, new string[] { extension }, caseInsensitive, title, sublanguages, haveAntlrParser, isPattern, isSql)
+            :this(key, new string[] { extension }, caseInsensitive, title, sublanguages, haveAntlrParser, isPattern, isSql)
         {
         }
 
-        public Language(string language, string[] extensions, bool caseInsensitive, string title = null,
+        public Language(string key, string[] extensions, bool caseInsensitive, string title = null,
             Language[] sublanguages = null, bool haveAntlrParser = true, bool isPattern = true, bool isSql = false)
         {
-            Key = language;
+            Key = key;
             Extensions = extensions;
             IsCaseInsensitive = caseInsensitive;
             Title = string.IsNullOrEmpty(title) ? Key.ToString() : title;

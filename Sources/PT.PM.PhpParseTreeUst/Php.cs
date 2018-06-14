@@ -6,6 +6,6 @@ namespace PT.PM.PhpParseTreeUst
     public static class Php
     {
         public readonly static Language Language =
-            new Language("Php", new[] { ".php" }, true, "PHP", new [] { JavaScript.Language, Html.Language });
+            new Language(nameof(Php), new[] { ".php" }, true, "PHP", new [] { JavaScript.Language, Html.Language });
     }
 }

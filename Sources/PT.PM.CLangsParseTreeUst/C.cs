@@ -5,6 +5,6 @@ namespace PT.PM.CLangsParseTreeUst
     public static class C
     {
         public readonly static Language Language =
-            new Language("C", new[] { ".c", ".h" }, false, "C", haveAntlrParser: false);
+            new Language(nameof(C), new[] { ".c", ".h" }, false, "C", haveAntlrParser: false);
     }
 }

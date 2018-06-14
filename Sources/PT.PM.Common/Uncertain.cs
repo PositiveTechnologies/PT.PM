@@ -3,6 +3,6 @@
     public static class Uncertain
     {
         public readonly static Language Language =
-            new Language("Uncertain", ".*", false, "Uncertain", haveAntlrParser: false);
+            new Language(nameof(Uncertain), ".*", false, "Uncertain", haveAntlrParser: false);
     }
 }
