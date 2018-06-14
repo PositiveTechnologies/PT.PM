@@ -74,17 +74,9 @@ namespace PT.PM.PatternEditor.Pattern
                 }
             });
 
-            Action openPatternAction = () =>
-            {
-                if (patternsListBox.SelectedItem != null)
-                {
-                    SelectedPattern = (PatternViewModel)patternsListBox.SelectedItem;
-                }
-            };
-
             patternsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                openPatternAction();
+                OpenPatternAction();
             };
 
             patternErrorsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
@@ -153,9 +145,17 @@ namespace PT.PM.PatternEditor.Pattern
                 }
             });
 
-            OpenPattern = ReactiveCommand.Create(openPatternAction);
+            OpenPattern = ReactiveCommand.Create(OpenPatternAction);
 
             SavePattern = ReactiveCommand.Create(() => SavePatterns());
+
+            void OpenPatternAction()
+            {
+                if (patternsListBox.SelectedItem != null)
+                {
+                    SelectedPattern = (PatternViewModel)patternsListBox.SelectedItem;
+                }
+            }
         }
 
         public ReactiveCommand OpenPatterns { get; }
@@ -170,10 +170,7 @@ namespace PT.PM.PatternEditor.Pattern
 
         public string PatternsFileName
         {
-            get
-            {
-                return Settings.PatternsFileName;
-            }
+            get => Settings.PatternsFileName;
             set
             {
                 Settings.PatternsFileName = value;
@@ -504,7 +501,7 @@ namespace PT.PM.PatternEditor.Pattern
 
         public void SavePatterns()
         {
-            var json = JsonConvert.SerializeObject(Patterns.Select(pattern => pattern.patternDto), Formatting.Indented, jsonConverters);
+            var json = JsonConvert.SerializeObject(Patterns.Select(pattern => pattern.PatternDto), Formatting.Indented, jsonConverters);
             File.WriteAllText(Settings.PatternsFileName, json);
         }
 

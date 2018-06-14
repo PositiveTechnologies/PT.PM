@@ -7,21 +7,21 @@ namespace PT.PM.PatternEditor
 {
     public class PatternViewModel : ReactiveObject
     {
-        public PatternDto patternDto { get; }
+        public PatternDto PatternDto { get; }
 
         public PatternViewModel(PatternDto patternDto)
         {
-            this.patternDto = patternDto ?? throw new NullReferenceException(nameof(patternDto));
+            PatternDto = patternDto ?? throw new NullReferenceException(nameof(patternDto));
         }
 
         public string Name
         {
-            get => patternDto.Name;
+            get => PatternDto.Name;
             set
             {
-                if (patternDto.Name != value)
+                if (PatternDto.Name != value)
                 {
-                    patternDto.Name = value;
+                    PatternDto.Name = value;
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(Title));
                 }
@@ -30,12 +30,12 @@ namespace PT.PM.PatternEditor
 
         public string Key
         {
-            get => patternDto.Key;
+            get => PatternDto.Key;
             set
             {
-                if (patternDto.Key != value)
+                if (PatternDto.Key != value)
                 {
-                    patternDto.Key = value;
+                    PatternDto.Key = value;
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(Title));
                 }
@@ -44,12 +44,12 @@ namespace PT.PM.PatternEditor
 
         public string CweId
         {
-            get => patternDto.CweId;
+            get => PatternDto.CweId;
             set
             {
-                if (patternDto.CweId != value)
+                if (PatternDto.CweId != value)
                 {
-                    patternDto.CweId = value;
+                    PatternDto.CweId = value;
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(Title));
                 }
@@ -58,12 +58,12 @@ namespace PT.PM.PatternEditor
 
         public string Description
         {
-            get => patternDto.Description;
+            get => PatternDto.Description;
             set
             {
-                if (patternDto.Description != value)
+                if (PatternDto.Description != value)
                 {
-                    patternDto.Description = value;
+                    PatternDto.Description = value;
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(Title));
                 }
@@ -72,26 +72,26 @@ namespace PT.PM.PatternEditor
 
         public string Value
         {
-            get => patternDto.Value;
+            get => PatternDto.Value;
             set
             {
-                if (patternDto.Value != value)
+                if (PatternDto.Value != value)
                 {
-                    patternDto.Value = value;
+                    PatternDto.Value = value;
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(Title));
                 }
             }
         }
 
-        public HashSet<string> Languages => patternDto.Languages;
+        public HashSet<string> Languages => PatternDto.Languages;
 
 
         public bool AddLanguage(string language)
         {
-            if (!patternDto.Languages.Contains(language))
+            if (!PatternDto.Languages.Contains(language))
             {
-                patternDto.Languages.Add(language);
+                PatternDto.Languages.Add(language);
                 this.RaisePropertyChanged(nameof(Title));
                 return true;
             }
@@ -100,20 +100,20 @@ namespace PT.PM.PatternEditor
 
         public bool RemoveLanguage(string language)
         {
-            if (patternDto.Languages.Contains(language) && patternDto.Languages.Count > 1)
+            if (PatternDto.Languages.Contains(language) && PatternDto.Languages.Count > 1)
             {
-                patternDto.Languages.Remove(language);
+                PatternDto.Languages.Remove(language);
                 this.RaisePropertyChanged(nameof(Title));
                 return true;
             }
             return false;
         }
 
-        public string Title => patternDto.ToString();
+        public string Title => PatternDto.ToString();
 
         public override string ToString()
         {
-            return patternDto.ToString();
+            return PatternDto.ToString();
         }
     }
 }
