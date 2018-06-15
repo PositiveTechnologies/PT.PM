@@ -9,7 +9,7 @@ namespace PT.PM.Common.CodeRepository
 
         public override IEnumerable<string> GetFileNames() => ArrayUtils<string>.EmptyArray;
 
-        public override bool IsFileIgnored(string fileName) => throw new InvalidOperationException();
+        public override bool IsFileIgnored(string fileName, bool withParser) => throw new InvalidOperationException();
 
         public override CodeFile ReadFile(string fileName) => throw new InvalidOperationException();
     }

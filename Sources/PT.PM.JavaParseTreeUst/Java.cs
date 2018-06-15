@@ -5,6 +5,6 @@ namespace PT.PM.JavaParseTreeUst
     public static class Java
     {
         public readonly static Language Language =
-            new Language("Java", ".java", false, "Java");
+            new Language(nameof(Java), ".java", false, "Java");
     }
 }

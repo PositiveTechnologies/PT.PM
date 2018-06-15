@@ -47,7 +47,7 @@ namespace PT.PM.Tests
         {
             var repository = new DirectoryCodeRepository("", CSharp.Language);
 
-            Assert.IsFalse(repository.IsFileIgnored("page.aspx"));
+            Assert.IsFalse(repository.IsFileIgnored("page.aspx", true));
         }
     }
 }

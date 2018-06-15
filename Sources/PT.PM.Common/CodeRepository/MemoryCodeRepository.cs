@@ -17,14 +17,14 @@ namespace PT.PM.Common.CodeRepository
             Code = code;
         }
 
-        public override bool IsFileIgnored(string fileName)
+        public override bool IsFileIgnored(string fileName, bool withParser)
         {
             if (string.IsNullOrEmpty(fileName))
             {
                 return false;
             }
 
-            return base.IsFileIgnored(fileName);
+            return base.IsFileIgnored(fileName, withParser);
         }
 
         public override IEnumerable<string> GetFileNames() => Code.Keys;

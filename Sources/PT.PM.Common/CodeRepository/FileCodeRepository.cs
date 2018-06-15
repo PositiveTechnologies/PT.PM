@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace PT.PM.Common.CodeRepository
@@ -50,14 +51,14 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public override bool IsFileIgnored(string fileName)
+        public override bool IsFileIgnored(string fileName, bool withParser)
         {
             if (Languages.Count == 1)
             {
-                return false;
+                return withParser ? !Languages.First().IsParserExists() : false;
             }
 
-            return base.IsFileIgnored(fileName);
+            return base.IsFileIgnored(fileName, withParser);
         }
 
         protected virtual string ReadCode(string fileName) => File.ReadAllText(fileName);

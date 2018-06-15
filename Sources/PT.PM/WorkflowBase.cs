@@ -125,7 +125,7 @@ namespace PT.PM
             var stopwatch = new Stopwatch();
             if (Stage.IsGreaterOrEqual(PM.Stage.File))
             {
-                if (SourceCodeRepository.IsFileIgnored(fileName))
+                if (SourceCodeRepository.IsFileIgnored(fileName, true))
                 {
                     Logger.LogInfo($"File {fileName} has not been read.");
                     return null;

@@ -272,10 +272,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsDeveloperMode
         {
-            get
-            {
-                return Settings.IsDeveloperMode;
-            }
+            get => Settings.IsDeveloperMode;
             set
             {
                 if (Settings.IsDeveloperMode != value)
@@ -301,10 +298,7 @@ namespace PT.PM.PatternEditor
 
         public Stage Stage
         {
-            get
-            {
-                return Settings.SelectedStage;
-            }
+            get => Settings.SelectedStage;
             set
             {
                 if (Settings.SelectedStage != value)
@@ -319,20 +313,15 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public ObservableCollection<Language> Languages
-        {
-            get
-            {
-                return new ObservableCollection<Language>(LanguageUtils.Languages.Values);
-            }
-        }
+        public ObservableCollection<Language> Languages { get; }
+            = new ObservableCollection<Language>(LanguageUtils.LanguagesWithParser);
 
         public Language SelectedLanguage
         {
             get
             {
                 HashSet<Language> languages = LanguageUtils.ParseLanguages(Settings.SourceCodeLanguage);
-                if (Languages.Count > 0)
+                if (languages.Count > 0)
                 {
                     return languages.First();
                 }
@@ -353,20 +342,12 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public ObservableCollection<JavaScriptType> JavaScriptTypes
-        {
-            get
-            {
-                return new ObservableCollection<JavaScriptType>((JavaScriptType[])Enum.GetValues(typeof(JavaScriptType)));
-            }
-        }
+        public ObservableCollection<JavaScriptType> JavaScriptTypes { get; }
+            = new ObservableCollection<JavaScriptType>((JavaScriptType[])Enum.GetValues(typeof(JavaScriptType)));
 
         public JavaScriptType JavaScriptType
         {
-            get
-            {
-                return Settings.JavaScriptType;
-            }
+            get => Settings.JavaScriptType;
             set
             {
                 if (Settings.JavaScriptType != value)
@@ -395,10 +376,7 @@ namespace PT.PM.PatternEditor
 
         public string OpenedFileName
         {
-            get
-            {
-                return Path.GetFileName(sourceCodeFileName);
-            }
+            get => Path.GetFileName(sourceCodeFileName);
             set
             {
                 if (!string.IsNullOrEmpty(value))

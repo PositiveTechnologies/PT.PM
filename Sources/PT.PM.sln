@@ -63,6 +63,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PlSqlParseTreeUst", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli.Common", "PT.PM.Cli.Common\PT.PM.Cli.Common.csproj", "{353E0423-A26D-48C6-804E-F134D7935399}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.CLangsParseTreeUst", "PT.PM.CLangsParseTreeUst\PT.PM.CLangsParseTreeUst.csproj", "{D8E70122-BABB-4A4E-A33B-85BF62E6158E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +175,10 @@ Global
 		{353E0423-A26D-48C6-804E-F134D7935399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{353E0423-A26D-48C6-804E-F134D7935399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{353E0423-A26D-48C6-804E-F134D7935399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8E70122-BABB-4A4E-A33B-85BF62E6158E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8E70122-BABB-4A4E-A33B-85BF62E6158E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8E70122-BABB-4A4E-A33B-85BF62E6158E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8E70122-BABB-4A4E-A33B-85BF62E6158E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
