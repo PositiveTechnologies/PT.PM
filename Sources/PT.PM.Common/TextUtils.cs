@@ -163,7 +163,12 @@ namespace PT.PM.Common
             }
             else
             {
-                result = codeFiles?.FirstOrDefault(codeFile => codeFile.Equals(fileName) || codeFile.RelativeName.Equals(fileName));
+                if (codeFiles != null)
+                    lock (codeFiles)
+                    {
+                        result = codeFiles?.FirstOrDefault(codeFile => codeFile.Equals(fileName) || codeFile.RelativeName.Equals(fileName));
+                    }
+
                 if (result == null)
                 {
                     if (!File.Exists(fileName))
@@ -184,7 +189,12 @@ namespace PT.PM.Common
                         RootPath = Path.GetDirectoryName(fileName),
                         Name = Path.GetFileName(fileName)
                     };
-                    codeFiles.Add(result);
+
+                    if (codeFiles != null)
+                        lock (codeFiles)
+                        {
+                            codeFiles.Add(result);
+                        }
                 }
             }
             return result;

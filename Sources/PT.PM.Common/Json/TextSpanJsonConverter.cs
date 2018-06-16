@@ -24,7 +24,8 @@ namespace PT.PM.Common.Json
         public void AddCodeFile(CodeFile codeFile)
         {
             CurrentCodeFile = codeFile;
-            CodeFiles.Add(codeFile);
+            lock (CodeFiles)
+                CodeFiles.Add(codeFile);
         }
 
         public override void WriteJson(JsonWriter writer, TextSpan textSpan, JsonSerializer serializer)

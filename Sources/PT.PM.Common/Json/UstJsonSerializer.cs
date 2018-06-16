@@ -4,13 +4,14 @@ namespace PT.PM.Common.Json
 {
     public class UstJsonSerializer : JsonBaseSerializer<Ust>
     {
-        public override Ust Deserialize(CodeFile jsonFile)
+        protected override UstJsonConverterReader CreateConverterReader(CodeFile jsonFile)
         {
-            var result = base.Deserialize(jsonFile);
-            result.FillAscendants(); // TODO: fill ascendats during deserialization
-            return result;
+            return new UstJsonConverterReader(jsonFile);
         }
 
-        protected override JsonConverterBase CreateConverterBase(CodeFile jsonFile) => new UstJsonConverter(JsonFile);
+        protected override UstJsonConverterWriter CreateConverterWriter()
+        {
+            return new UstJsonConverterWriter();
+        }
     }
 }

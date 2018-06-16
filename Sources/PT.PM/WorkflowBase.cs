@@ -246,6 +246,22 @@ namespace PT.PM
             return result;
         }
 
+        public CodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
+            stopwatch.Stop();
+
+            Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
+
+            workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
+            workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
+            workflowResult.AddReadTime(stopwatch.ElapsedTicks);
+            workflowResult.AddResultEntity(sourceCodeFile);
+
+            return sourceCodeFile;
+        }
+
         private void DumpTokensAndParseTree(ParseTree parseTree)
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.ParseTree)))
@@ -295,22 +311,6 @@ namespace PT.PM
                 Directory.CreateDirectory(DumpDir);
                 File.WriteAllText(Path.Combine(DumpDir, "output.json"), json);
             }
-        }
-
-        protected CodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
-            stopwatch.Stop();
-
-            Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
-
-            workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-            workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
-            workflowResult.AddReadTime(stopwatch.ElapsedTicks);
-            workflowResult.AddResultEntity(sourceCodeFile);
-
-            return sourceCodeFile;
         }
 
         protected List<TPattern> ConvertPatterns(TWorkflowResult workflowResult)

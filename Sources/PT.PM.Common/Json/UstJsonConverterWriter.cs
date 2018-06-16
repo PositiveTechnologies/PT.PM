@@ -9,23 +9,24 @@ using System.Reflection;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonConverterBase : JsonConverter, ILoggable
+    public class UstJsonConverterWriter : JsonConverter, ILoggable
     {
-        public const string KindName = "Kind";
-
-        protected JsonSerializer jsonSerializer;
-
         public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public CodeFile JsonFile { get; } = CodeFile.Empty;
 
         public bool IncludeTextSpans { get; set; } = false;
 
         public bool ExcludeDefaults { get; set; } = true;
 
-        public JsonConverterBase(CodeFile jsonFile)
+        public override bool CanRead => false;
+
+        public override bool CanConvert(Type objectType)
         {
-            JsonFile = jsonFile;
+            return objectType == typeof(Ust) || objectType.IsSubclassOf(typeof(Ust));
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new InvalidOperationException($"Use {(GetType().Name.Replace("Writer", "Reader"))} for JSON reading");
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -38,7 +39,7 @@ namespace PT.PM.Common.Json
         {
             JObject jObject = new JObject();
             Type type = value.GetType();
-            jObject.Add(KindName, type.Name);
+            jObject.Add(UstJsonKeys.KindName, type.Name);
             PropertyInfo[] properties = type.GetReadWriteClassProperties();
 
             if (type.Name == nameof(RootUst))
@@ -124,81 +125,25 @@ namespace PT.PM.Common.Json
             return jObject;
         }
 
-        protected Ust CreateUst(object jObjectOrToken, Type type = null)
+        protected static bool WriteCollection<T>(JObject writeTo, string propertyName, IEnumerable<T> values, JsonSerializer jsonSerializer)
         {
-            JObject jObject = jObjectOrToken as JObject;
-            JToken jToken = jObject == null ? jObjectOrToken as JToken : null;
+            if (values == null)
+                return false;
 
-            if (type == null)
-            {
-                string ustKind = jObject != null
-                    ? (string)jObject[KindName]
-                    : jToken != null
-                    ? (string)jToken[KindName]
-                    : "";
+            List<T> valuesList = values.ToList();
 
-                if (string.IsNullOrEmpty(ustKind) ||
-                    !ReflectionCache.TryGetClassType(ustKind, out type))
-                {
-                    string errorMessage = $"{KindName} field " +
-                        (ustKind == null ? "undefined" : $"incorrect ({ustKind})");
-                    Logger.LogError(JsonFile, jObjectOrToken as IJsonLineInfo, errorMessage);
-                    return null;
-                }
-            }
+            JToken serializedObject = valuesList.Count == 0
+                ? null
+                : valuesList.Count == 1
+                ? JToken.FromObject(valuesList[0], jsonSerializer)
+                : JArray.FromObject(valuesList, jsonSerializer);
 
-            JToken textSpanTokenWrapper = jObject != null
-                ? jObject[nameof(Ust.TextSpan)]
-                : jToken?[nameof(Ust.TextSpan)];
+            if (serializedObject == null)
+                return false;
 
-            List<TextSpan> textSpans = null;
+            writeTo.Add(propertyName, serializedObject);
 
-            if (textSpanTokenWrapper != null)
-            {
-                textSpans = GetCommonTextSpan(textSpanTokenWrapper).ToList();
-            }
-
-            Ust ust;
-            if (type == typeof(RootUst))
-            {
-                string languageString = jObject != null
-                    ? (string)jObject[nameof(RootUst.Language)]
-                    : jToken != null
-                    ? (string)jToken[nameof(RootUst.Language)]
-                    : "";
-                Language language = Uncertain.Language;
-                if (!string.IsNullOrEmpty(languageString))
-                {
-                    language = languageString.ParseLanguages().FirstOrDefault();
-                }
-                ust = (Ust)Activator.CreateInstance(type, null, language);
-            }
-            else
-            {
-                ust = (Ust)Activator.CreateInstance(type);
-            }
-
-            if (textSpans != null && textSpans.Count > 0)
-            {
-                if (textSpans.Count == 1)
-                {
-                    ust.TextSpan = textSpans[0];
-                }
-                else
-                {
-                    ust.InitialTextSpans = textSpans;
-                    ust.TextSpan = textSpans.First();
-                }
-            }
-
-            return ust;
-        }
-
-        protected IEnumerable<TextSpan> GetCommonTextSpan(JToken textSpanToken)
-        {
-            return textSpanToken
-                .GetTokenOrTokensArray()
-                .Select(token => token.ToObject<TextSpan>(jsonSerializer));
+            return true;
         }
 
         private object GetDefaultValue(Type type)

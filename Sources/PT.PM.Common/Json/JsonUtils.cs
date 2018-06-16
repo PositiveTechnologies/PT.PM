@@ -2,15 +2,27 @@
 using Newtonsoft.Json.Linq;
 using PT.PM.Common.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Common.Json
 {
     public static class JsonUtils
     {
-        public static JToken[] GetTokenOrTokensArray(this JToken jToken)
+        public static IEnumerable<TextSpan> ToTextSpans(this JToken textSpanToken, JsonSerializer jsonSerializer)
         {
-            return jToken is JArray jArray ? jArray.Children().ToArray() : new JToken[] { jToken };
+            return textSpanToken
+                .ReadArray()
+                .Select(token => token.ToObject<TextSpan>(jsonSerializer));
+        }
+
+        public static JToken[] ReadArray(this JToken jArrayOrToken)
+        {
+            return jArrayOrToken is JArray jArray
+                ? jArray.Children().ToArray()
+                : jArrayOrToken is JToken jToken
+                ? new JToken[] { jToken }
+                : new JToken[0];
         }
 
         public static void LogError(this ILogger logger, CodeFile jsonFile, IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
