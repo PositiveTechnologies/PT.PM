@@ -148,12 +148,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitParameter(ParameterSyntax node)
         {
-            SyntaxToken modifier = node.Modifiers.FirstOrDefault();
+            SyntaxToken modifier = node.Modifiers.FirstOrDefault(m =>
+                m.IsKind(SyntaxKind.OutKeyword) || m.IsKind(SyntaxKind.RefKeyword));
             InOutModifierLiteral inOut = null;
-            if (modifier != null)
+            if (!modifier.IsKind(SyntaxKind.None))
             {
                 inOut = new InOutModifierLiteral(
-                    modifier.RawKind == (int)SyntaxKind.OutKeyword ? InOutModifier.Out : InOutModifier.InOut,
+                    modifier.IsKind(SyntaxKind.OutKeyword) ? InOutModifier.Out : InOutModifier.InOut,
                     modifier.GetTextSpan());
             }
 
