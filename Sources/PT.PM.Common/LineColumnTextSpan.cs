@@ -53,9 +53,11 @@ namespace PT.PM.Common
                 }
             }
 
+            result = $"{result})";
+
             if (includeFileName && CodeFile != null)
             {
-                result = $"{result}); {CodeFile}";
+                result = $"{result}; {CodeFile}";
             }
 
             return result;
