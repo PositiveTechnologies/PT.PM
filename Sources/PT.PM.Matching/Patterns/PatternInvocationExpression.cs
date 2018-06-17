@@ -8,7 +8,7 @@ namespace PT.PM.Matching.Patterns
     {
         public PatternUst Target { get; set; }
 
-        public PatternArgs Arguments { get; set; }
+        public PatternUst Arguments { get; set; }
 
         public PatternInvocationExpression()
         {
@@ -26,7 +26,15 @@ namespace PT.PM.Matching.Patterns
         {
             var result = new List<PatternUst>();
             result.Add(Target);
-            result.AddRange(Arguments.Args);
+            if (Arguments is PatternArgs patternArgs)
+            {
+                result.AddRange(patternArgs.Args);
+            }
+            else
+            {
+                result.Add(Arguments);
+            }
+
             return result.ToArray();
         }
 
@@ -41,7 +49,15 @@ namespace PT.PM.Matching.Patterns
             {
                 return newContext;
             }
-            newContext = Arguments.Match(invocation.Arguments, newContext);
+
+            if (Arguments is PatternArgs patternArgs)
+            {
+                newContext = patternArgs.Match(invocation.Arguments, newContext);
+            }
+            else
+            {
+                newContext = context.Fail();
+            }
 
             return newContext.AddUstIfSuccess(invocation);
         }
