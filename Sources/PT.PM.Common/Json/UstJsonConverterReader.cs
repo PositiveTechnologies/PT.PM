@@ -38,7 +38,7 @@ namespace PT.PM.Common.Json
             }
 
             JObject jObject = JObject.Load(reader);
-            string kind = jObject[UstJsonKeys.KindName]?.ToString() ?? "";
+            string kind = jObject[nameof(Ust.Kind)]?.ToString() ?? "";
 
             if (!ReflectionCache.TryGetClassType(kind, out Type type))
             {

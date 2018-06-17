@@ -39,7 +39,7 @@ namespace PT.PM.Common.Json
         {
             JObject jObject = new JObject();
             Type type = value.GetType();
-            jObject.Add(UstJsonKeys.KindName, type.Name);
+            jObject.Add(nameof(Ust.Kind), type.Name);
             PropertyInfo[] properties = type.GetReadWriteClassProperties();
 
             if (type.Name == nameof(RootUst))

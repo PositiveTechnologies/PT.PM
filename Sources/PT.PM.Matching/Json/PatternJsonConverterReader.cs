@@ -51,7 +51,7 @@ namespace PT.PM.Matching.Json
             }
             else if (objectType == typeof(PatternUst) || objectType.IsSubclassOf(typeof(PatternUst)))
             {
-                var kind = (string)jObject[UstJsonKeys.KindName];
+                var kind = (string)jObject[nameof(PatternUst.Kind)];
                 ReflectionCache.TryGetClassType(kind, out Type type);
                 var patternUst = (PatternUst)Activator.CreateInstance(type);
                 target = patternUst;

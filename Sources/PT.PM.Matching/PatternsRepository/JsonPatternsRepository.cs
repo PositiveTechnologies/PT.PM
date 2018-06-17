@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common;
 using PT.PM.Common.Json;
 using PT.PM.Matching.Json;
+using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 
@@ -30,7 +31,7 @@ namespace PT.PM.Matching.PatternsRepository
                 try
                 {
                     PatternDto patternDto;
-                    if (token[UstJsonKeys.KindName] != null)
+                    if (token[nameof(PatternUst.Kind)] != null)
                     {
                         if (patternJsonSerializer == null)
                         {
