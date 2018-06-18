@@ -1,10 +1,24 @@
 ﻿using System.Diagnostics;
 
-namespace PT.PM.Cli.Tests
+namespace PT.PM.TestUtils
 {
     public class ProcessUtils
     {
-        public static ProcessExecutionResult SetupHiddenProcessAndStart(string fileName, string arguments, string workingDirectory = ".", bool waitForExit = true)
+        public static bool IsToolExists(string fileName, string arguments = "")
+        {
+            try
+            {
+                ProcessExecutionResult result = SetupHiddenProcessAndStart(fileName, arguments, timeout: 1000);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static ProcessExecutionResult SetupHiddenProcessAndStart(string fileName, string arguments, string workingDirectory = ".", bool waitForExit = true,
+            int timeout = 0)
         {
             var result = new ProcessExecutionResult();
 
@@ -43,7 +57,14 @@ namespace PT.PM.Cli.Tests
             result.ProcessId = process.Id;
             if (waitForExit)
             {
-                process.WaitForExit();
+                if (timeout == 0)
+                {
+                    process.WaitForExit();
+                }
+                else
+                {
+                    process.WaitForExit(timeout);
+                }
             }
 
             return result;
