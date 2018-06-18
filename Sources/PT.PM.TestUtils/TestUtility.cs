@@ -11,6 +11,8 @@ namespace PT.PM.TestUtils
 {
     public static class TestUtility
     {
+        private static bool? isDotInstalled = null;
+
         public const string GithubUrlPrefix = "https://github.com/";
         public const string TooLongTestDurationMessage = "Too long test duration.";
 
@@ -20,6 +22,19 @@ namespace PT.PM.TestUtils
         public static string TestsPath = $@"Tests/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.0";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
+
+        public static bool IsDotInstalled
+        {
+            get
+            {
+                if (!isDotInstalled.HasValue)
+                {
+                    isDotInstalled = ProcessUtils.IsToolExists("dot", "-V");
+                }
+
+                return isDotInstalled.Value;
+            }
+        }
 
         internal static bool IsDebug =>
 #if DEBUG
