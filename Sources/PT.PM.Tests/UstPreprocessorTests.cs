@@ -103,7 +103,7 @@ namespace PT.PM.Tests
 
             var statements = ((PatternStatements)result).Statements;
             var invocation = (PatternInvocationExpression)statements.ElementAt(0);
-            Assert.AreEqual(1, invocation.Arguments.Args.Count(child => child is PatternMultipleExpressions));
+            Assert.AreEqual(1, (invocation.Arguments as PatternArgs)?.Args.Count(child => child is PatternMultipleExpressions));
         }
 
         [Test]
