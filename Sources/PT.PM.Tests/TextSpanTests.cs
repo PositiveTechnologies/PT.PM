@@ -18,7 +18,6 @@ namespace PT.PM.Tests
             Assert.AreEqual(textSpan, TextUtils.ParseTextSpan(textSpanString));
         }
 
-        [Test]
         [TestCase(42, 1, 42, 1)]
         [TestCase(42, 1, 41, 5)]
         [TestCase(42, 5, 43, 5)]
