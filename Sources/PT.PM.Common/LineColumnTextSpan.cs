@@ -38,22 +38,24 @@ namespace PT.PM.Common
 
         public string ToString(bool includeFileName)
         {
-            string result = $"[{BeginLine},{BeginColumn}";
+            string result = $"[{BeginLine}";
 
-            if (BeginLine != EndLine || BeginColumn != EndColumn)
+            if (BeginLine == EndLine && BeginColumn != EndColumn)
             {
-                result = $"{result}..";
-                if (BeginLine != EndLine)
-                {
-                    result = $"{result}{EndLine},";
-                }
-                if (BeginColumn != EndColumn)
-                {
-                    result = $"{result}{EndColumn}";
-                }
+                result = $"{result},{BeginColumn}..{EndColumn})";
             }
-
-            result = $"{result})";
+            else if (BeginColumn == EndColumn && BeginLine != EndLine)
+            {
+                result = $"{result}..{EndLine},{EndColumn})";
+            }
+            else if (BeginColumn != EndColumn && BeginLine != EndLine)
+            {
+                result = $"{result},{BeginColumn}..{EndLine},{EndColumn})";
+            }
+            else
+            {
+                result = $"{result},{BeginColumn})";
+            }
 
             if (includeFileName && CodeFile != null)
             {

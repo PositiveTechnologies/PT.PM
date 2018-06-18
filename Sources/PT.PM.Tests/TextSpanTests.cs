@@ -19,14 +19,14 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void Parse_LineColumnTextSpan()
+        [TestCase(42, 1, 42, 1)]
+        [TestCase(42, 1, 41, 5)]
+        [TestCase(42, 5, 43, 5)]
+        [TestCase(42, 5, 42, 8)]
+        public void Parse_LineColumnTextSpan(int beginLine, int beginCol, int endLine, int endCol)
         {
-            var lcTextSpan = new LineColumnTextSpan(42, 1, 42, 1);
+            var lcTextSpan = new LineColumnTextSpan(beginLine, beginCol, endLine, endCol);
             string textSpanString = lcTextSpan.ToString();
-            Assert.AreEqual(lcTextSpan, TextUtils.ParseLineColumnTextSpan(textSpanString));
-
-            lcTextSpan = new LineColumnTextSpan(42, 1, 41, 5);
-            textSpanString = lcTextSpan.ToString();
             Assert.AreEqual(lcTextSpan, TextUtils.ParseLineColumnTextSpan(textSpanString));
         }
     }
