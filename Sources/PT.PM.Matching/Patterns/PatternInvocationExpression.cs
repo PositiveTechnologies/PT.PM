@@ -56,7 +56,7 @@ namespace PT.PM.Matching.Patterns
             }
             else
             {
-                newContext = context.Fail();
+                newContext = Arguments.MatchUst(invocation.Arguments, newContext);
             }
 
             return newContext.AddUstIfSuccess(invocation);
