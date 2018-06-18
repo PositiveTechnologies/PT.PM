@@ -130,12 +130,36 @@ namespace PT.PM.Common
             try
             {
                 int beginLine, beginColumn, endLine, endColumn;
+                
 
                 var index = firstPart.IndexOf("..");
                 if (index != -1)
                 {
-                    ParseLineColumn(firstPart.Remove(index), out beginLine, out beginColumn);
-                    ParseLineColumn(firstPart.Substring(index + 2), out endLine, out endColumn);
+                    string begin = firstPart.Remove(index);
+                    string end = firstPart.Substring(index + 2);
+                    if (end.IndexOf(',') == -1)
+                    {
+                        ParseLineColumn(begin, out beginLine, out beginColumn);
+                        endLine = beginLine;
+                        if (!int.TryParse(end, out endColumn))
+                        {
+                            throw new FormatException($"Invalid or too big column value {end} while {nameof(LineColumnTextSpan)} parsing.");
+                        }
+                    }
+                    else if (begin.IndexOf(',') == -1)
+                    {
+                        ParseLineColumn(end, out endLine, out endColumn);
+                        beginColumn = endColumn;
+                        if (!int.TryParse(begin, out beginLine))
+                        {
+                            throw new FormatException($"Invalid or too big line value {begin} while {nameof(LineColumnTextSpan)} parsing.");
+                        }
+                    }
+                    else
+                    {
+                        ParseLineColumn(begin, out beginLine, out beginColumn);
+                        ParseLineColumn(end, out endLine, out endColumn);
+                    }
                 }
                 else
                 {

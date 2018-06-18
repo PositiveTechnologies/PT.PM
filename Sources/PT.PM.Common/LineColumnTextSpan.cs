@@ -2,7 +2,7 @@
 
 namespace PT.PM.Common
 {
-    public class LineColumnTextSpan: IEquatable<LineColumnTextSpan>
+    public class LineColumnTextSpan : IEquatable<LineColumnTextSpan>
     {
         public static LineColumnTextSpan Zero => new LineColumnTextSpan(0, 0, 0, 0, null);
 
@@ -40,13 +40,17 @@ namespace PT.PM.Common
         {
             string result;
 
-            if (BeginLine == EndLine && EndColumn == BeginColumn)
+            if (BeginLine == EndLine)
             {
-                result = $"[{BeginLine},{BeginColumn})";
+                result = BeginColumn == EndColumn
+                    ? $"[{BeginLine},{BeginColumn})"
+                    : $"[{BeginLine},{BeginColumn}..{EndColumn})";
             }
             else
             {
-                result = $"[{BeginLine},{BeginColumn}..{EndLine},{EndColumn})";
+                result = BeginColumn == EndColumn
+                    ? $"[{BeginLine}..{EndLine},{BeginColumn})"
+                    : $"[{BeginLine},{BeginColumn}..{EndLine},{EndColumn})";
             }
 
             if (includeFileName && CodeFile != null)
