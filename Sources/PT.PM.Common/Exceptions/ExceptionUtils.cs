@@ -22,40 +22,60 @@ namespace PT.PM.Common.Exceptions
                 return "";
             }
 
-            string pathString = null;
-            int line = 0;
-            try
-            {
-                string stackTrace = ex.StackTrace;
-                if (stackTrace != null)
-                {
-                    var index1 = stackTrace.IndexOf(":\\");
-                    var index2 = stackTrace.IndexOf(":", index1 + 1);
-                    index1--;
-                    pathString = stackTrace.Substring(index1, index2 - index1);
-                    pathString = Path.GetFileName(pathString);
-
-                    while (index2 < stackTrace.Length && !char.IsDigit(stackTrace[index2]))
-                    {
-                        index2++;
-                    }
-                    int digitIndex = index2;
-                    while (index2 < stackTrace.Length && char.IsDigit(stackTrace[index2]))
-                    {
-                        index2++;
-                    }
-                    line = int.Parse(stackTrace.Substring(digitIndex, index2 - digitIndex));
-                }
-            }
-            catch
-            {
-            }
+            string pathString = ExtractPathString(ex, out int line);
 
             string result = pathString != null
                 ? $"{ex.Message} at \"{pathString}\" (line: {line})"
                 : ex.ToString();
 
             return result;
+        }
+
+        private static string ExtractPathString(Exception ex, out int line)
+        {
+            line = 0;
+            try
+            {
+                string stackTrace = ex.StackTrace;
+                if (stackTrace == null)
+                {
+                    return null;
+                }
+
+                var index1 = stackTrace.IndexOf(":\\");
+                if (index1 < 0)
+                {
+                    return null;
+                }
+
+                var index2 = stackTrace.IndexOf(":", index1 + 1);
+                if (index2 < 0)
+                {
+                    return null;
+                }
+
+                index1--;
+                string pathString = stackTrace.Substring(index1, index2 - index1);
+                pathString = Path.GetFileName(pathString);
+
+                while (index2 < stackTrace.Length && !char.IsDigit(stackTrace[index2]))
+                {
+                    index2++;
+                }
+                int digitIndex = index2;
+                while (index2 < stackTrace.Length && char.IsDigit(stackTrace[index2]))
+                {
+                    index2++;
+                }
+                line = int.Parse(stackTrace.Substring(digitIndex, index2 - digitIndex));
+
+                return pathString;
+            }
+            catch
+            {
+            }
+
+            return null;
         }
     }
 }
