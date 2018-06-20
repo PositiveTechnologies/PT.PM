@@ -65,6 +65,7 @@ namespace PT.PM.Common.Json
             else
             {
                 UstJsonConverterReader jsonConverterReader = CreateConverterReader(jsonFile);
+                jsonConverterReader.Logger = Logger;
 
                 jsonConverter = jsonConverterReader;
             }
