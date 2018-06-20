@@ -27,22 +27,25 @@ namespace PT.PM.Common.Exceptions
             try
             {
                 string stackTrace = ex.StackTrace;
-                var index1 = stackTrace.IndexOf(":\\");
-                var index2 = stackTrace.IndexOf(":", index1 + 1);
-                index1--;
-                pathString = stackTrace.Substring(index1, index2 - index1);
-                pathString = Path.GetFileName(pathString);
+                if (stackTrace != null)
+                {
+                    var index1 = stackTrace.IndexOf(":\\");
+                    var index2 = stackTrace.IndexOf(":", index1 + 1);
+                    index1--;
+                    pathString = stackTrace.Substring(index1, index2 - index1);
+                    pathString = Path.GetFileName(pathString);
 
-                while (index2 < stackTrace.Length && !char.IsDigit(stackTrace[index2]))
-                {
-                    index2++;
+                    while (index2 < stackTrace.Length && !char.IsDigit(stackTrace[index2]))
+                    {
+                        index2++;
+                    }
+                    int digitIndex = index2;
+                    while (index2 < stackTrace.Length && char.IsDigit(stackTrace[index2]))
+                    {
+                        index2++;
+                    }
+                    line = int.Parse(stackTrace.Substring(digitIndex, index2 - digitIndex));
                 }
-                int digitIndex = index2;
-                while (index2 < stackTrace.Length && char.IsDigit(stackTrace[index2]))
-                {
-                    index2++;
-                }
-                line = int.Parse(stackTrace.Substring(digitIndex, index2 - digitIndex));
             }
             catch
             {
