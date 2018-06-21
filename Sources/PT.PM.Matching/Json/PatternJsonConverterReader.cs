@@ -42,7 +42,7 @@ namespace PT.PM.Matching.Json
                     FilenameWildcard = (string)jObject[nameof(PatternRoot.FilenameWildcard)] ?? "",
                     Languages = resultLanguages,
                     DataFormat = (string)jObject[nameof(PatternRoot.DataFormat)] ?? "",
-                    CodeFile = jObject[nameof(PatternRoot.CodeFile)].ToObject<CodeFile>(serializer),
+                    CodeFile = jObject[nameof(PatternRoot.CodeFile)]?.ToObject<CodeFile>(serializer) ?? CodeFile.Empty,
                 };
 
                 target = root;
