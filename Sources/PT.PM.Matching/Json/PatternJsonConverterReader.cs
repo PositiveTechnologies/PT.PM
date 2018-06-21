@@ -63,11 +63,42 @@ namespace PT.PM.Matching.Json
                 }
 
                 ancestors.Push(patternUst);
-                serializer.Populate(jObject.CreateReader(), target);
+
+                if (patternUst is IRegexPattern regexPattern)
+                {
+                    if ((string)jObject[nameof(IRegexPattern.Regex)] is string regex)
+                    {
+                        regexPattern.RegexString = regex;
+                    }
+
+                    ReadTextSpan(jObject, patternUst);
+                }
+                else if (patternUst is PatternIntRangeLiteral patternIntRangeLiteral)
+                {
+                    if ((string)jObject[nameof(PatternIntLiteral.Value)] is string range)
+                    {
+                        patternIntRangeLiteral.ParseAndPopulate(range);
+                    }
+
+                    ReadTextSpan(jObject, patternUst);
+                }
+                else
+                {
+                    serializer.Populate(jObject.CreateReader(), target);
+                }
+
                 ancestors.Pop();
             }
 
             return target;
+        }
+
+        private static void ReadTextSpan(JObject jObject, PatternUst patternUst)
+        {
+            if ((string)jObject[nameof(PatternUst.TextSpan)] is string textSpan)
+            {
+                patternUst.TextSpan = TextUtils.ParseTextSpan(textSpan);
+            }
         }
     }
 }

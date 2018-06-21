@@ -36,10 +36,11 @@ namespace PT.PM.Matching.PatternsRepository
                         if (patternJsonSerializer == null)
                         {
                             patternJsonSerializer = new JsonSerializer();
-                            patternJsonSerializer.Converters.Add(new PatternJsonConverterReader(new CodeFile(patternsData)));
+                            var converters = patternJsonSerializer.Converters;
+                            converters.Add(new PatternJsonConverterReader(new CodeFile(patternsData)));
                             var textSpanJsonConverter = new TextSpanJsonConverter();
-                            patternJsonSerializer.Converters.Add(textSpanJsonConverter);
-                            patternJsonSerializer.Converters.Add(new CodeFileJsonConverter() { TextSpanJsonConverter = textSpanJsonConverter });
+                            converters.Add(textSpanJsonConverter);
+                            converters.Add(new CodeFileJsonConverter() { TextSpanJsonConverter = textSpanJsonConverter });
                         }
                         PatternRoot patternRoot = token.ToObject<PatternRoot>(patternJsonSerializer);
                         patternDto = patternConverter.ConvertBack(new[] { patternRoot })[0];

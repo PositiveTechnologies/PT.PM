@@ -37,7 +37,7 @@ namespace PT.PM.Common.Json
 
         protected JObject GetJObject(object value, JsonSerializer serializer)
         {
-            JObject jObject = new JObject();
+            var jObject = new JObject();
             Type type = value.GetType();
             jObject.Add(nameof(Ust.Kind), type.Name);
             PropertyInfo[] properties = type.GetReadWriteClassProperties();
