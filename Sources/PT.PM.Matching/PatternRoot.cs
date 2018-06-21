@@ -35,10 +35,7 @@ namespace PT.PM.Matching
 
         public HashSet<Language> Languages
         {
-            get
-            {
-                return languages;
-            }
+            get => languages;
             set
             {
                 Language notPatternLang = value.FirstOrDefault(lang => !lang.IsPattern);

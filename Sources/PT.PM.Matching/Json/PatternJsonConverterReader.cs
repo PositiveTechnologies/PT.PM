@@ -34,8 +34,7 @@ namespace PT.PM.Matching.Json
             object target = null;
             if (objectType == typeof(PatternRoot))
             {
-                var languagesArray = (JArray)jObject[nameof(PatternDto.Languages)];
-                HashSet<Language> resultLanguages = languagesArray.Values<string>().ParseLanguages(patternLanguages: true);
+                HashSet<Language> resultLanguages = ((string)jObject[nameof(PatternDto.Languages)])?.ParseLanguages(patternLanguages: true);
 
                 root = new PatternRoot
                 {

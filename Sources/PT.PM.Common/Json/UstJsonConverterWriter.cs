@@ -109,7 +109,11 @@ namespace PT.PM.Common.Json
                     else
                     {
                         object propVal = prop.GetValue(value, null);
-                        if (propVal != null)
+                        if (propVal is IEnumerable<Language> languages)
+                        {
+                            jToken = JToken.FromObject(string.Join(",", languages.Select(l => l.Key)), serializer);
+                        }
+                        else if (propVal != null)
                         {
                             jToken = JToken.FromObject(propVal, serializer);
                         }
