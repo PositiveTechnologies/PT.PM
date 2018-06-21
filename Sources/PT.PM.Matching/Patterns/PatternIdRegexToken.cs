@@ -4,17 +4,22 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdRegexToken : PatternUst<Token>
+    public class PatternIdRegexToken : PatternUst<Token>, IRegexPattern
     {
         private Regex regex;
         private Regex caseInsensitiveRegex;
 
-        public Regex IdRegex
+        public string Default => @"\w+";
+
+        public string RegexString
         {
-            get
-            {
-                return regex;
-            }
+            get => Regex.ToString();
+            set => Regex = new Regex(string.IsNullOrEmpty(value) ? Default : value, RegexOptions.Compiled);
+        }
+
+        public Regex Regex
+        {
+            get => regex;
             set
             {
                 regex = value;
@@ -24,26 +29,21 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternIdRegexToken()
-            : this(@"\w+")
+            : this("")
         {
         }
 
         public PatternIdRegexToken(string regexId, TextSpan textSpan = default(TextSpan))
-            : this(new Regex(string.IsNullOrEmpty(regexId) ? @"\w+" : regexId, RegexOptions.Compiled), textSpan)
-        {
-        }
-
-        public PatternIdRegexToken(Regex regex, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            IdRegex = regex;
+            RegexString = regexId;
         }
 
-        public bool Any => regex.ToString() == @"\w+";
+        public override bool Any => regex.ToString() == Default;
 
         public override string ToString()
         {
-            var regexString = regex.ToString();
+            string regexString = Any ? "" : regex.ToString();
             if (regex.Options.HasFlag(RegexOptions.IgnoreCase) && !regexString.StartsWith("(?i)"))
             {
                 regexString += "(?i)";

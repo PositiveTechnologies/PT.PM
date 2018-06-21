@@ -6,9 +6,17 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStringRegexLiteral : PatternUst<StringLiteral>
+    public class PatternStringRegexLiteral : PatternUst<StringLiteral>, IRegexPattern
     {
-        public Regex StringRegex { get; set; }
+        public string Default => @".*";
+
+        public string RegexString
+        {
+            get => Regex.ToString();
+            set => Regex = new Regex(string.IsNullOrEmpty(value) ? Default : value, RegexOptions.Compiled);
+        }
+
+        public Regex Regex { get; private set; }
 
         public PatternStringRegexLiteral()
             : this("")
@@ -16,21 +24,18 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternStringRegexLiteral(string regexString, TextSpan textSpan = default(TextSpan))
-            : this(new Regex(string.IsNullOrEmpty(regexString) ? ".*" : regexString, RegexOptions.Compiled), textSpan)
-        {
-        }
-
-        public PatternStringRegexLiteral(Regex regex, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            StringRegex = regex;
+            RegexString = regexString;
         }
 
-        public override string ToString() => $@"<""{StringRegex}"">";
+        public override bool Any => Regex.ToString() == Default;
+
+        public override string ToString() => $@"<""{(Any ? "" : Regex.ToString())}"">";
 
         public override MatchContext Match(StringLiteral stringLiteral, MatchContext context)
         {
-            IEnumerable<TextSpan> matches = StringRegex
+            IEnumerable<TextSpan> matches = Regex
                 .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength);
 
             if (stringLiteral.InitialTextSpans?.Any() ?? false)

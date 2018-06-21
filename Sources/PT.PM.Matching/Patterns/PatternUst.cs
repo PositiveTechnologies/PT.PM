@@ -17,6 +17,8 @@ namespace PT.PM.Matching.Patterns
 
         public int KindId => GetType().Name.GetHashCode();
 
+        public virtual bool Any => true;
+
         public PatternRoot Root { get; set; }
 
         public PatternUst Parent { get; set; }

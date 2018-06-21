@@ -74,16 +74,7 @@ namespace PT.PM.Matching
 
         public override PatternUst Visit(PatternIdRegexToken patternIdRegexToken)
         {
-            string regexString = patternIdRegexToken.IdRegex.ToString();
-
-            if (regexString.StartsWith("(?i)"))
-            {
-                regexString = regexString.Substring("(?i)".Length);
-                Regex newRegex = new Regex(
-                    string.IsNullOrEmpty(regexString) ? @"\w+" : regexString,
-                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                return new PatternIdRegexToken(newRegex, patternIdRegexToken.TextSpan);
-            }
+            string regexString = patternIdRegexToken.Regex.ToString();
 
             if (regexString.StartsWith("^") && regexString.EndsWith("$"))
             {
