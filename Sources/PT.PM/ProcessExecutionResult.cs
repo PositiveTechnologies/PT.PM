@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PT.PM.TestUtils
+namespace PT.PM
 {
     public class ProcessExecutionResult
     {
