@@ -66,6 +66,7 @@ namespace PT.PM
                     process.WaitForExit(timeout);
                 }
             }
+            result.ExitCode = process.ExitCode;
 
             return result;
         }
