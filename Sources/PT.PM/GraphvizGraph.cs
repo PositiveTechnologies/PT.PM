@@ -1,31 +1,30 @@
-﻿using PT.PM.Common;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
-using System.Reflection;
 
 namespace PT.PM
 {
     public class GraphvizGraph
     {
-        public static string GraphvizPath { get; set; }
+        private static bool? isDotInstalled = null;
+
+        public static bool IsDotInstalled
+        {
+            get
+            {
+                if (!isDotInstalled.HasValue)
+                {
+                    isDotInstalled = ProcessUtils.IsToolExists("dot", "-V");
+                }
+
+                return isDotInstalled.Value;
+            }
+        }
 
         public string DotGraph { get; set; }
 
         public bool SaveDot { get; set; } = false;
 
         public GraphvizOutputFormat OutputFormat { get; set; }
-
-        static GraphvizGraph()
-        {
-            string executingAssemblyPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            GraphvizPath = CommonUtils.IsRunningOnLinux
-                ? "dot"
-                : CommonUtils.ExistsOnPath("dot.exe")
-                ? "dot.exe"
-                : Path.Combine(executingAssemblyPath, "Graphviz", "dot.exe");
-        }
 
         public GraphvizGraph(string dotGraph)
         {
@@ -34,9 +33,9 @@ namespace PT.PM
 
         public void Render(string filePath)
         {
-            if (!CommonUtils.ExistsOnPath(GraphvizPath))
+            if (!IsDotInstalled)
             {
-                throw new Exception($"dot.exe has not been found at {GraphvizPath}");
+                throw new FileNotFoundException("dot tool (Graphviz) is not installed");
             }
 
             string ext = Path.GetExtension(filePath);
@@ -68,24 +67,19 @@ namespace PT.PM
 
             string dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
             File.WriteAllText(dotFilePath, DotGraph);
-            var process = Process.Start(new ProcessStartInfo
-            {
-                FileName = GraphvizPath,
-                Arguments = $"\"{dotFilePath}\" -T{outputFormat.ToString().ToLowerInvariant()} -o \"{imagePath}\"",
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            });
-            process.WaitForExit();
+
+            ProcessExecutionResult executionResult = ProcessUtils.SetupHiddenProcessAndStart("dot",
+                $"\"{dotFilePath}\" -T{outputFormat.ToString().ToLowerInvariant()} -o \"{imagePath}\"");
+
             if (!SaveDot)
             {
                 File.Delete(dotFilePath);
             }
-            var errors = process.StandardError.ReadToEnd();
-            if (process.ExitCode != 0 || errors != "")
+
+            if (executionResult.ExitCode != 0 || executionResult.Errors.Count > 0)
             {
-                throw new Exception($"Error while graph rendering. Errors: {errors}");
+                string errorsString = string.Join(Environment.NewLine, executionResult.Errors);
+                throw new Exception($"Error while graph rendering. Errors: {errorsString}");
             }
         }
     }
