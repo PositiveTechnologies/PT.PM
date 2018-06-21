@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace PT.PM.TestUtils
+namespace PT.PM
 {
     public class ProcessUtils
     {
