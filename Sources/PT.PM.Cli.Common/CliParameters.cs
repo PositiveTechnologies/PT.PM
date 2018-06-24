@@ -50,20 +50,20 @@ namespace PT.PM.Cli.Common
         [Option("log-debugs", HelpText = "Log debug messages")]
         public bool? IsLogDebugs { get; set; }
 
-        [Option("no-indents", HelpText = "Do not indent dump trees")]
-        public bool? NoIndentedDump { get; set; }
+        [Option("indented", HelpText = "Dump trees with indents")]
+        public bool? IndentedDump { get; set; }
 
         [Option("no-text-spans", HelpText = "Do not include text spans in dump trees")]
         public bool? NotIncludeTextSpansInDump { get; set; }
 
-        [Option("linear", HelpText = "Use linear format for text spans in dump")]
-        public bool? LinearTextSpans { get; set; } 
+        [Option("line-column", HelpText = "Use line-column format for text spans in dump")]
+        public bool? LineColumnTextSpans { get; set; } 
 
         [Option("dump-code", HelpText = "Dump content of source code file to dump")]
         public bool? IncludeCodeInDump { get; set; }
 
-        [Option("not-strict", HelpText = "Not strict json deserialization if set true")]
-        public bool? NotStrictJson { get; set; }
+        [Option("strict", HelpText = "Strict json deserialization if set true")]
+        public bool? StrictJson { get; set; }
 
         [Option("start-stage", HelpText = "Start stage to process (File or Ust)")]
         public string StartStage { get; set; }

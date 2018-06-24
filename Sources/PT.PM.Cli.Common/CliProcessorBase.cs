@@ -156,25 +156,25 @@ namespace PT.PM.Cli.Common
                 workflow.LogsDir = NormalizeLogsDir(parameters.LogsDir);
                 workflow.DumpDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            if (parameters.NoIndentedDump.HasValue)
+            if (parameters.IndentedDump.HasValue)
             {
-                workflow.IndentedDump = !parameters.NoIndentedDump.Value;
+                workflow.IndentedDump = parameters.IndentedDump.Value;
             }
             if (parameters.NotIncludeTextSpansInDump.HasValue)
             {
                 workflow.DumpWithTextSpans = !parameters.NotIncludeTextSpansInDump.Value;
             }
-            if (parameters.LinearTextSpans.HasValue)
+            if (parameters.LineColumnTextSpans.HasValue)
             {
-                workflow.LinearTextSpans = parameters.LinearTextSpans.Value;
+                workflow.LineColumnTextSpans = parameters.LineColumnTextSpans.Value;
             }
             if (parameters.IncludeCodeInDump.HasValue)
             {
                 workflow.IncludeCodeInDump = parameters.IncludeCodeInDump.Value;
             }
-            if (parameters.NotStrictJson.HasValue)
+            if (parameters.StrictJson.HasValue)
             {
-                workflow.NotStrictJson = parameters.NotStrictJson.Value;
+                workflow.StrictJson = parameters.StrictJson.Value;
             }
             if (parameters.IsDumpJsonOutput.HasValue)
             {

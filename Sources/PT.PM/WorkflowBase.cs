@@ -98,15 +98,15 @@ namespace PT.PM
 
         public GraphvizDirection RenderDirection { get; set; } = GraphvizDirection.TopBottom;
 
-        public bool IndentedDump { get; set; } = true;
+        public bool IndentedDump { get; set; } = false;
 
         public bool DumpWithTextSpans { get; set; } = true;
 
         public bool IncludeCodeInDump { get; set; } = false;
 
-        public bool LinearTextSpans { get; set; } = false;
+        public bool LineColumnTextSpans { get; set; } = false;
 
-        public bool NotStrictJson { get; set; } = false;
+        public bool StrictJson { get; set; } = false;
  
         public string LogsDir { get; set; } = "";
 
@@ -222,8 +222,8 @@ namespace PT.PM
                             var jsonUstSerializer = new UstJsonSerializer
                             {
                                 Logger = Logger,
-                                LinearTextSpans = LinearTextSpans,
-                                NotStrict = NotStrictJson,
+                                LineColumnTextSpans = LineColumnTextSpans,
+                                Strict = StrictJson,
                                 CodeFiles = workflowResult.SourceCodeFiles
                             };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
@@ -291,8 +291,8 @@ namespace PT.PM
                     Indented = IndentedDump,
                     IncludeTextSpans = DumpWithTextSpans,
                     IncludeCode = IncludeCodeInDump,
-                    LinearTextSpans = LinearTextSpans,
-                    NotStrict = NotStrictJson,
+                    LineColumnTextSpans = LineColumnTextSpans,
+                    Strict = StrictJson,
                     CodeFiles = sourceCodeFiles,
                     CurrectCodeFile = result.SourceCodeFile
                 };

@@ -626,8 +626,9 @@ namespace PT.PM.PatternEditor
             var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
             {
                 IsIncludeIntermediateResult = true,
+                IndentedDump = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
-                LinearTextSpans = IsLinearTextSpans,
+                LineColumnTextSpans = !IsLinearTextSpans,
                 IncludeCodeInDump = IsIncludeCode,
                 Logger = sourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,

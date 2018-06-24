@@ -78,9 +78,9 @@ namespace PT.PM.Tests
                 DumpDir = TestUtility.TestsOutputPath,
                 IncludeCodeInDump = includeCode,
                 IndentedDump = indented,
-                NotStrictJson = !strict,
+                StrictJson = strict,
                 DumpWithTextSpans = includeTextSpans,
-                LinearTextSpans = linearTextSpans,
+                LineColumnTextSpans = !linearTextSpans,
                 Stage = Stage.SimplifiedUst
             };
             WorkflowResult result = workflow.Process();
@@ -138,9 +138,9 @@ namespace PT.PM.Tests
             {
                 StartStage = Stage.Ust,
                 IndentedDump = indented,
-                NotStrictJson = !strict,
+                StrictJson = strict,
                 DumpWithTextSpans = includeTextSpans,
-                LinearTextSpans = linearTextSpans,
+                LineColumnTextSpans = !linearTextSpans,
                 Logger = logger
             };
             WorkflowResult newResult = newWorkflow.Process();

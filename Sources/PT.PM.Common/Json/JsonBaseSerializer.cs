@@ -18,9 +18,9 @@ namespace PT.PM.Common.Json
 
         public bool IncludeCode { get; set; } = true;
 
-        public bool LinearTextSpans { get; set; } = false;
+        public bool LineColumnTextSpans { get; set; } = false;
 
-        public bool NotStrict { get; set; } = false;
+        public bool Strict { get; set; } = false;
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
@@ -73,7 +73,7 @@ namespace PT.PM.Common.Json
             var textSpanJsonConverter = new TextSpanJsonConverter
             {
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
-                IsLinear = LinearTextSpans,
+                IsLineColumn = LineColumnTextSpans,
                 JsonFile = JsonFile,
                 Logger = Logger,
                 CodeFiles = CodeFiles,
@@ -110,8 +110,7 @@ namespace PT.PM.Common.Json
 
         protected virtual MissingMemberHandling SetMissingMemberHandling()
         {
-            return NotStrict ? MissingMemberHandling.Ignore
-                             : MissingMemberHandling.Error;
+            return Strict ? MissingMemberHandling.Error : MissingMemberHandling.Ignore;
         }
     }
 }
