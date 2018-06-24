@@ -1,11 +1,14 @@
-﻿using System;
+﻿using PT.PM.Common;
+using System;
 using System.IO;
 
 namespace PT.PM
 {
-    public class GraphvizGraph
+    public class GraphvizGraph : ILoggable
     {
         private static bool? isDotInstalled = null;
+
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public static bool IsDotInstalled
         {
@@ -13,7 +16,15 @@ namespace PT.PM
             {
                 if (!isDotInstalled.HasValue)
                 {
-                    isDotInstalled = ProcessUtils.IsToolExists("dot", "-V");
+                    try
+                    {
+                        new Processor("dot", "-V", 1000).Start();
+                        isDotInstalled = true;
+                    }
+                    catch
+                    {
+                        isDotInstalled = false;
+                    }
                 }
 
                 return isDotInstalled.Value;
@@ -35,7 +46,8 @@ namespace PT.PM
         {
             if (!IsDotInstalled)
             {
-                throw new FileNotFoundException("dot tool (Graphviz) is not installed");
+                Logger.LogError(new FileNotFoundException("dot tool (Graphviz) is not installed"));
+                return;
             }
 
             string ext = Path.GetExtension(filePath);
@@ -68,18 +80,24 @@ namespace PT.PM
             string dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
             File.WriteAllText(dotFilePath, DotGraph);
 
-            ProcessExecutionResult executionResult = ProcessUtils.SetupHiddenProcessAndStart("dot",
-                $"\"{dotFilePath}\" -T{outputFormat.ToString().ToLowerInvariant()} -o \"{imagePath}\"");
+            var processor = new Processor("dot")
+            {
+                Arguments = $"\"{dotFilePath}\" -T{outputFormat.ToString().ToLowerInvariant()} -o \"{imagePath}\""
+            };
+            processor.ErrorDataReceived += (sender, e) =>
+            {
+                Logger.LogError(new Exception($"Error while graph rendering: {e}"));
+            };
+            ProcessExecutionResult executionResult = processor.Start();
 
             if (!SaveDot)
             {
                 File.Delete(dotFilePath);
             }
 
-            if (executionResult.ExitCode != 0 || executionResult.Errors.Count > 0)
+            if (executionResult.ExitCode != 0)
             {
-                string errorsString = string.Join(Environment.NewLine, executionResult.Errors);
-                throw new Exception($"Error while graph rendering. Errors: {errorsString}");
+                Logger.LogError(new Exception($"Graph rendering completed with error code {executionResult.ExitCode}"));
             }
         }
     }

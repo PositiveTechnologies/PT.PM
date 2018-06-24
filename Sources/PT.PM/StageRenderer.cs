@@ -49,7 +49,8 @@ namespace PT.PM
                         + "ust";
                     var graph = new GraphvizGraph(dotGraph)
                     {
-                        OutputFormat = RenderFormat
+                        OutputFormat = RenderFormat,
+                        Logger = Logger
                     };
                     graph.Render(Path.Combine(DumpDir, fileName));
                 }

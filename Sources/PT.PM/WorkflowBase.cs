@@ -42,7 +42,7 @@ namespace PT.PM
 
         public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
 
-        public bool IsDumpJsonOutput { get; set; } = false; 
+        public bool IsDumpJsonOutput { get; set; } = false;
 
         public bool IsIncludeIntermediateResult { get; set; }
 

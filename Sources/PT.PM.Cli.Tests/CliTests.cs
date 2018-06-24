@@ -41,7 +41,11 @@ namespace PT.PM.Cli.Tests
                 {
                     Directory.Delete(logPath, true);
                 }
-                var result = ProcessUtils.SetupHiddenProcessAndStart("dotnet", $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns \"{patterns}\" --logs-dir \"{logPath}\"");
+                var processor = new Processor("dotnet")
+                {
+                    Arguments = $"{TestUtility.PtPmExePath} --stage {Stage.Pattern} --patterns \"{patterns}\" --logs-dir \"{logPath}\""
+                };
+                processor.Start();
                 var logFiles = Directory.GetFiles(logPath, "*.*");
                 Assert.Greater(logFiles.Length, 0);
             }
