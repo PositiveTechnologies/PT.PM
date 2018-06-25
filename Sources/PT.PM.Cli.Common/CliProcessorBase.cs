@@ -156,6 +156,10 @@ namespace PT.PM.Cli.Common
                 workflow.LogsDir = NormalizeLogsDir(parameters.LogsDir);
                 workflow.DumpDir = NormalizeLogsDir(parameters.LogsDir);
             }
+            if (parameters.TempDir != null)
+            {
+                workflow.TempDir = NormalizeLogsDir(parameters.TempDir);
+            }
             if (parameters.IndentedDump.HasValue)
             {
                 workflow.IndentedDump = parameters.IndentedDump.Value;
