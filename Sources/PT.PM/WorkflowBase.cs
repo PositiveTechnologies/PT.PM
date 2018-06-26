@@ -361,7 +361,7 @@ namespace PT.PM
                 IncludeTextSpans = DumpWithTextSpans,
                 ExcludeDefaults = true,
                 Indented = IndentedDump,
-                LinearTextSpans = LinearTextSpans
+                LineColumnTextSpans = LineColumnTextSpans
             };
             jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>(patterns.Select(root => root.CodeFile));
 
