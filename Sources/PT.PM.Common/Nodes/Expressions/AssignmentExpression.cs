@@ -29,7 +29,7 @@
                 ? Left == null
                 ? " = "
                 : Left.ToString()
-                : $"{Left} = {Right}";
+                : $"{Left} {BinaryExpression?.Operator}= {Right}";
         }
     }
 }

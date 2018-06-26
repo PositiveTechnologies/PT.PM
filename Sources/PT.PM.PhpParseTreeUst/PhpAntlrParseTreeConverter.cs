@@ -1152,20 +1152,16 @@ namespace PT.PM.PhpParseTreeUst
                         binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[binaryOperatorText.Remove(binaryOperatorText.Length - 1)];
                     }
 
+                    var assignmentExpression = new AssignmentExpression(left, right, context.GetTextSpan());
+
                     if (binaryOperator != null)
                     {
-                        result = new AssignmentExpression(left, right, context.GetTextSpan())
-                        {
-                            BinaryExpression = new BinaryOperatorExpression(
-                                left,
-                                new BinaryOperatorLiteral((BinaryOperator)binaryOperator),
-                                right, context.GetTextSpan())
-                        };
+                        assignmentExpression.BinaryExpression =  new BinaryOperatorExpression(
+                            left,
+                            new BinaryOperatorLiteral((BinaryOperator)binaryOperator),
+                            right, context.GetTextSpan());
                     }
-                    else
-                    {
-                        result = new AssignmentExpression(left, right, context.GetTextSpan());
-                    }
+                    result = assignmentExpression;
                 }
             }
             else
