@@ -108,6 +108,15 @@ namespace PT.PM.Common.Nodes
                         }
                         else
                         {
+                            if (child is AssignmentExpression assigmentExpression
+                             && assigmentExpression.BinaryExpression != null)
+                            {
+                                var binary = assigmentExpression.BinaryExpression;
+                                FillAscendantsLocal(binary, root);
+                                binary.Parent = child;
+                                binary.Root = root;
+                            }
+
                             FillAscendantsLocal(child, root);
                         }
                     }
