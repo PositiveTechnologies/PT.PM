@@ -31,6 +31,7 @@ namespace PT.PM
         {
             LogsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM");
             DumpDir = LogsDir;
+            TempDir = Path.Combine(Path.GetTempPath(), "PT.PM");
             SourceCodeRepository = sourceCodeRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
             IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();
