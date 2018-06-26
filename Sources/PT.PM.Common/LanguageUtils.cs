@@ -110,13 +110,18 @@ namespace PT.PM.Common
         public static HashSet<Language> ParseLanguages(this string languages, bool allByDefault = true,
             bool patternLanguages = false)
         {
+            if (languages == null)
+            {
+                return new HashSet<Language>(!patternLanguages ? Languages.Values : PatternLanguages.Values);
+            }
+
             return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ParseLanguages(allByDefault, patternLanguages);
         }
 
         public static HashSet<Language> ParseLanguages(this IEnumerable<string> languageStrings, bool allByDefault = true,
             bool patternLanguages = false)
         {
-            string[] languageStringsArray = languageStrings.ToArray() ?? ArrayUtils<string>.EmptyArray;
+            string[] languageStringsArray = languageStrings?.ToArray() ?? ArrayUtils<string>.EmptyArray;
             var languages = !patternLanguages ? Languages.Values : PatternLanguages.Values;
             HashSet<Language> negationLangs = new HashSet<Language>(languages);
 

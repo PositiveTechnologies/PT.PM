@@ -97,7 +97,14 @@ namespace PT.PM.Common.Json
                 }
             }
 
-            serializer.Populate(jObject.CreateReader(), ust);
+            try
+            {
+                serializer.Populate(jObject.CreateReader(), ust);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(JsonFile, jObject, ex);
+            }
 
             ExtraProcess(ust, jObject);
 

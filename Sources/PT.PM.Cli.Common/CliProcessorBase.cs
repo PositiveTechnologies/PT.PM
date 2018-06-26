@@ -192,6 +192,10 @@ namespace PT.PM.Cli.Common
             {
                 workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));
             }
+            if (parameters.DumpPatterns.HasValue)
+            {
+                workflow.IsDumpPatterns = parameters.DumpPatterns.Value;
+            }
             if (parameters.RenderStages?.Count() > 0)
             {
                 workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));

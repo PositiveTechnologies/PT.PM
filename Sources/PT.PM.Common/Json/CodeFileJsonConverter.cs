@@ -21,6 +21,11 @@ namespace PT.PM.Common.Json
 
         public override void WriteJson(JsonWriter writer, CodeFile sourceCodeFile, JsonSerializer serializer)
         {
+            if (ExcludeDefaults && sourceCodeFile.IsEmpty)
+            {
+                return;
+            }
+
             JObject jObject = new JObject();
 
             if (!ExcludeDefaults || !string.IsNullOrEmpty(sourceCodeFile.RootPath))
