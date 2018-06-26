@@ -1138,7 +1138,7 @@ namespace PT.PM.PhpParseTreeUst
                 }
                 else
                 {
-                    BinaryOperator binaryOperator;
+                    BinaryOperator? binaryOperator;
                     if (binaryOperatorText == ".=")
                     {
                         binaryOperator = BinaryOperator.Plus;
@@ -1152,13 +1152,15 @@ namespace PT.PM.PhpParseTreeUst
                         binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[binaryOperatorText.Remove(binaryOperatorText.Length - 1)];
                     }
 
-                    if (binaryOperator != BinaryOperator.None)
+                    if (binaryOperator != null)
                     {
-                        result = new AssignmentExpression(
-                            left,
-                            new BinaryOperatorExpression(left, new BinaryOperatorLiteral(binaryOperator), right, context.GetTextSpan()),
-                            context.GetTextSpan()
-                            );
+                        result = new AssignmentExpression(left, right, context.GetTextSpan())
+                        {
+                            BinaryExpression = new BinaryOperatorExpression(
+                                left,
+                                new BinaryOperatorLiteral((BinaryOperator)binaryOperator),
+                                right, context.GetTextSpan())
+                        };
                     }
                     else
                     {

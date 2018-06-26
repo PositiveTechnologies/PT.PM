@@ -6,6 +6,8 @@
 
         public Expression Right { get; set; }
 
+        public BinaryOperatorExpression BinaryExpression { get; set; }
+
         public AssignmentExpression(Expression left, Expression right, TextSpan textSpan)
             : base(textSpan)
         {

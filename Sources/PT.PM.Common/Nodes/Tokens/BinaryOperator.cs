@@ -5,7 +5,6 @@
     /// </summary>
     public enum BinaryOperator
     {
-        None,             // NoSuchOperator
         Plus,             // +
         Minus,            // -
         Multiply,         // *
