@@ -181,6 +181,7 @@ namespace PT.PM.Common
         public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
         {
             CodeFile result = null;
+
             if (fileName == null)
             {
                 result = currentCodeFile;
@@ -190,7 +191,8 @@ namespace PT.PM.Common
                 if (codeFiles != null)
                     lock (codeFiles)
                     {
-                        result = codeFiles?.FirstOrDefault(codeFile => codeFile.Equals(fileName) || codeFile.RelativeName.Equals(fileName));
+                        result = codeFiles.FirstOrDefault(codeFile =>
+                            codeFile.FullName == fileName || codeFile.RelativeName == fileName);
                     }
 
                 if (result == null)
@@ -202,7 +204,7 @@ namespace PT.PM.Common
                             fileName = Path.Combine(currentCodeFile.RootPath, fileName);
                             if (!File.Exists(fileName))
                             {
-                                throw new FileNotFoundException($"File {fileName} is not found.", fileName);
+                                throw new FileNotFoundException($"File {fileName} not found.", fileName);
                             }
                         }
                     }
@@ -221,6 +223,7 @@ namespace PT.PM.Common
                         }
                 }
             }
+
             return result;
         }
 
