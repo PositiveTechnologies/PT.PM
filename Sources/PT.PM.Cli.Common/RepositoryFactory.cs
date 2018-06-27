@@ -72,7 +72,7 @@ namespace PT.PM.Cli.Common
         {
             IPatternsRepository patternsRepository;
 
-            if (string.IsNullOrEmpty(patternsString))
+            if (string.IsNullOrEmpty(patternsString) || patternsString == "default")
             {
                 patternsRepository = new DefaultPatternRepository();
             }
