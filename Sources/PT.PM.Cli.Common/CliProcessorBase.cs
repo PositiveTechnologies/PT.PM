@@ -220,7 +220,7 @@ namespace PT.PM.Cli.Common
 
         protected virtual IPatternsRepository CreatePatternsRepository(TParameters parameters)
         {
-            return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, Logger);
+            return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, parameters.PatternIds, Logger);
         }
 
         protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> CreateWorkflow(TParameters parameters);
