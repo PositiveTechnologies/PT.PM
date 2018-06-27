@@ -30,6 +30,8 @@ namespace PT.PM.Common.Json
 
         public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
+        public bool IgnoreExtraProcess { get; set; } = false;
+
         public virtual T Deserialize(CodeFile jsonFile)
         {
             JsonFile = jsonFile;
@@ -66,6 +68,7 @@ namespace PT.PM.Common.Json
             {
                 UstJsonConverterReader jsonConverterReader = CreateConverterReader(jsonFile);
                 jsonConverterReader.Logger = Logger;
+                jsonConverterReader.IgnoreExtraProcess = IgnoreExtraProcess;
 
                 jsonConverter = jsonConverterReader;
             }
