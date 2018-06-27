@@ -117,7 +117,7 @@ namespace PT.PM.Cli.Common
 
             if (parameters.PatternIds?.Count() > 0)
             {
-                workflow.PatternsRepository.Identifiers = parameters.PatternIds;
+                workflow.PatternsRepository.Identifiers = parameters.PatternIds.ToList();
             }
 
             workflow.Logger = Logger;

@@ -12,7 +12,7 @@ namespace PT.PM.Matching.PatternsRepository
 
         protected List<PatternDto> PatternDtos { get; set; }
 
-        public IEnumerable<string> Identifiers { get; set; } = Enumerable.Empty<string>();
+        public List<string> Identifiers { get; set; } = new List<string>();
 
         public MemoryPatternsRepository()
         {
@@ -25,7 +25,7 @@ namespace PT.PM.Matching.PatternsRepository
                 PatternDtos = InitPatterns();
             }
 
-            if (Identifiers.Count() > 0)
+            if (Identifiers?.Count > 0)
             {
                 PatternDtos = PatternDtos.Where(dto => Identifiers.Contains(dto.Key)).ToList();
             }

@@ -14,9 +14,9 @@ namespace PT.PM.Matching.PatternsRepository
             set => new InvalidOperationException($"Unable to change {nameof(DummyPatternsRepository)}");
         }
 
-        public IEnumerable<string> Identifiers
+        public List<string> Identifiers
         {
-            get => ArrayUtils<string>.EmptyArray;
+            get => new List<string>();
             set => new InvalidOperationException($"Unable to change {nameof(DummyPatternsRepository)}");
         }
 
