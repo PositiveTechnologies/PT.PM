@@ -1,4 +1,6 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿using PT.PM.Common.Nodes.Tokens.Literals;
+
+namespace PT.PM.Common.Nodes.Expressions
 {
     public class AssignmentExpression : Expression
     {
@@ -6,7 +8,7 @@
 
         public Expression Right { get; set; }
 
-        public BinaryOperatorExpression BinaryExpression { get; set; }
+        public BinaryOperatorLiteral BinaryOperator { get; set; }
 
         public AssignmentExpression(Expression left, Expression right, TextSpan textSpan)
             : base(textSpan)
@@ -21,13 +23,13 @@
 
         public override Ust[] GetChildren()
         {
-            if(BinaryExpression != null)
+            if (BinaryOperator != null)
             {
-                return new Ust[] { Left, Right, BinaryExpression };
+                return new Ust[] { Left, Right, BinaryOperator };
             }
             return new Ust[] { Left, Right };
         }
-        
+
 
         public override Expression[] GetArgs() => new Expression[] { Left, Right };
 
@@ -37,7 +39,7 @@
                 ? Left == null
                 ? " = "
                 : Left.ToString()
-                : $"{Left} {BinaryExpression?.Operator}= {Right}";
+                : $"{Left} {BinaryOperator}= {Right}";
         }
     }
 }
