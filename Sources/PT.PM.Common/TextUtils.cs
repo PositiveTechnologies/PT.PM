@@ -197,32 +197,50 @@ namespace PT.PM.Common
 
                 if (result == null)
                 {
-                    if (!File.Exists(fileName))
+                    if (codeFiles != null)
                     {
-                        if (currentCodeFile != null)
+                        lock (codeFiles)
                         {
-                            fileName = Path.Combine(currentCodeFile.RootPath, fileName);
-                            if (!File.Exists(fileName))
+                            result = codeFiles.FirstOrDefault(codeFile =>
+                                codeFile.FullName == fileName || codeFile.RelativeName == fileName);
+
+                            if (result == null)
                             {
-                                throw new FileNotFoundException($"File {fileName} not found.", fileName);
+                                result = ReadFile(fileName, currentCodeFile);
+                                codeFiles.Add(result);
                             }
                         }
                     }
-
-                    var code = File.ReadAllText(fileName);
-                    result = new CodeFile(code)
+                    else
                     {
-                        RootPath = Path.GetDirectoryName(fileName),
-                        Name = Path.GetFileName(fileName)
-                    };
-
-                    if (codeFiles != null)
-                        lock (codeFiles)
-                        {
-                            codeFiles.Add(result);
-                        }
+                        result = ReadFile(fileName, currentCodeFile);
+                    }
                 }
             }
+
+            return result;
+        }
+
+        private static CodeFile ReadFile(string fileName, CodeFile currentCodeFile)
+        {
+            if (!File.Exists(fileName))
+            {
+                if (currentCodeFile != null)
+                {
+                    fileName = Path.Combine(currentCodeFile.RootPath, fileName);
+                    if (!File.Exists(fileName))
+                    {
+                        throw new FileNotFoundException($"File {fileName} not found.", fileName);
+                    }
+                }
+            }
+
+            var code = File.ReadAllText(fileName);
+            var result = new CodeFile(code)
+            {
+                RootPath = Path.GetDirectoryName(fileName),
+                Name = Path.GetFileName(fileName)
+            };
 
             return result;
         }
