@@ -126,7 +126,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         string text = child1Terminal.GetText();
                         var left = (Expression)Visit(context.expression(0));
                         JavaParser.ExpressionContext expr1 = context.expression(1);
-
                         if (expr1 != null)
                         {
                             var right = (Expression)Visit(expr1);
@@ -137,18 +136,24 @@ namespace PT.PM.JavaParseTreeUst.Converter
                             }
                             else if (BinaryOperatorLiteral.TextBinaryAssignmentOperator.Contains(text))
                             {
-                                BinaryOperator op;
+                                BinaryOperator? op;
                                 if (text == ">>>=")
                                 {
                                     op = BinaryOperator.ShiftRight; // TODO: fix shift operator.
                                 }
                                 else
                                 {
-                                    op = BinaryOperatorLiteral.TextBinaryOperator[text.Remove(text.Length - 1)];
+                                    op = GetBinaryOperatorFromCombined(context.GetChild(1).GetText());                                    
                                 }
 
                                 // TODO: implement assignment + operator
                                 result = new AssignmentExpression(left, right, context.GetTextSpan());
+                                if (op != null)
+                                {
+                                    ((AssignmentExpression)result).BinaryOperator = new BinaryOperatorLiteral(
+                                        (BinaryOperator)op,
+                                        child1Terminal.GetTextSpan());
+                                }
                             }
                             else
                             {
@@ -175,7 +180,6 @@ namespace PT.PM.JavaParseTreeUst.Converter
                             result = new UnaryOperatorExpression(opLiteral, left, textSpan);
                             return result;
                         }
-
                         return result;
                 }
             }
@@ -468,7 +472,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         }
 
         public Ust VisitFloatLiteral(JavaParser.FloatLiteralContext context)
-       {
+        {
             string literalText = context.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
             TextSpan textSpan = context.GetTextSpan();
 
