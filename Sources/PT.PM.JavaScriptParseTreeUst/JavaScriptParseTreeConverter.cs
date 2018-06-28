@@ -201,7 +201,14 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             var left = (Expression)Visit(context.singleExpression(0));
             var right = (Expression)Visit(context.singleExpression(1));
-            return new AssignmentExpression(left, right, context.GetTextSpan());
+
+            var operatorText = context.GetChild(1).GetText();
+            var binaryOperator = GetBinaryOperatorFromCombined(operatorText);
+
+            var assignment = new AssignmentExpression(left, right, context.GetTextSpan());
+            assignment.BinaryOperator = new BinaryOperatorLiteral(binaryOperator);
+
+            return assignment;
         }
 
         public Ust VisitVoidExpression([NotNull] JavaScriptParser.VoidExpressionContext context) { return VisitChildren(context); }
