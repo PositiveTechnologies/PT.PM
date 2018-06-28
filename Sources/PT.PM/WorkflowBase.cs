@@ -20,10 +20,11 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> : ILoggable
+    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
+        where TRenderStage : struct, IConvertible
     {
         protected ILogger logger = DummyLogger.Instance;
         protected Task filesCountTask;
@@ -91,7 +92,7 @@ namespace PT.PM
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
-        public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
+        public HashSet<TRenderStage> RenderStages { get; set; } = new HashSet<TRenderStage>();
 
         public HashSet<TStage> DumpStages { get; set; } = new HashSet<TStage>();
 

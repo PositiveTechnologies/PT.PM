@@ -9,9 +9,10 @@ using System.Threading;
 
 namespace PT.PM
 {
-    public abstract class WorkflowResultBase<TStage, TPattern, TMatchResult>
+    public abstract class WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TStage : struct, IConvertible
         where TMatchResult : MatchResultBase<TPattern>
+        where TRenderStage : struct, IConvertible
     {
         private HashSet<CodeFile> sourceCodeFiles = new HashSet<CodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
@@ -49,7 +50,7 @@ namespace PT.PM
 
         public IReadOnlyList<Language> BaseLanguages { get; set; }
 
-        public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
+        public HashSet<TRenderStage> RenderStages { get; set; } = new HashSet<TRenderStage>();
 
         public int ThreadCount { get; private set; }
 

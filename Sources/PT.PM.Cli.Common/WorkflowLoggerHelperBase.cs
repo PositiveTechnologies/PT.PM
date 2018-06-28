@@ -6,10 +6,11 @@ using static PT.PM.Cli.Common.WorkflowLoggerHelper;
 
 namespace PT.PM.Cli.Common
 {
-    public abstract class WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchResult> : ILoggable
+    public abstract class WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
+        where TRenderStage : struct, IConvertible
     {
         public ILogger Logger { get; set; }
 
