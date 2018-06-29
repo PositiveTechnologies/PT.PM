@@ -25,7 +25,7 @@ namespace PT.PM.Common.Nodes.Expressions
         {
             if (BinaryOperator != null)
             {
-                return new Ust[] { Left, Right, BinaryOperator };
+                return new Ust[] { Left, BinaryOperator, Right};
             }
             return new Ust[] { Left, Right };
         }

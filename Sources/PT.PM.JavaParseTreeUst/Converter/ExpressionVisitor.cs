@@ -143,17 +143,15 @@ namespace PT.PM.JavaParseTreeUst.Converter
                                 }
                                 else
                                 {
-                                    op = GetBinaryOperatorFromCombined(context.GetChild(1).GetText());                                    
+                                    op = null;
                                 }
 
-                                // TODO: implement assignment + operator
-                                result = new AssignmentExpression(left, right, context.GetTextSpan());
-                                if (op != null)
+                                result = new AssignmentExpression(left, right, context.GetTextSpan())
                                 {
-                                    ((AssignmentExpression)result).BinaryOperator = new BinaryOperatorLiteral(
-                                        (BinaryOperator)op,
-                                        child1Terminal.GetTextSpan());
-                                }
+                                    BinaryOperator = op.HasValue
+                                    ? new BinaryOperatorLiteral((BinaryOperator)op, child1Terminal.GetTextSpan())
+                                    : ConvertToBinaryOperatorLiteral(text, child1Terminal.GetTextSpan())
+                                };
                             }
                             else
                             {

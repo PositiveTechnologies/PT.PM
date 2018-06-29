@@ -203,10 +203,11 @@ namespace PT.PM.JavaScriptParseTreeUst
             var right = (Expression)Visit(context.singleExpression(1));
 
             var operatorText = context.GetChild(1).GetText();
-            var binaryOperator = GetBinaryOperatorFromCombined(operatorText);
 
-            var assignment = new AssignmentExpression(left, right, context.GetTextSpan());
-            assignment.BinaryOperator = new BinaryOperatorLiteral(binaryOperator);
+            var assignment = new AssignmentExpression(left, right, context.GetTextSpan())
+            {
+                BinaryOperator = ConvertToBinaryOperatorLiteral(operatorText, context.assignmentOperator().GetTextSpan())
+            };
 
             return assignment;
         }

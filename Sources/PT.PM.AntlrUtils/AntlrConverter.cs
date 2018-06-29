@@ -263,10 +263,11 @@ namespace PT.PM.AntlrUtils
             return CreateBinaryOperatorExpression(left, operatorTerminal.GetText(), operatorTerminal.GetTextSpan(),  right);
         }
 
-        protected virtual BinaryOperator GetBinaryOperatorFromCombined(string combinedOperatorText)
+        protected virtual BinaryOperatorLiteral ConvertToBinaryOperatorLiteral(string assignExprOpText, TextSpan assignOpTextSpan)
         {
-            var operatorText = combinedOperatorText.TakeWhile(x => !x.Equals('=')).ToArray();
-            return CreateBinaryOperator(new string(operatorText));
+            var operatorText = assignExprOpText.Remove(assignExprOpText.Length - 1);
+            BinaryOperator op = CreateBinaryOperator(operatorText);
+            return new BinaryOperatorLiteral(op, assignOpTextSpan);
         }
 
         protected virtual BinaryOperator CreateBinaryOperator(string binaryOperatorText)
