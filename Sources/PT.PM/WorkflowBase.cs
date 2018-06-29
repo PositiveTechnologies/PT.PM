@@ -8,6 +8,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
+using PT.PM.Matching.Json;
 using PT.PM.Matching.PatternsRepository;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,11 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> : ILoggable
+    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
+        where TRenderStage : struct, IConvertible
     {
         protected ILogger logger = DummyLogger.Instance;
         protected Task filesCountTask;
@@ -90,9 +92,11 @@ namespace PT.PM
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
 
-        public HashSet<TStage> RenderStages { get; set; } = new HashSet<TStage>();
+        public HashSet<TRenderStage> RenderStages { get; set; } = new HashSet<TRenderStage>();
 
         public HashSet<TStage> DumpStages { get; set; } = new HashSet<TStage>();
+
+        public bool IsDumpPatterns { get; set; } = false;
 
         public GraphvizOutputFormat RenderFormat { get; set; } = GraphvizOutputFormat.Png;
 
@@ -309,7 +313,8 @@ namespace PT.PM
         {
             if (IsDumpJsonOutput)
             {
-                string json = JsonConvert.SerializeObject(workflow, Formatting.Indented, LanguageJsonConverter.Instance);
+                string json = JsonConvert.SerializeObject(workflow,
+                    IndentedDump ? Formatting.Indented : Formatting.None, LanguageJsonConverter.Instance);
                 Directory.CreateDirectory(DumpDir);
                 File.WriteAllText(Path.Combine(DumpDir, "output.json"), json);
             }
@@ -329,6 +334,9 @@ namespace PT.PM
                     workflowResult.AddResultEntity(patterns);
                     workflowResult.AddProcessedPatternsCount(patterns.Count);
                 }
+
+                DumpPatterns(patterns);
+
                 return patterns;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
@@ -337,6 +345,30 @@ namespace PT.PM
                     new CodeFile("") { IsPattern = true }, ex, $"Patterns can not be deserialized: {ex.FormatExceptionMessage()}"));
                 return new List<TPattern>(0);
             }
+        }
+
+        protected virtual void DumpPatterns(List<TPattern> patterns)
+        {
+            if (IsDumpPatterns)
+            {
+                DumpPatterns(patterns.Where(pattern => pattern is PatternRoot).Cast<PatternRoot>().ToList());
+            }
+        }
+
+        protected void DumpPatterns(List<PatternRoot> patterns)
+        {
+            var jsonPatternSerializer = new JsonPatternSerializer
+            {
+                IncludeTextSpans = DumpWithTextSpans,
+                ExcludeDefaults = true,
+                Indented = IndentedDump,
+                LineColumnTextSpans = LineColumnTextSpans
+            };
+            jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>(patterns.Select(root => root.CodeFile));
+
+            string json = jsonPatternSerializer.Serialize(patterns);
+            Directory.CreateDirectory(DumpDir);
+            File.WriteAllText(Path.Combine(DumpDir, "patterns.json"), json);
         }
 
         protected static HashSet<Language> GetBaseLanguages(HashSet<Language> analyzedLanguages)

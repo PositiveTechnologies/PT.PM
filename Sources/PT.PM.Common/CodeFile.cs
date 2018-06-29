@@ -13,7 +13,7 @@ namespace PT.PM.Common
 
         public const int StartColumn = 1;
 
-        public static CodeFile Empty = new CodeFile("");
+        public static CodeFile Empty => new CodeFile("");
 
         public string RootPath { get; set; } = "";
 

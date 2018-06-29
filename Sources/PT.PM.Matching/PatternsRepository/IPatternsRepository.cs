@@ -7,7 +7,7 @@ namespace PT.PM.Matching.PatternsRepository
     {
         string Path { get; set; }
 
-        IEnumerable<string> Identifiers { get; set; }
+        List<string> Identifiers { get; set; }
 
         IEnumerable<PatternDto> GetAll();
 

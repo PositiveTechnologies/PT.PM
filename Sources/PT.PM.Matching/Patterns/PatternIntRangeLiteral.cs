@@ -1,13 +1,14 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System;
 
 namespace PT.PM.Matching.Patterns
 {
     public class PatternIntRangeLiteral : PatternUst<IntLiteral>
     {
-        public long MinValue { get; set; }
+        public long MinValue { get; set; } = long.MinValue;
 
-        public long MaxValue { get; set; }
+        public long MaxValue { get; set; } = long.MaxValue;
 
         public PatternIntRangeLiteral()
             : this(long.MinValue, long.MaxValue)
@@ -26,16 +27,86 @@ namespace PT.PM.Matching.Patterns
             MaxValue = maxValue;
         }
 
-        public override string ToString()
+        public override bool Any => MinValue == long.MinValue && MaxValue == long.MaxValue;
+
+        public void ParseAndPopulate(string range)
         {
-            if (MinValue == MaxValue)
+            if (string.IsNullOrEmpty(range))
             {
-                return MinValue.ToString();
+                MinValue = long.MinValue;
+                MaxValue = long.MaxValue;
+                return;
             }
 
-            string lowerBound = MinValue == long.MinValue ? "" : MinValue.ToString();
-            string upperBound = MaxValue == long.MaxValue ? "" : MaxValue.ToString();
-            return $"<({lowerBound}..{upperBound})>";
+            if (range.StartsWith("<(") && range.EndsWith(")>"))
+            {
+                range = range.Substring(2, range.Length - 4);
+            }
+
+            int index = range.IndexOf("..");
+
+            if (index != -1)
+            {
+                string value = range.Remove(index);
+                long minValue;
+
+                if (value == "")
+                {
+                    minValue = long.MinValue;
+                }
+                else if (!long.TryParse(value, out minValue))
+                {
+                    throw new FormatException($"Invalid or too big value {value} while {nameof(PatternIntRangeLiteral)} parsing.");
+                }
+                MinValue = minValue;
+
+                value = range.Substring(index + 2);
+                long maxValue;
+
+                if (value == "")
+                {
+                    maxValue = long.MaxValue;
+                }
+                else if (!long.TryParse(value, out maxValue))
+                {
+                    throw new FormatException($"Invalid or too big value {value} while {nameof(PatternIntRangeLiteral)} parsing.");
+                }
+                MaxValue = maxValue;
+            }
+            else
+            {
+                long value;
+                if (!long.TryParse(range, out value))
+                {
+                    throw new FormatException($"Invalid or too big value {range} while {nameof(PatternIntRangeLiteral)} parsing.");
+                }
+
+                MinValue = value;
+                MaxValue = value;
+            }
+        }
+
+        public override string ToString()
+        {
+            string result;
+
+            if (MinValue == MaxValue)
+            {
+                result = MinValue.ToString();
+            }
+            else
+            {
+                if (MinValue == long.MinValue)
+                {
+                    result = MaxValue == long.MaxValue ? "" : $"..{MaxValue}";
+                }
+                else
+                {
+                    result = MaxValue == long.MaxValue ? $"{MinValue}.." : $"{MinValue}..{MaxValue}";
+                }
+            }
+
+            return $"<({result})>";
         }
 
         public override MatchContext Match(IntLiteral intLiteral, MatchContext context)

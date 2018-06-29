@@ -16,11 +16,12 @@ using System.Threading;
 
 namespace PT.PM.Cli.Common
 {
-    public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters>
+    public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters, TRenderStage>
         where TStage : struct, IConvertible
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
         where TParameters : CliParameters, new()
+        where TRenderStage : struct, IConvertible
     {
         public ILogger Logger { get; protected set; } = new ConsoleFileLogger();
 
@@ -100,7 +101,7 @@ namespace PT.PM.Cli.Common
             return result;
         }
 
-        protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult>
+        protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage>
             InitWorkflow(TParameters parameters)
         {
             var workflow = CreateWorkflow(parameters);
@@ -114,21 +115,11 @@ namespace PT.PM.Cli.Common
             }
 
             workflow.PatternsRepository = CreatePatternsRepository(parameters);
-
-            if (parameters.PatternIds?.Count() > 0)
-            {
-                workflow.PatternsRepository.Identifiers = parameters.PatternIds;
-            }
-
             workflow.Logger = Logger;
 
             if (parameters.Stage != null)
             {
                 workflow.Stage = parameters.Stage.ParseEnum(ContinueWithInvalidArgs, workflow.Stage, Logger);
-            }
-            else if (string.IsNullOrEmpty(parameters.InputFileNameOrDirectory))
-            {
-                workflow.Stage = (TStage)Enum.Parse(typeof(TStage), nameof(Stage.Pattern));
             }
 
             if (parameters.ThreadCount.HasValue)
@@ -192,9 +183,13 @@ namespace PT.PM.Cli.Common
             {
                 workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));
             }
+            if (parameters.DumpPatterns.HasValue)
+            {
+                workflow.IsDumpPatterns = parameters.DumpPatterns.Value;
+            }
             if (parameters.RenderStages?.Count() > 0)
             {
-                workflow.RenderStages = new HashSet<TStage>(parameters.RenderStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));
+                workflow.RenderStages = new HashSet<TRenderStage>(parameters.RenderStages.ParseEnums<TRenderStage>(ContinueWithInvalidArgs, Logger));
             }
             if (parameters.RenderFormat != null)
             {
@@ -216,10 +211,10 @@ namespace PT.PM.Cli.Common
 
         protected virtual IPatternsRepository CreatePatternsRepository(TParameters parameters)
         {
-            return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, Logger);
+            return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, parameters.PatternIds, Logger);
         }
 
-        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult> CreateWorkflow(TParameters parameters);
+        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> CreateWorkflow(TParameters parameters);
 
         protected abstract void LogStatistics(TWorkflowResult workflowResult);
 

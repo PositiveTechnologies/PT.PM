@@ -6,31 +6,36 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternCommentRegex : PatternUst<CommentLiteral>
+    public class PatternCommentRegex : PatternUst<CommentLiteral>, IRegexPattern
     {
-        public Regex CommentRegex { get; set; }
+        public string Default => @".*";
+
+        public string RegexString
+        {
+            get => Regex.ToString();
+            set => Regex = new Regex(string.IsNullOrEmpty(value) ? Default : value, RegexOptions.Compiled);
+        }
+
+        public Regex Regex { get; private set; }
 
         public PatternCommentRegex()
-            : this("")
+           : this("")
         {
         }
 
-        public PatternCommentRegex(string comment, TextSpan textSpan = default(TextSpan))
-            : this(new Regex(string.IsNullOrEmpty(comment) ? ".*" : comment, RegexOptions.Compiled), textSpan)
-        {
-        }
-
-        public PatternCommentRegex(Regex commentRegex, TextSpan textSpan = default(TextSpan))
+        public PatternCommentRegex(string patternRegex, TextSpan textSpan = default(TextSpan))
             : base(textSpan)
         {
-            CommentRegex = commentRegex;
+            RegexString = patternRegex;
         }
 
-        public override string ToString() => $"</*{CommentRegex}*/>";
+        public override bool Any => Regex.ToString() == Default;
+
+        public override string ToString() => $"</*{(Any ? "" : Regex.ToString())}*/>";
 
         public override MatchContext Match(CommentLiteral commentLiteral, MatchContext context)
         {
-            IEnumerable<TextSpan> matches = CommentRegex
+            IEnumerable<TextSpan> matches = Regex
                 .MatchRegex(commentLiteral.Comment)
                 .Select(location => location.AddOffset(commentLiteral.TextSpan.Start));
 

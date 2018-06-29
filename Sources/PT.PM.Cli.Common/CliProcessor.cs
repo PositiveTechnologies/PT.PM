@@ -4,11 +4,11 @@ using PT.PM.Matching;
 
 namespace PT.PM.Cli.Common
 {
-    public class CliProcessor : CliProcessorBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, CliParameters>
+    public class CliProcessor : CliProcessorBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, CliParameters, Stage>
     {
         public override string CoreName => "PT.PM";
 
-        protected override WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult> CreateWorkflow(CliParameters parameters)
+        protected override WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, Stage> CreateWorkflow(CliParameters parameters)
         {
             return new Workflow();
         }

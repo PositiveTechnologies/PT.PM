@@ -2,6 +2,8 @@
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Matching;
+using PT.PM.Matching.PatternsRepository;
+using PT.PM.Patterns.PatternsRepository;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
@@ -60,9 +62,15 @@ namespace PT.PM.Tests
             CheckJsonSerialization("empty-try-catch.php", checkStrict: true, strict: false);
         }
 
+        [Test]
+        public void WriteReadPatternsToJson()
+        {
+            CheckJsonSerialization("empty-try-catch.php", checkPatternSerialization: true);
+        }
+
         private static void CheckJsonSerialization(string inputFileName, bool linearTextSpans = false,
             bool includeTextSpans = true, bool indented = true, bool includeCode = false,
-            bool checkStrict = false, bool strict = true)
+            bool checkStrict = false, bool strict = true, bool checkPatternSerialization = false)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
 
@@ -81,7 +89,8 @@ namespace PT.PM.Tests
                 StrictJson = strict,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = !linearTextSpans,
-                Stage = Stage.SimplifiedUst
+                Stage = Stage.SimplifiedUst,
+                IsDumpPatterns = checkPatternSerialization
             };
             WorkflowResult result = workflow.Process();
 
@@ -133,15 +142,19 @@ namespace PT.PM.Tests
             var logger = new LoggerMessageCounter();
             var newCodeRepository = new FileCodeRepository(jsonFiles) { LoadJson = true };
 
-            var newWorkflow = new Workflow(newCodeRepository,
-                inputFileName == "MultiTextSpan" ? new DslPatternRepository("a", "php") : null)
+            var newPatternsRepository = checkPatternSerialization
+                ? new JsonPatternsRepository(File.ReadAllText(Path.Combine(TestUtility.TestsOutputPath, "patterns.json")))
+                : inputFileName == "MultiTextSpan"
+                ? (IPatternsRepository)new DslPatternRepository("a", "php")
+                : new DefaultPatternRepository();
+            var newWorkflow = new Workflow(newCodeRepository, newPatternsRepository)
             {
                 StartStage = Stage.Ust,
                 IndentedDump = indented,
                 StrictJson = strict,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = !linearTextSpans,
-                Logger = logger
+                Logger = logger,
             };
             WorkflowResult newResult = newWorkflow.Process();
 

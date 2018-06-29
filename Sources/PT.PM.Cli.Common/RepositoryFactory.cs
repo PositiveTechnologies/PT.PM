@@ -67,11 +67,12 @@ namespace PT.PM.Cli.Common
             return sourceCodeRepository;
         }
 
-        public static IPatternsRepository CreatePatternsRepository(string patternsString, ILogger logger)
+        public static IPatternsRepository CreatePatternsRepository(string patternsString, IEnumerable<string> patternIds,
+            ILogger logger)
         {
             IPatternsRepository patternsRepository;
 
-            if (string.IsNullOrEmpty(patternsString))
+            if (string.IsNullOrEmpty(patternsString) || patternsString == "default")
             {
                 patternsRepository = new DefaultPatternRepository();
             }
@@ -121,6 +122,11 @@ namespace PT.PM.Cli.Common
             if (logger != null)
             {
                 patternsRepository.Logger = logger;
+            }
+            
+            if (patternsRepository is MemoryPatternsRepository MemoryPatternsRepository)
+            {
+                patternsRepository.Identifiers = patternIds as List<string> ?? patternIds?.ToList();
             }
 
             return patternsRepository;
