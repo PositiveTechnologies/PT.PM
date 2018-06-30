@@ -1128,21 +1128,8 @@ namespace PT.PM.PhpParseTreeUst
             Expression result;
             if (context.ChildCount == 3)
             {
-                ParserRuleContext operatorTerminal = (ParserRuleContext)context.GetChild(1);
-                string binaryOperatorText = operatorTerminal.GetText();
                 var right = (Expression)Visit(context.expression());
-
-                if (binaryOperatorText == "=")
-                {
-                    result = new AssignmentExpression(left, right, context.GetTextSpan());
-                }
-                else
-                {
-                    result = new AssignmentExpression(left, right, context.GetTextSpan())
-                    {
-                        BinaryOperator = ConvertToBinaryOperatorLiteral(binaryOperatorText, operatorTerminal.GetTextSpan())
-                    };
-                }
+                return CreateAssignExpr(left, right, context, context.assignmentOperator());
             }
             else
             {
