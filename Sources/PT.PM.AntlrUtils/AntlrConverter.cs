@@ -251,6 +251,11 @@ namespace PT.PM.AntlrUtils
             }
         }
 
+        protected AssignmentExpression CreateAssignExpr(Expression left, Expression right, ParserRuleContext context, ParserRuleContext assignOperator)
+        {
+            return UstUtils.CreateAssignExpr(left, right, context.GetTextSpan(), assignOperator?.GetText(), assignOperator?.GetTextSpan() ?? TextSpan.Zero);
+        }
+
         protected Expression CreateBinaryOperatorExpression(
             ParserRuleContext left, IToken operatorTerminal, ParserRuleContext right)
         {
@@ -263,21 +268,9 @@ namespace PT.PM.AntlrUtils
             return CreateBinaryOperatorExpression(left, operatorTerminal.GetText(), operatorTerminal.GetTextSpan(),  right);
         }
 
-        protected virtual BinaryOperatorLiteral ConvertToBinaryOperatorLiteral(string assignExprOpText, TextSpan assignOpTextSpan)
-        {
-            var operatorText = assignExprOpText.Remove(assignExprOpText.Length - 1);
-            BinaryOperator op = CreateBinaryOperator(operatorText);
-            return new BinaryOperatorLiteral(op, assignOpTextSpan);
-        }
-
-        protected virtual BinaryOperator CreateBinaryOperator(string binaryOperatorText)
-        {
-            return BinaryOperatorLiteral.TextBinaryOperator[binaryOperatorText];
-        }
-
         private Expression CreateBinaryOperatorExpression(ParserRuleContext left, string operatorText, TextSpan operatorTextSpan, ParserRuleContext right)
         {
-            BinaryOperator binaryOperator = CreateBinaryOperator(operatorText);
+            BinaryOperator binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[operatorText];
 
             var expression0 = (Expression)Visit(left);
             var expression1 = (Expression)Visit(right);

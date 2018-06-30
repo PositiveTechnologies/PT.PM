@@ -1,5 +1,7 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Statements;
+using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -66,6 +68,23 @@ namespace PT.PM.Common.Nodes
 
             Statement statement = (Statement)parent;
             return statement.Parent is Statement parentStatement && !(parentStatement is BlockStatement);
+        }
+
+        public static AssignmentExpression CreateAssignExpr(Expression left, Expression right, TextSpan textSpan, string assignExprOpText, TextSpan assignOpTextSpan)
+        {
+            BinaryOperatorLiteral binaryOperator = null;
+
+            if (assignExprOpText != null && assignExprOpText.Length > 1)
+            {
+                var operatorText = assignExprOpText.Remove(assignExprOpText.Length - 1);
+                BinaryOperator op = BinaryOperatorLiteral.TextBinaryOperator[operatorText];
+                binaryOperator = new BinaryOperatorLiteral(op, assignOpTextSpan);
+            }
+
+            return new AssignmentExpression(left, right, textSpan)
+            {
+                BinaryOperator = binaryOperator
+            };
         }
 
         public static Ust[] SelectAnalyzedNodes(this Ust ust, Language language, HashSet<Language> analyzedLanguages)
