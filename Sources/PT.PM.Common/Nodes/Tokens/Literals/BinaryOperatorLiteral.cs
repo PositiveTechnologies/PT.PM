@@ -19,7 +19,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             {"^", BinaryOperator.BitwiseXor},
             {"<<", BinaryOperator.ShiftLeft},
             {">>", BinaryOperator.ShiftRight},
-            
+
             {"==", BinaryOperator.Equal},
             {"!=", BinaryOperator.NotEqual},
             {">", BinaryOperator.Greater},
@@ -27,23 +27,23 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             {">=", BinaryOperator.GreaterOrEqual},
             {"<=", BinaryOperator.LessOrEqual},
 
-            {"??", BinaryOperator.NullCoalescing},
-            {".", BinaryOperator.Plus }
-        };
+            // PHP
+            {".", BinaryOperator.Concat },
+            {"**", BinaryOperator.Power},
+            {"<>", BinaryOperator.NotEqual },
+            {"and", BinaryOperator.LogicalAnd },
+            {"xor", BinaryOperator.BitwiseXor },
+            {"or", BinaryOperator.LogicalOr },
 
-        public static List<string> TextBinaryAssignmentOperator = new List<string>
-        {
-            "+=",
-            "-=",
-            "*=",
-            "/=",
-            "%=",
-            "&=",
-            "|=",
-            "^=",
-            "<<=",
-            ">>=",
-            ">>>="
+            // C#
+            {"??", BinaryOperator.NullCoalescing},
+
+            // Java
+            {">>>", BinaryOperator.LogicalShift },
+
+            // PHP & JavaScript
+            {"===", BinaryOperator.StrictEqual },
+            {"!==", BinaryOperator.StrictNotEqual }
         };
 
         public override string TextValue => BinaryOperator.ToString();

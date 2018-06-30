@@ -24,6 +24,18 @@
         GreaterOrEqual,   // >=
         LessOrEqual,      // <=
 
+        /// C#
         NullCoalescing,   // ??
+
+        // Java
+        LogicalShift,     // >>>
+
+        // PHP
+        Concat,           // .
+        Power,            // **
+
+        // PHP & JavaScript
+        StrictEqual,      // ===
+        StrictNotEqual,   // !==
     }
 }
