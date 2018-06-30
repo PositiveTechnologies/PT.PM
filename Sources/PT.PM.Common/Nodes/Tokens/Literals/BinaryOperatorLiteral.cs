@@ -7,43 +7,43 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     {
         public static Dictionary<string, BinaryOperator> TextBinaryOperator = new Dictionary<string, BinaryOperator>
         {
-            {"+", BinaryOperator.Plus},
-            {"-", BinaryOperator.Minus},
-            {"*", BinaryOperator.Multiply},
-            {"/", BinaryOperator.Divide},
-            {"%", BinaryOperator.Mod},
-            {"&", BinaryOperator.BitwiseAnd},
-            {"|", BinaryOperator.BitwiseOr},
-            {"&&", BinaryOperator.LogicalAnd},
-            {"||", BinaryOperator.LogicalOr},
-            {"^", BinaryOperator.BitwiseXor},
-            {"<<", BinaryOperator.ShiftLeft},
-            {">>", BinaryOperator.ShiftRight},
+            ["+"] = BinaryOperator.Plus,
+            ["-"] = BinaryOperator.Minus,
+            ["*"] = BinaryOperator.Multiply,
+            ["/"] = BinaryOperator.Divide,
+            ["%"] = BinaryOperator.Mod,
+            ["&"] = BinaryOperator.BitwiseAnd,
+            ["|"] = BinaryOperator.BitwiseOr,
+            ["&&"] = BinaryOperator.LogicalAnd,
+            ["||"] = BinaryOperator.LogicalOr,
+            ["^"] = BinaryOperator.BitwiseXor,
+            ["<<"] = BinaryOperator.ShiftLeft,
+            [">>"] = BinaryOperator.ShiftRight,
 
-            {"==", BinaryOperator.Equal},
-            {"!=", BinaryOperator.NotEqual},
-            {">", BinaryOperator.Greater},
-            {"<", BinaryOperator.Less},
-            {">=", BinaryOperator.GreaterOrEqual},
-            {"<=", BinaryOperator.LessOrEqual},
+            ["=="] = BinaryOperator.Equal,
+            ["!="] = BinaryOperator.NotEqual,
+            [">"] = BinaryOperator.Greater,
+            ["<"] = BinaryOperator.Less,
+            [">="] = BinaryOperator.GreaterOrEqual,
+            ["<="] = BinaryOperator.LessOrEqual,
 
             // PHP
-            {".", BinaryOperator.Concat },
-            {"**", BinaryOperator.Power},
-            {"<>", BinaryOperator.NotEqual },
-            {"and", BinaryOperator.LogicalAnd },
-            {"xor", BinaryOperator.BitwiseXor },
-            {"or", BinaryOperator.LogicalOr },
+            ["."] = BinaryOperator.Concat,
+            ["**"] = BinaryOperator.Power,
+            ["<>"] = BinaryOperator.NotEqual ,
+            ["and"] = BinaryOperator.LogicalAnd,
+            ["xor"] = BinaryOperator.BitwiseXor,
+            ["or"] = BinaryOperator.LogicalOr,
 
             // C#
-            {"??", BinaryOperator.NullCoalescing},
+            ["??"] = BinaryOperator.NullCoalescing,
 
             // Java
-            {">>>", BinaryOperator.LogicalShift },
+            [">>>"] = BinaryOperator.LogicalShift,
 
             // PHP & JavaScript
-            {"===", BinaryOperator.StrictEqual },
-            {"!==", BinaryOperator.StrictNotEqual }
+            ["==="] = BinaryOperator.StrictEqual,
+            ["!=="] = BinaryOperator.StrictNotEqual
         };
 
         public override string TextValue => BinaryOperator.ToString();

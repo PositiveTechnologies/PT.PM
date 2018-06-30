@@ -7,22 +7,23 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     {
         public static Dictionary<string, UnaryOperator> PrefixTextUnaryOperator = new Dictionary<string, UnaryOperator>
         {
-            { "+", UnaryOperator.Plus},
-            { "-", UnaryOperator.Minus},
-            { "!", UnaryOperator.Not},
-            { "~", UnaryOperator.BitwiseNot},
-            { "++", UnaryOperator.Increment},
-            { "--", UnaryOperator.Decrement},
-            { "*", UnaryOperator.Dereference},
-            { "&", UnaryOperator.AddressOf},
-            { "await", UnaryOperator.Await}
+            ["+"] = UnaryOperator.Plus,
+            ["-"] = UnaryOperator.Minus,
+            ["!"] = UnaryOperator.Not,
+            ["~"] = UnaryOperator.BitwiseNot,
+            ["++"] = UnaryOperator.Increment,
+            ["--"] = UnaryOperator.Decrement,
+            ["*"] = UnaryOperator.Dereference,
+            ["&"] = UnaryOperator.AddressOf,
+            ["await"] = UnaryOperator.Await
         };
 
         public static Dictionary<string, UnaryOperator> PostfixTextUnaryOperator = new Dictionary<string, UnaryOperator>
         {
-            { "++", UnaryOperator.PostIncrement},
-            { "--", UnaryOperator.PostDecrement},
+            ["++"] = UnaryOperator.PostIncrement,
+            ["--"] = UnaryOperator.PostDecrement,
         };
+
         public override string TextValue => UnaryOperator.ToString();
 
         public UnaryOperator UnaryOperator { get; set; }
