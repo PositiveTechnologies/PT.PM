@@ -82,7 +82,7 @@ namespace PT.PM
             if (leftExpression is StringLiteral leftString &&
                 rightExpression is StringLiteral rightString)
             {
-                if (op.BinaryOperator == BinaryOperator.Plus)
+                if (op.BinaryOperator == BinaryOperator.Plus || op.BinaryOperator == BinaryOperator.Concat)
                 {
                     string resultText = leftString.Text + rightString.Text;
                     result = new StringLiteral(resultText);

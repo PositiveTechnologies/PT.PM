@@ -172,20 +172,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var left = (Expression)base.Visit(node.Left);
             var right = (Expression)base.Visit(node.Right);
 
-            AssignmentExpression result;
-            var opText = node.OperatorToken.ValueText;
-            if (opText == "=")
-            {
-                result = new AssignmentExpression(left, right, node.GetTextSpan());
-            }
-            else
-            {
-                var op = BinaryOperatorLiteral.TextBinaryOperator[opText.Remove(opText.Length - 1)];
-                // TODO: implement assignment + operator
-                result = new AssignmentExpression(left, right, node.GetTextSpan());
-            }
-
-            return result;
+            return UstUtils.CreateAssignExpr(left, right, node.GetTextSpan(),
+                node.OperatorToken.ValueText, node.OperatorToken.GetTextSpan());
         }
 
         public override Ust VisitBaseExpression(BaseExpressionSyntax node)

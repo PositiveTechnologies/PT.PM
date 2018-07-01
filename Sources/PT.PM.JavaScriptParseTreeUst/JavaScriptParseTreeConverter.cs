@@ -201,7 +201,8 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             var left = (Expression)Visit(context.singleExpression(0));
             var right = (Expression)Visit(context.singleExpression(1));
-            return new AssignmentExpression(left, right, context.GetTextSpan());
+
+            return CreateAssignExpr(left, right, context, context.assignmentOperator());
         }
 
         public Ust VisitVoidExpression([NotNull] JavaScriptParser.VoidExpressionContext context) { return VisitChildren(context); }

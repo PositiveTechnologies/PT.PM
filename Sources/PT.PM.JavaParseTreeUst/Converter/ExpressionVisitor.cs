@@ -123,59 +123,37 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         return VisitChildren(context);
 
                     default: // binary operator
-                        string text = child1Terminal.GetText();
                         var left = (Expression)Visit(context.expression(0));
                         JavaParser.ExpressionContext expr1 = context.expression(1);
 
                         if (expr1 != null)
                         {
+                            string opText = string.Concat(context.children.Skip(1).Take(context.children.Count - 2));
                             var right = (Expression)Visit(expr1);
 
-                            if (text == "=")
+                            // TODO: fix via grammar refactoring (alternative labels).
+                            if (opText == "=" ||
+                                (opText.EndsWith("=") && BinaryOperatorLiteral.TextBinaryOperator.ContainsKey(opText.Remove(opText.Length - 1))))
                             {
-                                result = new AssignmentExpression(left, right, textSpan);
-                            }
-                            else if (BinaryOperatorLiteral.TextBinaryAssignmentOperator.Contains(text))
-                            {
-                                BinaryOperator op;
-                                if (text == ">>>=")
-                                {
-                                    op = BinaryOperator.ShiftRight; // TODO: fix shift operator.
-                                }
-                                else
-                                {
-                                    op = BinaryOperatorLiteral.TextBinaryOperator[text.Remove(text.Length - 1)];
-                                }
-
-                                // TODO: implement assignment + operator
-                                result = new AssignmentExpression(left, right, context.GetTextSpan());
+                                result = UstUtils.CreateAssignExpr(left, right, context.GetTextSpan(),
+                                    opText, child1Terminal.GetTextSpan());
                             }
                             else
                             {
-                                BinaryOperator op;
-                                if (text == ">>>")
-                                {
-                                    op = BinaryOperator.ShiftRight;  // TODO: fix shift operator.
-                                }
-                                else
-                                {
-                                    op = BinaryOperatorLiteral.TextBinaryOperator[text];
-                                }
+                                BinaryOperator op = BinaryOperatorLiteral.TextBinaryOperator[opText];
                                 var opLiteral = new BinaryOperatorLiteral(op, child1Terminal.GetTextSpan());
-
                                 result = new BinaryOperatorExpression(left, opLiteral, right, textSpan);
                             }
                         }
                         else
                         {
                             // post increment or decrement.
-                            UnaryOperator op = UnaryOperatorLiteral.PostfixTextUnaryOperator[text];
+                            UnaryOperator op = UnaryOperatorLiteral.PostfixTextUnaryOperator[context.postfix.Text];
                             var opLiteral = new UnaryOperatorLiteral(op, child1Terminal.GetTextSpan());
 
                             result = new UnaryOperatorExpression(opLiteral, left, textSpan);
                             return result;
                         }
-
                         return result;
                 }
             }
@@ -468,7 +446,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         }
 
         public Ust VisitFloatLiteral(JavaParser.FloatLiteralContext context)
-       {
+        {
             string literalText = context.GetText().ToLowerInvariant().Replace("d", "").Replace("f", "").Replace("_", "");
             TextSpan textSpan = context.GetTextSpan();
 
