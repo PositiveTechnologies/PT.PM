@@ -253,6 +253,11 @@ namespace PT.PM.Common
             return result.ToString();
         }
 
+        public static string Escape(this string str)
+        {
+            return str.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        }
+
         private static void ParseLineColumn(string text, out int line, out int column)
         {
             int commaIndex = text.IndexOf(',');

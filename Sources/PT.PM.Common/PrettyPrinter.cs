@@ -83,7 +83,7 @@ namespace PT.PM.Common
 
             if (Escape)
             {
-                message = message.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "");
+                message = message.Escape().Replace("\r", "").Replace("\n", "");
             }
 
             return message;
