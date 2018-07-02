@@ -14,7 +14,6 @@ namespace PT.PM
         where TMatchResult : MatchResultBase<TPattern>
         where TRenderStage : struct, IConvertible
     {
-        private HashSet<CodeFile> sourceCodeFiles = new HashSet<CodeFile>();
         private List<ParseTree> parseTrees = new List<ParseTree>();
         private List<RootUst> usts = new List<RootUst>();
         private List<TPattern> patterns = new List<TPattern>();
@@ -61,7 +60,7 @@ namespace PT.PM
         public int ErrorCount { get; set; }
 
         [JsonIgnore]
-        public HashSet<CodeFile> SourceCodeFiles => sourceCodeFiles;
+        public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
 
         [JsonIgnore]
         public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
@@ -84,7 +83,7 @@ namespace PT.PM
         public IReadOnlyList<IMatchResultBase> MatchResults => matchResults;
 
         [JsonIgnore]
-        public IReadOnlyList<TPattern> Patterns
+        public List<TPattern> Patterns
         {
             get
             {
@@ -94,6 +93,10 @@ namespace PT.PM
                 }
 
                 return patterns;
+            }
+            set
+            {
+                patterns = value;
             }
         }
 
@@ -120,7 +123,7 @@ namespace PT.PM
 
         public void AddResultEntity(CodeFile sourceCodeFile)
         {
-            AddEntity(sourceCodeFiles, sourceCodeFile);
+            AddEntity(SourceCodeFiles, sourceCodeFile);
         }
 
         public void AddResultEntity(ParseTree parseTree)
