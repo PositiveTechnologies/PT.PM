@@ -303,7 +303,7 @@ namespace PT.PM.Cli.Common
             Logger.IsLogDebugs = parameters.IsLogDebugs.HasValue ? parameters.IsLogDebugs.Value : false;
         }
 
-        private TWorkflowResult RunWorkflow(TParameters parameters)
+        protected virtual TWorkflowResult RunWorkflow(TParameters parameters)
         {
             try
             {
