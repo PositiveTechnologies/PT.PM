@@ -70,25 +70,15 @@ namespace PT.PM
                     IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards
                 };
 
-                if (ThreadCount == 1 || (fileNames is IList<string> && result.TotalFilesCount <= 1))
-                {
-                    foreach (string fileName in fileNames)
+                var parallelOptions = PrepareParallelOptions(cancellationToken);
+                Parallel.ForEach(
+                    fileNames,
+                    parallelOptions,
+                    fileName =>
                     {
-                        ProcessFileWithTimeout(fileName, patternMatcher, result, cancellationToken);
-                    }
-                }
-                else
-                {
-                    var parallelOptions = PrepareParallelOptions(cancellationToken);
-                    Parallel.ForEach(
-                        fileNames,
-                        parallelOptions,
-                        fileName =>
-                        {
-                            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-                            ProcessFileWithTimeout(fileName, patternMatcher, result, parallelOptions.CancellationToken);
-                        });
-                }
+                        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                        ProcessFileWithTimeout(fileName, patternMatcher, result, parallelOptions.CancellationToken);
+                    });
             }
             catch (OperationCanceledException)
             {
