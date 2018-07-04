@@ -12,6 +12,8 @@ namespace PT.PM.Cli.Common
         where TMatchResult : MatchResultBase<TPattern>
         where TRenderStage : struct, IConvertible
     {
+        protected const string SimplifiedUstStageName = "SimplifiedUst";
+
         public ILogger Logger { get; set; }
 
         public TWorkflowResult WorkflowResult { get; set; }
@@ -50,6 +52,10 @@ namespace PT.PM.Cli.Common
                         if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.Ust)
                         {
                             LogStageTime(nameof(Stage.Ust));
+                            if (WorkflowResult.IsSimplifyUst)
+                            {
+                                LogStageTime(SimplifiedUstStageName);
+                            }
                             LogAdvanced();
                         }
                     }
@@ -78,7 +84,7 @@ namespace PT.PM.Cli.Common
                 case nameof(Stage.Ust):
                     ticks = WorkflowResult.TotalConvertTicks;
                     break;
-                case nameof(Stage.SimplifiedUst):
+                case SimplifiedUstStageName:
                     ticks = WorkflowResult.TotalSimplifyTicks;
                     break;
                 case nameof(Stage.Match):
@@ -102,7 +108,7 @@ namespace PT.PM.Cli.Common
             }
         }
 
-        protected abstract long GetTicksCount(string stage);
+        protected virtual long GetTicksCount(string stage) => 0;
 
         protected void LogAdditionalParserInfo()
         {

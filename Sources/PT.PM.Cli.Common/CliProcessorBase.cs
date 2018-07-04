@@ -126,9 +126,9 @@ namespace PT.PM.Cli.Common
             {
                 workflow.ThreadCount = parameters.ThreadCount.Value;
             }
-            if (parameters.NotPreprocessUst.HasValue)
+            if (parameters.NotSimplifyUst.HasValue)
             {
-                workflow.IsIncludePreprocessing = !parameters.NotPreprocessUst.Value;
+                workflow.IsSimplifyUst = !parameters.NotSimplifyUst.Value;
             }
             if (parameters.MaxStackSize.HasValue)
             {

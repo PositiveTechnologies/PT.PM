@@ -23,8 +23,8 @@ namespace PT.PM.Cli.Common
         [Option('t', "threads", HelpText = "Number of processing threads")]
         public int? ThreadCount { get; set; }
 
-        [Option("not-preprocess-ust", HelpText = "Do not include ust simplification stage")]
-        public bool? NotPreprocessUst { get; set; }
+        [Option("not-simplify-ust", HelpText = "Do not simplify ust")]
+        public bool? NotSimplifyUst { get; set; }
 
         [Option('s', "stage", HelpText = "End processing stage. By default: Match")]
         public string Stage { get; set; }

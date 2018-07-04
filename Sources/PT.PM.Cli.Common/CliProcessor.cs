@@ -27,7 +27,7 @@ namespace PT.PM.Cli.Common
                 startStage = startStageString.ParseEnum(ContinueWithInvalidArgs, startStage, Logger);
             }
 
-            return startStage == Stage.Ust || startStage == Stage.SimplifiedUst;
+            return startStage == Stage.Ust;
         }
     }
 }

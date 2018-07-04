@@ -48,7 +48,7 @@ namespace PT.PM
 
         public bool IsIncludeIntermediateResult { get; set; }
 
-        public bool IsIncludePreprocessing { get; set; } = true;
+        public bool IsSimplifyUst { get; set; } = true;
 
         public bool IsIgnoreFilenameWildcards { get; set; } = false;
 
@@ -217,11 +217,6 @@ namespace PT.PM
                             converter.Logger = Logger;
                             converter.AnalyzedLanguages = AnalyzedLanguages;
                             result = converter.Convert(parseTree);
-
-                            if (Stage.IsLess(PM.Stage.SimplifiedUst))
-                            {
-                                DumpUst(result, workflowResult.SourceCodeFiles);
-                            }
                         }
                         else
                         {
@@ -233,6 +228,7 @@ namespace PT.PM
                                 CodeFiles = workflowResult.SourceCodeFiles
                             };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
+
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
                                 Logger.LogInfo($"File {fileName} has been ignored.");
@@ -243,7 +239,21 @@ namespace PT.PM
                         stopwatch.Stop();
                         Logger.LogInfo($"File {shortFileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(result, true);
+
+                        if (IsSimplifyUst)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            var simplifier = new UstSimplifier { Logger = logger };
+                            stopwatch.Restart();
+                            result = simplifier.Simplify(result);
+                            stopwatch.Stop();
+                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} has been simplified (Elapsed: {stopwatch.Elapsed}).");
+                            workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
+                        }
+
+                        DumpUst(result, workflowResult.SourceCodeFiles);
+                        workflowResult.AddResultEntity(result);
 
                         cancellationToken.ThrowIfCancellationRequested();
                     }
@@ -289,7 +299,7 @@ namespace PT.PM
 
         protected void DumpUst(RootUst result, HashSet<CodeFile> sourceCodeFiles)
         {
-            if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust) || stage.Is(PM.Stage.SimplifiedUst)))
+            if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust)))
             {
                 var serializer = new UstJsonSerializer
                 {

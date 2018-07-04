@@ -50,6 +50,7 @@ namespace PT.PM
                 new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
             result.BaseLanguages = BaseLanguages.ToArray();
             result.RenderStages = RenderStages;
+            result.IsSimplifyUst = IsSimplifyUst;
 
             IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
             if (fileNames is IList<string> fileNamesList)
@@ -136,35 +137,16 @@ namespace PT.PM
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
                 ust = ReadParseAndConvert(fileName, workflowResult);
-                if (ust != null && Stage >= Stage.SimplifiedUst)
+                if (ust != null && Stage >= Stage.Match)
                 {
-                    Stopwatch stopwatch = new Stopwatch();
-                    if (IsIncludePreprocessing)
-                    {
-                        var simplifier = new UstSimplifier() { Logger = logger };
-                        stopwatch.Restart();
-                        ust = simplifier.Simplify(ust);
-                        stopwatch.Stop();
-                        Logger.LogInfo($"Ust of file {ust.SourceCodeFile.Name} has been preprocessed (Elapsed: {stopwatch.Elapsed}).");
-                        workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(ust, false);
+                    Stopwatch stopwatch = Stopwatch.StartNew();
+                    IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
+                    stopwatch.Stop();
+                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
+                    workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
+                    workflowResult.AddResultEntity(matchResults);
 
-                        DumpUst(ust, workflowResult.SourceCodeFiles);
-
-                        cancellationToken.ThrowIfCancellationRequested();
-                    }
-
-                    if (Stage >= Stage.Match)
-                    {
-                        stopwatch.Restart();
-                        IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
-                        stopwatch.Stop();
-                        Logger.LogInfo($"File {ust.SourceCodeFile.Name} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
-                        workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
-                        workflowResult.AddResultEntity(matchResults);
-
-                        cancellationToken.ThrowIfCancellationRequested();
-                    }
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     RenderGraphs(workflowResult);
                 }

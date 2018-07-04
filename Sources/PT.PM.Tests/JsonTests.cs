@@ -89,7 +89,7 @@ namespace PT.PM.Tests
                 StrictJson = strict,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = !linearTextSpans,
-                Stage = Stage.SimplifiedUst,
+                Stage = Stage.Ust,
                 IsDumpPatterns = checkPatternSerialization
             };
             WorkflowResult result = workflow.Process();

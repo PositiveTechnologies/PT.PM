@@ -57,6 +57,8 @@ namespace PT.PM
 
         public bool IsIncludeIntermediateResult { get; private set; }
 
+        public bool IsSimplifyUst { get; set; }
+
         public int ErrorCount { get; set; }
 
         [JsonIgnore]
@@ -70,7 +72,7 @@ namespace PT.PM
         {
             get
             {
-                if (!Stage.Is(PM.Stage.Ust) && !Stage.Is(PM.Stage.SimplifiedUst) && !IsIncludeIntermediateResult &&
+                if (!Stage.Is(PM.Stage.Ust) && !IsIncludeIntermediateResult &&
                     RenderStages.All(stage => Convert.ToInt32(stage) != (int)PM.Stage.Ust))
                 {
                     ThrowInvalidStageException(PM.Stage.Ust.ToString());
@@ -135,25 +137,12 @@ namespace PT.PM
             }
         }
 
-        public void AddResultEntity(RootUst ust, bool convert)
+        public void AddResultEntity(RootUst ust)
         {
-            if (IsIncludeIntermediateResult || (convert && Stage.Is(PM.Stage.Ust)) || (!convert && Stage.Is(PM.Stage.SimplifiedUst)) ||
-                Stage.Is(PM.Stage.Match) ||
+            if (IsIncludeIntermediateResult || Stage.Is(PM.Stage.Ust) || Stage.Is(PM.Stage.Match) ||
                 RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.Ust))
             {
-                int ustIndex = usts.FindIndex(tree => tree.SourceCodeFile == ust.SourceCodeFile);
-                lock (usts)
-                {
-                    if (ustIndex == -1)
-                    {
-                        usts.Add(ust);
-                    }
-                    else
-                    {
-                        usts.RemoveAt(ustIndex);
-                        usts.Insert(ustIndex, ust);
-                    }
-                }
+                AddEntity(usts, ust);
             }
         }
 

@@ -15,7 +15,7 @@ namespace PT.PM.Tests
     public class UstPreprocessorTests
     {
         [Test]
-        public void Preprocess_PhpCodeWithConstants_ConstantsFolded()
+        public void Simplify_PhpCodeWithConstants_ConstantsFolded()
         {
             var sourceCodeRep = new MemoryCodeRepository(
                 "<?php\r\n" +
@@ -28,9 +28,9 @@ namespace PT.PM.Tests
                 "constants.php"
             );
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, stage: Stage.SimplifiedUst)
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust)
             {
-                IsIncludePreprocessing = true,
+                IsSimplifyUst = true,
                 Logger = logger
             };
             workflow.Process();
@@ -43,7 +43,7 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void Preprocess_JavaCodeWithConstantCharArray_ArrayFolded()
+        public void Simplify_JavaCodeWithConstantCharArray_ArrayFolded()
         {
             var sourceCodeRep = new MemoryCodeRepository(
                 "class Wrapper {\r\n" +
@@ -55,9 +55,9 @@ namespace PT.PM.Tests
                 "constantCharArray.java"
             );
 
-            var workflow = new Workflow(sourceCodeRep, stage: Stage.SimplifiedUst)
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust)
             {
-                IsIncludePreprocessing = true
+                IsSimplifyUst = true
             };
             var ust = workflow.Process().Usts.First();
 
@@ -66,7 +66,7 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void Preprocess_MultiMultiPattern_RemovedDuplicates()
+        public void Simplify_MultiMultiPattern_RemovedDuplicates()
         {
             var input = new PatternStatements
             {
