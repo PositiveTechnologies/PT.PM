@@ -16,7 +16,6 @@ namespace PT.PM
     {
         private List<ParseTree> parseTrees = new List<ParseTree>();
         private List<RootUst> usts = new List<RootUst>();
-        private List<TPattern> patterns = new List<TPattern>();
         private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
 
         private long totalReadTicks;
@@ -42,7 +41,6 @@ namespace PT.PM
             AnalyzedLanguages = languages.ToList();
             ThreadCount = threadCount;
             Stage = stage;
-            IsIncludeIntermediateResult = isIncludeIntermediateResult;
         }
 
         public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
@@ -55,8 +53,6 @@ namespace PT.PM
 
         public TStage Stage { get; private set; }
 
-        public bool IsIncludeIntermediateResult { get; private set; }
-
         public bool IsSimplifyUst { get; set; }
 
         public int ErrorCount { get; set; }
@@ -65,42 +61,16 @@ namespace PT.PM
         public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
 
         [JsonIgnore]
-        public IReadOnlyList<ParseTree> ParseTrees => ValidateStageAndReturn(PM.Stage.ParseTree.ToString(), parseTrees);
+        public IReadOnlyList<ParseTree> ParseTrees => parseTrees;
 
         [JsonIgnore]
-        public IReadOnlyList<RootUst> Usts
-        {
-            get
-            {
-                if (!Stage.Is(PM.Stage.Ust) && !IsIncludeIntermediateResult &&
-                    RenderStages.All(stage => Convert.ToInt32(stage) != (int)PM.Stage.Ust))
-                {
-                    ThrowInvalidStageException(PM.Stage.Ust.ToString());
-                }
-                return usts;
-            }
-        }
+        public IReadOnlyList<RootUst> Usts => usts;
 
         [JsonIgnore]
         public IReadOnlyList<IMatchResultBase> MatchResults => matchResults;
 
         [JsonIgnore]
-        public List<TPattern> Patterns
-        {
-            get
-            {
-                if (!Stage.Is(PM.Stage.Pattern) && (Stage.IsLess(PM.Stage.Match) || !IsIncludeIntermediateResult))
-                {
-                    ThrowInvalidStageException(PM.Stage.Pattern.ToString());
-                }
-
-                return patterns;
-            }
-            set
-            {
-                patterns = value;
-            }
-        }
+        public List<TPattern> Patterns { get; set; } = new List<TPattern>();
 
         public long TotalReadTicks => totalReadTicks;
         public long TotalParseTicks => totalParseTicks;
@@ -130,20 +100,12 @@ namespace PT.PM
 
         public void AddResultEntity(ParseTree parseTree)
         {
-            if (Stage.Is(PM.Stage.ParseTree) || IsIncludeIntermediateResult ||
-                RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.ParseTree))
-            {
-                AddEntity(parseTrees, parseTree);
-            }
+            AddEntity(parseTrees, parseTree);
         }
 
         public void AddResultEntity(RootUst ust)
         {
-            if (IsIncludeIntermediateResult || Stage.Is(PM.Stage.Ust) || Stage.Is(PM.Stage.Match) ||
-                RenderStages.Any(stage => Convert.ToInt32(stage) == (int)PM.Stage.Ust))
-            {
-                AddEntity(usts, ust);
-            }
+            AddEntity(usts, ust);
         }
 
         public void AddResultEntity(IEnumerable<IMatchResultBase> matchResults)
@@ -153,7 +115,7 @@ namespace PT.PM
 
         public void AddResultEntity(IEnumerable<TPattern> patterns)
         {
-            AddEntities(this.patterns, patterns);
+            AddEntities(this.Patterns, patterns);
         }
 
         public void AddProcessedFilesCount(int filesCount)
@@ -228,18 +190,6 @@ namespace PT.PM
             totalSimplifyTicks +
             totalMatchTicks +
             totalPatternsTicks;
-
-        protected Result ValidateStageAndReturn<Result>(string stage, Result result)
-        {
-            if (Stage.ToString() != stage && !IsIncludeIntermediateResult)
-                ThrowInvalidStageException(stage);
-            return result;
-        }
-
-        protected void ThrowInvalidStageException(string stage)
-        {
-            throw new InvalidOperationException($"Set {stage} as a final Stage or activate {nameof(IsIncludeIntermediateResult)} property");
-        }
 
         protected void AddEntity<T>(ICollection<T> collection, T entity)
         {
