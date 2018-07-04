@@ -14,7 +14,9 @@ namespace PT.PM
         where TMatchResult : MatchResultBase<TPattern>
         where TRenderStage : struct, IConvertible
     {
-        private List<ParseTree> parseTrees = new List<ParseTree>();
+        // Can GC parse trees because they are intermediate objects.
+        private List<WeakReference<ParseTree>> parseTrees = new List<WeakReference<ParseTree>>();
+
         private List<RootUst> usts = new List<RootUst>();
         private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
 
@@ -61,7 +63,10 @@ namespace PT.PM
         public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
 
         [JsonIgnore]
-        public IReadOnlyList<ParseTree> ParseTrees => parseTrees;
+        public IReadOnlyList<ParseTree> ParseTrees =>
+            parseTrees.Select(parseTree => parseTree.TryGetTarget(out ParseTree target) ? target : null)
+            .Where(parseTree => parseTree != null)
+            .ToList();
 
         [JsonIgnore]
         public IReadOnlyList<RootUst> Usts => usts;
@@ -100,7 +105,17 @@ namespace PT.PM
 
         public void AddResultEntity(ParseTree parseTree)
         {
-            AddEntity(parseTrees, parseTree);
+            if (ThreadCount == 1)
+            {
+                parseTrees.Add(new WeakReference<ParseTree>(parseTree));
+            }
+            else
+            {
+                lock (parseTrees)
+                {
+                    parseTrees.Add(new WeakReference<ParseTree>(parseTree));
+                }
+            }
         }
 
         public void AddResultEntity(RootUst ust)
