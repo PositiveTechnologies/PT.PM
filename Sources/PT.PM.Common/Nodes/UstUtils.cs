@@ -83,7 +83,7 @@ namespace PT.PM.Common.Nodes
 
             return new AssignmentExpression(left, right, textSpan)
             {
-                BinaryOperator = binaryOperator
+                Operator = binaryOperator
             };
         }
 

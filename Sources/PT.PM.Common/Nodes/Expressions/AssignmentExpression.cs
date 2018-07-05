@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public Expression Right { get; set; }
 
-        public BinaryOperatorLiteral BinaryOperator { get; set; }
+        public BinaryOperatorLiteral Operator { get; set; }
 
         public AssignmentExpression(Expression left, Expression right, TextSpan textSpan)
             : base(textSpan)
@@ -23,9 +23,9 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override Ust[] GetChildren()
         {
-            if (BinaryOperator != null)
+            if (Operator != null)
             {
-                return new Ust[] { Left, BinaryOperator, Right};
+                return new Ust[] { Left, Operator, Right};
             }
             return new Ust[] { Left, Right };
         }
@@ -39,7 +39,7 @@ namespace PT.PM.Common.Nodes.Expressions
                 ? Left == null
                 ? " = "
                 : Left.ToString()
-                : $"{Left} {BinaryOperator}= {Right}";
+                : $"{Left} {Operator}= {Right}";
         }
     }
 }
