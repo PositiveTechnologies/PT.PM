@@ -77,8 +77,7 @@ namespace PT.PM.Common.Nodes
             if (assignExprOpText != null && assignExprOpText.Length > 1)
             {
                 var operatorText = assignExprOpText.Remove(assignExprOpText.Length - 1);
-                BinaryOperator op = BinaryOperatorLiteral.TextBinaryOperator[operatorText];
-                binaryOperator = new BinaryOperatorLiteral(op, assignOpTextSpan);
+                binaryOperator = new BinaryOperatorLiteral(operatorText, assignOpTextSpan);
             }
 
             return new AssignmentExpression(left, right, textSpan)

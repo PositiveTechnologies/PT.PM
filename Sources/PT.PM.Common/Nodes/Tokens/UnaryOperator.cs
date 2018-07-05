@@ -5,6 +5,7 @@
     /// </summary>
     public enum UnaryOperator
     {
+        None,          // No such operator
         Plus,          // +a
         Minus,         // -a
         Not,           // !a

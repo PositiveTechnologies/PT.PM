@@ -60,7 +60,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             BinaryOperator binaryOperator;
             if (!TextBinaryOperator.TryGetValue(op, out binaryOperator))
             {
-                binaryOperator = BinaryOperator.Equal;
+                binaryOperator = BinaryOperator.None;
             }
             BinaryOperator = binaryOperator;
             TextSpan = textSpan;
