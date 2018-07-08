@@ -15,7 +15,9 @@ namespace PT.PM.Matching
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
-        public ILogger Logger { get; set; }
+        public static readonly string[] KeySeparators = new [] { ",", ";"};
+
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public string Key { get; set; } = "";
 
