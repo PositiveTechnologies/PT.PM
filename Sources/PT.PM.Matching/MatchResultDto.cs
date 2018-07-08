@@ -21,10 +21,8 @@ namespace PT.PM.Matching
             string code = sourceCodeFile.Code;
             TextSpan = matchResult.TextSpans.Where(textSpan =>
                 textSpan.Start >= 0 &&
-                (textSpan.CodeFile == null
-                  ? textSpan.Start <= sourceCodeFile.Code.Length
-                  : textSpan.Start <= textSpan.CodeFile.Code.Length)
-                ).Union();
+                textSpan.End <= textSpan.GetCodeFile(sourceCodeFile).Code.Length)
+                .Union();
             LineColumnTextSpan = sourceCodeFile.GetLineColumnTextSpan(TextSpan);
 
             PatternKey = matchResult.Pattern.Key;

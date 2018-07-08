@@ -227,6 +227,13 @@ namespace PT.PM.Common
             return result;
         }
 
+        public static LineColumnTextSpan GetLineColumnTextSpan(this TextSpan textSpan, CodeFile currentFile)
+        {
+            return textSpan.GetCodeFile(currentFile).GetLineColumnTextSpan(textSpan);
+        }
+
+        public static CodeFile GetCodeFile(this TextSpan textSpan, CodeFile currentFile) => textSpan.CodeFile ?? currentFile;
+
         public static string Substring(this string str, TextSpan textSpan)
         {
             return str.Substring(textSpan.Start, textSpan.Length);
