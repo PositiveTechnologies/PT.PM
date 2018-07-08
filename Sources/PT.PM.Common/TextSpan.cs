@@ -72,7 +72,7 @@ namespace PT.PM.Common
 
         public bool Includes(TextSpan span)
         {
-            return  Start <= span.Start && End >= span.End;
+            return CodeFile == span.CodeFile && span.Start >= Start && span.End <= End;
         }
 
         public TextSpan AddOffset(int offset)
