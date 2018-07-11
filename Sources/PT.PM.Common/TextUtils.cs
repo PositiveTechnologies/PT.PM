@@ -181,13 +181,13 @@ namespace PT.PM.Common
         public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
         {
             CodeFile result = null;
-
             if (fileName == null)
             {
                 result = currentCodeFile;
             }
             else
             {
+                fileName = Path.GetFullPath(fileName);
                 if (codeFiles != null)
                     lock (codeFiles)
                     {
