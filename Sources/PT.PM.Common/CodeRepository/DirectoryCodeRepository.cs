@@ -73,19 +73,28 @@ namespace PT.PM.Common.CodeRepository
                 relativePath = fileName;
             }
 
-            int substringIndex = RootPath.Length;
-            if (substringIndex + 1 < relativePath.Length && relativePath[substringIndex] == Path.DirectorySeparatorChar)
+            string rootPath;
+            if (fileName.StartsWith(RootPath))
             {
-                substringIndex += 1;
+                rootPath = RootPath;
+                int substringIndex = RootPath.Length;
+                if (substringIndex + 1 < relativePath.Length && relativePath[substringIndex] == Path.DirectorySeparatorChar)
+                {
+                    substringIndex += 1;
+                }
+                relativePath = relativePath.Substring(substringIndex);
             }
-            relativePath = relativePath.Substring(substringIndex);
+            else
+            {
+                rootPath = "";
+            }
 
             CodeFile result;
             try
             {
                 result = new CodeFile(File.ReadAllText(fileName))
                 {
-                    RootPath = RootPath,
+                    RootPath = rootPath,
                     RelativePath = relativePath,
                     Name = name
                 };
@@ -94,7 +103,7 @@ namespace PT.PM.Common.CodeRepository
             {
                 result = new CodeFile("")
                 {
-                    RootPath = RootPath,
+                    RootPath = rootPath,
                     RelativePath = relativePath,
                     Name = name
                 };
