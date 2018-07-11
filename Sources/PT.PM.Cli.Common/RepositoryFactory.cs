@@ -26,7 +26,8 @@ namespace PT.PM.Cli.Common
             }
             else if (File.Exists(path))
             {
-                if (Path.GetExtension(path).EqualsIgnoreCase(".zip"))
+                string extensions = Path.GetExtension(path);
+                if (extensions.EqualsIgnoreCase(".zip"))
                 {
                     sourceCodeRepository = new ZipCachingRepository(path)
                     {
@@ -36,6 +37,7 @@ namespace PT.PM.Cli.Common
                 else
                 {
                     sourceCodeRepository = new FileCodeRepository(path);
+                    sourceCodeRepository.LoadJson = extensions.EqualsIgnoreCase(".json");
                 }
             }
             else

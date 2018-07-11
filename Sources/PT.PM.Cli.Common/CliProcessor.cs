@@ -13,6 +13,19 @@ namespace PT.PM.Cli.Common
             return new Workflow();
         }
 
+        protected override WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, Stage>
+            InitWorkflow(CliParameters parameters)
+        {
+            var workflow = (Workflow)base.InitWorkflow(parameters);
+
+            if (parameters.StartStage == null && workflow.SourceCodeRepository.LoadJson)
+            {
+                workflow.StartStage = Stage.Ust;
+            }
+
+            return workflow;
+        }
+
         protected override void LogStatistics(WorkflowResult workflowResult)
         {
             var workflowLoggerHelper = new WorkflowLoggerHelper(Logger, workflowResult);

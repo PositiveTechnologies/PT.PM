@@ -107,7 +107,6 @@ namespace PT.PM.Cli.Common
             var workflow = CreateWorkflow(parameters);
 
             workflow.SourceCodeRepository = CreateSourceCodeRepository(parameters);
-            workflow.SourceCodeRepository.LoadJson = IsLoadJson(parameters.StartStage);
 
             if (parameters.Languages?.Count() > 0)
             {
@@ -177,6 +176,7 @@ namespace PT.PM.Cli.Common
             }
             if (parameters.StartStage != null)
             {
+                workflow.SourceCodeRepository.LoadJson = IsLoadJson(parameters.StartStage);
                 workflow.StartStage = parameters.StartStage.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);
             }
             if (parameters.DumpStages?.Count() > 0)
