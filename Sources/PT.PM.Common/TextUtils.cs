@@ -187,7 +187,7 @@ namespace PT.PM.Common
             }
             else
             {
-                fileName = Path.GetFullPath(fileName);
+                fileName = fileName.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
                 if (codeFiles != null)
                     lock (codeFiles)
                     {
