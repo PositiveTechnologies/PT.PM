@@ -11,6 +11,7 @@ namespace PT.PM.Common
 {
     public static class CommonUtils
     {
+        private static bool? isRunningOnLinux = null;
         private static bool? isSupportThreadAbort = null;
 
         public const string Prefix = "pt.pm_";
@@ -41,8 +42,13 @@ namespace PT.PM.Common
         {
             get
             {
-                int p = (int)Environment.OSVersion.Platform;
-                return (p == 4) || (p == 6) || (p == 128);
+                if (isRunningOnLinux == null)
+                {
+                    int p = (int)Environment.OSVersion.Platform;
+                    isRunningOnLinux = (p == 4) || (p == 6) || (p == 128);
+                }
+
+                return isRunningOnLinux.Value;
             }
         }
 

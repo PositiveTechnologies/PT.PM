@@ -37,11 +37,6 @@ namespace PT.PM.Common
             return i;
         }
 
-        public static string NormDirSeparator(this string path)
-        {
-            return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
-        }
-
         public static TextSpan Union(this IEnumerable<TextSpan> textSpans)
         {
             if (textSpans == null || textSpans.Count() == 0)
@@ -130,7 +125,6 @@ namespace PT.PM.Common
             try
             {
                 int beginLine, beginColumn, endLine, endColumn;
-                
 
                 var index = firstPart.IndexOf("..");
                 if (index != -1)
@@ -187,7 +181,8 @@ namespace PT.PM.Common
             }
             else
             {
-                fileName = fileName.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+                fileName = fileName.NormDirSeparator();
+
                 if (codeFiles != null)
                     lock (codeFiles)
                     {
@@ -263,6 +258,18 @@ namespace PT.PM.Common
         public static string Escape(this string str)
         {
             return str.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        }
+
+        public static string NormDirSeparator(this string path)
+        {
+            char notPlatformSeparator = CommonUtils.IsRunningOnLinux ? '\\' : '/';
+
+            if (path.Contains(notPlatformSeparator))
+            {
+                return path.Replace(notPlatformSeparator, Path.DirectorySeparatorChar);
+            }
+
+            return path;
         }
 
         private static void ParseLineColumn(string text, out int line, out int column)
