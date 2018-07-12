@@ -111,6 +111,25 @@ namespace PT.PM.Matching.Tests
         }
 
         [Test]
+        public void Match_PatternAnyWithRegex()
+        {
+            PatternRoot pattern = new PatternRoot
+            {
+                DebugInfo = "Test PatternAny",
+                Languages = new HashSet<Language> { Php.Language },
+                Node = new PatternAny("pass")
+            };
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
+
+            WorkflowResult workflowResult = workflow.Process();
+            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
+            patternsRepository.Clear();
+
+            int expectedCount = 6;
+            Assert.AreEqual(expectedCount, matchResults.Count());
+        }
+
+        [Test]
         public void Match_PatternWithNegation_CorrectCount()
         {
             var code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
