@@ -90,6 +90,34 @@ namespace PT.PM.Common
             return lineIndexes.Length;
         }
 
+        public string GetStringAtLine(int line)
+        {
+            InitLineIndexesIfRequired();
+
+            line = line - StartLine;
+
+            if (line < 0 || line >= lineIndexes.Length)
+            {
+                throw new IndexOutOfRangeException(nameof(line));
+            }
+
+            int endInd;
+            if (line + 1 < lineIndexes.Length)
+            {
+                endInd = lineIndexes[line + 1] - 1;
+                if (endInd - 1 > 0 && Code[endInd - 1] == '\r')
+                {
+                    endInd--;
+                }
+            }
+            else
+            {
+                endInd = Code.Length;
+            }
+
+            return Code.Substring(lineIndexes[line], endInd - lineIndexes[line]);
+        }
+
         public bool IsEmpty => string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(Code);
 
         private void InitLineIndexesIfRequired()
