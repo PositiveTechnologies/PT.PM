@@ -37,14 +37,11 @@ namespace PT.PM.Matching.Patterns
                 }
                 return context.AddMatch(ust);
             }
-
-            if (ust is IdToken idUst)
+            string ustString = ust.ToString();
+            var match = Regex.Match(ustString);
+            if (match.Value.Equals(ustString))
             {
-                var match = Regex.Match(idUst.Id);
-                if (match.Success)
-                {
-                    return context.AddMatch(idUst);
-                }
+                return context.AddMatch(ust);
             }
             return context.Fail();
         }

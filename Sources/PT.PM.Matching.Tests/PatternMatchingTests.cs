@@ -117,7 +117,7 @@ namespace PT.PM.Matching.Tests
             {
                 DebugInfo = "Test PatternAny",
                 Languages = new HashSet<Language> { Php.Language },
-                Node = new PatternAny("pass")
+                Node = new PatternAny("password")
             };
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
@@ -125,7 +125,7 @@ namespace PT.PM.Matching.Tests
             IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             patternsRepository.Clear();
 
-            int expectedCount = 6;
+            int expectedCount = 3;
             Assert.AreEqual(expectedCount, matchResults.Count());
         }
 
