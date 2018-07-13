@@ -1,7 +1,7 @@
 image:
 - Visual Studio 2017
 - Ubuntu
-version: 1.6.1.{build}
+version: 1.6.2.{build}
 configuration: Release
 skip_branch_with_pr: true
 install:
