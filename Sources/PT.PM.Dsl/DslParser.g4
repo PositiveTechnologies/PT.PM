@@ -40,7 +40,7 @@ expression
     | '(' expression '.' ')?' literalOrPatternId           #MemberReferenceOrLiteralExpression
     | expression op=('==' | '!=') expression               #ComparisonExpression
     | expression '=' expression                            #AssignmentExpression
-    | 'new' literalOrPatternId '(' args? ')'               #ObjectCreationExpression
+    | 'new' literalOrPatternId ('.' literalOrPatternId)* '(' args? ')'    #ObjectCreationExpression
     | 'function' '{' expression '}'                        #FunctionExpression
     | patternLiterals                                      #PatternLiteralExpression
     | literal                                              #LiteralExpression

@@ -295,8 +295,11 @@ namespace PT.PM.Dsl
 
         public PatternUst VisitObjectCreationExpression(DslParser.ObjectCreationExpressionContext context)
         {
-            PatternUst literal = VisitLiteralOrPatternId(context.literalOrPatternId());
-            var typeToken = new PatternIdToken(literal.ToString(), literal.TextSpan);
+            IEnumerable<PatternUst> literals = context.literalOrPatternId()
+                .Select(literalOrPatternId => VisitLiteralOrPatternId(literalOrPatternId));
+            string typeString = string.Join(".", literals);
+            TextSpan typeTextSpan = literals.Select(literal => literal.TextSpan).Union();
+            var typeToken = new PatternIdToken(typeString, typeTextSpan);
             PatternArgs args = context.args() == null
                 ? new PatternArgs()
                 : (PatternArgs)VisitArgs(context.args());

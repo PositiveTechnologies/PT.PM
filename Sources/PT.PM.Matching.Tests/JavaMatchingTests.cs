@@ -51,5 +51,28 @@ namespace PT.PM.Matching.Tests
             var useOfNullPointerException = patternDtos.Single(dto => dto.Description.StartsWith("Use of NullPointerException"));
             Assert.AreEqual(1, matchResults.Count(r => r.PatternKey == useOfNullPointerException.Key));
         }
+
+        [Test]
+        public void Match_Issue156_ObjectCreationByFullyQualifiedName()
+        {
+            var workflow = new Workflow(
+                new MemoryCodeRepository(new Dictionary<string, string>
+                {
+                    ["test.java"] = @"
+                    public class ProcessBuilderExample
+                    {
+                        public static void main(String[] args)
+                        {
+                            ProcessBuilder pb = new Java.Lang.ProcessBuilder(""bbb"", ""aaa"");
+                            Process process = pb.start();
+                        }
+                    }"
+                }),
+                new DslPatternRepository("new Java.Lang.ProcessBuilder(...)", "java"));
+
+            WorkflowResult result = workflow.Process();
+
+            Assert.AreEqual(1, result.TotalMatchesCount);
+        }
     }
 }
