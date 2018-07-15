@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace PT.PM.Common
 {
@@ -137,29 +138,28 @@ namespace PT.PM.Common
         private void InitLineIndexes()
         {
             int currentLine = StartLine;
-            int currentColumn = StartColumn;
-            string text = Code;
+            char[] chars = Code.ToCharArray();
 
-            var lineIndexesBuffer = new List<int>(text.Length / 25) { 0 };
-            int textIndex = 0;
-            while (textIndex < text.Length)
+            var lineIndexesBuffer = new List<int>(chars.Length / 25) { 0 };
+            int charIndex = 0;
+            int offset = 0;
+            while (charIndex < chars.Length)
             {
-                char c = text[textIndex];
+                char c = chars[charIndex];
+                int bytesCount = CommonUtils.DefaultFileEncoding.GetByteCount(chars, charIndex, 1);
                 if (c == '\r' || c == '\n')
                 {
                     currentLine++;
-                    currentColumn = StartColumn;
-                    if (c == '\r' && textIndex + 1 < text.Length && text[textIndex + 1] == '\n')
+                    if (c == '\r' && charIndex + 1 < chars.Length && chars[charIndex + 1] == '\n')
                     {
-                        textIndex++;
+                        offset += bytesCount;
+                        charIndex++;
+                        bytesCount = CommonUtils.DefaultFileEncoding.GetByteCount(chars, charIndex, 1);
                     }
-                    lineIndexesBuffer.Add(textIndex + 1);
+                    lineIndexesBuffer.Add(offset + bytesCount);
                 }
-                else
-                {
-                    currentColumn++;
-                }
-                textIndex++;
+                offset += bytesCount;
+                charIndex++;
             }
 
             lineIndexes = lineIndexesBuffer.ToArray();
