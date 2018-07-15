@@ -13,7 +13,7 @@ namespace PT.PM
 
         public DetectionResult DetectIfRequired(string codeFileName)
         {
-            var codeFile = new CodeFile(File.ReadAllText(codeFileName))
+            var codeFile = new CodeFile(File.ReadAllText(codeFileName, CommonUtils.DefaultFileEncoding))
             {
                 Name = codeFileName
             };

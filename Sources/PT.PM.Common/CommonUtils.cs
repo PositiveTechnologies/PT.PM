@@ -2,9 +2,9 @@
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace PT.PM.Common
@@ -16,12 +16,7 @@ namespace PT.PM.Common
 
         public const string Prefix = "pt.pm_";
 
-        public static string FormatJson(string json)
-        {
-            dynamic parsedJson = JsonConvert.DeserializeObject(json);
-            string formattedJson = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-            return formattedJson;
-        }
+        public static readonly Encoding DefaultFileEncoding = Encoding.UTF8;
 
         public static bool TryConvertToInt64(this string value, int fromBase, out long result)
         {

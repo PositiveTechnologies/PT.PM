@@ -92,7 +92,7 @@ namespace PT.PM.Common.CodeRepository
             CodeFile result;
             try
             {
-                result = new CodeFile(File.ReadAllText(fileName))
+                result = new CodeFile(File.ReadAllText(fileName, CommonUtils.DefaultFileEncoding))
                 {
                     RootPath = rootPath,
                     RelativePath = relativePath,

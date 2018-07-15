@@ -204,7 +204,7 @@ namespace PT.PM.Common
                         }
                     }
 
-                    var code = File.ReadAllText(fileName);
+                    var code = File.ReadAllText(fileName, CommonUtils.DefaultFileEncoding);
                     result = new CodeFile(code)
                     {
                         RootPath = Path.GetDirectoryName(fileName),
