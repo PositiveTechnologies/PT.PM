@@ -125,7 +125,7 @@ namespace PT.PM.Matching.Tests
             IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             patternsRepository.Clear();
 
-            int expectedCount = 3;
+            int expectedCount = 6;
             Assert.AreEqual(expectedCount, matchResults.Count());
         }
 
