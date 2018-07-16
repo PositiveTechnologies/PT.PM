@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common
 {
@@ -56,6 +58,64 @@ namespace PT.PM.Common
             }
 
             return resultTextSpan;
+        }
+
+        public static List<TextSpan> GetCombinedTextSpan(Ust ust, TextSpan[] locations)
+        {
+            List<TextSpan> result = new List<TextSpan>();
+            var initialTextSpans = ust.InitialTextSpans.OrderBy(x => x).ToList();
+            var escapeLength = (ust as StringLiteral)?.EscapeCharsLength ?? 1;
+
+            foreach (TextSpan location in locations)
+            {
+                int offset = 0;
+                int leftBound = 1;
+                int rightBound =
+                    initialTextSpans[0].Length - 2 * escapeLength + 1; // - quotes length and then + 1
+                TextSpan textSpan = TextSpan.Zero;
+
+                // Check first initial textspan separately
+                if (location.Start < rightBound && location.End > rightBound)
+                {
+                    textSpan = location;
+                }
+
+                for (int i = 1; i < initialTextSpans.Count; i++)
+                {
+                    var initTextSpan = initialTextSpans[i];
+                    var prevTextSpan = initialTextSpans[i - 1];
+                    leftBound += prevTextSpan.Length - 2 * escapeLength;
+                    rightBound += initTextSpan.Length - 2 * escapeLength;
+                    offset += initTextSpan.Start - prevTextSpan.End + 2 * escapeLength;
+
+                    if (location.Start < leftBound && location.End < leftBound)
+                    {
+                        break;
+                    }
+
+                    if (location.Start >= leftBound && location.Start < rightBound)
+                    {
+                        textSpan = location.AddOffset(offset);
+                        if (location.End <= rightBound)
+                        {
+                            result.Add(textSpan);
+                            break;
+                        }
+                    }
+
+                    if (!textSpan.IsZero && location.End <= rightBound)
+                    {
+                        result.Add(new TextSpan(textSpan.Start, location.Length + offset, textSpan.CodeFile));
+                        break;
+                    }
+                }
+
+                if (textSpan.IsZero)
+                {
+                    result.Add(location);
+                }
+            }
+            return result;
         }
 
         public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
