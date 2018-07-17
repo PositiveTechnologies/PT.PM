@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net462</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;net472</TargetFrameworks>
     <ApplicationIcon>..\PT.PM.ico</ApplicationIcon>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -9,7 +9,7 @@
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <OutputPath>..\..\bin\PatternEditorDebug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;netcoreapp2.1</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

@@ -15,9 +15,9 @@ namespace PT.PM.TestUtils
         public const string TooLongTestDurationMessage = "Too long test duration.";
 
         public static string RepositoryDirectory;
-        public static string PtPmExePath = $@"bin/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.0/PT.PM.Cli.dll";
+        public static string PtPmExePath = $@"bin/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.1/PT.PM.Cli.dll";
         public static string GrammarsDirectory = "Sources/antlr-grammars-v4";
-        public static string TestsPath = $@"Tests/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.0";
+        public static string TestsPath = $@"Tests/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.1";
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
 
