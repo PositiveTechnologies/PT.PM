@@ -15,7 +15,7 @@ namespace PT.PM.Matching
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
-        public static readonly string[] KeySeparators = new [] { ",", ";"};
+        public static readonly string[] KeySeparators = new[] { ",", ";" };
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -98,7 +98,13 @@ namespace PT.PM.Matching
 
         private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
-            MatchAndAddResult(patternUst, ust, context, results);
+            MatchAndAddResult(patternUst, ust, context, results, false);
+
+            if (context.Locations.Count > 0)
+            {
+                context.Locations.Clear();
+                return;
+            }
 
             if (ust != null)
             {
@@ -110,7 +116,7 @@ namespace PT.PM.Matching
         }
 
         private static void MatchAndAddResult(
-            PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
+            PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results, bool clearLocations = true)
         {
             if (patternUst.MatchUst(ust, context).Success)
             {
@@ -118,11 +124,22 @@ namespace PT.PM.Matching
                 {
                     context.Locations.Add(ust.TextSpan);
                 }
+
+                if (ust is RootUst)
+                {
+                    context.Locations.Clear();
+                    return;
+                }
+
                 var match = new MatchResult(ust.Root, context.PatternUst, context.Locations);
+
                 results.Add(match);
                 context.Logger.LogInfo(match);
             }
-            context.Locations.Clear();
+            if (clearLocations || (patternUst is PatternAnd && !context.Success))
+            {
+                context.Locations.Clear();
+            }
         }
     }
 }

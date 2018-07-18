@@ -36,6 +36,7 @@ namespace PT.PM.Matching.Tests
                 "test_call_2(a, e);\n" +
                 "test_call_3(c, d, a);\n" +
                 "test_call_4(c, d, a, e);\n" +
+                "$member->$password->$reference = \"hardcoded\";\n" +
                 "\n" +
                 "$password = a;\n" +
                 "call_with_password_param(1, $password, 2);\n" +
@@ -117,7 +118,11 @@ namespace PT.PM.Matching.Tests
             {
                 DebugInfo = "Test PatternAny",
                 Languages = new HashSet<Language> { Php.Language },
-                Node = new PatternAny("password")
+                Node = new PatternAssignmentExpression
+                {
+                    Left = new PatternAny("password"),
+                    Right = new PatternStringRegexLiteral("hardcoded")
+                }
             };
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
@@ -125,8 +130,25 @@ namespace PT.PM.Matching.Tests
             IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             patternsRepository.Clear();
 
-            int expectedCount = 6;
-            Assert.AreEqual(expectedCount, matchResults.Count());
+            Assert.AreEqual(1, matchResults.Count());
+        }
+
+        [Test]
+        public void Match_PatternAnyRegexAsOnlyNode()
+        {
+            PatternRoot pattern = new PatternRoot
+            {
+                DebugInfo = "Test PatternAny",
+                Languages = new HashSet<Language> { Php.Language },
+                Node = new PatternAny("password")
+            };
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
+
+            WorkflowResult workflowResult = workflow.Process();
+            patternsRepository.Clear();
+
+            Assert.AreEqual(1, workflowResult.MatchResults.Count);
+            Assert.AreEqual(7, ((MatchResult)workflowResult.MatchResults[0]).TextSpans.Length);
         }
 
         [Test]
@@ -186,9 +208,9 @@ namespace PT.PM.Matching.Tests
             patternsRepository.Clear();
 
             LineColumnTextSpan textSpan = matchResults[1].LineColumnTextSpan;
-            Assert.AreEqual(14, textSpan.BeginLine);
+            Assert.AreEqual(15, textSpan.BeginLine);
             Assert.AreEqual(12, textSpan.BeginColumn);
-            Assert.AreEqual(16, textSpan.EndLine);
+            Assert.AreEqual(17, textSpan.EndLine);
             Assert.AreEqual(7, textSpan.EndColumn);
         }
 

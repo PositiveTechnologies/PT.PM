@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternStringRegexLiteral : PatternUst<StringLiteral>, IRegexPattern
     {
-        public string Default => @".*";
+        public string Default => ".*";
 
         public string RegexString
         {
@@ -39,8 +40,8 @@ namespace PT.PM.Matching.Patterns
                 .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength);
 
             if (stringLiteral.InitialTextSpans?.Any() ?? false)
-            {                
-                matches = TextUtils.GetCombinedTextSpan(stringLiteral, matches.ToArray());
+            {
+                matches = UstUtils.GetAlignedTextSpan(stringLiteral, matches.ToArray());
             }
 
             matches = matches.Select(location => location.AddOffset(stringLiteral.TextSpan.Start));

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
-using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
@@ -43,17 +41,12 @@ namespace PT.PM.Matching.Patterns
                 return context.AddMatch(ust);
             }
 
-            if (ust.Children.Length > 0)
-            {
-                return context.Fail();
-            }
-
             string ustString = ust.ToString();
             var matches = Regex.MatchRegex(ustString, (ust as StringLiteral)?.EscapeCharsLength ?? 0);
 
             if (ust.InitialTextSpans?.Any() ?? false)
             {
-                matches = TextUtils.GetCombinedTextSpan(ust, matches).ToArray();
+                matches = UstUtils.GetAlignedTextSpan(ust, matches).ToArray();
             }
 
             matches = matches.Select(location => location.AddOffset(ust.TextSpan.Start)).ToArray();
@@ -65,7 +58,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString()
         {
-            return $@"<#""{(Any ? "" : RegexString + "#")}"">";
+            return $@"<""#{(Any ? "" : RegexString + "#")}"">";
         }
     }
 }
