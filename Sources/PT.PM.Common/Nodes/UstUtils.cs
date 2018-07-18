@@ -141,7 +141,7 @@ namespace PT.PM.Common.Nodes
             }
             else
             {
-                return usts.First().TextSpan.Union(usts.Last().TextSpan);
+                return usts.First().TextSpan.Union(usts.LastOrDefault(x => !x.TextSpan.IsZero)?.TextSpan ?? TextSpan.Zero);
             }
         }
 
