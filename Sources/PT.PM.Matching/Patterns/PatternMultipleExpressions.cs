@@ -9,7 +9,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternMultipleExpressions(TextSpan textSpan = default(TextSpan))
+        public PatternMultipleExpressions(TextSpan textSpan = default)
             : base(textSpan)
         {
         }

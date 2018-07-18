@@ -12,7 +12,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternThrowStatement(PatternUst pattern, TextSpan textSpan = default(TextSpan))
+        public PatternThrowStatement(PatternUst pattern, TextSpan textSpan = default)
             : base(textSpan)
         {
             Expression = pattern ?? throw new ArgumentNullException(nameof(pattern));

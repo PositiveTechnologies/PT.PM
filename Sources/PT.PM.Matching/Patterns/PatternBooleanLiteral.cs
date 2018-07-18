@@ -11,7 +11,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternBooleanLiteral(bool? value = null, TextSpan textSpan = default(TextSpan))
+        public PatternBooleanLiteral(bool? value = null, TextSpan textSpan = default)
             : base(textSpan)
         {
             Boolean = value;

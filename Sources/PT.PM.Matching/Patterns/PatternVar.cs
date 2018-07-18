@@ -13,7 +13,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternVar(string id, TextSpan textSpan = default(TextSpan))
+        public PatternVar(string id, TextSpan textSpan = default)
             : base(textSpan)
         {
             Id = id;

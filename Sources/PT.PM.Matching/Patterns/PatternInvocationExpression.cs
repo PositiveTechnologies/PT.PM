@@ -15,7 +15,7 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternInvocationExpression(PatternUst target, PatternArgs arguments,
-            TextSpan textSpan = default(TextSpan))
+            TextSpan textSpan = default)
             : base(textSpan)
         {
             Target = target;

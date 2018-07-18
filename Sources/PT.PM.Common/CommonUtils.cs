@@ -112,7 +112,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static T ParseEnum<T>(this string str, bool ignoreIncorrectValue, T defaultValue = default(T), ILogger logger = null)
+        public static T ParseEnum<T>(this string str, bool ignoreIncorrectValue, T defaultValue = default, ILogger logger = null)
             where T : Enum
         {
             if (ParseEnum(str, ignoreIncorrectValue, out T parsed, defaultValue, logger))
@@ -122,7 +122,7 @@ namespace PT.PM.Common
             return defaultValue;
         }
 
-        public static bool ParseEnum<T>(this string str, bool ignoreIncorrectValue, out T result, T defaultValue = default(T), ILogger logger = null)
+        public static bool ParseEnum<T>(this string str, bool ignoreIncorrectValue, out T result, T defaultValue = default, ILogger logger = null)
             where T : Enum
         {
             if (ignoreIncorrectValue)
@@ -145,7 +145,7 @@ namespace PT.PM.Common
             return true;
         }
 
-        public static int ConvertToInt32(this uint obj, bool ignoreIncorrectValue, int defaultValue = default(int), ILogger logger = null)
+        public static int ConvertToInt32(this uint obj, bool ignoreIncorrectValue, int defaultValue = default, ILogger logger = null)
         {
             try
             {

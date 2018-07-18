@@ -84,7 +84,7 @@ namespace PT.PM
 
         public int MemoryConsumptionMb { get; set; } = 300;
 
-        public TimeSpan FileTimeout { get; set; } = default(TimeSpan);
+        public TimeSpan FileTimeout { get; set; } = default;
 
         public int MaxStackSize { get; set; } = Utils.DefaultMaxStackSize;
 
@@ -118,14 +118,14 @@ namespace PT.PM
 
         public string TempDir { get; set; } = "";
 
-        public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default(CancellationToken));
+        public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default);
 
         public WorkflowBase(TStage stage)
         {
             Stage = stage;
         }
 
-        protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default)
         {
             RootUst result = null;
             var stopwatch = new Stopwatch();

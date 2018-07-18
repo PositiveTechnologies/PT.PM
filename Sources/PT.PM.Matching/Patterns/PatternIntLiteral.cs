@@ -11,7 +11,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternIntLiteral(long value, TextSpan textSpan = default(TextSpan))
+        public PatternIntLiteral(long value, TextSpan textSpan = default)
             : base(textSpan)
         {
             Value = value;

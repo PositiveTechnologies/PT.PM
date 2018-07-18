@@ -12,7 +12,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternNot(PatternUst pattern, TextSpan textSpan = default(TextSpan))
+        public PatternNot(PatternUst pattern, TextSpan textSpan = default)
             : base(textSpan)
         {
             Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));

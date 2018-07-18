@@ -18,7 +18,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternStatements(IEnumerable<PatternUst> statements, TextSpan textSpan = default(TextSpan))
+        public PatternStatements(IEnumerable<PatternUst> statements, TextSpan textSpan = default)
             : base(textSpan)
         {
             Statements = statements?.ToList() ?? new List<PatternUst>();

@@ -15,12 +15,12 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternIntRangeLiteral(long value, TextSpan textSpan = default(TextSpan))
+        public PatternIntRangeLiteral(long value, TextSpan textSpan = default)
             : this(value, value, textSpan)
         {
         }
 
-        public PatternIntRangeLiteral(long minValue, long maxValue, TextSpan textSpan = default(TextSpan))
+        public PatternIntRangeLiteral(long minValue, long maxValue, TextSpan textSpan = default)
             : base(textSpan)
         {
             MinValue = minValue;

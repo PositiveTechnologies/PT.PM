@@ -14,7 +14,7 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternAssignmentExpression(PatternUst left, PatternUst right,
-            TextSpan textSpan = default(TextSpan))
+            TextSpan textSpan = default)
             : base(textSpan)
         {
             Left = left;

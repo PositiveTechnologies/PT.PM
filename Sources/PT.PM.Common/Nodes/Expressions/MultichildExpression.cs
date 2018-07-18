@@ -23,7 +23,7 @@ namespace PT.PM.Common.Nodes.Expressions
             }
             else
             {
-                TextSpan = default(TextSpan);
+                TextSpan = default;
             }
         }
 

@@ -50,7 +50,7 @@ namespace PT.PM.AntlrUtils
             }
             else
             {
-                result = default(TextSpan);
+                result = default;
             }
             return result;
         }

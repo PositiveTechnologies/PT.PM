@@ -10,7 +10,7 @@ namespace PT.PM.Common.Nodes.Tokens
         public override string TextValue => TypeText;
 
         public TypeToken(string type)
-            : this(type, default(TextSpan))
+            : this(type, default)
         {
         }
 

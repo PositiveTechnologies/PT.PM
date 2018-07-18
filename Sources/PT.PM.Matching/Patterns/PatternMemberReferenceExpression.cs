@@ -14,7 +14,7 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternMemberReferenceExpression(PatternUst target, PatternUst name,
-            TextSpan textSpan = default(TextSpan))
+            TextSpan textSpan = default)
             : base(textSpan)
         {
             Target = target;

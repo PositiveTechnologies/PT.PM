@@ -49,7 +49,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        protected PatternUst(TextSpan textSpan = default(TextSpan))
+        protected PatternUst(TextSpan textSpan = default)
         {
             TextSpan = textSpan;
         }

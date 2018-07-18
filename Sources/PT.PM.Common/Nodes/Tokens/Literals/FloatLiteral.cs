@@ -9,7 +9,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public override string TextValue => Value.ToString(CultureInfo.InvariantCulture);
 
         public FloatLiteral(double value)
-            : this(value, default(TextSpan))
+            : this(value, default)
         {
         }
 

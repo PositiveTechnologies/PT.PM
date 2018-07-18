@@ -10,7 +10,7 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public ExpressionStatement(Expression expression, TextSpan textSpan = default(TextSpan))
+        public ExpressionStatement(Expression expression, TextSpan textSpan = default)
             : base(textSpan)
         {
             Expression = expression;

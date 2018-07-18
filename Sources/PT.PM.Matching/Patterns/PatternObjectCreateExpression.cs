@@ -13,7 +13,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternObjectCreateExpression(PatternUst type, PatternArgs args, TextSpan textSpan = default(TextSpan))
+        public PatternObjectCreateExpression(PatternUst type, PatternArgs args, TextSpan textSpan = default)
             : base(textSpan)
         {
             Type = type;

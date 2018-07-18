@@ -16,7 +16,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         public Expression Initializer { get; set; }
 
         public ParameterDeclaration(InOutModifierLiteral modifier, TypeToken type,
-            IdToken name, TextSpan textSpan = default(TextSpan))
+            IdToken name, TextSpan textSpan = default)
             : base(textSpan)
         {
             Modifier = modifier;

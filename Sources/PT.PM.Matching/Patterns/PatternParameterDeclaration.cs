@@ -15,7 +15,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternParameterDeclaration(PatternUst type, PatternUst name, TextSpan textSpan = default(TextSpan))
+        public PatternParameterDeclaration(PatternUst type, PatternUst name, TextSpan textSpan = default)
             : base(textSpan)
         {
             Type = type;

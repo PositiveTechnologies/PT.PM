@@ -16,7 +16,7 @@ namespace PT.PM.Matching.Patterns
         }
 
         public PatternBinaryOperatorExpression(PatternUst left, PatternBinaryOperatorLiteral op, PatternUst right,
-            TextSpan textSpan = default(TextSpan))
+            TextSpan textSpan = default)
             : base(textSpan)
         {
             Left = left;

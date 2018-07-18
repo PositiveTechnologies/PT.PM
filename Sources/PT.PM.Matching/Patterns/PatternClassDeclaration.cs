@@ -23,7 +23,7 @@ namespace PT.PM.Matching.Patterns
 
         public PatternClassDeclaration(IEnumerable<PatternUst> modifiers,
             PatternUst name, IEnumerable<PatternUst> baseTypes,
-            PatternArbitraryDepth body, TextSpan textSpan = default(TextSpan))
+            PatternArbitraryDepth body, TextSpan textSpan = default)
             : base(textSpan)
         {
             Modifiers = modifiers?.ToList() ?? new List<PatternUst>();

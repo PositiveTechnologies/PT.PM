@@ -41,7 +41,7 @@ namespace PT.PM
         }
 
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -98,7 +98,7 @@ namespace PT.PM
 
         private void ProcessFileWithTimeout(string fileName, PatternMatcher patternMatcher, WorkflowResult result, CancellationToken cancellationToken)
         {
-            if (FileTimeout == default(TimeSpan) && MaxStackSize == 0)
+            if (FileTimeout == default && MaxStackSize == 0)
             {
                 ProcessFile(fileName, patternMatcher, result, cancellationToken);
             }
@@ -111,7 +111,7 @@ namespace PT.PM
                 };
                 thread.Start();
 
-                if (FileTimeout == default(TimeSpan))
+                if (FileTimeout == default)
                 {
                     thread.Join();
                 }
@@ -129,7 +129,7 @@ namespace PT.PM
             }
         }
 
-        private void ProcessFile(string fileName, PatternMatcher patternMatcher, WorkflowResult workflowResult, CancellationToken cancellationToken = default(CancellationToken))
+        private void ProcessFile(string fileName, PatternMatcher patternMatcher, WorkflowResult workflowResult, CancellationToken cancellationToken = default)
         {
             RootUst ust = null;
             try
