@@ -252,10 +252,12 @@ namespace PT.PM.Cli.Common
                     {
                         try
                         {
-                            var settings = new JsonSerializerSettings();
-                            settings.MissingMemberHandling = ContinueWithInvalidArgs
-                                ? MissingMemberHandling.Ignore
-                                : MissingMemberHandling.Error;
+                            var settings = new JsonSerializerSettings
+                            {
+                                MissingMemberHandling = ContinueWithInvalidArgs
+                                    ? MissingMemberHandling.Ignore
+                                    : MissingMemberHandling.Error
+                            };
                             JsonConvert.PopulateObject(content, parameters, settings);
                             FillLoggerSettings(parameters);
                             Logger.LogInfo($"Load settings from {configFile}...");
@@ -299,8 +301,8 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            Logger.IsLogErrors = parameters.IsLogErrors.HasValue ? parameters.IsLogErrors.Value : false;
-            Logger.IsLogDebugs = parameters.IsLogDebugs.HasValue ? parameters.IsLogDebugs.Value : false;
+            Logger.IsLogErrors = parameters.IsLogErrors ?? false;
+            Logger.IsLogDebugs = parameters.IsLogDebugs ?? false;
         }
 
         protected virtual TWorkflowResult RunWorkflow(TParameters parameters)
