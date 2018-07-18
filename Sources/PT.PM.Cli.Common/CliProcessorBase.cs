@@ -17,11 +17,11 @@ using System.Threading;
 namespace PT.PM.Cli.Common
 {
     public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters, TRenderStage>
-        where TStage : struct, IConvertible
+        where TStage : Enum
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
         where TParameters : CliParameters, new()
-        where TRenderStage : struct, IConvertible
+        where TRenderStage : Enum
     {
         public ILogger Logger { get; protected set; } = new ConsoleFileLogger();
 

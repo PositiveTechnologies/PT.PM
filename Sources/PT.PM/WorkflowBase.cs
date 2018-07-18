@@ -21,10 +21,10 @@ using System.Threading.Tasks;
 namespace PT.PM
 {
     public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
-        where TStage : struct, IConvertible
+        where TStage : Enum
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
-        where TRenderStage : struct, IConvertible
+        where TRenderStage : Enum
     {
         protected ILogger logger = DummyLogger.Instance;
         protected Task filesCountTask;
