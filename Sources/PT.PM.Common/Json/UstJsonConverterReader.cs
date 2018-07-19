@@ -110,7 +110,7 @@ namespace PT.PM.Common.Json
 
             if (!IgnoreExtraProcess)
             {
-                ExtraProcess(ust, jObject);
+                ExtraProcess(ust, jObject, serializer);
             }
 
             if (rootUst != null)
@@ -124,14 +124,14 @@ namespace PT.PM.Common.Json
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new InvalidOperationException($"Use {(GetType().Name.Replace("Reader", "Writer"))} for JSON writing");
+            throw new InvalidOperationException($"Use {GetType().Name.Replace("Reader", "Writer")} for JSON writing");
         }
 
         protected virtual void ProcessRootUst(RootUst rootUst)
         {
         }
 
-        protected virtual void ExtraProcess(Ust ust, JObject ustJObject)
+        protected virtual void ExtraProcess(Ust ust, JObject ustJObject, JsonSerializer serializer)
         {
         }
     }
