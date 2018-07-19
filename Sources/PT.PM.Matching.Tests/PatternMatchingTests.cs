@@ -134,7 +134,7 @@ namespace PT.PM.Matching.Tests
         }
 
         [Test]
-        public void Match_PatternAnyRegexAsOnlyNode()
+        public void Match_PatternAnyWithRegexAsSingleNode()
         {
             PatternRoot pattern = new PatternRoot
             {
