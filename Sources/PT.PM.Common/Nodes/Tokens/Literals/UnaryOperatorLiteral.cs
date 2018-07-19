@@ -29,7 +29,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public UnaryOperator UnaryOperator { get; set; }
 
         public UnaryOperatorLiteral(UnaryOperator op)
-            : this(op, default(TextSpan))
+            : this(op, default)
         {
         }
 

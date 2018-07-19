@@ -14,7 +14,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternIndexerExpression(PatternUst target, PatternArgs arguments, TextSpan textSpan = default(TextSpan))
+        public PatternIndexerExpression(PatternUst target, PatternArgs arguments, TextSpan textSpan = default)
             : base(textSpan)
         {
             Target = target;

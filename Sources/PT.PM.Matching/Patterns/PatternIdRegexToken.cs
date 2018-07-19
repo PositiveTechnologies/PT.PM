@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternIdRegexToken(string regexId, TextSpan textSpan = default(TextSpan))
+        public PatternIdRegexToken(string regexId, TextSpan textSpan = default)
             : base(textSpan)
         {
             RegexString = regexId;

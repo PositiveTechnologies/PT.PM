@@ -11,7 +11,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternArbitraryDepth(PatternUst pattern, TextSpan textSpan = default(TextSpan))
+        public PatternArbitraryDepth(PatternUst pattern, TextSpan textSpan = default)
             : base(textSpan)
         {
             Pattern = pattern;

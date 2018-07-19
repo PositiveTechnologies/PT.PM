@@ -17,11 +17,11 @@ using System.Threading;
 namespace PT.PM.Cli.Common
 {
     public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters, TRenderStage>
-        where TStage : struct, IConvertible
+        where TStage : Enum
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
         where TParameters : CliParameters, new()
-        where TRenderStage : struct, IConvertible
+        where TRenderStage : Enum
     {
         public ILogger Logger { get; protected set; } = new ConsoleFileLogger();
 
@@ -252,10 +252,12 @@ namespace PT.PM.Cli.Common
                     {
                         try
                         {
-                            var settings = new JsonSerializerSettings();
-                            settings.MissingMemberHandling = ContinueWithInvalidArgs
-                                ? MissingMemberHandling.Ignore
-                                : MissingMemberHandling.Error;
+                            var settings = new JsonSerializerSettings
+                            {
+                                MissingMemberHandling = ContinueWithInvalidArgs
+                                    ? MissingMemberHandling.Ignore
+                                    : MissingMemberHandling.Error
+                            };
                             JsonConvert.PopulateObject(content, parameters, settings);
                             FillLoggerSettings(parameters);
                             Logger.LogInfo($"Load settings from {configFile}...");
@@ -299,8 +301,8 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            Logger.IsLogErrors = parameters.IsLogErrors.HasValue ? parameters.IsLogErrors.Value : false;
-            Logger.IsLogDebugs = parameters.IsLogDebugs.HasValue ? parameters.IsLogDebugs.Value : false;
+            Logger.IsLogErrors = parameters.IsLogErrors ?? false;
+            Logger.IsLogDebugs = parameters.IsLogDebugs ?? false;
         }
 
         protected virtual TWorkflowResult RunWorkflow(TParameters parameters)

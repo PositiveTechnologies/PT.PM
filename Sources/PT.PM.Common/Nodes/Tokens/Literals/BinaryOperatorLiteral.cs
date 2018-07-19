@@ -51,7 +51,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public BinaryOperator BinaryOperator { get; set; }
 
         public BinaryOperatorLiteral(BinaryOperator op)
-            : this(op, default(TextSpan))
+            : this(op, default)
         {
         }
 

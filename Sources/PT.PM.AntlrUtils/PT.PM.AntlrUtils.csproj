@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -15,7 +16,7 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-    <PackageReference Include="Antlr4.Runtime" Version="4.6.5-beta002" />
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.5-rc002" />
     
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
   </ItemGroup>

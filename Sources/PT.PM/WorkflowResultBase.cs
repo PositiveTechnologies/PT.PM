@@ -10,9 +10,9 @@ using System.Threading;
 namespace PT.PM
 {
     public abstract class WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
-        where TStage : struct, IConvertible
+        where TStage : Enum
         where TMatchResult : MatchResultBase<TPattern>
-        where TRenderStage : struct, IConvertible
+        where TRenderStage : Enum
     {
         // Can GC parse trees because they are intermediate objects.
         private List<WeakReference<ParseTree>> parseTrees = new List<WeakReference<ParseTree>>();

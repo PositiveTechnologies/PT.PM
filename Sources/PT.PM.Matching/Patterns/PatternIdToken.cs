@@ -28,7 +28,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternIdToken(string id, TextSpan textSpan = default(TextSpan))
+        public PatternIdToken(string id, TextSpan textSpan = default)
         {
             Id = id;
             TextSpan = textSpan;

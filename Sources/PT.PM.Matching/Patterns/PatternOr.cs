@@ -15,7 +15,7 @@ namespace PT.PM.Matching.Patterns
             Patterns = new List<PatternUst>();
         }
 
-        public PatternOr(IEnumerable<PatternUst> patterns, TextSpan textSpan = default(TextSpan))
+        public PatternOr(IEnumerable<PatternUst> patterns, TextSpan textSpan = default)
             : base(textSpan)
         {
             Patterns = patterns?.ToList()

@@ -11,7 +11,7 @@ namespace PT.PM.Common.Nodes.Expressions
         public List<AssignmentExpression> Variables { get; set; }
 
         public VariableDeclarationExpression(TypeToken type, IEnumerable<AssignmentExpression> variables,
-            TextSpan textSpan = default(TextSpan))
+            TextSpan textSpan = default)
             : base(textSpan)
         {
             Type = type;

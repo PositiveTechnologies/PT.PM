@@ -11,7 +11,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternStringLiteral(string @string, TextSpan textSpan = default(TextSpan))
+        public PatternStringLiteral(string @string, TextSpan textSpan = default)
             : base(textSpan)
         {
             String = @string;

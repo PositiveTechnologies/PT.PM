@@ -9,7 +9,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternNullLiteral(TextSpan textSpan = default(TextSpan))
+        public PatternNullLiteral(TextSpan textSpan = default)
             : base(textSpan)
         {
         }

@@ -24,7 +24,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternStringRegexLiteral(string regexString, TextSpan textSpan = default(TextSpan))
+        public PatternStringRegexLiteral(string regexString, TextSpan textSpan = default)
             : base(textSpan)
         {
             RegexString = regexString;

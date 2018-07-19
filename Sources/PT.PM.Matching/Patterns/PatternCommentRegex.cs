@@ -23,7 +23,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternCommentRegex(string patternRegex, TextSpan textSpan = default(TextSpan))
+        public PatternCommentRegex(string patternRegex, TextSpan textSpan = default)
             : base(textSpan)
         {
             RegexString = patternRegex;

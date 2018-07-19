@@ -14,7 +14,7 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternBinaryOperatorLiteral(string opText, TextSpan textSpan = default(TextSpan))
+        public PatternBinaryOperatorLiteral(string opText, TextSpan textSpan = default)
             : base(textSpan)
         {
             BinaryOperator op;
@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Patterns
             BinaryOperator = op;
         }
 
-        public PatternBinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan = default(TextSpan))
+        public PatternBinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan = default)
             : base(textSpan)
         {
             BinaryOperator = op;
