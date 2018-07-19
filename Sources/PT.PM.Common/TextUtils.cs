@@ -60,7 +60,6 @@ namespace PT.PM.Common
             return resultTextSpan;
         }
 
-
         public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);

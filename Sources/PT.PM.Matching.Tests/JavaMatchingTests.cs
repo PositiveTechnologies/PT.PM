@@ -26,14 +26,7 @@ namespace PT.PM.Matching.Tests
                 .Where(patternDto => patternDto.Languages.Contains("Java")).ToArray();
             foreach (PatternDto dto in patternDtos)
             {
-                try
-                {
-                    Assert.Greater(matchResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
-                }
-                catch (Exception ex)
-                {
-                    Console.Write("ss");
-                }
+                Assert.Greater(matchResults.Count(p => p.PatternKey == dto.Key), 0, dto.Description);
             }
 
             var improperValidationEmptyMethodPartial = patternDtos.Single(dto => dto.Description.StartsWith("ImproperValidationEmptyMethodPartial"));

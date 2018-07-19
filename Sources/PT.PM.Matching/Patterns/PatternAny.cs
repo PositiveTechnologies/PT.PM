@@ -58,7 +58,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString()
         {
-            return $@"<""#{(Any ? "" : RegexString + "#")}"">";
+            return $@"<#{(Any ? "" : RegexString + "#")}>";
         }
     }
 }

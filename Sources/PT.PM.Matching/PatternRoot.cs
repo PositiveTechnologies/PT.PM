@@ -98,15 +98,9 @@ namespace PT.PM.Matching
 
         private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
-            MatchAndAddResult(patternUst, ust, context, results, false);
+            MatchAndAddResult(patternUst, ust, context, results);
 
-            if (context.Locations.Count > 0)
-            {
-                context.Locations.Clear();
-                return;
-            }
-
-            if (ust != null)
+            if (ust != null && !(patternUst is PatternAny && context.Success))
             {
                 foreach (Ust child in ust.Children)
                 {
@@ -116,7 +110,7 @@ namespace PT.PM.Matching
         }
 
         private static void MatchAndAddResult(
-            PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results, bool clearLocations = true)
+            PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
             if (patternUst.MatchUst(ust, context).Success)
             {
@@ -125,21 +119,14 @@ namespace PT.PM.Matching
                     context.Locations.Add(ust.TextSpan);
                 }
 
-                if (ust is RootUst)
-                {
-                    context.Locations.Clear();
-                    return;
-                }
-
-                var match = new MatchResult(ust.Root, context.PatternUst, context.Locations);
+                var match = new MatchResult(
+                    ust is RootUst rootUst ? rootUst : ust.Root, context.PatternUst, context.Locations);
 
                 results.Add(match);
                 context.Logger.LogInfo(match);
             }
-            if (clearLocations || (patternUst is PatternAnd && !context.Success))
-            {
-                context.Locations.Clear();
-            }
+
+            context.Locations.Clear();
         }
     }
 }
