@@ -28,7 +28,7 @@ namespace PT.PM.Tests
             Node = new PatternAssignmentExpression
             {
                 Left = new PatternIdRegexToken(),
-                Right = new PatternAnyExpression()
+                Right = new PatternAny()
             },
         };
 
@@ -108,12 +108,12 @@ namespace PT.PM.Tests
                         new PatternAssignmentExpression
                         {
                              Left = new PatternVar("pwd") { Value = new PatternIdRegexToken("password") },
-                             Right = new PatternAnyExpression()
+                             Right = new PatternAny()
                         },
 
                         new PatternInvocationExpression
                         {
-                            Target = new PatternAnyExpression(),
+                            Target = new PatternAny(),
                             Arguments = new PatternArgs(
                                 new PatternMultipleExpressions(),
                                 new PatternVar("pwd"),

@@ -104,7 +104,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdToken("setSeed"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     },
                     Arguments = new PatternArgs(new PatternIntRangeLiteral())
                 }
@@ -136,7 +136,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdRegexToken("^(checkCallingOrSelfPermission|checkCallingOrSelfUriPermission)$"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     },
                     Arguments = new PatternArgs(new PatternMultipleExpressions())
                 }
@@ -209,11 +209,11 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java.Language },
                 Node = new PatternInvocationExpression
                 {
-                    Arguments = new PatternArgs(new PatternAnyExpression()),
+                    Arguments = new PatternArgs(new PatternAny()),
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdToken("sendStickyBroadcast"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     }
                 }
             });
@@ -227,13 +227,13 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression()
+                        new PatternAny(),
+                        new PatternAny()
                     ),
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdToken("sendStickyBroadcastAsUser"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     }
                 }
             });
@@ -248,13 +248,13 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression()
+                        new PatternAny(),
+                        new PatternAny()
                     ),
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdToken("getInsecure"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     }
                 }
             });
@@ -268,13 +268,13 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
+                        new PatternAny(),
                         new PatternStringRegexLiteral()
                     ),
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdToken("hash"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     }
                 }
             });
@@ -287,11 +287,11 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>() { Java.Language },
                 Node = new PatternInvocationExpression
                 {
-                    Arguments = new PatternArgs(new PatternAnyExpression()),
+                    Arguments = new PatternArgs(new PatternAny()),
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdToken("sendBroadcast"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     }
                 }
             });
@@ -308,13 +308,13 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression()
+                        new PatternAny(),
+                        new PatternAny()
                     ),
                     Target = new PatternMemberReferenceExpression
                     {
                         Name = new PatternIdToken("registerReceiver"),
-                        Target = new PatternAnyExpression()
+                        Target = new PatternAny()
                     }
                 }
             });
@@ -360,7 +360,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Target = new PatternMemberReferenceExpression
                         {
                             Name = new PatternIdToken("addCookie"),
-                            Target = new PatternAnyExpression()
+                            Target = new PatternAny()
                         }
                     }
                 )

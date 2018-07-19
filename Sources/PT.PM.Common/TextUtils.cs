@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common
 {

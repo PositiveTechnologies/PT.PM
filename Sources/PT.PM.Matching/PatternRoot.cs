@@ -15,7 +15,7 @@ namespace PT.PM.Matching
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
-        public static readonly string[] KeySeparators = new [] { ",", ";"};
+        public static readonly string[] KeySeparators = new[] { ",", ";" };
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -54,7 +54,7 @@ namespace PT.PM.Matching
         [JsonIgnore]
         public string DebugInfo { get; set; } = "";
 
-        public PatternUst Node { get; set; } = PatternAny.Instance;
+        public PatternUst Node { get; set; } = new PatternAny();
 
         public CodeFile CodeFile { get; set; } = CodeFile.Empty;
 
@@ -100,7 +100,7 @@ namespace PT.PM.Matching
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
-            if (ust != null)
+            if (ust != null && !(patternUst is PatternAny))
             {
                 foreach (Ust child in ust.Children)
                 {
@@ -118,10 +118,14 @@ namespace PT.PM.Matching
                 {
                     context.Locations.Add(ust.TextSpan);
                 }
-                var match = new MatchResult(ust.Root, context.PatternUst, context.Locations);
+
+                var match = new MatchResult(
+                    ust is RootUst rootUst ? rootUst : ust.Root, context.PatternUst, context.Locations);
+
                 results.Add(match);
                 context.Logger.LogInfo(match);
             }
+
             context.Locations.Clear();
         }
     }

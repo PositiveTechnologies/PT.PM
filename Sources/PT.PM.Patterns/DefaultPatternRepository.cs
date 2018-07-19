@@ -67,7 +67,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             new PatternIdRegexToken(@"(?i)(password|pwd)"),
                             new PatternMemberReferenceExpression
                             {
-                                Target = new PatternAnyExpression(),
+                                Target = new PatternAny(),
                                 Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
                             }
                         ),
@@ -85,7 +85,7 @@ namespace PT.PM.Patterns.PatternsRepository
                             new PatternIdRegexToken(@"(?i)(password|pwd)"),
                             new PatternMemberReferenceExpression
                             {
-                                Target = new PatternAnyExpression(),
+                                Target = new PatternAny(),
                                 Name = new PatternIdRegexToken(@"(?i)(password|pwd)")
                             }
                         ),
@@ -153,13 +153,13 @@ namespace PT.PM.Patterns.PatternsRepository
                 (
                     new PatternBinaryOperatorExpression
                     {
-                        Left = new PatternAnyExpression(),
+                        Left = new PatternAny(),
                         Operator = new PatternBinaryOperatorLiteral(BinaryOperator.Equal),
                         Right = new PatternNullLiteral()
                     },
                     new PatternBinaryOperatorExpression
                     {
-                        Left = new PatternAnyExpression(),
+                        Left = new PatternAny(),
                         Operator = new PatternBinaryOperatorLiteral(BinaryOperator.NotEqual),
                         Right = new PatternNullLiteral()
                     }

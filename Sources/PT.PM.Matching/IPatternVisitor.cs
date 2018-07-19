@@ -7,7 +7,6 @@ namespace PT.PM.Matching
         T Visit(PatternUst patternBase);
         T Visit(PatternAnd patternAnd);
         T Visit(PatternAny patternAny);
-        T Visit(PatternAnyExpression patternAnyExpression);
         T Visit(PatternArgs patternArgs);
         T Visit(PatternAssignmentExpression patternAssignmentExpression);
         T Visit(PatternThisReferenceToken patternThisReferenceToken);

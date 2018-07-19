@@ -50,7 +50,7 @@ namespace PT.PM.Matching.Patterns
 
         private MatchContext MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchContext context)
         {
-            if (LocalVariable == true || fieldDeclaration.Variables.Count() != 1)
+            if (LocalVariable || fieldDeclaration.Variables.Count() != 1)
             {
                 return context.Fail();
             }
