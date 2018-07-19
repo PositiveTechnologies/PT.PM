@@ -54,10 +54,4 @@
     <EmbeddedResource Include="..\PT.PM.ico" Link="PT.PM.ico" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="PT.PM.PatternEditor.runtimeconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
