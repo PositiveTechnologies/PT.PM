@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
@@ -7,14 +8,14 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternAny : PatternUst<Ust>, IRegexPattern
     {
-        public static PatternAny Instance = new PatternAny();
-
         public string Default => ".*";
 
         public string RegexString
         {
-            get => Regex.ToString();
-            set => Regex = new Regex(string.IsNullOrEmpty(value) ? Default : value, RegexOptions.Compiled);
+            get => Regex?.ToString() ?? "";
+            set => Regex = value == null
+                ? null
+                : new Regex(string.IsNullOrEmpty(value) ? Default : value, RegexOptions.Compiled);
         }
 
         public Regex Regex { get; private set; }
@@ -25,7 +26,8 @@ namespace PT.PM.Matching.Patterns
         {
         }
 
-        public PatternAny(string regex)
+        public PatternAny(string regex, TextSpan textSpan = default(TextSpan))
+            : base(textSpan)
         {
             RegexString = regex;
         }
@@ -58,7 +60,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString()
         {
-            return $@"<#{(Any ? "" : RegexString + "#")}>";
+            return Any ? "<#>" : $@"<#{RegexString}#>";
         }
     }
 }

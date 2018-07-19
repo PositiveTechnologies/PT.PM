@@ -22,8 +22,8 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternIdRegexToken("(?i)^mysql_connect$"),
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
+                        new PatternAny(),
+                        new PatternAny(),
                         new PatternStringRegexLiteral()
                     )
                 }
@@ -143,7 +143,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternIdRegexToken("(?i)crypt"),
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
+                        new PatternAny(),
                         new PatternStringRegexLiteral()
                     )
                 }
@@ -169,7 +169,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     },
                     new PatternAssignmentExpression
                     {
-                        Left = new PatternAnyExpression(),
+                        Left = new PatternAny(),
                         Right =  new PatternObjectCreateExpression
                         {
                             Type = new PatternIdToken("Zend_Filter_Encrypt"),
@@ -202,13 +202,13 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternIdRegexToken("(?i)setcookie"),
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
                         new PatternStringLiteral("/"),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression()
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny()
                     )
                 }
             });
@@ -223,13 +223,13 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternIdRegexToken("(?i)setcookie"),
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
                         new PatternStringRegexLiteral(@"^\..*"),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression()
+                        new PatternAny(),
+                        new PatternAny()
                     )
                 }
             });
@@ -244,12 +244,12 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternIdRegexToken("(?i)setcookie"),
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression()
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny()
                     )
                 }
             });
@@ -264,11 +264,11 @@ namespace PT.PM.Patterns.PatternsRepository
                     Target = new PatternIdRegexToken("(?i)setcookie"),
                     Arguments = new PatternArgs
                     (
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression(),
-                        new PatternAnyExpression()
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny(),
+                        new PatternAny()
                     )
                 }
             });

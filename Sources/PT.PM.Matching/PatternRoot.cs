@@ -54,7 +54,7 @@ namespace PT.PM.Matching
         [JsonIgnore]
         public string DebugInfo { get; set; } = "";
 
-        public PatternUst Node { get; set; } = PatternAny.Instance;
+        public PatternUst Node { get; set; } = new PatternAny();
 
         public CodeFile CodeFile { get; set; } = CodeFile.Empty;
 
@@ -100,7 +100,7 @@ namespace PT.PM.Matching
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
-            if (ust != null && !(patternUst is PatternAny && context.Success))
+            if (ust != null && !(patternUst is PatternAny))
             {
                 foreach (Ust child in ust.Children)
                 {

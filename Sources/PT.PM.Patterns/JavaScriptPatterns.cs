@@ -21,7 +21,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Left = new PatternMemberReferenceExpression
                     {
-                        Target = new PatternAnyExpression(),
+                        Target = new PatternAny(),
                         Name = new PatternIdRegexToken("^on")
                     },
                     Right = new PatternArbitraryDepth

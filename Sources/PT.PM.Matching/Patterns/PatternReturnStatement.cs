@@ -6,7 +6,7 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternReturnStatement : PatternUst<ReturnStatement>
     {
-        public PatternUst Expression { get; set; } = PatternAny.Instance;
+        public PatternUst Expression { get; set; } = new PatternAny();
 
         public PatternReturnStatement()
         {

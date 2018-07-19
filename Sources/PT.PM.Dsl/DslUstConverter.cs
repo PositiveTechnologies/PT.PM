@@ -118,7 +118,7 @@ namespace PT.PM.Dsl
 
         public PatternUst VisitPatternStatement(DslParser.PatternStatementContext context)
         {
-            return new PatternAnyExpression(context.GetTextSpan());
+            return new PatternAny(null, context.GetTextSpan());
         }
 
         public PatternUst VisitPatternMultipleStatement(DslParser.PatternMultipleStatementContext context)
@@ -324,7 +324,7 @@ namespace PT.PM.Dsl
 
         public PatternUst VisitPatternExpression(DslParser.PatternExpressionContext context)
         {
-            return new PatternAnyExpression(context.GetTextSpan());
+            return new PatternAny(null, context.GetTextSpan());
         }
 
         public PatternUst VisitParenthesisExpression([NotNull] DslParser.ParenthesisExpressionContext context)

@@ -6,7 +6,7 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternNot : PatternUst<Ust>
     {
-        public PatternUst Pattern { get; set; } = PatternAny.Instance;
+        public PatternUst Pattern { get; set; } = new PatternAny();
 
         public PatternNot()
         {

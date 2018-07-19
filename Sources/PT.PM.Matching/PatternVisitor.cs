@@ -36,11 +36,6 @@ namespace PT.PM.Matching
             return VisitChildren(patternAny);
         }
 
-        public virtual T Visit(PatternAnyExpression patternAnyExpression)
-        {
-            return VisitChildren(patternAnyExpression);
-        }
-
         public virtual T Visit(PatternArgs patternArgs)
         {
             return VisitChildren(patternArgs);
