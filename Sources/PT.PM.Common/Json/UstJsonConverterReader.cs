@@ -84,7 +84,7 @@ namespace PT.PM.Common.Json
             ancestors.Push(ust);
 
             List <TextSpan> textSpans =
-                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList() ?? null;
+                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList();
 
             if (textSpans != null && textSpans.Count > 0)
             {

@@ -51,7 +51,7 @@ namespace PT.PM.Common.Json
             return JsonConvert.SerializeObject(nodes, jsonSettings);
         }
 
-        protected JsonSerializerSettings PrepareSettings(bool writer, CodeFile jsonFile)
+        protected virtual JsonSerializerSettings PrepareSettings(bool writer, CodeFile jsonFile)
         {
             JsonConverter jsonConverter;
 
