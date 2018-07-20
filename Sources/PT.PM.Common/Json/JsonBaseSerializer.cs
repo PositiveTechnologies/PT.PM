@@ -54,6 +54,7 @@ namespace PT.PM.Common.Json
         protected virtual JsonSerializerSettings PrepareSettings(bool writer, CodeFile jsonFile)
         {
             JsonConverter jsonConverter;
+            UstContractResolver contractResolver = null;
 
             if (writer)
             {
@@ -83,25 +84,39 @@ namespace PT.PM.Common.Json
                 CurrentCodeFile = CurrectCodeFile
             };
 
+            var codeFileConverter = new CodeFileJsonConverter
+            {
+                TextSpanJsonConverter = textSpanJsonConverter,
+                ExcludeDefaults = ExcludeDefaults,
+                IncludeCode = IncludeCode,
+                JsonFile = JsonFile,
+                Logger = Logger
+            };
+
+            if (!writer)
+            {
+                contractResolver = new UstContractResolver()
+                {
+                    UstJsonReader = jsonConverter,
+                    CodeFileConverter = codeFileConverter,
+                    TextSpanConverter = textSpanJsonConverter,
+                    LanguageConverter = LanguageJsonConverter.Instance
+                };
+            }
+
             var jsonSettings = new JsonSerializerSettings
             {
                 MissingMemberHandling = SetMissingMemberHandling(),
                 Formatting = Indented ? Formatting.Indented : Formatting.None,
                 Converters = new List<JsonConverter>
                 {
-                    stringEnumConverter,
                     jsonConverter,
-                    LanguageJsonConverter.Instance,
+                    codeFileConverter,
+                    stringEnumConverter,
                     textSpanJsonConverter,
-                    new CodeFileJsonConverter
-                    {
-                        TextSpanJsonConverter = textSpanJsonConverter,
-                        ExcludeDefaults = ExcludeDefaults,
-                        IncludeCode = IncludeCode,
-                        JsonFile = JsonFile,
-                        Logger = Logger
-                    }
-                }
+                    LanguageJsonConverter.Instance
+                },
+                ContractResolver = contractResolver
             };
 
             return jsonSettings;
