@@ -55,24 +55,7 @@ namespace PT.PM.Common.Json
         {
             JsonConverter jsonConverter;
             UstContractResolver contractResolver = null;
-
-            if (writer)
-            {
-                UstJsonConverterWriter jsonConverterWriter = CreateConverterWriter();
-                jsonConverterWriter.IncludeTextSpans = IncludeTextSpans;
-                jsonConverterWriter.ExcludeDefaults = ExcludeDefaults;
-                jsonConverterWriter.Logger = Logger;
-
-                jsonConverter = jsonConverterWriter;
-            }
-            else
-            {
-                UstJsonConverterReader jsonConverterReader = CreateConverterReader(jsonFile);
-                jsonConverterReader.Logger = Logger;
-                jsonConverterReader.IgnoreExtraProcess = IgnoreExtraProcess;
-
-                jsonConverter = jsonConverterReader;
-            }
+            List<JsonConverter> converters = null;
 
             var textSpanJsonConverter = new TextSpanJsonConverter
             {
@@ -93,8 +76,32 @@ namespace PT.PM.Common.Json
                 Logger = Logger
             };
 
-            if (!writer)
+            if (writer)
             {
+                UstJsonConverterWriter jsonConverterWriter = CreateConverterWriter();
+                jsonConverterWriter.IncludeTextSpans = IncludeTextSpans;
+                jsonConverterWriter.ExcludeDefaults = ExcludeDefaults;
+                jsonConverterWriter.Logger = Logger;
+
+                jsonConverter = jsonConverterWriter;
+
+                converters = new List<JsonConverter>
+                {
+                    jsonConverter,
+                    codeFileConverter,
+                    stringEnumConverter,
+                    textSpanJsonConverter,
+                    LanguageJsonConverter.Instance
+                };
+            }
+            else
+            {
+                UstJsonConverterReader jsonConverterReader = CreateConverterReader(jsonFile);
+                jsonConverterReader.Logger = Logger;
+                jsonConverterReader.IgnoreExtraProcess = IgnoreExtraProcess;
+
+                jsonConverter = jsonConverterReader;
+
                 contractResolver = new UstContractResolver()
                 {
                     UstJsonReader = jsonConverter,
@@ -102,20 +109,18 @@ namespace PT.PM.Common.Json
                     TextSpanConverter = textSpanJsonConverter,
                     LanguageConverter = LanguageJsonConverter.Instance
                 };
+
+                converters = new List<JsonConverter>()
+                {
+                    stringEnumConverter
+                };
             }
 
             var jsonSettings = new JsonSerializerSettings
             {
                 MissingMemberHandling = SetMissingMemberHandling(),
                 Formatting = Indented ? Formatting.Indented : Formatting.None,
-                Converters = new List<JsonConverter>
-                {
-                    jsonConverter,
-                    codeFileConverter,
-                    stringEnumConverter,
-                    textSpanJsonConverter,
-                    LanguageJsonConverter.Instance
-                },
+                Converters = converters,
                 ContractResolver = contractResolver
             };
 

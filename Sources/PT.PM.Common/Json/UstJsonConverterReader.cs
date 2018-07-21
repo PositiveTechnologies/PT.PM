@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Reflection;
 using System;
 using System.Collections.Generic;
@@ -20,6 +23,10 @@ namespace PT.PM.Common.Json
         public CodeFile JsonFile { get; } = CodeFile.Empty;
 
         public bool IgnoreExtraProcess { get; set; } = false;
+
+        public LiteralJsonReader LiteralJsonReader { get; } = new LiteralJsonReader();
+
+        public TokenJsonReader TokenJsonReader { get; } = new TokenJsonReader();
 
         public UstJsonConverterReader(CodeFile jsonFile)
         {
@@ -83,7 +90,7 @@ namespace PT.PM.Common.Json
             }
             ancestors.Push(ust);
 
-            List <TextSpan> textSpans =
+            List<TextSpan> textSpans =
                 jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList();
 
             if (textSpans != null && textSpans.Count > 0)
@@ -101,7 +108,7 @@ namespace PT.PM.Common.Json
 
             try
             {
-                serializer.Populate(jObject.CreateReader(), ust);
+                ust = ReadAsObject(serializer, jObject.CreateReader(), ust, type);
             }
             catch (Exception ex)
             {
@@ -121,6 +128,24 @@ namespace PT.PM.Common.Json
 
             return ust;
         }
+
+        private Ust ReadAsObject(JsonSerializer serializer, JsonReader jsonReader, Ust ust, Type type)
+        {
+            if (type.IsSubclassOf(typeof(Literal)))
+            {
+                ust = LiteralJsonReader.Read(jsonReader, ust);
+            }
+            else if (type.IsSubclassOf(typeof(Token)))
+            {
+                ust = TokenJsonReader.Read(jsonReader, ust);
+            }
+            else
+            {
+                serializer.Populate(jsonReader, ust);
+            }
+            return ust;
+        }
+
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

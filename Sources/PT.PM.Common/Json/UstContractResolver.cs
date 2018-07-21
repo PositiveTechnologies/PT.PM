@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using System;
 
 namespace PT.PM.Common.Json
@@ -14,6 +15,7 @@ namespace PT.PM.Common.Json
         public JsonConverter TextSpanConverter { get; set; }
 
         public JsonConverter LanguageConverter { get; set; }
+
 
 
         protected override JsonContract CreateContract(Type objectType)
