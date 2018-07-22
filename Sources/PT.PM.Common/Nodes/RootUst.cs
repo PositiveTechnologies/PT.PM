@@ -30,6 +30,7 @@ namespace PT.PM.Common.Nodes
         {
             SourceCodeFile = sourceCodeFile ?? CodeFile.Empty;
             Language = language;
+            TextSpan = new TextSpan(0, SourceCodeFile.Code.Length);
         }
 
         public override Ust[] GetChildren()
@@ -48,7 +49,7 @@ namespace PT.PM.Common.Nodes
         private Language[] GetSublangauges()
         {
             var result = new HashSet<Language>();
-            var descendants = this.WhereDescendants(child => child is RootUst)
+            var descendants = this.WhereDescendantsOrSelf(child => child is RootUst)
                 .Cast<RootUst>();
             foreach (RootUst descendant in descendants)
             {
