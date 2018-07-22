@@ -29,7 +29,7 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchContext Match(Ust ust, MatchContext context)
         {
-            var result = ust.AnyDescendant(ustNode => MatchExpression(ustNode, context).Success);
+            var result = ust.AnyDescendantOrSelf(ustNode => MatchExpression(ustNode, context).Success);
             return context.Set(result).AddUstIfSuccess(ust);
         }
 

@@ -33,7 +33,7 @@ namespace PT.PM.Tests
             string fileName = Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs");
             WorkflowResult result = TestUtility.CheckFile(fileName, Stage.Ust);
 
-            IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().WhereDescendants().Skip(1);
+            IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().WhereDescendantsOrSelf().Skip(1);
             foreach (var descendant in descendantsExceptFirst)
             {
                 if (!(descendant is RootUst))

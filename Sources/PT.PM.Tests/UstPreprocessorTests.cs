@@ -61,7 +61,7 @@ namespace PT.PM.Tests
             };
             var ust = workflow.Process().Usts.First();
 
-            Assert.IsTrue(ust.AnyDescendant(
+            Assert.IsTrue(ust.AnyDescendantOrSelf(
                 node => node is StringLiteral str && str.Text == "none"));
         }
 

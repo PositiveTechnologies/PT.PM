@@ -145,7 +145,7 @@ namespace PT.PM.PhpParseTreeUst
             result.Root = root;
             result.Parent = root;
             int jsCodeOffset = Tokens[jsStartCodeInd].StartIndex;
-            result.ApplyActionToDescendants(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(jsCodeOffset));
+            result.ApplyActionToDescendantsAndSelf(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(jsCodeOffset));
             return result;
         }
 

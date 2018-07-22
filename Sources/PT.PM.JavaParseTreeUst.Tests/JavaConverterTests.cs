@@ -86,7 +86,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                     Initializers = data.Item1,
                     Sizes = data.Item2
                 };
-                bool exist = ust.AnyDescendant(node => node.Equals(arrayCreationExpression));
+                bool exist = ust.AnyDescendantOrSelf(node => node.Equals(arrayCreationExpression));
                 Assert.IsTrue(exist, "Test failed on " + i + " iteration.");
             }
         }
@@ -109,7 +109,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
 
-            Assert.IsTrue(ust.AnyDescendant(ustNode =>
+            Assert.IsTrue(ust.AnyDescendantOrSelf(ustNode =>
                 ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
         }
 
@@ -119,7 +119,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
             string fileName = Path.Combine(TestUtility.GrammarsDirectory, "java", "examples", "AllInOne7.java");
             var workflowResults = TestUtility.CheckFile(fileName, Stage.Ust);
             var ust = workflowResults.Usts.First();
-            bool result = ust.AnyDescendant(descendant =>
+            bool result = ust.AnyDescendantOrSelf(descendant =>
             {
                 return descendant is TypeDeclaration typeDeclaration &&
                        typeDeclaration.BaseTypes.Any(type => type.TypeText == "ActionListener");
