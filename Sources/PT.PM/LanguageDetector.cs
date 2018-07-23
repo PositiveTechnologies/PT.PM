@@ -58,11 +58,11 @@ namespace PT.PM
             string languagesString = string.Join(", ", languages.Select(lang => lang.Title));
             if (detectionResult != null)
             {
-                Logger.LogDebug($"Language {detectionResult.Language} (from {languagesString}) has been detected for file \"{codeFile}\". ");
+                Logger.LogDebug($"Language {detectionResult.Language} (from {languagesString}) detected for file \"{codeFile}\". ");
             }
             else
             {
-                Logger.LogDebug($"Language has not been detected from ({languagesString}) for file \"{codeFile}\". ");
+                Logger.LogDebug($"Language is not detected from ({languagesString}) for file \"{codeFile}\". ");
             }
         }
 

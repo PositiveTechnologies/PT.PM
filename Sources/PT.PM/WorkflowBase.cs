@@ -133,7 +133,7 @@ namespace PT.PM
             {
                 if (SourceCodeRepository.IsFileIgnored(fileName, true))
                 {
-                    Logger.LogInfo($"File {fileName} has not been read.");
+                    Logger.LogInfo($"File {fileName} not read.");
                     return null;
                 }
 
@@ -156,7 +156,7 @@ namespace PT.PM
 
                         if (detectionResult == null)
                         {
-                            Logger.LogInfo($"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File has not been converter.");
+                            Logger.LogInfo($"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File not converted.");
                             return null;
                         }
 
@@ -192,7 +192,7 @@ namespace PT.PM
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
+                        Logger.LogInfo($"File {shortFileName} parsed (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddParseTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(parseTree);
 
@@ -231,13 +231,13 @@ namespace PT.PM
 
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
-                                Logger.LogInfo($"File {fileName} has been ignored.");
+                                Logger.LogInfo($"File {fileName} ignored.");
                                 return null;
                             }
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
+                        Logger.LogInfo($"File {shortFileName} converted (Elapsed: {stopwatch.Elapsed}).");
                         workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
 
                         if (IsSimplifyUst)
@@ -248,7 +248,7 @@ namespace PT.PM
                             stopwatch.Restart();
                             result = simplifier.Simplify(result);
                             stopwatch.Stop();
-                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} has been simplified (Elapsed: {stopwatch.Elapsed}).");
+                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified (Elapsed: {stopwatch.Elapsed}).");
                             workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
                         }
 
@@ -268,7 +268,7 @@ namespace PT.PM
             CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
             stopwatch.Stop();
 
-            Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
+            Logger.LogInfo($"File {fileName} read (Elapsed: {stopwatch.Elapsed}).");
 
             workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
             workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());

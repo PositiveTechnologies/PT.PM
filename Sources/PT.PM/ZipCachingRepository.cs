@@ -72,7 +72,7 @@ namespace PT.PM
                             {
                                 File.Delete(ArchiveName);
                             }
-                            Logger.LogInfo($"{Name} has been extracted.");
+                            Logger.LogInfo($"{Name} extracted.");
 
                             string[] directories = Directory.GetDirectories(RootPath);
                             if (directories.Length == 1)

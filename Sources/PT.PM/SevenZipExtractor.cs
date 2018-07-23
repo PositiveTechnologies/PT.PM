@@ -27,7 +27,7 @@ namespace PT.PM
         {
             if (!File.Exists(SevenZipPath))
             {
-                throw new Exception($"7z.exe has not been found at {SevenZipPath}");
+                throw new Exception($"7z.exe not found at {SevenZipPath}");
             }
 
             string errorMessage = null;

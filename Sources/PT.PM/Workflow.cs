@@ -83,7 +83,7 @@ namespace PT.PM
             }
             catch (OperationCanceledException)
             {
-                Logger.LogInfo("Scan has been cancelled");
+                Logger.LogInfo("Scan cancelled");
             }
 
             if (result.TotalProcessedFilesCount > 1)
@@ -142,7 +142,7 @@ namespace PT.PM
                     Stopwatch stopwatch = Stopwatch.StartNew();
                     IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
+                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns (Elapsed: {stopwatch.Elapsed}).");
                     workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
                     workflowResult.AddResultEntity(matchResults);
 
@@ -154,7 +154,7 @@ namespace PT.PM
             catch (OperationCanceledException)
             {
                 workflowResult.AddTerminatedFilesCount(1);
-                Logger.LogInfo($"{fileName} processing has been cancelled");
+                Logger.LogInfo($"{fileName} processing cancelled");
             }
             catch (ThreadAbortException)
             {

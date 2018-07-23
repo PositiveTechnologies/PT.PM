@@ -141,7 +141,7 @@ namespace PT.PM
             }
             while (!fileDownloaded);
 
-            Logger.LogInfo($"{Name} has been downloaded.");
+            Logger.LogInfo($"{Name} downloaded.");
         }
     }
 }
