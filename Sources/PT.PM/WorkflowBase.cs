@@ -193,7 +193,7 @@ namespace PT.PM
 
                         stopwatch.Stop();
                         Logger.LogInfo($"File {shortFileName} parsed (Elapsed: {stopwatch.Elapsed.Format()}).");
-                        workflowResult.AddParseTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddParseTime(stopwatch.Elapsed.Ticks);
                         workflowResult.AddResultEntity(parseTree);
 
                         if (parseTree is AntlrParseTree antlrParseTree)
@@ -238,7 +238,7 @@ namespace PT.PM
 
                         stopwatch.Stop();
                         Logger.LogInfo($"File {shortFileName} converted (Elapsed: {stopwatch.Elapsed.Format()}).");
-                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
+                        workflowResult.AddConvertTime(stopwatch.Elapsed.Ticks);
 
                         if (IsSimplifyUst)
                         {
@@ -249,7 +249,7 @@ namespace PT.PM
                             result = simplifier.Simplify(result);
                             stopwatch.Stop();
                             Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified (Elapsed: {stopwatch.Elapsed.Format()}).");
-                            workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
+                            workflowResult.AddSimplifyTime(stopwatch.Elapsed.Ticks);
                         }
 
                         DumpUst(result, workflowResult.SourceCodeFiles);
@@ -272,7 +272,7 @@ namespace PT.PM
 
             workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
             workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
-            workflowResult.AddReadTime(stopwatch.ElapsedTicks);
+            workflowResult.AddReadTime(stopwatch.Elapsed.Ticks);
             workflowResult.AddResultEntity(sourceCodeFile);
 
             return sourceCodeFile;
@@ -340,7 +340,7 @@ namespace PT.PM
                 stopwatch.Stop();
                 if (patterns.Count > 0)
                 {
-                    workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
+                    workflowResult.AddPatternsTime(stopwatch.Elapsed.Ticks);
                     workflowResult.AddResultEntity(patterns);
                     workflowResult.AddProcessedPatternsCount(patterns.Count);
                 }
