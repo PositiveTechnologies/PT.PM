@@ -64,8 +64,8 @@ namespace PT.PM.Common.Json
                 Language language = !string.IsNullOrEmpty(languageString)
                     ? languageString.ParseLanguages().FirstOrDefault()
                     : Uncertain.Language;
-
-                rootUst = (RootUst)Activator.CreateInstance(type, null, language);
+                var codeFile = jObject[nameof(RootUst.SourceCodeFile)]?.ToCodeFile(serializer);
+                rootUst = new RootUst(codeFile, language);
                 ProcessRootUst(rootUst);
 
                 ust = rootUst;

@@ -16,6 +16,11 @@ namespace PT.PM.Common.Json
                 .Select(token => token.ToObject<TextSpan>(jsonSerializer));
         }
 
+        public static CodeFile ToCodeFile(this JToken codeFileToken, JsonSerializer serializer)
+        {
+            return codeFileToken.ToObject<CodeFile>(serializer);
+        }
+
         public static JToken[] ReadArray(this JToken jArrayOrToken)
         {
             return jArrayOrToken is JArray jArray

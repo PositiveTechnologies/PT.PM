@@ -10,44 +10,38 @@ namespace PT.PM.Common.Json
     {
         public Ust Read(JsonReader reader, Ust ust)
         {
-            if (ust is StringLiteral stringLiteral)
+            switch (ust)
             {
-                ust = ReadAsStringLiteral(reader, stringLiteral);
-            }
-            else if (ust is IntLiteral intLiteral)
-            {
-                ust = ReadAsIntLiteral(reader, intLiteral);
-            }
-            else if (ust is BinaryOperatorLiteral binaryLiteral)
-            {
-                ust = ReadAsBinaryOperatorLiteral(reader, binaryLiteral);
-            }
-            else if (ust is BooleanLiteral boolLiteral)
-            {
-                ust = ReadAsBooleanLiteral(reader, boolLiteral);
-            }
-            else if (ust is CommentLiteral commentLiteral)
-            {
-                ust = ReadAsCommentLiteral(reader, commentLiteral);
-            }
-            else if (ust is ModifierLiteral modifierLiteral)
-            {
-                ust = ReadAsModifierLiteral(reader, modifierLiteral);
-            }
-            else if (ust is FloatLiteral floatLiteral)
-            {
-                ust = ReadAsFloatLiteral(reader, floatLiteral);
-            }
-            else if (ust is InOutModifierLiteral inOutLiteral)
-            {
-                ust = ReadAsInOutModifierLiteral(reader, inOutLiteral);
-            }
-            else if (ust is UnaryOperatorLiteral unaryLiteral)
-            {
-                ust = ReadAsUnaryOperatorLiteral(reader, unaryLiteral);
-            }
+                case StringLiteral stringLiteral:
+                    return ReadAsStringLiteral(reader, stringLiteral);
 
-            return ust;
+                case IntLiteral intLiteral:
+                    return ReadAsIntLiteral(reader, intLiteral);
+
+                case BinaryOperatorLiteral binaryLiteral:
+                    return ReadAsBinaryOperatorLiteral(reader, binaryLiteral);
+
+                case BooleanLiteral boolLiteral:
+                    return ReadAsBooleanLiteral(reader, boolLiteral);
+
+                case CommentLiteral commentLiteral:
+                    return ReadAsCommentLiteral(reader, commentLiteral);
+
+                case ModifierLiteral modifierLiteral:
+                    return ReadAsModifierLiteral(reader, modifierLiteral);
+
+                case FloatLiteral floatLiteral:
+                    return ReadAsFloatLiteral(reader, floatLiteral);
+
+                case InOutModifierLiteral inOutLiteral:
+                    return ReadAsInOutModifierLiteral(reader, inOutLiteral);
+
+                case UnaryOperatorLiteral unaryLiteral:
+                    return ReadAsUnaryOperatorLiteral(reader, unaryLiteral);
+
+                default:
+                    return ust;
+            }
         }
 
         private Ust ReadAsUnaryOperatorLiteral(JsonReader reader, UnaryOperatorLiteral unaryLiteral)
@@ -101,14 +95,14 @@ namespace PT.PM.Common.Json
             string currentProperty = string.Empty;
             while (reader.Read())
             {
-                if(reader.Value != null)
+                if (reader.Value != null)
                 {
-                    if(reader.TokenType == JsonToken.PropertyName)
+                    if (reader.TokenType == JsonToken.PropertyName)
                     {
                         currentProperty = reader.Value.ToString();
                         reader.Read();
                     }
-                    if(reader.TokenType == JsonToken.Float && currentProperty == nameof(FloatLiteral.Value))
+                    if (reader.TokenType == JsonToken.Float && currentProperty == nameof(FloatLiteral.Value))
                     {
                         floatLiteral.Value = float.Parse(reader.Value.ToString());
                         break;
@@ -243,7 +237,7 @@ namespace PT.PM.Common.Json
                         currentProperty = reader.Value.ToString();
                         reader.Read();
                     }
-                    if(reader.TokenType == JsonToken.String && currentProperty == nameof(StringLiteral.Text))
+                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(StringLiteral.Text))
                     {
                         stringLiteral.Text = reader.Value.ToString();
                     }
