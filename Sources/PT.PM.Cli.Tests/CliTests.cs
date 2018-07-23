@@ -24,7 +24,7 @@ namespace PT.PM.Cli.Tests
         public void CheckCli_Patterns_CorrectErrorMessages()
         {
             var cliProcessor = new TestsCliProcessor();
-            cliProcessor.Process($"--stage {Stage.Pattern} --patterns \"{patterns}\" --log-errors true");
+            cliProcessor.Process($"--stage {Stage.Pattern} --patterns \"{patterns}\"");
 
             var errors = (cliProcessor.Logger as LoggerMessageCounter).Errors;
             Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", errors[0]);
