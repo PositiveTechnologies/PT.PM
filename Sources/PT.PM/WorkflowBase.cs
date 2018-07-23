@@ -192,7 +192,7 @@ namespace PT.PM
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} parsed (Elapsed: {stopwatch.Elapsed}).");
+                        Logger.LogInfo($"File {shortFileName} parsed (Elapsed: {stopwatch.Elapsed.Format()}).");
                         workflowResult.AddParseTime(stopwatch.ElapsedTicks);
                         workflowResult.AddResultEntity(parseTree);
 
@@ -237,7 +237,7 @@ namespace PT.PM
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} converted (Elapsed: {stopwatch.Elapsed}).");
+                        Logger.LogInfo($"File {shortFileName} converted (Elapsed: {stopwatch.Elapsed.Format()}).");
                         workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
 
                         if (IsSimplifyUst)
@@ -248,7 +248,7 @@ namespace PT.PM
                             stopwatch.Restart();
                             result = simplifier.Simplify(result);
                             stopwatch.Stop();
-                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified (Elapsed: {stopwatch.Elapsed}).");
+                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified (Elapsed: {stopwatch.Elapsed.Format()}).");
                             workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
                         }
 
@@ -268,7 +268,7 @@ namespace PT.PM
             CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
             stopwatch.Stop();
 
-            Logger.LogInfo($"File {fileName} read (Elapsed: {stopwatch.Elapsed}).");
+            Logger.LogInfo($"File {fileName} read (Elapsed: {stopwatch.Elapsed.Format()}).");
 
             workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
             workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());

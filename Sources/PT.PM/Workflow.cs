@@ -140,9 +140,11 @@ namespace PT.PM
                 if (ust != null && Stage >= Stage.Match)
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
+
                     IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
+
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns (Elapsed: {stopwatch.Elapsed}).");
+                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns (Elapsed: {stopwatch.Elapsed.Format()}).");
                     workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
                     workflowResult.AddResultEntity(matchResults);
 
