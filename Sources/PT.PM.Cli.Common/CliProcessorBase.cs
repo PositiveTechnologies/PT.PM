@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Cli.Common
@@ -314,27 +313,28 @@ namespace PT.PM.Cli.Common
                 TWorkflowResult workflowResult = workflow.Process();
                 stopwatch.Stop();
 
-                Logger.LogInfo($"Stage: {workflow.Stage}");
+                Logger.LogInfo("");
+
+                CliUtils.LogSystemInfo(Logger, CoreName);
+
+                Logger.LogInfo("");
+                Logger.LogInfo($"{"Stage: ",CliUtils.Align} {workflow.Stage}");
                 if (!workflow.Stage.Is(Stage.Pattern))
                 {
-                    Logger.LogInfo("Scan completed.");
                     int matchedResultCount = workflowResult.MatchResults.Count();
                     if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
                     {
-                        Logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {matchedResultCount}");
+                        Logger.LogInfo($"{"Matches count: ",CliUtils.Align} {matchedResultCount}");
                     }
-                }
-                else
-                {
-                    Logger.LogInfo("Patterns checked.");
                 }
 
                 if (workflowResult.ErrorCount > 0)
                 {
-                    Logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
+                    Logger.LogInfo($"{"Errors count: ",CliUtils.Align} {workflowResult.ErrorCount}");
                 }
+
                 LogStatistics(workflowResult);
-                Logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
+                Logger.LogInfo($"{"Time elapsed:",CliUtils.Align} {stopwatch.Elapsed.Format()}");
 
                 return workflowResult;
             }
@@ -349,10 +349,11 @@ namespace PT.PM.Cli.Common
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
         {
+            Logger.LogInfo($"{CoreName} started at {DateTime.Now}");
+
             if (errors == null || errors.FirstOrDefault() is VersionRequestedError)
             {
-                AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-                Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
+                Logger.LogInfo($"{CoreName} version: {CliUtils.GetVersionString(CoreName)}");
             }
 
             string commandLineArguments = "Command line arguments: " +
