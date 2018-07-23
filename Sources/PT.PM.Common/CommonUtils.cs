@@ -37,6 +37,13 @@ namespace PT.PM.Common
             }
         }
 
+        public static readonly bool IsDebug =
+#if DEBUG
+            true;
+#else
+            false;
+#endif
+
         public static bool IsRunningOnLinux
         {
             get
