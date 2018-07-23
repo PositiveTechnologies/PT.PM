@@ -44,7 +44,7 @@ namespace PT.PM.Common.Json
             }
         }
 
-        private Ust ReadAsUnaryOperatorLiteral(JsonReader reader, UnaryOperatorLiteral unaryLiteral)
+        public Ust ReadAsUnaryOperatorLiteral(JsonReader reader, UnaryOperatorLiteral unaryLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -67,7 +67,7 @@ namespace PT.PM.Common.Json
             return unaryLiteral;
         }
 
-        private Ust ReadAsInOutModifierLiteral(JsonReader reader, InOutModifierLiteral inOutLiteral)
+        public Ust ReadAsInOutModifierLiteral(JsonReader reader, InOutModifierLiteral inOutLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -90,7 +90,7 @@ namespace PT.PM.Common.Json
             return inOutLiteral;
         }
 
-        private Ust ReadAsFloatLiteral(JsonReader reader, FloatLiteral floatLiteral)
+        public Ust ReadAsFloatLiteral(JsonReader reader, FloatLiteral floatLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -112,7 +112,7 @@ namespace PT.PM.Common.Json
             return floatLiteral;
         }
 
-        private Ust ReadAsModifierLiteral(JsonReader reader, ModifierLiteral modifierLiteral)
+        public Ust ReadAsModifierLiteral(JsonReader reader, ModifierLiteral modifierLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -135,7 +135,7 @@ namespace PT.PM.Common.Json
             return modifierLiteral;
         }
 
-        private Ust ReadAsCommentLiteral(JsonReader reader, CommentLiteral commentLiteral)
+        public Ust ReadAsCommentLiteral(JsonReader reader, CommentLiteral commentLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -157,7 +157,7 @@ namespace PT.PM.Common.Json
             return commentLiteral;
         }
 
-        private Ust ReadAsBooleanLiteral(JsonReader reader, BooleanLiteral boolLiteral)
+        public Ust ReadAsBooleanLiteral(JsonReader reader, BooleanLiteral boolLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -179,7 +179,7 @@ namespace PT.PM.Common.Json
             return boolLiteral;
         }
 
-        private Ust ReadAsBinaryOperatorLiteral(JsonReader reader, BinaryOperatorLiteral binaryLiteral)
+        public Ust ReadAsBinaryOperatorLiteral(JsonReader reader, BinaryOperatorLiteral binaryLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -203,7 +203,7 @@ namespace PT.PM.Common.Json
             return binaryLiteral;
         }
 
-        private Ust ReadAsIntLiteral(JsonReader reader, IntLiteral intLiteral)
+        public Ust ReadAsIntLiteral(JsonReader reader, IntLiteral intLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())
@@ -225,7 +225,7 @@ namespace PT.PM.Common.Json
             return intLiteral;
         }
 
-        private Ust ReadAsStringLiteral(JsonReader reader, StringLiteral stringLiteral)
+        public Ust ReadAsStringLiteral(JsonReader reader, StringLiteral stringLiteral)
         {
             string currentProperty = string.Empty;
             while (reader.Read())

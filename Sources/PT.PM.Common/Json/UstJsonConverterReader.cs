@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Reflection;
@@ -64,7 +65,7 @@ namespace PT.PM.Common.Json
                 Language language = !string.IsNullOrEmpty(languageString)
                     ? languageString.ParseLanguages().FirstOrDefault()
                     : Uncertain.Language;
-                var codeFile = jObject[nameof(RootUst.SourceCodeFile)]?.ToCodeFile(serializer);
+                var codeFile = jObject[nameof(RootUst.SourceCodeFile)]?.ToObject<CodeFile>(serializer);
                 rootUst = new RootUst(codeFile, language);
                 ProcessRootUst(rootUst);
 
@@ -129,23 +130,79 @@ namespace PT.PM.Common.Json
             return ust;
         }
 
-        private Ust ReadAsObject(JsonSerializer serializer, JsonReader jsonReader, Ust ust, Type type)
+        private Ust ReadAsObject(JsonSerializer serializer, JsonReader reader, Ust ust, Type type)
         {
-            if (type.IsSubclassOf(typeof(Literal)))
+            if (ust is RootUst rootUst)
             {
-                ust = LiteralJsonReader.Read(jsonReader, ust);
+                ust = ReadAsRootUst(serializer, reader, rootUst);
+            }
+            else if (ust is UsingDeclaration usingUst)
+            {
+                ust = ReadAsUsingDeclaration(reader, usingUst, serializer);
+            }
+            else if (type.IsSubclassOf(typeof(Literal)))
+            {
+                ust = LiteralJsonReader.Read(reader, ust);
             }
             else if (type.IsSubclassOf(typeof(Token)))
             {
-                ust = TokenJsonReader.Read(jsonReader, ust);
+                ust = TokenJsonReader.Read(reader, ust);
             }
             else
             {
-                serializer.Populate(jsonReader, ust);
+                serializer.Populate(reader, ust);
             }
             return ust;
         }
 
+        private Ust ReadAsRootUst(JsonSerializer serializer, JsonReader reader, RootUst rootUst)
+        {
+            List<Ust> nodes = new List<Ust>();
+            string currentProperty = string.Empty;
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonToken.PropertyName)
+                {
+                    currentProperty = reader.Value.ToString();
+                    reader.Read();
+                }
+                if (currentProperty == nameof(RootUst.Nodes))
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.TokenType == JsonToken.StartObject)
+                        {
+                            nodes.Add((Ust)ReadJson(reader, null, null, serializer));
+                        }
+                    }
+                    rootUst.Nodes = nodes.ToArray();
+                    break;
+                }
+            }
+            return rootUst;
+        }
+
+        private Ust ReadAsUsingDeclaration(JsonReader reader, UsingDeclaration usingUst, JsonSerializer serializer)
+        {
+            string currentProperty = string.Empty;
+            while (reader.Read())
+            {
+                if (reader.Value != null)
+                {
+                    if (reader.TokenType == JsonToken.PropertyName)
+                    {
+                        currentProperty = reader.Value.ToString();
+                        reader.Read();
+                    }
+                    if (currentProperty == nameof(UsingDeclaration.Name))
+                    {
+                        usingUst.Name = (StringLiteral)ReadJson(reader, null, null, serializer);
+                        break;
+                    }
+                }
+            }
+            return usingUst;
+        }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
