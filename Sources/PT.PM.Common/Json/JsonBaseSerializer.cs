@@ -112,7 +112,11 @@ namespace PT.PM.Common.Json
 
                 converters = new List<JsonConverter>()
                 {
-                    stringEnumConverter
+                    jsonConverter,
+                    codeFileConverter,
+                    stringEnumConverter,
+                    textSpanJsonConverter,
+                    LanguageJsonConverter.Instance
                 };
             }
 
