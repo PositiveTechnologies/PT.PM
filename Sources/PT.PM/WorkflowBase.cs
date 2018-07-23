@@ -192,7 +192,7 @@ namespace PT.PM
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} parsed (Elapsed: {stopwatch.Elapsed.Format()}).");
+                        Logger.LogInfo($"File {shortFileName} parsed {GetElapsedString(stopwatch)}.");
                         workflowResult.AddParseTime(stopwatch.Elapsed.Ticks);
                         workflowResult.AddResultEntity(parseTree);
 
@@ -237,7 +237,7 @@ namespace PT.PM
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} converted (Elapsed: {stopwatch.Elapsed.Format()}).");
+                        Logger.LogInfo($"File {shortFileName} converted {GetElapsedString(stopwatch)}.");
                         workflowResult.AddConvertTime(stopwatch.Elapsed.Ticks);
 
                         if (IsSimplifyUst)
@@ -248,7 +248,7 @@ namespace PT.PM
                             stopwatch.Restart();
                             result = simplifier.Simplify(result);
                             stopwatch.Stop();
-                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified (Elapsed: {stopwatch.Elapsed.Format()}).");
+                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified {GetElapsedString(stopwatch)}.");
                             workflowResult.AddSimplifyTime(stopwatch.Elapsed.Ticks);
                         }
 
@@ -268,7 +268,7 @@ namespace PT.PM
             CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
             stopwatch.Stop();
 
-            Logger.LogInfo($"File {fileName} read (Elapsed: {stopwatch.Elapsed.Format()}).");
+            Logger.LogInfo($"File {fileName} read {GetElapsedString(stopwatch)}.");
 
             workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
             workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
@@ -409,5 +409,7 @@ namespace PT.PM
                 CancellationToken = cancellationToken
             };
         }
+
+        protected string GetElapsedString(Stopwatch stopwatch) => $"(Elapsed: {stopwatch.Elapsed.Format()})";
     }
 }
