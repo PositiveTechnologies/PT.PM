@@ -10,7 +10,7 @@ namespace PT.PM.Cli.Common
         {
         }
 
-        protected override void LogAdvanced()
+        protected override void LogAdvancedStageInfo()
         {
             if (WorkflowResult.Stage >= Stage.Match)
             {

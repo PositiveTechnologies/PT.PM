@@ -25,6 +25,7 @@ namespace PT.PM.Cli.Common
 
         public void LogStatistics()
         {
+            LogAdvancedInfo();
             if (WorkflowResult.TotalTerminatedFilesCount > 0)
             {
                 Logger.LogInfo($"{"Terminated files count:",CliUtils.Align} {WorkflowResult.TotalTerminatedFilesCount}");
@@ -54,7 +55,7 @@ namespace PT.PM.Cli.Common
                             {
                                 LogStageTime(SimplifiedUstStageName);
                             }
-                            LogAdvanced();
+                            LogAdvancedStageInfo();
                         }
                     }
                 }
@@ -66,7 +67,11 @@ namespace PT.PM.Cli.Common
             }
         }
 
-        protected abstract void LogAdvanced();
+        protected virtual void LogAdvancedInfo()
+        {
+        }
+
+        protected abstract void LogAdvancedStageInfo();
 
         protected void LogStageTime(string stage)
         {
