@@ -22,7 +22,7 @@ namespace PT.PM.Cli.Common
         where TParameters : CliParameters, new()
         where TRenderStage : Enum
     {
-        public ILogger Logger { get; protected set; } = new ConsoleFileLogger();
+        public ILogger Logger { get; protected set; } = new NLogLogger();
 
         public virtual bool ContinueWithInvalidArgs => false;
 

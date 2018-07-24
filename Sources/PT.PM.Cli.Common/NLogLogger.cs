@@ -9,18 +9,20 @@ using System.Threading;
 
 namespace PT.PM.Cli.Common
 {
-    public class FileLogger : ILogger
+    public class NLogLogger : ILogger
     {
         private int errorCount;
         private string logPath;
 
         public int ErrorCount => errorCount;
 
-        public NLog.Logger FileInternalLogger => NLog.LogManager.GetLogger("file");
+        public NLog.Logger FileLogger { get; } = NLog.LogManager.GetLogger("file");
 
-        public NLog.Logger ErrorsLogger => NLog.LogManager.GetLogger("errors");
+        public NLog.Logger ErrorsLogger { get; } = NLog.LogManager.GetLogger("errors");
 
-        public NLog.Logger MatchLogger => NLog.LogManager.GetLogger("match");
+        public NLog.Logger MatchLogger { get; } = NLog.LogManager.GetLogger("match");
+
+        protected NLog.Logger ConsoleLogger { get; } = NLog.LogManager.GetLogger("console");
 
         protected PrettyPrinter ErrorPrinter { get; } = new PrettyPrinter
         {
@@ -62,11 +64,25 @@ namespace PT.PM.Cli.Common
 
         public bool IsLogDebugs { get; set; } = false;
 
+        public bool IsLogToFile { get; set; } = true;
+
+        public bool IsLogToConsole { get; set; } = true;
+
         public virtual void LogError(Exception ex)
         {
             var exString = ErrorPrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Full));
             ErrorsLogger.Error(exString);
-            FileInternalLogger.Error(exString);
+
+            if (IsLogToFile)
+            {
+                FileLogger.Error(exString);
+            }
+
+            if (IsLogToConsole)
+            {
+                ConsoleLogger.Error(MessagePrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Relative)));
+            }
+
             Interlocked.Increment(ref errorCount);
         }
 
@@ -107,15 +123,38 @@ namespace PT.PM.Cli.Common
 
         public virtual void LogInfo(string message)
         {
-            FileInternalLogger.Info(message);
+            if (IsLogToFile)
+            {
+                FileLogger.Info(message);
+            }
+
+            if (IsLogToConsole)
+            {
+                ConsoleLogger.Info(PrepareForConsole(message));
+            }
         }
 
         public virtual void LogDebug(string message)
         {
             if (IsLogDebugs)
             {
-                FileInternalLogger.Debug(MessagePrinter.Print(message));
+                string truncatedMessage = MessagePrinter.Print(message);
+
+                if (IsLogToFile)
+                {
+                    FileLogger.Debug(truncatedMessage);
+                }
+
+                if (IsLogToConsole)
+                {
+                    ConsoleLogger.Debug(PrepareForConsole(truncatedMessage));
+                }
             }
+        }
+
+        protected string PrepareForConsole(string str)
+        {
+            return str.Replace("\a", "");
         }
     }
 }
