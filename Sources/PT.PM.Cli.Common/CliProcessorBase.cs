@@ -358,7 +358,7 @@ namespace PT.PM.Cli.Common
 
             if (errors == null || errors.FirstOrDefault() is VersionRequestedError)
             {
-                Logger.LogInfo($"{CoreName} version: {CliUtils.GetVersionString(CoreName)}");
+                Logger.LogInfo($"{CoreName} version: {CliUtils.GetVersionString()}");
             }
 
             string commandLineArguments = "Command line arguments: " +

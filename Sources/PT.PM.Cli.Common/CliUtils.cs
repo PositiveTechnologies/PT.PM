@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace PT.PM.Cli.Common
@@ -74,7 +75,7 @@ namespace PT.PM.Cli.Common
         {
             Process currentProcess = Process.GetCurrentProcess();
 
-            logger.LogInfo($"{coreName + " version:",Align} {GetVersionString(coreName)}");
+            logger.LogInfo($"{coreName + " version:",Align} {GetVersionString()}");
             logger.LogInfo($"{"Finish date:",Align} {DateTime.Now}");
             logger.LogInfo($"{"OS:",Align} {Environment.OSVersion}");
             logger.LogInfo($"{"Config:",Align} {(CommonUtils.IsDebug ? "DEBUG" : "RELEASE")} ({(Debugger.IsAttached ? "+ debugger" : "no debugger")})");
@@ -85,15 +86,17 @@ namespace PT.PM.Cli.Common
             logger.LogInfo($"{"Peak virtual/working set:",Align} {peakVirtualSet} / {peakWorkingSet} MB, {processBitsString}");
         }
 
-        public static string GetVersionString(string coreName)
+        public static string GetVersionString()
         {
             Assembly assembly = Assembly.GetEntryAssembly();
 
             AssemblyName assemblyName = assembly.GetName();
             string buildTime = "";
 
-            Stream stream = assembly.GetManifestResourceStream($"{coreName}.Cli.BuildTimeStamp");
-            if (stream != null)
+            string streamName = assembly.GetManifestResourceNames().FirstOrDefault() ?? "";
+            Stream stream;
+            if (!string.IsNullOrEmpty(streamName) &&
+                (stream = assembly.GetManifestResourceStream(streamName)) != null)
             {
                 using (var reader = new StreamReader(stream))
                 {
