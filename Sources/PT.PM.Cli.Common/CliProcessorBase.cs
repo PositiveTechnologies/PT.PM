@@ -330,26 +330,26 @@ namespace PT.PM.Cli.Common
         {
             Logger.LogInfo("");
 
-            CliUtils.LogSystemInfo(Logger, CoreName);
+            LoggerUtils.LogSystemInfo(Logger, CoreName);
 
             Logger.LogInfo("");
-            Logger.LogInfo($"{"Stage: ",CliUtils.Align} {workflow.Stage}");
+            Logger.LogInfo($"{"Stage: ",LoggerUtils.Align} {workflow.Stage}");
             if (!workflow.Stage.Is(Stage.Pattern))
             {
                 int matchedResultCount = workflowResult.MatchResults.Count();
                 if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
                 {
-                    Logger.LogInfo($"{"Matches count: ",CliUtils.Align} {matchedResultCount}");
+                    Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount}");
                 }
             }
 
             if (workflowResult.ErrorCount > 0)
             {
-                Logger.LogInfo($"{"Errors count: ",CliUtils.Align} {workflowResult.ErrorCount}");
+                Logger.LogInfo($"{"Errors count: ",LoggerUtils.Align} {workflowResult.ErrorCount}");
             }
 
             LogStatistics(workflowResult);
-            Logger.LogInfo($"{"Time elapsed:",CliUtils.Align} {totalElapsed.Format()}");
+            Logger.LogInfo($"{"Time elapsed:",LoggerUtils.Align} {totalElapsed.Format()}");
         }
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
@@ -358,7 +358,7 @@ namespace PT.PM.Cli.Common
 
             if (errors == null || errors.FirstOrDefault() is VersionRequestedError)
             {
-                Logger.LogInfo($"{CoreName} version: {CliUtils.GetVersionString()}");
+                Logger.LogInfo($"{CoreName} version: {LoggerUtils.GetVersionString()}");
             }
 
             string commandLineArguments = "Command line arguments: " +

@@ -28,17 +28,17 @@ namespace PT.PM.Cli.Common
             LogAdvancedInfo();
             if (WorkflowResult.TotalTerminatedFilesCount > 0)
             {
-                Logger.LogInfo($"{"Terminated files count:",CliUtils.Align} {WorkflowResult.TotalTerminatedFilesCount}");
+                Logger.LogInfo($"{"Terminated files count:",LoggerUtils.Align} {WorkflowResult.TotalTerminatedFilesCount}");
             }
             if (!WorkflowResult.Stage.Is(Stage.Pattern) || WorkflowResult.TotalProcessedFilesCount > 0)
             {
-                Logger.LogInfo($"{"Files count:",CliUtils.Align} {WorkflowResult.TotalProcessedFilesCount}");
+                Logger.LogInfo($"{"Files count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedFilesCount}");
             }
             if (WorkflowResult.TotalProcessedFilesCount > 0)
             {
-                Logger.LogInfo($"{"Lines/chars count:",CliUtils.Align} {WorkflowResult.TotalProcessedLinesCount} / {WorkflowResult.TotalProcessedCharsCount}");
+                Logger.LogInfo($"{"Lines/chars count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedLinesCount} / {WorkflowResult.TotalProcessedCharsCount}");
             }
-            Logger.LogInfo($"{"Patterns count:",CliUtils.Align} {WorkflowResult.TotalProcessedPatternsCount}");
+            Logger.LogInfo($"{"Patterns count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedPatternsCount}");
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
@@ -105,7 +105,7 @@ namespace PT.PM.Cli.Common
                 var timeSpan = new TimeSpan(ticks);
                 string percent = CalculateAndFormatPercent(ticks, WorkflowResult.TotalTimeTicks);
                 Logger.LogInfo
-                    ($"{"Total " + stage + " time:",CliUtils.Align} {timeSpan.Format()} {percent}%");
+                    ($"{"Total " + stage + " time:",LoggerUtils.Align} {timeSpan.Format()} {percent}%");
             }
             if (stage == nameof(Stage.ParseTree))
             {
@@ -125,11 +125,11 @@ namespace PT.PM.Cli.Common
                 string parserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalParseTicks);
                 if (WorkflowResult.TotalLexerTicks > 0)
                 {
-                    Logger.LogInfo($"{"  ANTLR lexing time: ",CliUtils.Align - 2} {lexerTimeSpan.Format()} {lexerPercent}%");
+                    Logger.LogInfo($"{"  ANTLR lexing time: ",LoggerUtils.Align - 2} {lexerTimeSpan.Format()} {lexerPercent}%");
                 }
                 if (WorkflowResult.TotalParseTicks > 0)
                 {
-                    Logger.LogInfo($"{"  ANTLR parisng time: ",CliUtils.Align - 2} {parserTimeSpan.Format()} {parserPercent}%");
+                    Logger.LogInfo($"{"  ANTLR parisng time: ",LoggerUtils.Align - 2} {parserTimeSpan.Format()} {parserPercent}%");
                 }
             }
         }

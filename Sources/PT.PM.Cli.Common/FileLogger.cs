@@ -83,16 +83,12 @@ namespace PT.PM.Cli.Common
                     var matchResultDto = new MatchResultDto(matchResult);
                     string matchedCode = CodePrinter.Print(matchResultDto.MatchedCode);
 
-                    var message = new StringBuilder();
-                    message.AppendLine("---------------------");
-                    message.AppendLine($"{nameof(MatchResultDto.MatchedCode)}: {matchedCode}");
-                    message.AppendLine($"Location: {matchResultDto.LineColumnTextSpan}");
-                    message.AppendLine($"{nameof(MatchResultDto.PatternKey)}: {matchResultDto.PatternKey}");
-                    message.AppendLine($"{nameof(MatchResultDto.SourceFile)}: {matchResultDto.SourceFile}");
-                    string result = message.ToString();
+                    string matchMessage = LoggerUtils.LogMatch(matchedCode, matchResultDto.LineColumnTextSpan,
+                        matchResult.SourceCodeFile,
+                        matchResultDto.PatternKey, false, false);
 
-                    MatchLogger.Info(result);
-                    LogInfo(result);
+                    MatchLogger.Info(matchMessage);
+                    LogInfo(matchMessage);
                 }
                 else if (!(infoObj is MessageEventArgs))
                 {
