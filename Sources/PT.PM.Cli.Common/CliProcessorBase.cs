@@ -313,28 +313,7 @@ namespace PT.PM.Cli.Common
                 TWorkflowResult workflowResult = workflow.Process();
                 stopwatch.Stop();
 
-                Logger.LogInfo("");
-
-                CliUtils.LogSystemInfo(Logger, CoreName);
-
-                Logger.LogInfo("");
-                Logger.LogInfo($"{"Stage: ",CliUtils.Align} {workflow.Stage}");
-                if (!workflow.Stage.Is(Stage.Pattern))
-                {
-                    int matchedResultCount = workflowResult.MatchResults.Count();
-                    if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
-                    {
-                        Logger.LogInfo($"{"Matches count: ",CliUtils.Align} {matchedResultCount}");
-                    }
-                }
-
-                if (workflowResult.ErrorCount > 0)
-                {
-                    Logger.LogInfo($"{"Errors count: ",CliUtils.Align} {workflowResult.ErrorCount}");
-                }
-
-                LogStatistics(workflowResult);
-                Logger.LogInfo($"{"Time elapsed:",CliUtils.Align} {stopwatch.Elapsed.Format()}");
+                LogOutput(stopwatch.Elapsed, workflow, workflowResult);
 
                 return workflowResult;
             }
@@ -345,6 +324,32 @@ namespace PT.PM.Cli.Common
 
                 return null;
             }
+        }
+
+        protected void LogOutput(TimeSpan totalElapsed, WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> workflow, TWorkflowResult workflowResult)
+        {
+            Logger.LogInfo("");
+
+            CliUtils.LogSystemInfo(Logger, CoreName);
+
+            Logger.LogInfo("");
+            Logger.LogInfo($"{"Stage: ",CliUtils.Align} {workflow.Stage}");
+            if (!workflow.Stage.Is(Stage.Pattern))
+            {
+                int matchedResultCount = workflowResult.MatchResults.Count();
+                if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
+                {
+                    Logger.LogInfo($"{"Matches count: ",CliUtils.Align} {matchedResultCount}");
+                }
+            }
+
+            if (workflowResult.ErrorCount > 0)
+            {
+                Logger.LogInfo($"{"Errors count: ",CliUtils.Align} {workflowResult.ErrorCount}");
+            }
+
+            LogStatistics(workflowResult);
+            Logger.LogInfo($"{"Time elapsed:",CliUtils.Align} {totalElapsed.Format()}");
         }
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
