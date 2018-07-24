@@ -55,7 +55,6 @@ namespace PT.PM.Common.Json
         {
             JsonConverter jsonConverter;
             UstContractResolver contractResolver = null;
-            List<JsonConverter> converters = null;
 
             var textSpanJsonConverter = new TextSpanJsonConverter
             {
@@ -84,47 +83,27 @@ namespace PT.PM.Common.Json
                 jsonConverterWriter.Logger = Logger;
 
                 jsonConverter = jsonConverterWriter;
-
-                converters = new List<JsonConverter>
-                {
-                    jsonConverter,
-                    codeFileConverter,
-                    stringEnumConverter,
-                    textSpanJsonConverter,
-                    LanguageJsonConverter.Instance
-                };
             }
             else
             {
                 UstJsonConverterReader jsonConverterReader = CreateConverterReader(jsonFile);
                 jsonConverterReader.Logger = Logger;
                 jsonConverterReader.IgnoreExtraProcess = IgnoreExtraProcess;
-
                 jsonConverter = jsonConverterReader;
-
-                contractResolver = new UstContractResolver()
-                {
-                    UstJsonReader = jsonConverter,
-                    CodeFileConverter = codeFileConverter,
-                    TextSpanConverter = textSpanJsonConverter,
-                    LanguageConverter = LanguageJsonConverter.Instance
-                };
-
-                converters = new List<JsonConverter>()
-                {
-                    jsonConverter,
-                    codeFileConverter,
-                    stringEnumConverter,
-                    textSpanJsonConverter,
-                    LanguageJsonConverter.Instance
-                };
             }
 
             var jsonSettings = new JsonSerializerSettings
             {
                 MissingMemberHandling = SetMissingMemberHandling(),
                 Formatting = Indented ? Formatting.Indented : Formatting.None,
-                Converters = converters,
+                Converters = new List<JsonConverter>
+                {
+                    jsonConverter,
+                    codeFileConverter,
+                    stringEnumConverter,
+                    textSpanJsonConverter,
+                    LanguageJsonConverter.Instance
+                },
                 ContractResolver = contractResolver
             };
 
