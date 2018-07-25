@@ -109,7 +109,7 @@ namespace PT.PM.Common.Json
 
             try
             {
-                ust = ReadAsObject(serializer, jObject.CreateReader(), ust, type);
+                ust = ReadAsObject(serializer, jObject, ust, type);
             }
             catch (Exception ex)
             {
@@ -130,76 +130,54 @@ namespace PT.PM.Common.Json
             return ust;
         }
 
-        private Ust ReadAsObject(JsonSerializer serializer, JsonReader reader, Ust ust, Type type)
+        private Ust ReadAsObject(JsonSerializer serializer, JObject token, Ust ust, Type type)
         {
             if (ust is RootUst rootUst)
             {
-                ust = ReadAsRootUst(serializer, reader, rootUst);
+                ust = ReadAsRootUst(serializer, token, rootUst);
             }
             else if (ust is UsingDeclaration usingUst)
             {
-                ust = ReadAsUsingDeclaration(reader, usingUst, serializer);
+                ust = ReadAsUsingDeclaration(serializer, token, usingUst);
             }
             else if (type.IsSubclassOf(typeof(Literal)))
             {
-                ust = LiteralJsonReader.Read(reader, ust);
+                ust = LiteralJsonReader.Read(token, ust);
             }
             else if (type.IsSubclassOf(typeof(Token)))
             {
-                ust = TokenJsonReader.Read(reader, ust);
+                ust = TokenJsonReader.Read(token.CreateReader(), ust);
             }
             else
             {
-                serializer.Populate(reader, ust);
+                serializer.Populate(token.CreateReader(), ust);
             }
             return ust;
         }
 
-        private Ust ReadAsRootUst(JsonSerializer serializer, JsonReader reader, RootUst rootUst)
+        private Ust ReadAsRootUst(JsonSerializer serializer, JObject token, RootUst rootUst)
         {
-            List<Ust> nodes = new List<Ust>();
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            Ust[] nodes;
+            var nodesToken = token[nameof(RootUst.Nodes)]?.ReadArray();
+            if (nodesToken?.Length > 0)
             {
-                if (reader.TokenType == JsonToken.PropertyName)
+                nodes = new Ust[nodesToken.Length];
+                for (int i = 0; i < nodes.Length; i++)
                 {
-                    currentProperty = reader.Value.ToString();
-                    reader.Read();
+                    nodes[i] = (Ust)ReadJson(nodesToken[i].CreateReader(), null, null, serializer);
                 }
-                if (currentProperty == nameof(RootUst.Nodes))
-                {
-                    while (reader.Read())
-                    {
-                        if (reader.TokenType == JsonToken.StartObject)
-                        {
-                            nodes.Add((Ust)ReadJson(reader, null, null, serializer));
-                        }
-                    }
-                    rootUst.Nodes = nodes.ToArray();
-                    break;
-                }
+                rootUst.Nodes = nodes;
             }
             return rootUst;
         }
 
-        private Ust ReadAsUsingDeclaration(JsonReader reader, UsingDeclaration usingUst, JsonSerializer serializer)
+        private Ust ReadAsUsingDeclaration(JsonSerializer serializer, JObject token, UsingDeclaration usingUst)
         {
             string currentProperty = string.Empty;
-            while (reader.Read())
+            var nameNode = token[nameof(UsingDeclaration.Name)];
+            if (nameNode != null)
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (currentProperty == nameof(UsingDeclaration.Name))
-                    {
-                        usingUst.Name = (StringLiteral)ReadJson(reader, null, null, serializer);
-                        break;
-                    }
-                }
+                usingUst.Name = (StringLiteral)ReadJson(nameNode.CreateReader(), typeof(StringLiteral), null, serializer);
             }
             return usingUst;
         }

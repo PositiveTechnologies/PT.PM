@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
@@ -8,244 +9,137 @@ namespace PT.PM.Common.Json
 {
     public class LiteralJsonReader
     {
-        public Ust Read(JsonReader reader, Ust ust)
+        public Ust Read(JObject token, Ust ust)
         {
             switch (ust)
             {
                 case StringLiteral stringLiteral:
-                    return ReadAsStringLiteral(reader, stringLiteral);
+                    return ReadAsStringLiteral(token, stringLiteral);
 
                 case IntLiteral intLiteral:
-                    return ReadAsIntLiteral(reader, intLiteral);
+                    return ReadAsIntLiteral(token, intLiteral);
 
                 case BinaryOperatorLiteral binaryLiteral:
-                    return ReadAsBinaryOperatorLiteral(reader, binaryLiteral);
+                    return ReadAsBinaryOperatorLiteral(token, binaryLiteral);
 
                 case BooleanLiteral boolLiteral:
-                    return ReadAsBooleanLiteral(reader, boolLiteral);
+                    return ReadAsBooleanLiteral(token, boolLiteral);
 
                 case CommentLiteral commentLiteral:
-                    return ReadAsCommentLiteral(reader, commentLiteral);
+                    return ReadAsCommentLiteral(token, commentLiteral);
 
                 case ModifierLiteral modifierLiteral:
-                    return ReadAsModifierLiteral(reader, modifierLiteral);
+                    return ReadAsModifierLiteral(token, modifierLiteral);
 
                 case FloatLiteral floatLiteral:
-                    return ReadAsFloatLiteral(reader, floatLiteral);
+                    return ReadAsFloatLiteral(token, floatLiteral);
 
                 case InOutModifierLiteral inOutLiteral:
-                    return ReadAsInOutModifierLiteral(reader, inOutLiteral);
+                    return ReadAsInOutModifierLiteral(token, inOutLiteral);
 
                 case UnaryOperatorLiteral unaryLiteral:
-                    return ReadAsUnaryOperatorLiteral(reader, unaryLiteral);
+                    return ReadAsUnaryOperatorLiteral(token, unaryLiteral);
 
                 default:
                     return ust;
             }
         }
 
-        public Ust ReadAsUnaryOperatorLiteral(JsonReader reader, UnaryOperatorLiteral unaryLiteral)
+        public UnaryOperatorLiteral ReadAsUnaryOperatorLiteral(JObject token, UnaryOperatorLiteral unaryLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            string operatorText = token[nameof(UnaryOperatorLiteral.UnaryOperator)]?.ToString();
+            if (operatorText != null)
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(UnaryOperatorLiteral.UnaryOperator))
-                    {
-                        Enum.TryParse(reader.Value.ToString(), out UnaryOperator op);
-                        unaryLiteral.UnaryOperator = op;
-                        break;
-                    }
-                }
+                Enum.TryParse(operatorText, out UnaryOperator op);
+                unaryLiteral.UnaryOperator = op;
             }
             return unaryLiteral;
         }
 
-        public Ust ReadAsInOutModifierLiteral(JsonReader reader, InOutModifierLiteral inOutLiteral)
+        public InOutModifierLiteral ReadAsInOutModifierLiteral(JObject token, InOutModifierLiteral inOutLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            string modifierTypeText = token[nameof(InOutModifierLiteral.ModifierType)]?.ToString();
+            if (modifierTypeText != null)
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(InOutModifierLiteral.ModifierType))
-                    {
-                        Enum.TryParse(reader.Value.ToString(), out InOutModifier mod);
-                        inOutLiteral.ModifierType = mod;
-                        break;
-                    }
-                }
+                Enum.TryParse(modifierTypeText, out InOutModifier mod);
+                inOutLiteral.ModifierType = mod;
             }
             return inOutLiteral;
         }
 
-        public Ust ReadAsFloatLiteral(JsonReader reader, FloatLiteral floatLiteral)
+        public FloatLiteral ReadAsFloatLiteral(JObject token, FloatLiteral floatLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            float value = 0;
+            string valueText = token[nameof(FloatLiteral.Value)]?.ToString();
+            if (!string.IsNullOrEmpty(valueText))
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.Float && currentProperty == nameof(FloatLiteral.Value))
-                    {
-                        floatLiteral.Value = float.Parse(reader.Value.ToString());
-                        break;
-                    }
-                }
+                float.TryParse(valueText, out value);
             }
+            floatLiteral.Value = value;
             return floatLiteral;
         }
 
-        public Ust ReadAsModifierLiteral(JsonReader reader, ModifierLiteral modifierLiteral)
+        public ModifierLiteral ReadAsModifierLiteral(JObject token, ModifierLiteral modifierLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            string modifierTypeText = token[nameof(ModifierLiteral.Modifier)]?.ToString();
+            if (modifierTypeText != null)
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(ModifierLiteral.Modifier))
-                    {
-                        Enum.TryParse(reader.Value.ToString(), out Modifier mod);
-                        modifierLiteral.Modifier = mod;
-                        break;
-                    }
-                }
+                Enum.TryParse(modifierTypeText, out Modifier mod);
+                modifierLiteral.Modifier = mod;
             }
             return modifierLiteral;
         }
 
-        public Ust ReadAsCommentLiteral(JsonReader reader, CommentLiteral commentLiteral)
+        public CommentLiteral ReadAsCommentLiteral(JObject token, CommentLiteral commentLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
-            {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(CommentLiteral.Comment))
-                    {
-                        commentLiteral.Comment = reader.Value.ToString();
-                        break;
-                    }
-                }
-            }
+            commentLiteral.Comment = token[nameof(CommentLiteral.Comment)]?.ToString()
+                ?? commentLiteral.Comment;
+
             return commentLiteral;
         }
 
-        public Ust ReadAsBooleanLiteral(JsonReader reader, BooleanLiteral boolLiteral)
+        public BooleanLiteral ReadAsBooleanLiteral(JObject token, BooleanLiteral boolLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            string valueText = token[nameof(BooleanLiteral.Value)]?.ToString();
+            if (!string.IsNullOrEmpty(valueText))
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.Boolean && currentProperty == nameof(BooleanLiteral.Value))
-                    {
-                        boolLiteral.Value = bool.Parse(reader.Value.ToString());
-                        break;
-                    }
-                }
+                boolLiteral.Value = bool.TrueString.Equals(valueText, StringComparison.InvariantCultureIgnoreCase);
             }
             return boolLiteral;
         }
 
-        public Ust ReadAsBinaryOperatorLiteral(JsonReader reader, BinaryOperatorLiteral binaryLiteral)
+        public BinaryOperatorLiteral ReadAsBinaryOperatorLiteral(JObject token, BinaryOperatorLiteral binaryLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            string operatorText = token[nameof(BinaryOperatorLiteral.BinaryOperator)]?.ToString();
+            if (operatorText != null)
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(BinaryOperatorLiteral.BinaryOperator))
-                    {
-                        Enum.TryParse(reader.Value.ToString(), out BinaryOperator op);
-                        binaryLiteral.BinaryOperator = op;
-                        break;
-                    }
-                }
+                Enum.TryParse(operatorText, out BinaryOperator op);
+                binaryLiteral.BinaryOperator = op;
             }
 
             return binaryLiteral;
         }
 
-        public Ust ReadAsIntLiteral(JsonReader reader, IntLiteral intLiteral)
+        public IntLiteral ReadAsIntLiteral(JObject token, IntLiteral intLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            int value = 0;
+            string valueText = token[nameof(IntLiteral.Value)]?.ToString();
+            if (!string.IsNullOrEmpty(valueText))
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.Integer && currentProperty == nameof(IntLiteral.Value))
-                    {
-                        intLiteral.Value = int.Parse(reader.Value.ToString());
-                        break;
-                    }
-                }
+                int.TryParse(valueText, out value);
+                intLiteral.Value = value;
             }
             return intLiteral;
         }
 
-        public Ust ReadAsStringLiteral(JsonReader reader, StringLiteral stringLiteral)
+        public StringLiteral ReadAsStringLiteral(JObject token, StringLiteral stringLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            stringLiteral.Text = token[nameof(StringLiteral.Text)]?.ToString();
+            string valueText = token[nameof(StringLiteral.EscapeCharsLength)]?.ToString();
+            if (!string.IsNullOrEmpty(valueText))
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(StringLiteral.Text))
-                    {
-                        stringLiteral.Text = reader.Value.ToString();
-                    }
-                    else if (reader.TokenType == JsonToken.Integer && currentProperty == nameof(StringLiteral.EscapeCharsLength))
-                    {
-                        stringLiteral.EscapeCharsLength = int.Parse(reader.Value.ToString());
-                    }
-                }
+                int.TryParse(valueText, out int escapeCharsLength);
+                stringLiteral.EscapeCharsLength = escapeCharsLength;
             }
             return stringLiteral;
         }
