@@ -328,14 +328,22 @@ namespace PT.PM.Cli.Common
             LoggerUtils.LogSystemInfo(Logger, CoreName);
 
             Logger.LogInfo("");
-            Logger.LogInfo($"{"Stage: ",LoggerUtils.Align} {workflow.Stage}");
-            if (!workflow.Stage.Is(Stage.Pattern))
+
+            if (!string.IsNullOrEmpty(workflowResult.RootPath))
             {
-                int matchedResultCount = workflowResult.MatchResults.Count();
-                if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
-                {
-                    Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount}");
-                }
+                Logger.LogInfo($"{"Scan path or file:",LoggerUtils.Align} {workflowResult.RootPath}");
+            }
+            Logger.LogInfo($"{"Finish date:",LoggerUtils.Align} {DateTime.Now}");
+
+            if (!workflow.Stage.Is(Stage.Match))
+            {
+                Logger.LogInfo($"{"Stage: ",LoggerUtils.Align} {workflow.Stage}");
+            }
+
+            int matchedResultCount = workflowResult.MatchResults.Count();
+            if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
+            {
+                Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount}");
             }
 
             if (workflowResult.ErrorCount > 0)

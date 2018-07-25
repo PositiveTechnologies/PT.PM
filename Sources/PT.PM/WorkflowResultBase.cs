@@ -14,7 +14,7 @@ namespace PT.PM
         where TMatchResult : MatchResultBase<TPattern>
         where TRenderStage : Enum
     {
-        // Can GC parse trees because they are intermediate objects.
+        // Erase parse trees if required because they are intermediate objects.
         private List<WeakReference<ParseTree>> parseTrees = new List<WeakReference<ParseTree>>();
 
         private List<RootUst> usts = new List<RootUst>();
@@ -44,6 +44,8 @@ namespace PT.PM
             ThreadCount = threadCount;
             Stage = stage;
         }
+
+        public string RootPath { get; set; }
 
         public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
 

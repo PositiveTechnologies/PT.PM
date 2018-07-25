@@ -23,6 +23,7 @@ namespace PT.PM.Common.CodeRepository
             {
                 Languages = new HashSet<Language>() { language };
             }
+            RootPath = string.Join("; ", fileNames);
         }
 
         public override IEnumerable<string> GetFileNames() => fullNames;

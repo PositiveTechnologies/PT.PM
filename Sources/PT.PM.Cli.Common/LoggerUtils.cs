@@ -19,7 +19,6 @@ namespace PT.PM.Cli.Common
             Process currentProcess = Process.GetCurrentProcess();
 
             logger.LogInfo($"{coreName + " version:",Align} {GetVersionString()}");
-            logger.LogInfo($"{"Finish date:",Align} {DateTime.Now}");
             logger.LogInfo($"{"OS:",Align} {Environment.OSVersion}");
             logger.LogInfo($"{"Config:",Align} {(CommonUtils.IsDebug ? "DEBUG" : "RELEASE")} ({(Debugger.IsAttached ? "+ debugger" : "no debugger")})");
 

@@ -26,6 +26,7 @@ namespace PT.PM.Cli.Common
         public void LogStatistics()
         {
             LogAdvancedInfo();
+
             if (WorkflowResult.TotalTerminatedFilesCount > 0)
             {
                 Logger.LogInfo($"{"Terminated files count:",LoggerUtils.Align} {WorkflowResult.TotalTerminatedFilesCount}");
