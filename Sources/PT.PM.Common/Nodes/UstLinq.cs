@@ -6,42 +6,45 @@ namespace PT.PM.Common
 {
     public static class UstLinq
     {
-        public static void ApplyActionToDescendants(this Ust ust, Action<Ust> action)
+        public static void ApplyActionToDescendantsAndSelf(this Ust ust, Action<Ust> action)
         {
-            foreach (var child in ust.Children)
+            action(ust);
+
+            foreach (Ust child in ust.Children)
             {
                 if (child != null)
                 {
-                    action(child);
-                    child.ApplyActionToDescendants(action);
+                    child.ApplyActionToDescendantsAndSelf(action);
                 }
             }
         }
 
-        public static bool AnyDescendant(this Ust ust, Func<Ust, bool> predicate)
+        public static bool AnyDescendantOrSelf(this Ust ust, Func<Ust, bool> predicate)
         {
             if (predicate(ust))
             {
                 return true;
             }
-            foreach (var child in ust.Children)
+
+            foreach (Ust child in ust.Children)
             {
-                if (child != null && child.AnyDescendant(predicate))
+                if (child != null && child.AnyDescendantOrSelf(predicate))
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
-        public static List<Ust> Descendants(this Ust ust) => ust.WhereDescendants();
+        public static List<Ust> DescendantsAndSelf(this Ust ust) => ust.WhereDescendantsOrSelf();
 
-        public static List<Ust> WhereDescendants(this Ust ust, Func<Ust, bool> predicate = null)
+        public static List<Ust> WhereDescendantsOrSelf(this Ust ust, Func<Ust, bool> predicate = null)
         {
             var result = new List<Ust>();
-            GetDescendants(ust);
+            GetDescendantsAndSelf(ust);
 
-            void GetDescendants(Ust localResult)
+            void GetDescendantsAndSelf(Ust localResult)
             {
                 if (localResult != null)
                 {
@@ -51,7 +54,7 @@ namespace PT.PM.Common
                     }
                     foreach (Ust child in localResult.Children)
                     {
-                        GetDescendants(child);
+                        GetDescendantsAndSelf(child);
                     }
                 }
             }

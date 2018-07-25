@@ -58,7 +58,7 @@ namespace PT.PM.Common.Json
                     ? languageString.ParseLanguages().FirstOrDefault()
                     : Uncertain.Language;
 
-                rootUst = (RootUst)Activator.CreateInstance(type, null, language);
+                rootUst = new RootUst(null, language);
                 ProcessRootUst(rootUst);
 
                 ust = rootUst;
@@ -83,7 +83,16 @@ namespace PT.PM.Common.Json
             }
             ancestors.Push(ust);
 
-            List <TextSpan> textSpans =
+            try
+            {
+                serializer.Populate(jObject.CreateReader(), ust);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(JsonFile, jObject, ex);
+            }
+
+            List<TextSpan> textSpans =
                 jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList() ?? null;
 
             if (textSpans != null && textSpans.Count > 0)
@@ -97,15 +106,6 @@ namespace PT.PM.Common.Json
                     ust.InitialTextSpans = textSpans;
                     ust.TextSpan = textSpans.First();
                 }
-            }
-
-            try
-            {
-                serializer.Populate(jObject.CreateReader(), ust);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(JsonFile, jObject, ex);
             }
 
             if (!IgnoreExtraProcess)

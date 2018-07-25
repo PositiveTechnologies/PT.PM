@@ -25,7 +25,11 @@ namespace PT.PM.Common.Nodes
 
         public virtual bool IsTerminal => false;
 
-        public LineColumnTextSpan LineColumnTextSpan => Root?.SourceCodeFile?.GetLineColumnTextSpan(TextSpan);
+        public LineColumnTextSpan LineColumnTextSpan => CurrentCodeFile?.GetLineColumnTextSpan(TextSpan);
+
+        public CodeFile CurrentCodeFile => this is RootUst rootUst ? rootUst.SourceCodeFile : Root?.SourceCodeFile;
+
+        public RootUst RootOrThis => this is RootUst rootUst ? rootUst : Root;
 
         [JsonIgnore]
         public TextSpan TextSpan { get; set; }

@@ -120,6 +120,11 @@ namespace PT.PM.Common
 
         public bool IsEmpty => string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(Code);
 
+        public string GetSubstring(TextSpan textSpan)
+        {
+            return Code.Substring(textSpan.Start, textSpan.Length);
+        }
+
         private void InitLineIndexesIfRequired()
         {
             if (lineIndexes == null)

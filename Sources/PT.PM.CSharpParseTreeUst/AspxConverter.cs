@@ -164,7 +164,7 @@ namespace PT.PM.CSharpParseTreeUst
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
             var converter = new CSharpRoslynParseTreeConverter();
             RootUst result = converter.Convert(new CSharpRoslynParseTree(tree) { SourceCodeFile = sourceCodeFile });
-            result.ApplyActionToDescendants(ust => ust.TextSpan = ust.TextSpan.AddOffset(location.Start));
+            result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(location.Start));
             return result;
         }
 
@@ -174,9 +174,9 @@ namespace PT.PM.CSharpParseTreeUst
             var converter = new CSharpRoslynParseTreeConverter();
             Ust result = converter.Visit(node);
             RootUst resultRoot =
-                result as RootUst ?? new RootUst(sourceCodeFile, CSharp.Language) { Node = result };
+                result as RootUst ?? new RootUst(sourceCodeFile, CSharp.Language) { Node = result, TextSpan = result.TextSpan };
             resultRoot.SourceCodeFile = sourceCodeFile;
-            result.ApplyActionToDescendants(ust => ust.TextSpan = ust.TextSpan.AddOffset(offset));
+            result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(offset));
             return result;
         }
 

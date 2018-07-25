@@ -87,7 +87,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (root == null)
             {
-                root = new RootUst(children.FirstOrDefault()?.Root?.SourceCodeFile, CSharp.Language);
+                root = new RootUst(null, CSharp.Language)
+                {
+                    TextSpan = node.GetTextSpan()
+                };
             }
             root.Nodes = children.ToArray();
             return root;

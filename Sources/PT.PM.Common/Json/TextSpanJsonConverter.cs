@@ -49,7 +49,7 @@ namespace PT.PM.Common.Json
                     }
                     else
                     {
-                        CodeFile codeFile = textSpan.CodeFile ?? CurrentCodeFile;
+                        CodeFile codeFile = textSpan.GetCodeFile(CurrentCodeFile);
                         if (codeFile != null)
                         {
                             textSpanString = codeFile.GetLineColumnTextSpan(textSpan).ToString(includeFileName);

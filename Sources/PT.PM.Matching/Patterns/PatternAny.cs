@@ -22,11 +22,13 @@ namespace PT.PM.Matching.Patterns
 
         public override bool Any => Regex == null || RegexString.Equals(Default);
 
+        public bool UseUstString { get; set; }
+
         public PatternAny()
         {
         }
 
-        public PatternAny(string regex, TextSpan textSpan = default(TextSpan))
+        public PatternAny(string regex, TextSpan textSpan = default)
             : base(textSpan)
         {
             RegexString = regex;
@@ -43,8 +45,18 @@ namespace PT.PM.Matching.Patterns
                 return context.AddMatch(ust);
             }
 
-            string ustString = ust.ToString();
-            var matches = Regex.MatchRegex(ustString, (ust as StringLiteral)?.EscapeCharsLength ?? 0);
+            string treeString;
+
+            if (UseUstString)
+            {
+                treeString = ust.ToString();
+            }
+            else
+            {
+                treeString = ust.CurrentCodeFile?.GetSubstring(ust.TextSpan) ?? "";
+            }
+
+            var matches = Regex.MatchRegex(treeString, (ust as StringLiteral)?.EscapeCharsLength ?? 0);
 
             if (ust.InitialTextSpans?.Any() ?? false)
             {
