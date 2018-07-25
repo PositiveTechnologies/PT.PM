@@ -1,4 +1,5 @@
-﻿using NLog.Targets;
+﻿using NLog;
+using NLog.Targets;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Matching;
@@ -9,20 +10,20 @@ using System.Threading;
 
 namespace PT.PM.Cli.Common
 {
-    public class NLogLogger : ILogger
+    public class NLogLogger : PM.Common.ILogger
     {
         private int errorCount;
         private string logPath;
 
         public int ErrorCount => errorCount;
 
-        public NLog.Logger FileLogger { get; } = NLog.LogManager.GetLogger("file");
+        public Logger FileLogger { get; } = LogManager.GetLogger("file");
 
-        public NLog.Logger ErrorsLogger { get; } = NLog.LogManager.GetLogger("errors");
+        public Logger ErrorsLogger { get; } = LogManager.GetLogger("errors");
 
-        public NLog.Logger MatchLogger { get; } = NLog.LogManager.GetLogger("match");
+        public Logger MatchLogger { get; } = LogManager.GetLogger("match");
 
-        protected NLog.Logger ConsoleLogger { get; } = NLog.LogManager.GetLogger("console");
+        protected Logger ConsoleLogger { get; } = LogManager.GetLogger("console");
 
         protected PrettyPrinter ErrorPrinter { get; } = new PrettyPrinter
         {
@@ -48,7 +49,7 @@ namespace PT.PM.Cli.Common
                 logPath = value;
                 if (!string.IsNullOrEmpty(logPath))
                 {
-                    foreach (Target target in NLog.LogManager.Configuration.AllTargets)
+                    foreach (Target target in LogManager.Configuration.AllTargets)
                     {
                         if (target is FileTarget fileTarget)
                         {
@@ -59,8 +60,6 @@ namespace PT.PM.Cli.Common
                 }
             }
         }
-
-        public bool IsLogErrors { get; set; } = false;
 
         public bool IsLogDebugs { get; set; } = false;
 

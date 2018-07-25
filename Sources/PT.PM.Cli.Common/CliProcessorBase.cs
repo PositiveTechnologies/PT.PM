@@ -39,8 +39,6 @@ namespace PT.PM.Cli.Common
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-            Logger.IsLogErrors = true;
-
             var parser = new Parser(config =>
             {
                 config.IgnoreUnknownArguments = ContinueWithInvalidArgs;
@@ -287,7 +285,6 @@ namespace PT.PM.Cli.Common
             }
             catch (Exception ex)
             {
-                Logger.IsLogErrors = true;
                 Logger.LogError(ex);
 
                 return null;
@@ -300,7 +297,6 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            Logger.IsLogErrors = parameters.IsLogErrorsToConsole ?? true;
             Logger.IsLogDebugs = parameters.IsLogDebugs ?? false;
         }
 
@@ -319,7 +315,6 @@ namespace PT.PM.Cli.Common
             }
             catch (Exception ex)
             {
-                Logger.IsLogErrors = true;
                 Logger.LogError(ex);
 
                 return null;
