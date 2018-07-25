@@ -9,6 +9,7 @@ using PT.PM.Common.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace PT.PM.Common.Json
 {
@@ -73,7 +74,8 @@ namespace PT.PM.Common.Json
             }
             else
             {
-                ust = (Ust)Activator.CreateInstance(type);
+                var constructor = type.GetConstructor(new Type[0]);
+                ust = (Ust)constructor.Invoke(null);
             }
 
             if (rootAncestors.Count > 0)
@@ -132,26 +134,16 @@ namespace PT.PM.Common.Json
 
         private Ust ReadAsObject(JsonSerializer serializer, JObject token, Ust ust, Type type)
         {
-            if (ust is RootUst rootUst)
+            PropertyInfo[] properties = type.GetReadWriteClassProperties();
+            foreach (var property in properties.Where(p => p.Name != nameof(RootUst.TextSpan)))
             {
-                ust = ReadAsRootUst(serializer, token, rootUst);
+                var propertyToken = token[property.Name];
+                if (propertyToken != null)
+                {
+                    property.SetValue(ust, propertyToken.ToObject(property.PropertyType, serializer));
+                }
             }
-            else if (ust is UsingDeclaration usingUst)
-            {
-                ust = ReadAsUsingDeclaration(serializer, token, usingUst);
-            }
-            else if (type.IsSubclassOf(typeof(Literal)))
-            {
-                ust = LiteralJsonReader.Read(token, ust);
-            }
-            else if (type.IsSubclassOf(typeof(Token)))
-            {
-                ust = TokenJsonReader.Read(token.CreateReader(), ust);
-            }
-            else
-            {
-                serializer.Populate(token.CreateReader(), ust);
-            }
+
             return ust;
         }
 
