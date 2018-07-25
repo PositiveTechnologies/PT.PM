@@ -41,6 +41,9 @@ namespace PT.PM.Cli.Common
         [Option("logs-dir", HelpText = "Logs directory")]
         public string LogsDir { get; set; }
 
+        [Option("silent", HelpText = "Do not print messages to console")]
+        public bool? Silent { get; set; }
+
         [Option("temp-dir", HelpText = "Temp directory")]
         public string TempDir { get; set; }
 

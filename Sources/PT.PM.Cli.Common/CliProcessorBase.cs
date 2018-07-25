@@ -143,6 +143,14 @@ namespace PT.PM.Cli.Common
                 workflow.LogsDir = NormalizeLogsDir(parameters.LogsDir);
                 workflow.DumpDir = NormalizeLogsDir(parameters.LogsDir);
             }
+            if (parameters.Silent != null && Logger is NLogLogger logger)
+            {
+                if (parameters.Silent.Value)
+                {
+                    Logger.LogInfo("Silent mode.");
+                }
+                logger.IsLogToConsole = !parameters.Silent.Value;
+            }
             if (parameters.TempDir != null)
             {
                 workflow.TempDir = NormalizeLogsDir(parameters.TempDir);
