@@ -44,8 +44,8 @@ namespace PT.PM.Cli.Common
         [Option("temp-dir", HelpText = "Temp directory")]
         public string TempDir { get; set; }
 
-        [Option('e', "log-errors", HelpText = "Log errors to console")]
-        public bool? IsLogErrors { get; set; }
+        [Option("no-errors-in-console", HelpText = "Do not print errors to console")]
+        public bool? IsLogErrorsToConsole { get; set; }
 
         [Option("log-debugs", HelpText = "Log debug messages")]
         public bool? IsLogDebugs { get; set; }

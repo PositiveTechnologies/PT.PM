@@ -301,7 +301,7 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            Logger.IsLogErrors = parameters.IsLogErrors ?? false;
+            Logger.IsLogErrors = parameters.IsLogErrorsToConsole ?? true;
             Logger.IsLogDebugs = parameters.IsLogDebugs ?? false;
         }
 
