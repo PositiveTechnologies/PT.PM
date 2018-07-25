@@ -82,6 +82,7 @@ namespace PT.PM.Common.Json
             {
                 ust.Root = rootAncestors.Peek();
             }
+
             if (ancestors.Count > 0)
             {
                 ust.Parent = ancestors.Peek();
@@ -93,21 +94,7 @@ namespace PT.PM.Common.Json
             }
             ancestors.Push(ust);
 
-            List<TextSpan> textSpans =
-                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList();
-
-            if (textSpans != null && textSpans.Count > 0)
-            {
-                if (textSpans.Count == 1)
-                {
-                    ust.TextSpan = textSpans[0];
-                }
-                else
-                {
-                    ust.InitialTextSpans = textSpans;
-                    ust.TextSpan = textSpans.First();
-                }
-            }
+            FillTextSpans(jObject, ust, serializer);
 
             try
             {
@@ -134,17 +121,56 @@ namespace PT.PM.Common.Json
 
         private Ust ReadAsObject(JsonSerializer serializer, JObject token, Ust ust, Type type)
         {
-            PropertyInfo[] properties = type.GetReadWriteClassProperties();
-            foreach (var property in properties.Where(p => p.Name != nameof(RootUst.TextSpan)))
+            if (ust is UsingDeclaration usingUst)
             {
-                var propertyToken = token[property.Name];
-                if (propertyToken != null)
+                ust = ReadAsUsingDeclaration(serializer, token, usingUst);
+            }
+            else if (ust is NamespaceDeclaration namespaceDeclaration)
+            {
+                ust = ReadAsNamespaceDeclaration(serializer, token, namespaceDeclaration);
+            }
+            else if (type.IsSubclassOf(typeof(Literal)))
+            {
+                ust = LiteralJsonReader.Read(token, ust);
+            }
+            else if (type.IsSubclassOf(typeof(Token)))
+            {
+                ust = TokenJsonReader.Read(token, ust);
+            }
+            else
+            {
+                PropertyInfo[] properties = type.GetReadWriteClassProperties();
+                foreach (var property in properties.Where(p => p.Name != nameof(RootUst.TextSpan)))
                 {
-                    property.SetValue(ust, propertyToken.ToObject(property.PropertyType, serializer));
+                    var propertyToken = token[property.Name];
+                    if (propertyToken != null)
+                    {
+                        property.SetValue(ust, propertyToken.ToObject(property.PropertyType, serializer));
+                    }
                 }
             }
-
             return ust;
+        }
+
+        private Ust ReadAsNamespaceDeclaration(JsonSerializer serializer, JObject token, NamespaceDeclaration namespaceDeclaration)
+        {
+            var nameToken = token[nameof(NamespaceDeclaration.Name)];
+            if (nameToken != null)
+            {
+                namespaceDeclaration.Name = (StringLiteral)ReadJson(nameToken.CreateReader(), null, null, serializer);
+            }
+            var membersToken = token[nameof(NamespaceDeclaration.Members)]?.ReadArray();
+
+            if (membersToken?.Length > 0)
+            {
+                List<Ust> members = new List<Ust>(membersToken.Length);
+                for (int i = 0; i < membersToken.Length; i++)
+                {
+                    members.Add((Ust)ReadJson(membersToken[i].CreateReader(), null, null, serializer));
+                }
+                namespaceDeclaration.Members = members;
+            }
+            return namespaceDeclaration;
         }
 
         private Ust ReadAsRootUst(JsonSerializer serializer, JObject token, RootUst rootUst)
@@ -172,6 +198,24 @@ namespace PT.PM.Common.Json
                 usingUst.Name = (StringLiteral)ReadJson(nameNode.CreateReader(), typeof(StringLiteral), null, serializer);
             }
             return usingUst;
+        }
+
+        private void FillTextSpans(JObject token, Ust ust, JsonSerializer serializer)
+        {
+            List<TextSpan> textSpans = token[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList();
+
+            if (textSpans?.Count > 0)
+            {
+                if (textSpans.Count == 1)
+                {
+                    ust.TextSpan = textSpans[0];
+                }
+                else
+                {
+                    ust.InitialTextSpans = textSpans;
+                    ust.TextSpan = textSpans[0];
+                }
+            }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

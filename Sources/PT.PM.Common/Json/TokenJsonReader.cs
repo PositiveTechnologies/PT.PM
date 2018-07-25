@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
@@ -9,87 +10,46 @@ namespace PT.PM.Common.Json
     public class TokenJsonReader
     {
 
-        public Ust Read(JsonReader reader, Ust ust)
+        public Ust Read(JObject token, Ust ust)
         {
             if (ust is IdToken idToken)
             {
-                ust = ReadAsIdToken(reader, idToken);
+                ust = ReadAsIdToken(token, idToken);
             }
             else if (ust is TypeToken typeToken)
             {
-                ust = ReadAsTypeToken(reader, typeToken);
+                ust = ReadAsTypeToken(token, typeToken);
             }
             else if (ust is TypeTypeLiteral typeTypeLiteral)
             {
-                ust = ReadAsTypeType(reader, typeTypeLiteral);
+                ust = ReadAsTypeType(token, typeTypeLiteral);
             }
             return ust;
         }
 
-        private Ust ReadAsTypeType(JsonReader reader, TypeTypeLiteral typeTypeLiteral)
+        private Ust ReadAsTypeType(JObject token, TypeTypeLiteral typeTypeLiteral)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
+            string typeText = token[nameof(TypeTypeLiteral.TypeType)]?.ToString();
+            if (!string.IsNullOrEmpty(typeText))
             {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(TypeTypeLiteral.TypeType))
-                    {
-                        Enum.TryParse(reader.Value.ToString(), out TypeType type);
-                        typeTypeLiteral.TypeType = type;
-                        break;
-                    }
-                }
+                Enum.TryParse(typeText, out TypeType type);
+                typeTypeLiteral.TypeType = type;
             }
+
             return typeTypeLiteral;
         }
 
-        private Ust ReadAsTypeToken(JsonReader reader, TypeToken typeToken)
+        private Ust ReadAsTypeToken(JObject token, TypeToken typeToken)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
-            {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(TypeToken.TypeText))
-                    {
-                        typeToken.TypeText = reader.Value.ToString();
-                        break;
-                    }
-                }
-            }
+            typeToken.TypeText = token[nameof(TypeToken.TypeText)]?.ToString()
+                ?? typeToken.TypeText;
             return typeToken;
         }
 
-        private Ust ReadAsIdToken(JsonReader reader, IdToken idToken)
+        private Ust ReadAsIdToken(JObject token, IdToken idToken)
         {
-            string currentProperty = string.Empty;
-            while (reader.Read())
-            {
-                if (reader.Value != null)
-                {
-                    if (reader.TokenType == JsonToken.PropertyName)
-                    {
-                        currentProperty = reader.Value.ToString();
-                        reader.Read();
-                    }
-                    if (reader.TokenType == JsonToken.String && currentProperty == nameof(IdToken.Id))
-                    {
-                        idToken.Id = reader.Value.ToString();
-                        break;
-                    }
-                }
-            }
+            idToken.Id = token[nameof(IdToken.Id)]?.ToString()
+                ?? idToken.Id;
             return idToken;
         }
     }
