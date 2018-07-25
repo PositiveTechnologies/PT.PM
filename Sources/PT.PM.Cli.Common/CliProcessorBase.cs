@@ -112,6 +112,7 @@ namespace PT.PM.Cli.Common
 
             workflow.PatternsRepository = CreatePatternsRepository(parameters);
             workflow.Logger = Logger;
+            NLogLogger nLogLogger = Logger as NLogLogger;
 
             if (parameters.Stage != null)
             {
@@ -143,13 +144,21 @@ namespace PT.PM.Cli.Common
                 workflow.LogsDir = NormalizeLogsDir(parameters.LogsDir);
                 workflow.DumpDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            if (parameters.Silent != null && Logger is NLogLogger logger)
+            if (parameters.Silent != null && nLogLogger != null)
             {
                 if (parameters.Silent.Value)
                 {
                     Logger.LogInfo("Silent mode.");
                 }
-                logger.IsLogToConsole = !parameters.Silent.Value;
+                nLogLogger.IsLogToConsole = !parameters.Silent.Value;
+            }
+            if (parameters.NoLog != null && nLogLogger != null)
+            {
+                if (parameters.NoLog.Value)
+                {
+                    Logger.LogInfo("File log disabled.");
+                }
+                nLogLogger.IsLogToFile = false;
             }
             if (parameters.TempDir != null)
             {
