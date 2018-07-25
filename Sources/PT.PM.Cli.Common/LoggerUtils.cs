@@ -50,24 +50,5 @@ namespace PT.PM.Cli.Common
 
             return $"{assemblyName.Version}{buildTime}";
         }
-
-        public static string LogMatch(string matchedCode, LineColumnTextSpan textSpan, CodeFile codeFile, string patternKey,
-            bool dataFlowMatch, bool isSuppressed)
-        {
-            var message = new StringBuilder();
-            message.AppendLine($"-- Match ----------------");
-            message.AppendLine($"Type          : {(dataFlowMatch ? "Taint" : "PM")}");
-            message.AppendLine($"Code          : {matchedCode}");
-            message.AppendLine($"Location      : {textSpan.ToString(false)}");
-            message.AppendLine($"File          : {codeFile}");
-            message.AppendLine($"PatternKey    : {patternKey}");
-            if (isSuppressed)
-            {
-                message.AppendLine($"IsSuppressed  : {isSuppressed}");
-            }
-            string text = message.ToString();
-
-            return text;
-        }
     }
 }

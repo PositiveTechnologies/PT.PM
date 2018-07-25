@@ -6,12 +6,16 @@ using PT.PM.Matching;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace PT.PM.Cli.Common
 {
     public class NLogLogger : PM.Common.ILogger
     {
+        private static readonly Regex SupressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         private int errorCount;
         private string logPath;
 
@@ -38,7 +42,9 @@ namespace PT.PM.Cli.Common
 
         protected PrettyPrinter CodePrinter { get; } = new PrettyPrinter
         {
-            ReduceWhitespaces = true
+            TrimIndent = true,
+            ReduceWhitespaces = true,
+            MaxMessageLength = 300
         };
 
         public string LogsDir
@@ -95,27 +101,14 @@ namespace PT.PM.Cli.Common
             {
                 if (infoObj is MatchResult matchResult)
                 {
-                    var matchResultDto = new MatchResultDto(matchResult);
-                    string matchedCode = CodePrinter.Print(matchResultDto.MatchedCode);
-
-                    string matchMessage = LoggerUtils.LogMatch(matchedCode, matchResultDto.LineColumnTextSpan,
-                        matchResult.SourceCodeFile,
-                        matchResultDto.PatternKey, false, false);
-
-                    MatchLogger.Info(matchMessage);
-                    LogInfo(matchMessage);
+                    ProcessMatchResult(matchResult.TextSpan, matchResult.SourceCodeFile, matchResult.Pattern.Key);
                 }
                 else if (!(infoObj is MessageEventArgs))
                 {
                     var message = new StringBuilder();
                     message.AppendLine("---------------------");
                     message.AppendLine(infoObj.ToString());
-                    string result = message.ToString();
-                    if (infoObj is IMatchResultBase)
-                    {
-                        MatchLogger.Info(result);
-                    }
-                    LogInfo(result);
+                    LogInfo(message.ToString());
                 }
             }
         }
@@ -151,9 +144,51 @@ namespace PT.PM.Cli.Common
             }
         }
 
+        protected virtual void ProcessMatchResult(TextSpan textSpan, CodeFile sourceFile, string patternKey)
+        {
+            ExtractLogInfo(textSpan, sourceFile,
+                out LineColumnTextSpan lineColumnTextSpan, out string code, out bool isSuppressed);
+
+            LogMatch(code, lineColumnTextSpan, patternKey, false, isSuppressed);
+        }
+
+        protected void ExtractLogInfo(TextSpan textSpan, CodeFile sourceFile, out LineColumnTextSpan lineColumnTextSpan, out string code, out bool isSuppressed)
+        {
+            lineColumnTextSpan = sourceFile.GetLineColumnTextSpan(textSpan);
+            code = sourceFile.Code.Substring(textSpan);
+            code = CodePrinter.Print(code);
+            isSuppressed = IsSuppressed(sourceFile, lineColumnTextSpan);
+        }
+
         protected string PrepareForConsole(string str)
         {
             return str.Replace("\a", "");
+        }
+
+        protected void LogMatch(string matchedCode, LineColumnTextSpan textSpan, string patternKey,
+            bool taint, bool isSuppressed)
+        {
+            var message = new StringBuilder();
+            message.AppendLine($"-- Match ----------------");
+            if (taint || isSuppressed)
+            {
+                message.AppendLine($"Type      : {(taint ? "Taint; " : "")}{(isSuppressed ? "Suppressed" : "")}");
+            }
+            message.AppendLine($"Code      : {matchedCode}");
+            message.AppendLine($"Location  : {textSpan}");
+            message.AppendLine($"Pattern   : {patternKey}");
+            string text = message.ToString();
+
+            MatchLogger.Info(text);
+            LogInfo(text);
+        }
+
+        protected static bool IsSuppressed(CodeFile sourceFile, LineColumnTextSpan lineColumnTextSpan)
+        {
+            string prevLine = lineColumnTextSpan.BeginLine > 0
+                            ? sourceFile.GetStringAtLine(lineColumnTextSpan.BeginLine - 1)
+                            : "";
+            return SupressMarkerRegex.IsMatch(prevLine);
         }
     }
 }
