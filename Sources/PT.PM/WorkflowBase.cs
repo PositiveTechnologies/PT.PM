@@ -137,7 +137,11 @@ namespace PT.PM
                     return null;
                 }
 
-                CodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
+                stopwatch.Restart();
+                CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
+                stopwatch.Stop();
+
+                LogCodeFile((sourceCodeFile, stopwatch.Elapsed), workflowResult);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -227,6 +231,10 @@ namespace PT.PM
                                 Strict = StrictJson,
                                 CodeFiles = workflowResult.SourceCodeFiles
                             };
+                            jsonUstSerializer.ReadCodeFileEvent += (object sender, (CodeFile, TimeSpan) fileAndTime) =>
+                            {
+                                LogCodeFile(fileAndTime, workflowResult);
+                            };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
 
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
@@ -262,20 +270,17 @@ namespace PT.PM
             return result;
         }
 
-        public CodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
+        public void LogCodeFile((CodeFile, TimeSpan) fileAndTime, TWorkflowResult workflowResult)
         {
-            var stopwatch = Stopwatch.StartNew();
-            CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
-            stopwatch.Stop();
+            CodeFile codeFile = fileAndTime.Item1;
+            TimeSpan elapsed = fileAndTime.Item2;
 
-            Logger.LogInfo($"File {fileName} read {GetElapsedString(stopwatch)}.");
+            Logger.LogInfo($"File {fileAndTime.Item1} read (Elapsed: {elapsed.Format()}).");
 
-            workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-            workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
-            workflowResult.AddReadTime(stopwatch.Elapsed.Ticks);
-            workflowResult.AddResultEntity(sourceCodeFile);
-
-            return sourceCodeFile;
+            workflowResult.AddProcessedCharsCount(codeFile.Code.Length);
+            workflowResult.AddProcessedLinesCount(codeFile.GetLinesCount());
+            workflowResult.AddReadTime(elapsed.Ticks);
+            workflowResult.AddResultEntity(codeFile);
         }
 
         private void DumpTokensAndParseTree(ParseTree parseTree)
