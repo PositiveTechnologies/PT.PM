@@ -132,7 +132,7 @@ namespace PT.PM
 
         public void AddResultEntity(IEnumerable<TPattern> patterns)
         {
-            AddEntities(this.Patterns, patterns);
+            AddEntities(Patterns, patterns);
         }
 
         public void AddProcessedFilesCount(int filesCount)

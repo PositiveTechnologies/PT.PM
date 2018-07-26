@@ -357,11 +357,7 @@ namespace PT.PM.Cli.Common
                 Logger.LogInfo($"{"Stage: ",LoggerUtils.Align} {workflow.Stage}");
             }
 
-            int matchedResultCount = workflowResult.MatchResults.Count();
-            if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
-            {
-                Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount}");
-            }
+            LogMatchesCount(workflowResult);
 
             if (workflowResult.ErrorCount > 0)
             {
@@ -370,6 +366,15 @@ namespace PT.PM.Cli.Common
 
             LogStatistics(workflowResult);
             Logger.LogInfo($"{"Time elapsed:",LoggerUtils.Align} {totalElapsed.Format()}");
+        }
+
+        protected virtual void LogMatchesCount(TWorkflowResult workflowResult)
+        {
+            int matchedResultCount = workflowResult.MatchResults.Count();
+            if (matchedResultCount > 0)
+            {
+                Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount}");
+            }
         }
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
