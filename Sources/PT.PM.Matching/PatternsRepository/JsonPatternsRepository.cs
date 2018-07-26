@@ -40,7 +40,15 @@ namespace PT.PM.Matching.PatternsRepository
                             converters.Add(new PatternJsonConverterReader(new CodeFile(patternsData)));
                             var textSpanJsonConverter = new TextSpanJsonConverter();
                             converters.Add(textSpanJsonConverter);
-                            converters.Add(new CodeFileJsonConverter() { TextSpanJsonConverter = textSpanJsonConverter });
+
+                            var codeFileJsonConverter = new CodeFileJsonConverter();
+
+                            codeFileJsonConverter.SetCurrentCodeFileEvent += (object sender, CodeFile codeFile) =>
+                            {
+                                textSpanJsonConverter.CurrentCodeFile = codeFile;
+                            };
+
+                            converters.Add(codeFileJsonConverter);
                         }
                         PatternRoot patternRoot = token.ToObject<PatternRoot>(patternJsonSerializer);
                         patternDto = patternConverter.ConvertBack(new[] { patternRoot })[0];
