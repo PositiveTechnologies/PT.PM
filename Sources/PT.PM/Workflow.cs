@@ -48,7 +48,6 @@ namespace PT.PM
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ??
                 new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
-            result.RootPath = SourceCodeRepository.RootPath;
             result.BaseLanguages = BaseLanguages.ToArray();
             result.RenderStages = RenderStages;
             result.IsSimplifyUst = IsSimplifyUst;
@@ -94,6 +93,9 @@ namespace PT.PM
 
             DumpJsonOutput(result);
             result.ErrorCount = logger?.ErrorCount ?? 0;
+
+            result.RootPath = SourceCodeRepository.RootPath;
+
             return result;
         }
 
