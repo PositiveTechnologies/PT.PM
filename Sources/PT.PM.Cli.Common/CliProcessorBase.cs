@@ -365,6 +365,8 @@ namespace PT.PM.Cli.Common
             }
 
             LogStatistics(workflowResult);
+
+            Logger.LogInfo("");
             Logger.LogInfo($"{"Time elapsed:",LoggerUtils.Align} {totalElapsed.Format()}");
         }
 
