@@ -1,60 +1,72 @@
-﻿using PT.PM.Common.Exceptions;
+﻿using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using System;
-using System.Diagnostics;
-using PT.PM.Common;
-using System.IO;
-using System.Reflection;
 using System.Threading;
 
 namespace PT.PM
 {
     public class SevenZipExtractor : IArchiveExtractor
     {
-        public string SevenZipPath { get; set; } = "";
+        private const string ToolName = "7z";
+
+        private static bool? is7zInstalled = null;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public SevenZipExtractor()
+        public static bool Is7zInstalled
         {
-            string executingAssemblyPath = Path.Combine(
-               Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            SevenZipPath = CommonUtils.IsRunningOnLinux
-               ? "7z"
-               : Path.Combine(executingAssemblyPath, "7-Zip", "7z.exe");
+            get
+            {
+                if (!is7zInstalled.HasValue)
+                {
+                    try
+                    {
+                        new Processor(ToolName, "", 1000).Start();
+                        is7zInstalled = true;
+                    }
+                    catch
+                    {
+                        is7zInstalled = false;
+                    }
+                }
+
+                return is7zInstalled.Value;
+            }
         }
 
         public void Extract(string zipPath, string extractPath)
         {
-            if (!File.Exists(SevenZipPath))
+            if (!Is7zInstalled)
             {
-                throw new Exception($"7z.exe not found at {SevenZipPath}");
+                throw new Exception($"{ToolName} tool is not installed");
             }
 
             string errorMessage = null;
             try
             {
-                var processStartInfo = new ProcessStartInfo
+                var processor = new Processor(ToolName, $@"x ""{zipPath}"" -o""{extractPath}"" -y");
+                processor.ErrorDataReceived += (sender, error) =>
                 {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    FileName = SevenZipPath,
-                    Arguments = $@"x ""{zipPath}"" -o""{extractPath}"" -y"
+                    Logger.LogInfo($"{ToolName} error: {error}");
                 };
-                Process process = Process.Start(processStartInfo);
-                process.WaitForExit();
-                if (process.ExitCode != 0)
+                processor.OutputDataReceived += (sender, message) =>
                 {
-                    errorMessage = $"Error while extracting {extractPath}.";
+                    Logger.LogInfo($"{ToolName}: {message}");
+                };
+                ProcessExecutionResult execResult = processor.Start();
+
+                if (execResult.ExitCode != 0)
+                {
+                    errorMessage = $"{ToolName} error while extracting {extractPath}. Exit code: {execResult.ExitCode}";
                 }
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                errorMessage = $"Error while extracting {extractPath}: {ex.Message}";
+                errorMessage = $"{ToolName} error while extracting {extractPath}: {ex.Message}";
             }
+
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                Console.Error.WriteLine(errorMessage);
                 throw new ReadException(new CodeFile("") { Name = zipPath }, message: errorMessage);
             }
         }
