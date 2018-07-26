@@ -49,6 +49,13 @@ namespace PT.PM.Common.Json
             }
 
             JObject jObject = JObject.Load(reader);
+
+            return ReadJson(jObject, objectType, existingValue, serializer);
+        }
+
+        private Ust ReadJson(JObject jObject, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+
             string kind = jObject[nameof(Ust.Kind)]?.ToString() ?? "";
 
             if (!ReflectionCache.TryGetClassType(kind, out Type type))
@@ -121,15 +128,7 @@ namespace PT.PM.Common.Json
 
         private Ust ReadAsObject(JsonSerializer serializer, JObject token, Ust ust, Type type)
         {
-            if (ust is UsingDeclaration usingUst)
-            {
-                ust = ReadAsUsingDeclaration(serializer, token, usingUst);
-            }
-            else if (ust is NamespaceDeclaration namespaceDeclaration)
-            {
-                ust = ReadAsNamespaceDeclaration(serializer, token, namespaceDeclaration);
-            }
-            else if (type.IsSubclassOf(typeof(Literal)))
+            if (type.IsSubclassOf(typeof(Literal)))
             {
                 ust = LiteralJsonReader.Read(token, ust);
             }
@@ -143,61 +142,22 @@ namespace PT.PM.Common.Json
                 foreach (var property in properties.Where(p => p.Name != nameof(RootUst.TextSpan)))
                 {
                     var propertyToken = token[property.Name];
-                    if (propertyToken != null)
+                    if (propertyToken == null)
+                    {
+                        continue;
+                    }
+
+                    if (propertyToken.Type != JTokenType.Array && propertyToken[nameof(Ust.Kind)] != null)
+                    {
+                        property.SetValue(ust, ReadJson((JObject)propertyToken, null, null, serializer));
+                    }
+                    else
                     {
                         property.SetValue(ust, propertyToken.ToObject(property.PropertyType, serializer));
                     }
                 }
             }
             return ust;
-        }
-
-        private Ust ReadAsNamespaceDeclaration(JsonSerializer serializer, JObject token, NamespaceDeclaration namespaceDeclaration)
-        {
-            var nameToken = token[nameof(NamespaceDeclaration.Name)];
-            if (nameToken != null)
-            {
-                namespaceDeclaration.Name = (StringLiteral)ReadJson(nameToken.CreateReader(), null, null, serializer);
-            }
-            var membersToken = token[nameof(NamespaceDeclaration.Members)]?.ReadArray();
-
-            if (membersToken?.Length > 0)
-            {
-                List<Ust> members = new List<Ust>(membersToken.Length);
-                for (int i = 0; i < membersToken.Length; i++)
-                {
-                    members.Add((Ust)ReadJson(membersToken[i].CreateReader(), null, null, serializer));
-                }
-                namespaceDeclaration.Members = members;
-            }
-            return namespaceDeclaration;
-        }
-
-        private Ust ReadAsRootUst(JsonSerializer serializer, JObject token, RootUst rootUst)
-        {
-            Ust[] nodes;
-            var nodesToken = token[nameof(RootUst.Nodes)]?.ReadArray();
-            if (nodesToken?.Length > 0)
-            {
-                nodes = new Ust[nodesToken.Length];
-                for (int i = 0; i < nodes.Length; i++)
-                {
-                    nodes[i] = (Ust)ReadJson(nodesToken[i].CreateReader(), null, null, serializer);
-                }
-                rootUst.Nodes = nodes;
-            }
-            return rootUst;
-        }
-
-        private Ust ReadAsUsingDeclaration(JsonSerializer serializer, JObject token, UsingDeclaration usingUst)
-        {
-            string currentProperty = string.Empty;
-            var nameNode = token[nameof(UsingDeclaration.Name)];
-            if (nameNode != null)
-            {
-                usingUst.Name = (StringLiteral)ReadJson(nameNode.CreateReader(), typeof(StringLiteral), null, serializer);
-            }
-            return usingUst;
         }
 
         private void FillTextSpans(JObject token, Ust ust, JsonSerializer serializer)
