@@ -185,7 +185,7 @@ namespace PT.PM.Cli.Common
 
         protected static bool IsSuppressed(CodeFile sourceFile, LineColumnTextSpan lineColumnTextSpan)
         {
-            string prevLine = lineColumnTextSpan.BeginLine > 0
+            string prevLine = lineColumnTextSpan.BeginLine - 1 > 0
                             ? sourceFile.GetStringAtLine(lineColumnTextSpan.BeginLine - 1)
                             : "";
             return SupressMarkerRegex.IsMatch(prevLine);
