@@ -93,23 +93,31 @@ namespace PT.PM.Cli.Common
 
         public virtual void LogInfo(object infoObj)
         {
-            if (infoObj is ProgressEventArgs progressEventArgs)
+            try
             {
-                LogInfo(progressEventArgs.ToString());
+                switch (infoObj)
+                {
+                    case ProgressEventArgs progressEventArgs:
+                        LogInfo(progressEventArgs.ToString());
+                        ProcessProgressEventArgs(progressEventArgs);
+                        break;
+
+                    case MessageEventArgs messageEventArgs:
+                        ProcessMessageEventArgs(messageEventArgs);
+                        break;
+
+                    case MatchResult matchResult:
+                        ProcessMatchResult(matchResult.TextSpan, matchResult.SourceCodeFile, matchResult.Pattern.Key);
+                        break;
+
+                    default:
+                        LogInfo($"Unknown object {infoObj}");
+                        break;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                if (infoObj is MatchResult matchResult)
-                {
-                    ProcessMatchResult(matchResult.TextSpan, matchResult.SourceCodeFile, matchResult.Pattern.Key);
-                }
-                else if (!(infoObj is MessageEventArgs))
-                {
-                    var message = new StringBuilder();
-                    message.AppendLine("---------------------");
-                    message.AppendLine(infoObj.ToString());
-                    LogInfo(message.ToString());
-                }
+                LogError(ex);
             }
         }
 
@@ -142,6 +150,14 @@ namespace PT.PM.Cli.Common
                     ConsoleLogger.Debug(PrepareForConsole(truncatedMessage));
                 }
             }
+        }
+
+        protected virtual void ProcessProgressEventArgs(ProgressEventArgs progressEventArgs)
+        {
+        }
+
+        protected virtual void ProcessMessageEventArgs(MessageEventArgs messageEventArgs)
+        {
         }
 
         protected virtual void ProcessMatchResult(TextSpan textSpan, CodeFile sourceFile, string patternKey)
