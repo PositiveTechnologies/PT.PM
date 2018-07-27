@@ -381,9 +381,10 @@ namespace PT.PM.Cli.Common
         protected virtual void LogMatchesCount(TWorkflowResult workflowResult)
         {
             int matchedResultCount = workflowResult.MatchResults.Count();
+            int suppressedCount = workflowResult.MatchResults.Count(match => match.Suppressed);
             if (matchedResultCount > 0)
             {
-                Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount}");
+                Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount} ({suppressedCount} suppressed)");
             }
         }
 
