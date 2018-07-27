@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.Dsl;
 using PT.PM.JavaParseTreeUst;
@@ -17,7 +16,7 @@ using System.Linq;
 namespace PT.PM.Matching.Tests
 {
     [TestFixture]
-    public class PatternMatchingTests
+    public class CommonMatchingTests
     {
         private PatternConverter patternsConverter;
         private MemoryPatternsRepository patternsRepository;

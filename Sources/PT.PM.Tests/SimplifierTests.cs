@@ -12,7 +12,7 @@ using System.Linq;
 namespace PT.PM.Tests
 {
     [TestFixture]
-    public class UstPreprocessorTests
+    public class SimplifierTests
     {
         [Test]
         public void Simplify_PhpCodeWithConstants_ConstantsFolded()
