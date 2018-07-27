@@ -46,8 +46,6 @@ namespace PT.PM
 
         public bool IsDumpJsonOutput { get; set; } = false;
 
-        public bool IsIncludeIntermediateResult { get; set; }
-
         public bool IsSimplifyUst { get; set; } = true;
 
         public bool IsIgnoreFilenameWildcards { get; set; } = false;

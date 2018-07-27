@@ -47,7 +47,7 @@ namespace PT.PM
 
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ??
-                new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
+                new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage);
             result.BaseLanguages = BaseLanguages.ToArray();
             result.RenderStages = RenderStages;
             result.IsSimplifyUst = IsSimplifyUst;

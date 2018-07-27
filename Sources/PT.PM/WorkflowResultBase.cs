@@ -38,7 +38,7 @@ namespace PT.PM
 
         private int totalTerminatedFilesCount;
 
-        public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage, bool isIncludeIntermediateResult)
+        public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage)
         {
             AnalyzedLanguages = languages.ToList();
             ThreadCount = threadCount;
