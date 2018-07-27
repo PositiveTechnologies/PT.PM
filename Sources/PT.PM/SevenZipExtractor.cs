@@ -47,7 +47,7 @@ namespace PT.PM
                 var processor = new Processor(ToolName, $@"x ""{zipPath}"" -o""{extractPath}"" -y");
                 processor.ErrorDataReceived += (sender, error) =>
                 {
-                    Logger.LogInfo($"{ToolName} error: {error}");
+                    Logger.LogInfo($"{ToolName}: error: {error}");
                 };
                 processor.OutputDataReceived += (sender, message) =>
                 {

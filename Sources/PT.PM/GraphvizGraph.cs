@@ -88,7 +88,7 @@ namespace PT.PM
             };
             processor.ErrorDataReceived += (sender, error) =>
             {
-                Logger.LogInfo($"{ToolName} error: {error}");
+                Logger.LogInfo($"{ToolName}: error: {error}");
             };
             processor.OutputDataReceived += (sender, message) =>
             {

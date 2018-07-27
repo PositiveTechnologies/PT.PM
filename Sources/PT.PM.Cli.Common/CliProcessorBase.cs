@@ -342,6 +342,7 @@ namespace PT.PM.Cli.Common
         {
             Logger.LogInfo("");
 
+            LogExtraVersion();
             LoggerUtils.LogSystemInfo(Logger, CoreName);
 
             Logger.LogInfo("");
@@ -350,6 +351,9 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogInfo($"{"Scan path or file:",LoggerUtils.Align} {workflowResult.RootPath}");
             }
+            string threadCountString = workflowResult.ThreadCount <= 0 ?
+                "default" : workflowResult.ThreadCount.ToString();
+            Logger.LogInfo($"{"Thread count:",LoggerUtils.Align} {threadCountString}");
             Logger.LogInfo($"{"Finish date:",LoggerUtils.Align} {DateTime.Now}");
 
             if (!workflow.Stage.Is(Stage.Match))
@@ -368,6 +372,10 @@ namespace PT.PM.Cli.Common
 
             Logger.LogInfo("");
             Logger.LogInfo($"{"Time elapsed:",LoggerUtils.Align} {totalElapsed.Format()}");
+        }
+
+        protected virtual void LogExtraVersion()
+        {
         }
 
         protected virtual void LogMatchesCount(TWorkflowResult workflowResult)

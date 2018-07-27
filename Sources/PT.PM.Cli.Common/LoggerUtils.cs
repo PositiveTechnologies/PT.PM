@@ -15,12 +15,11 @@ namespace PT.PM.Cli.Common
 
         public static void LogSystemInfo(ILogger logger, string coreName)
         {
-            Process currentProcess = Process.GetCurrentProcess();
-
             logger.LogInfo($"{coreName + " version:",Align} {GetVersionString()}");
             logger.LogInfo($"{"OS:",Align} {Environment.OSVersion}");
             logger.LogInfo($"{"Config:",Align} {(CommonUtils.IsDebug ? "DEBUG" : "RELEASE")} ({(Debugger.IsAttached ? "+ debugger" : "no debugger")})");
 
+            Process currentProcess = Process.GetCurrentProcess();
             string processBitsString = (Environment.Is64BitProcess ? "64" : "32") + "-bit";
             double peakVirtualSet = currentProcess.PeakVirtualMemorySize64 / TwoInPower20;
             double peakWorkingSet = currentProcess.PeakWorkingSet64 / TwoInPower20;
@@ -44,7 +43,7 @@ namespace PT.PM.Cli.Common
                 {
                     buildTime = reader.ReadToEnd().Trim();
                 }
-                buildTime = $" (build: {buildTime})";
+                buildTime = $" ({buildTime})";
             }
 
             return $"{assemblyName.Version}{buildTime}";
