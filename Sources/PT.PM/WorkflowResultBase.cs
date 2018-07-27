@@ -155,34 +155,34 @@ namespace PT.PM
             AddInt(ref totalTerminatedFilesCount, filesCount);
         }
 
-        public void AddReadTime(long readTicks)
+        public void AddReadTime(TimeSpan readTime)
         {
-            AddTicks(ref totalReadTicks, readTicks);
+            AddTime(ref totalReadTicks, readTime);
         }
 
-        public void AddParseTime(long parseTicks)
+        public void AddParseTime(TimeSpan parseTime)
         {
-            AddTicks(ref totalParseTicks, parseTicks);
+            AddTime(ref totalParseTicks, parseTime);
         }
 
-        public void AddConvertTime(long convertTicks)
+        public void AddConvertTime(TimeSpan convertTime)
         {
-            AddTicks(ref totalConvertTicks, convertTicks);
+            AddTime(ref totalConvertTicks, convertTime);
         }
 
-        public void AddSimplifyTime(long simplifyTicks)
+        public void AddSimplifyTime(TimeSpan simplifyTime)
         {
-            AddTicks(ref totalSimplifyTicks, simplifyTicks);
+            AddTime(ref totalSimplifyTicks, simplifyTime);
         }
 
-        public void AddMatchTime(long matchTicks)
+        public void AddMatchTime(TimeSpan matchTime)
         {
-            AddTicks(ref totalMatchTicks, matchTicks);
+            AddTime(ref totalMatchTicks, matchTime);
         }
 
-        public void AddPatternsTime(long patternsTicks)
+        public void AddPatternsTime(TimeSpan patternsTime)
         {
-            AddTicks(ref totalPatternsTicks, patternsTicks);
+            AddTime(ref totalPatternsTicks, patternsTime);
         }
 
         public void AddProcessedPatternsCount(int patternsCount)
@@ -190,14 +190,14 @@ namespace PT.PM
             AddInt(ref totalProcessedPatternsCount, patternsCount);
         }
 
-        public void AddLexerTime(long ticks)
+        public void AddLexerTime(TimeSpan lexerTime)
         {
-            AddTicks(ref totalLexerTicks, ticks);
+            AddTime(ref totalLexerTicks, lexerTime);
         }
 
-        public void AddParserTicks(long ticks)
+        public void AddParserTicks(TimeSpan parserTime)
         {
-            AddTicks(ref totalParserTicks, ticks);
+            AddTime(ref totalParserTicks, parserTime);
         }
 
         public virtual long TotalTimeTicks =>
@@ -250,15 +250,15 @@ namespace PT.PM
             }
         }
 
-        protected void AddTicks(ref long total, long ticks)
+        protected void AddTime(ref long total, TimeSpan timeSpan)
         {
             if (ThreadCount == 1)
             {
-                total += ticks;
+                total += timeSpan.Ticks;
             }
             else
             {
-                Interlocked.Add(ref total, ticks);
+                Interlocked.Add(ref total, timeSpan.Ticks);
             }
         }
     }

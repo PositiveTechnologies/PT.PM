@@ -34,10 +34,11 @@ namespace PT.PM.Cli.Common
             AssemblyName assemblyName = assembly.GetName();
             string buildTime = "";
 
-            string streamName = assembly.GetManifestResourceNames().FirstOrDefault() ?? "";
-            Stream stream;
-            if (!string.IsNullOrEmpty(streamName) &&
-                (stream = assembly.GetManifestResourceStream(streamName)) != null)
+            string streamName = assembly.GetManifestResourceNames().FirstOrDefault() ?? null;
+            Stream stream = !string.IsNullOrEmpty(streamName)
+                ? assembly.GetManifestResourceStream(streamName)
+                : null;
+            if (stream != null)
             {
                 using (var reader = new StreamReader(stream))
                 {

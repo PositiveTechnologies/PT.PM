@@ -197,13 +197,13 @@ namespace PT.PM
 
                         stopwatch.Stop();
                         Logger.LogInfo($"File {shortFileName} parsed {GetElapsedString(stopwatch)}.");
-                        workflowResult.AddParseTime(stopwatch.Elapsed.Ticks);
+                        workflowResult.AddParseTime(stopwatch.Elapsed);
                         workflowResult.AddResultEntity(parseTree);
 
                         if (parseTree is AntlrParseTree antlrParseTree)
                         {
-                            workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
-                            workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
+                            workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan);
+                            workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan);
                         }
 
                         DumpTokensAndParseTree(parseTree);
@@ -246,7 +246,7 @@ namespace PT.PM
 
                         stopwatch.Stop();
                         Logger.LogInfo($"File {shortFileName} converted {GetElapsedString(stopwatch)}.");
-                        workflowResult.AddConvertTime(stopwatch.Elapsed.Ticks);
+                        workflowResult.AddConvertTime(stopwatch.Elapsed);
 
                         if (IsSimplifyUst)
                         {
@@ -257,7 +257,7 @@ namespace PT.PM
                             result = simplifier.Simplify(result);
                             stopwatch.Stop();
                             Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified {GetElapsedString(stopwatch)}.");
-                            workflowResult.AddSimplifyTime(stopwatch.Elapsed.Ticks);
+                            workflowResult.AddSimplifyTime(stopwatch.Elapsed);
                         }
 
                         DumpUst(result, workflowResult.SourceCodeFiles);
@@ -279,7 +279,7 @@ namespace PT.PM
 
             workflowResult.AddProcessedCharsCount(codeFile.Code.Length);
             workflowResult.AddProcessedLinesCount(codeFile.GetLinesCount());
-            workflowResult.AddReadTime(elapsed.Ticks);
+            workflowResult.AddReadTime(elapsed);
             workflowResult.AddResultEntity(codeFile);
         }
 
@@ -345,7 +345,7 @@ namespace PT.PM
                 stopwatch.Stop();
                 if (patterns.Count > 0)
                 {
-                    workflowResult.AddPatternsTime(stopwatch.Elapsed.Ticks);
+                    workflowResult.AddPatternsTime(stopwatch.Elapsed);
                     workflowResult.AddResultEntity(patterns);
                     workflowResult.AddProcessedPatternsCount(patterns.Count);
                 }

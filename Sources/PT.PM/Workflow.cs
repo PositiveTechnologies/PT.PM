@@ -148,7 +148,7 @@ namespace PT.PM
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");
-                    workflowResult.AddMatchTime(stopwatch.Elapsed.Ticks);
+                    workflowResult.AddMatchTime(stopwatch.Elapsed);
                     workflowResult.AddResultEntity(matchResults);
 
                     cancellationToken.ThrowIfCancellationRequested();
