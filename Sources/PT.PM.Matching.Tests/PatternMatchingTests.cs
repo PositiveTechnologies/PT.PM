@@ -222,5 +222,22 @@ namespace PT.PM.Matching.Tests
                 Languages = new HashSet<Language>() { Aspx.Language }
             });
         }
+
+        [Test]
+        public void Match_Suppress_CorrectCount()
+        {
+            var code =
+                "<?php $password = \"hardcoded\";\n" +
+                "\n" +
+                "// ptai: suppress\n" +
+                "$password = \"hardcoded\"";
+
+            var pattern = "<[password]> = <[\"\"]>";
+
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
+
+            Assert.AreEqual(2, matchResults.Length);
+            Assert.AreEqual(1, matchResults.Count(matchResult => matchResult.Suppressed));
+        }
     }
 }
