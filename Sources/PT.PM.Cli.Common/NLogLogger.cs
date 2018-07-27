@@ -6,16 +6,12 @@ using PT.PM.Matching;
 using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace PT.PM.Cli.Common
 {
     public class NLogLogger : PM.Common.ILogger
     {
-        private static readonly Regex SupressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
         private int errorCount;
         private string logPath;
 
@@ -107,7 +103,8 @@ namespace PT.PM.Cli.Common
                         break;
 
                     case MatchResult matchResult:
-                        ProcessMatchResult(matchResult.TextSpan, matchResult.SourceCodeFile, matchResult.Pattern.Key);
+                        ProcessMatchResult(matchResult.TextSpan, matchResult.SourceCodeFile,
+                            matchResult.Pattern.Key, matchResult.Suppressed);
                         break;
 
                     default:
@@ -160,20 +157,19 @@ namespace PT.PM.Cli.Common
         {
         }
 
-        protected virtual void ProcessMatchResult(TextSpan textSpan, CodeFile sourceFile, string patternKey)
+        protected virtual void ProcessMatchResult(TextSpan textSpan, CodeFile sourceFile, string patternKey, bool isSuppressed)
         {
             ExtractLogInfo(textSpan, sourceFile,
-                out LineColumnTextSpan lineColumnTextSpan, out string code, out bool isSuppressed);
+                out LineColumnTextSpan lineColumnTextSpan, out string code);
 
             LogMatch(code, lineColumnTextSpan, patternKey, false, isSuppressed);
         }
 
-        protected void ExtractLogInfo(TextSpan textSpan, CodeFile sourceFile, out LineColumnTextSpan lineColumnTextSpan, out string code, out bool isSuppressed)
+        protected void ExtractLogInfo(TextSpan textSpan, CodeFile sourceFile, out LineColumnTextSpan lineColumnTextSpan, out string code)
         {
             lineColumnTextSpan = sourceFile.GetLineColumnTextSpan(textSpan);
             code = sourceFile.Code.Substring(textSpan);
             code = CodePrinter.Print(code);
-            isSuppressed = IsSuppressed(sourceFile, lineColumnTextSpan);
         }
 
         protected string PrepareForConsole(string str)
@@ -197,14 +193,6 @@ namespace PT.PM.Cli.Common
 
             MatchLogger.Info(text);
             LogInfo(text);
-        }
-
-        protected static bool IsSuppressed(CodeFile sourceFile, LineColumnTextSpan lineColumnTextSpan)
-        {
-            string prevLine = lineColumnTextSpan.BeginLine - 1 > 0
-                            ? sourceFile.GetStringAtLine(lineColumnTextSpan.BeginLine - 1)
-                            : "";
-            return SupressMarkerRegex.IsMatch(prevLine);
         }
     }
 }
