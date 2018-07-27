@@ -63,7 +63,7 @@ namespace PT.PM.Matching
                 {
                     Logger.LogError(new ConversionException(
                         patternFile,
-                        null, $"Serializer for {patternDto.DataFormat} has not been found"));
+                        null, $"Serializer for {patternDto.DataFormat} not found"));
                     continue;
                 }
 

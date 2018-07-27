@@ -29,10 +29,12 @@ namespace PT.PM.Cli.Common
                 string extensions = Path.GetExtension(path);
                 if (extensions.EqualsIgnoreCase(".zip"))
                 {
-                    sourceCodeRepository = new ZipCachingRepository(path)
+                    var zipCachingRepository = new ZipCachingRepository(path);
+                    if (tempDir != null)
                     {
-                        ExtractPath = tempDir
-                    };
+                        zipCachingRepository.ExtractPath = tempDir;
+                    }
+                    sourceCodeRepository = zipCachingRepository;
                 }
                 else
                 {
@@ -59,10 +61,11 @@ namespace PT.PM.Cli.Common
                     projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
                 }
 
-                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName)
+                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName);
+                if (tempDir != null)
                 {
-                    DownloadPath = tempDir
-                };
+                    zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
+                }
                 sourceCodeRepository = zipAtUrlCachedCodeRepository;
             }
 

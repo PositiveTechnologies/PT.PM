@@ -5,14 +5,12 @@ namespace PT.PM.Cli.Common
 {
     public class WorkflowLoggerHelper : WorkflowLoggerHelperBase<Stage, WorkflowResult, PatternRoot, MatchResult, Stage>
     {
-        public const int Align = -25;
-
         public WorkflowLoggerHelper(ILogger logger, WorkflowResult workflowResult)
             : base(logger, workflowResult)
         {
         }
 
-        protected override void LogAdvanced()
+        protected override void LogAdvancedStageInfo()
         {
             if (WorkflowResult.Stage >= Stage.Match)
             {

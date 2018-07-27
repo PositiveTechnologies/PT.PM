@@ -10,11 +10,14 @@ namespace PT.PM.Common
 
         public string Message { get; }
 
-        public ProgressEventArgs(double progress, string fileName, string message = "")
+        public DateTime Date { get; }
+
+        public ProgressEventArgs(double progress, string fileName, string message = "", DateTime date = default)
         {
             Progress = progress;
             CurrentFile = fileName;
             Message = message;
+            Date = date == default ? DateTime.Now : date;
         }
 
         public override string ToString()
@@ -22,7 +25,7 @@ namespace PT.PM.Common
             string value = Progress > 1 ? $"{(int)Progress} items" : $"{Progress*100:0.00}%";
             string messageStr = string.IsNullOrEmpty(Message) ? "" : $"; {Message}";
             string fileStr = string.IsNullOrEmpty(CurrentFile) ? "" : $"; File: {CurrentFile}";
-            return $"Progress: {value}{messageStr}{fileStr}";
+            return $"Progress: {value} at {Date.ToLongTimeString()}{messageStr}{fileStr}";
         }
     }
 }

@@ -7,6 +7,7 @@
     <StartupObject>PT.PM.Cli.Program</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>7.3</LangVersion>
+    <CurrentDate>$([System.DateTime]::Now)</CurrentDate>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -22,7 +23,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BuildTimeStamp" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+    <EmbeddedResource Include="BuildTimeStamp" />
 
     <None Include="..\PT.PM.ico" Link="PT.PM.ico" />
   </ItemGroup>
@@ -37,4 +43,7 @@
     </None>
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="echo $(CurrentDate) &gt; $(ProjectDir)BuildTimeStamp" />
+  </Target>
 </Project>

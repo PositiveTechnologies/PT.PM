@@ -47,7 +47,7 @@ namespace PT.PM
 
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ??
-                new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage, IsIncludeIntermediateResult);
+                new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage);
             result.BaseLanguages = BaseLanguages.ToArray();
             result.RenderStages = RenderStages;
             result.IsSimplifyUst = IsSimplifyUst;
@@ -83,7 +83,7 @@ namespace PT.PM
             }
             catch (OperationCanceledException)
             {
-                Logger.LogInfo("Scan has been cancelled");
+                Logger.LogInfo("Scan cancelled");
             }
 
             if (result.TotalProcessedFilesCount > 1)
@@ -93,6 +93,9 @@ namespace PT.PM
 
             DumpJsonOutput(result);
             result.ErrorCount = logger?.ErrorCount ?? 0;
+
+            result.RootPath = SourceCodeRepository.RootPath;
+
             return result;
         }
 
@@ -140,10 +143,12 @@ namespace PT.PM
                 if (ust != null && Stage >= Stage.Match)
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
+
                     IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
+
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} has been matched with patterns (Elapsed: {stopwatch.Elapsed}).");
-                    workflowResult.AddMatchTime(stopwatch.ElapsedTicks);
+                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");
+                    workflowResult.AddMatchTime(stopwatch.Elapsed);
                     workflowResult.AddResultEntity(matchResults);
 
                     cancellationToken.ThrowIfCancellationRequested();
@@ -154,7 +159,7 @@ namespace PT.PM
             catch (OperationCanceledException)
             {
                 workflowResult.AddTerminatedFilesCount(1);
-                Logger.LogInfo($"{fileName} processing has been cancelled");
+                Logger.LogInfo($"{fileName} processing cancelled");
             }
             catch (ThreadAbortException)
             {

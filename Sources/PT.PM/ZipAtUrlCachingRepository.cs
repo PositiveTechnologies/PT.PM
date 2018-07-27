@@ -16,6 +16,12 @@ namespace PT.PM
 
         public string DownloadPath { get; set; } = Path.GetTempPath();
 
+        static ZipAtUrlCachingRepository()
+        {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        }
+
         public ZipAtUrlCachingRepository(string url, string name = null)
             : base("")
         {
@@ -108,7 +114,7 @@ namespace PT.PM
                 {
                     lock (progressLockObj)
                     {
-                        if (e.ProgressPercentage == 0)
+                        if (e.ProgressPercentage != 0)
                         {
                             if (e.ProgressPercentage / percentStep > previousPercent / percentStep)
                             {
@@ -141,7 +147,7 @@ namespace PT.PM
             }
             while (!fileDownloaded);
 
-            Logger.LogInfo($"{Name} has been downloaded.");
+            Logger.LogInfo($"{Name} downloaded.");
         }
     }
 }

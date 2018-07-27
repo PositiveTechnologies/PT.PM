@@ -625,7 +625,6 @@ namespace PT.PM.PatternEditor
             }
             var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
             {
-                IsIncludeIntermediateResult = true,
                 IndentedDump = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
                 LineColumnTextSpans = !IsLinearTextSpans,

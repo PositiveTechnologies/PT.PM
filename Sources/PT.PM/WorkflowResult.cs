@@ -6,8 +6,8 @@ namespace PT.PM
 {
     public class WorkflowResult : WorkflowResultBase<Stage, PatternRoot, MatchResult, Stage>
     {
-        public WorkflowResult(IEnumerable<Language> languages, int threadCount, Stage stage, bool isIncludeIntermediateResult)
-            : base(languages, threadCount, stage, isIncludeIntermediateResult)
+        public WorkflowResult(IEnumerable<Language> languages, int threadCount, Stage stage)
+            : base(languages, threadCount, stage)
         {
         }
     }

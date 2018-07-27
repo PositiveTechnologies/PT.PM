@@ -1,26 +1,20 @@
-﻿using PT.PM.Common;
+﻿using Avalonia.Threading;
+using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using Avalonia.Threading;
 using System;
 using System.Collections.ObjectModel;
-using PT.PM.Common.CodeRepository;
 
 namespace PT.PM.PatternEditor
 {
     public class GuiLogger : ILogger
     {
-        private int errorCount;
-        public int ErrorCount => errorCount;
+        public int ErrorCount { get; private set; }
 
         internal event EventHandler<string> LogEvent;
 
         internal readonly ObservableCollection<object> ErrorsCollection;
 
         internal bool LogPatternErrors { get; set; }
-
-        public SourceCodeRepository SourceCodeRepository { get; set; }
-
-        public bool IsLogErrors { get; set; }
 
         public bool IsLogDebugs { get; set; }
 
@@ -33,7 +27,7 @@ namespace PT.PM.PatternEditor
 
         public void Clear()
         {
-            errorCount = 0;
+            ErrorCount = 0;
         }
 
         public void LogDebug(string message)
@@ -46,15 +40,10 @@ namespace PT.PM.PatternEditor
 
         public void LogError(Exception ex)
         {
-            if (!IsLogErrors)
-            {
-                return;
-            }
-
             bool logError = WhetherLogError(ex);
             if (logError)
             {
-                errorCount++;
+                ErrorCount++;
                 Dispatcher.UIThread.InvokeAsync(() => ErrorsCollection.Add(ex));
                 string message = ex.ToString();
                 if (string.IsNullOrEmpty(message))

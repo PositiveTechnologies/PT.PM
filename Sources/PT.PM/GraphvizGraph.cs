@@ -6,6 +6,8 @@ namespace PT.PM
 {
     public class GraphvizGraph : ILoggable
     {
+        private const string ToolName = "dot";
+
         private static bool? isDotInstalled = null;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
@@ -46,7 +48,7 @@ namespace PT.PM
         {
             if (!IsDotInstalled)
             {
-                Logger.LogError(new FileNotFoundException("dot tool (Graphviz) is not installed"));
+                Logger.LogError(new FileNotFoundException($"{ToolName} tool (Graphviz) is not installed"));
                 return;
             }
 
@@ -80,24 +82,28 @@ namespace PT.PM
             string dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
             File.WriteAllText(dotFilePath, DotGraph);
 
-            var processor = new Processor("dot")
+            var processor = new Processor(ToolName)
             {
                 Arguments = $"\"{dotFilePath}\" -T{outputFormat.ToString().ToLowerInvariant()} -o \"{imagePath}\""
             };
-            processor.ErrorDataReceived += (sender, e) =>
+            processor.ErrorDataReceived += (sender, error) =>
             {
-                Logger.LogError(new Exception($"Error while graph rendering: {e}"));
+                Logger.LogInfo($"{ToolName}: error: {error}");
             };
-            ProcessExecutionResult executionResult = processor.Start();
+            processor.OutputDataReceived += (sender, message) =>
+            {
+                Logger.LogInfo($"{ToolName}: {message}");
+            };
+            ProcessExecutionResult execResult = processor.Start();
 
             if (!SaveDot)
             {
                 File.Delete(dotFilePath);
             }
 
-            if (executionResult.ExitCode != 0)
+            if (execResult.ExitCode != 0)
             {
-                Logger.LogError(new Exception($"Graph rendering completed with error code {executionResult.ExitCode}"));
+                Logger.LogError(new Exception($"{ToolName} execution completed with error code {execResult.ExitCode}"));
             }
         }
     }

@@ -46,8 +46,6 @@ namespace PT.PM
 
         public bool IsDumpJsonOutput { get; set; } = false;
 
-        public bool IsIncludeIntermediateResult { get; set; }
-
         public bool IsSimplifyUst { get; set; } = true;
 
         public bool IsIgnoreFilenameWildcards { get; set; } = false;
@@ -133,11 +131,15 @@ namespace PT.PM
             {
                 if (SourceCodeRepository.IsFileIgnored(fileName, true))
                 {
-                    Logger.LogInfo($"File {fileName} has not been read.");
+                    Logger.LogInfo($"File {fileName} not read.");
                     return null;
                 }
 
-                CodeFile sourceCodeFile = ReadFile(fileName, workflowResult);
+                stopwatch.Restart();
+                CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
+                stopwatch.Stop();
+
+                LogCodeFile((sourceCodeFile, stopwatch.Elapsed), workflowResult);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -156,7 +158,7 @@ namespace PT.PM
 
                         if (detectionResult == null)
                         {
-                            Logger.LogInfo($"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File has not been converter.");
+                            Logger.LogInfo($"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File not converted.");
                             return null;
                         }
 
@@ -192,14 +194,14 @@ namespace PT.PM
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} has been parsed (Elapsed: {stopwatch.Elapsed}).");
-                        workflowResult.AddParseTime(stopwatch.ElapsedTicks);
+                        Logger.LogInfo($"File {shortFileName} parsed {GetElapsedString(stopwatch)}.");
+                        workflowResult.AddParseTime(stopwatch.Elapsed);
                         workflowResult.AddResultEntity(parseTree);
 
                         if (parseTree is AntlrParseTree antlrParseTree)
                         {
-                            workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan.Ticks);
-                            workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan.Ticks);
+                            workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan);
+                            workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan);
                         }
 
                         DumpTokensAndParseTree(parseTree);
@@ -227,18 +229,22 @@ namespace PT.PM
                                 Strict = StrictJson,
                                 CodeFiles = workflowResult.SourceCodeFiles
                             };
+                            jsonUstSerializer.ReadCodeFileEvent += (object sender, (CodeFile, TimeSpan) fileAndTime) =>
+                            {
+                                LogCodeFile(fileAndTime, workflowResult);
+                            };
                             result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
 
                             if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                             {
-                                Logger.LogInfo($"File {fileName} has been ignored.");
+                                Logger.LogInfo($"File {fileName} ignored.");
                                 return null;
                             }
                         }
 
                         stopwatch.Stop();
-                        Logger.LogInfo($"File {shortFileName} has been converted (Elapsed: {stopwatch.Elapsed}).");
-                        workflowResult.AddConvertTime(stopwatch.ElapsedTicks);
+                        Logger.LogInfo($"File {shortFileName} converted {GetElapsedString(stopwatch)}.");
+                        workflowResult.AddConvertTime(stopwatch.Elapsed);
 
                         if (IsSimplifyUst)
                         {
@@ -248,8 +254,8 @@ namespace PT.PM
                             stopwatch.Restart();
                             result = simplifier.Simplify(result);
                             stopwatch.Stop();
-                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} has been simplified (Elapsed: {stopwatch.Elapsed}).");
-                            workflowResult.AddSimplifyTime(stopwatch.ElapsedTicks);
+                            Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified {GetElapsedString(stopwatch)}.");
+                            workflowResult.AddSimplifyTime(stopwatch.Elapsed);
                         }
 
                         DumpUst(result, workflowResult.SourceCodeFiles);
@@ -262,20 +268,17 @@ namespace PT.PM
             return result;
         }
 
-        public CodeFile ReadFile(string fileName, TWorkflowResult workflowResult)
+        public void LogCodeFile((CodeFile, TimeSpan) fileAndTime, TWorkflowResult workflowResult)
         {
-            var stopwatch = Stopwatch.StartNew();
-            CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
-            stopwatch.Stop();
+            CodeFile codeFile = fileAndTime.Item1;
+            TimeSpan elapsed = fileAndTime.Item2;
 
-            Logger.LogInfo($"File {fileName} has been read (Elapsed: {stopwatch.Elapsed}).");
+            Logger.LogInfo($"File {fileAndTime.Item1} read (Elapsed: {elapsed.Format()}).");
 
-            workflowResult.AddProcessedCharsCount(sourceCodeFile.Code.Length);
-            workflowResult.AddProcessedLinesCount(sourceCodeFile.GetLinesCount());
-            workflowResult.AddReadTime(stopwatch.ElapsedTicks);
-            workflowResult.AddResultEntity(sourceCodeFile);
-
-            return sourceCodeFile;
+            workflowResult.AddProcessedCharsCount(codeFile.Code.Length);
+            workflowResult.AddProcessedLinesCount(codeFile.GetLinesCount());
+            workflowResult.AddReadTime(elapsed);
+            workflowResult.AddResultEntity(codeFile);
         }
 
         private void DumpTokensAndParseTree(ParseTree parseTree)
@@ -340,7 +343,7 @@ namespace PT.PM
                 stopwatch.Stop();
                 if (patterns.Count > 0)
                 {
-                    workflowResult.AddPatternsTime(stopwatch.ElapsedTicks);
+                    workflowResult.AddPatternsTime(stopwatch.Elapsed);
                     workflowResult.AddResultEntity(patterns);
                     workflowResult.AddProcessedPatternsCount(patterns.Count);
                 }
@@ -409,5 +412,7 @@ namespace PT.PM
                 CancellationToken = cancellationToken
             };
         }
+
+        protected string GetElapsedString(Stopwatch stopwatch) => $"(Elapsed: {stopwatch.Elapsed.Format()})";
     }
 }

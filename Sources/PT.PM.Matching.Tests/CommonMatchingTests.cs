@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.Dsl;
 using PT.PM.JavaParseTreeUst;
@@ -17,7 +16,7 @@ using System.Linq;
 namespace PT.PM.Matching.Tests
 {
     [TestFixture]
-    public class PatternMatchingTests
+    public class CommonMatchingTests
     {
         private PatternConverter patternsConverter;
         private MemoryPatternsRepository patternsRepository;
@@ -221,6 +220,23 @@ namespace PT.PM.Matching.Tests
             {
                 Languages = new HashSet<Language>() { Aspx.Language }
             });
+        }
+
+        [Test]
+        public void Match_Suppress_CorrectCount()
+        {
+            var code =
+                "<?php $password = \"hardcoded\";\n" +
+                "\n" +
+                "// ptai: suppress\n" +
+                "$password = \"hardcoded\"";
+
+            var pattern = "<[password]> = <[\"\"]>";
+
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
+
+            Assert.AreEqual(2, matchResults.Length);
+            Assert.AreEqual(1, matchResults.Count(matchResult => matchResult.Suppressed));
         }
     }
 }

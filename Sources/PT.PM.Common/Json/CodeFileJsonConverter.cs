@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,11 +14,11 @@ namespace PT.PM.Common.Json
 
         public bool ExcludeDefaults { get; set; } = true;
 
-        public CodeFile CodeFile { get; private set; } = CodeFile.Empty;
-
         public CodeFile JsonFile { get; set; } = CodeFile.Empty;
 
-        public TextSpanJsonConverter TextSpanJsonConverter { get; set; }
+        public event EventHandler<CodeFile> SetCurrentCodeFileEvent;
+
+        internal event EventHandler<(CodeFile, TimeSpan)> ReadCodeFileEvent;
 
         public override void WriteJson(JsonWriter writer, CodeFile sourceCodeFile, JsonSerializer serializer)
         {
@@ -55,6 +56,7 @@ namespace PT.PM.Common.Json
             string relativePath = (string)obj[nameof(CodeFile.RelativePath)] ?? "";
             string name = (string)obj[nameof(CodeFile.Name)] ?? "";
 
+            var stopwatch = Stopwatch.StartNew();
             if (code == null)
             {
                 string fullName = Path.Combine(rootPath, relativePath, name);
@@ -68,6 +70,7 @@ namespace PT.PM.Common.Json
                     Logger.LogError(JsonFile, obj, $"File {fullName} can not be read");
                 }
             }
+            stopwatch.Stop();
 
             CodeFile result = new CodeFile(code)
             {
@@ -76,11 +79,9 @@ namespace PT.PM.Common.Json
                 Name = name
             };
 
-            CodeFile = result;
-            if (TextSpanJsonConverter != null)
-            {
-                TextSpanJsonConverter.AddCodeFile(result);
-            }
+            ReadCodeFileEvent?.Invoke(this, (result, stopwatch.Elapsed));
+            SetCurrentCodeFileEvent?.Invoke(this, result);
+
             return result;
         }
     }

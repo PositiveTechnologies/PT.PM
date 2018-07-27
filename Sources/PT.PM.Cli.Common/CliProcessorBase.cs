@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Cli.Common
@@ -23,7 +22,7 @@ namespace PT.PM.Cli.Common
         where TParameters : CliParameters, new()
         where TRenderStage : Enum
     {
-        public ILogger Logger { get; protected set; } = new ConsoleFileLogger();
+        public ILogger Logger { get; protected set; } = new NLogLogger();
 
         public virtual bool ContinueWithInvalidArgs => false;
 
@@ -39,8 +38,6 @@ namespace PT.PM.Cli.Common
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-
-            Logger.IsLogErrors = true;
 
             var parser = new Parser(config =>
             {
@@ -115,6 +112,7 @@ namespace PT.PM.Cli.Common
 
             workflow.PatternsRepository = CreatePatternsRepository(parameters);
             workflow.Logger = Logger;
+            NLogLogger nLogLogger = Logger as NLogLogger;
 
             if (parameters.Stage != null)
             {
@@ -145,6 +143,22 @@ namespace PT.PM.Cli.Common
             {
                 workflow.LogsDir = NormalizeLogsDir(parameters.LogsDir);
                 workflow.DumpDir = NormalizeLogsDir(parameters.LogsDir);
+            }
+            if (parameters.Silent != null && nLogLogger != null)
+            {
+                if (parameters.Silent.Value)
+                {
+                    Logger.LogInfo("Silent mode.");
+                }
+                nLogLogger.IsLogToConsole = !parameters.Silent.Value;
+            }
+            if (parameters.NoLog != null && nLogLogger != null)
+            {
+                if (parameters.NoLog.Value)
+                {
+                    Logger.LogInfo("File log disabled.");
+                }
+                nLogLogger.IsLogToFile = false;
             }
             if (parameters.TempDir != null)
             {
@@ -288,7 +302,6 @@ namespace PT.PM.Cli.Common
             }
             catch (Exception ex)
             {
-                Logger.IsLogErrors = true;
                 Logger.LogError(ex);
 
                 return null;
@@ -301,7 +314,6 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            Logger.IsLogErrors = parameters.IsLogErrorsToConsole ?? true;
             Logger.IsLogDebugs = parameters.IsLogDebugs ?? false;
         }
 
@@ -314,45 +326,75 @@ namespace PT.PM.Cli.Common
                 TWorkflowResult workflowResult = workflow.Process();
                 stopwatch.Stop();
 
-                Logger.LogInfo($"Stage: {workflow.Stage}");
-                if (!workflow.Stage.Is(Stage.Pattern))
-                {
-                    Logger.LogInfo("Scan completed.");
-                    int matchedResultCount = workflowResult.MatchResults.Count();
-                    if (workflow.Stage.Is(Stage.Match) && matchedResultCount > 0)
-                    {
-                        Logger.LogInfo($"{"Matches count: ",WorkflowLoggerHelper.Align} {matchedResultCount}");
-                    }
-                }
-                else
-                {
-                    Logger.LogInfo("Patterns checked.");
-                }
-
-                if (workflowResult.ErrorCount > 0)
-                {
-                    Logger.LogInfo($"{"Errors count: ",WorkflowLoggerHelper.Align} {workflowResult.ErrorCount}");
-                }
-                LogStatistics(workflowResult);
-                Logger.LogInfo($"{"Time elapsed:",WorkflowLoggerHelper.Align} {stopwatch.Elapsed}");
+                LogOutput(stopwatch.Elapsed, workflow, workflowResult);
 
                 return workflowResult;
             }
             catch (Exception ex)
             {
-                Logger.IsLogErrors = true;
                 Logger.LogError(ex);
 
                 return null;
             }
         }
 
+        protected void LogOutput(TimeSpan totalElapsed, WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> workflow, TWorkflowResult workflowResult)
+        {
+            Logger.LogInfo("");
+
+            LogExtraVersion();
+            LoggerUtils.LogSystemInfo(Logger, CoreName);
+
+            Logger.LogInfo("");
+
+            if (!string.IsNullOrEmpty(workflowResult.RootPath))
+            {
+                Logger.LogInfo($"{"Scan path or file:",LoggerUtils.Align} {workflowResult.RootPath}");
+            }
+            string threadCountString = workflowResult.ThreadCount <= 0 ?
+                "default" : workflowResult.ThreadCount.ToString();
+            Logger.LogInfo($"{"Thread count:",LoggerUtils.Align} {threadCountString}");
+            Logger.LogInfo($"{"Finish date:",LoggerUtils.Align} {DateTime.Now}");
+
+            if (!workflow.Stage.Is(Stage.Match))
+            {
+                Logger.LogInfo($"{"Stage: ",LoggerUtils.Align} {workflow.Stage}");
+            }
+
+            LogMatchesCount(workflowResult);
+
+            if (workflowResult.ErrorCount > 0)
+            {
+                Logger.LogInfo($"{"Errors count: ",LoggerUtils.Align} {workflowResult.ErrorCount}");
+            }
+
+            LogStatistics(workflowResult);
+
+            Logger.LogInfo("");
+            Logger.LogInfo($"{"Time elapsed:",LoggerUtils.Align} {totalElapsed.Format()}");
+        }
+
+        protected virtual void LogExtraVersion()
+        {
+        }
+
+        protected virtual void LogMatchesCount(TWorkflowResult workflowResult)
+        {
+            int matchedResultCount = workflowResult.MatchResults.Count();
+            int suppressedCount = workflowResult.MatchResults.Count(match => match.Suppressed);
+            if (matchedResultCount > 0)
+            {
+                Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount} ({suppressedCount} suppressed)");
+            }
+        }
+
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
         {
+            Logger.LogInfo($"{CoreName} started at {DateTime.Now}");
+
             if (errors == null || errors.FirstOrDefault() is VersionRequestedError)
             {
-                AssemblyName assemblyName = Assembly.GetEntryAssembly().GetName();
-                Logger.LogInfo($"{CoreName} version: {assemblyName.Version}");
+                Logger.LogInfo($"{CoreName} version: {LoggerUtils.GetVersionString()}");
             }
 
             string commandLineArguments = "Command line arguments: " +
