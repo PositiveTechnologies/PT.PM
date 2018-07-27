@@ -21,13 +21,6 @@ namespace PT.PM.Common.Json
 
         public CodeFile JsonFile { get; set; } = CodeFile.Empty;
 
-        public void AddCodeFile(CodeFile codeFile)
-        {
-            CurrentCodeFile = codeFile;
-            lock (CodeFiles)
-                CodeFiles.Add(codeFile);
-        }
-
         public override void WriteJson(JsonWriter writer, TextSpan textSpan, JsonSerializer serializer)
         {
             try
@@ -49,7 +42,7 @@ namespace PT.PM.Common.Json
                     }
                     else
                     {
-                        CodeFile codeFile = textSpan.CodeFile ?? CurrentCodeFile;
+                        CodeFile codeFile = textSpan.GetCodeFile(CurrentCodeFile);
                         if (codeFile != null)
                         {
                             textSpanString = codeFile.GetLineColumnTextSpan(textSpan).ToString(includeFileName);

@@ -23,7 +23,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             string fileName = Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs");
             var workflowResults = TestUtility.CheckFile(fileName, Stage.Ust);
             var ust = workflowResults.Usts.First();
-            bool result = ust.AnyDescendant(descendant =>
+            bool result = ust.AnyDescendantOrSelf(descendant =>
             {
                 return descendant is TypeDeclaration typeDeclaration &&
                        typeDeclaration.BaseTypes.Any(type => type.TypeText == nameof(IDisposable));

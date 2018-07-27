@@ -15,6 +15,8 @@ namespace PT.PM.Matching
 
         public string SourceFile { get; }
 
+        public bool Suppressed { get; }
+
         public MatchResultDto(MatchResult matchResult)
         {
             CodeFile sourceCodeFile = matchResult.SourceCodeFile;
@@ -28,6 +30,7 @@ namespace PT.PM.Matching
             PatternKey = matchResult.Pattern.Key;
             SourceFile = sourceCodeFile.FullName;
             MatchedCode = code.Substring(TextSpan);
+            Suppressed = matchResult.Suppressed;
         }
 
         public override string ToString()

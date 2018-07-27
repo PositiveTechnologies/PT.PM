@@ -120,7 +120,7 @@ namespace PT.PM.Matching
                 }
 
                 var match = new MatchResult(
-                    ust is RootUst rootUst ? rootUst : ust.Root, context.PatternUst, context.Locations);
+                    ust.RootOrThis, context.PatternUst, context.Locations);
 
                 results.Add(match);
                 context.Logger.LogInfo(match);

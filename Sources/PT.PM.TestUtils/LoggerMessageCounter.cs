@@ -9,25 +9,22 @@ namespace PT.PM.TestUtils
 {
     public class LoggerMessageCounter : ILogger
     {
-        private List<string> errorMessages = new List<string>();
         private List<string> infoMessages = new List<string>();
         private List<string> debugMessages = new List<string>();
 
         private HashSet<string> errorFiles = new HashSet<string>();
 
-        public int ErrorCount => errorMessages.Count;
+        public int ErrorCount => Errors.Count;
 
         public double ErrorFilesCount => errorFiles.Count;
 
         public int InfoMessageCount => infoMessages.Count;
 
-        public List<string> Errors => errorMessages;
+        public List<string> Errors { get; } = new List<string>();
 
         public bool LogToConsole { get; set; }
 
-        public string ErrorsString => string.Join(", " + Environment.NewLine, errorMessages);
-
-        public bool IsLogErrors { get; set; } = true;
+        public string ErrorsString => string.Join(", " + Environment.NewLine, Errors);
 
         public bool IsLogDebugs { get; set; } = true;
 
@@ -35,15 +32,10 @@ namespace PT.PM.TestUtils
 
         public void LogError(Exception ex)
         {
-            if (!IsLogErrors)
-            {
-                return;
-            }
-
             string message = ex.ToString();
-            lock (errorMessages)
+            lock (Errors)
             {
-                errorMessages.Add(message);
+                Errors.Add(message);
                 if (ex is ParsingException parsingException)
                 {
                     errorFiles.Add(parsingException.CodeFile.RelativeName);
@@ -56,14 +48,9 @@ namespace PT.PM.TestUtils
 
         public void LogError(string message)
         {
-            if (!IsLogErrors)
+            lock (Errors)
             {
-                return;
-            }
-
-            lock (errorMessages)
-            {
-                errorMessages.Add(message);
+                Errors.Add(message);
             }
             message = message.TrimEnd() + Environment.NewLine;
             LogToConsoleIfNeeded(message);
@@ -103,7 +90,7 @@ namespace PT.PM.TestUtils
 
         public bool ContainsErrorMessagePart(string errorMessagePart)
         {
-            return errorMessages.Any(msg => msg.Contains(errorMessagePart));
+            return Errors.Any(msg => msg.Contains(errorMessagePart));
         }
 
         public bool ContainsDebugMessagePart(string debugMessagePart)

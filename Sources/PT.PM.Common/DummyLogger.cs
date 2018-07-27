@@ -8,8 +8,6 @@ namespace PT.PM.Common
 
         public int ErrorCount => 0;
 
-        public bool IsLogErrors { get; set; }
-
         public bool IsLogDebugs { get; set; }
 
         public string LogsDir { get; set; } = "";

@@ -5,6 +5,7 @@ namespace PT.PM.Matching
 {
     public interface IMatchResultBase
     {
+        bool Suppressed { get; }
     }
 
     public abstract class MatchResultBase<TPattern>

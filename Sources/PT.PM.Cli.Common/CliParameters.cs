@@ -41,11 +41,14 @@ namespace PT.PM.Cli.Common
         [Option("logs-dir", HelpText = "Logs directory")]
         public string LogsDir { get; set; }
 
+        [Option("silent", HelpText = "Do not print messages to console")]
+        public bool? Silent { get; set; }
+
+        [Option("no-log", HelpText = "Do not log messages to file")]
+        public bool? NoLog { get; set; }
+
         [Option("temp-dir", HelpText = "Temp directory")]
         public string TempDir { get; set; }
-
-        [Option("no-errors-in-console", HelpText = "Do not print errors to console")]
-        public bool? IsLogErrorsToConsole { get; set; }
 
         [Option("log-debugs", HelpText = "Log debug messages")]
         public bool? IsLogDebugs { get; set; }

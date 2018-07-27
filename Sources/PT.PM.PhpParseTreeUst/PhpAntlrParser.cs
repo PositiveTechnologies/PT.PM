@@ -54,7 +54,7 @@ namespace PT.PM.PhpParseTreeUst
 
             if (trimmed)
             {
-                Logger.LogDebug($"File {Path.Combine(file.RelativePath, file.Name)} has been trimmed.");
+                Logger.LogDebug($"File {Path.Combine(file.RelativePath, file.Name)} trimmed.");
             }
 
             return result;

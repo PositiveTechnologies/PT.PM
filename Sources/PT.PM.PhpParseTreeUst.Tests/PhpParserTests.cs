@@ -35,7 +35,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 var converter = new PhpAntlrParseTreeConverter();
                 RootUst ust = converter.Convert(parseTree);
 
-                Ust intNode = ust.WhereDescendants(
+                Ust intNode = ust.WhereDescendantsOrSelf(
                     node => node is IntLiteral intLiteral && intLiteral.Value == 42).First();
 
                 LineColumnTextSpan intNodeSpan = intNode.LineColumnTextSpan;
@@ -43,7 +43,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 Assert.AreEqual(12, intNodeSpan.BeginColumn);
                 Assert.AreEqual(14, intNodeSpan.EndColumn);
 
-                Ust heredocNode = ust.WhereDescendants(
+                Ust heredocNode = ust.WhereDescendantsOrSelf(
                     node => node is StringLiteral stringLiteral &&
                     stringLiteral.Text.StartsWith("Heredoc text")).First();
 
@@ -51,7 +51,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 Assert.AreEqual(3, heredocNodeSpan.BeginLine);
                 Assert.AreEqual(6, heredocNodeSpan.EndLine);
 
-                Ust serverAddressNode = ust.WhereDescendants(
+                Ust serverAddressNode = ust.WhereDescendantsOrSelf(
                     node => node is StringLiteral stringLiteral &&
                     stringLiteral.Text.Contains("http://127.0.0.1")).First();
 

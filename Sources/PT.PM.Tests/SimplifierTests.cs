@@ -12,7 +12,7 @@ using System.Linq;
 namespace PT.PM.Tests
 {
     [TestFixture]
-    public class UstPreprocessorTests
+    public class SimplifierTests
     {
         [Test]
         public void Simplify_PhpCodeWithConstants_ConstantsFolded()
@@ -61,7 +61,7 @@ namespace PT.PM.Tests
             };
             var ust = workflow.Process().Usts.First();
 
-            Assert.IsTrue(ust.AnyDescendant(
+            Assert.IsTrue(ust.AnyDescendantOrSelf(
                 node => node is StringLiteral str && str.Text == "none"));
         }
 

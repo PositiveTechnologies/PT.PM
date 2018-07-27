@@ -3,7 +3,6 @@ using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 
 namespace PT.PM.Common
@@ -36,6 +35,13 @@ namespace PT.PM.Common
                 return false;
             }
         }
+
+        public static readonly bool IsDebug =
+#if DEBUG
+            true;
+#else
+            false;
+#endif
 
         public static bool IsRunningOnLinux
         {
@@ -71,26 +77,6 @@ namespace PT.PM.Common
 
                 return isSupportThreadAbort.Value;
             }
-        }
-
-        public static bool ExistsOnPath(string fileName)
-        {
-            return GetFullPath(fileName) != null;
-        }
-
-        public static string GetFullPath(string fileName)
-        {
-            if (File.Exists(fileName))
-                return Path.GetFullPath(fileName);
-
-            var values = Environment.GetEnvironmentVariable("PATH");
-            foreach (var path in values.Split(';'))
-            {
-                var fullPath = Path.Combine(path, fileName);
-                if (File.Exists(fullPath))
-                    return fullPath;
-            }
-            return null;
         }
 
         public static bool TryCheckIdTokenValue(Expression expr, string value)

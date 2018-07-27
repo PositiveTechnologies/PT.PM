@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 
 namespace PT.PM.Common.Json
@@ -27,6 +28,8 @@ namespace PT.PM.Common.Json
         public CodeFile CurrectCodeFile { get; set; }
 
         public HashSet<CodeFile> CodeFiles { get; set; } = new HashSet<CodeFile>();
+
+        public event EventHandler<(CodeFile, TimeSpan)> ReadCodeFileEvent;
 
         public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
@@ -92,6 +95,21 @@ namespace PT.PM.Common.Json
                 jsonConverter = jsonConverterReader;
             }
 
+            var codeFileJsonConverter = new CodeFileJsonConverter
+            {
+                ExcludeDefaults = ExcludeDefaults,
+                IncludeCode = IncludeCode,
+                JsonFile = JsonFile,
+                Logger = Logger
+            };
+
+            codeFileJsonConverter.ReadCodeFileEvent += ReadCodeFileEvent;
+
+            codeFileJsonConverter.SetCurrentCodeFileEvent += (object sender, CodeFile codeFile) =>
+            {
+                textSpanJsonConverter.CurrentCodeFile = codeFile;
+            };
+
             var jsonSettings = new JsonSerializerSettings
             {
                 MissingMemberHandling = SetMissingMemberHandling(),
@@ -102,9 +120,7 @@ namespace PT.PM.Common.Json
                     codeFileConverter,
                     stringEnumConverter,
                     textSpanJsonConverter,
-                    LanguageJsonConverter.Instance
-                },
-                ContractResolver = contractResolver
+                    codeFileJsonConverter
             };
 
             return jsonSettings;

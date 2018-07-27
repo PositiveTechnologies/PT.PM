@@ -58,21 +58,18 @@ namespace PT.PM
                                 Directory.Delete(RootPath, true);
                             }
 
-                            var sevenZipExtractor = new SevenZipExtractor();
-                            if (!CommonUtils.IsRunningOnLinux && File.Exists(sevenZipExtractor.SevenZipPath))
-                            {
-                                sevenZipExtractor.Extract(ArchiveName, RootPath);
-                            }
-                            else
-                            {
-                                new StandardArchiveExtractor().Extract(ArchiveName, RootPath);
-                            }
+                            IArchiveExtractor extractor = SevenZipExtractor.Is7zInstalled
+                                ? (IArchiveExtractor)new SevenZipExtractor()
+                                : new StandardArchiveExtractor();
+
+                            extractor.Logger = Logger;
+                            extractor.Extract(ArchiveName, RootPath);
 
                             if (RemoveAfterExtraction)
                             {
                                 File.Delete(ArchiveName);
                             }
-                            Logger.LogInfo($"{Name} has been extracted.");
+                            Logger.LogInfo($"{Name} extracted.");
 
                             string[] directories = Directory.GetDirectories(RootPath);
                             if (directories.Length == 1)

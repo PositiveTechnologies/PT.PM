@@ -102,6 +102,14 @@ namespace PT.PM.Common.Json
             ancestors.Push(ust);
 
             FillTextSpans(jObject, ust, serializer);
+            {
+                serializer.Populate(jObject.CreateReader(), ust);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(JsonFile, jObject, ex);
+            }
+
 
             try
             {
