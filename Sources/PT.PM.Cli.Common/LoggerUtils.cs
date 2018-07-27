@@ -31,7 +31,7 @@ namespace PT.PM.Cli.Common
             Assembly assembly = Assembly.GetEntryAssembly();
 
             AssemblyName assemblyName = assembly.GetName();
-            string buildTime = "";
+            DateTime buildTime = default;
 
             string streamName = assembly.GetManifestResourceNames().FirstOrDefault() ?? null;
             Stream stream = !string.IsNullOrEmpty(streamName)
@@ -41,12 +41,17 @@ namespace PT.PM.Cli.Common
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    buildTime = reader.ReadToEnd().Trim();
+                    string dateString = reader.ReadToEnd().Trim();
+                    DateTime.TryParse(dateString, out buildTime);
                 }
-                buildTime = $" ({buildTime})";
             }
 
-            return $"{assemblyName.Version}{buildTime}";
+            if (buildTime == default)
+            {
+                buildTime = File.GetCreationTime(assembly.Location);
+            }
+
+            return $"{assemblyName.Version} ({buildTime})";
         }
     }
 }

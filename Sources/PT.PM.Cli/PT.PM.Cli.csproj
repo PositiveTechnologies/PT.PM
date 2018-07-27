@@ -7,7 +7,7 @@
     <StartupObject>PT.PM.Cli.Program</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>7.3</LangVersion>
-    <CurrentDate>$([System.DateTime]::Now)</CurrentDate>
+    <CurrentDate>$([System.DateTime]::Now.tostring("MM/dd/yyyy HH:mm:ss"))</CurrentDate>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
