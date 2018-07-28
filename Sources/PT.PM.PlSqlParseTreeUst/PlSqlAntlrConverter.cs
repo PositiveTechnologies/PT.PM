@@ -1,6 +1,4 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime.Misc;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
@@ -3103,6 +3101,16 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitNon_reserved_keywords_pre12c([NotNull] PlSqlParser.Non_reserved_keywords_pre12cContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitPartial_database_recovery_10g([NotNull] PlSqlParser.Partial_database_recovery_10gContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitLog_file_group([NotNull] PlSqlParser.Log_file_groupContext context)
         {
             return VisitChildren(context);
         }
