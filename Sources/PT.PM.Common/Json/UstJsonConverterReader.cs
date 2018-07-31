@@ -10,8 +10,8 @@ namespace PT.PM.Common.Json
 {
     public class UstJsonConverterReader : JsonConverter, ILoggable
     {
-        private Stack<RootUst> rootAncestors = new Stack<RootUst>();
-        private Stack<Ust> ancestors = new Stack<Ust>();
+        public Stack<RootUst> rootAncestors = new Stack<RootUst>();
+        public Stack<Ust> ancestors = new Stack<Ust>();
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -20,6 +20,8 @@ namespace PT.PM.Common.Json
         public CodeFile JsonFile { get; } = CodeFile.Empty;
 
         public bool IgnoreExtraProcess { get; set; } = false;
+
+        public UstJsonNodesConverter NodesConverter { get; set; }
 
         public UstJsonConverterReader(CodeFile jsonFile)
         {
@@ -38,8 +40,14 @@ namespace PT.PM.Common.Json
             {
                 return null;
             }
+            NodesConverter = NodesConverter ?? new UstJsonNodesConverter(this, serializer);
 
             JObject jObject = JObject.Load(reader);
+            return ReadJson(jObject, objectType, existingValue, serializer);
+        }
+
+        public Ust ReadJson(JObject jObject, Type objectType, object existingValue, JsonSerializer serializer)
+        {
             string kind = jObject[nameof(Ust.Kind)]?.ToString() ?? "";
 
             if (!ReflectionCache.TryGetClassType(kind, out Type type))
@@ -57,8 +65,8 @@ namespace PT.PM.Common.Json
                 Language language = !string.IsNullOrEmpty(languageString)
                     ? languageString.ParseLanguages().FirstOrDefault()
                     : Uncertain.Language;
-
-                rootUst = new RootUst(null, language);
+                CodeFile codeFile = (CodeFile)jObject[nameof(RootUst.SourceCodeFile)]?.ToObject(typeof(CodeFile), serializer);
+                rootUst = new RootUst(codeFile, language);
                 ProcessRootUst(rootUst);
 
                 ust = rootUst;
@@ -68,56 +76,16 @@ namespace PT.PM.Common.Json
                 ust = (Ust)Activator.CreateInstance(type);
             }
 
-            if (rootAncestors.Count > 0)
-            {
-                ust.Root = rootAncestors.Peek();
-            }
-            if (ancestors.Count > 0)
-            {
-                ust.Parent = ancestors.Peek();
-            }
 
-            if (rootUst != null)
-            {
-                rootAncestors.Push(rootUst);
-            }
-            ancestors.Push(ust);
 
             try
             {
-                serializer.Populate(jObject.CreateReader(), ust);
+                ust = NodesConverter.Convert(jObject, ust);
             }
             catch (Exception ex)
             {
                 Logger.LogError(JsonFile, jObject, ex);
             }
-
-            List<TextSpan> textSpans =
-                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList() ?? null;
-
-            if (textSpans != null && textSpans.Count > 0)
-            {
-                if (textSpans.Count == 1)
-                {
-                    ust.TextSpan = textSpans[0];
-                }
-                else
-                {
-                    ust.InitialTextSpans = textSpans;
-                    ust.TextSpan = textSpans.First();
-                }
-            }
-
-            if (!IgnoreExtraProcess)
-            {
-                ExtraProcess(ust, jObject, serializer);
-            }
-
-            if (rootUst != null)
-            {
-                rootAncestors.Pop();
-            }
-            ancestors.Pop();
 
             return ust;
         }
@@ -131,7 +99,7 @@ namespace PT.PM.Common.Json
         {
         }
 
-        protected virtual void ExtraProcess(Ust ust, JObject ustJObject, JsonSerializer serializer)
+        public virtual void ExtraProcess(Ust ust, JObject ustJObject, JsonSerializer serializer)
         {
         }
     }
