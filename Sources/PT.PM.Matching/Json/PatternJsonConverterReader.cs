@@ -14,6 +14,14 @@ namespace PT.PM.Matching.Json
         private PatternRoot root;
         private Stack<PatternUst> ancestors = new Stack<PatternUst>();
 
+        public string DefaultDataFormat { get; set; } = "Json";
+
+        public string DefaultKey { get; set; } = "";
+
+        public string DefaultFilenameWildcard { get; set; } = "";
+
+        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
+
         public PatternJsonConverterReader(CodeFile jsonFile)
             : base(jsonFile)
         {
@@ -34,14 +42,15 @@ namespace PT.PM.Matching.Json
             object target = null;
             if (objectType == typeof(PatternRoot))
             {
-                HashSet<Language> resultLanguages = ((string)jObject[nameof(PatternDto.Languages)])?.ParseLanguages(patternLanguages: true);
+                HashSet<Language> resultLanguages = ((string)jObject[nameof(PatternDto.Languages)])?.ParseLanguages(patternLanguages: true)
+                    ?? DefaultLanguages;
 
                 root = new PatternRoot
                 {
-                    Key = (string)jObject[nameof(PatternRoot.Key)] ?? "",
-                    FilenameWildcard = (string)jObject[nameof(PatternRoot.FilenameWildcard)] ?? "",
+                    Key = (string)jObject[nameof(PatternRoot.Key)] ?? DefaultKey,
+                    FilenameWildcard = (string)jObject[nameof(PatternRoot.FilenameWildcard)] ?? DefaultFilenameWildcard,
                     Languages = resultLanguages,
-                    DataFormat = (string)jObject[nameof(PatternRoot.DataFormat)] ?? "",
+                    DataFormat = (string)jObject[nameof(PatternRoot.DataFormat)] ?? DefaultDataFormat,
                     CodeFile = jObject[nameof(PatternRoot.CodeFile)]?.ToObject<CodeFile>(serializer) ?? CodeFile.Empty,
                 };
 
@@ -70,7 +79,7 @@ namespace PT.PM.Matching.Json
                         regexPattern.RegexString = regex;
                     }
 
-                    ReadTextSpan(jObject, patternUst);
+                    ReadTextSpan(jObject, patternUst, serializer);
                 }
                 else if (patternUst is PatternIntRangeLiteral patternIntRangeLiteral)
                 {
@@ -79,7 +88,7 @@ namespace PT.PM.Matching.Json
                         patternIntRangeLiteral.ParseAndPopulate(range);
                     }
 
-                    ReadTextSpan(jObject, patternUst);
+                    ReadTextSpan(jObject, patternUst, serializer);
                 }
                 else
                 {
@@ -92,11 +101,11 @@ namespace PT.PM.Matching.Json
             return target;
         }
 
-        private static void ReadTextSpan(JObject jObject, PatternUst patternUst)
+        private static void ReadTextSpan(JObject jObject, PatternUst patternUst, JsonSerializer serializer)
         {
-            if ((string)jObject[nameof(PatternUst.TextSpan)] is string textSpan)
+            if (jObject[nameof(PatternUst.TextSpan)] is JToken textSpanToken)
             {
-                patternUst.TextSpan = TextUtils.ParseTextSpan(textSpan);
+                patternUst.TextSpan = textSpanToken.ToObject<TextSpan>(serializer);
             }
         }
     }
