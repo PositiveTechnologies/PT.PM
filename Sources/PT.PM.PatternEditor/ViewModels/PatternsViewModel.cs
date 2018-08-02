@@ -20,13 +20,11 @@ namespace PT.PM.PatternEditor.Pattern
 {
     public class PatternsViewModel : ReactiveObject
     {
-        private JsonPatternSerializer jsonPatternSerializer = new JsonPatternSerializer
-        {
-            IncludeTextSpans = false,
-            ExcludeDefaults = true,
-            Indented = true,
-        };
         private static JsonConverter[] jsonConverters = new JsonConverter[] { new StringEnumConverter() };
+
+        private bool oldIsIncludeTextSpans;
+        private bool oldIsLinearTextSpans;
+        private bool oldIsIncludeCode;
 
         private ListBox patternsListBox;
         private TextBox patternTextBox;
@@ -397,17 +395,23 @@ namespace PT.PM.PatternEditor.Pattern
             }
         }
 
-        private void CheckPattern()
+        public void CheckPattern()
         {
             if (SelectedPattern == null)
             {
                 return;
             }
 
-            if (oldPattern != patternTextBox.Text || !oldLanguages.SequenceEqual(SelectedPattern.Languages))
+            if (oldPattern != patternTextBox.Text || !oldLanguages.SequenceEqual(SelectedPattern.Languages) ||
+                oldIsIncludeTextSpans != Settings.IsIncludeTextSpans ||
+                oldIsLinearTextSpans != Settings.IsLinearTextSpans ||
+                oldIsIncludeCode != Settings.IsIncludeCode)
             {
                 oldPattern = patternTextBox.Text;
                 oldLanguages = new HashSet<string>(SelectedPattern.Languages);
+                oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
+                oldIsLinearTextSpans = Settings.IsLinearTextSpans;
+                oldIsIncludeCode = Settings.IsIncludeCode;
 
                 Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
                 patternLogger.Clear();
@@ -433,6 +437,15 @@ namespace PT.PM.PatternEditor.Pattern
                     PatternErrorsText = "";
                     if (IsDeveloperMode && patternNode != null)
                     {
+                        var jsonPatternSerializer = new JsonPatternSerializer
+                        {
+                            IncludeCode = Settings.IsIncludeCode,
+                            IncludeTextSpans = Settings.IsIncludeTextSpans,
+                            LineColumnTextSpans = !Settings.IsLinearTextSpans,
+                            ExcludeDefaults = true,
+                            Indented = true
+                        };
+
                         jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>() { patternNode.CodeFile };
                         jsonPatternSerializer.CurrectCodeFile = patternNode.CodeFile;
                         PatternJson = jsonPatternSerializer.Serialize(patternNode);
