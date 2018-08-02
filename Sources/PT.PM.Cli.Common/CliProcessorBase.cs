@@ -380,12 +380,35 @@ namespace PT.PM.Cli.Common
 
         protected virtual void LogMatchesCount(TWorkflowResult workflowResult)
         {
-            int matchedResultCount = workflowResult.MatchResults.Count();
-            int suppressedCount = workflowResult.MatchResults.Count(match => match.Suppressed);
-            if (matchedResultCount > 0)
+            int matchedResultCount = 0;
+            int suppressedCount = 0;
+
+            foreach (IMatchResultBase matchResult in workflowResult.MatchResults)
             {
-                Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount} ({suppressedCount} suppressed)");
+                GetMatchesCount(matchResult, ref matchedResultCount, ref suppressedCount);
             }
+
+            Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount} ({suppressedCount} suppressed)");
+        }
+
+        protected static void GetMatchesCount(IMatchResultBase matchResult, ref int matchedResultCount, ref int suppressedCount)
+        {
+            int patternsCount = ExtractKeys(matchResult.PatternKey).Length;
+            if (patternsCount == 0)
+            {
+                patternsCount = 1;
+            }
+
+            matchedResultCount += patternsCount;
+            if (matchResult.Suppressed)
+            {
+                suppressedCount += patternsCount;
+            }
+        }
+
+        protected static string[] ExtractKeys(string keys)
+        {
+            return keys.Split(PatternRoot.KeySeparators, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
