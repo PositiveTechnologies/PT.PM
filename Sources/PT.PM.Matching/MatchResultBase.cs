@@ -5,6 +5,8 @@ namespace PT.PM.Matching
 {
     public interface IMatchResultBase
     {
+        string PatternKey { get; }
+
         bool Suppressed { get; }
     }
 
