@@ -48,7 +48,7 @@
     </Grid>
     <Grid ColumnDefinitions="100,*">
       <TextBlock Text="Languages" />
-      <Grid Grid.Column="1" RowDefinitions="25,25,25"  ColumnDefinitions="90,80,80" Height="75">
+      <Grid Grid.Column="1" RowDefinitions="25,25,25,25" ColumnDefinitions="90,90,90" Height="100">
         <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsCSharpLanguage}">C#</CheckBox>
         <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsJavaLanguage}" >Java</CheckBox>
         <CheckBox Grid.Row="0" Grid.Column="2" IsChecked="{Binding IsPhpLanguage}">PHP</CheckBox>
@@ -56,6 +56,9 @@
         <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsTSqlLanguage}">T-SQL</CheckBox>
         <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsJavaScriptLanguage}">JavaScript</CheckBox>
         <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsHtmlLanguage}">Html</CheckBox>
+        <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IsCLanguage}">C</CheckBox>
+        <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding IsCPlusPlusLanguage}" >C++</CheckBox>
+        <CheckBox Grid.Row="3" Grid.Column="2" IsChecked="{Binding IsObjectiveCLanguage}" >Objective-C</CheckBox>
       </Grid>
     </Grid>
     

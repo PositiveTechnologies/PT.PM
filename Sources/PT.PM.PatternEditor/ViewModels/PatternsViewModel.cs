@@ -214,6 +214,9 @@ namespace PT.PM.PatternEditor.Pattern
                 this.RaisePropertyChanged(nameof(IsTSqlLanguage));
                 this.RaisePropertyChanged(nameof(IsJavaScriptLanguage));
                 this.RaisePropertyChanged(nameof(IsHtmlLanguage));
+                this.RaisePropertyChanged(nameof(IsCLanguage));
+                this.RaisePropertyChanged(nameof(IsCPlusPlusLanguage));
+                this.RaisePropertyChanged(nameof(IsObjectiveCLanguage));
                 this.RaisePropertyChanged(nameof(Description));
                 patternTextBox.Text = selectedPattern?.Value ?? "";
                 CheckPattern();
@@ -302,6 +305,24 @@ namespace PT.PM.PatternEditor.Pattern
         {
             get => SelectedPattern?.Languages.Contains("Html") ?? false;
             set => ChangeLanguage("Html", value);
+        }
+
+        public bool IsCLanguage
+        {
+            get => SelectedPattern?.Languages.Contains("C") ?? false;
+            set => ChangeLanguage("C", value);
+        }
+
+        public bool IsCPlusPlusLanguage
+        {
+            get => SelectedPattern?.Languages.Contains("CPlusPlus") ?? false;
+            set => ChangeLanguage("CPlusPlus", value);
+        }
+
+        public bool IsObjectiveCLanguage
+        {
+            get => SelectedPattern?.Languages.Contains("ObjectiveC") ?? false;
+            set => ChangeLanguage("ObjectiveC", value);
         }
 
         public string Description
