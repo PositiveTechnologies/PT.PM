@@ -417,7 +417,7 @@ namespace PT.PM.Cli.Common
 
             if (errors == null || errors.FirstOrDefault() is VersionRequestedError)
             {
-                Logger.LogInfo($"{CoreName} version: {LoggerUtils.GetVersionString()}");
+                Logger.LogInfo($"{CoreName} version: {Utils.GetVersionString()}");
             }
 
             string commandLineArguments = "Command line arguments: " +

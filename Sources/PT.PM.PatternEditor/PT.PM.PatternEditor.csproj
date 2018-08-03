@@ -6,6 +6,7 @@
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>7.3</LangVersion>
+    <CurrentDate>$([System.DateTime]::Now.tostring("MM/dd/yyyy HH:mm:ss"))</CurrentDate>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <None Remove="App.paml" />
+    <None Remove="BuildTimeStamp" />
     <None Remove="MainWindow.paml" />
     <None Remove="MessageBox.paml" />
     <None Remove="PatternUserControl.paml" />
@@ -26,6 +28,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="App.paml" />
+    <EmbeddedResource Include="BuildTimeStamp" />
     <EmbeddedResource Include="MainWindow.paml" />
     <EmbeddedResource Include="MessageBox.paml" />
     <EmbeddedResource Include="PatternUserControl.paml" />
@@ -54,4 +57,7 @@
     <EmbeddedResource Include="..\PT.PM.ico" Link="PT.PM.ico" />
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="echo $(CurrentDate) &gt; $(ProjectDir)BuildTimeStamp" />
+  </Target>
 </Project>
