@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Matching.Json;
 using PT.PM.Matching.Patterns;
@@ -29,7 +30,18 @@ namespace PT.PM.Matching.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            JToken[] jsonTokens = JToken.Parse(patternsData).ReadArray();
+            JToken[] jsonTokens;
+
+            try
+            {
+                jsonTokens = JToken.Parse(patternsData).ReadArray();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(new ParsingException(
+                   new CodeFile(patternsData) { PatternKey = DefaultKey }, ex, ex.FormatExceptionMessage()));
+                jsonTokens = ArrayUtils<JToken>.EmptyArray;
+            }
 
             var result = new List<PatternDto>();
             JsonSerializer patternJsonSerializer = null;
