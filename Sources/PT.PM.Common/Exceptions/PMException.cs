@@ -9,6 +9,8 @@ namespace PT.PM.Common.Exceptions
 
         public CodeFile CodeFile { get; set; } = CodeFile.Empty;
 
+        public TextSpan TextSpan { get; set; }
+
         public PMException()
             : base()
         {
