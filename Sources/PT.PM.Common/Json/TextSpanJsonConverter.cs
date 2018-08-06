@@ -69,52 +69,19 @@ namespace PT.PM.Common.Json
 
             try
             {
-                try
-                {
-                    result = DeserializeTextSpan(reader, IsLineColumn);
-                }
-                catch (FormatException)
-                {
-                    result = DeserializeTextSpan(reader, !IsLineColumn);
-                    IsLineColumn = !IsLineColumn;
-                }
-            }
-            catch (Exception ex) when (!(ex is ThreadAbortException))
-            {
-                Logger.LogError(JsonFile, (reader as JTokenReader)?.CurrentToken, ex);
-            }
+                string textSpanString = (string)reader.Value;
+                IsLineColumn = textSpanString.Contains(",");
 
-            return result;
-        }
-
-        private TextSpan DeserializeTextSpan(JsonReader reader, bool isLineColumn)
-        {
-            TextSpan result = TextSpan.Zero;
-
-            string textSpanString = (string)reader.Value;
-            if (textSpanString != EmptyTextSpanFormat)
-            {
-                if (!isLineColumn)
+                if (textSpanString != EmptyTextSpanFormat)
                 {
-                    try
+                    if (!IsLineColumn)
                     {
                         result = TextUtils.ParseTextSpan(textSpanString, CurrentCodeFile, CodeFiles);
                     }
-                    catch (FileNotFoundException ex)
-                    {
-                        Logger.LogError(JsonFile, (reader as JTokenReader)?.CurrentToken, ex);
-                    }
-                }
-                else
-                {
-                    try
+                    else
                     {
                         LineColumnTextSpan lineColumnTextSpan = TextUtils.ParseLineColumnTextSpan(textSpanString, CurrentCodeFile, CodeFiles);
                         result = lineColumnTextSpan.CodeFile.GetTextSpan(lineColumnTextSpan);
-                    }
-                    catch (FileNotFoundException ex)
-                    {
-                        Logger.LogError(JsonFile, (reader as JTokenReader)?.CurrentToken, ex);
                     }
                 }
 
@@ -122,6 +89,10 @@ namespace PT.PM.Common.Json
                 {
                     result.CodeFile = null;
                 }
+            }
+            catch (Exception ex) when (!(ex is ThreadAbortException))
+            {
+                Logger.LogError(JsonFile, (reader as JTokenReader)?.CurrentToken, ex);
             }
 
             return result;
