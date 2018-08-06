@@ -6,7 +6,6 @@ namespace PT.PM.Common
 {
     public class CodeFile : IEquatable<CodeFile>, IComparable<CodeFile>, IComparable
     {
-        private readonly object lockObj = new object();
         private int[] lineIndexes;
 
         public const int StartLine = 1;
@@ -21,9 +20,9 @@ namespace PT.PM.Common
 
         public string Name { get; set; } = "";
 
-        public string PatternKey { get; set; } = null;
-
         public string Code { get; } = "";
+
+        public string PatternKey { get; set; } = null;
 
         public string RelativeName => Path.Combine(RelativePath, Name);
 
@@ -32,6 +31,7 @@ namespace PT.PM.Common
         public CodeFile(string code)
         {
             Code = code ?? "";
+            InitLineIndexes();
         }
 
         public override string ToString() => !string.IsNullOrEmpty(RelativeName)
@@ -48,8 +48,6 @@ namespace PT.PM.Common
 
         public void GetLineColumnFromLinear(int position, out int line, out int column)
         {
-            InitLineIndexesIfRequired();
-
             line = Array.BinarySearch(lineIndexes, position);
             if (line < 0)
             {
@@ -71,29 +69,21 @@ namespace PT.PM.Common
 
         public int GetLinearFromLineColumn(int line, int column)
         {
-            InitLineIndexesIfRequired();
-
             return lineIndexes[line - StartLine] + column - StartColumn;
         }
 
         public int GetLineLinearIndex(int lineIndex)
         {
-            InitLineIndexesIfRequired();
-
             return lineIndexes[lineIndex];
         }
 
         public int GetLinesCount()
         {
-            InitLineIndexesIfRequired();
-
             return lineIndexes.Length;
         }
 
         public string GetStringAtLine(int line)
         {
-            InitLineIndexesIfRequired();
-
             line = line - StartLine;
 
             if (line < 0 || line >= lineIndexes.Length)
@@ -123,20 +113,6 @@ namespace PT.PM.Common
         public string GetSubstring(TextSpan textSpan)
         {
             return Code.Substring(textSpan.Start, textSpan.Length);
-        }
-
-        private void InitLineIndexesIfRequired()
-        {
-            if (lineIndexes == null)
-            {
-                lock (lockObj)
-                {
-                    if (lineIndexes == null)
-                    {
-                        InitLineIndexes();
-                    }
-                }
-            }
         }
 
         private void InitLineIndexes()
