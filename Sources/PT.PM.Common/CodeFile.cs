@@ -21,7 +21,7 @@ namespace PT.PM.Common
 
         public string Name { get; set; } = "";
 
-        public bool IsPattern { get; set; } = false;
+        public string PatternKey { get; set; } = null;
 
         public string Code { get; } = "";
 

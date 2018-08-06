@@ -443,7 +443,7 @@ namespace PT.PM.PatternEditor.Pattern
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
-                        patternNode = dslProcessor.Deserialize(new CodeFile(patternTextBox.Text) { IsPattern = true });
+                        patternNode = dslProcessor.Deserialize(new CodeFile(patternTextBox.Text) { PatternKey = Key });
                         patternNode.Languages = SelectedPattern.Languages.ParseLanguages(allByDefault: false, patternLanguages: true);
                     }
                 }

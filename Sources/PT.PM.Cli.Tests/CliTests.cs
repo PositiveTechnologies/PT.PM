@@ -27,8 +27,9 @@ namespace PT.PM.Cli.Tests
             cliProcessor.Process($"--stage {Stage.Pattern} --patterns \"{patterns}\"");
 
             var errors = (cliProcessor.Logger as LoggerMessageCounter).Errors;
-            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", errors[0]);
-            Assert.AreEqual($"Pattern ParsingException in \"Pattern\": no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", errors[1]);
+            string patternKey = patterns.Replace("\"\"", "\"");
+            Assert.AreEqual($"Pattern {patternKey} ParsingException: token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", errors[0]);
+            Assert.AreEqual($"Pattern {patternKey} ParsingException: no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", errors[1]);
         }
 
         [Test]

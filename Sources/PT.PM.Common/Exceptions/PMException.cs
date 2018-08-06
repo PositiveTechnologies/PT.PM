@@ -44,7 +44,7 @@ namespace PT.PM.Common.Exceptions
             string fileNameString = !string.IsNullOrEmpty(fileName)
                 ? $@" in ""{fileName}"""
                 : "";
-            string patternString = CodeFile.IsPattern ? "Pattern " : "";
+            string patternString = !string.IsNullOrEmpty(CodeFile.PatternKey) ? $"Pattern {CodeFile.PatternKey} " : "";
 
             string exceptionString = printStackTrace
                 ? InnerException?.FormatExceptionMessage() ?? Message

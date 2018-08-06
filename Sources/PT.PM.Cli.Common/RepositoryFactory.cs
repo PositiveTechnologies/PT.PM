@@ -96,7 +96,7 @@ namespace PT.PM.Cli.Common
                 {
                     patternsFile = new CodeFile(File.ReadAllText(patternsString))
                     {
-                        IsPattern = true,
+                        PatternKey = patternsString,
                         Name = patternsString
                     };
                 }
