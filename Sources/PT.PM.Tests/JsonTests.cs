@@ -53,7 +53,7 @@ namespace PT.PM.Tests
         [Test]
         public void Process_JsonUst_ExcessPropertyInJson()
         {
-            CheckJsonSerialization("empty-try-catch.php", checkStrict: true, strict: true);
+            CheckJsonSerialization("empty-try-catch.php", checkStrict: false, strict: true);
         }
 
         [Test]
