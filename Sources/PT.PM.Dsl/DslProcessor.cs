@@ -30,7 +30,7 @@ namespace PT.PM.Dsl
                 PatternExpressionInsideStatement = PatternExpressionInsideStatement,
                 Data = data
             };
-            DslParser.PatternContext patternContext = parser.Parse(data.Code);
+            DslParser.PatternContext patternContext = parser.Parse(data.PatternKey, data.Code);
 
             PatternRoot patternNode = converter.Convert(patternContext);
             patternNode.CodeFile = data;

@@ -15,10 +15,10 @@ namespace PT.PM.Dsl
         {
         }
 
-        public DslParser.PatternContext Parse(string data)
+        public DslParser.PatternContext Parse(string patternKey, string data)
         {
             DslParser.PatternContext pattern = null;
-            var codeFile = new CodeFile(data) { Name = "Pattern", IsPattern = true };
+            var codeFile = new CodeFile(data) { PatternKey = patternKey ?? data };
             var errorListener = new AntlrMemoryErrorListener()
             {
                 IsPattern = true,

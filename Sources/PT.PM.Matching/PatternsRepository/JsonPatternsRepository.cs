@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Matching.Json;
 using PT.PM.Matching.Patterns;
@@ -14,6 +15,14 @@ namespace PT.PM.Matching.PatternsRepository
         private string patternsData;
         private PatternConverter patternConverter = new PatternConverter();
 
+        public string DefaultDataFormat { get; set; } = "Json";
+
+        public string DefaultKey { get; set; } = "";
+
+        public string DefaultFilenameWildcard { get; set; } = "";
+
+        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
+
         public JsonPatternsRepository(string patternsData)
         {
             this.patternsData = patternsData;
@@ -21,7 +30,18 @@ namespace PT.PM.Matching.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            JToken[] jsonTokens = JToken.Parse(patternsData).ReadArray();
+            JToken[] jsonTokens;
+
+            try
+            {
+                jsonTokens = JToken.Parse(patternsData).ReadArray();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(new ParsingException(
+                   new CodeFile(patternsData) { PatternKey = DefaultKey }, ex, ex.FormatExceptionMessage()));
+                jsonTokens = ArrayUtils<JToken>.EmptyArray;
+            }
 
             var result = new List<PatternDto>();
             JsonSerializer patternJsonSerializer = null;
@@ -37,11 +57,25 @@ namespace PT.PM.Matching.PatternsRepository
                         {
                             patternJsonSerializer = new JsonSerializer();
                             var converters = patternJsonSerializer.Converters;
-                            converters.Add(new PatternJsonConverterReader(new CodeFile(patternsData)));
-                            var textSpanJsonConverter = new TextSpanJsonConverter();
+                            var patternJsonConverterReader = new PatternJsonConverterReader(new CodeFile(patternsData))
+                            {
+                                Logger = Logger,
+                                DefaultDataFormat = DefaultDataFormat,
+                                DefaultKey = DefaultKey,
+                                DefaultFilenameWildcard = DefaultFilenameWildcard,
+                                DefaultLanguages = DefaultLanguages
+                            };
+                            converters.Add(patternJsonConverterReader);
+                            var textSpanJsonConverter = new TextSpanJsonConverter
+                            {
+                                Logger = Logger
+                            };
                             converters.Add(textSpanJsonConverter);
 
-                            var codeFileJsonConverter = new CodeFileJsonConverter();
+                            var codeFileJsonConverter = new CodeFileJsonConverter
+                            {
+                                Logger = Logger
+                            };
 
                             codeFileJsonConverter.SetCurrentCodeFileEvent += (object sender, CodeFile codeFile) =>
                             {

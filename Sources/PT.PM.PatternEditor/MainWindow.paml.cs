@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using System.Diagnostics;
 
 namespace PT.PM.PatternEditor
 {
@@ -9,12 +8,10 @@ namespace PT.PM.PatternEditor
     {
         public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             this.AttachDevTools();
 
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            string productVersion = FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion;
-            Title = "Pattern Editor " + productVersion;
+            Title = "Pattern Editor " + Utils.GetVersionString();
 
             ServiceLocator.MainWindow = this;
             ServiceLocator.MainWindowViewModel = new MainWindowViewModel(this);

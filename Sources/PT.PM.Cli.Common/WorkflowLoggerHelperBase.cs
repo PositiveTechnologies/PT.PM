@@ -41,7 +41,7 @@ namespace PT.PM.Cli.Common
             }
             Logger.LogInfo($"{"Patterns count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedPatternsCount}");
 
-            Logger.LogInfo($"{"Time format:",LoggerUtils.Align} mm:ss.ff");
+            Logger.LogInfo($"{"Time format:",LoggerUtils.Align} {Utils.TimeSpanFormat.Replace("\\", "")}");
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {

@@ -8,6 +8,8 @@ namespace PT.PM.Matching
 {
     public class MatchResult : MatchResultBase<PatternRoot>, IMatchResultBase
     {
+        public string PatternKey => Pattern.Key;
+
         public CodeFile SourceCodeFile => RootUst.SourceCodeFile;
 
         public TextSpan TextSpan => TextSpans.FirstOrDefault();

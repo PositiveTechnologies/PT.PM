@@ -53,7 +53,7 @@ namespace PT.PM.Matching
                 CodeFile patternFile = new CodeFile(patternDto.Value)
                 {
                     Name = patternDto.Name,
-                    IsPattern = true
+                    PatternKey = patternDto.Key
                 };
 
                 IPatternSerializer serializer = Serializers

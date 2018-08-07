@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace PT.PM
 {
@@ -26,5 +30,33 @@ namespace PT.PM
         }
 
         public static string Format(this TimeSpan timeSpan) => timeSpan.ToString(TimeSpanFormat);
+
+        public static string GetVersionString()
+        {
+            Assembly assembly = Assembly.GetEntryAssembly();
+
+            AssemblyName assemblyName = assembly.GetName();
+            DateTime buildTime = default;
+
+            string streamName = assembly.GetManifestResourceNames().FirstOrDefault(name => name.Contains("BuildTimeStamp")) ?? null;
+            Stream stream = !string.IsNullOrEmpty(streamName)
+                ? assembly.GetManifestResourceStream(streamName)
+                : null;
+            if (stream != null)
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    string dateString = reader.ReadToEnd().Trim();
+                    DateTime.TryParse(dateString, out buildTime);
+                }
+            }
+
+            if (buildTime == default)
+            {
+                buildTime = File.GetLastWriteTime(assembly.Location);
+            }
+
+            return $"{assemblyName.Version} ({buildTime.ToString(CultureInfo.InvariantCulture)})";
+        }
     }
 }

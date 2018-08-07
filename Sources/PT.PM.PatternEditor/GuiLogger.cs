@@ -72,7 +72,7 @@ namespace PT.PM.PatternEditor
             {
                 if (!logError)
                 {
-                    logError = !pmException.CodeFile.IsPattern;
+                    logError = !string.IsNullOrEmpty(pmException.CodeFile.PatternKey);
                 }
             }
 

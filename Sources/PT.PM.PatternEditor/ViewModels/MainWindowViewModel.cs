@@ -530,6 +530,7 @@ namespace PT.PM.PatternEditor
                     Settings.Save();
                     this.RaisePropertyChanged();
                     CheckSourceCode();
+                    ServiceLocator.PatternsViewModel.CheckPattern();
                 }
             }
         }
@@ -545,6 +546,7 @@ namespace PT.PM.PatternEditor
                     Settings.Save();
                     this.RaisePropertyChanged();
                     CheckSourceCode();
+                    ServiceLocator.PatternsViewModel.CheckPattern();
                 }
             }
         }
@@ -560,6 +562,7 @@ namespace PT.PM.PatternEditor
                     Settings.Save();
                     this.RaisePropertyChanged();
                     CheckSourceCode();
+                    ServiceLocator.PatternsViewModel.CheckPattern();
                 }
             }
         }

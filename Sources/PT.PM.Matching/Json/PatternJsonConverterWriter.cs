@@ -22,7 +22,7 @@ namespace PT.PM.Matching.Json
                     jObject.Add(nameof(IRegexPattern.Regex), regexPattern.RegexString);
                 }
 
-                AddTextSpanAndWrite(writer, jObject, patternUst);
+                AddTextSpanAndWrite(writer, jObject, patternUst, serializer);
             }
             else if (value is PatternIntRangeLiteral patternIntRangeLiteral)
             {
@@ -34,7 +34,7 @@ namespace PT.PM.Matching.Json
                     jObject.Add(nameof(PatternIntLiteral.Value), str.Substring(2, str.Length - 4));
                 }
 
-                AddTextSpanAndWrite(writer, jObject, patternIntRangeLiteral);
+                AddTextSpanAndWrite(writer, jObject, patternIntRangeLiteral, serializer);
             }
             else
             {
@@ -49,11 +49,11 @@ namespace PT.PM.Matching.Json
             return jObject;
         }
 
-        private void AddTextSpanAndWrite(JsonWriter writer, JObject jObject, PatternUst patternUst)
+        private void AddTextSpanAndWrite(JsonWriter writer, JObject jObject, PatternUst patternUst, JsonSerializer serializer)
         {
-            if (!ExcludeDefaults || !patternUst.TextSpan.IsZero)
+            if (IncludeTextSpans && (!ExcludeDefaults || !patternUst.TextSpan.IsZero))
             {
-                jObject.Add(nameof(PatternUst.TextSpan), patternUst.TextSpan.ToString());
+                jObject.Add(nameof(PatternUst.TextSpan), JToken.FromObject(patternUst.TextSpan, serializer));
             }
             jObject.WriteTo(writer);
         }
