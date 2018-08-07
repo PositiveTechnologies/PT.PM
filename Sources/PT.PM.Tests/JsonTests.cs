@@ -53,7 +53,8 @@ namespace PT.PM.Tests
         [Test]
         public void Process_JsonUst_ExcessPropertyInJson()
         {
-            CheckJsonSerialization("empty-try-catch.php", checkStrict: false, strict: true);
+            Assert.Ignore("New version of Json reader ignore excess properties");
+            CheckJsonSerialization("empty-try-catch.php", checkStrict: true, strict: true);
         }
 
         [Test]
