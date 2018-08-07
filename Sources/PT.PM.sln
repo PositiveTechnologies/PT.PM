@@ -65,7 +65,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli.Common", "PT.PM.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.CLangsParseTreeUst", "PT.PM.CLangsParseTreeUst\PT.PM.CLangsParseTreeUst.csproj", "{D8E70122-BABB-4A4E-A33B-85BF62E6158E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "..\..\..\CodeGenerator\CodeGenerator\CodeGenerator\CodeGenerator.csproj", "{15457E79-CA8A-4C3A-8D5D-D5F555E693F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{3189C44D-7F54-4161-B1BD-C903C52C3F0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -181,10 +181,10 @@ Global
 		{D8E70122-BABB-4A4E-A33B-85BF62E6158E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8E70122-BABB-4A4E-A33B-85BF62E6158E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8E70122-BABB-4A4E-A33B-85BF62E6158E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15457E79-CA8A-4C3A-8D5D-D5F555E693F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15457E79-CA8A-4C3A-8D5D-D5F555E693F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15457E79-CA8A-4C3A-8D5D-D5F555E693F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15457E79-CA8A-4C3A-8D5D-D5F555E693F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3189C44D-7F54-4161-B1BD-C903C52C3F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3189C44D-7F54-4161-B1BD-C903C52C3F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3189C44D-7F54-4161-B1BD-C903C52C3F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3189C44D-7F54-4161-B1BD-C903C52C3F0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
