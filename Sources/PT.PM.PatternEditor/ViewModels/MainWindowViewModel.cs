@@ -78,7 +78,7 @@ namespace PT.PM.PatternEditor
             sourceCodeErrorsListBox.DoubleTapped +=
             (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                GuiHelpers.ProcessErrorOnDoubleClick(sourceCodeErrorsListBox, sourceCodeTextBox);
+                GuiUtils.ProcessErrorOnDoubleClick(sourceCodeErrorsListBox, sourceCodeTextBox);
             };
             matchResultListBox.DoubleTapped += MatchingResultListBox_DoubleTapped;
 
@@ -124,7 +124,7 @@ namespace PT.PM.PatternEditor
             {
                 try
                 {
-                    GuiHelpers.OpenDirectory(ServiceLocator.TempDirectory);
+                    GuiUtils.OpenDirectory(ServiceLocator.TempDirectory);
                 }
                 catch (Exception ex)
                 {

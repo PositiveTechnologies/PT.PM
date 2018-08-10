@@ -80,7 +80,7 @@ namespace PT.PM.PatternEditor.Pattern
 
             patternErrorsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                GuiHelpers.ProcessErrorOnDoubleClick(patternErrorsListBox, patternTextBox);
+                GuiUtils.ProcessErrorOnDoubleClick(patternErrorsListBox, patternTextBox);
             };
 
             patternLogger = GuiLogger.CreatePatternLogger(PatternErrors);

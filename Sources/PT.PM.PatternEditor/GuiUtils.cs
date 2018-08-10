@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace PT.PM.PatternEditor
 {
-    internal class GuiHelpers
+    internal class GuiUtils
     {
         internal static void ProcessErrorOnDoubleClick(ListBox errorsListBox, TextBox inputTextBox)
         {
