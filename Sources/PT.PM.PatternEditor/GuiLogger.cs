@@ -1,6 +1,7 @@
 ﻿using Avalonia.Threading;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.PatternEditor.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 
@@ -12,22 +13,30 @@ namespace PT.PM.PatternEditor
 
         internal event EventHandler<string> LogEvent;
 
-        internal readonly ObservableCollection<object> ErrorsCollection;
+        internal readonly ObservableCollection<ErrorViewModel> ErrorsCollection;
 
-        internal bool LogPatternErrors { get; set; }
+        internal bool IsPatternLogger { get; }
 
         public bool IsLogDebugs { get; set; }
 
         public string LogsDir { get; set; } = "";
 
-        public GuiLogger(ObservableCollection<object> errorsCollection)
+        public static GuiLogger CreateSourceCodeLogger(ObservableCollection<ErrorViewModel> errorsCollection) =>
+            new GuiLogger(errorsCollection, false);
+
+        public static GuiLogger CreatePatternLogger(ObservableCollection<ErrorViewModel> errorsCollection) =>
+            new GuiLogger(errorsCollection, true);
+
+        private GuiLogger(ObservableCollection<ErrorViewModel> errorsCollection, bool logPatternErrors)
         {
             ErrorsCollection = errorsCollection;
+            IsPatternLogger = logPatternErrors;
         }
 
         public void Clear()
         {
             ErrorCount = 0;
+            Dispatcher.UIThread.InvokeAsync(ErrorsCollection.Clear);
         }
 
         public void LogDebug(string message)
@@ -40,18 +49,25 @@ namespace PT.PM.PatternEditor
 
         public void LogError(Exception ex)
         {
-            bool logError = WhetherLogError(ex);
-            if (logError)
+            bool logToGui = true;
+
+            if (ex is PMException pmException)
+            {
+                logToGui = !(IsPatternLogger ^ pmException.CodeFile.PatternKey != null);
+            }
+
+            if (logToGui)
             {
                 ErrorCount++;
-                Dispatcher.UIThread.InvokeAsync(() => ErrorsCollection.Add(ex));
-                string message = ex.ToString();
-                if (string.IsNullOrEmpty(message))
-                {
-                    message = ex.InnerException.ToString();
-                }
-                LogEvent?.Invoke(this, "Error: " + message);
+                Dispatcher.UIThread.InvokeAsync(() => ErrorsCollection.Add(new ErrorViewModel(ex)));
             }
+
+            string message = ex.ToString();
+            if (string.IsNullOrEmpty(message))
+            {
+                message = ex.InnerException.ToString();
+            }
+            LogEvent?.Invoke(this, "Error: " + message);
         }
 
         public void LogInfo(object infoObj)
@@ -62,21 +78,6 @@ namespace PT.PM.PatternEditor
         public void LogInfo(string message)
         {
             LogEvent?.Invoke(this, message);
-        }
-
-        private bool WhetherLogError(Exception ex)
-        {
-            bool logError = LogPatternErrors;
-
-            if (ex is PMException pmException)
-            {
-                if (!logError)
-                {
-                    logError = !string.IsNullOrEmpty(pmException.CodeFile.PatternKey);
-                }
-            }
-
-            return logError;
         }
     }
 }

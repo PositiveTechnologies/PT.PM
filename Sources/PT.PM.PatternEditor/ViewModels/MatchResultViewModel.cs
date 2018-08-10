@@ -1,15 +1,16 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
+using ReactiveUI;
 
-namespace PT.PM.PatternEditor
+namespace PT.PM.PatternEditor.ViewModels
 {
-    public class MatchResultDtoWrapper
+    public class MatchResultViewModel : ReactiveObject
     {
         private PrettyPrinter textPrinter = new PrettyPrinter() { MaxMessageLength = 32 };
 
         public MatchResultDto MatchResult { get; set; }
 
-        public MatchResultDtoWrapper(MatchResultDto matchResult)
+        public MatchResultViewModel(MatchResultDto matchResult)
         {
             MatchResult = matchResult;
         }

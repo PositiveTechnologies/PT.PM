@@ -8,6 +8,7 @@ using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
+using PT.PM.PatternEditor.ViewModels;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,6 @@ namespace PT.PM.PatternEditor
         private ListBox sourceCodeErrorsListBox;
         private ListBox matchResultListBox;
         private TextBox logger;
-        private GuiLogger sourceCodeLogger;
         private string oldSelectedLanguage;
         private string sourceCodeFileName;
         private bool fileOpened;
@@ -82,8 +82,8 @@ namespace PT.PM.PatternEditor
             };
             matchResultListBox.DoubleTapped += MatchingResultListBox_DoubleTapped;
 
-            sourceCodeLogger = new GuiLogger(SourceCodeErrors) { LogPatternErrors = false };
-            languageDetector.Logger = sourceCodeLogger;
+            SourceCodeLogger = GuiLogger.CreateSourceCodeLogger(SourceCodeErrors);
+            languageDetector.Logger = SourceCodeLogger;
 
             OpenSourceCodeFile = ReactiveCommand.Create(async () =>
             {
@@ -260,15 +260,17 @@ namespace PT.PM.PatternEditor
 
         private void MatchingResultListBox_DoubleTapped(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (matchResultListBox.SelectedItem is MatchResultDtoWrapper matchResultWrapper)
+            if (matchResultListBox.SelectedItem is MatchResultViewModel matchResultViewModel)
             {
-                var matchResult = matchResultWrapper.MatchResult;
+                var matchResult = matchResultViewModel.MatchResult;
                 sourceCodeTextBox.Focus();
                 sourceCodeTextBox.SelectionStart = matchResult.TextSpan.Start;
                 sourceCodeTextBox.SelectionEnd = matchResult.TextSpan.End;
                 sourceCodeTextBox.CaretIndex = sourceCodeTextBox.SelectionEnd;
             }
         }
+
+        public GuiLogger SourceCodeLogger { get; }
 
         public bool IsDeveloperMode
         {
@@ -401,7 +403,7 @@ namespace PT.PM.PatternEditor
             set => this.RaiseAndSetIfChanged(ref sourceCodeErrorsIsVisible, value);
         }
 
-        public ObservableCollection<object> SourceCodeErrors { get; } = new ObservableCollection<object>();
+        public ObservableCollection<ErrorViewModel> SourceCodeErrors { get; } = new ObservableCollection<ErrorViewModel>();
 
         public string TokensHeader
         {
@@ -445,7 +447,7 @@ namespace PT.PM.PatternEditor
             set => this.RaiseAndSetIfChanged(ref matchResultText, value);
         }
 
-        public ObservableCollection<MatchResultDtoWrapper> MatchingResults { get; } = new ObservableCollection<MatchResultDtoWrapper>();
+        public ObservableCollection<MatchResultViewModel> MatchingResults { get; } = new ObservableCollection<MatchResultViewModel>();
 
         public bool IsMatchingStage => Stage >= Stage.Match;
 
@@ -613,7 +615,7 @@ namespace PT.PM.PatternEditor
 
         internal void RunWorkflow()
         {
-            sourceCodeLogger.Clear();
+            SourceCodeLogger.Clear();
 
             var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text, language: SelectedLanguage ?? CSharp.Language);
             IPatternsRepository patternRepository;
@@ -632,7 +634,7 @@ namespace PT.PM.PatternEditor
                 DumpWithTextSpans = IsIncludeTextSpans,
                 LineColumnTextSpans = !IsLinearTextSpans,
                 IncludeCodeInDump = IsIncludeCode,
-                Logger = sourceCodeLogger,
+                Logger = SourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,
                 DumpDir = ServiceLocator.TempDirectory,
                 RenderStages = new HashSet<Stage>() { Stage.Ust },
@@ -677,7 +679,7 @@ namespace PT.PM.PatternEditor
 
             MatchingResultText = "MATCHINGS" + (matchResults.Count() > 0 ? $" ({matchResults.Count()})" : "");
 
-            if (sourceCodeLogger.ErrorCount == 0)
+            if (SourceCodeLogger.ErrorCount == 0)
             {
                 SourceCodeErrorsIsVisible = false;
                 SourceCodeErrorsText = "ERRORS";
@@ -685,7 +687,7 @@ namespace PT.PM.PatternEditor
             else
             {
                 SourceCodeErrorsIsVisible = true;
-                SourceCodeErrorsText = $"ERRORS ({sourceCodeLogger.ErrorCount})";
+                SourceCodeErrorsText = $"ERRORS ({SourceCodeLogger.ErrorCount})";
             }
 
             Dispatcher.UIThread.InvokeAsync(() =>
@@ -693,7 +695,7 @@ namespace PT.PM.PatternEditor
                 MatchingResults.Clear();
                 foreach (MatchResultDto matchResult in matchResults)
                 {
-                    MatchingResults.Add(new MatchResultDtoWrapper(matchResult));
+                    MatchingResults.Add(new MatchResultViewModel(matchResult));
                 }
             });
         }

@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
-using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.PatternEditor.ViewModels;
 
 namespace PT.PM.PatternEditor
 {
@@ -9,36 +9,13 @@ namespace PT.PM.PatternEditor
         internal static void ProcessErrorOnDoubleClick(ListBox errorsListBox, TextBox inputTextBox)
         {
             errorsListBox.Focus();
-            int selectionStart = -1, selectionEnd = -1;
 
-            if (errorsListBox.SelectedItem is ParsingException parsingException)
+            if (errorsListBox.SelectedItem is ErrorViewModel errorViewModel &&
+                errorViewModel.Exception is PMException pmException &&
+                !pmException.TextSpan.IsZero)
             {
-                selectionStart = parsingException.TextSpan.Start;
-                selectionEnd = parsingException.TextSpan.End;
-            }
-            else if (errorsListBox.SelectedItem is ConversionException conversionException)
-            {
-                TextSpan textSpan = conversionException.TextSpan;
-                if (!textSpan.IsZero)
-                {
-                    selectionStart = textSpan.Start;
-                    selectionEnd = textSpan.End;
-                }
-            }
-            else if (errorsListBox.SelectedItem is MatchingException matchException)
-            {
-                TextSpan textSpan = matchException.TextSpan;
-                if (!textSpan.IsZero)
-                {
-                    selectionStart = textSpan.Start;
-                    selectionEnd = textSpan.End;
-                }
-            }
-
-            if (selectionStart != -1)
-            {
-                inputTextBox.SelectionStart = selectionStart;
-                inputTextBox.SelectionEnd = selectionEnd;
+                inputTextBox.SelectionStart = pmException.TextSpan.Start;
+                inputTextBox.SelectionEnd = pmException.TextSpan.End;
                 inputTextBox.CaretIndex = inputTextBox.SelectionEnd + 1;
             }
         }

@@ -7,6 +7,7 @@ using PT.PM.Common;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
+using PT.PM.PatternEditor.ViewModels;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,7 @@ namespace PT.PM.PatternEditor.Pattern
                 GuiHelpers.ProcessErrorOnDoubleClick(patternErrorsListBox, patternTextBox);
             };
 
-            patternLogger = new GuiLogger(PatternErrors) { LogPatternErrors = true };
+            patternLogger = GuiLogger.CreatePatternLogger(PatternErrors);
             patternLogger.LogEvent += PatternLogger_LogEvent;
             dslProcessor.Logger = patternLogger;
 
@@ -384,7 +385,7 @@ namespace PT.PM.PatternEditor.Pattern
 
         public string PatternJson { get; set; }
 
-        public ObservableCollection<object> PatternErrors { get; } = new ObservableCollection<object>();
+        public ObservableCollection<ErrorViewModel> PatternErrors { get; } = new ObservableCollection<ErrorViewModel>();
 
         public string PatternTextBoxPosition { get; set; }
 
@@ -434,7 +435,7 @@ namespace PT.PM.PatternEditor.Pattern
                 oldIsLinearTextSpans = Settings.IsLinearTextSpans;
                 oldIsIncludeCode = Settings.IsIncludeCode;
 
-                Dispatcher.UIThread.InvokeAsync(PatternErrors.Clear);
+                ServiceLocator.MainWindowViewModel.SourceCodeLogger.Clear();
                 patternLogger.Clear();
 
                 patternFile = CodeFile.Empty;
