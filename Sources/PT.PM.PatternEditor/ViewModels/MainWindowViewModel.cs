@@ -124,7 +124,7 @@ namespace PT.PM.PatternEditor
             {
                 try
                 {
-                    Process.Start(ServiceLocator.TempDirectory);
+                    GuiHelpers.OpenDirectory(ServiceLocator.TempDirectory);
                 }
                 catch (Exception ex)
                 {
