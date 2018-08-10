@@ -225,8 +225,6 @@ namespace PT.PM.PatternEditor.Pattern
             }
         }
 
-        public bool IsDeveloperMode => Settings.IsDeveloperMode;
-
         public string Name
         {
             get => SelectedPattern?.Name;
@@ -391,11 +389,6 @@ namespace PT.PM.PatternEditor.Pattern
 
         public string Log { get; set; }
 
-        public void UpdateDeveloperMode()
-        {
-            this.RaisePropertyChanged(nameof(IsDeveloperMode));
-        }
-
         private void ChangeLanguage(string language, bool set)
         {
             if (SelectedPattern != null)
@@ -457,7 +450,7 @@ namespace PT.PM.PatternEditor.Pattern
                 {
                     PatternErrorsIsVisible = false;
                     PatternErrorsText = "";
-                    if (IsDeveloperMode && patternNode != null)
+                    if (patternNode != null)
                     {
                         var jsonPatternSerializer = new JsonPatternSerializer
                         {
@@ -478,10 +471,7 @@ namespace PT.PM.PatternEditor.Pattern
                 {
                     PatternErrorsIsVisible = true;
                     PatternErrorsText = $"ERRORS ({patternLogger.ErrorCount})";
-                    if (IsDeveloperMode)
-                    {
-                        PatternJson = "";
-                    }
+                    PatternJson = "";
                 }
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -499,7 +489,7 @@ namespace PT.PM.PatternEditor.Pattern
 
         private void PatternLogger_LogEvent(object sender, string e)
         {
-            if (ServiceLocator.MainWindowViewModel != null && IsDeveloperMode)
+            if (ServiceLocator.MainWindowViewModel != null)
             {
                 lock (log)
                 {

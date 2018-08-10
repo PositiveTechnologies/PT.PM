@@ -30,9 +30,9 @@
             <TextBlock Text="{Binding OpenedFullFileName}" />
           </ToolTip.Tip>
         </TextBlock>
-        <TextBlock Text="{Binding SourceCodeTextBoxPosition}" Grid.Column="6" Margin="10,0,0,0" IsVisible="{Binding DeveloperMode}" />
-        <TextBlock Grid.Column="7" Text="Stage" IsVisible="{Binding DeveloperMode}"/>
-        <DropDown Grid.Column="8" Items="{Binding Stages}" SelectedItem="{Binding Stage}" IsVisible="{Binding DeveloperMode}"/>
+        <TextBlock Text="{Binding SourceCodeTextBoxPosition}" Grid.Column="6" Margin="10,0,0,0" />
+        <TextBlock Grid.Column="7" Text="Stage"/>
+        <DropDown Grid.Column="8" Items="{Binding Stages}" SelectedItem="{Binding Stage}" />
         <TextBlock Grid.Column="9" Margin="10,0,0,0" Text="Language"/>
         <DropDown Grid.Column="10" Items="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
         <TextBlock Grid.Column="11" Margin="10,0,0,0" Text="JS Type  " IsVisible="{Binding IsJavaScriptTypeVisible}" />
@@ -69,8 +69,8 @@
         <ListBox Name="MatchingResult" MaxHeight="300" MinHeight="120" Items="{Binding MatchingResults}" />
       </Expander>
 
-      <Grid Grid.Row="7" ColumnDefinitions="170,170,170,170,170" Margin="0,5,0,0" IsVisible="{Binding DeveloperMode}">
-        <Button Command="{Binding OpenDumpDirectory}" Margin="0,0,5,0" Grid.Column="0" >Open Dump Directory</Button>
+      <Grid Grid.Row="7" ColumnDefinitions="170,170,170,170,170" Margin="0,5,0,0" >
+        <Button Command="{Binding OpenDumpDirectory}" Margin="0,0,5,0" Grid.Column="0">Open Dump Directory</Button>
         <CheckBox Grid.Column="1" IsChecked="{Binding IsIncludeTextSpans}">Include Text Spans</CheckBox>
         <CheckBox Grid.Column="2" IsChecked="{Binding IsLinearTextSpans}">Linear Text Spans</CheckBox>
         <CheckBox Grid.Column="3" IsChecked="{Binding IsIncludeCode}">Include Code</CheckBox>

@@ -72,10 +72,10 @@
     <Expander IsExpanded="{Binding IsPatternErrorsExpanded, Mode=TwoWay}" IsVisible="{Binding PatternErrorsIsVisible}" Header="{Binding PatternErrorsText}" FontSize="18" FontWeight="Medium" >
       <ListBox Name="PatternErrors" Items="{Binding PatternErrors}" MinHeight="100" />
     </Expander>
-    <Expander Header=" Json" IsExpanded="{Binding IsPatternJsonExpanded, Mode=TwoWay}" IsVisible="{Binding DeveloperMode}">
+    <Expander Header=" Json" IsExpanded="{Binding IsPatternJsonExpanded, Mode=TwoWay}">
       <TextBox AcceptsReturn="true" IsReadOnly="true" Text="{Binding PatternJson, Mode=OneWay}" MaxHeight="200" />
     </Expander>
-    <Expander Header=" Log" IsExpanded="false" IsVisible="{Binding DeveloperMode}">
+    <Expander Header=" Log" IsExpanded="false">
       <Grid RowDefinitions="250" >
         <TextBox Name="Logger" Text="{Binding Log, Mode=OneWay}" AcceptsReturn="true" IsReadOnly="true" MinHeight="250" />
       </Grid>

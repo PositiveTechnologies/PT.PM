@@ -46,8 +46,6 @@ namespace PT.PM.PatternEditor
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
-        public bool IsDeveloperMode { get; set; } = true;
-
         public bool IsErrorsExpanded { get; set; } = false;
 
         public bool IsTokensExpanded { get; set; } = false;

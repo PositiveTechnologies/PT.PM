@@ -220,19 +220,6 @@ namespace PT.PM.PatternEditor
                     Settings.PatternsPanelWidth = patternsPanelColumn.Width.Value;
                     Settings.Save();
                 });
-
-            Observable.FromEventPattern<PointerPressedEventArgs>(
-                ev => window.PointerPressed += ev, ev => window.PointerPressed -= ev)
-                .Subscribe(async ev =>
-                {
-                    var position = ev.EventArgs.GetPosition(window);
-                    int offset = 7;
-                    if (ev.EventArgs.ClickCount == 3 && position.X <= offset && position.Y >= window.Height - offset)
-                    {
-                        IsDeveloperMode = !IsDeveloperMode;
-                        await MessageBox.ShowDialog($"DeveloperMode turned {(Settings.IsDeveloperMode ? "on" : "off")}.");
-                    }
-                });
         }
 
         private void UpdateSourceCodeSelection(int index)
@@ -271,26 +258,6 @@ namespace PT.PM.PatternEditor
         }
 
         public GuiLogger SourceCodeLogger { get; }
-
-        public bool IsDeveloperMode
-        {
-            get => Settings.IsDeveloperMode;
-            set
-            {
-                if (Settings.IsDeveloperMode != value)
-                {
-                    Settings.IsDeveloperMode = value;
-                    Settings.Save();
-
-                    this.RaisePropertyChanged(nameof(IsTokensVisible));
-                    this.RaisePropertyChanged(nameof(IsTreeVisible));
-                    this.RaisePropertyChanged(nameof(IsUstJsonVisible));
-                    this.RaisePropertyChanged();
-
-                    ServiceLocator.PatternsViewModel.UpdateDeveloperMode();
-                }
-            }
-        }
 
         public Settings Settings => ServiceLocator.Settings;
 
@@ -435,11 +402,11 @@ namespace PT.PM.PatternEditor
             set => this.RaiseAndSetIfChanged(ref ustJson, value);
         }
 
-        public bool IsTokensVisible => SelectedLanguage?.HaveAntlrParser == true && IsDeveloperMode;
+        public bool IsTokensVisible => SelectedLanguage?.HaveAntlrParser == true;
 
-        public bool IsTreeVisible => SelectedLanguage?.HaveAntlrParser == true && IsDeveloperMode;
+        public bool IsTreeVisible => SelectedLanguage?.HaveAntlrParser == true;
 
-        public bool IsUstJsonVisible => Stage >= Stage.Ust && IsDeveloperMode;
+        public bool IsUstJsonVisible => Stage >= Stage.Ust;
 
         public string MatchingResultText
         {
@@ -644,37 +611,33 @@ namespace PT.PM.PatternEditor
             {
                 workflow.JavaScriptType = JavaScriptType;
             }
-            if (IsDeveloperMode)
+
+            var dumpStages = new HashSet<Stage>();
+            if (Stage >= Stage.ParseTree)
             {
-                var dumpStages = new HashSet<Stage>();
-                if (Stage >= Stage.ParseTree)
+                dumpStages.Add(Stage.ParseTree);
+                if (Stage >= Stage.Ust)
                 {
-                    dumpStages.Add(Stage.ParseTree);
-                    if (Stage >= Stage.Ust)
-                    {
-                        dumpStages.Add(Stage.Ust);
-                    }
+                    dumpStages.Add(Stage.Ust);
                 }
-                workflow.DumpStages = dumpStages;
             }
+            workflow.DumpStages = dumpStages;
+
             WorkflowResult workflowResult = workflow.Process();
             IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
 
-            if (IsDeveloperMode)
+            string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.TokensSuffix);
+            string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.ParseTreeSuffix);
+            Tokens = File.Exists(tokensFileName) ? File.ReadAllText(tokensFileName) : "";
+            ParseTree = File.Exists(parseTreeFileName) ? File.ReadAllText(parseTreeFileName) : "";
+
+            TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
+            ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
+
+            if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
             {
-                string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.TokensSuffix);
-                string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.ParseTreeSuffix);
-                Tokens = File.Exists(tokensFileName) ? File.ReadAllText(tokensFileName) : "";
-                ParseTree = File.Exists(parseTreeFileName) ? File.ReadAllText(parseTreeFileName) : "";
-
-                TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
-                ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
-
-                if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
-                {
-                    UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
-                }
+                UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
             }
 
             MatchingResultText = "MATCHINGS" + (matchResults.Count() > 0 ? $" ({matchResults.Count()})" : "");
