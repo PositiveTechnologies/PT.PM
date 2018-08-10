@@ -58,7 +58,7 @@ namespace PT.PM.PatternEditor
 
         public bool IsPatternErrorsExpanded { get; set; } = false;
 
-        public bool IsPatternJsonExpanded { get; set; } = false;
+        public bool IsPatternExtraInfoExpanded { get; set; } = false;
 
         public bool IsIncludeTextSpans { get; set; } = false;
 

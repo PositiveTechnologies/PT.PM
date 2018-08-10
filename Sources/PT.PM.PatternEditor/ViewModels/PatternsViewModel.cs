@@ -367,14 +367,14 @@ namespace PT.PM.PatternEditor.Pattern
             }
         }
 
-        public bool IsPatternJsonExpanded
+        public bool IsPatternExtraInfoExpanded
         {
-            get => Settings.IsPatternJsonExpanded;
+            get => Settings.IsPatternExtraInfoExpanded;
             set
             {
-                if (Settings.IsPatternJsonExpanded != value)
+                if (Settings.IsPatternExtraInfoExpanded != value)
                 {
-                    Settings.IsPatternJsonExpanded = value;
+                    Settings.IsPatternExtraInfoExpanded = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
                 }

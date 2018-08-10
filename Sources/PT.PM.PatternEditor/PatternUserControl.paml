@@ -23,9 +23,9 @@
         </ToolTip.Tip>
       </TextBlock>
     </Grid>
-    
+
     <ListBox Name="PatternsListBox" MinHeight="150" MaxHeight="150" VirtualizationMode="Simple" Items="{Binding Patterns}" SelectedItem="{Binding SelectedPattern}" AutoScrollToSelectedItem="true" />
-    
+
     <Grid ColumnDefinitions="*,*,*,*">
       <Button Grid.Column="0" Content="Create" Command="{Binding CreatePattern}" Margin="0,0,7,0" />
       <Button Grid.Column="1" Content="Remove" Command="{Binding RemovePattern}" Margin="0,0,7,0" />
@@ -42,43 +42,51 @@
       <TextBlock Text="Key" />
       <TextBox Grid.Column="1" Text="{Binding Key}" />
     </Grid>
+
+    <Expander Header="Extra Info" IsExpanded="{Binding IsPatternExtraInfoExpanded, Mode=TwoWay}" >
+      <StackPanel Gap="7">
+        <Grid ColumnDefinitions="100,*">
+          <TextBlock Text="CweId" />
+          <TextBox Grid.Column="1" Text="{Binding CweId}" />
+        </Grid>
+        <Grid ColumnDefinitions="100,*">
+          <TextBlock Text="Languages" />
+          <Grid Grid.Column="1" RowDefinitions="25,25,25,25" ColumnDefinitions="90,90,90" Height="100">
+            <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsCSharpLanguage}">C#</CheckBox>
+            <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsJavaLanguage}" >Java</CheckBox>
+            <CheckBox Grid.Row="0" Grid.Column="2" IsChecked="{Binding IsPhpLanguage}">PHP</CheckBox>
+            <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsPlSqlLanguage}">PL/SQL</CheckBox>
+            <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsTSqlLanguage}">T-SQL</CheckBox>
+            <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsJavaScriptLanguage}">JavaScript</CheckBox>
+            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsHtmlLanguage}">Html</CheckBox>
+            <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IsCLanguage}">C</CheckBox>
+            <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding IsCPlusPlusLanguage}" >C++</CheckBox>
+            <CheckBox Grid.Row="3" Grid.Column="2" IsChecked="{Binding IsObjectiveCLanguage}" >Objective-C</CheckBox>
+          </Grid>
+        </Grid>
+        <TextBlock Text="Description" />
+        <TextBox AcceptsReturn="true" Text="{Binding Description}" Height="50" TextWrapping="Wrap" />
+      </StackPanel>
+    </Expander>
+
     <Grid ColumnDefinitions="100,*">
-      <TextBlock Text="CweId" />
-      <TextBox Grid.Column="1" Text="{Binding CweId}" />
-    </Grid>
-    <Grid ColumnDefinitions="100,*">
-      <TextBlock Text="Languages" />
-      <Grid Grid.Column="1" RowDefinitions="25,25,25,25" ColumnDefinitions="90,90,90" Height="100">
-        <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsCSharpLanguage}">C#</CheckBox>
-        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsJavaLanguage}" >Java</CheckBox>
-        <CheckBox Grid.Row="0" Grid.Column="2" IsChecked="{Binding IsPhpLanguage}">PHP</CheckBox>
-        <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsPlSqlLanguage}">PL/SQL</CheckBox>
-        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsTSqlLanguage}">T-SQL</CheckBox>
-        <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsJavaScriptLanguage}">JavaScript</CheckBox>
-        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsHtmlLanguage}">Html</CheckBox>
-        <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IsCLanguage}">C</CheckBox>
-        <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding IsCPlusPlusLanguage}" >C++</CheckBox>
-        <CheckBox Grid.Row="3" Grid.Column="2" IsChecked="{Binding IsObjectiveCLanguage}" >Objective-C</CheckBox>
-      </Grid>
-    </Grid>
-    
-    <TextBlock Text="Description" />
-    <TextBox AcceptsReturn="true" Text="{Binding Description}" Height="100" TextWrapping="Wrap" />
-    <Grid ColumnDefinitions="100,*">
-      <TextBlock Text="Value"/>
+      <TextBlock Text="DSL"/>
       <TextBlock Grid.Column="1" Text="{Binding TextBoxPosition}"/>
     </Grid>
     <TextBox Name="PatternData" TextWrapping="Wrap" AcceptsReturn="true" MinHeight="100"/>
+
+    <TextBlock Text="JSON"/>
+    <TextBox AcceptsReturn="true" IsReadOnly="true" Text="{Binding PatternJson, Mode=OneWay}" MaxHeight="200" />
+
     <Expander IsExpanded="{Binding IsPatternErrorsExpanded, Mode=TwoWay}" IsVisible="{Binding PatternErrorsIsVisible}" Header="{Binding PatternErrorsText}" FontSize="18" FontWeight="Medium" >
       <ListBox Name="PatternErrors" Items="{Binding PatternErrors}" MinHeight="100" />
     </Expander>
-    <Expander Header=" Json" IsExpanded="{Binding IsPatternJsonExpanded, Mode=TwoWay}">
-      <TextBox AcceptsReturn="true" IsReadOnly="true" Text="{Binding PatternJson, Mode=OneWay}" MaxHeight="200" />
-    </Expander>
+
     <Expander Header=" Log" IsExpanded="false">
       <Grid RowDefinitions="250" >
         <TextBox Name="Logger" Text="{Binding Log, Mode=OneWay}" AcceptsReturn="true" IsReadOnly="true" MinHeight="250" />
       </Grid>
     </Expander>
+
   </StackPanel>
 </UserControl>
