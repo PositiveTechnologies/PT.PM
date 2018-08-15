@@ -105,7 +105,7 @@ namespace PT.PM.AntlrUtils
                     var stopwatch = Stopwatch.StartNew();
                     IList<IToken> tokens = lexer.GetAllTokens();
                     stopwatch.Stop();
-                    long lexerTimeSpanTicks = stopwatch.Elapsed.Ticks;
+                    TimeSpan lexerTimeSpan = stopwatch.Elapsed;
 
                     foreach (IToken token in tokens)
                     {
@@ -120,11 +120,11 @@ namespace PT.PM.AntlrUtils
                     var codeTokenStream = new CommonTokenStream(codeTokenSource);
                     ParserRuleContext syntaxTree = ParseTokens(sourceCodeFile, errorListener, codeTokenStream);
                     stopwatch.Stop();
-                    long parserTimeSpanTicks = stopwatch.Elapsed.Ticks;
+                    TimeSpan parserTimeSpan = stopwatch.Elapsed;
 
                     result = Create(syntaxTree);
-                    result.LexerTimeSpan = new TimeSpan(lexerTimeSpanTicks);
-                    result.ParserTimeSpan = new TimeSpan(parserTimeSpanTicks);
+                    result.LexerTimeSpan = lexerTimeSpan;
+                    result.ParserTimeSpan = parserTimeSpan;
                     result.Tokens = tokens;
                     result.Comments = commentTokens;
                 }
