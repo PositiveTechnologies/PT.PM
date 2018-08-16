@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Cli.Common
@@ -39,31 +40,41 @@ namespace PT.PM.Cli.Common
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
+            var paramsNormalizer = new CliParametersNormalizer<TParameters>()
+            {
+                Logger = Logger
+            };
+            bool success = paramsNormalizer.Normalize(args, out List<string> outArgs);
+
             var parser = new Parser(config =>
             {
                 config.IgnoreUnknownArguments = ContinueWithInvalidArgs;
                 config.CaseInsensitiveEnumValues = true;
             });
-            ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(args);
+
+            ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(outArgs);
 
             TWorkflowResult result = null;
 
-            parserResult.WithParsed(
-                parameters =>
-                {
-                    result = ProcessJsonConfig(args, parameters);
-                })
-                .WithNotParsed(errors =>
-                {
-                    if (ContinueWithInvalidArgs)
+            if (success || ContinueWithInvalidArgs)
+            {
+                parserResult.WithParsed(
+                    parameters =>
                     {
-                        result = ProcessJsonConfig(args, null, errors);
-                    }
-                    else
+                        result = ProcessJsonConfig(outArgs, parameters);
+                    })
+                    .WithNotParsed(errors =>
                     {
-                        LogInfoAndErrors(args, errors);
-                    }
-                });
+                        if (ContinueWithInvalidArgs)
+                        {
+                            result = ProcessJsonConfig(outArgs, null, errors);
+                        }
+                        else
+                        {
+                            LogInfoAndErrors(outArgs, errors);
+                        }
+                    });
+            }
 
 #if DEBUG
             if (StopIfDebuggerAttached && Debugger.IsAttached)
@@ -234,7 +245,7 @@ namespace PT.PM.Cli.Common
 
         protected abstract bool IsLoadJson(string startStageString);
 
-        private TWorkflowResult ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
+        private TWorkflowResult ProcessJsonConfig(IList<string> args, TParameters parameters, IEnumerable<Error> errors = null)
         {
             try
             {
@@ -411,7 +422,7 @@ namespace PT.PM.Cli.Common
             return keys.Split(PatternRoot.KeySeparators, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
+        private void LogInfoAndErrors(IList<string> args, IEnumerable<Error> errors)
         {
             Logger.LogInfo($"{CoreName} started at {DateTime.Now}");
 
@@ -421,7 +432,7 @@ namespace PT.PM.Cli.Common
             }
 
             string commandLineArguments = "Command line arguments: " +
-                    (args.Length > 0 ? string.Join(" ", args) : "not defined.");
+                    (args.Count > 0 ? string.Join(" ", args) : "not defined.");
             Logger.LogInfo(commandLineArguments);
 
             if (errors != null)
