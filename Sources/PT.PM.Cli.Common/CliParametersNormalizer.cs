@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -52,22 +53,42 @@ namespace PT.PM.Cli.Common
                         : foundOption.Option.LongName == trimmedArg
                         ? "--" + foundOption.Option.LongName
                         : "--" + foundOption.ParamName;
-                    outArgs.Add(outArg);
 
                     argInd++;
 
-                    if (foundOption.Type == typeof(bool?) &&
-                        (argInd == args.Length || !bool.TryParse(args[argInd], out bool _)))
+                    string outValue = argInd < args.Length ? args[argInd] : null;
+
+                    Type underlyingType = Nullable.GetUnderlyingType(foundOption.Type);
+
+                    bool isNullable;
+                    Type notNullableType;
+                    if (underlyingType != null)
                     {
-                        outArgs.Add(true.ToString().ToLowerInvariant());
+                        isNullable = true;
+                        notNullableType = underlyingType;
                     }
                     else
                     {
-                        if (argInd < args.Length)
+                        isNullable = false;
+                        notNullableType = foundOption.Type;
+                    }
+
+                    if (notNullableType == typeof(bool) && (argInd == args.Length || outValue.StartsWith("-")))
+                    {
+                        outArgs.Add(outArg);
+                        if (isNullable)
                         {
-                            outArgs.Add(args[argInd]);
-                            argInd++;
+                            outArgs.Add(true.ToString().ToLowerInvariant());
                         }
+                    }
+                    else
+                    {
+                        bool success = CheckAndAddIfParsed(outArgs, outArg, outValue, notNullableType, isNullable);
+                        if (!success)
+                        {
+                            error = true;
+                        }
+                        argInd++;
                     }
                 }
                 else
@@ -80,6 +101,104 @@ namespace PT.PM.Cli.Common
             }
 
             return !error;
+        }
+
+        private bool CheckAndAddIfParsed(List<string> outArgs, string outArg, string outValue, Type type, bool nullable)
+        {
+            if (type == typeof(int))
+            {
+                return AddArgValueIfSuccess(int.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(uint))
+            {
+                return AddArgValueIfSuccess(uint.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(byte))
+            {
+                return AddArgValueIfSuccess(byte.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(sbyte))
+            {
+                return AddArgValueIfSuccess(sbyte.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(short))
+            {
+                return AddArgValueIfSuccess(short.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(ushort))
+            {
+                return AddArgValueIfSuccess(ushort.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(long))
+            {
+                return AddArgValueIfSuccess(long.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(ulong))
+            {
+                return AddArgValueIfSuccess(ulong.TryParse(outValue, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(float))
+            {
+                return AddArgValueIfSuccess(float.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(double))
+            {
+                return AddArgValueIfSuccess(double.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(decimal))
+            {
+                return AddArgValueIfSuccess(decimal.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var _), outArgs, outArg, outValue);
+            }
+            else if (type == typeof(bool))
+            {
+                bool b = true;
+                if (bool.TryParse(outValue, out b))
+                {
+                    if (b)
+                    {
+                        outArgs.Add(outArg);
+                        if (nullable)
+                        {
+                            outArgs.Add(outValue);
+                        }
+                    }
+                    return true;
+                }
+                else
+                {
+                    Logger.LogError(new FormatException($"Incorrect value {outValue} of argument {outArg}"));
+                    return false;
+                }
+            }
+            else if (type.BaseType == typeof(Enum))
+            {
+                bool success = true;
+                try
+                {
+                    Enum.Parse(type, outValue, true);
+                }
+                catch
+                {
+                    success = false;
+                }
+                return AddArgValueIfSuccess(success, outArgs, outArg, outValue);
+            }
+
+            return AddArgValueIfSuccess(true, outArgs, outArg, outValue);
+        }
+
+        private bool AddArgValueIfSuccess(bool success, List<string> outArgs, string outArg, string outValue)
+        {
+            if (success)
+            {
+                outArgs.Add(outArg);
+                outArgs.Add(outValue);
+            }
+            else
+            {
+                Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument {outArg}"));
+            }
+            return success;
         }
     }
 }
