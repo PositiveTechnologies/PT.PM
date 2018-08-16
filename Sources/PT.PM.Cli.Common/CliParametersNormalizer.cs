@@ -12,6 +12,8 @@ namespace PT.PM.Cli.Common
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
+        public bool CheckTypes { get; set; } = true;
+
         public bool Normalize(string[] args, out List<string> outArgs)
         {
             bool error = false;
@@ -152,7 +154,7 @@ namespace PT.PM.Cli.Common
             else if (type == typeof(bool))
             {
                 bool b = true;
-                if (bool.TryParse(outValue, out b))
+                if (!CheckTypes || bool.TryParse(outValue, out b))
                 {
                     if (b)
                     {
@@ -189,16 +191,17 @@ namespace PT.PM.Cli.Common
 
         private bool AddArgValueIfSuccess(bool success, List<string> outArgs, string outArg, string outValue)
         {
-            if (success)
+            if (success || !CheckTypes)
             {
                 outArgs.Add(outArg);
                 outArgs.Add(outValue);
+                return true;
             }
             else
             {
                 Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument {outArg}"));
+                return false;
             }
-            return success;
         }
     }
 }
