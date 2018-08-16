@@ -1,7 +1,9 @@
-﻿using NUnit.Framework;
+﻿using CommandLine;
+using NUnit.Framework;
 using PT.PM.Cli.Common;
 using PT.PM.Common;
 using PT.PM.TestUtils;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PT.PM.Cli.Tests
@@ -9,6 +11,24 @@ namespace PT.PM.Cli.Tests
     [TestFixture]
     public class CliTests
     {
+        class CliTestsParameters
+        {
+            [Option('s', "string")]
+            public string File { get; set; }
+
+            [Option('b', "bool")]
+            public bool? Bool { get; set; }
+
+            [Option("bool2")]
+            public bool? Bool2 { get; set; }
+
+            [Option('i', "int")]
+            public int Int { get; set; }
+
+            [Option]
+            public string Option { get; set; }
+        }
+
         private const string patterns = "(?i)password(?-i)]> = <[\"\"\\w*\"\" || null]>";
 
         [Test]
@@ -18,6 +38,28 @@ namespace PT.PM.Cli.Tests
             CollectionAssert.AreEqual(new[] { "-a", "--param", "-c" }, "-a  --param -c    ".SplitArguments());
             CollectionAssert.AreEqual(new[] { "-s", "a\"b c", "-d", "", "", "-e", "" }, "-s \"a\"\"b c\" -d \"\" \"\" -e \"\"".SplitArguments());
             CollectionAssert.AreEqual(new[] { "sa", "b" }, "s\"a\" b".SplitArguments());
+        }
+
+        [Test]
+        public void CheckCli_String_CorrectlyNormalized()
+        {
+            var logger = new LoggerMessageCounter();
+
+            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            bool success = paramsNormalizer.Normalize(new[] { "-upp", "val1", "val2", "-u", "-s", "str", "--bool", "--bool2" },
+                out List<string> outArgs);
+
+            Assert.IsFalse(success);
+            CollectionAssert.AreEqual(new List<string> { "-s", "str", "--bool", "true", "--bool2", "true" }, outArgs);
+
+            paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            success = paramsNormalizer.Normalize(new[] { "val", "--s", "-str", "-int", "1", "--bool", "false", "--option", "opt" }, out outArgs);
+            Assert.IsFalse(success);
+            CollectionAssert.AreEqual(new List<string> { "-s", "-str", "--int", "1", "--bool", "false", "--option", "opt" }, outArgs);
+
+            paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            success = paramsNormalizer.Normalize(new[] { "-s", "str", "--int", "1" }, out outArgs);
+            Assert.IsTrue(success);
         }
 
         [Test]
