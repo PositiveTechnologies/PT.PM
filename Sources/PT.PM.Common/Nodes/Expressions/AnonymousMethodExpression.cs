@@ -12,6 +12,15 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public BlockStatement Body { get; set; }
 
+        public string Signature
+        {
+            get
+            {
+                var paramsString = string.Join(",", Parameters.Select(p => p.Type?.TypeText ?? "Any"));
+                return $"{LineColumnTextSpan}({paramsString})";
+            }
+        }
+
         public override Expression[] GetArgs() => new Expression[0];
 
         public AnonymousMethodExpression()
