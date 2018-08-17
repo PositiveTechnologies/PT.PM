@@ -74,7 +74,7 @@ namespace PT.PM.Cli.Tests
             CollectionAssert.AreEqual(new List<string> { "--bool1", "true", "--bool2", "true" }, outArgs);
 
             Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool1", "true", "--bool2", "false" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "--bool1", "true" }, outArgs);
+            CollectionAssert.AreEqual(new List<string> { "--bool1", "true", "--bool2", "false" }, outArgs);
 
             Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool" }, out outArgs));
             CollectionAssert.AreEqual(new List<string> { "--bool" }, outArgs);

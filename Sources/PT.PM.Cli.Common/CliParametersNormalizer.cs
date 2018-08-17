@@ -162,13 +162,14 @@ namespace PT.PM.Cli.Common
                 bool b = true;
                 if (!CheckTypes || bool.TryParse(outValue, out b))
                 {
-                    if (b)
+                    if (nullable)
                     {
                         outArgs.Add(outArg);
-                        if (nullable)
-                        {
-                            outArgs.Add(outValue);
-                        }
+                        outArgs.Add(outValue);
+                    }
+                    else if (b)
+                    {
+                        outArgs.Add(outArg);
                     }
                     return true;
                 }
