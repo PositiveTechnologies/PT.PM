@@ -10,17 +10,17 @@ namespace PT.PM.Cli.Common
 {
     public class CliParametersNormalizer<TParameters> : ILoggable
     {
+        private static List<OptionType> optionTypes;
+
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool CheckTypes { get; set; } = true;
 
-        public bool Normalize(string[] args, out List<string> outArgs)
+        static CliParametersNormalizer()
         {
-            bool error = false;
-            outArgs = new List<string>(args.Length);
             PropertyInfo[] paramProps = typeof(TParameters).GetProperties();
 
-            var optionTypes = new List<OptionType>();
+            optionTypes = new List<OptionType>();
             foreach (PropertyInfo prop in paramProps)
             {
                 IEnumerable<OptionAttribute> optionAttrs = prop.GetCustomAttributes<OptionAttribute>(true);
@@ -29,6 +29,12 @@ namespace PT.PM.Cli.Common
                     optionTypes.Add(new OptionType(optionAttr, prop));
                 }
             }
+        }
+
+        public bool Normalize(string[] args, out List<string> outArgs)
+        {
+            bool error = false;
+            outArgs = new List<string>(args.Length);
 
             int argInd = 0;
             while (argInd < args.Length)
