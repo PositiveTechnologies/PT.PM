@@ -44,7 +44,7 @@ namespace PT.PM.Cli.Common
             {
                 Logger = Logger
             };
-            bool success = paramsNormalizer.Normalize(args, out List<string> outArgs);
+            bool success = paramsNormalizer.Normalize(args, out string[] outArgs);
 
             var parser = new Parser(config =>
             {
@@ -245,7 +245,7 @@ namespace PT.PM.Cli.Common
 
         protected abstract bool IsLoadJson(string startStageString);
 
-        private TWorkflowResult ProcessJsonConfig(IList<string> args, TParameters parameters, IEnumerable<Error> errors = null)
+        private TWorkflowResult ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
         {
             try
             {
@@ -422,7 +422,7 @@ namespace PT.PM.Cli.Common
             return keys.Split(PatternRoot.KeySeparators, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private void LogInfoAndErrors(IList<string> args, IEnumerable<Error> errors)
+        private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
         {
             Logger.LogInfo($"{CoreName} started at {DateTime.Now}");
 
@@ -432,7 +432,7 @@ namespace PT.PM.Cli.Common
             }
 
             string commandLineArguments = "Command line arguments: " +
-                    (args.Count > 0 ? string.Join(" ", args) : "not defined.");
+                    (args.Length > 0 ? string.Join(" ", args) : "not defined.");
             Logger.LogInfo(commandLineArguments);
 
             if (errors != null)

@@ -33,7 +33,7 @@ namespace PT.PM.Cli.Common
             }
         }
 
-        public bool Normalize(string[] args, out List<string> outArgs)
+        public bool Normalize(string[] args, out string[] outArgs)
         {
             bool error = false;
             var outArgValues = new List<Tuple<string, string>>(args.Length);
@@ -44,7 +44,7 @@ namespace PT.PM.Cli.Common
                 if (!args[argInd].StartsWith("-"))
                 {
                     error = true;
-                    Logger.LogError(new ArgumentException($"Incorrect argument {args[argInd]}", args[argInd]));
+                    Logger.LogError(new ArgumentException($"Incorrect argument", args[argInd]));
 
                     argInd++;
                     continue;
@@ -104,22 +104,24 @@ namespace PT.PM.Cli.Common
                 else
                 {
                     error = true;
-                    Logger.LogError(new ArgumentException($"Unknown argument {args[argInd]}", args[argInd]));
+                    Logger.LogError(new ArgumentException($"Unknown argument", args[argInd]));
 
                     argInd++;
                 }
             }
 
-            outArgs = new List<string>();
+            var outArgsList = new List<string>();
             foreach (var argValue in outArgValues)
             {
-                outArgs.Add(argValue.Item1);
+                outArgsList.Add(argValue.Item1);
 
                 if (argValue.Item2 != null)
                 {
-                    outArgs.Add(argValue.Item2);
+                    outArgsList.Add(argValue.Item2);
                 }
             }
+
+            outArgs = outArgsList.ToArray();
 
             return !error;
         }
@@ -187,7 +189,7 @@ namespace PT.PM.Cli.Common
                     Tuple<string, string> duplicate;
                     if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg2 => outArg2.Item1 == outArg)) != default)
                     {
-                        Logger.LogError(new ArgumentException($"Duplicate argument {outArg}", outArg));
+                        Logger.LogError(new ArgumentException("Duplicate argument", outArg));
                         outArgs.Remove(duplicate);
                         return false;
                     }
@@ -195,7 +197,7 @@ namespace PT.PM.Cli.Common
                 }
                 else
                 {
-                    Logger.LogError(new FormatException($"Incorrect value {outValue} of argument {outArg}"));
+                    Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument `{outArg}`"));
                     return false;
                 }
             }
@@ -236,7 +238,7 @@ namespace PT.PM.Cli.Common
 
             if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg => outArg.Item1 == arg)) != default)
             {
-                Logger.LogError(new ArgumentException($"Duplicate argument {arg}", arg));
+                Logger.LogError(new ArgumentException("Duplicate argument", arg));
                 outArgs.Remove(duplicate);
                 result = false;
             }
