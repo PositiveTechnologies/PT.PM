@@ -16,6 +16,8 @@ namespace PT.PM.Cli.Common
 
         public bool CheckTypes { get; set; } = true;
 
+        public bool CheckDuplicates { get; set; } = true;
+
         static CliParametersNormalizer()
         {
             PropertyInfo[] paramProps = typeof(TParameters).GetProperties();
@@ -34,7 +36,7 @@ namespace PT.PM.Cli.Common
         public bool Normalize(string[] args, out List<string> outArgs)
         {
             bool error = false;
-            outArgs = new List<string>(args.Length);
+            var outArgValues = new List<Tuple<string, string>>(args.Length);
 
             int argInd = 0;
             while (argInd < args.Length)
@@ -83,15 +85,15 @@ namespace PT.PM.Cli.Common
 
                     if (notNullableType == typeof(bool) && (argInd == args.Length || outValue.StartsWith("-")))
                     {
-                        outArgs.Add(outArg);
-                        if (isNullable)
+                        bool success = CheckDuplicatesAndAdd(outArgValues, outArg, isNullable ? true.ToString().ToLowerInvariant() : null);
+                        if (!success)
                         {
-                            outArgs.Add(true.ToString().ToLowerInvariant());
+                            error = true;
                         }
                     }
                     else
                     {
-                        bool success = CheckAndAddIfParsed(outArgs, outArg, outValue, notNullableType, isNullable);
+                        bool success = CheckAndAddIfParsed(outArgValues, outArg, outValue, notNullableType, isNullable);
                         if (!success)
                         {
                             error = true;
@@ -108,10 +110,21 @@ namespace PT.PM.Cli.Common
                 }
             }
 
+            outArgs = new List<string>();
+            foreach (var argValue in outArgValues)
+            {
+                outArgs.Add(argValue.Item1);
+
+                if (argValue.Item2 != null)
+                {
+                    outArgs.Add(argValue.Item2);
+                }
+            }
+
             return !error;
         }
 
-        private bool CheckAndAddIfParsed(List<string> outArgs, string outArg, string outValue, Type type, bool nullable)
+        private bool CheckAndAddIfParsed(List<Tuple<string, string>> outArgs, string outArg, string outValue, Type type, bool nullable)
         {
             if (type == typeof(int))
             {
@@ -164,12 +177,19 @@ namespace PT.PM.Cli.Common
                 {
                     if (nullable)
                     {
-                        outArgs.Add(outArg);
-                        outArgs.Add(outValue);
+                        return CheckDuplicatesAndAdd(outArgs, outArg, outValue);
                     }
                     else if (b)
                     {
-                        outArgs.Add(outArg);
+                        return CheckDuplicatesAndAdd(outArgs, outArg, null);
+                    }
+
+                    Tuple<string, string> duplicate;
+                    if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg2 => outArg2.Item1 == outArg)) != default)
+                    {
+                        Logger.LogError(new ArgumentException($"Duplicate argument {outArg}", outArg));
+                        outArgs.Remove(duplicate);
+                        return false;
                     }
                     return true;
                 }
@@ -196,19 +216,33 @@ namespace PT.PM.Cli.Common
             return AddArgValueIfSuccess(true, outArgs, outArg, outValue);
         }
 
-        private bool AddArgValueIfSuccess(bool success, List<string> outArgs, string outArg, string outValue)
+        private bool AddArgValueIfSuccess(bool success, List<Tuple<string, string>> outArgs, string outArg, string outValue)
         {
             if (success || !CheckTypes)
             {
-                outArgs.Add(outArg);
-                outArgs.Add(outValue);
-                return true;
+                return CheckDuplicatesAndAdd(outArgs, outArg, outValue);
             }
             else
             {
                 Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument {outArg}"));
                 return false;
             }
+        }
+
+        private bool CheckDuplicatesAndAdd(List<Tuple<string, string>> outArgs, string arg, string value)
+        {
+            bool result = true;
+            Tuple<string, string> duplicate;
+
+            if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg => outArg.Item1 == arg)) != default)
+            {
+                Logger.LogError(new ArgumentException($"Duplicate argument {arg}", arg));
+                outArgs.Remove(duplicate);
+                result = false;
+            }
+
+            outArgs.Add(new Tuple<string, string>(arg, value));
+            return result;
         }
     }
 }
