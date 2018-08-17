@@ -64,6 +64,30 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
+        public void CheckCli_DuplicateParams_CorrectlyNormalized()
+        {
+            var logger = new LoggerMessageCounter();
+            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            List<string> outArgs;
+
+            string[] inputArgs = "--int -1 --int 1".SplitArguments();
+
+            paramsNormalizer.CheckDuplicates = false;
+            logger.Errors.Clear();
+            Assert.IsTrue(paramsNormalizer.Normalize(inputArgs, out outArgs));
+            Assert.AreEqual(0, logger.ErrorCount);
+            Assert.AreEqual(4, outArgs.Count);
+
+            paramsNormalizer.CheckDuplicates = true;
+            logger.Errors.Clear();
+            Assert.IsFalse(paramsNormalizer.Normalize(inputArgs, out outArgs));
+            Assert.AreEqual(1, logger.ErrorCount);
+            Assert.AreEqual(2, outArgs.Count);
+            Assert.AreEqual("--int", outArgs[0]);
+            Assert.AreEqual("1", outArgs[1]);
+        }
+
+        [Test]
         public void CheckCli_BoolValues_CorrectlyNormalized()
         {
             var logger = new LoggerMessageCounter();
