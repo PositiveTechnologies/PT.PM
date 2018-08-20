@@ -9,7 +9,7 @@ namespace PT.PM.Common.Utils
 {
     public static class CommonUtils
     {
-        private static bool? isRunningOnLinux = null;
+        private static bool? isWindows = null;
         private static bool? isCoreApp = null;
 
         public const string Prefix = "pt.pm_";
@@ -47,12 +47,12 @@ namespace PT.PM.Common.Utils
         {
             get
             {
-                if (!isRunningOnLinux.HasValue)
+                if (!isWindows.HasValue)
                 {
-                    isRunningOnLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                    isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 }
 
-                return isRunningOnLinux.Value;
+                return isWindows.Value;
             }
         }
 
