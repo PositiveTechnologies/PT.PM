@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using PT.PM.Common.Utils;
 using PT.PM.JavaScriptParseTreeUst;
 using System;
 using System.IO;
@@ -74,18 +75,18 @@ namespace PT.PM.PatternEditor
             {
                 try
                 {
-                    var settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsFileName), jsonConverters) ?? new Settings();
+                    var settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsFileName.NormalizeFilePath()), jsonConverters) ?? new Settings();
                     return settings;
                 }
                 catch
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName));
+                    Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName).NormalizeDirPath());
                     return new Settings();
                 }
             }
             else
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName));
+                Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName).NormalizeDirPath());
                 return new Settings();
             }
         }
@@ -95,7 +96,7 @@ namespace PT.PM.PatternEditor
             lock (saveLock)
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName));
-                File.WriteAllText(settingsFileName, JsonConvert.SerializeObject(this, Formatting.Indented, jsonConverters));
+                File.WriteAllText(settingsFileName.NormalizeFilePath(), JsonConvert.SerializeObject(this, Formatting.Indented, jsonConverters));
             }
         }
     }

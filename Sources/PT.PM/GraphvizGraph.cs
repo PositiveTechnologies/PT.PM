@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Utils;
 using System;
 using System.IO;
 
@@ -79,7 +80,7 @@ namespace PT.PM
                 }
             }
 
-            string dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
+            string dotFilePath = (appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot")).NormalizeFilePath();
             File.WriteAllText(dotFilePath, DotGraph);
 
             var processor = new Processor(ToolName)

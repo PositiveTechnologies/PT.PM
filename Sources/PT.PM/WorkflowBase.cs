@@ -5,6 +5,7 @@ using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Utils;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
@@ -317,8 +318,8 @@ namespace PT.PM
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
-                Directory.CreateDirectory(DumpDir);
-                File.WriteAllText(Path.Combine(DumpDir, name + ParseTreeDumper.UstSuffix), json);
+                Directory.CreateDirectory(DumpDir.NormalizeDirPath());
+                File.WriteAllText(Path.Combine(DumpDir, name + ParseTreeDumper.UstSuffix).NormalizeFilePath(), json);
             }
         }
 
@@ -328,8 +329,8 @@ namespace PT.PM
             {
                 string json = JsonConvert.SerializeObject(workflow,
                     IndentedDump ? Formatting.Indented : Formatting.None, LanguageJsonConverter.Instance);
-                Directory.CreateDirectory(DumpDir);
-                File.WriteAllText(Path.Combine(DumpDir, "output.json"), json);
+                Directory.CreateDirectory(DumpDir.NormalizeDirPath());
+                File.WriteAllText(Path.Combine(DumpDir, "output.json").NormalizeFilePath(), json);
             }
         }
 
@@ -380,8 +381,8 @@ namespace PT.PM
             jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>(patterns.Select(root => root.CodeFile));
 
             string json = jsonPatternSerializer.Serialize(patterns);
-            Directory.CreateDirectory(DumpDir);
-            File.WriteAllText(Path.Combine(DumpDir, "patterns.json"), json);
+            Directory.CreateDirectory(DumpDir.NormalizeDirPath());
+            File.WriteAllText(Path.Combine(DumpDir, "patterns.json").NormalizeFilePath(), json);
         }
 
         protected static HashSet<Language> GetBaseLanguages(HashSet<Language> analyzedLanguages)

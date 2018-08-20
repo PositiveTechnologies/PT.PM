@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,10 +34,10 @@ namespace PT.PM.TestUtils
             GetRepositoryDirectory();
 
             PtPmExePath = Path.Combine(RepositoryDirectory, PtPmExePath);
-            GrammarsDirectory = Path.Combine(RepositoryDirectory, GrammarsDirectory).NormDirSeparator();
-            TestsPath = Path.Combine(RepositoryDirectory, TestsPath).NormDirSeparator();
-            TestsDataPath = Path.Combine(RepositoryDirectory, TestsDataPath).NormDirSeparator();
-            TestsOutputPath = Path.Combine(RepositoryDirectory, TestsOutputPath).NormDirSeparator();
+            GrammarsDirectory = Path.Combine(RepositoryDirectory, GrammarsDirectory).NormalizeDirSeparator();
+            TestsPath = Path.Combine(RepositoryDirectory, TestsPath).NormalizeDirSeparator();
+            TestsDataPath = Path.Combine(RepositoryDirectory, TestsDataPath).NormalizeDirSeparator();
+            TestsOutputPath = Path.Combine(RepositoryDirectory, TestsOutputPath).NormalizeDirSeparator();
             if (!Directory.Exists(TestsOutputPath))
             {
                 Directory.CreateDirectory(TestsOutputPath);
@@ -47,7 +48,7 @@ namespace PT.PM.TestUtils
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
             Language language = null, int maxStackSize = 0)
         {
-            var codeRepository = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormDirSeparator()));
+            var codeRepository = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormalizeDirSeparator()));
             if (language != null)
             {
                 codeRepository.Languages = new HashSet<Language>() { language };

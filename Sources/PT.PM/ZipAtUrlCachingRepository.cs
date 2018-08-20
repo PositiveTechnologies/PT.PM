@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,16 +64,18 @@ namespace PT.PM
                     {
                         if (Rewrite || IsDirectoryNotExistsOrEmpty(RootPath))
                         {
-                            if (Directory.Exists(RootPath))
+                            string normRootPath = RootPath.NormalizeDirPath(true);
+                            if (Directory.Exists(normRootPath))
                             {
-                                Directory.Delete(RootPath);
+                                Directory.Delete(normRootPath, true);
                             }
 
-                            if (File.Exists(ArchiveName))
+                            string normArchiveNamePath = ArchiveName.NormalizeFilePath();
+                            if (File.Exists(normArchiveNamePath))
                             {
                                 if (Rewrite)
                                 {
-                                    File.Delete(ArchiveName);
+                                    File.Delete(normArchiveNamePath);
                                 }
                                 DownloadArchive();
                             }
@@ -135,9 +138,11 @@ namespace PT.PM
             }
             webClient.DownloadFileCompleted += (sender, e) => fileDownloaded = true;
             Logger.LogInfo($"{Name} downloading...");
-            if (!Directory.Exists(DownloadPath))
+
+            string normDownloadPath = DownloadPath.NormalizeDirPath();
+            if (!Directory.Exists(normDownloadPath))
             {
-                Directory.CreateDirectory(DownloadPath);
+                Directory.CreateDirectory(normDownloadPath);
             }
             webClient.DownloadFileAsync(new Uri(Url), ArchiveName);
 

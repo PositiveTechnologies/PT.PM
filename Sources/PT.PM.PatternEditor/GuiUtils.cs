@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Utils;
 using PT.PM.PatternEditor.ViewModels;
 using System.Diagnostics;
 using System.IO;
@@ -25,11 +26,12 @@ namespace PT.PM.PatternEditor
 
         public static void OpenDirectory(string directoryName)
         {
-            if (Directory.Exists(directoryName))
+            string normDirPath = directoryName.NormalizeDirPath();
+            if (Directory.Exists(normDirPath))
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"\"{directoryName}\"" });
+                    Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"\"{normDirPath}\"" });
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {

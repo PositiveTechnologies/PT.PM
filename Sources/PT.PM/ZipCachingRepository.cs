@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,9 +54,10 @@ namespace PT.PM
                         {
                             Logger.LogInfo($"{Name} extraction...");
 
-                            if (Directory.Exists(RootPath))
+                            string normRootPath = RootPath.NormalizeDirPath(true);
+                            if (Directory.Exists(normRootPath))
                             {
-                                Directory.Delete(RootPath, true);
+                                Directory.Delete(normRootPath, true);
                             }
 
                             IArchiveExtractor extractor = SevenZipExtractor.Is7zInstalled
@@ -67,37 +69,38 @@ namespace PT.PM
 
                             if (RemoveAfterExtraction)
                             {
-                                File.Delete(ArchiveName);
+                                File.Delete(ArchiveName.NormalizeFilePath());
                             }
                             Logger.LogInfo($"{Name} extracted.");
 
-                            string[] directories = Directory.GetDirectories(RootPath);
+                            string[] directories = Directory.GetDirectories(normRootPath);
                             if (directories.Length == 1)
                             {
-                                Directory.CreateDirectory(RootPath);
+                                Directory.CreateDirectory(normRootPath);
 
-                                foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(directories[0]))
+                                foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(directories[0].NormalizeDirPath()))
                                 {
-                                    string shortName = Path.GetFileName(fileSystemEntry);
+                                    string normFileSystemEntry = fileSystemEntry.NormalizeDirPath();
+                                    string shortName = Path.GetFileName(normFileSystemEntry);
                                     string newName = Path.Combine(RootPath, shortName);
-                                    if (File.Exists(fileSystemEntry))
+                                    if (File.Exists(normFileSystemEntry))
                                     {
-                                        File.Move(fileSystemEntry, newName);
+                                        File.Move(normFileSystemEntry, newName);
                                     }
                                     else
                                     {
                                         try
                                         {
-                                            Directory.Move(fileSystemEntry, newName);
+                                            Directory.Move(normFileSystemEntry, newName);
                                         }
                                         catch
                                         {
-                                            Directory.Move(fileSystemEntry, newName);
+                                            Directory.Move(normFileSystemEntry, newName);
                                         }
                                     }
                                 }
 
-                                Directory.Delete(directories[0], true);
+                                Directory.Delete(directories[0].NormalizeDirPath(true), true);
                             }
                         }
                     }
@@ -132,12 +135,14 @@ namespace PT.PM
 
         protected bool IsDirectoryNotExistsOrEmpty(string directoryName)
         {
-            return !Directory.Exists(RootPath) || IsDirectoryEmpty(RootPath);
-        }
+            string normDirPath = RootPath.NormalizeDirPath();
 
-        private static bool IsDirectoryEmpty(string path)
-        {
-            IEnumerable<string> items = Directory.EnumerateFileSystemEntries(path);
+            if (!Directory.Exists(normDirPath))
+            {
+                return true;
+            }
+
+            IEnumerable<string> items = Directory.EnumerateFileSystemEntries(normDirPath);
             using (IEnumerator<string> en = items.GetEnumerator())
             {
                 return !en.MoveNext();

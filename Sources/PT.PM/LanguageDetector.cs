@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace PT.PM
 
         public DetectionResult DetectIfRequired(string codeFileName)
         {
-            var codeFile = new CodeFile(File.ReadAllText(codeFileName))
+            var codeFile = new CodeFile(File.ReadAllText(codeFileName.NormalizeFilePath()))
             {
                 Name = codeFileName
             };

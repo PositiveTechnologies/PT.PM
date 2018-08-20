@@ -1,16 +1,17 @@
-﻿using PT.PM.Common;
-using PT.PM.TestUtils;
-using NUnit.Framework;
-using System.IO;
-using PT.PM.SqlParseTreeUst;
-using PT.PM.JavaParseTreeUst;
-using System.Collections.Generic;
-using System.Linq;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.Common.CodeRepository;
+﻿using NUnit.Framework;
 using PT.PM.CLangsParseTreeUst;
+using PT.PM.Common;
+using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Utils;
+using PT.PM.CSharpParseTreeUst;
+using PT.PM.JavaParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.PhpParseTreeUst;
+using PT.PM.SqlParseTreeUst;
+using PT.PM.TestUtils;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace PT.PM.Tests
 {
@@ -74,7 +75,7 @@ namespace PT.PM.Tests
         public void DetectLanguage_SourceCode_CorrectLanguage(string expectedLanguage, string fileName)
         {
             var sourceCode =
-                new CodeFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormDirSeparator())));
+                new CodeFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
             DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(sourceCode);
             Assert.NotNull(detectedLanguage);
             Assert.AreEqual(expectedLanguage, detectedLanguage.Language.Key);

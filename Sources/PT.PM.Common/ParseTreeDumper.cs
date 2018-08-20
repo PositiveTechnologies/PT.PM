@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using PT.PM.Common.Utils;
+using System.IO;
 
 namespace PT.PM.Common
 {
@@ -28,9 +29,9 @@ namespace PT.PM.Common
 
         protected void Dump(string data, CodeFile sourceCodeFile, bool tokens)
         {
-            Directory.CreateDirectory(DumpDir);
+            Directory.CreateDirectory(DumpDir.NormalizeDirPath());
             string name = string.IsNullOrEmpty(sourceCodeFile.Name) ? "" : sourceCodeFile.Name + ".";
-            File.WriteAllText(Path.Combine(DumpDir, $"{name}{(tokens ? TokensSuffix : ParseTreeSuffix)}"), data);
+            File.WriteAllText(Path.Combine(DumpDir, $"{name}{(tokens ? TokensSuffix : ParseTreeSuffix)}").NormalizeFilePath(), data);
         }
     }
 }

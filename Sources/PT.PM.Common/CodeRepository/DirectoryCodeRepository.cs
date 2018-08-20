@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common.Exceptions;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,7 +44,7 @@ namespace PT.PM.Common.CodeRepository
                 return Enumerable.Empty<string>();
             }
 
-            IEnumerable<string> result = Directory.EnumerateFiles(RootPath, SearchPattern, SearchOption);
+            IEnumerable<string> result = Directory.EnumerateFiles(RootPath.NormalizeDirPath(), SearchPattern, SearchOption);
 
             if (LoadJson)
             {
@@ -92,7 +93,7 @@ namespace PT.PM.Common.CodeRepository
             CodeFile result;
             try
             {
-                result = new CodeFile(File.ReadAllText(fileName))
+                result = new CodeFile(File.ReadAllText(fileName.NormalizeFilePath()))
                 {
                     RootPath = rootPath,
                     RelativePath = relativePath,
