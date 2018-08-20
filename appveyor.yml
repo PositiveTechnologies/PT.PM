@@ -31,11 +31,11 @@ test_script:
 
     dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll --logger:nunit
 
-    if ($isWindows) {
-        nunit3-console PT.PM.Net.Tests.dll
-    }
-
     cd ../../..
+
+    if ($isWindows) {
+        nunit3-console Tests/Release/net472/PT.PM.Net.Tests.dll
+    }
 
     $wc = New-Object 'System.Net.WebClient'
 
