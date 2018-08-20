@@ -19,7 +19,7 @@ namespace PT.PM.Common.Utils
             {
                 if (path.StartsWith(@"\\"))
                 {
-                    return $@"\\?\UNC\{path.Remove(2)}";
+                    return $@"\\?\UNC\{path.Substring(2)}";
                 }
 
                 path = path.NormalizeDirSeparator();
