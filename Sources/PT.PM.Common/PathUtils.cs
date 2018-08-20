@@ -7,14 +7,18 @@ namespace PT.PM.Common.Utils
         public const int MaxDirLength = 248 - 1;
         public const int MaxPathLength = 260 - 1;
 
-        public static string NormalizePath(this string path, bool isDirectory = true, bool force = true)
+        public static string NormalizeFilePath(this string path) => NormalizePath(path, false);
+
+        public static string NormalizeDirPath(this string path, bool force = false) => NormalizePath(path, true, force);
+
+        private static string NormalizePath(this string path, bool isDirectory = true, bool force = false)
         {
             if (CommonUtils.IsWindows && !CommonUtils.IsCoreApp && !path.StartsWith(@"\\?\") &&
-                (force || path.Length > (isDirectory ? MaxDirLength : MaxPathLength)))
+                (path.Length > (isDirectory ? MaxDirLength : MaxPathLength) || force))
             {
                 if (path.StartsWith(@"\\"))
                 {
-                    return $@"\\?\UNC\{path.TrimStart('\\')}";
+                    return $@"\\?\UNC\{path.Remove(2)}";
                 }
 
                 path = path.NormalizeDirSeparator();
