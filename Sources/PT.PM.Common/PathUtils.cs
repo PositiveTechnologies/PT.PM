@@ -66,14 +66,14 @@ namespace PT.PM.Common.Utils
 
         public static string[] GetDirectories(string path) => Directory.GetDirectories(path.NormalizeDirPath(true));
 
-        public static string[] GetFiles(string path, string searchPattern, SearchOption searchOption) => Directory.GetFiles(path.NormalizeDirPath(), searchPattern, searchOption);
+        public static string[] GetFiles(string path, string searchPattern, SearchOption searchOption) => Directory.GetFiles(path.NormalizeDirPath(true), searchPattern, searchOption);
 
         public static DirectoryInfo CreateDirectory(string path) => Directory.CreateDirectory(path.NormalizeDirPath());
 
         public static bool Exists(string path) => Directory.Exists(path.NormalizeDirPath());
 
-        public static void Delete(string path) => Directory.Delete(path.NormalizeDirPath(), true);
+        public static void Delete(string path) => Directory.Delete(path.NormalizeDirPath(true), true);
 
-        public static void Move(string sourceDirName, string destDirName) => Directory.Move(sourceDirName.NormalizeDirPath(), destDirName.NormalizeDirPath());
+        public static void Move(string sourceDirName, string destDirName) => Directory.Move(sourceDirName.NormalizeDirPath(true), destDirName.NormalizeDirPath(true));
     }
 }
