@@ -14,8 +14,8 @@ namespace PT.PM.Common.Utils
 
         private static string NormalizePath(this string path, bool isDirectory = true, bool force = false)
         {
-            if (CommonUtils.IsWindows && !CommonUtils.IsCoreApp && !path.StartsWith(@"\\?\") &&
-                (path.Length > (isDirectory ? MaxDirLength : MaxPathLength) || force))
+            if ((path.Length > (isDirectory ? MaxDirLength : MaxPathLength) || force) &&
+                CommonUtils.IsWindows && !CommonUtils.IsCoreApp && !path.StartsWith(@"\\?\"))
             {
                 if (path.StartsWith(@"\\"))
                 {
