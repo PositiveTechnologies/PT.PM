@@ -3,14 +3,14 @@ using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Runtime.InteropServices;
 
-namespace PT.PM.Common
+namespace PT.PM.Common.Utils
 {
     public static class CommonUtils
     {
-        private static bool? isRunningOnLinux = null;
-        private static bool? isSupportThreadAbort = null;
+        private static bool? isWindows = null;
+        private static bool? isCoreApp = null;
 
         public const string Prefix = "pt.pm_";
 
@@ -43,39 +43,29 @@ namespace PT.PM.Common
             false;
 #endif
 
-        public static bool IsRunningOnLinux
+        public static bool IsWindows
         {
             get
             {
-                if (isRunningOnLinux == null)
+                if (!isWindows.HasValue)
                 {
-                    int p = (int)Environment.OSVersion.Platform;
-                    isRunningOnLinux = (p == 4) || (p == 6) || (p == 128);
+                    isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 }
 
-                return isRunningOnLinux.Value;
+                return isWindows.Value;
             }
         }
 
-        public static bool IsSupportThreadAbort
+        public static bool IsCoreApp
         {
             get
             {
-                if (!isSupportThreadAbort.HasValue)
+                if (!isCoreApp.HasValue)
                 {
-                    Thread thread = new Thread(() => { });
-                    try
-                    {
-                        thread.Abort();
-                        isSupportThreadAbort = true;
-                    }
-                    catch (PlatformNotSupportedException)
-                    {
-                        isSupportThreadAbort = false;
-                    }
+                    isCoreApp = RuntimeInformation.FrameworkDescription.Contains(".NET Core");
                 }
 
-                return isSupportThreadAbort.Value;
+                return isCoreApp.Value;
             }
         }
 

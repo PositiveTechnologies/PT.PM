@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Utils;
 using PT.PM.SqlParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace PT.PM.Matching.Tests
 
         private void Match_TestPatternsSql_MatchedAllDefault(Language language, string patternsFileName)
         {
-            var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormDirSeparator());
+            var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormalizeDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);
 
             var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);

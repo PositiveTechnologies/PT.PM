@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Utils;
 using PT.PM.PatternEditor.ViewModels;
 using System.Diagnostics;
 using System.IO;
@@ -25,7 +26,7 @@ namespace PT.PM.PatternEditor
 
         public static void OpenDirectory(string directoryName)
         {
-            if (Directory.Exists(directoryName))
+            if (DirectoryExt.Exists(directoryName))
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {

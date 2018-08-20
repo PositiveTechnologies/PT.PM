@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PT.PM.Common;
+using PT.PM.Common.Utils;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
@@ -464,7 +465,7 @@ namespace PT.PM.PatternEditor.Pattern
                         jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>() { patternNode.CodeFile };
                         jsonPatternSerializer.CurrectCodeFile = patternNode.CodeFile;
                         PatternJson = jsonPatternSerializer.Serialize(patternNode);
-                        File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern-ust.json"), PatternJson);
+                        FileExt.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern-ust.json"), PatternJson);
                     }
                 }
                 else
@@ -520,14 +521,14 @@ namespace PT.PM.PatternEditor.Pattern
 
         public List<PatternDto> LoadPatterns()
         {
-            var patternsJson = File.ReadAllText(Settings.PatternsFileName);
+            var patternsJson = FileExt.ReadAllText(Settings.PatternsFileName);
             return JsonConvert.DeserializeObject<List<PatternDto>>(patternsJson, jsonConverters);
         }
 
         public void SavePatterns()
         {
             var json = JsonConvert.SerializeObject(Patterns.Select(pattern => pattern.PatternDto), Formatting.Indented, jsonConverters);
-            File.WriteAllText(Settings.PatternsFileName, json);
+            FileExt.WriteAllText(Settings.PatternsFileName, json);
         }
 
         private static PatternViewModel CreateNewPattern()

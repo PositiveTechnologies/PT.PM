@@ -33,6 +33,10 @@ test_script:
 
     cd ../../..
 
+    if ($isWindows) {
+        nunit3-console Tests/Release/net472/PT.PM.Net.Tests.dll
+    }
+
     $wc = New-Object 'System.Net.WebClient'
 
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$env:APPVEYOR_JOB_ID", (Resolve-Path ./Tests/Release/netcoreapp2.1/TestResults/TestResults.xml))
@@ -62,5 +66,4 @@ after_test:
         7z a PT.PM.Gui-net472-$env:APPVEYOR_BUILD_VERSION.zip *.exe *.dll *.config
 
         Push-AppveyorArtifact PT.PM.Gui-net472-$env:APPVEYOR_BUILD_VERSION.zip
-
     }

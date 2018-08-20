@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common.Exceptions;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,6 +63,6 @@ namespace PT.PM.Common.CodeRepository
             return base.IsFileIgnored(fileName, withParser);
         }
 
-        protected virtual string ReadCode(string fileName) => File.ReadAllText(fileName);
+        protected virtual string ReadCode(string fileName) => FileExt.ReadAllText(fileName);
     }
 }

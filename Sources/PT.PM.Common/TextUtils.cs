@@ -1,11 +1,10 @@
-﻿using System;
+﻿using PT.PM.Common.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common
 {
@@ -183,7 +182,7 @@ namespace PT.PM.Common
             }
             else
             {
-                fileName = fileName.NormDirSeparator();
+                fileName = fileName.NormalizeDirSeparator();
 
                 if (codeFiles != null)
                     lock (codeFiles)
@@ -194,19 +193,19 @@ namespace PT.PM.Common
 
                 if (result == null)
                 {
-                    if (!File.Exists(fileName))
+                    if (!FileExt.Exists(fileName))
                     {
                         if (currentCodeFile != null)
                         {
                             fileName = Path.Combine(currentCodeFile.RootPath, fileName);
-                            if (!File.Exists(fileName))
+                            if (!FileExt.Exists(fileName))
                             {
                                 throw new FileNotFoundException($"File {fileName} not found.", fileName);
                             }
                         }
                     }
 
-                    var code = File.ReadAllText(fileName);
+                    var code = FileExt.ReadAllText(fileName);
                     result = new CodeFile(code)
                     {
                         RootPath = Path.GetDirectoryName(fileName),
@@ -260,18 +259,6 @@ namespace PT.PM.Common
         public static string Escape(this string str)
         {
             return str.Replace("\\", "\\\\").Replace("\"", "\\\"");
-        }
-
-        public static string NormDirSeparator(this string path)
-        {
-            char notPlatformSeparator = CommonUtils.IsRunningOnLinux ? '\\' : '/';
-
-            if (path.Contains(notPlatformSeparator))
-            {
-                return path.Replace(notPlatformSeparator, Path.DirectorySeparatorChar);
-            }
-
-            return path;
         }
 
         private static void ParseLineColumn(string text, out int line, out int column)

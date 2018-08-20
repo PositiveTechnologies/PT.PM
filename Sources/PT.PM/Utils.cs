@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PT.PM.Common.Utils;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -33,12 +34,12 @@ namespace PT.PM
 
         public static string GetVersionString()
         {
-            Assembly assembly = Assembly.GetEntryAssembly();
+            Assembly assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
 
-            AssemblyName assemblyName = assembly.GetName();
+            AssemblyName assemblyName = assembly?.GetName();
             DateTime buildTime = default;
 
-            string streamName = assembly.GetManifestResourceNames().FirstOrDefault(name => name.Contains("BuildTimeStamp")) ?? null;
+            string streamName = assembly?.GetManifestResourceNames().FirstOrDefault(name => name.Contains("BuildTimeStamp")) ?? null;
             Stream stream = !string.IsNullOrEmpty(streamName)
                 ? assembly.GetManifestResourceStream(streamName)
                 : null;
@@ -51,12 +52,12 @@ namespace PT.PM
                 }
             }
 
-            if (buildTime == default)
+            if (buildTime == default && assembly != null)
             {
-                buildTime = File.GetLastWriteTime(assembly.Location);
+                buildTime = File.GetLastWriteTime(assembly.Location.NormalizeFilePath());
             }
 
-            return $"{assemblyName.Version} ({buildTime.ToString(CultureInfo.InvariantCulture)})";
+            return $"{assemblyName?.Version} ({buildTime.ToString(CultureInfo.InvariantCulture)})";
         }
     }
 }

@@ -3,6 +3,7 @@ using CommandLine.Text;
 using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Utils;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
 using System;
@@ -11,7 +12,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Cli.Common
@@ -259,13 +259,13 @@ namespace PT.PM.Cli.Common
                 }
 
                 bool error = false;
-                string configFile = File.Exists("config.json") ? "config.json" : parameters.ConfigFile;
+                string configFile = FileExt.Exists("config.json") ? "config.json" : parameters.ConfigFile;
                 if (!string.IsNullOrEmpty(configFile))
                 {
                     string content = null;
                     try
                     {
-                        content = File.ReadAllText(configFile);
+                        content = FileExt.ReadAllText(configFile);
                     }
                     catch (Exception ex)
                     {

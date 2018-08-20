@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,9 +54,9 @@ namespace PT.PM
                         {
                             Logger.LogInfo($"{Name} extraction...");
 
-                            if (Directory.Exists(RootPath))
+                            if (DirectoryExt.Exists(RootPath))
                             {
-                                Directory.Delete(RootPath, true);
+                                DirectoryExt.Delete(RootPath);
                             }
 
                             IArchiveExtractor extractor = SevenZipExtractor.Is7zInstalled
@@ -67,22 +68,22 @@ namespace PT.PM
 
                             if (RemoveAfterExtraction)
                             {
-                                File.Delete(ArchiveName);
+                                FileExt.Delete(ArchiveName);
                             }
                             Logger.LogInfo($"{Name} extracted.");
 
-                            string[] directories = Directory.GetDirectories(RootPath);
+                            string[] directories = DirectoryExt.GetDirectories(RootPath);
                             if (directories.Length == 1)
                             {
-                                Directory.CreateDirectory(RootPath);
+                                DirectoryExt.CreateDirectory(RootPath);
 
-                                foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(directories[0]))
+                                foreach (string fileSystemEntry in DirectoryExt.EnumerateFileSystemEntries(directories[0]))
                                 {
                                     string shortName = Path.GetFileName(fileSystemEntry);
                                     string newName = Path.Combine(RootPath, shortName);
-                                    if (File.Exists(fileSystemEntry))
+                                    if (FileExt.Exists(fileSystemEntry))
                                     {
-                                        File.Move(fileSystemEntry, newName);
+                                        FileExt.Move(fileSystemEntry, newName);
                                     }
                                     else
                                     {
@@ -97,7 +98,7 @@ namespace PT.PM
                                     }
                                 }
 
-                                Directory.Delete(directories[0], true);
+                                DirectoryExt.Delete(directories[0]);
                             }
                         }
                     }
@@ -132,12 +133,12 @@ namespace PT.PM
 
         protected bool IsDirectoryNotExistsOrEmpty(string directoryName)
         {
-            return !Directory.Exists(RootPath) || IsDirectoryEmpty(RootPath);
-        }
+            if (!DirectoryExt.Exists(RootPath))
+            {
+                return true;
+            }
 
-        private static bool IsDirectoryEmpty(string path)
-        {
-            IEnumerable<string> items = Directory.EnumerateFileSystemEntries(path);
+            IEnumerable<string> items = DirectoryExt.EnumerateFileSystemEntries(RootPath);
             using (IEnumerator<string> en = items.GetEnumerator())
             {
                 return !en.MoveNext();

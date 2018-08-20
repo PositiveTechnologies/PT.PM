@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Json
 {
@@ -62,7 +63,7 @@ namespace PT.PM.Common.Json
                 string fullName = Path.Combine(rootPath, relativePath, name);
                 try
                 {
-                    code = fullName != "" ? File.ReadAllText(fullName) : "";
+                    code = fullName != "" ? FileExt.ReadAllText(fullName) : "";
                 }
                 catch
                 {

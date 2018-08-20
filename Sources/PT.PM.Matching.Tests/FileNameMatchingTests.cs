@@ -1,12 +1,13 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Matching.Tests
 {
     [TestFixture]
     public class FileNameMatchingTests
     {
-        private static string TestFileName = "C:/Users/Unnamed/examples/sample.php".NormDirSeparator();
+        private static string TestFileName = "C:/Users/Unnamed/examples/sample.php".NormalizeDirSeparator();
 
         [TestCase("C:/Users/Unnamed/examples/sample.php")]
         [TestCase("**/examples/*")]
