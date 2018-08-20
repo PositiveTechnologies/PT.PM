@@ -89,11 +89,11 @@ namespace PT.PM
                                     {
                                         try
                                         {
-                                            Directory.Move(fileSystemEntry, newName);
+                                            DirectoryExt.Move(fileSystemEntry, newName);
                                         }
                                         catch
                                         {
-                                            Directory.Move(fileSystemEntry, newName);
+                                            DirectoryExt.Move(fileSystemEntry, newName);
                                         }
                                     }
                                 }
