@@ -29,13 +29,11 @@ test_script:
 - ps: |
     cd Tests/Release/netcoreapp2.1
 
-    $net_tests = ''
+    dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll --logger:nunit
 
     if ($isWindows) {
-        $net_tests = 'PT.PM.Net.Tests.dll'
+        nunit3-console PT.PM.Net.Tests.dll
     }
-
-    dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll $net_tests --logger:nunit
 
     cd ../../..
 
