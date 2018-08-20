@@ -29,7 +29,13 @@ test_script:
 - ps: |
     cd Tests/Release/netcoreapp2.1
 
-    dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll --logger:nunit
+    $net_tests = ''
+
+    if ($isWindows) {
+        $net_tests = 'PT.PM.Net.Tests.dll'
+    }
+
+    dotnet vstest PT.PM.Cli.Tests.dll PT.PM.CSharpParseTreeUst.Tests.dll PT.PM.Dsl.Tests.dll PT.PM.JavaParseTreeUst.Tests.dll PT.PM.JavaScriptParseTreeUst.Tests.dll PT.PM.Matching.Tests.dll PT.PM.PhpParseTreeUst.Tests.dll PT.PM.SqlParseTreeUst.Tests.dll PT.PM.Tests.dll $net_tests --logger:nunit
 
     cd ../../..
 
@@ -62,5 +68,4 @@ after_test:
         7z a PT.PM.Gui-net472-$env:APPVEYOR_BUILD_VERSION.zip *.exe *.dll *.config
 
         Push-AppveyorArtifact PT.PM.Gui-net472-$env:APPVEYOR_BUILD_VERSION.zip
-
     }
