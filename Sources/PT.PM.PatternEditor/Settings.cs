@@ -71,22 +71,22 @@ namespace PT.PM.PatternEditor
 
         public static Settings Load()
         { 
-            if (File.Exists(settingsFileName))
+            if (FileExt.Exists(settingsFileName))
             {
                 try
                 {
-                    var settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsFileName.NormalizeFilePath()), jsonConverters) ?? new Settings();
+                    var settings = JsonConvert.DeserializeObject<Settings>(FileExt.ReadAllText(settingsFileName), jsonConverters) ?? new Settings();
                     return settings;
                 }
                 catch
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName).NormalizeDirPath());
+                    DirectoryExt.CreateDirectory(Path.GetDirectoryName(settingsFileName));
                     return new Settings();
                 }
             }
             else
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName).NormalizeDirPath());
+                DirectoryExt.CreateDirectory(Path.GetDirectoryName(settingsFileName));
                 return new Settings();
             }
         }
@@ -95,8 +95,8 @@ namespace PT.PM.PatternEditor
         {
             lock (saveLock)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsFileName));
-                File.WriteAllText(settingsFileName.NormalizeFilePath(), JsonConvert.SerializeObject(this, Formatting.Indented, jsonConverters));
+                DirectoryExt.CreateDirectory(Path.GetDirectoryName(settingsFileName));
+                FileExt.WriteAllText(settingsFileName, JsonConvert.SerializeObject(this, Formatting.Indented, jsonConverters));
             }
         }
     }

@@ -26,12 +26,11 @@ namespace PT.PM.PatternEditor
 
         public static void OpenDirectory(string directoryName)
         {
-            string normDirPath = directoryName.NormalizeDirPath();
-            if (Directory.Exists(normDirPath))
+            if (DirectoryExt.Exists(directoryName))
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"\"{normDirPath}\"" });
+                    Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"\"{directoryName}\"" });
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {

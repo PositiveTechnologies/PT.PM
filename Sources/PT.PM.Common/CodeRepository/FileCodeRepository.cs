@@ -63,6 +63,6 @@ namespace PT.PM.Common.CodeRepository
             return base.IsFileIgnored(fileName, withParser);
         }
 
-        protected virtual string ReadCode(string fileName) => File.ReadAllText(fileName.NormalizeFilePath());
+        protected virtual string ReadCode(string fileName) => FileExt.ReadAllText(fileName);
     }
 }

@@ -14,7 +14,7 @@ namespace PT.PM
 
         public DetectionResult DetectIfRequired(string codeFileName)
         {
-            var codeFile = new CodeFile(File.ReadAllText(codeFileName.NormalizeFilePath()))
+            var codeFile = new CodeFile(FileExt.ReadAllText(codeFileName))
             {
                 Name = codeFileName
             };

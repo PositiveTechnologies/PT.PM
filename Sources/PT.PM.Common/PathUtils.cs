@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace PT.PM.Common.Utils
 {
@@ -40,5 +41,39 @@ namespace PT.PM.Common.Utils
 
             return path;
         }
+    }
+
+    public static class FileExt
+    {
+        public static string ReadAllText(string path) => File.ReadAllText(path.NormalizeFilePath());
+
+        public static void WriteAllText(string path, string contents) => File.WriteAllText(path.NormalizeFilePath(), contents);
+
+        public static void WriteAllLines(string path, IEnumerable<string> contents) => File.WriteAllLines(path.NormalizeFilePath(), contents);
+
+        public static bool Exists(string path) => File.Exists(path.NormalizeFilePath());
+
+        public static void Delete(string path) => File.Delete(path.NormalizeFilePath());
+
+        public static void Move(string sourceFileName, string destFileName) => File.Move(sourceFileName.NormalizeFilePath(), destFileName.NormalizeFilePath());
+    }
+
+    public static class DirectoryExt
+    {
+        public static IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOption) => Directory.EnumerateFiles(path.NormalizeDirPath(true), searchPattern, searchOption);
+
+        public static IEnumerable<string> EnumerateFileSystemEntries(string path) => Directory.EnumerateFileSystemEntries(path.NormalizeDirPath(true));
+
+        public static string[] GetDirectories(string path) => Directory.GetDirectories(path.NormalizeDirPath(true));
+
+        public static string[] GetFiles(string path, string searchPattern, SearchOption searchOption) => Directory.GetFiles(path.NormalizeDirPath(), searchPattern, searchOption);
+
+        public static DirectoryInfo CreateDirectory(string path) => Directory.CreateDirectory(path.NormalizeDirPath());
+
+        public static bool Exists(string path) => Directory.Exists(path.NormalizeDirPath());
+
+        public static void Delete(string path) => Directory.Delete(path.NormalizeDirPath(), true);
+
+        public static void Move(string sourceDirName, string destDirName) => Directory.Move(sourceDirName.NormalizeDirPath(), destDirName.NormalizeDirPath());
     }
 }

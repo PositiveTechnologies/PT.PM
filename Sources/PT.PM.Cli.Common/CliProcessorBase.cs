@@ -259,13 +259,13 @@ namespace PT.PM.Cli.Common
                 }
 
                 bool error = false;
-                string configFile = File.Exists("config.json") ? "config.json" : parameters.ConfigFile;
+                string configFile = FileExt.Exists("config.json") ? "config.json" : parameters.ConfigFile;
                 if (!string.IsNullOrEmpty(configFile))
                 {
                     string content = null;
                     try
                     {
-                        content = File.ReadAllText(configFile.NormalizeFilePath());
+                        content = FileExt.ReadAllText(configFile);
                     }
                     catch (Exception ex)
                     {

@@ -38,9 +38,9 @@ namespace PT.PM.TestUtils
             TestsPath = Path.Combine(RepositoryDirectory, TestsPath).NormalizeDirSeparator();
             TestsDataPath = Path.Combine(RepositoryDirectory, TestsDataPath).NormalizeDirSeparator();
             TestsOutputPath = Path.Combine(RepositoryDirectory, TestsOutputPath).NormalizeDirSeparator();
-            if (!Directory.Exists(TestsOutputPath))
+            if (!DirectoryExt.Exists(TestsOutputPath))
             {
-                Directory.CreateDirectory(TestsOutputPath);
+                DirectoryExt.CreateDirectory(TestsOutputPath);
             }
         }
 

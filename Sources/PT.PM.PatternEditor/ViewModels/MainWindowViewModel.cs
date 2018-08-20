@@ -93,7 +93,7 @@ namespace PT.PM.PatternEditor
                     string fileName = fileNames.Single();
                     OpenedFileName = fileName;
                     fileOpened = true;
-                    sourceCodeTextBox.Text = File.ReadAllText(sourceCodeFileName.NormalizeFilePath());
+                    sourceCodeTextBox.Text = FileExt.ReadAllText(sourceCodeFileName);
                 }
             });
 
@@ -101,7 +101,7 @@ namespace PT.PM.PatternEditor
             {
                 if (!string.IsNullOrEmpty(sourceCodeFileName))
                 {
-                    File.WriteAllText(sourceCodeFileName.NormalizeFilePath(), sourceCodeTextBox.Text);
+                    FileExt.WriteAllText(sourceCodeFileName, sourceCodeTextBox.Text);
                 }
             });
 
@@ -109,7 +109,7 @@ namespace PT.PM.PatternEditor
             {
                 if (!string.IsNullOrEmpty(sourceCodeFileName))
                 {
-                    sourceCodeTextBox.Text = File.ReadAllText(sourceCodeFileName.NormalizeFilePath());
+                    sourceCodeTextBox.Text = FileExt.ReadAllText(sourceCodeFileName);
                 }
             });
 
@@ -131,7 +131,7 @@ namespace PT.PM.PatternEditor
                 }
             });
 
-            if (string.IsNullOrEmpty(Settings.SourceCodeFile) || !File.Exists(Settings.SourceCodeFile.NormalizeFilePath()))
+            if (string.IsNullOrEmpty(Settings.SourceCodeFile) || !FileExt.Exists(Settings.SourceCodeFile))
             {
                 fileOpened = false;
                 sourceCodeFileName = "";
@@ -141,7 +141,7 @@ namespace PT.PM.PatternEditor
             {
                 fileOpened = true;
                 sourceCodeFileName = Settings.SourceCodeFile;
-                sourceCodeTextBox.Text = File.ReadAllText(Settings.SourceCodeFile.NormalizeFilePath());
+                sourceCodeTextBox.Text = FileExt.ReadAllText(Settings.SourceCodeFile);
             }
 
             CheckSourceCode();
@@ -626,17 +626,17 @@ namespace PT.PM.PatternEditor
             IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
 
-            string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.TokensSuffix).NormalizeFilePath();
-            string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.ParseTreeSuffix).NormalizeFilePath();
-            Tokens = File.Exists(tokensFileName) ? File.ReadAllText(tokensFileName) : "";
-            ParseTree = File.Exists(parseTreeFileName) ? File.ReadAllText(parseTreeFileName) : "";
+            string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.TokensSuffix);
+            string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.ParseTreeSuffix);
+            Tokens = FileExt.Exists(tokensFileName) ? FileExt.ReadAllText(tokensFileName) : "";
+            ParseTree = FileExt.Exists(parseTreeFileName) ? FileExt.ReadAllText(parseTreeFileName) : "";
 
             TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
             ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
 
             if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
             {
-                UstJson = File.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix).NormalizeFilePath());
+                UstJson = FileExt.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
             }
 
             MatchingResultText = "MATCHINGS" + (matchResults.Count() > 0 ? $" ({matchResults.Count()})" : "");

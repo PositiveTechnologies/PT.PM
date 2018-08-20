@@ -80,8 +80,8 @@ namespace PT.PM
                 }
             }
 
-            string dotFilePath = (appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot")).NormalizeFilePath();
-            File.WriteAllText(dotFilePath, DotGraph);
+            string dotFilePath = appendExt ? filePath + ".dot" : Path.ChangeExtension(filePath, "dot");
+            FileExt.WriteAllText(dotFilePath, DotGraph);
 
             var processor = new Processor(ToolName)
             {
@@ -99,7 +99,7 @@ namespace PT.PM
 
             if (!SaveDot)
             {
-                File.Delete(dotFilePath);
+                FileExt.Delete(dotFilePath);
             }
 
             if (execResult.ExitCode != 0)

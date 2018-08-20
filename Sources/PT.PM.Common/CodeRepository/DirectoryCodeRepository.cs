@@ -44,7 +44,7 @@ namespace PT.PM.Common.CodeRepository
                 return Enumerable.Empty<string>();
             }
 
-            IEnumerable<string> result = Directory.EnumerateFiles(RootPath.NormalizeDirPath(), SearchPattern, SearchOption);
+            IEnumerable<string> result = DirectoryExt.EnumerateFiles(RootPath, SearchPattern, SearchOption);
 
             if (LoadJson)
             {
@@ -93,7 +93,7 @@ namespace PT.PM.Common.CodeRepository
             CodeFile result;
             try
             {
-                result = new CodeFile(File.ReadAllText(fileName.NormalizeFilePath()))
+                result = new CodeFile(FileExt.ReadAllText(fileName))
                 {
                     RootPath = rootPath,
                     RelativePath = relativePath,

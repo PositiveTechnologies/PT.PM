@@ -54,10 +54,9 @@ namespace PT.PM
                         {
                             Logger.LogInfo($"{Name} extraction...");
 
-                            string normRootPath = RootPath.NormalizeDirPath(true);
-                            if (Directory.Exists(normRootPath))
+                            if (DirectoryExt.Exists(RootPath))
                             {
-                                Directory.Delete(normRootPath, true);
+                                DirectoryExt.Delete(RootPath);
                             }
 
                             IArchiveExtractor extractor = SevenZipExtractor.Is7zInstalled
@@ -69,38 +68,37 @@ namespace PT.PM
 
                             if (RemoveAfterExtraction)
                             {
-                                File.Delete(ArchiveName.NormalizeFilePath());
+                                FileExt.Delete(ArchiveName);
                             }
                             Logger.LogInfo($"{Name} extracted.");
 
-                            string[] directories = Directory.GetDirectories(normRootPath);
+                            string[] directories = DirectoryExt.GetDirectories(RootPath);
                             if (directories.Length == 1)
                             {
-                                Directory.CreateDirectory(normRootPath);
+                                DirectoryExt.CreateDirectory(RootPath);
 
-                                foreach (string fileSystemEntry in Directory.EnumerateFileSystemEntries(directories[0].NormalizeDirPath()))
+                                foreach (string fileSystemEntry in DirectoryExt.EnumerateFileSystemEntries(directories[0]))
                                 {
-                                    string normFileSystemEntry = fileSystemEntry.NormalizeDirPath();
-                                    string shortName = Path.GetFileName(normFileSystemEntry);
+                                    string shortName = Path.GetFileName(fileSystemEntry);
                                     string newName = Path.Combine(RootPath, shortName);
-                                    if (File.Exists(normFileSystemEntry))
+                                    if (FileExt.Exists(fileSystemEntry))
                                     {
-                                        File.Move(normFileSystemEntry, newName);
+                                        FileExt.Move(fileSystemEntry, newName);
                                     }
                                     else
                                     {
                                         try
                                         {
-                                            Directory.Move(normFileSystemEntry, newName);
+                                            Directory.Move(fileSystemEntry, newName);
                                         }
                                         catch
                                         {
-                                            Directory.Move(normFileSystemEntry, newName);
+                                            Directory.Move(fileSystemEntry, newName);
                                         }
                                     }
                                 }
 
-                                Directory.Delete(directories[0].NormalizeDirPath(true), true);
+                                DirectoryExt.Delete(directories[0]);
                             }
                         }
                     }
@@ -135,14 +133,12 @@ namespace PT.PM
 
         protected bool IsDirectoryNotExistsOrEmpty(string directoryName)
         {
-            string normDirPath = RootPath.NormalizeDirPath();
-
-            if (!Directory.Exists(normDirPath))
+            if (!DirectoryExt.Exists(RootPath))
             {
                 return true;
             }
 
-            IEnumerable<string> items = Directory.EnumerateFileSystemEntries(normDirPath);
+            IEnumerable<string> items = DirectoryExt.EnumerateFileSystemEntries(RootPath);
             using (IEnumerator<string> en = items.GetEnumerator())
             {
                 return !en.MoveNext();

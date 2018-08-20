@@ -193,19 +193,19 @@ namespace PT.PM.Common
 
                 if (result == null)
                 {
-                    if (!File.Exists(fileName.NormalizeFilePath()))
+                    if (!FileExt.Exists(fileName))
                     {
                         if (currentCodeFile != null)
                         {
                             fileName = Path.Combine(currentCodeFile.RootPath, fileName);
-                            if (!File.Exists(fileName.NormalizeFilePath()))
+                            if (!FileExt.Exists(fileName))
                             {
                                 throw new FileNotFoundException($"File {fileName} not found.", fileName);
                             }
                         }
                     }
 
-                    var code = File.ReadAllText(fileName.NormalizeFilePath());
+                    var code = FileExt.ReadAllText(fileName);
                     result = new CodeFile(code)
                     {
                         RootPath = Path.GetDirectoryName(fileName),

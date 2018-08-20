@@ -465,7 +465,7 @@ namespace PT.PM.PatternEditor.Pattern
                         jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>() { patternNode.CodeFile };
                         jsonPatternSerializer.CurrectCodeFile = patternNode.CodeFile;
                         PatternJson = jsonPatternSerializer.Serialize(patternNode);
-                        File.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern-ust.json").NormalizeFilePath(), PatternJson);
+                        FileExt.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern-ust.json"), PatternJson);
                     }
                 }
                 else
@@ -521,14 +521,14 @@ namespace PT.PM.PatternEditor.Pattern
 
         public List<PatternDto> LoadPatterns()
         {
-            var patternsJson = File.ReadAllText(Settings.PatternsFileName.NormalizeFilePath());
+            var patternsJson = FileExt.ReadAllText(Settings.PatternsFileName);
             return JsonConvert.DeserializeObject<List<PatternDto>>(patternsJson, jsonConverters);
         }
 
         public void SavePatterns()
         {
             var json = JsonConvert.SerializeObject(Patterns.Select(pattern => pattern.PatternDto), Formatting.Indented, jsonConverters);
-            File.WriteAllText(Settings.PatternsFileName.NormalizeFilePath(), json);
+            FileExt.WriteAllText(Settings.PatternsFileName, json);
         }
 
         private static PatternViewModel CreateNewPattern()

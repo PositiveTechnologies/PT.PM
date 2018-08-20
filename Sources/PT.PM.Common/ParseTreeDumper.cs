@@ -29,9 +29,9 @@ namespace PT.PM.Common
 
         protected void Dump(string data, CodeFile sourceCodeFile, bool tokens)
         {
-            Directory.CreateDirectory(DumpDir.NormalizeDirPath());
+            DirectoryExt.CreateDirectory(DumpDir);
             string name = string.IsNullOrEmpty(sourceCodeFile.Name) ? "" : sourceCodeFile.Name + ".";
-            File.WriteAllText(Path.Combine(DumpDir, $"{name}{(tokens ? TokensSuffix : ParseTreeSuffix)}").NormalizeFilePath(), data);
+            FileExt.WriteAllText(Path.Combine(DumpDir, $"{name}{(tokens ? TokensSuffix : ParseTreeSuffix)}"), data);
         }
     }
 }
