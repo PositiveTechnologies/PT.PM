@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Utils;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
@@ -122,7 +123,7 @@ namespace PT.PM
                 {
                     if (!thread.Join(FileTimeout))
                     {
-                        if (CommonUtils.IsSupportThreadAbort)
+                        if (!CommonUtils.IsCoreApp)
                         {
                             thread.Abort();
                         }

@@ -3,6 +3,7 @@ using CommandLine.Text;
 using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Utils;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
 using System;
@@ -11,7 +12,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Cli.Common
@@ -44,7 +44,7 @@ namespace PT.PM.Cli.Common
             {
                 Logger = Logger
             };
-            bool success = paramsNormalizer.Normalize(args, out List<string> outArgs);
+            bool success = paramsNormalizer.Normalize(args, out string[] outArgs);
 
             var parser = new Parser(config =>
             {
@@ -245,7 +245,7 @@ namespace PT.PM.Cli.Common
 
         protected abstract bool IsLoadJson(string startStageString);
 
-        private TWorkflowResult ProcessJsonConfig(IList<string> args, TParameters parameters, IEnumerable<Error> errors = null)
+        private TWorkflowResult ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
         {
             try
             {
@@ -259,13 +259,13 @@ namespace PT.PM.Cli.Common
                 }
 
                 bool error = false;
-                string configFile = File.Exists("config.json") ? "config.json" : parameters.ConfigFile;
+                string configFile = FileExt.Exists("config.json") ? "config.json" : parameters.ConfigFile;
                 if (!string.IsNullOrEmpty(configFile))
                 {
                     string content = null;
                     try
                     {
-                        content = File.ReadAllText(configFile);
+                        content = FileExt.ReadAllText(configFile);
                     }
                     catch (Exception ex)
                     {
@@ -422,7 +422,7 @@ namespace PT.PM.Cli.Common
             return keys.Split(PatternRoot.KeySeparators, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private void LogInfoAndErrors(IList<string> args, IEnumerable<Error> errors)
+        private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
         {
             Logger.LogInfo($"{CoreName} started at {DateTime.Now}");
 
@@ -432,7 +432,7 @@ namespace PT.PM.Cli.Common
             }
 
             string commandLineArguments = "Command line arguments: " +
-                    (args.Count > 0 ? string.Join(" ", args) : "not defined.");
+                    (args.Length > 0 ? string.Join(" ", args) : "not defined.");
             Logger.LogInfo(commandLineArguments);
 
             if (errors != null)

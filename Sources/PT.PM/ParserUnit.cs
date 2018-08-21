@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -29,7 +30,7 @@ namespace PT.PM
 
         public void AbortIfPossibly()
         {
-            if (CommonUtils.IsSupportThreadAbort)
+            if (!CommonUtils.IsCoreApp)
             {
                 thread?.Abort();
             }

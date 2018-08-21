@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Cli.Common
 {
@@ -20,11 +21,11 @@ namespace PT.PM.Cli.Common
             {
                 sourceCodeRepository = DummyCodeRepository.Instance;
             }
-            else if (Directory.Exists(path))
+            else if (DirectoryExt.Exists(path))
             {
                 sourceCodeRepository = new DirectoryCodeRepository(path);
             }
-            else if (File.Exists(path))
+            else if (FileExt.Exists(path))
             {
                 string extensions = Path.GetExtension(path);
                 if (extensions.EqualsIgnoreCase(".zip"))
@@ -87,14 +88,14 @@ namespace PT.PM.Cli.Common
             }
             else if (patternsString.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             {
-                patternsRepository = new JsonPatternsRepository(File.ReadAllText(patternsString));
+                patternsRepository = new JsonPatternsRepository(FileExt.ReadAllText(patternsString));
             }
             else
             {
                 CodeFile patternsFile;
                 if (patternsString.EndsWith(".pattern", StringComparison.OrdinalIgnoreCase))
                 {
-                    patternsFile = new CodeFile(File.ReadAllText(patternsString))
+                    patternsFile = new CodeFile(FileExt.ReadAllText(patternsString))
                     {
                         PatternKey = patternsString,
                         Name = patternsString

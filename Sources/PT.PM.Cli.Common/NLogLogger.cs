@@ -2,6 +2,7 @@
 using NLog.Targets;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Utils;
 using PT.PM.Matching;
 using System;
 using System.IO;
@@ -56,7 +57,7 @@ namespace PT.PM.Cli.Common
                         if (target is FileTarget fileTarget)
                         {
                             string fullFileName = fileTarget.FileName.ToString().Replace("'", "");
-                            fileTarget.FileName = Path.Combine(logPath, Path.GetFileName(fullFileName));
+                            fileTarget.FileName = Path.Combine(logPath, Path.GetFileName(fullFileName)).NormalizeFilePath();
                         }
                     }
                 }
