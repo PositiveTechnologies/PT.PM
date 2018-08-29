@@ -6,7 +6,7 @@ namespace PT.PM.Common.Utils
 {
     public static class PathUtils
     {
-        private const string LongPrefix = @"\\?\";
+        public const string LongPrefix = @"\\?\";
 
         public const int MaxDirLength = 248 - 1;
         public const int MaxPathLength = 260 - 1;
@@ -76,22 +76,37 @@ namespace PT.PM.Common.Utils
         public static IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOption)
         {
             IEnumerable<string> files = Directory.EnumerateFiles(path.NormalizeDirPath(true), searchPattern, searchOption);
-            return files.Select(file => file.DenormalizePath());
+
+            if (!path.StartsWith(PathUtils.LongPrefix))
+            {
+                files = files.Select(file => file.DenormalizePath());
+            }
+
+            return files;
         }
 
         public static IEnumerable<string> EnumerateFileSystemEntries(string path)
         {
             IEnumerable<string> fileSystemEntries = Directory.EnumerateFileSystemEntries(path.NormalizeDirPath(true));
-            return fileSystemEntries.Select(fileSystemEntry => fileSystemEntry.DenormalizePath());
+
+            if (!path.StartsWith(PathUtils.LongPrefix))
+            {
+                fileSystemEntries = fileSystemEntries.Select(fileSystemEntry => fileSystemEntry.DenormalizePath());
+            }
+
+            return fileSystemEntries;
         }
 
         public static string[] GetDirectories(string path)
         {
             string[] dirs = Directory.GetDirectories(path.NormalizeDirPath(true));
 
-            for (int i = 0; i < dirs.Length; i++)
+            if (!path.StartsWith(PathUtils.LongPrefix))
             {
-                dirs[i] = dirs[i].DenormalizePath();
+                for (int i = 0; i < dirs.Length; i++)
+                {
+                    dirs[i] = dirs[i].DenormalizePath();
+                }
             }
 
             return dirs;
@@ -101,9 +116,12 @@ namespace PT.PM.Common.Utils
         {
             string[] files = Directory.GetFiles(path.NormalizeDirPath(true), searchPattern, searchOption);
 
-            for (int i = 0; i < files.Length; i++)
+            if (!path.StartsWith(PathUtils.LongPrefix))
             {
-                files[i] = files[i].DenormalizePath();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    files[i] = files[i].DenormalizePath();
+                }
             }
 
             return files;
