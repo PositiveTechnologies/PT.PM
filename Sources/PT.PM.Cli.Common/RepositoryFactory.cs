@@ -27,8 +27,8 @@ namespace PT.PM.Cli.Common
             }
             else if (FileExt.Exists(path))
             {
-                string extensions = Path.GetExtension(path);
-                if (extensions.EqualsIgnoreCase(".zip"))
+                string extension = Path.GetExtension(path);
+                if (extension.EqualsIgnoreCase(".zip"))
                 {
                     var zipCachingRepository = new ZipCachingRepository(path);
                     if (tempDir != null)
@@ -40,7 +40,7 @@ namespace PT.PM.Cli.Common
                 else
                 {
                     sourceCodeRepository = new FileCodeRepository(path);
-                    sourceCodeRepository.LoadJson = extensions.EqualsIgnoreCase(".json");
+                    sourceCodeRepository.LoadJson = extension.EqualsIgnoreCase(".json");
                 }
             }
             else
