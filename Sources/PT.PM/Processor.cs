@@ -34,6 +34,9 @@ namespace PT.PM
             var startInfo = process.StartInfo;
             startInfo.FileName = ToolName;
             startInfo.Arguments = Arguments;
+
+            startInfo.StandardOutputEncoding = System.Text.Encoding.Default;
+            startInfo.StandardErrorEncoding = System.Text.Encoding.Default;
             if (WorkingDirectory != null)
             {
                 startInfo.WorkingDirectory = WorkingDirectory;
