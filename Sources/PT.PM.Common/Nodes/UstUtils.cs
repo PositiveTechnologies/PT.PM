@@ -44,6 +44,20 @@ namespace PT.PM.Common.Nodes
             return ust.Parent.GetCurrentBlockStatement();
         }
 
+        public static bool IsChildFor(this BlockStatement childBlock, BlockStatement parentBlock)
+        {
+            var currentParent = childBlock.Parent;
+            while(currentParent != null)
+            {
+                if (currentParent == parentBlock)
+                {
+                    return true;
+                }
+                currentParent = currentParent.Parent;
+            }
+            return false;
+        }
+
         public static Expression ToExpressionIfRequired(this Ust ust)
         {
             if (ust == null)
