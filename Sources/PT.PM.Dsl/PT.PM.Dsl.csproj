@@ -16,20 +16,11 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-    <PackageReference Include="Antlr4" Version="4.6.5-rc002" />
+    <PackageReference Include="Antlr4" Version="4.6.5" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj" />
     <ProjectReference Include="..\PT.PM.Patterns\PT.PM.Patterns.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Antlr4 Include="DslLexer.g4">
-      <Listener>false</Listener>
-    </Antlr4>
-    <Antlr4 Include="DslParser.g4">
-      <Listener>false</Listener>
-    </Antlr4>
   </ItemGroup>
 </Project>

@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr4" Version="4.6.5-rc002" />
+    <PackageReference Include="Antlr4" Version="4.6.5" />
   </ItemGroup>
   
   <ItemGroup>

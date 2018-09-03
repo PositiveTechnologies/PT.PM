@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-    <PackageReference Include="Antlr4.Runtime" Version="4.6.5-rc002" />
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.5" />
     
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
   </ItemGroup>
