@@ -2,8 +2,6 @@
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -14,25 +12,10 @@ namespace PT.PM.Common.Nodes.Expressions
         public BlockStatement Body { get; set; }
 
         public string Id => Parent is AssignmentExpression assignment 
-            ? ((IdToken)assignment.Left).Id 
+            ? assignment.Left.ToString()
             : LineColumnTextSpan.ToString();
 
-        public string Signature
-        {
-            get
-            {
-                var paramsString = string.Join(",", Parameters.Select(p => p.Type?.TypeText ?? "Any"));
-
-                if (Parent is AssignmentExpression assignment)
-                {
-                    return $"{Id}({paramsString})";
-                }
-                else
-                {
-                    return $"{LineColumnTextSpan}({paramsString})";
-                }
-            }
-        }
+        public string Signature => UstUtils.GenerateSignature(Id, Parameters);
 
         public override Expression[] GetArgs() => new Expression[0];
 

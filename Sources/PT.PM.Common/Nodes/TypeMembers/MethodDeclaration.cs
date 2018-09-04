@@ -14,14 +14,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public BlockStatement Body { get; set; }
 
-        public string Signature
-        {
-            get
-            {
-                var paramsString = string.Join(",", Parameters.Select(p => p.Type?.TypeText ?? "Any"));
-                return $"{Name.TextValue}({paramsString})";
-            }
-        }
+        public string Signature => UstUtils.GenerateSignature(Name.TextValue, Parameters);
 
         public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan)
             : base(name, textSpan)
