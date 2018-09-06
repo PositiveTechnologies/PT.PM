@@ -30,22 +30,6 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-
-        public static BlockStatement GetCurrentBlockStatement(this Ust ust)
-        {
-            if (ust.Parent == null)
-            {
-                return null;
-            }
-
-            if (ust.Parent is BlockStatement block)
-            {
-                return block;
-            }
-
-            return ust.Parent.GetCurrentBlockStatement();
-        }
-
         public static Expression ToExpressionIfRequired(this Ust ust)
         {
             if (ust == null)
