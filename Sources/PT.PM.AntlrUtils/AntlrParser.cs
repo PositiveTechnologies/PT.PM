@@ -39,11 +39,11 @@ namespace PT.PM.AntlrUtils
 
         public static int ClearCacheLexerFilesBytes { get; set; } = 40 * 1000 * 1000;
 
-        public static int ClearCacheParserFilesBytes { get; set; } = 20 * 1000 * 1000;
+        public static int ClearCacheParserFilesBytes { get; set; } = 10 * 1000 * 1000;
 
-        public static int ClearCacheLexerFilesCount { get; set; } = 80;
+        public static int ClearCacheLexerFilesCount { get; set; } = 100;
 
-        public static int ClearCacheParserFilesCount { get; set; } = 40;
+        public static int ClearCacheParserFilesCount { get; set; } = 20;
 
         public static long MemoryConsumptionBytes { get; set; } = 500 * 1000 * 1000;
 
@@ -141,6 +141,8 @@ namespace PT.PM.AntlrUtils
                 {
                     Interlocked.Increment(ref processedFilesCount);
                     Interlocked.Add(ref processedBytesCount, sourceCodeFile.Code.Length);
+
+                    ClearCacheIfRequired();
                 }
             }
             else

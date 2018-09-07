@@ -87,11 +87,6 @@ namespace PT.PM
                 Logger.LogInfo("Scan cancelled");
             }
 
-            if (result.TotalProcessedFilesCount > 1)
-            {
-                AntlrParser.ClearCacheIfRequired();
-            }
-
             DumpJsonOutput(result);
             result.ErrorCount = logger?.ErrorCount ?? 0;
 
@@ -175,8 +170,6 @@ namespace PT.PM
             }
             finally
             {
-                AntlrParser.ClearCacheIfRequired();
-
                 workflowResult.AddProcessedFilesCount(1);
                 double progress = workflowResult.TotalFilesCount == 0
                     ? workflowResult.TotalProcessedFilesCount
