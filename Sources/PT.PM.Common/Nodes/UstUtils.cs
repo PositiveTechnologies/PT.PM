@@ -1,7 +1,7 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,13 +38,20 @@ namespace PT.PM.Common.Nodes
             }
 
             Expression result = ust as Expression;
+
             if (result == null)
             {
                 result = new WrapperExpression(ust);
             }
+
             return result;
         }
 
+        internal static string GenerateSignature(string id, List<ParameterDeclaration> parameters)
+        {
+            string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Any"));
+            return $"{id}({paramsString})";
+        }
 
         public static List<TextSpan> GetAlignedTextSpan(Ust ust, TextSpan[] matchesLocations)
         {

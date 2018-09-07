@@ -59,6 +59,24 @@ namespace PT.PM.Common
             return resultTextSpan;
         }
 
+        public static TextSpan ParseAnyTextSpan(string textSpanString, out bool isLineColumn, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
+        {
+            TextSpan result;
+
+            isLineColumn = textSpanString.Contains(",");
+            if (!isLineColumn)
+            {
+                result = ParseTextSpan(textSpanString, currentCodeFile, codeFiles);
+            }
+            else
+            {
+                LineColumnTextSpan lineColumnTextSpan = ParseLineColumnTextSpan(textSpanString, currentCodeFile, codeFiles);
+                result = lineColumnTextSpan.CodeFile.GetTextSpan(lineColumnTextSpan);
+            }
+
+            return result;
+        }
+
         public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);

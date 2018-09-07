@@ -2,7 +2,6 @@
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -11,6 +10,12 @@ namespace PT.PM.Common.Nodes.Expressions
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
         public BlockStatement Body { get; set; }
+
+        public string Id => Parent is AssignmentExpression assignment 
+            ? assignment.Left.ToString()
+            : LineColumnTextSpan.ToString();
+
+        public string Signature => UstUtils.GenerateSignature(Id, Parameters);
 
         public override Expression[] GetArgs() => new Expression[0];
 

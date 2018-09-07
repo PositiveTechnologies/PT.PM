@@ -15,6 +15,8 @@ namespace PT.PM.Common.Json
 
         public bool IncludeTextSpans { get; set; } = false;
 
+        public bool IsLineColumn { get; set; }
+
         public bool ExcludeDefaults { get; set; } = true;
 
         public override bool CanRead => false;

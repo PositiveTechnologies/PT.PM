@@ -64,6 +64,7 @@ namespace PT.PM.Common.Json
                 jsonConverterWriter.IncludeTextSpans = IncludeTextSpans;
                 jsonConverterWriter.ExcludeDefaults = ExcludeDefaults;
                 jsonConverterWriter.Logger = Logger;
+                jsonConverterWriter.IsLineColumn = LineColumnTextSpans;
 
                 jsonConverter = jsonConverterWriter;
             }
