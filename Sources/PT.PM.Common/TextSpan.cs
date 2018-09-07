@@ -94,6 +94,11 @@ namespace PT.PM.Common
             return obj is TextSpan && Equals((TextSpan)obj);
         }
 
+        public bool EqualsNoFile(TextSpan other)
+        {
+            return Start == other.Start && Length == other.Length;
+        }
+
         public bool Equals(TextSpan other)
         {
             if (CodeFile != other.CodeFile)
