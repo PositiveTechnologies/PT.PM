@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace PT.PM
 {
@@ -15,14 +16,17 @@ namespace PT.PM
 
         public int Timeout { get; set; } = 0;
 
+        public Encoding Encoding { get; set; }
+
         public event EventHandler<string> ErrorDataReceived;
 
         public event EventHandler<string> OutputDataReceived;
 
-        public Processor(string toolName, string arguments = "", int timeout = 0)
+        public Processor(string toolName, string arguments = "", int timeout = 0, Encoding encoding = null)
         {
             ToolName = toolName ?? throw new ArgumentNullException(nameof(toolName));
             Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            Encoding = encoding;
             Timeout = timeout;
         }
 
@@ -34,6 +38,10 @@ namespace PT.PM
             var startInfo = process.StartInfo;
             startInfo.FileName = ToolName;
             startInfo.Arguments = Arguments;
+
+            startInfo.StandardOutputEncoding = Encoding;
+            startInfo.StandardErrorEncoding = Encoding;
+
             if (WorkingDirectory != null)
             {
                 startInfo.WorkingDirectory = WorkingDirectory;
@@ -60,6 +68,7 @@ namespace PT.PM
                     outputDataReceived(sender, e.Data);
                 }
             };
+
             process.EnableRaisingEvents = true;
             process.Start();
             process.StandardInput.WriteLine();
