@@ -70,19 +70,11 @@ namespace PT.PM.Common.Json
             try
             {
                 string textSpanString = (string)reader.Value;
-                IsLineColumn = textSpanString.Contains(",");
 
                 if (textSpanString != EmptyTextSpanFormat)
                 {
-                    if (!IsLineColumn)
-                    {
-                        result = TextUtils.ParseTextSpan(textSpanString, CurrentCodeFile, CodeFiles);
-                    }
-                    else
-                    {
-                        LineColumnTextSpan lineColumnTextSpan = TextUtils.ParseLineColumnTextSpan(textSpanString, CurrentCodeFile, CodeFiles);
-                        result = lineColumnTextSpan.CodeFile.GetTextSpan(lineColumnTextSpan);
-                    }
+                    result = TextUtils.ParseAnyTextSpan(textSpanString, out bool isLineColumn, CurrentCodeFile, CodeFiles);
+                    IsLineColumn = isLineColumn;
                 }
 
                 if (result.CodeFile == CurrentCodeFile)
