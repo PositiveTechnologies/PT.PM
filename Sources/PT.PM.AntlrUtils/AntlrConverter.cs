@@ -52,7 +52,7 @@ namespace PT.PM.AntlrUtils
             {
                 try
                 {
-                    Tokens = antlrParseTree.Tokens;
+                    Tokens = Language.Sublanguages.Length > 0 ? antlrParseTree.Tokens : new List<IToken>();
                     root = new RootUst(langParseTree.SourceCodeFile, Language);
                     Ust visited = Visit(tree);
                     if (visited is RootUst rootUst)
