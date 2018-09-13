@@ -1352,7 +1352,6 @@ namespace PT.PM.PhpParseTreeUst
             {
                 var indirectTypeRef = (Expression)Visit(context.indirectTypeRef());
                 result = new TypeToken(indirectTypeRef.ToString() + genericStr, textSpan);
-                result.Expression = indirectTypeRef;
             }
             else if (context.primitiveType() != null)
             {
@@ -1792,7 +1791,6 @@ namespace PT.PM.PhpParseTreeUst
                 exprs.Insert(0, (Expression)Visit(context.expression()));
             }
 
-            result.Expression = new MultichildExpression(exprs, context.GetTextSpan());
             return result;
         }
 
