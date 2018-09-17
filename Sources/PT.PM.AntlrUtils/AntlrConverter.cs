@@ -64,7 +64,6 @@ namespace PT.PM.AntlrUtils
                         result = root;
                         result.Node = visited;
                     }
-                    result.FillAscendants();
                 }
                 catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
@@ -87,6 +86,7 @@ namespace PT.PM.AntlrUtils
                 };
             }
             result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())).ToArray();
+            result.FillAscendants();
             return result;
         }
 
