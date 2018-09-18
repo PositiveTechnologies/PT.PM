@@ -32,6 +32,8 @@ namespace PT.PM.AntlrUtils
 
         public abstract Language Language { get; }
 
+        public bool IsActive => true;
+
         public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
 
         public bool UseFastParseStrategyAtFirst { get; set; } = true;

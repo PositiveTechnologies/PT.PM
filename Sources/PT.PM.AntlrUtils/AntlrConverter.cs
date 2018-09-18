@@ -26,6 +26,8 @@ namespace PT.PM.AntlrUtils
 
         public abstract Language Language { get; }
 
+        public bool IsActive => true;
+
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public IList<IToken> Tokens { get; set; }

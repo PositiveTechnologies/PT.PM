@@ -21,6 +21,8 @@ namespace PT.PM.CSharpParseTreeUst
 
         public Language Language => Aspx.Language;
 
+        public bool IsActive => true;
+
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;

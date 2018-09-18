@@ -21,13 +21,15 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
     {
         private RootUst root { get; set; }
 
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
+
         public Language Language => CSharp.Language;
+
+        public bool IsActive => true;
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public RootUst ParentRoot { get; set; }
-
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public CSharpRoslynParseTreeConverter()
         {

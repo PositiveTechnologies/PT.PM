@@ -213,7 +213,10 @@ namespace PT.PM.Common
                     if (interfaces.Contains(typeof(ILanguageParser)))
                     {
                         var parser = (ILanguageParser)Activator.CreateInstance(type);
-                        parsers.Add(parser.Language, parser.GetType());
+                        if (parser.IsActive)
+                        {
+                            parsers.Add(parser.Language, parser.GetType());
+                        }
                         foreach (Language sublanguage in parser.Language.Sublanguages)
                         {
                             subParsers.Add(sublanguage, type);
@@ -222,7 +225,10 @@ namespace PT.PM.Common
                     else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
                     {
                         var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
-                        converters.Add(converter.Language, converter.GetType());
+                        if (converter.IsActive)
+                        {
+                            converters.Add(converter.Language, converter.GetType());
+                        }
                         foreach (Language sublanguage in converter.Language.Sublanguages)
                         {
                             subConverters.Add(sublanguage, type);

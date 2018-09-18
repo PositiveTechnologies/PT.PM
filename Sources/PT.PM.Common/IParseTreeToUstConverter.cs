@@ -11,6 +11,8 @@ namespace PT.PM.Common
 
         RootUst ParentRoot { get; set; }
 
+        bool IsActive { get; }
+
         RootUst Convert(ParseTree langParseTree);
     }
 }

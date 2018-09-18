@@ -14,6 +14,8 @@ namespace PT.PM.CSharpParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
+        public bool IsActive => true;
+
         public Language Language => CSharp.Language;
 
         public ParseTree Parse(CodeFile sourceCodeFile)
