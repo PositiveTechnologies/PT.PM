@@ -11,12 +11,12 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public override Language Language => JavaScript.Language;
 
-        protected override int CommentsChannel => JavaScriptLexer.Hidden;
+        protected override int CommentsChannel => Lexer.Hidden;
 
-        protected override IVocabulary Vocabulary => JavaScriptParser.DefaultVocabulary;
+        protected override IVocabulary Vocabulary => DefaultVocabulary;
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
-            => new JavaScriptAntlrParseTree((JavaScriptParser.ProgramContext)syntaxTree);
+            => new JavaScriptAntlrParseTree((ProgramContext)syntaxTree);
 
         protected override Lexer InitLexer(ICharStream inputStream)
         {
@@ -29,14 +29,14 @@ namespace PT.PM.JavaScriptParseTreeUst
             return lexer;
         }
 
-        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream)
+        protected override Parser InitParser(ITokenStream inputStream)
             => new JavaScriptParser(inputStream);
 
-        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser)
+        protected override ParserRuleContext Parse(Parser parser)
             => ((JavaScriptParser)parser).program();
 
         protected override string LexerSerializedATN => JavaScriptLexer._serializedATN;
 
-        protected override string ParserSerializedATN => JavaScriptParser._serializedATN;
+        protected override string ParserSerializedATN => _serializedATN;
     }
 }
