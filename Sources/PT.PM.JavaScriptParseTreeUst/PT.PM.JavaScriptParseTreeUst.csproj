@@ -28,6 +28,7 @@
       <CustomToolNamespace>PT.PM.JavaScriptParseTreeUst</CustomToolNamespace>
     </Antlr4>
     <PackageReference Include="Antlr4" Version="4.6.5" />
+    <PackageReference Include="Esprima" Version="1.0.0-beta-1051" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
   </ItemGroup>
