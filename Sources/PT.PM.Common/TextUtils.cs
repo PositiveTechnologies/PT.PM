@@ -279,6 +279,72 @@ namespace PT.PM.Common
             return str.Replace("\\", "\\\\").Replace("\"", "\\\"");
         }
 
+        public static string CollectWords(params object[] objects)
+        {
+            var result = new StringBuilder();
+
+            for (int i = 0; i < objects.Length; i++)
+            {
+                string str = objects[i]?.ToString();
+                if (!string.IsNullOrEmpty(str))
+                {
+                    result.Append(str);
+                    if (i < objects.Length - 1)
+                    {
+                        result.Append(' ');
+                    }
+                }
+            }
+
+            return result.ToString();
+        }
+
+        public static string ToStringNullable(this object obj)
+        {
+            return obj?.ToString() ?? "";
+        }
+
+        public static string ToStringWithLeadSpace(this object obj)
+        {
+            return ToStringWithLead(obj, ' ');
+        }
+
+        public static string ToStringWithTrailSpace(this object obj)
+        {
+            return ToStringWithTrail(obj, ' ');
+        }
+
+        public static string ToStringWithTrailNL(this object obj)
+        {
+            return ToStringWithTrail(obj, '\n');
+        }
+
+        public static string ToStringWithTrail(this object obj, char trail)
+        {
+            string result = obj?.ToString() ?? null;
+            return string.IsNullOrEmpty(result) ? "" : result + trail;
+        }
+
+        public static string ToStringWithLead(this object obj, char lead)
+        {
+            string result = obj?.ToString() ?? null;
+            return string.IsNullOrEmpty(result) ? "" : lead + result;
+        }
+
+        public static void GetNewlineIndent(bool newline, out string nl, out string indent)
+        {
+            if (newline)
+            {
+                nl = "\n";
+                indent = "  ";
+            }
+            else
+            {
+                nl = " ";
+                indent = "";
+            }
+        }
+
         private static void ParseLineColumn(string text, out int line, out int column)
         {
             int commaIndex = text.IndexOf(',');
