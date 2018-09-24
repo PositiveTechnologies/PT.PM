@@ -18,8 +18,6 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public Language Language => JavaScript.Language;
 
-        public bool IsActive => true;
-
         public int Offset { get; set; }
 
         public CodeFile OrigFile { get; set; }

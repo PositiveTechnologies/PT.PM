@@ -12,8 +12,6 @@ namespace PT.PM.CSharpParseTreeUst
 
         public Language Language => Aspx.Language;
 
-        public bool IsActive => true;
-
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
             if (sourceCodeFile.Code == null)

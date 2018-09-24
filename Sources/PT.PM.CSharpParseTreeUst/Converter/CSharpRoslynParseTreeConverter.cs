@@ -25,8 +25,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public Language Language => CSharp.Language;
 
-        public bool IsActive => true;
-
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public RootUst ParentRoot { get; set; }

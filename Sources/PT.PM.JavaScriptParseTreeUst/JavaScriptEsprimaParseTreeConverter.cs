@@ -20,8 +20,6 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public Language Language => JavaScript.Language;
 
-        public bool IsActive => true;
-
         public CodeFile SourceCodeFile { get; set; }
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
