@@ -32,7 +32,7 @@ namespace PT.PM.AntlrUtils
 
         public abstract Language Language { get; }
 
-        public bool IsActive => true;
+        public virtual bool IsActive => true;
 
         public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
 
@@ -70,112 +70,104 @@ namespace PT.PM.AntlrUtils
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
+            if (sourceCodeFile.Code == null)
+            {
+                return null;
+            }
+
             AntlrParseTree result = null;
-
             var filePath = sourceCodeFile.RelativeName;
-            if (sourceCodeFile.Code != null)
+            var errorListener = new AntlrMemoryErrorListener();
+            errorListener.CodeFile = sourceCodeFile;
+            errorListener.Logger = Logger;
+            errorListener.LineOffset = LineOffset;
+            try
             {
-                var errorListener = new AntlrMemoryErrorListener();
-                errorListener.CodeFile = sourceCodeFile;
-                errorListener.Logger = Logger;
-                errorListener.LineOffset = LineOffset;
-                try
+                var preprocessedText = PreprocessText(sourceCodeFile);
+                AntlrInputStream inputStream;
+                if (Language.IsCaseInsensitive)
                 {
-                    var preprocessedText = PreprocessText(sourceCodeFile);
-                    AntlrInputStream inputStream;
-                    if (Language.IsCaseInsensitive)
-                    {
-                        inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
-                    }
-                    else
-                    {
-                        inputStream = new AntlrInputStream(preprocessedText);
-                    }
-                    inputStream.name = filePath;
-
-                    Lexer lexer = InitLexer(inputStream);
-                    lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(true));
-                    lexer.RemoveErrorListeners();
-                    lexer.AddErrorListener(errorListener);
-                    var commentTokens = new List<IToken>();
-
-                    var stopwatch = Stopwatch.StartNew();
-                    IList<IToken> tokens = lexer.GetAllTokens();
-                    stopwatch.Stop();
-                    TimeSpan lexerTimeSpan = stopwatch.Elapsed;
-
-                    foreach (IToken token in tokens)
-                    {
-                        if (token.Channel == CommentsChannel)
-                        {
-                            commentTokens.Add(token);
-                        }
-                    }
-
-                    stopwatch.Restart();
-                    var codeTokenSource = new ListTokenSource(tokens);
-                    var codeTokenStream = new CommonTokenStream(codeTokenSource);
-                    ParserRuleContext syntaxTree = ParseTokens(sourceCodeFile, errorListener, codeTokenStream);
-                    stopwatch.Stop();
-                    TimeSpan parserTimeSpan = stopwatch.Elapsed;
-
-                    result = Create(syntaxTree);
-                    result.LexerTimeSpan = lexerTimeSpan;
-                    result.ParserTimeSpan = parserTimeSpan;
-
-                    result.Tokens = tokens;
-                    result.Comments = commentTokens;
+                    inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
                 }
-                catch (Exception ex) when (!(ex is ThreadAbortException))
+                else
                 {
-                    Logger.LogError(new ParsingException(sourceCodeFile, ex));
+                    inputStream = new AntlrInputStream(preprocessedText);
+                }
+                inputStream.name = filePath;
 
-                    if (result == null)
+                Lexer lexer = InitLexer(inputStream);
+                lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(true));
+                lexer.RemoveErrorListeners();
+                lexer.AddErrorListener(errorListener);
+                var commentTokens = new List<IToken>();
+
+                var stopwatch = Stopwatch.StartNew();
+                IList<IToken> tokens = lexer.GetAllTokens();
+                stopwatch.Stop();
+                TimeSpan lexerTimeSpan = stopwatch.Elapsed;
+
+                foreach (IToken token in tokens)
+                {
+                    if (token.Channel == CommentsChannel)
                     {
-                        result = Create(null);
+                        commentTokens.Add(token);
                     }
                 }
-                finally
+
+                stopwatch.Restart();
+                var codeTokenSource = new ListTokenSource(tokens);
+                var codeTokenStream = new CommonTokenStream(codeTokenSource);
+                ParserRuleContext syntaxTree = ParseTokens(sourceCodeFile, errorListener, codeTokenStream);
+                stopwatch.Stop();
+                TimeSpan parserTimeSpan = stopwatch.Elapsed;
+
+                result = Create(syntaxTree);
+                result.LexerTimeSpan = lexerTimeSpan;
+                result.ParserTimeSpan = parserTimeSpan;
+
+                result.Tokens = tokens;
+                result.Comments = commentTokens;
+                result.SourceCodeFile = sourceCodeFile;
+            }
+            catch (Exception ex) when (!(ex is ThreadAbortException))
+            {
+                Logger.LogError(new ParsingException(sourceCodeFile, ex));
+            }
+            finally
+            {
+                long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
+                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceCodeFile.Code.Length);
+
+                long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
+                bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
+                checkNumber = divideResult;
+
+                if (Process.GetCurrentProcess().PrivateMemorySize64 > MemoryConsumptionBytes)
                 {
-                    long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
-                    long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceCodeFile.Code.Length);
+                    bool prevExcessMemory = excessMemory;
+                    excessMemory = true;
 
-                    long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
-                    bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
-                    checkNumber = divideResult;
-
-                    if (Process.GetCurrentProcess().PrivateMemorySize64 > MemoryConsumptionBytes)
+                    if (!prevExcessMemory ||
+                        exceededProcessedBytes ||
+                        localProcessedFilesCount % ClearCacheFilesCount == 0)
                     {
-                        bool prevExcessMemory = excessMemory;
-                        excessMemory = true;
-
-                        if (!prevExcessMemory ||
-                            exceededProcessedBytes ||
-                            localProcessedFilesCount % ClearCacheFilesCount == 0)
+                        lock (lexerAtns)
                         {
-                            lock (lexerAtns)
-                            {
-                                lexerAtns.Remove(Language);
-                            }
-                            lock (parserAtns)
-                            {
-                                parserAtns.Remove(Language);
-                            }
-
-                            Logger.LogInfo($"Memory cleared due to big memory consumption during {sourceCodeFile.RelativeName} parsing.");
+                            lexerAtns.Remove(Language);
                         }
+                        lock (parserAtns)
+                        {
+                            parserAtns.Remove(Language);
+                        }
+
+                        Logger.LogInfo($"Memory cleared due to big memory consumption during {sourceCodeFile.RelativeName} parsing.");
                     }
-                    else
-                    {
-                        excessMemory = false;
-                    }
+                }
+                else
+                {
+                    excessMemory = false;
                 }
             }
-            else
-            {
-                result = Create(null);
-            }
-            result.SourceCodeFile = sourceCodeFile;
 
             return result;
         }

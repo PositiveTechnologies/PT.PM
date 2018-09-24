@@ -11,6 +11,7 @@ using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
 using PT.PM.Matching.PatternsRepository;
+using PT.PM.PhpParseTreeUst;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -199,14 +200,15 @@ namespace PT.PM
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {shortFileName} parsed {GetElapsedString(stopwatch)}.");
-                    workflowResult.AddParseTime(stopwatch.Elapsed);
-                    workflowResult.AddResultEntity(parseTree);
 
-                    if (parseTree is AntlrParseTree antlrParseTree)
+                    if (parseTree == null)
                     {
-                        workflowResult.AddLexerTime(antlrParseTree.LexerTimeSpan);
-                        workflowResult.AddParserTicks(antlrParseTree.ParserTimeSpan);
+                        return null;
                     }
+
+                    workflowResult.AddResultEntity(parseTree);
+                    workflowResult.AddLexerTime(parseTree.LexerTimeSpan);
+                    workflowResult.AddParserTicks(parseTree.ParserTimeSpan);
 
                     DumpTokensAndParseTree(parseTree);
 
@@ -220,6 +222,10 @@ namespace PT.PM
                     if (!StartStage.Is(PM.Stage.Ust))
                     {
                         IParseTreeToUstConverter converter = detectionResult.Language.CreateConverter();
+                        if (converter is PhpAntlrParseTreeConverter phpConverter)
+                        {
+                            phpConverter.JavaScriptType = JavaScriptType;
+                        }
                         converter.Logger = Logger;
                         converter.AnalyzedLanguages = AnalyzedLanguages;
                         result = converter.Convert(parseTree);
@@ -239,7 +245,7 @@ namespace PT.PM
                         };
                         result = (RootUst)jsonUstSerializer.Deserialize(sourceCodeFile);
 
-                        if (!AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
+                        if (result == null || !AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                         {
                             Logger.LogInfo($"File {fileName} ignored.");
                             return null;
@@ -249,6 +255,11 @@ namespace PT.PM
                     stopwatch.Stop();
                     Logger.LogInfo($"File {shortFileName} converted {GetElapsedString(stopwatch)}.");
                     workflowResult.AddConvertTime(stopwatch.Elapsed);
+
+                    if (result == null)
+                    {
+                        return null;
+                    }
 
                     if (IsSimplifyUst)
                     {

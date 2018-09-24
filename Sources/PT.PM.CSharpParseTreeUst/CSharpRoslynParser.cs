@@ -20,55 +20,50 @@ namespace PT.PM.CSharpParseTreeUst
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
-            CSharpRoslynParseTree result = null;
-
-            var filePath = Path.Combine(sourceCodeFile.RelativePath, sourceCodeFile.Name);
-            if (sourceCodeFile.Code != null)
+            if (sourceCodeFile.Code == null)
             {
-                SyntaxNode root = null;
-                try
-                {
-                    SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCodeFile.Code, null, filePath);
-                    result = new CSharpRoslynParseTree(syntaxTree);
-                    root = syntaxTree.GetRoot();
-                    result.Comments = root.DescendantTrivia().Where(node =>
-                    {
-                        SyntaxKind kind = node.Kind();
-                        return kind == SyntaxKind.SingleLineCommentTrivia ||
-                               kind == SyntaxKind.MultiLineCommentTrivia ||
-                               kind == SyntaxKind.SingleLineDocumentationCommentTrivia ||
-                               kind == SyntaxKind.MultiLineDocumentationCommentTrivia ||
-                               kind == SyntaxKind.DocumentationCommentExteriorTrivia ||
-                               kind == SyntaxKind.XmlComment;
-                    }).ToArray();
+                return null;
+            }
 
-                    IEnumerable<Diagnostic> diagnostics = root.GetDiagnostics();
-                    foreach (Diagnostic diagnostic in diagnostics)
+            try
+            {
+                var filePath = Path.Combine(sourceCodeFile.RelativePath, sourceCodeFile.Name);
+                SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCodeFile.Code, null, filePath);
+                var result = new CSharpRoslynParseTree(syntaxTree);
+                SyntaxNode root = syntaxTree.GetRoot();
+                result.Comments = root.DescendantTrivia().Where(node =>
+                {
+                    SyntaxKind kind = node.Kind();
+                    return kind == SyntaxKind.SingleLineCommentTrivia ||
+                           kind == SyntaxKind.MultiLineCommentTrivia ||
+                           kind == SyntaxKind.SingleLineDocumentationCommentTrivia ||
+                           kind == SyntaxKind.MultiLineDocumentationCommentTrivia ||
+                           kind == SyntaxKind.DocumentationCommentExteriorTrivia ||
+                           kind == SyntaxKind.XmlComment;
+                }).ToArray();
+
+                IEnumerable<Diagnostic> diagnostics = root.GetDiagnostics();
+                foreach (Diagnostic diagnostic in diagnostics)
+                {
+                    if (diagnostic.Severity == DiagnosticSeverity.Error &&
+                        diagnostic.Id != "CS1029")
                     {
-                        if (diagnostic.Severity == DiagnosticSeverity.Error &&
-                            diagnostic.Id != "CS1029")
+                        var textSpan = diagnostic.Location.ToTextSpan();
+                        Logger.LogError(new ParsingException(sourceCodeFile, message: diagnostic.ToString())
                         {
-                            var textSpan = diagnostic.Location.ToTextSpan();
-                            Logger.LogError(new ParsingException(sourceCodeFile, message: diagnostic.ToString())
-                            {
-                                TextSpan = textSpan
-                            });
-                        }
+                            TextSpan = textSpan
+                        });
                     }
                 }
-                catch (Exception ex) when (!(ex is ThreadAbortException))
-                {
-                    Logger.LogError(new ParsingException(sourceCodeFile, ex));
-                    result = new CSharpRoslynParseTree();
-                }
-            }
-            else
-            {
-                result = new CSharpRoslynParseTree();
-            }
-            result.SourceCodeFile = sourceCodeFile;
 
-            return result;
+                result.SourceCodeFile = sourceCodeFile;
+                return result;
+            }
+            catch (Exception ex) when (!(ex is ThreadAbortException))
+            {
+                Logger.LogError(new ParsingException(sourceCodeFile, ex));
+                return null;
+            }
         }
     }
 }

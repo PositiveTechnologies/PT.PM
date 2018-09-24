@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using System.IO;
 
 namespace PT.PM.CSharpParseTreeUst
 {
