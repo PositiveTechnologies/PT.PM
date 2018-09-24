@@ -188,7 +188,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
             if (value.Static)
             {
-                result.Modifiers.Add(new UstLiterals.ModifierLiteral(UstTokens.Modifier.Static));
+                result.Modifiers.Add(new UstLiterals.ModifierLiteral(Modifier.Static));
             }
 
             return result;

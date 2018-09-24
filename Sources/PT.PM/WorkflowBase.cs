@@ -174,9 +174,9 @@ namespace PT.PM
                         if (parser is AntlrParser antlrParser)
                         {
                             AntlrParser.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;
-                            if (parser is JavaScriptAntlrParser javaScriptAntlrParser)
+                            if (parser is JavaScriptEsprimaParser javaScriptParser)
                             {
-                                javaScriptAntlrParser.JavaScriptType = JavaScriptType;
+                                javaScriptParser.JavaScriptType = JavaScriptType;
                             }
                         }
                         parseTree = parser.Parse(sourceCodeFile);
