@@ -34,6 +34,11 @@ namespace PT.PM.Common
             CodeFile = codeFile;
         }
 
+        public LineColumnTextSpan AddLineOffset(int lineOffset)
+        {
+            return new LineColumnTextSpan(BeginLine + lineOffset, BeginColumn, EndLine + lineOffset, EndColumn);
+        }
+
         public override string ToString() => ToString(true);
 
         public string ToString(bool includeFileName)

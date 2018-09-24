@@ -331,12 +331,12 @@ namespace PT.PM.Common
             return string.IsNullOrEmpty(result) ? "" : lead + result;
         }
 
-        public static void GetNewlineIndent(bool newline, out string nl, out string indent)
+        public static void GetNewlineIndent(bool newline, string prevIndent, out string nl, out string indent)
         {
             if (newline)
             {
                 nl = "\n";
-                indent = "  ";
+                indent = prevIndent + "    ";
             }
             else
             {
