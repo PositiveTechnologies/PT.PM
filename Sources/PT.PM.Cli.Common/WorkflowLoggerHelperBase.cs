@@ -85,7 +85,7 @@ namespace PT.PM.Cli.Common
                     ticks = WorkflowResult.TotalReadTicks;
                     break;
                 case nameof(Stage.ParseTree):
-                    ticks = WorkflowResult.TotalParseTicks;
+                    ticks = WorkflowResult.TotalLexerParserTicks;
                     break;
                 case nameof(Stage.Ust):
                     ticks = WorkflowResult.TotalConvertTicks;
@@ -120,19 +120,24 @@ namespace PT.PM.Cli.Common
 
         protected void LogAdditionalParserInfo()
         {
+            bool printLexerParserPercents = WorkflowResult.TotalLexerTicks > 0 && WorkflowResult.TotalLexerParserTicks > 0;
             if (WorkflowResult.TotalLexerTicks > 0)
             {
                 TimeSpan lexerTimeSpan = new TimeSpan(WorkflowResult.TotalLexerTicks);
                 string totalLexerPercent = CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalTimeTicks);
-                string lexerPercent = CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalParseTicks);
-                Logger.LogInfo($"{"Lexing time: ",LoggerUtils.Align} {lexerTimeSpan.Format()} {totalLexerPercent}% ({lexerPercent}%)");
+                string lexerPercent = printLexerParserPercents
+                    ? $" ({CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalLexerParserTicks)}%)"
+                    : "";
+                Logger.LogInfo($"{"Lexing time: ",LoggerUtils.Align} {lexerTimeSpan.Format()} {totalLexerPercent}%{lexerPercent}");
             }
-            if (WorkflowResult.TotalParseTicks > 0)
+            if (WorkflowResult.TotalLexerParserTicks > 0)
             {
                 TimeSpan parserTimeSpan = new TimeSpan(WorkflowResult.TotalParserTicks);
                 string totalParserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalTimeTicks);
-                string parserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalParseTicks);
-                Logger.LogInfo($"{"Parsing time: ",LoggerUtils.Align} {parserTimeSpan.Format()} {totalParserPercent}% ({parserPercent}%)");
+                string parserPercent = printLexerParserPercents
+                    ? $" ({CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalLexerParserTicks)}%)"
+                    : "";
+                Logger.LogInfo($"{"Parsing time: ",LoggerUtils.Align} {parserTimeSpan.Format()} {totalParserPercent}%{parserPercent}");
             }
         }
 

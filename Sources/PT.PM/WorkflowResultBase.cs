@@ -21,7 +21,6 @@ namespace PT.PM
         private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
 
         private long totalReadTicks;
-        private long totalParseTicks;
         private long totalConvertTicks;
         private long totalSimplifyTicks;
         private long totalMatchTicks;
@@ -80,7 +79,7 @@ namespace PT.PM
         public List<TPattern> Patterns { get; set; } = new List<TPattern>();
 
         public long TotalReadTicks => totalReadTicks;
-        public long TotalParseTicks => totalParseTicks;
+        public long TotalLexerParserTicks => totalLexerTicks + totalParserTicks;
         public long TotalConvertTicks => totalConvertTicks;
         public long TotalSimplifyTicks => totalSimplifyTicks;
         public long TotalMatchTicks => totalMatchTicks;
@@ -160,11 +159,6 @@ namespace PT.PM
             AddTime(ref totalReadTicks, readTime);
         }
 
-        public void AddParseTime(TimeSpan parseTime)
-        {
-            AddTime(ref totalParseTicks, parseTime);
-        }
-
         public void AddConvertTime(TimeSpan convertTime)
         {
             AddTime(ref totalConvertTicks, convertTime);
@@ -202,7 +196,8 @@ namespace PT.PM
 
         public virtual long TotalTimeTicks =>
             totalReadTicks +
-            totalParseTicks +
+            totalLexerTicks +
+            totalParserTicks +
             totalConvertTicks +
             totalSimplifyTicks +
             totalMatchTicks +
