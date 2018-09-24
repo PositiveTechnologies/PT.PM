@@ -11,6 +11,8 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public override Language Language => JavaScript.Language;
 
+        public override bool IsActive => false;
+
         protected override int CommentsChannel => Lexer.Hidden;
 
         protected override IVocabulary Vocabulary => DefaultVocabulary;

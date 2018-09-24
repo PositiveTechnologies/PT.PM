@@ -20,6 +20,8 @@ namespace PT.PM.JavaScriptParseTreeUst
     {
         public override Language Language => JavaScript.Language;
 
+        public override bool IsActive => false;
+
         public Ust VisitProgram([NotNull] JavaScriptParser.ProgramContext context)
         {
             root.Node = Visit(context.sourceElements());
@@ -40,11 +42,11 @@ namespace PT.PM.JavaScriptParseTreeUst
                 context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
-        public Ust VisitPreIncrementExpression([NotNull] JavaScriptParser.PreIncrementExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitPreIncrementExpression([NotNull] JavaScriptParser.PreIncrementExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitObjectLiteralExpression([NotNull] JavaScriptParser.ObjectLiteralExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitObjectLiteralExpression([NotNull] JavaScriptParser.ObjectLiteralExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitInExpression([NotNull] JavaScriptParser.InExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitInExpression([NotNull] JavaScriptParser.InExpressionContext context) => VisitChildren(context);
 
         public Ust VisitLogicalOrExpression([NotNull] JavaScriptParser.LogicalOrExpressionContext context)
         {
@@ -52,9 +54,9 @@ namespace PT.PM.JavaScriptParseTreeUst
                 context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
-        public Ust VisitNotExpression([NotNull] JavaScriptParser.NotExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitNotExpression([NotNull] JavaScriptParser.NotExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitPreDecreaseExpression([NotNull] JavaScriptParser.PreDecreaseExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitPreDecreaseExpression([NotNull] JavaScriptParser.PreDecreaseExpressionContext context) => VisitChildren(context);
 
         public Ust VisitArgumentsExpression([NotNull] JavaScriptParser.ArgumentsExpressionContext context)
         {
@@ -64,15 +66,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return result;
         }
 
-        public Ust VisitSuperExpression([NotNull] JavaScriptParser.SuperExpressionContext context)
-        {
-            return VisitChildren(context);
-        }
+        public Ust VisitSuperExpression([NotNull] JavaScriptParser.SuperExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitThisExpression([NotNull] JavaScriptParser.ThisExpressionContext context)
-        {
-            return new ThisReferenceToken(context.GetTextSpan());
-        }
+        public Ust VisitThisExpression([NotNull] JavaScriptParser.ThisExpressionContext context) => new ThisReferenceToken(context.GetTextSpan());
 
         /// <returns><see cref="AnonymousMethodExpression"/></returns>
         public Ust VisitFunctionExpression([NotNull] JavaScriptParser.FunctionExpressionContext context)
@@ -82,9 +78,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return result;
         }
 
-        public Ust VisitPostDecreaseExpression([NotNull] JavaScriptParser.PostDecreaseExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitPostDecreaseExpression([NotNull] JavaScriptParser.PostDecreaseExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitUnaryMinusExpression([NotNull] JavaScriptParser.UnaryMinusExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitUnaryMinusExpression([NotNull] JavaScriptParser.UnaryMinusExpressionContext context) => VisitChildren(context);
 
         public Ust VisitAssignmentExpression([NotNull] JavaScriptParser.AssignmentExpressionContext context)
         {
@@ -93,13 +89,13 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new AssignmentExpression(left, right, context.GetTextSpan());
         }
 
-        public Ust VisitTypeofExpression([NotNull] JavaScriptParser.TypeofExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitTypeofExpression([NotNull] JavaScriptParser.TypeofExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitInstanceofExpression([NotNull] JavaScriptParser.InstanceofExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitInstanceofExpression([NotNull] JavaScriptParser.InstanceofExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitUnaryPlusExpression([NotNull] JavaScriptParser.UnaryPlusExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitUnaryPlusExpression([NotNull] JavaScriptParser.UnaryPlusExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitDeleteExpression([NotNull] JavaScriptParser.DeleteExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitDeleteExpression([NotNull] JavaScriptParser.DeleteExpressionContext context) => VisitChildren(context);
 
         public Ust VisitEqualityExpression([NotNull] JavaScriptParser.EqualityExpressionContext context)
         {
@@ -107,7 +103,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
-        public Ust VisitBitXOrExpression([NotNull] JavaScriptParser.BitXOrExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitBitXOrExpression([NotNull] JavaScriptParser.BitXOrExpressionContext context) => VisitChildren(context);
 
         public Ust VisitMultiplicativeExpression([NotNull] JavaScriptParser.MultiplicativeExpressionContext context)
         {
@@ -146,7 +142,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitPostIncrementExpression([NotNull] JavaScriptParser.PostIncrementExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitPostIncrementExpression([NotNull] JavaScriptParser.PostIncrementExpressionContext context) => VisitChildren(context);
 
         public Ust VisitAdditiveExpression([NotNull] JavaScriptParser.AdditiveExpressionContext context)
         {
@@ -161,9 +157,9 @@ namespace PT.PM.JavaScriptParseTreeUst
                 context.singleExpression(0), context.GetChild<ITerminalNode>(0), context.singleExpression(1));
         }
 
-        public Ust VisitBitNotExpression([NotNull] JavaScriptParser.BitNotExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitBitNotExpression([NotNull] JavaScriptParser.BitNotExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitNewExpression([NotNull] JavaScriptParser.NewExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitNewExpression([NotNull] JavaScriptParser.NewExpressionContext context) => VisitChildren(context);
 
         public Ust VisitLiteralExpression([NotNull] JavaScriptParser.LiteralExpressionContext context)
         {
@@ -177,9 +173,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new MemberReferenceExpression(target, name, context.GetTextSpan());
         }
 
-        public Ust VisitArrayLiteralExpression([NotNull] JavaScriptParser.ArrayLiteralExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitArrayLiteralExpression([NotNull] JavaScriptParser.ArrayLiteralExpressionContext context) => VisitChildren(context);
 
-        public Ust VisitMemberIndexExpression([NotNull] JavaScriptParser.MemberIndexExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitMemberIndexExpression([NotNull] JavaScriptParser.MemberIndexExpressionContext context) => VisitChildren(context);
 
         public Ust VisitIdentifierExpression([NotNull] JavaScriptParser.IdentifierExpressionContext context)
         {
@@ -206,7 +202,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return CreateAssignExpr(left, right, context, context.assignmentOperator());
         }
 
-        public Ust VisitVoidExpression([NotNull] JavaScriptParser.VoidExpressionContext context) { return VisitChildren(context); }
+        public Ust VisitVoidExpression([NotNull] JavaScriptParser.VoidExpressionContext context) => VisitChildren(context);
 
         public Ust VisitPropertyExpressionAssignment([NotNull] JavaScriptParser.PropertyExpressionAssignmentContext context)
         {
@@ -218,9 +214,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitPropertySetter([NotNull] JavaScriptParser.PropertySetterContext context) { return VisitChildren(context); }
+        public Ust VisitPropertySetter([NotNull] JavaScriptParser.PropertySetterContext context) => VisitChildren(context);
 
-        public Ust VisitPropertyGetter([NotNull] JavaScriptParser.PropertyGetterContext context) { return VisitChildren(context); }
+        public Ust VisitPropertyGetter([NotNull] JavaScriptParser.PropertyGetterContext context) => VisitChildren(context);
 
         public Ust VisitMethodProperty([NotNull] JavaScriptParser.MethodPropertyContext context)
         {
@@ -232,17 +228,17 @@ namespace PT.PM.JavaScriptParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitDoStatement([NotNull] JavaScriptParser.DoStatementContext context) { return VisitChildren(context); }
+        public Ust VisitDoStatement([NotNull] JavaScriptParser.DoStatementContext context) => VisitChildren(context);
 
-        public Ust VisitForVarStatement([NotNull] JavaScriptParser.ForVarStatementContext context) { return VisitChildren(context); }
+        public Ust VisitForVarStatement([NotNull] JavaScriptParser.ForVarStatementContext context) => VisitChildren(context);
 
-        public Ust VisitForVarInStatement([NotNull] JavaScriptParser.ForVarInStatementContext context) { return VisitChildren(context); }
+        public Ust VisitForVarInStatement([NotNull] JavaScriptParser.ForVarInStatementContext context) => VisitChildren(context);
 
-        public Ust VisitWhileStatement([NotNull] JavaScriptParser.WhileStatementContext context) { return VisitChildren(context); }
+        public Ust VisitWhileStatement([NotNull] JavaScriptParser.WhileStatementContext context) => VisitChildren(context);
 
-        public Ust VisitForStatement([NotNull] JavaScriptParser.ForStatementContext context) { return VisitChildren(context); }
+        public Ust VisitForStatement([NotNull] JavaScriptParser.ForStatementContext context) => VisitChildren(context);
 
-        public Ust VisitForInStatement([NotNull] JavaScriptParser.ForInStatementContext context) { return VisitChildren(context); }
+        public Ust VisitForInStatement([NotNull] JavaScriptParser.ForInStatementContext context) => VisitChildren(context);
 
         /// <returns><see cref="BlockStatement"/></returns>
         public Ust VisitSourceElements([NotNull] JavaScriptParser.SourceElementsContext context)
@@ -284,9 +280,9 @@ namespace PT.PM.JavaScriptParseTreeUst
                 context.GetTextSpan());
         }
 
-        public Ust VisitVariableStatement([NotNull] JavaScriptParser.VariableStatementContext context) { return VisitChildren(context); }
+        public Ust VisitVariableStatement([NotNull] JavaScriptParser.VariableStatementContext context) => VisitChildren(context);
 
-        public Ust VisitVariableDeclarationList([NotNull] JavaScriptParser.VariableDeclarationListContext context) { return VisitChildren(context); }
+        public Ust VisitVariableDeclarationList([NotNull] JavaScriptParser.VariableDeclarationListContext context) => VisitChildren(context);
 
         public Ust VisitVariableDeclaration([NotNull] JavaScriptParser.VariableDeclarationContext context)
         {
@@ -298,20 +294,20 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new EmptyStatement(context.GetTextSpan());
         }
 
-        public Ust VisitExpressionStatement([NotNull] JavaScriptParser.ExpressionStatementContext context) { return VisitChildren(context); }
+        public Ust VisitExpressionStatement([NotNull] JavaScriptParser.ExpressionStatementContext context) => VisitChildren(context);
 
-        public Ust VisitIfStatement([NotNull] JavaScriptParser.IfStatementContext context) { return VisitChildren(context); }
+        public Ust VisitIfStatement([NotNull] JavaScriptParser.IfStatementContext context) => VisitChildren(context);
 
-        public Ust VisitIterationStatement([NotNull] JavaScriptParser.IterationStatementContext context) { return VisitChildren(context); }
+        public Ust VisitIterationStatement([NotNull] JavaScriptParser.IterationStatementContext context) => VisitChildren(context);
 
         public Ust VisitVarModifier([NotNull] JavaScriptParser.VarModifierContext context)
         {
             return VisitChildren(context);
         }
 
-        public Ust VisitContinueStatement([NotNull] JavaScriptParser.ContinueStatementContext context) { return VisitChildren(context); }
+        public Ust VisitContinueStatement([NotNull] JavaScriptParser.ContinueStatementContext context) => VisitChildren(context);
 
-        public Ust VisitBreakStatement([NotNull] JavaScriptParser.BreakStatementContext context) { return VisitChildren(context); }
+        public Ust VisitBreakStatement([NotNull] JavaScriptParser.BreakStatementContext context) => VisitChildren(context);
 
         /// <returns><see cref="ReturnStatement"/></returns>
         public Ust VisitReturnStatement([NotNull] JavaScriptParser.ReturnStatementContext context)
@@ -324,21 +320,21 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new ReturnStatement(expression, context.GetTextSpan());
         }
 
-        public Ust VisitWithStatement([NotNull] JavaScriptParser.WithStatementContext context) { return VisitChildren(context); }
+        public Ust VisitWithStatement([NotNull] JavaScriptParser.WithStatementContext context) => VisitChildren(context);
 
-        public Ust VisitSwitchStatement([NotNull] JavaScriptParser.SwitchStatementContext context) { return VisitChildren(context); }
+        public Ust VisitSwitchStatement([NotNull] JavaScriptParser.SwitchStatementContext context) => VisitChildren(context);
 
-        public Ust VisitCaseBlock([NotNull] JavaScriptParser.CaseBlockContext context) { return VisitChildren(context); }
+        public Ust VisitCaseBlock([NotNull] JavaScriptParser.CaseBlockContext context) => VisitChildren(context);
 
-        public Ust VisitCaseClauses([NotNull] JavaScriptParser.CaseClausesContext context) { return VisitChildren(context); }
+        public Ust VisitCaseClauses([NotNull] JavaScriptParser.CaseClausesContext context) => VisitChildren(context);
 
-        public Ust VisitCaseClause([NotNull] JavaScriptParser.CaseClauseContext context) { return VisitChildren(context); }
+        public Ust VisitCaseClause([NotNull] JavaScriptParser.CaseClauseContext context) => VisitChildren(context);
 
-        public Ust VisitDefaultClause([NotNull] JavaScriptParser.DefaultClauseContext context) { return VisitChildren(context); }
+        public Ust VisitDefaultClause([NotNull] JavaScriptParser.DefaultClauseContext context) => VisitChildren(context);
 
-        public Ust VisitLabelledStatement([NotNull] JavaScriptParser.LabelledStatementContext context) { return VisitChildren(context); }
+        public Ust VisitLabelledStatement([NotNull] JavaScriptParser.LabelledStatementContext context) => VisitChildren(context);
 
-        public Ust VisitThrowStatement([NotNull] JavaScriptParser.ThrowStatementContext context) { return VisitChildren(context); }
+        public Ust VisitThrowStatement([NotNull] JavaScriptParser.ThrowStatementContext context) => VisitChildren(context);
 
         /// <returns><see cref="TryCatchStatement"/></returns>
         public Ust VisitTryStatement([NotNull] JavaScriptParser.TryStatementContext context)
@@ -377,9 +373,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return Visit(context.block());
         }
 
-        public Ust VisitDebuggerStatement([NotNull] JavaScriptParser.DebuggerStatementContext context) { return VisitChildren(context); }
+        public Ust VisitDebuggerStatement([NotNull] JavaScriptParser.DebuggerStatementContext context) => VisitChildren(context);
 
-        public Ust VisitFunctionDeclaration([NotNull] JavaScriptParser.FunctionDeclarationContext context) { return VisitChildren(context); }
+        public Ust VisitFunctionDeclaration([NotNull] JavaScriptParser.FunctionDeclarationContext context) => VisitChildren(context);
 
         public Ust VisitFormalParameterList([NotNull] JavaScriptParser.FormalParameterListContext context)
         {
@@ -411,7 +407,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return result;
         }
 
-        public Ust VisitArrayLiteral([NotNull] JavaScriptParser.ArrayLiteralContext context) { return VisitChildren(context); }
+        public Ust VisitArrayLiteral([NotNull] JavaScriptParser.ArrayLiteralContext context) => VisitChildren(context);
 
         public Ust VisitElementList([NotNull] JavaScriptParser.ElementListContext context)
         {
@@ -423,11 +419,11 @@ namespace PT.PM.JavaScriptParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitObjectLiteral([NotNull] JavaScriptParser.ObjectLiteralContext context) { return VisitChildren(context); }
+        public Ust VisitObjectLiteral([NotNull] JavaScriptParser.ObjectLiteralContext context) => VisitChildren(context);
 
-        public Ust VisitPropertyAssignment([NotNull] JavaScriptParser.PropertyAssignmentContext context) { return VisitChildren(context); }
+        public Ust VisitPropertyAssignment([NotNull] JavaScriptParser.PropertyAssignmentContext context) => VisitChildren(context);
 
-        public Ust VisitPropertyName([NotNull] JavaScriptParser.PropertyNameContext context) { return VisitChildren(context); }
+        public Ust VisitPropertyName([NotNull] JavaScriptParser.PropertyNameContext context) => VisitChildren(context);
 
         public Ust VisitArguments([NotNull] JavaScriptParser.ArgumentsContext context)
         {
@@ -457,7 +453,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return VisitShouldNotBeVisited(context);
         }
 
-        public Ust VisitAssignmentOperator([NotNull] JavaScriptParser.AssignmentOperatorContext context) { return VisitChildren(context); }
+        public Ust VisitAssignmentOperator([NotNull] JavaScriptParser.AssignmentOperatorContext context) => VisitChildren(context);
 
         public Ust VisitLiteral([NotNull] JavaScriptParser.LiteralContext context)
         {
@@ -520,15 +516,15 @@ namespace PT.PM.JavaScriptParseTreeUst
             }
         }
 
-        public Ust VisitIdentifierName([NotNull] JavaScriptParser.IdentifierNameContext context) { return VisitChildren(context); }
+        public Ust VisitIdentifierName([NotNull] JavaScriptParser.IdentifierNameContext context) => VisitChildren(context);
 
-        public Ust VisitReservedWord([NotNull] JavaScriptParser.ReservedWordContext context) { return VisitChildren(context); }
+        public Ust VisitReservedWord([NotNull] JavaScriptParser.ReservedWordContext context) => VisitChildren(context);
 
-        public Ust VisitKeyword([NotNull] JavaScriptParser.KeywordContext context) { return VisitChildren(context); }
+        public Ust VisitKeyword([NotNull] JavaScriptParser.KeywordContext context) => VisitChildren(context);
 
-        public Ust VisitGetter([NotNull] JavaScriptParser.GetterContext context) { return VisitChildren(context); }
+        public Ust VisitGetter([NotNull] JavaScriptParser.GetterContext context) => VisitChildren(context);
 
-        public Ust VisitSetter([NotNull] JavaScriptParser.SetterContext context) { return VisitChildren(context); }
+        public Ust VisitSetter([NotNull] JavaScriptParser.SetterContext context) => VisitChildren(context);
 
         public Ust VisitEos([NotNull] JavaScriptParser.EosContext context)
         {
