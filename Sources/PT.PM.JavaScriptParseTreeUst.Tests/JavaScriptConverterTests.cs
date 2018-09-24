@@ -10,6 +10,8 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         [Test]
         public void Convert_JavaScriptSyntaxFiles_WithoutErrors()
         {
+            Assert.Inconclusive("Waiting for the new version of https://github.com/sebastienros/esprima-dotnet");
+
             TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "javascript", "examples"),
                 JavaScript.Language, Stage.Ust);
         }
