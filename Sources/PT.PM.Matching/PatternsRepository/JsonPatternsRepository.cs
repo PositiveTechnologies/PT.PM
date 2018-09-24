@@ -7,6 +7,7 @@ using PT.PM.Matching.Json;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Matching.PatternsRepository
 {
@@ -89,7 +90,29 @@ namespace PT.PM.Matching.PatternsRepository
                     }
                     else
                     {
-                        patternDto = token.ToObject<PatternDto>();
+                        patternDto = new PatternDto()
+                        {
+                            Name = token[nameof(PatternDto.Name)]?.ToString() ?? string.Empty,
+                            Key = token[nameof(PatternDto.Key)]?.ToString() ?? string.Empty,
+                            DataFormat = token[nameof(PatternDto.DataFormat)]?.ToString(),
+                            Value = token[nameof(PatternDto.Value)]?.ToString(),
+                            CweId = token[nameof(PatternDto.CweId)]?.ToString(),
+                            Description = token[nameof(PatternDto.Description)]?.ToString(),
+                            FilenameWildcard = token[nameof(PatternDto.FilenameWildcard)]?.ToString()
+                        };
+
+                        HashSet<string> languages;
+                        try
+                        {
+                            languages = token["Languages"]?.ToObject<HashSet<string>>();
+                        }
+                        catch(JsonSerializationException)
+                        {
+                            languages = new HashSet<string>(token["Languages"].ToString()
+                                .Split(',').Select(x => x.Trim()));
+                        }
+
+                        patternDto.Languages = languages;
                     }
                     result.Add(patternDto);
                 }
