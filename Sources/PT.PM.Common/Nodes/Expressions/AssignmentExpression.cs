@@ -37,7 +37,7 @@ namespace PT.PM.Common.Nodes.Expressions
         {
             return Right == null
                 ? Left == null
-                ? " = "
+                ? $" {Operator}= "
                 : Left.ToString()
                 : $"{Left} {Operator}= {Right}";
         }

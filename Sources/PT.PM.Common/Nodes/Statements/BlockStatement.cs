@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Common.Nodes.Statements
@@ -26,12 +25,13 @@ namespace PT.PM.Common.Nodes.Statements
 
         public override Ust[] GetChildren()
         {
-            return Statements.Select(s => (Ust) s).ToArray();
+            return Statements.Select(s => (Ust)s).ToArray();
         }
 
         public override string ToString()
         {
-            return "{" + string.Join(Environment.NewLine, Statements) + "}";
+
+            return "{\n" + string.Join("\n", Statements).ToStringWithTrailNL() + "}";
         }
     }
 }

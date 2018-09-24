@@ -29,6 +29,7 @@ namespace PT.PM.Common.Nodes
         #region Expressions
 
         T Visit(AnonymousMethodExpression anonymousMethodExpression);
+        T Visit(AnonymousObjectExpression anonymousObjectExpression);
         T Visit(ArrayCreationExpression arrayCreationExpression);
         T Visit(AssignmentExpression assignmentExpression);
         T Visit(BaseReferenceToken baseReferenceExpression);
@@ -45,6 +46,7 @@ namespace PT.PM.Common.Nodes
         T Visit(VariableDeclarationExpression variableDeclarationExpression);
         T Visit(CommaExpression colonExpression);
         T Visit(ArgumentExpression argumentExpression);
+        T Visit(YieldExpression yieldExpression);
 
         #endregion
 
@@ -79,10 +81,10 @@ namespace PT.PM.Common.Nodes
 
         T Visit(AsExpression asExpression);
         T Visit(CheckedExpression checkedExpression);
-        T Visit(CheckedStatement checkedStatement);
         T Visit(FixedStatement fixedStatement);
         T Visit(LockStatement lockStatement);
         T Visit(UnsafeStatement unsafeStatement);
+        T Visit(ArrayPatternExpression arrayPatternExpression);
 
         #endregion
 
@@ -95,6 +97,7 @@ namespace PT.PM.Common.Nodes
         T Visit(BlockStatement blockStatement);
         T Visit(BreakStatement breakStatement);
         T Visit(ContinueStatement continueStatement);
+        T Visit(DebuggerStatement debuggerStatement);
         T Visit(DoWhileStatement doWhileStatement);
         T Visit(EmptyStatement emptyStatement);
         T Visit(ExpressionStatement expressionStatement);
@@ -102,6 +105,7 @@ namespace PT.PM.Common.Nodes
         T Visit(ForStatement forStatement);
         T Visit(GotoStatement gotoStatement);
         T Visit(IfElseStatement ifElseStatement);
+        T Visit(LabelStatement labelStatement);
         T Visit(ReturnStatement returnStatement);
         T Visit(ThrowStatement throwStatement);
         T Visit(TypeDeclarationStatement typeDeclarationStatement);
@@ -115,6 +119,7 @@ namespace PT.PM.Common.Nodes
 
         T Visit(ConstructorDeclaration constructorDeclaration);
         T Visit(FieldDeclaration fieldDeclaration);
+        T Visit(PropertyDeclaration propertyDeclaration);
         T Visit(MethodDeclaration methodDeclaration);
         T Visit(ParameterDeclaration parameterDeclaration);
         T Visit(StatementDeclaration statementDeclaration);

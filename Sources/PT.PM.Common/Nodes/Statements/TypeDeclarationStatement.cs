@@ -1,9 +1,4 @@
 ﻿using PT.PM.Common.Nodes.GeneralScope;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Common.Nodes.Statements
 {
@@ -25,6 +20,11 @@ namespace PT.PM.Common.Nodes.Statements
         {
             var result = new[] { TypeDeclaration };
             return result;
+        }
+
+        public override string ToString()
+        {
+            return TypeDeclaration.ToString();
         }
     }
 }

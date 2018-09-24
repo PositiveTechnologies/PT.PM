@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System.Text;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
@@ -37,7 +36,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         {
             string modifierString = Modifier != null ? Modifier + " " : "";
             string typeString = Type != null ? Type + " " : "";
-            string initializerString = Initializer != null ? " " + Initializer : "";
+            string initializerString = Initializer != null ? ": " + Initializer : "";
 
             return $"{modifierString}{typeString}{Name}{initializerString}";
         }

@@ -27,7 +27,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override string ToString()
         {
-            return "{ " + string.Join("; ", Properties) + " }";
+            return "{ " + string.Join("; ", Properties).ToStringWithTrailSpace() + "}";
         }
     }
 }

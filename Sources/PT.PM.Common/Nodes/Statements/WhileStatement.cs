@@ -31,8 +31,7 @@ namespace PT.PM.Common.Nodes.Statements
 
         public override string ToString()
         {
-            string nl = Environment.NewLine;
-            return $"while ({Condition}){nl}  {Embedded}{nl}";
+            return $"while ({Condition})\n{Embedded}";
         }
     }
 }

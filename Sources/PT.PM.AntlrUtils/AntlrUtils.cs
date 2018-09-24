@@ -23,6 +23,7 @@ namespace PT.PM.AntlrUtils
             {
                 result.Append(tokens[i].Text);
             }
+
             return result.ToString();
         }
 
@@ -30,7 +31,7 @@ namespace PT.PM.AntlrUtils
         {
             var start = ruleContext.Start;
             if (start.Text == "<EOF>")
-                return default(TextSpan);
+                return default;
 
             IToken stop = ruleContext.Stop;
             RuleContext parent = ruleContext.Parent;
@@ -52,6 +53,7 @@ namespace PT.PM.AntlrUtils
             {
                 result = default;
             }
+
             return result;
         }
 
@@ -97,6 +99,7 @@ namespace PT.PM.AntlrUtils
             {
                 exceptionText = $"{ex.Message} at position {lineColumnTextSpan.BeginLine}:{lineColumnTextSpan.BeginColumn} in source file";
             }
+
             logger.LogError(new ConversionException(currentFileData, message: exceptionText) { TextSpan = textSpan });
         }
     }

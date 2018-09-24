@@ -35,7 +35,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override string ToString()
         {
-            return $"{Condition} ? {TrueExpression} : {FalseExpression}";
+            return $"{Condition} ? {TrueExpression.ToStringWithTrailSpace()}: {FalseExpression}";
         }
     }
 }

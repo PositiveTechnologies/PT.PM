@@ -48,9 +48,6 @@ namespace PT.PM.Common.Nodes.Tokens
             return 0;
         }
 
-        public override string ToString()
-        {
-            return TextValue;
-        }
+        public override string ToString() => TextValue;
     }
 }

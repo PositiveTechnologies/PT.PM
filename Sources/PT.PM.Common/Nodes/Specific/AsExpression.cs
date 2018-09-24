@@ -29,5 +29,10 @@ namespace PT.PM.Common.Nodes.Specific
         {
             return new Expression[] { Expression, Type };
         }
+
+        public override string ToString()
+        {
+            return $"{Expression} as {Type}";
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace PT.PM.Common.Nodes
         {
             if (ust == null)
             {
-                return default(T);
+                return default;
             }
             return Visit((dynamic)ust);
         }
@@ -42,9 +42,19 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(anonymousMethodExpression);
         }
 
+        public virtual T Visit(AnonymousObjectExpression anonymousObjectExpression)
+        {
+            return VisitChildren(anonymousObjectExpression);
+        }
+
         public virtual T Visit(ArrayCreationExpression arrayCreationExpression)
         {
             return VisitChildren(arrayCreationExpression);
+        }
+
+        public virtual T Visit(ArrayPatternExpression arrayPatternExpression)
+        {
+            return VisitChildren(arrayPatternExpression);
         }
 
         public virtual T Visit(AssignmentExpression assignmentExpression)
@@ -110,6 +120,11 @@ namespace PT.PM.Common.Nodes
         public virtual T Visit(VariableDeclarationExpression variableDeclarationExpression)
         {
             return VisitChildren(variableDeclarationExpression);
+        }
+
+        public virtual T Visit(YieldExpression yieldExpression)
+        {
+            return VisitChildren(yieldExpression);
         }
 
         public virtual T Visit(CommaExpression colonExpression)
@@ -212,14 +227,19 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(checkedExpression);
         }
 
-        public virtual T Visit(CheckedStatement checkedStatement)
+        public virtual T Visit(DebuggerStatement debuggerStatement)
         {
-            return VisitChildren(checkedStatement);
+            return VisitChildren(debuggerStatement);
         }
 
         public virtual T Visit(FixedStatement fixedStatement)
         {
             return VisitChildren(fixedStatement);
+        }
+
+        public virtual T Visit(LabelStatement labelStatement)
+        {
+            return VisitChildren(labelStatement);
         }
 
         public virtual T Visit(LockStatement lockStatement)
@@ -342,6 +362,11 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(fieldDeclaration);
         }
 
+        public virtual T Visit(PropertyDeclaration propertyDeclaration)
+        {
+            return VisitChildren(propertyDeclaration);
+        }
+
         public virtual T Visit(MethodDeclaration methodDeclaration)
         {
             return VisitChildren(methodDeclaration);
@@ -392,4 +417,4 @@ namespace PT.PM.Common.Nodes
             return default(T);
         }
     }
-}
+} 
