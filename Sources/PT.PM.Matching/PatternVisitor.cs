@@ -4,10 +4,12 @@ using PT.PM.Common.Reflection;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace PT.PM.Matching
 {
+    [DebuggerStepThrough]
     public class PatternVisitor<T> : IPatternVisitor<T>, ILoggable
     {
         private static PropertyVisitor<PatternUst, T> propertyEnumerator = new PropertyVisitor<PatternUst, T>
@@ -21,8 +23,9 @@ namespace PT.PM.Matching
         {
             if (patternBase == null)
             {
-                return default(T);
+                return default;
             }
+
             return Visit((dynamic)patternBase);
         }
 
@@ -208,7 +211,8 @@ namespace PT.PM.Matching
                 {
                     TextSpan = patternBase.TextSpan
                 });
-                return default(T);
+
+                return default;
             }
         }
     }
