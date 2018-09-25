@@ -22,7 +22,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public Scanner Scanner { get; internal set; }
 
-        public CodeFile OrigFile { get; internal set; }
+        public CodeFile OriginFile { get; internal set; }
 
         public JavaScriptEsprimaErrorHandler(CodeFile codeFile)
         {
@@ -80,7 +80,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public ParsingException CreateException(int index, string message)
         {
-            var codeFile = OrigFile ?? CodeFile;
+            var codeFile = OriginFile ?? CodeFile;
             TextSpan textSpan = new TextSpan(index + Offset, 0);
             message = codeFile.GetLineColumnTextSpan(textSpan) + "; " + Regex.Replace(message, @"Line \d+': ", "");
             return new ParsingException(codeFile, message: message)

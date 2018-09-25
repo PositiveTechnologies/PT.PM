@@ -20,7 +20,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public int Offset { get; set; }
 
-        public CodeFile OrigFile { get; set; }
+        public CodeFile OriginFile { get; set; }
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
@@ -33,7 +33,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             {
                 Logger = Logger,
                 Offset = Offset,
-                OrigFile = OrigFile
+                OriginFile = OriginFile
             };
             try
             {
@@ -44,7 +44,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     Tolerant = true,
                     ErrorHandler = errorHandler
                 };
-                var parser = new Esprima.JavaScriptParser(sourceCodeFile.Code, parserOptions);
+                var parser = new JavaScriptParser(sourceCodeFile.Code, parserOptions);
 
                 var stopwatch = Stopwatch.StartNew();
                 Program ast = parser.ParseProgram(JavaScriptType == JavaScriptType.Strict);
@@ -65,7 +65,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     {
                         token = scanner.Lex();
                     }
-                    catch (InvalidOperationException ex)
+                    catch (Exception ex) when (!(ex is ThreadAbortException))
                     {
                         // TODO: handle the end of the stream without exception
                         Logger.LogError(new ParsingException(sourceCodeFile, ex));

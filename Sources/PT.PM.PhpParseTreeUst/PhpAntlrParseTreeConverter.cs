@@ -145,7 +145,7 @@ namespace PT.PM.PhpParseTreeUst
                 Logger = Logger,
                 JavaScriptType = JavaScriptType,
                 Offset = offset,
-                OrigFile = root.SourceCodeFile
+                OriginFile = root.SourceCodeFile
             };
 
             var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceCodeFile);
