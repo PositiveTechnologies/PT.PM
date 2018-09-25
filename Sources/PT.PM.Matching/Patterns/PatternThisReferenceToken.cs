@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternThisReferenceToken : PatternUst<ThisReferenceToken>
+    public class PatternThisReferenceToken : PatternUst<ThisReferenceToken>, ITerminalPattern
     {
 
         public PatternThisReferenceToken()

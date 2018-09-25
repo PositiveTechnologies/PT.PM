@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntLiteral : PatternUst<IntLiteral>
+    public class PatternIntLiteral : PatternUst<IntLiteral>, ITerminalPattern
     {
         public long Value { get; set; }
 

@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdRegexToken : PatternUst<Token>, IRegexPattern
+    public class PatternIdRegexToken : PatternUst<Token>, IRegexPattern, ITerminalPattern
     {
         private Regex regex;
         private Regex caseInsensitiveRegex;

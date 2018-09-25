@@ -4,7 +4,7 @@ using System;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntRangeLiteral : PatternUst<IntLiteral>
+    public class PatternIntRangeLiteral : PatternUst<IntLiteral>, ITerminalPattern
     {
         public long MinValue { get; set; } = long.MinValue;
 

@@ -5,17 +5,14 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdToken : PatternUst<Token>
+    public class PatternIdToken : PatternUst<Token>, ITerminalPattern
     {
         private string id = "";
         private Regex caseInsensitiveRegex;
 
         public string Id
         {
-            get
-            {
-                return id;
-            }
+            get => id;
             set
             {
                 id = value;

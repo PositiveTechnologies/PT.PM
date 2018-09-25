@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternCommentRegex : PatternUst<CommentLiteral>, IRegexPattern
+    public class PatternCommentRegex : PatternUst<CommentLiteral>, IRegexPattern, ITerminalPattern
     {
         public string Default => @".*";
 

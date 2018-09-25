@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStringRegexLiteral : PatternUst<StringLiteral>, IRegexPattern
+    public class PatternStringRegexLiteral : PatternUst<StringLiteral>, IRegexPattern, ITerminalPattern
     {
         public string Default => ".*";
 

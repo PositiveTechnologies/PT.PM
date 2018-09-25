@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBooleanLiteral : PatternUst<BooleanLiteral>
+    public class PatternBooleanLiteral : PatternUst<BooleanLiteral>, ITerminalPattern
     {
         public bool? Boolean { get; set; }
 
