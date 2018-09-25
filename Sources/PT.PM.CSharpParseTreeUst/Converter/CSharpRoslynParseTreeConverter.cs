@@ -59,13 +59,19 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     result.Node = visited;
                 }
                 result.SourceCodeFile = langParseTree.SourceCodeFile;
-                result.Comments = roslynParseTree.Comments.Select(c =>
-                    new CommentLiteral(c.ToString(), c.GetTextSpan())
+
+                var comments = new List<CommentLiteral>(roslynParseTree.Comments.Length);
+                foreach (SyntaxTrivia commentTrivia in roslynParseTree.Comments)
+                {
+                    var textSpan = commentTrivia.GetTextSpan();
+                    comments.Add(new CommentLiteral(langParseTree.SourceCodeFile, textSpan)
                     {
                         Root = result,
                         Parent = result
-                    })
-                    .ToArray();
+                    });
+                }
+
+                result.Comments = comments.ToArray();
                 result.FillAscendants();
 
                 return result;

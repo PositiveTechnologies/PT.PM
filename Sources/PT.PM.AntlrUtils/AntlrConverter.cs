@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System.Linq;
 using System.Threading;
 using PT.PM.Common.Utils;
 
@@ -74,13 +73,17 @@ namespace PT.PM.AntlrUtils
                 return null;
             }
 
-            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())
+            var commentLiterals = new List<CommentLiteral>(antlrParseTree.Comments.Count);
+            foreach (IToken commentToken in antlrParseTree.Comments)
             {
-                Parent = result,
-                Root = result
-            })
-            .ToArray();
+                commentLiterals.Add(new CommentLiteral(langParseTree.SourceCodeFile, commentToken.GetTextSpan())
+                {
+                    Parent = result,
+                    Root = result
+                });
+            }
 
+            result.Comments = commentLiterals.ToArray();
             result.FillAscendants();
 
             return result;
@@ -231,10 +234,9 @@ namespace PT.PM.AntlrUtils
         {
             var parserRuleContext = tree as ParserRuleContext;
             string ruleName = "";
-            if (parserRuleContext != null)
+            if (parserRuleContext != null && Parser?.RuleNames.Length > parserRuleContext.RuleIndex)
             {
-                ruleName = Parser?.RuleNames.ElementAtOrDefault(parserRuleContext.RuleIndex)
-                           ?? parserRuleContext.RuleIndex.ToString();
+                ruleName = Parser?.RuleNames[parserRuleContext.RuleIndex] ?? parserRuleContext.RuleIndex.ToString();
             }
 
             throw new ShouldNotBeVisitedException(ruleName);

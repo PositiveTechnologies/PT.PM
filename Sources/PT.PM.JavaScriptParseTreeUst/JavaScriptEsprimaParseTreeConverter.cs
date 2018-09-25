@@ -47,8 +47,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 var comments = new List<CommentLiteral>(esprimaParseTree.Comments.Count);
                 foreach (Comment comment in esprimaParseTree.Comments)
                 {
-                    TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new CommentLiteral(SourceCodeFile.GetSubstring(textSpan), textSpan)
+                    comments.Add(new CommentLiteral(SourceCodeFile, GetTextSpan(comment))
                     {
                         Root = rootUst,
                         Parent = rootUst

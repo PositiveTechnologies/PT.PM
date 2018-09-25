@@ -1,15 +1,20 @@
-﻿namespace PT.PM.Common.Nodes.Tokens.Literals
+﻿using System;
+
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     public class CommentLiteral : Literal
     {
-        public virtual string Comment { get; set; }
+        public ReadOnlyMemory<char> Comment { get; set; }
 
-        public override string TextValue => Comment;
+        //private string cachedString;
+        //public string CachedString => cachedString ?? (cachedString = Comment.ToString());
 
-        public CommentLiteral(string comment, TextSpan textSpan)
+        public override string TextValue => Comment.ToString();
+
+        public CommentLiteral(CodeFile codeFile, TextSpan textSpan)
             : base(textSpan)
         {
-            Comment = comment;
+            Comment = codeFile.Code.AsMemory(ref textSpan);
         }
 
         public CommentLiteral()

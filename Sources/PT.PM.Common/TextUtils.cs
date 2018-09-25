@@ -279,6 +279,11 @@ namespace PT.PM.Common
             return str.Replace("\\", "\\\\").Replace("\"", "\\\"");
         }
 
+        public static ReadOnlyMemory<char> AsMemory(this string str, ref TextSpan textSpan)
+        {
+            return str.AsMemory(textSpan.Start, textSpan.Length);
+        }
+
         public static string CollectWords(params object[] objects)
         {
             var result = new StringBuilder();

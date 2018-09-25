@@ -35,8 +35,9 @@ namespace PT.PM.Matching.Patterns
 
         public override MatchContext Match(CommentLiteral commentLiteral, MatchContext context)
         {
+            // TODO: fix with Memory<string> instead of string
             IEnumerable<TextSpan> matches = Regex
-                .MatchRegex(commentLiteral.Comment)
+                .MatchRegex(commentLiteral.Comment.ToString())
                 .Select(location => location.AddOffset(commentLiteral.TextSpan.Start));
 
             return matches.Count() > 0
