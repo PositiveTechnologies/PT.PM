@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
 using System;
-using System.Linq;
 
 namespace PT.PM.Cli.Common
 {
@@ -41,7 +40,8 @@ namespace PT.PM.Cli.Common
             }
             Logger.LogInfo($"{"Patterns count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedPatternsCount}");
 
-            Logger.LogInfo($"{"Time format:",LoggerUtils.Align} {Utils.TimeSpanFormat.Replace("\\", "")}");
+            string extraTimeInfo = WorkflowResult.ThreadCount == 1 ? "" : $" (average per thread)";
+            Logger.LogInfo($"{"Time format:",LoggerUtils.Align} {Utils.TimeSpanFormat.Replace("\\", "")}{extraTimeInfo}");
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
@@ -105,40 +105,29 @@ namespace PT.PM.Cli.Common
             }
             if (ticks > 0)
             {
-                var timeSpan = new TimeSpan(ticks);
+                long avgTicksPerThread = IsMultithreadStage(stage)
+                    ? ticks / (WorkflowResult.ThreadCount == 0 ? Environment.ProcessorCount : WorkflowResult.ThreadCount)
+                    : ticks;
+                var timeSpan = new TimeSpan(avgTicksPerThread);
                 string percent = CalculateAndFormatPercent(ticks, WorkflowResult.TotalTimeTicks);
-                Logger.LogInfo
-                    ($"{stage + " time:",LoggerUtils.Align} {timeSpan.Format()} {percent}%");
-            }
-            if (stage == nameof(Stage.ParseTree))
-            {
-                LogAdditionalParserInfo();
+
+                string extraInfo = "";
+                if (stage == nameof(Stage.ParseTree))
+                {
+                    string lexerPercent = CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalLexerParserTicks);
+                    string parserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalLexerParserTicks);
+                    extraInfo = $" (Lexer: {lexerPercent}% + Parser: {parserPercent}%)";
+                }
+
+                Logger.LogInfo($"{stage + " time:",LoggerUtils.Align} {timeSpan.Format()} {percent}%{extraInfo}");
             }
         }
 
         protected virtual long GetTicksCount(string stage) => 0;
 
-        protected void LogAdditionalParserInfo()
+        protected virtual bool IsMultithreadStage(string stage)
         {
-            bool printLexerParserPercents = WorkflowResult.TotalLexerTicks > 0 && WorkflowResult.TotalLexerParserTicks > 0;
-            if (WorkflowResult.TotalLexerTicks > 0)
-            {
-                TimeSpan lexerTimeSpan = new TimeSpan(WorkflowResult.TotalLexerTicks);
-                string totalLexerPercent = CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalTimeTicks);
-                string lexerPercent = printLexerParserPercents
-                    ? $" ({CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalLexerParserTicks)}%)"
-                    : "";
-                Logger.LogInfo($"{"Lexing time: ",LoggerUtils.Align} {lexerTimeSpan.Format()} {totalLexerPercent}%{lexerPercent}");
-            }
-            if (WorkflowResult.TotalLexerParserTicks > 0)
-            {
-                TimeSpan parserTimeSpan = new TimeSpan(WorkflowResult.TotalParserTicks);
-                string totalParserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalTimeTicks);
-                string parserPercent = printLexerParserPercents
-                    ? $" ({CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalLexerParserTicks)}%)"
-                    : "";
-                Logger.LogInfo($"{"Parsing time: ",LoggerUtils.Align} {parserTimeSpan.Format()} {totalParserPercent}%{parserPercent}");
-            }
+            return stage != nameof(Stage.Pattern);
         }
 
         protected string CalculateAndFormatPercent(long part, long whole)
