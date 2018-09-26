@@ -102,13 +102,19 @@ namespace PT.PM.Matching.PatternsRepository
                         };
 
                         HashSet<string> languages;
-                        try
+                        var languagesToken = token["Languages"];
+
+                        if (languagesToken == null)
                         {
-                            languages = token["Languages"]?.ToObject<HashSet<string>>();
+                            languages = new HashSet<string>();
                         }
-                        catch(JsonSerializationException)
+                        else if (languagesToken is JArray)
                         {
-                            languages = new HashSet<string>(token["Languages"].ToString()
+                            languages = new HashSet<string>(languagesToken.Select(x => x.ToString()));
+                        }
+                        else
+                        {
+                            languages = new HashSet<string>(languagesToken.ToString()
                                 .Split(',').Select(x => x.Trim()));
                         }
 
