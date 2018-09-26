@@ -1,8 +1,7 @@
-﻿using PT.PM.Common;
-using AspxParser;
-using System;
-using System.IO;
+﻿using AspxParser;
+using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using System;
 using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst
@@ -15,42 +14,34 @@ namespace PT.PM.CSharpParseTreeUst
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
-            ParseTree result = null;
-
-            var filePath = Path.Combine(sourceCodeFile.RelativePath, sourceCodeFile.Name);
-            if (sourceCodeFile.Code != null)
+            if (sourceCodeFile.Code == null)
             {
-                try
+                return null;
+            }
+
+            try
+            {
+                AspxParseTree result = null;
+                var parser = new global::AspxParser.AspxParser(sourceCodeFile.RelativePath);
+                var source = new AspxSource(sourceCodeFile.FullName, sourceCodeFile.Code);
+                AspxParseResult aspxTree = parser.Parse(source);
+                foreach (var error in aspxTree.ParseErrors)
                 {
-                    var parser = new global::AspxParser.AspxParser(sourceCodeFile.RelativePath);
-                    var source = new AspxSource(sourceCodeFile.FullName, sourceCodeFile.Code);
-                    AspxParseResult aspxTree = parser.Parse(source);
-                    foreach (var error in aspxTree.ParseErrors)
+                    Logger.LogError(new ParsingException(sourceCodeFile, message: error.Message)
                     {
-                        Logger.LogError(new ParsingException(sourceCodeFile, message: error.Message)
-                        {
-                            TextSpan = error.Location.GetTextSpan()
-                        });
-                    }
-                    result = new AspxParseTree(aspxTree.RootNode);
+                        TextSpan = error.Location.GetTextSpan()
+                    });
                 }
-                catch (Exception ex) when (!(ex is ThreadAbortException))
-                {
-                    Logger.LogError(new ParsingException(sourceCodeFile, ex));
-                    result = new CSharpRoslynParseTree();
-                }
+                result = new AspxParseTree(aspxTree.RootNode);
+                result.SourceCodeFile = sourceCodeFile;
+
+                return result;
             }
-            else
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = new CSharpRoslynParseTree();
+                Logger.LogError(new ParsingException(sourceCodeFile, ex));
+                return null;
             }
-            result.SourceCodeFile = sourceCodeFile;
-
-            return result;
-        }
-
-        public void ClearCache()
-        {
         }
     }
 }

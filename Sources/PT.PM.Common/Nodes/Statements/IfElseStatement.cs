@@ -43,11 +43,10 @@ namespace PT.PM.Common.Nodes.Statements
 
         public override string ToString()
         {
-            string nl = Environment.NewLine;
-            var result = $"if ({Condition}){nl}{{{nl}  {TrueStatement}{nl}}}";
+            var result = $"if ({Condition})\n{{\n{TrueStatement}\n}}";
             if (FalseStatement != null)
             {
-                result += $"else{nl}{{{nl}  {FalseStatement}{nl}}}";
+                result += $"else\n{{\n{FalseStatement}\n}}";
             }
             return result;
         }

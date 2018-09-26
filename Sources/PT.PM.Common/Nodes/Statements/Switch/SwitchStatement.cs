@@ -28,5 +28,13 @@ namespace PT.PM.Common.Nodes.Statements.Switch
             result.AddRange(Sections);
             return result.ToArray();
         }
+
+        public override string ToString() => $"switch ({Expression})\n{{{string.Join("\n", Sections)}}}";
+
+        public string ToString(bool newline, string prevIndent = "")
+        {
+            TextUtils.GetNewlineIndent(newline, prevIndent, out string nl, out string indent);
+            return $"{prevIndent}switch({Expression}){prevIndent}{{{string.Join(nl + indent, Sections)}}}";
+        }
     }
 }

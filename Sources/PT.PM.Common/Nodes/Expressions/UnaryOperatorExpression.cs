@@ -36,7 +36,11 @@ namespace PT.PM.Common.Nodes.Expressions
             UnaryOperator op = Operator.UnaryOperator;
             if (UnaryOperatorLiteral.PrefixTextUnaryOperator.ContainsValue(op))
             {
-                return $"{Operator}{Expression}";
+                string spaceOrEmpty = op == UnaryOperator.Delete || op == UnaryOperator.TypeOf ||
+                                      op == UnaryOperator.Await || op == UnaryOperator.Void
+                    ? " "
+                    : "";
+                return $"{Operator}{spaceOrEmpty}{Expression}";
             }
             else if (UnaryOperatorLiteral.PostfixTextUnaryOperator.ContainsValue(op))
             {

@@ -16,7 +16,13 @@
         PostDecrement, // a--
         Dereference,   // *a
         AddressOf,     // &a
+        Delete,        // delete a
+        TypeOf,        // typeof a
 
-        Await          // await a
+        // C#
+        Await,          // await a
+
+        // JavaScript
+        Void
     }
 }

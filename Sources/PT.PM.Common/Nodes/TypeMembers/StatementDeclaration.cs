@@ -1,10 +1,6 @@
-﻿using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Statements;
-using System;
+﻿using PT.PM.Common.Nodes.Statements;
+using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {

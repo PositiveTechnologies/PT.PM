@@ -86,7 +86,11 @@ namespace PT.PM
                 {
                     string resultText = leftString.Text + rightString.Text;
                     result = new StringLiteral(resultText);
-                    Logger.LogDebug($"Strings {binaryOperatorExpression} concatenated to \"{resultText}\" at {binaryOperatorExpression.TextSpan}");
+
+                    if (Logger.IsLogDebugs)
+                    {
+                        Logger.LogDebug($"Strings {binaryOperatorExpression} concatenated to \"{resultText}\" at {binaryOperatorExpression.TextSpan}");
+                    }
                 }
             }
             else if (leftExpression is IntLiteral leftInt &&
@@ -134,7 +138,10 @@ namespace PT.PM
                         if (folded)
                         {
                             result = new IntLiteral(resultValue);
-                            Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {resultValue} at {binaryOperatorExpression.TextSpan}");
+                            if (Logger.IsLogDebugs)
+                            {
+                                Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {resultValue} at {binaryOperatorExpression.TextSpan}");
+                            }
                         }
                     }
                 }
@@ -193,7 +200,10 @@ namespace PT.PM
                     result.TextSpan = textSpans.Union();
                     result.Root = unaryOperatorExpression.Root;
 
-                    Logger.LogDebug($"Unary expression {unaryOperatorExpression} folded to {foldedValue} at {result.TextSpan}");
+                    if (Logger.IsLogDebugs)
+                    {
+                        Logger.LogDebug($"Unary expression {unaryOperatorExpression} folded to {foldedValue} at {result.TextSpan}");
+                    }
                 }
             }
             

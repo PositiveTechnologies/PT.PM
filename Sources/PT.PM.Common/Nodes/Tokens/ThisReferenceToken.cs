@@ -1,5 +1,4 @@
-﻿using PT.PM.Common.Nodes.Tokens;
-namespace PT.PM.Common.Nodes.Expressions
+﻿namespace PT.PM.Common.Nodes.Tokens
 {
     public class ThisReferenceToken : Token
     {

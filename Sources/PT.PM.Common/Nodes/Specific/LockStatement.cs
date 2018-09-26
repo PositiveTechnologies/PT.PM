@@ -24,5 +24,10 @@ namespace PT.PM.Common.Nodes.Specific
         {
             return new Ust[] {Lock, Embedded};
         }
+
+        public override string ToString()
+        {
+            return $"lock ({Lock})\n{Embedded}";
+        }
     }
 }

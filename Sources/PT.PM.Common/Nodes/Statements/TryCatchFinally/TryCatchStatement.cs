@@ -34,15 +34,14 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 
         public override string ToString()
         {
-            var nl = Environment.NewLine;
-            var result = $"try {{{nl}    {TryBlock}{nl}}}{nl}";
-            if (CatchClauses != null)
+            var result = $"try {{{TryBlock}}}\n";
+            if (CatchClauses?.Count > 0)
             {
-                result += string.Join("", CatchClauses);
+                result += string.Join("\n", CatchClauses);
             }
             if (FinallyBlock != null)
             {
-                result += $"finally {{{nl}    {FinallyBlock}{nl}}}{nl}";
+                result += $"finally\n{{\n{FinallyBlock.ToStringWithTrailNL()}}}";
             }
             return result;
         }

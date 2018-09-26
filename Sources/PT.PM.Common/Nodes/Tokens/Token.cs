@@ -8,8 +8,6 @@ namespace PT.PM.Common.Nodes.Tokens
 
         public override bool IsTerminal => true;
 
-        public Expression Expression { get; set; }
-
         protected Token(TextSpan textSpan)
             : base(textSpan)
         {
@@ -47,30 +45,9 @@ namespace PT.PM.Common.Nodes.Tokens
                 return nodeTypeResult;
             }
 
-            Token otherLiteral = (Token)other;
-            if (Expression != null && otherLiteral.Expression == null)
-            {
-                return 1;
-            }
-
-            if (Expression == null && otherLiteral.Expression != null)
-            {
-                return -1;
-            }
-
-            if (Expression != null && otherLiteral.Expression != null)
-            {
-                var expressionCompareResult = Expression.CompareTo(otherLiteral.Expression);
-                if (expressionCompareResult != 0)
-                    return expressionCompareResult;
-            }
-
             return 0;
         }
 
-        public override string ToString()
-        {
-            return TextValue;
-        }
+        public override string ToString() => TextValue;
     }
 }

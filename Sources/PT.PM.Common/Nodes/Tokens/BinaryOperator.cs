@@ -38,5 +38,10 @@
         // PHP & JavaScript
         StrictEqual,      // ===
         StrictNotEqual,   // !==
+
+        // JavaScript
+        In,               // in
+        InstanceOf        // instanceof
+
     }
 }

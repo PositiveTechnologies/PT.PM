@@ -41,8 +41,9 @@ namespace PT.PM.Common.Nodes.Statements
 
         public override string ToString()
         {
-            var nl = Environment.NewLine;
-            return $"for ({string.Join(" ", Initializers)} {Condition}; {string.Join("; ", Iterators)}) {{{nl}    {Statement}{nl}}}";
+            string initializersStr = Initializers?.Count > 0 ? string.Join(" ", Initializers) : "";
+            string iteratorsStr = Iterators?.Count > 0 ? " " + string.Join("; ", Iterators) : "";
+            return $"for ({TextUtils.CollectWords(initializersStr, Condition)};{iteratorsStr})\n{{\n{Statement.ToStringWithTrailNL()}}}";
         }
     }
 }

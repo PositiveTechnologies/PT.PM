@@ -25,5 +25,10 @@ namespace PT.PM.Common.Nodes.Statements
             var result = new List<Ust> {EmbeddedStatement, Condition};
             return result.ToArray();
         }
+
+        public override string ToString()
+        {
+            return $"do\n{EmbeddedStatement.ToStringWithTrailNL()}while ({Condition})";
+        }
     }
 }

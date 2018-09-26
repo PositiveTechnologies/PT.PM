@@ -96,6 +96,11 @@ namespace PT.PM
                 parseUnit.AbortIfPossibly();
                 parseUnit.Wait((int)LanguageParseTimeout.TotalMilliseconds / 4);
 
+                if (!parseUnit.IsAlive && parseUnit.ParseTree == null) // Ignore languages with critical errors
+                {
+                    continue;
+                }
+
                 List<ParsingException> parseErrors = parseUnit.Errors.Where(error =>
                      error is ParsingException parsingException && parsingException.InnerException == null)
                     .Cast<ParsingException>()

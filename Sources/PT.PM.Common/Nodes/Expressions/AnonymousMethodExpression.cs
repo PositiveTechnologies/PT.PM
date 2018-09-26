@@ -1,5 +1,4 @@
-﻿using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.TypeMembers;
+﻿using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +8,7 @@ namespace PT.PM.Common.Nodes.Expressions
     {
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
-        public BlockStatement Body { get; set; }
+        public Ust Body { get; set; }
 
         public string Id => Parent is AssignmentExpression assignment 
             ? assignment.Left.ToString()
@@ -19,16 +18,15 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override Expression[] GetArgs() => new Expression[0];
 
-        public AnonymousMethodExpression()
-        {
-        }
-
-        public AnonymousMethodExpression(IEnumerable<ParameterDeclaration> parameters, BlockStatement body,
-            TextSpan textSpan)
+        public AnonymousMethodExpression(IEnumerable<ParameterDeclaration> parameters, Ust body, TextSpan textSpan)
             : base(textSpan)
         {
             Parameters = parameters as List<ParameterDeclaration> ?? parameters.ToList();
             Body = body;
+        }
+
+        public AnonymousMethodExpression()
+        {
         }
 
         public override Ust[] GetChildren()
@@ -37,6 +35,14 @@ namespace PT.PM.Common.Nodes.Expressions
             result.AddRange(Parameters);
             result.Add(Body);
             return result.ToArray();
+        }
+
+        public override string ToString()
+        {
+            string paramsStr = Parameters.Count == 1
+                ? Parameters[0].ToString()
+                : "(" + string.Join(", ", Parameters) + ")";
+            return $"{paramsStr} => {Body}";
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Expressions;
+﻿using PT.PM.Common.Nodes.Expressions;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.Common.Nodes.Statements.Switch
@@ -27,6 +27,17 @@ namespace PT.PM.Common.Nodes.Statements.Switch
             result.AddRange(CaseLabels);
             result.AddRange(Statements);
             return result.ToArray();
+        }
+
+        public override string ToString() => ToString(false, "");
+
+        public string ToString(bool newline, string prevIndent = "")
+        {
+            TextUtils.GetNewlineIndent(newline, prevIndent, out string nl, out string indent);
+            string nlIndent = nl + indent;
+            string caseLabels = string.Join(nl + prevIndent, CaseLabels.Select(caseLabel => "case " + caseLabel + ": "));
+            string statements = string.Join(nlIndent, Statements);
+            return $"{prevIndent}{caseLabels}{nlIndent}{statements}";
         }
     }
 }

@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Collections;
+﻿using PT.PM.Common.Nodes.Collections;
+using System.Collections.Generic;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
     public class ObjectCreateExpression : Expression
     {
-        public Token Type { get; set; }
+        public Expression Type { get; set; }
 
         public ArgsUst Arguments { get; set; }
 
         public List<Expression> Initializers { get; set; }
 
-        public ObjectCreateExpression(Token type, ArgsUst args, TextSpan textSpan)
+        public ObjectCreateExpression(Expression target, ArgsUst args, TextSpan textSpan)
             : base(textSpan)
         {
-            Type = type;
+            Type = target;
             Arguments = args;
         }
 

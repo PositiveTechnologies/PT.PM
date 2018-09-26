@@ -1,5 +1,4 @@
-﻿using System;
-using PT.PM.Common.Nodes.Expressions;
+﻿using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.Specific
 {
@@ -26,6 +25,11 @@ namespace PT.PM.Common.Nodes.Specific
         public override Expression[] GetArgs()
         {
             return new Expression[] { this };
+        }
+
+        public override string ToString()
+        {
+            return $"checked ({Expression})";
         }
     }
 }

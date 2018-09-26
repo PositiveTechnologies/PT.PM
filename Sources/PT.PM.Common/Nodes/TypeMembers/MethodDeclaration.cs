@@ -40,8 +40,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public override string ToString()
         {
-            var nl = Environment.NewLine;
-            return $"{ReturnType} {Name}({(string.Join(", ", Parameters))}) {{{nl}    {Body}{nl}}}";
+            return $"{ReturnType.ToStringWithTrailSpace()}{Name}({(string.Join(", ", Parameters))})\n{{\n{Body.ToStringWithTrailNL()}}}";
         }
     }
 }

@@ -16,20 +16,7 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
-    <Compile Include="..\antlr-grammars-v4\javascript\CSharpSharwell\JavaScriptBaseLexer.cs" Link="JavaScriptBaseLexer.cs" />
-    <Compile Include="..\antlr-grammars-v4\javascript\CSharpSharwell\JavaScriptBaseParser.cs" Link="JavaScriptBaseParser.cs" />
-
-    <Antlr4 Include="..\antlr-grammars-v4\javascript\JavaScriptLexer.g4" Link="JavaScriptLexer.g4">
-      <Listener>false</Listener>
-      <CustomToolNamespace>PT.PM.JavaScriptParseTreeUst</CustomToolNamespace>
-    </Antlr4>
-    <Antlr4 Include="..\antlr-grammars-v4\javascript\JavaScriptParser.g4" Link="JavaScriptParser.g4">
-      <Listener>false</Listener>
-      <CustomToolNamespace>PT.PM.JavaScriptParseTreeUst</CustomToolNamespace>
-    </Antlr4>
-    <PackageReference Include="Antlr4" Version="4.6.5" />
-
-    <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
+    <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
+    <PackageReference Include="Esprima" Version="1.0.0-beta-1051" />
   </ItemGroup>
-
 </Project>

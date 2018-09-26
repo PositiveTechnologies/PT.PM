@@ -9,7 +9,7 @@ namespace PT.PM.Common.Nodes
     [DebuggerDisplay("{ToStringWithoutLineBreaks()}")]
     public abstract class Ust : IComparable<Ust>, IEquatable<Ust>, IUst<Ust, RootUst>, IUst
     {
-        private PrettyPrinter debuggerPrinter = new PrettyPrinter
+        private static PrettyPrinter debuggerPrinter = new PrettyPrinter
         {
             MaxMessageLength = 0,
             ReduceWhitespaces = true

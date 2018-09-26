@@ -7,19 +7,15 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrParseTree : ParseTree
     {
-        public IList<IToken> Tokens = new List<IToken>();
+        public IList<IToken> Tokens;
 
-        public ParserRuleContext SyntaxTree;
-
-        public TimeSpan LexerTimeSpan;
-
-        public TimeSpan ParserTimeSpan;
+        public ParserRuleContext SyntaxTree { get; }
 
         public IList<IToken> Comments = new List<IToken>();
 
         protected AntlrParseTree(ParserRuleContext syntaxTree)
         {
-            SyntaxTree = syntaxTree;
+            SyntaxTree = syntaxTree ?? throw new ArgumentNullException(nameof(syntaxTree));
         }
 
         public AntlrParseTree()

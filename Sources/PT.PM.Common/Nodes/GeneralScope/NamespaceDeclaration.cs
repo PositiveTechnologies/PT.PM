@@ -41,8 +41,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public override string ToString()
         {
-            string nl = Environment.NewLine;
-            return $"namespace {Name}\r\n{{  {(Members == null ? string.Empty : string.Join(nl, Members))}{nl}}}";
+            return $"namespace {Name}\n{{\n{string.Join("\n", Members).ToStringWithTrailNL()}}}";
         }
     }
 }

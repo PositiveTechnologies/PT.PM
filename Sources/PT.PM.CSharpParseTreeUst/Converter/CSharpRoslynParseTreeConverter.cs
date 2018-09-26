@@ -21,13 +21,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
     {
         private RootUst root { get; set; }
 
+        public ILogger Logger { get; set; } = DummyLogger.Instance;
+
         public Language Language => CSharp.Language;
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public RootUst ParentRoot { get; set; }
-
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public CSharpRoslynParseTreeConverter()
         {
@@ -38,39 +38,43 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var roslynParseTree = (CSharpRoslynParseTree)langParseTree;
             SyntaxTree syntaxTree = roslynParseTree.SyntaxTree;
-            RootUst result;
-            if (syntaxTree != null)
+
+            if (syntaxTree == null)
             {
-                string filePath = syntaxTree.FilePath;
-                try
-                {
-                    Ust visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
-                    if (visited is RootUst rootUst)
-                    {
-                        result = rootUst;
-                    }
-                    else
-                    {
-                        result = new RootUst(langParseTree.SourceCodeFile, Language);
-                        result.Node = visited;
-                    }
-                    result.SourceCodeFile = langParseTree.SourceCodeFile;
-                    result.Comments = roslynParseTree.Comments.Select(c =>
-                        new CommentLiteral(c.ToString(), c.GetTextSpan())).ToArray();
-                    result.FillAscendants();
-                }
-                catch (Exception ex) when (!(ex is ThreadAbortException))
-                {
-                    Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
-                    result = new RootUst(langParseTree.SourceCodeFile, Language);
-                }
-            }
-            else
-            {
-                result = new RootUst(langParseTree.SourceCodeFile, Language);
+                return null;
             }
 
-            return result;
+            RootUst result;
+            string filePath = syntaxTree.FilePath;
+            try
+            {
+                Ust visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
+                if (visited is RootUst rootUst)
+                {
+                    result = rootUst;
+                }
+                else
+                {
+                    result = new RootUst(langParseTree.SourceCodeFile, Language);
+                    result.Node = visited;
+                }
+                result.SourceCodeFile = langParseTree.SourceCodeFile;
+                result.Comments = roslynParseTree.Comments.Select(c =>
+                    new CommentLiteral(c.ToString(), c.GetTextSpan())
+                    {
+                        Root = result,
+                        Parent = result
+                    })
+                    .ToArray();
+                result.FillAscendants();
+
+                return result;
+            }
+            catch (Exception ex) when (!(ex is ThreadAbortException))
+            {
+                Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
+                return null;
+            }
         }
 
         public override Ust Visit(SyntaxNode node)

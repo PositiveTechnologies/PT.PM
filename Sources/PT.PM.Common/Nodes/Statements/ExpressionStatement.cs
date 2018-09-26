@@ -21,7 +21,7 @@ namespace PT.PM.Common.Nodes.Statements
 
         public override string ToString()
         {
-            return $"{Expression};" + System.Environment.NewLine;
+            return $"{Expression};";
         }
     }
 }

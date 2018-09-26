@@ -20,5 +20,10 @@ namespace PT.PM.Common.Nodes.Specific
         {
             return new Ust[] {Body};
         }
+
+        public override string ToString()
+        {
+            return $"unsafe\n{{\n{Body.ToStringWithTrailNL()}}}";
+        }
     }
 }

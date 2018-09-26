@@ -46,47 +46,43 @@ namespace PT.PM.AntlrUtils
             var antlrParseTree = (AntlrParseTree)langParseTree;
             ParserRuleContext tree = antlrParseTree.SyntaxTree;
             ICharStream inputStream = tree.start.InputStream ?? tree.stop?.InputStream;
-            string filePath = inputStream != null ? inputStream.SourceName : "";
-            RootUst result = null;
-            if (tree != null && inputStream != null)
-            {
-                try
-                {
-                    Tokens = antlrParseTree.Tokens;
-                    root = new RootUst(langParseTree.SourceCodeFile, Language);
-                    Ust visited = Visit(tree);
-                    if (visited is RootUst rootUst)
-                    {
-                        result = rootUst;
-                    }
-                    else
-                    {
-                        result = root;
-                        result.Node = visited;
-                    }
-                    result.FillAscendants();
-                }
-                catch (Exception ex) when (!(ex is ThreadAbortException))
-                {
-                    Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
 
-                    if (result == null)
-                    {
-                        result = new RootUst(langParseTree.SourceCodeFile, Language)
-                        {
-                            Comments = ArrayUtils<CommentLiteral>.EmptyArray
-                        };
-                    }
+            if (tree == null || inputStream == null)
+            {
+                return null;
+            }
+
+            RootUst result = null;
+            try
+            {
+                Tokens = Language.Sublanguages.Length > 0 ? antlrParseTree.Tokens : new List<IToken>();
+                root = new RootUst(langParseTree.SourceCodeFile, Language);
+                Ust visited = Visit(tree);
+                if (visited is RootUst rootUst)
+                {
+                    result = rootUst;
+                }
+                else
+                {
+                    result = root;
+                    result.Node = visited;
                 }
             }
-            else
+            catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = new RootUst(langParseTree.SourceCodeFile, Language)
-                {
-                    Comments = ArrayUtils<CommentLiteral>.EmptyArray
-                };
+                Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
+                return null;
             }
-            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())).ToArray();
+
+            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())
+            {
+                Parent = result,
+                Root = result
+            })
+            .ToArray();
+
+            result.FillAscendants();
+
             return result;
         }
 

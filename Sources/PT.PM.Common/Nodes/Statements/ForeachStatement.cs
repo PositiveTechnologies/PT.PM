@@ -37,5 +37,10 @@ namespace PT.PM.Common.Nodes.Statements
             result.Add(EmbeddedStatement);
             return result.ToArray();
         }
+
+        public override string ToString()
+        {
+            return $"foreach ({VarName} in {InExpression})\n{EmbeddedStatement}";
+        }
     }
 }

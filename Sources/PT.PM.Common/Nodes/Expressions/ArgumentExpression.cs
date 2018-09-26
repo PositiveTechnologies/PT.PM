@@ -26,8 +26,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override string ToString()
         {
-            string modifierString = Modifier != null ? Modifier + " " : "";
-            return $"{modifierString}{Argument}";
+            return $"{Modifier.ToStringWithTrailSpace()}{Argument}";
         }
     }
 }

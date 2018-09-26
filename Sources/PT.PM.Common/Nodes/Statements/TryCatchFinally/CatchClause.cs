@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common.Nodes.Tokens;
-using System;
 
 namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 {
@@ -30,8 +29,7 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 
         public override string ToString()
         {
-            var nl = Environment.NewLine;
-            return $"catch ({(Type != null ? Type.ToString() : "")} {(VarName != null ? VarName.ToString() : "")}) {{{nl}    {Body}{nl}}}{nl}";
+            return $"catch ({Type.ToStringWithTrailSpace()}{(VarName.ToStringNullable())})\n{{{Body}}}";
         }
     }
 }

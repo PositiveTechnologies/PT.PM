@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.TypeMembers;
-using System;
-using System.Linq;
+﻿using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.TypeMembers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
@@ -11,9 +10,9 @@ namespace PT.PM.Common.Nodes.GeneralScope
     {
         public TypeTypeLiteral Type { get; set; }
 
-        public List<TypeToken> BaseTypes { get; set; }
+        public List<TypeToken> BaseTypes { get; set; } = new List<TypeToken>();
 
-        public List<EntityDeclaration> TypeMembers { get; set; }
+        public List<EntityDeclaration> TypeMembers { get; set; } = new List<EntityDeclaration>();
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<EntityDeclaration> typeMembers,
              TextSpan textSpan) : base(name, textSpan)
@@ -34,8 +33,6 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public TypeDeclaration()
         {
-            BaseTypes = new List<TypeToken>();
-            TypeMembers = new List<EntityDeclaration>();
         }
 
         public override Ust[] GetChildren()
@@ -50,8 +47,10 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public override string ToString()
         {
-            string nl = Environment.NewLine;
-            return $"{Name}{nl}{{  {string.Join(nl, TypeMembers)}}}";
+            string baseTypesString = BaseTypes.Count > 0
+                ? " : " + string.Join(", ", BaseTypes) + " "
+                : " ";
+            return $"{Name}{baseTypesString}{{{string.Join(" ", TypeMembers)}}}";
         }
     }
 }

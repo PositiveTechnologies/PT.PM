@@ -7,6 +7,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
+using PT.PM.Common.Nodes.Specific;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
@@ -33,6 +34,8 @@ namespace PT.PM.PhpParseTreeUst
         protected int namespaceDepth;
 
         public override Language Language => Php.Language;
+
+        public JavaScriptType JavaScriptType { get; set; }
 
         public PhpAntlrParseTreeConverter()
             : base()
@@ -79,7 +82,7 @@ namespace PT.PM.PhpParseTreeUst
                 {
                     if (token.Type == PhpLexer.HtmlScriptOpen)
                     {
-                        jsStartCodeInd = context.Start.TokenIndex;
+                        jsStartCodeInd = i;
                     }
                     else if (token.Type == PhpLexer.ScriptClose)
                     {
@@ -99,6 +102,7 @@ namespace PT.PM.PhpParseTreeUst
                     }
                 }
                 : null;
+
             return result;
         }
 
@@ -128,25 +132,38 @@ namespace PT.PM.PhpParseTreeUst
                 }
             }
 
-            var javaScriptParser = new JavaScriptAntlrParser
-            {
-                Logger = Logger,
-                LineOffset = Tokens[jsStartCodeInd].Line - 1
-            };
+            int offset = Tokens[jsStartCodeInd].StartIndex;
+
             var sourceCodeFile = new CodeFile(jsCode.ToString())
             {
                 Name = root.SourceCodeFile.Name,
                 RelativePath = root.SourceCodeFile.RelativePath,
             };
-            var parseTree = (JavaScriptAntlrParseTree)javaScriptParser.Parse(sourceCodeFile);
 
-            var javaScriptConverter = new JavaScriptParseTreeConverter() { Logger = Logger, ParentRoot = root };
+            var javaScriptParser = new JavaScriptEsprimaParser
+            {
+                Logger = Logger,
+                JavaScriptType = JavaScriptType,
+                Offset = offset,
+                OriginFile = root.SourceCodeFile
+            };
+
+            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceCodeFile);
+            if (parseTree == null)
+            {
+                return null;
+            }
+
+            var javaScriptConverter = new JavaScriptEsprimaParseTreeConverter
+            {
+                Logger = Logger,
+                SourceCodeFile = root.SourceCodeFile,
+                ParentRoot = root,
+                Offset = offset
+            };
+
             RootUst result = javaScriptConverter.Convert(parseTree);
-            result.SourceCodeFile = root.SourceCodeFile;
-            result.Root = root;
-            result.Parent = root;
-            int jsCodeOffset = Tokens[jsStartCodeInd].StartIndex;
-            result.ApplyActionToDescendantsAndSelf(ustNode => ustNode.TextSpan = ustNode.TextSpan.AddOffset(jsCodeOffset));
+
             return result;
         }
 
@@ -1352,7 +1369,6 @@ namespace PT.PM.PhpParseTreeUst
             {
                 var indirectTypeRef = (Expression)Visit(context.indirectTypeRef());
                 result = new TypeToken(indirectTypeRef.ToString() + genericStr, textSpan);
-                result.Expression = indirectTypeRef;
             }
             else if (context.primitiveType() != null)
             {
@@ -1792,7 +1808,6 @@ namespace PT.PM.PhpParseTreeUst
                 exprs.Insert(0, (Expression)Visit(context.expression()));
             }
 
-            result.Expression = new MultichildExpression(exprs, context.GetTextSpan());
             return result;
         }
 

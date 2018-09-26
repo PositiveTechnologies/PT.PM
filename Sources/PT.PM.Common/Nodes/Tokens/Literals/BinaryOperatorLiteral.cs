@@ -43,7 +43,11 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
             // PHP & JavaScript
             ["==="] = BinaryOperator.StrictEqual,
-            ["!=="] = BinaryOperator.StrictNotEqual
+            ["!=="] = BinaryOperator.StrictNotEqual,
+
+            // JavaScript
+            ["in"] = BinaryOperator.In,
+            ["instanceof"] = BinaryOperator.InstanceOf
         };
 
         public override string TextValue => BinaryOperator.ToString();
