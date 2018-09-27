@@ -13,7 +13,7 @@ namespace PT.PM.Matching.PatternsRepository
 {
     public class JsonPatternsRepository : MemoryPatternsRepository
     {
-        private string patternsData;
+        protected string patternsData;
         private PatternConverter patternConverter = new PatternConverter();
 
         public string DefaultDataFormat { get; set; } = "Json";
@@ -27,6 +27,10 @@ namespace PT.PM.Matching.PatternsRepository
         public JsonPatternsRepository(string patternsData)
         {
             this.patternsData = patternsData;
+        }
+
+        public JsonPatternsRepository()
+        {
         }
 
         protected override List<PatternDto> InitPatterns()
