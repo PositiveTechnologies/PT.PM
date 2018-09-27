@@ -7,12 +7,13 @@ using PT.PM.Matching.Json;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PT.PM.Matching.PatternsRepository
 {
     public class JsonPatternsRepository : MemoryPatternsRepository
     {
-        private string patternsData;
+        protected string patternsData;
         private PatternConverter patternConverter = new PatternConverter();
 
         public string DefaultDataFormat { get; set; } = "Json";
@@ -26,6 +27,10 @@ namespace PT.PM.Matching.PatternsRepository
         public JsonPatternsRepository(string patternsData)
         {
             this.patternsData = patternsData;
+        }
+
+        public JsonPatternsRepository()
+        {
         }
 
         protected override List<PatternDto> InitPatterns()
@@ -89,7 +94,35 @@ namespace PT.PM.Matching.PatternsRepository
                     }
                     else
                     {
-                        patternDto = token.ToObject<PatternDto>();
+                        patternDto = new PatternDto()
+                        {
+                            Name = token[nameof(PatternDto.Name)]?.ToString() ?? string.Empty,
+                            Key = token[nameof(PatternDto.Key)]?.ToString() ?? string.Empty,
+                            DataFormat = token[nameof(PatternDto.DataFormat)]?.ToString(),
+                            Value = token[nameof(PatternDto.Value)]?.ToString(),
+                            CweId = token[nameof(PatternDto.CweId)]?.ToString(),
+                            Description = token[nameof(PatternDto.Description)]?.ToString(),
+                            FilenameWildcard = token[nameof(PatternDto.FilenameWildcard)]?.ToString()
+                        };
+
+                        HashSet<string> languages;
+                        var languagesToken = token["Languages"];
+
+                        if (languagesToken == null)
+                        {
+                            languages = new HashSet<string>();
+                        }
+                        else if (languagesToken is JArray)
+                        {
+                            languages = new HashSet<string>(languagesToken.Select(x => x.ToString()));
+                        }
+                        else
+                        {
+                            languages = new HashSet<string>(languagesToken.ToString()
+                                .Split(',').Select(x => x.Trim()));
+                        }
+
+                        patternDto.Languages = languages;
                     }
                     result.Add(patternDto);
                 }
