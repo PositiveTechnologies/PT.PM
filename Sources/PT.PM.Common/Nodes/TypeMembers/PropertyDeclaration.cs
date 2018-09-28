@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common.Nodes.Tokens;
+using System.Collections.Generic;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
@@ -17,6 +18,15 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public PropertyDeclaration()
         {
+        }
+
+        public override Ust[] GetChildren()
+        {
+            var result = new List<Ust>();
+            result.AddRange(base.GetChildren());
+            result.Add(Type);
+            result.Add(Body);
+            return result.ToArray();
         }
 
         public override string ToString()

@@ -20,10 +20,7 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override Ust[] GetChildren()
-        {
-            return new Ust[] { Expression, Statement };
-        }
+        public override Ust[] GetChildren() => new Ust[] { Expression, Statement };
 
         public override string ToString()
         {

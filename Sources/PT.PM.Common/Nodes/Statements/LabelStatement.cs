@@ -19,10 +19,7 @@ namespace PT.PM.Common.Nodes.Statements
         {
         }
 
-        public override Ust[] GetChildren()
-        {
-            return new Ust[] { Label, Body };
-        }
+        public override Ust[] GetChildren() => new Ust[] { Label, Body };
 
         public override string ToString()
         {
