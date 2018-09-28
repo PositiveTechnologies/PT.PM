@@ -9,7 +9,7 @@ namespace PT.PM
 {
     public static class Utils
     {
-        public const int DefaultMaxStackSize = 0;
+        public const int DefaultMaxStackSize = 4 * 1024 * 1024;
         public const string TimeSpanFormat = "mm\\:ss\\.ff";
 
         public static bool Is<TStage>(this TStage stage, Stage pmStage)
