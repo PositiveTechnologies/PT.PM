@@ -1,4 +1,7 @@
-﻿using PT.PM.Common;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using PT.PM.Common;
+using System.Collections.Generic;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -6,12 +9,26 @@ namespace PT.PM.CSharpParseTreeUst
     {
         public override void DumpTokens(ParseTree parseTree)
         {
-            Dump("", parseTree.SourceCodeFile, true);
         }
 
         public override void DumpTree(ParseTree parseTree)
         {
-            Dump("", parseTree.SourceCodeFile, false);
+            var roslynParseTree = (CSharpRoslynParseTree)parseTree;
+
+            var serializerSettings = new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = IndentSize != -1 ? Formatting.Indented : Formatting.None,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Converters = new List<JsonConverter>
+                {
+                    new StringEnumConverter()
+                }
+            };
+
+            string result = JsonConvert.SerializeObject(roslynParseTree.SyntaxTree.GetRoot(), serializerSettings);
+            Dump(result, parseTree.SourceCodeFile, false);
         }
     }
 }
