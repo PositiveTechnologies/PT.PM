@@ -147,7 +147,8 @@ namespace PT.PM.Common
                 {
                     bool result = isSql
                         ? language.IsSql
-                        : (language.Key.EqualsIgnoreCase(langStr) || language.Title.EqualsIgnoreCase(langStr));
+                        : (language.Key.EqualsIgnoreCase(langStr) || language.Title.EqualsIgnoreCase(langStr) ||
+                           language.Extensions.Any(ext => (ext.StartsWith(".") ? ext.Substring(1) : ext).EqualsIgnoreCase(langStr)));
                     if (negation)
                     {
                         containsNegation = true;
