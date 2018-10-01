@@ -8,6 +8,8 @@ namespace PT.PM.AntlrUtils
 {
     public class AntlrDumper : ParseTreeDumper
     {
+        public override string ParseTreeSuffix => "parseTree.lisp";
+
         public override void DumpTokens(ParseTree parseTree)
         {
             var antlrParseTree = parseTree as AntlrParseTree;

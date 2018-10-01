@@ -1,4 +1,8 @@
-﻿using PT.PM.Common.Utils;
+﻿using PT.PM.AntlrUtils;
+using PT.PM.Common;
+using PT.PM.Common.Utils;
+using PT.PM.CSharpParseTreeUst;
+using PT.PM.JavaScriptParseTreeUst;
 using System;
 using System.Globalization;
 using System.IO;
@@ -28,6 +32,26 @@ namespace PT.PM
             where TStage : Enum
         {
             return Convert.ToInt32(stage) < (int)pmStage;
+        }
+
+        public static ParseTreeDumper CreateParseTreeDumper(Language language)
+        {
+            ParseTreeDumper dumper;
+
+            if (language == CSharp.Language)
+            {
+                dumper = new RoslynDumper();
+            }
+            else if (language == JavaScript.Language)
+            {
+                dumper = new JavaScriptEsprimaParseTreeDumper();
+            }
+            else
+            {
+                dumper = new AntlrDumper();
+            }
+
+            return dumper;
         }
 
         public static string Format(this TimeSpan timeSpan) => timeSpan.ToString(TimeSpanFormat);
