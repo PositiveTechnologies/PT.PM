@@ -50,10 +50,11 @@ namespace PT.PM
         {
             Ust result;
 
-            if (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false)
+            if (arrayCreationExpression.Type?.TypeText == "char" &&
+                (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false))
             {
                 var value = new StringBuilder();
-                var textSpans = new List<TextSpan>();
+                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count);
                 foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
                 {
                     value.Append(stringLiteral.Text);
