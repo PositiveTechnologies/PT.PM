@@ -47,11 +47,7 @@ namespace PT.PM.Matching.Patterns
 
             if (Statements == null || Statements.Count == 0)
             {
-                if (blockStatement.Statements == null || blockStatement.Statements.Count == 0)
-                {
-                    newContext = newContext.AddMatch(blockStatement);
-                }
-                else
+                if (blockStatement.Statements != null && blockStatement.Statements.Count != 0)
                 {
                     return context.Fail();
                 }
@@ -89,14 +85,7 @@ namespace PT.PM.Matching.Patterns
                     }
                 }
 
-                if (success)
-                {
-                    context = context.AddMatches(matchedTextSpans);
-                }
-                else
-                {
-                    context = context.Fail();
-                }
+                context = success ? context.AddMatches(matchedTextSpans) : context.Fail();
             }
 
             return context;
