@@ -47,7 +47,7 @@ namespace PT.PM.Matching.Patterns
 
             if (Statements == null || Statements.Count == 0)
             {
-                if (blockStatement.Statements != null && blockStatement.Statements.Count != 0)
+                if (blockStatement.Statements?.Count > 0)
                 {
                     return context.Fail();
                 }
