@@ -611,7 +611,11 @@ namespace PT.PM.PatternEditor
             var dumpStages = new HashSet<Stage>();
             if (Stage >= Stage.ParseTree)
             {
-                dumpStages.Add(Stage.ParseTree);
+                if (SelectedLanguage != CSharp.Language)
+                {
+                    // TODO: ignore C# parse tree dump due to the huge size
+                    dumpStages.Add(Stage.ParseTree);
+                }
                 if (Stage >= Stage.Ust)
                 {
                     dumpStages.Add(Stage.Ust);
