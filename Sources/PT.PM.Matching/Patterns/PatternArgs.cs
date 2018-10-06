@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
@@ -47,7 +48,8 @@ namespace PT.PM.Matching.Patterns
                 {
                     if (patternArgInd + 1 < Args.Count)
                     {
-                        newContext = Args[patternArgInd + 1].MatchUst(args[argInd], newContext);
+                        Expression arg = UstUtils.GetArgWithoutModifier(args[argInd]);
+                        newContext = Args[patternArgInd + 1].MatchUst(arg, newContext);
                         matchedTextSpans.AddRange(newContext.Locations);
                         if (newContext.Success)
                         {
@@ -62,7 +64,8 @@ namespace PT.PM.Matching.Patterns
                 }
                 else
                 {
-                    newContext = Args[patternArgInd].MatchUst(args[argInd], newContext);
+                    Expression arg = UstUtils.GetArgWithoutModifier(args[argInd]);
+                    newContext = Args[patternArgInd].MatchUst(arg, newContext);
                     if (!newContext.Success)
                     {
                         break;

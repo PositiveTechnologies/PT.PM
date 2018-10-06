@@ -21,7 +21,7 @@ namespace PT.PM.Matching
 
         protected override List<PatternDto> InitPatterns()
         {
-            return new List<PatternDto>()
+            return new List<PatternDto>
             {
                 new PatternDto
                 {
