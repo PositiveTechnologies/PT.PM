@@ -47,6 +47,11 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
+        public static Expression GetArgWithoutModifier(Expression arg)
+        {
+            return arg is ArgumentExpression argExpression ? argExpression.Argument : arg;
+        }
+
         internal static string GenerateSignature(string id, List<ParameterDeclaration> parameters)
         {
             string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Any"));
