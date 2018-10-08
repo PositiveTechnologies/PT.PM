@@ -116,6 +116,11 @@ namespace PT.PM
                                 resultValue = leftValue * rightValue;
                                 break;
                             case BinaryOperator.Divide:
+                                if (rightValue == 0)
+                                {
+                                    folded = false;
+                                    break;
+                                }
                                 resultValue = leftValue / rightValue;
                                 break;
                             case BinaryOperator.Mod:
