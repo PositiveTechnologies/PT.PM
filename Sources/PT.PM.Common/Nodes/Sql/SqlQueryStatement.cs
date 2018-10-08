@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PT.PM.Common.Nodes.Specific
+namespace PT.PM.Common.Nodes.Sql
 {
     public class SqlQueryStatement : Statement
     {

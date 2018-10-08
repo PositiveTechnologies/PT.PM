@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes.Expressions;
 using System;
 using System.Collections.Generic;
 
-namespace PT.PM.Common.Nodes.Specific
+namespace PT.PM.Common.Nodes.Sql
 {
     public class QueryParameters : Expression
     {
