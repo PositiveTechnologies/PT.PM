@@ -52,7 +52,7 @@ namespace PT.PM.Matching.Patterns
 
             if (Arguments is PatternArgs patternArgs)
             {
-                newContext = patternArgs.Match(invocation.Arguments, newContext);
+                 newContext = patternArgs.Match(invocation.Arguments, newContext);
             }
             else
             {

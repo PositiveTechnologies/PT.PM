@@ -22,7 +22,7 @@ namespace PT.PM.TestUtils
         public static string TestsDataPath = $@"{TestsPath}/Data";
         public static string TestsOutputPath = $@"{TestsPath}/Output";
 
-        internal static bool IsDebug =>
+        public static bool IsDebug =>
 #if DEBUG
             true;
 #else

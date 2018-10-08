@@ -53,7 +53,7 @@
         </Grid>
       </Expander>
 
-      <Expander Grid.Row="4" Header="{Binding ParseTreeHeader}" IsExpanded="{Binding IsParseTreeExpanded, Mode=TwoWay}" IsVisible="{Binding IsTreeVisible}">
+      <Expander Grid.Row="4" Header="{Binding ParseTreeHeader}" IsExpanded="{Binding IsParseTreeExpanded, Mode=TwoWay}" >
         <Grid RowDefinitions="80">
           <TextBox Text="{Binding ParseTree}" AcceptsReturn="true" TextWrapping="Wrap" IsReadOnly="true" MinHeight="80"/>
         </Grid>

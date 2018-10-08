@@ -92,6 +92,7 @@ namespace PT.PM.Matching
                         ex, $"Error while \"{patternDto.Key}\" pattern deserialising ({patternDto.Value}) "));
                 }
             }
+
             return result;
         }
 

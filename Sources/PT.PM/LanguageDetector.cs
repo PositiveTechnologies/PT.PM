@@ -1,5 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Utils;
+using PT.PM.CSharpParseTreeUst;
+using PT.PM.PhpParseTreeUst;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,14 +35,21 @@ namespace PT.PM
             {
                 string[] extensions = GetExtensions(codeFile.Name);
                 List<Language> finalLanguages = GetLanguagesIntersection(extensions, languages);
-                if (finalLanguages.Count == 1 || finalLanguages.Any(final => final.Key == "CSharp"))
+                if (finalLanguages.Count == 1 || finalLanguages.Any(final => final == CSharp.Language))
                 {
                     result = new DetectionResult(finalLanguages[0]);
                 }
                 else if (finalLanguages.Count > 1)
                 {
-                    result = Detect(codeFile, finalLanguages);
-                    LogDetection(result, finalLanguages, codeFile);
+                    if (finalLanguages.Count == 2 && finalLanguages.Contains(Html.Language) && finalLanguages.Contains(Php.Language))
+                    {
+                        result = new DetectionResult(Php.Language);
+                    }
+                    else
+                    {
+                        result = Detect(codeFile, finalLanguages);
+                        LogDetection(result, finalLanguages, codeFile);
+                    }
                 }
             }
             else

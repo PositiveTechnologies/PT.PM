@@ -52,6 +52,13 @@ namespace PT.PM.Cli.Common
 
                 string trimmedArg = args[argInd].TrimStart('-');
 
+                if (trimmedArg == "help" || trimmedArg == "version")
+                {
+                    outArgValues.Add(new Tuple<string, string>($"--{trimmedArg}", null));
+                    argInd++;
+                    continue;
+                }
+
                 OptionType foundOption = optionTypes.FirstOrDefault(optionType =>
                     optionType.Option.ShortName == trimmedArg || optionType.Option.LongName == trimmedArg ||
                     optionType.ParamName == trimmedArg);

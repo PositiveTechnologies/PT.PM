@@ -300,15 +300,9 @@ namespace PT.PM
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.ParseTree)))
             {
-                ParseTreeDumper dumper;
-                if (parseTree.SourceLanguage.HaveAntlrParser)
-                {
-                    dumper = new AntlrDumper();
-                }
-                else
-                {
-                    dumper = new RoslynDumper();
-                }
+                var dumper = Utils.CreateParseTreeDumper(parseTree.SourceLanguage);
+                dumper.IncludeTextSpans = DumpWithTextSpans;
+                dumper.IsLineColumn = LineColumnTextSpans;
                 dumper.DumpDir = DumpDir;
                 dumper.DumpTokens(parseTree);
                 dumper.DumpTree(parseTree);

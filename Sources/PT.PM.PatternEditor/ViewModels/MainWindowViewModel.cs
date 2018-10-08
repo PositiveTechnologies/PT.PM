@@ -303,7 +303,6 @@ namespace PT.PM.PatternEditor
                     Settings.Save();
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
-                    this.RaisePropertyChanged(nameof(IsTreeVisible));
                     this.RaisePropertyChanged(nameof(IsJavaScriptTypeVisible));
                     CheckSourceCode();
                 }
@@ -402,8 +401,6 @@ namespace PT.PM.PatternEditor
         }
 
         public bool IsTokensVisible => SelectedLanguage?.HaveAntlrParser == true;
-
-        public bool IsTreeVisible => SelectedLanguage?.HaveAntlrParser == true;
 
         public bool IsUstJsonVisible => Stage >= Stage.Ust;
 
@@ -614,7 +611,11 @@ namespace PT.PM.PatternEditor
             var dumpStages = new HashSet<Stage>();
             if (Stage >= Stage.ParseTree)
             {
-                dumpStages.Add(Stage.ParseTree);
+                if (SelectedLanguage != CSharp.Language)
+                {
+                    // TODO: ignore C# parse tree dump due to the huge size
+                    dumpStages.Add(Stage.ParseTree);
+                }
                 if (Stage >= Stage.Ust)
                 {
                     dumpStages.Add(Stage.Ust);
@@ -626,8 +627,10 @@ namespace PT.PM.PatternEditor
             IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
             sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
 
+            ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
+
             string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.TokensSuffix);
-            string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.ParseTreeSuffix);
+            string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, dumper.ParseTreeSuffix);
             Tokens = FileExt.Exists(tokensFileName) ? FileExt.ReadAllText(tokensFileName) : "";
             ParseTree = FileExt.Exists(parseTreeFileName) ? FileExt.ReadAllText(parseTreeFileName) : "";
 

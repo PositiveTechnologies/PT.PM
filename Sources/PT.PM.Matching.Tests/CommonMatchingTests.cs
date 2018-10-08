@@ -79,6 +79,17 @@ namespace PT.PM.Matching.Tests
             Assert.AreEqual(matchMethodNumbers.Contains(4) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_4")));
         }
 
+        [Test]
+        public void Match_RefOutArg()
+        {
+            var codeRepository = new MemoryCodeRepository("class P { void Main() { Func(ref a); } }", "test.cs");
+            var patternsRepository = new DslPatternRepository("Func(a)", "CSharp");
+            workflow = new Workflow(codeRepository, patternsRepository);
+            WorkflowResult result = workflow.Process();
+
+            Assert.AreEqual(1, result.MatchResults.Count);
+        }
+
         [TestCase("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);")]
         [TestCase("<[@pwd:username]> = #; ... #(#*, <[@pwd]>, #*);")]
         public void Match_PatternVarWithRegex(string patternData)
