@@ -232,6 +232,21 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(debuggerStatement);
         }
 
+        public virtual T Visit(SqlQueryStatement sqlQueryStatement)
+        {
+            return VisitChildren(sqlQueryStatement);
+        }
+
+        public virtual T Visit(SqlBlockStatement sqlBlockStatement)
+        {
+            return VisitChildren(sqlBlockStatement);
+        }
+
+        public virtual T Visit(QueryParameters queryParameters)
+        {
+            return VisitChildren(queryParameters);
+        }
+
         public virtual T Visit(FixedStatement fixedStatement)
         {
             return VisitChildren(fixedStatement);

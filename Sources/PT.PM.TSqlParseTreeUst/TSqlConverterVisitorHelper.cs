@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.TSqlParseTreeUst;
+using PT.PM.Common.Nodes.Specific;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -88,7 +89,11 @@ namespace PT.PM.SqlParseTreeUst
 
             try
             {
-                if (text.StartsWith("@"))
+                if (text == "*")
+                {
+                    result = new IdToken(text, textSpan);
+                }
+                else if (text.StartsWith("@"))
                 {
                     result = new IdToken(text.Substring(1), textSpan);
                 }
