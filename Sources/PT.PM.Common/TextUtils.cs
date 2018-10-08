@@ -314,6 +314,11 @@ namespace PT.PM.Common
             return ToStringWithTrail(obj, ' ');
         }
 
+        public static string ToStringWithLeadAndTrailSpace(this object obj)
+        {
+            return ToStringWithLeadAndTrail(obj, ' ');
+        }
+
         public static string ToStringWithTrailNL(this object obj)
         {
             return ToStringWithTrail(obj, '\n');
@@ -329,6 +334,12 @@ namespace PT.PM.Common
         {
             string result = obj?.ToString() ?? null;
             return string.IsNullOrEmpty(result) ? "" : lead + result;
+        }
+
+        public static string ToStringWithLeadAndTrail(this object obj, char leadAndTrailSymbol)
+        {
+            string result = obj?.ToString();
+            return string.IsNullOrEmpty(result) ? "" : $"{leadAndTrailSymbol}{result}{leadAndTrailSymbol}";
         }
 
         public static void GetNewlineIndent(bool newline, string prevIndent, out string nl, out string indent)
