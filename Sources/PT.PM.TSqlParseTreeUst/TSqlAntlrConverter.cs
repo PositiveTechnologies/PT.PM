@@ -227,7 +227,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             if (context.table_sources() != null)
             {
-                exprs.Add((MultichildExpression)Visit(context.table_sources()));
+                exprs.Add((QueryParameters)Visit(context.table_sources()));
             }
             if (context.search_condition() != null)
             {
@@ -285,7 +285,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.insert_with_table_hints() != null)
             {
-                exprs.Add((MultichildExpression)Visit(context.insert_with_table_hints()));
+                exprs.Add((QueryParameters)Visit(context.insert_with_table_hints()));
             }
             if (context.column_name_list() != null)
             {
@@ -1036,7 +1036,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 exprs.Add((Expression)Visit(context.search_condition()));
             }
-            return new MultichildExpression(exprs, context.GetTextSpan());
+            return new QueryParameters(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="ArgsUst"/></returns>
@@ -1460,7 +1460,23 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Expression"/></returns>
         public Ust VisitQuery_expression([NotNull] TSqlParser.Query_expressionContext context)
         {
-            return VisitChildren(context);
+            if (context.ChildCount > 1)
+            {
+                List<Expression> exprs = new List<Expression>();
+                for (int i = 0; i < context.ChildCount; i++)
+                {
+                    var visited = Visit(context.GetChild(i));
+                    if(visited != null)
+                    {
+                        exprs.Add(new WrapperExpression(visited));
+                    }
+                }
+                return new SqlQueryStatement(((SqlQueryStatement)((WrapperExpression)exprs.FirstOrDefault())?.Node).QueryCommand,exprs, context.GetTextSpan());
+            }
+            else
+            {
+                return VisitChildren(context);
+            }
         }
 
         /// <returns><see cref="MultichildExpression"/></returns>
@@ -1477,6 +1493,11 @@ namespace PT.PM.SqlParseTreeUst
             for (int i = 0; i < context.ChildCount; i++)
             {
                 var queryElement = Visit(context.GetChild(i));
+
+                if(queryElement == null)
+                {
+                    continue;
+                }
 
                 if (queryElement is Expression expression)
                 {
@@ -1614,7 +1635,12 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="MultichildExpression"/></returns>
         public Ust VisitTable_source_item_joined([NotNull] TSqlParser.Table_source_item_joinedContext context)
         {
-            return VisitChildren(context);
+            List<Expression> exprs = new List<Expression>();
+            for(int i = 0; i < context.ChildCount; i++)
+            {
+                exprs.Add((Expression)Visit(context.GetChild(i)));
+            }
+            return new QueryParameters(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="Expression"/></returns>
