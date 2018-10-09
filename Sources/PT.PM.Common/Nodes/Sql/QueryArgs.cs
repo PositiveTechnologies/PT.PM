@@ -5,17 +5,17 @@ using System.Collections.Generic;
 
 namespace PT.PM.Common.Nodes.Sql
 {
-    public class QueryParameters : Expression
+    public class QueryArgs : Expression
     {
         public Collection Parameters { get; set; }
 
-        public QueryParameters(IEnumerable<Expression> elements, TextSpan textSpan)
+        public QueryArgs(IEnumerable<Expression> elements, TextSpan textSpan)
             : base(textSpan)
         {
             Parameters = new Collection(elements ?? throw new ArgumentNullException(nameof(elements)));
         }
 
-        public QueryParameters()
+        public QueryArgs()
         {
         }
 

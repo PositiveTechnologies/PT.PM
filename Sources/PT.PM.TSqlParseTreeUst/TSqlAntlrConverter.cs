@@ -225,7 +225,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             if (context.table_sources() != null)
             {
-                exprs.Add((QueryParameters)Visit(context.table_sources()));
+                exprs.Add((QueryArgs)Visit(context.table_sources()));
             }
             if (context.search_condition() != null)
             {
@@ -250,11 +250,11 @@ namespace PT.PM.SqlParseTreeUst
             return (Expression)Visit(context.GetChild(0));
         }
 
-        /// <returns><see cref="QueryParameters"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitInsert_with_table_hints([NotNull] TSqlParser.Insert_with_table_hintsContext context)
         {
             var exprs = context.table_hint().Select(hint => (Expression)Visit(hint)).ToList();
-            var result = new QueryParameters(exprs, context.GetTextSpan());
+            var result = new QueryArgs(exprs, context.GetTextSpan());
             return result;
         }
 
@@ -283,7 +283,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.insert_with_table_hints() != null)
             {
-                exprs.Add((QueryParameters)Visit(context.insert_with_table_hints()));
+                exprs.Add((QueryArgs)Visit(context.insert_with_table_hints()));
             }
             if (context.column_name_list() != null)
             {
@@ -385,7 +385,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.with_table_hints() != null)
             {
-                exprs.Add((QueryParameters)Visit(context.with_table_hints()));
+                exprs.Add((QueryArgs)Visit(context.with_table_hints()));
             }
 
             if (context.output_clause() != null)
@@ -395,7 +395,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.table_sources() != null)
             {
-                exprs.Add((QueryParameters)Visit(context.table_sources()));
+                exprs.Add((QueryArgs)Visit(context.table_sources()));
             }
 
             if (context.search_condition_list() != null)
@@ -970,7 +970,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                result = (QueryParameters)Visit(context.table_constraint());
+                result = (QueryArgs)Visit(context.table_constraint());
             }
             return result;
         }
@@ -1034,7 +1034,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 exprs.Add((Expression)Visit(context.search_condition()));
             }
-            return new QueryParameters(exprs, context.GetTextSpan());
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="ArgsUst"/></returns>
@@ -1604,7 +1604,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var selectListElements = context.select_list_elem();
             var visitedFirst = (Expression)Visit(selectListElements.First());
-            var result = new QueryParameters(selectListElements.Select(
+            var result = new QueryArgs(selectListElements.Select(
                 elem => (Expression)Visit(elem)).ToList(), context.GetTextSpan());
             return result;
         }
@@ -1618,16 +1618,16 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="MultichildExpression"/></returns>
         public Ust VisitTable_sources([NotNull] TSqlParser.Table_sourcesContext context)
         {
-            var result = new QueryParameters(
+            var result = new QueryArgs(
                 context.table_source().Select(tableSource =>
                 (Expression)Visit(tableSource)).ToList(), context.GetTextSpan());
             return result;
         }
 
-        /// <returns><see cref="QueryParameters"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitTable_source([NotNull] TSqlParser.Table_sourceContext context)
         {
-            return (QueryParameters)Visit(context.table_source_item_joined());
+            return (QueryArgs)Visit(context.table_source_item_joined());
         }
 
         /// <returns><see cref="MultichildExpression"/></returns>
@@ -1638,7 +1638,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 exprs.Add((Expression)Visit(context.GetChild(i)));
             }
-            return new QueryParameters(exprs, context.GetTextSpan());
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="Expression"/></returns>
@@ -1676,7 +1676,7 @@ namespace PT.PM.SqlParseTreeUst
                 }
             }
 
-            return new QueryParameters(exprs, context.GetTextSpan());
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
@@ -1691,7 +1691,7 @@ namespace PT.PM.SqlParseTreeUst
             Expression result = (IdToken)Visit(context.table_name());
             if (context.with_table_hints() != null)
             {
-                var parameters = (QueryParameters)Visit(context.with_table_hints());
+                var parameters = (QueryArgs)Visit(context.with_table_hints());
                 parameters.Parameters.Collection.Add(result);
                 result = parameters;
             }
@@ -1766,22 +1766,22 @@ namespace PT.PM.SqlParseTreeUst
             Expression result = (IdToken)Visit(context.id());
             if (context.with_table_hints() != null)
             {
-                var parameters = (QueryParameters)Visit(context.with_table_hints());
+                var parameters = (QueryArgs)Visit(context.with_table_hints());
                 parameters.Parameters.Collection.Add(result);
                 result = parameters;
             }
             return result;
         }
 
-        /// <returns><see cref="QueryParameters"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitWith_table_hints([NotNull] TSqlParser.With_table_hintsContext context)
         {
             var exprs = context.table_hint().Select(hint => (Expression)Visit(hint)).ToList();
-            var result = new QueryParameters(exprs, context.GetTextSpan());
+            var result = new QueryArgs(exprs, context.GetTextSpan());
             return result;
         }
 
-        /// <returns><see cref="QueryParameters"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitTable_hint([NotNull] TSqlParser.Table_hintContext context)
         {
             return VisitChildren(context);
@@ -1793,11 +1793,11 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        /// <returns><see cref="QueryParameters"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitColumn_alias_list([NotNull] TSqlParser.Column_alias_listContext context)
         {
             var exprs = context.column_alias().Select(column_alias => (Token)Visit(column_alias)).ToArray();
-            return new QueryParameters(exprs, context.GetTextSpan());
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="Token"/></returns>
@@ -2585,7 +2585,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitExpression_elem([NotNull] TSqlParser.Expression_elemContext context)
         {
-            return GetQueryParameters(context);
+            return GetQueryArgs(context);
         }
 
         public Ust VisitOpen_xml([NotNull] TSqlParser.Open_xmlContext context)
@@ -2651,7 +2651,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitAs_column_alias([NotNull] TSqlParser.As_column_aliasContext context)
         {
-            return GetQueryParameters(context);
+            return GetQueryArgs(context);
         }
 
         public Ust VisitColumn_name_list_with_order([NotNull] TSqlParser.Column_name_list_with_orderContext context)
@@ -3924,17 +3924,17 @@ namespace PT.PM.SqlParseTreeUst
         }
 
 
-        private QueryParameters GetQueryParameters(ParserRuleContext context)
+        private QueryArgs GetQueryArgs(ParserRuleContext context)
         {
-            QueryParameters queryParameters = null;
+            QueryArgs QueryArgs = null;
             List<Expression> elements = new List<Expression>();
             for (int i = 0; i < context.ChildCount; i++)
             {
                 var element = (Expression)Visit(context.GetChild(i));
                 elements.Add(element);
             }
-            queryParameters = new QueryParameters(elements, context.GetTextSpan());
-            return queryParameters;
+            QueryArgs = new QueryArgs(elements, context.GetTextSpan());
+            return QueryArgs;
         }
     }
 }

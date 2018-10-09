@@ -243,7 +243,7 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(sqlBlockStatement);
         }
 
-        public virtual T Visit(QueryParameters queryParameters)
+        public virtual T Visit(QueryArgs queryParameters)
         {
             return VisitChildren(queryParameters);
         }
