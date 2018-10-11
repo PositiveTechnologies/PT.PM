@@ -4,6 +4,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Sql;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
@@ -29,8 +30,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSql_script([NotNull] PlSqlParser.Sql_scriptContext context)
         {
-            var statements = context.unit_statement().Select(statement => (Statement)Visit(statement)).ToArray();
-            root.Nodes = statements;
+            var statements = context.unit_statement().Select(statement => (Statement)Visit(statement));
+            var block = new BlockStatement(statements, context.GetTextSpan());
+            root.Nodes = new Ust[] { block };
             return root;
         }
 
@@ -89,7 +91,13 @@ namespace PT.PM.SqlParseTreeUst
         {
             var name = (IdToken)Visit(context.procedure_name());
             ParameterDeclaration[] parameters = context.parameter().Select(p => (ParameterDeclaration)Visit(p)).ToArray();
+            var decls = (BlockStatement)Visit(context.seq_of_declare_specs());
             var body = (BlockStatement)Visit(context.body());
+
+            if (decls != null)
+            {
+                body.Statements.InsertRange(0, decls.Statements);
+            }
 
             var result = new MethodDeclaration(name, parameters, body, context.GetTextSpan());
             return result;
@@ -247,11 +255,34 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        public Ust VisitDefault_value_part([NotNull] PlSqlParser.Default_value_partContext context) { return VisitChildren(context); }
+        public Ust VisitDefault_value_part([NotNull] PlSqlParser.Default_value_partContext context)
+        {
+            if (context.GetChild(0).GetText() == ":=")
+            {
+                return Visit(context.GetChild(1));
+            }
+            return VisitChildren(context);
+        }
 
         public Ust VisitDeclare_spec([NotNull] PlSqlParser.Declare_specContext context) { return VisitChildren(context); }
 
-        public Ust VisitVariable_declaration([NotNull] PlSqlParser.Variable_declarationContext context) { return VisitChildren(context); }
+        public Ust VisitVariable_declaration([NotNull] PlSqlParser.Variable_declarationContext context)
+        {
+            var identifier = context.identifier();
+            var left = new IdToken(identifier.GetText(), identifier.GetTextSpan());
+            var typeName = context.type_spec();
+            var defaultValue = context.default_value_part();
+            var right = (Expression)Visit(defaultValue);
+            var result = new VariableDeclarationExpression(
+                new TypeToken(typeName.GetText(), typeName.GetTextSpan()),
+                new List<AssignmentExpression> { new AssignmentExpression
+                {
+                    Left = left,
+                    Right = right
+                }},
+                context.GetTextSpan());
+            return result;
+        }
 
         public Ust VisitSubtype_declaration([NotNull] PlSqlParser.Subtype_declarationContext context) { return VisitChildren(context); }
 
@@ -471,7 +502,36 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSql_statement([NotNull] PlSqlParser.Sql_statementContext context) { return VisitChildren(context); }
 
-        public Ust VisitExecute_immediate([NotNull] PlSqlParser.Execute_immediateContext context) { return VisitChildren(context); }
+        public Ust VisitExecute_immediate([NotNull] PlSqlParser.Execute_immediateContext context)
+        {
+            List<Expression> exprs = new List<Expression>();
+            var args = (Expression)VisitChildren(context.expression());
+            var invocation = new InvocationExpression
+            {
+                Target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan()),
+                Arguments = new ArgsUst(args),
+                TextSpan = context.GetTextSpan()
+            };
+            exprs.Add(invocation);
+            if (context.using_clause() != null)
+            {
+                exprs.Add((Expression)Visit(context.using_clause()));
+            }
+
+            if (context.dynamic_returning_clause() != null)
+            {
+                exprs.Add((Expression)Visit(context.dynamic_returning_clause()));
+            }
+
+            if (context.into_clause() != null)
+            {
+                exprs.Add((Expression)Visit(context.into_clause()));
+            }
+
+            SqlQueryStatement sqlStatement = new SqlQueryStatement(new IdToken(context.EXECUTE().GetText()), exprs, context.GetTextSpan());
+
+            return sqlStatement;
+        }
 
         public Ust VisitDynamic_returning_clause([NotNull] PlSqlParser.Dynamic_returning_clauseContext context) { return VisitChildren(context); }
 
@@ -481,11 +541,39 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitClose_statement([NotNull] PlSqlParser.Close_statementContext context) { return VisitChildren(context); }
 
-        public Ust VisitOpen_statement([NotNull] PlSqlParser.Open_statementContext context) { return VisitChildren(context); }
+        public Ust VisitOpen_statement([NotNull] PlSqlParser.Open_statementContext context)
+        {
+            return VisitChildren(context);
+        }
 
         public Ust VisitFetch_statement([NotNull] PlSqlParser.Fetch_statementContext context) { return VisitChildren(context); }
 
-        public Ust VisitOpen_for_statement([NotNull] PlSqlParser.Open_for_statementContext context) { return VisitChildren(context); }
+        /// <summary>
+        /// Convert OPEN cursorName FOR [QUERY|expression] to InvocationExpression
+        /// </summary>
+        /// <returns><see cref="InvocationExpression"/></returns>
+        public Ust VisitOpen_for_statement([NotNull] PlSqlParser.Open_for_statementContext context)
+        {
+            var invocation = new InvocationExpression
+            {
+                Target = new IdToken($"{context.OPEN().GetText()}_{context.FOR().GetText()}"),
+                Arguments = new ArgsUst(
+                    (Expression)Visit(context.variable_name())
+                    ),
+                TextSpan = context.GetTextSpan()
+            };
+
+            if (context.select_statement() != null)
+            {
+                invocation.Arguments.Collection.Add((Expression)Visit(context.select_statement()));
+            }
+
+            if (context.expression() != null)
+            {
+                invocation.Arguments.Collection.Add((Expression)Visit(context.expression()));
+            }
+            return invocation;
+        }
 
         public Ust VisitTransaction_control_statements([NotNull] PlSqlParser.Transaction_control_statementsContext context) { return VisitChildren(context); }
 
@@ -2707,7 +2795,12 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSeq_of_declare_specs([NotNull] PlSqlParser.Seq_of_declare_specsContext context)
         {
-            return VisitChildren(context);
+            List<Statement> decls = new List<Statement>();
+            for (int i = 0; i < context.ChildCount; i++)
+            {
+                decls.Add(new ExpressionStatement((Expression)Visit(context.GetChild(i))));
+            }
+            return new BlockStatement(decls);
         }
 
         public Ust VisitOffset_clause([NotNull] PlSqlParser.Offset_clauseContext context)
