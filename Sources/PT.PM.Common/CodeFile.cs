@@ -34,9 +34,23 @@ namespace PT.PM.Common
             InitLineIndexes();
         }
 
-        public override string ToString() => !string.IsNullOrEmpty(RelativeName)
-            ? RelativeName
-            : Code;
+        public override string ToString() => ToString(false);
+
+        public string ToString(bool useRelativeName)
+        {
+            if (useRelativeName)
+            {
+                return !string.IsNullOrEmpty(RelativeName)
+                    ? RelativeName
+                    : Code;
+            }
+            else
+            {
+                return !string.IsNullOrEmpty(FullName)
+                    ? FullName
+                    : Code;
+            }
+        }
 
         public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)
         {

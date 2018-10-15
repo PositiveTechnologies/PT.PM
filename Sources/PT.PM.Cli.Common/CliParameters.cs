@@ -60,7 +60,10 @@ namespace PT.PM.Cli.Common
         public bool? NotIncludeTextSpansInDump { get; set; }
 
         [Option("line-column", HelpText = "Use line-column format for text spans in dump")]
-        public bool? LineColumnTextSpans { get; set; } 
+        public bool? LineColumnTextSpans { get; set; }
+
+        [Option("relative-names", HelpText = "Use relative file names in json dump")]
+        public bool? RelativeFileNamesInTextSpans { get; set; }
 
         [Option("dump-code", HelpText = "Dump content of source code file to dump")]
         public bool? IncludeCodeInDump { get; set; }

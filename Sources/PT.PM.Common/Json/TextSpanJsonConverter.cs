@@ -15,6 +15,8 @@ namespace PT.PM.Common.Json
 
         public bool IsLineColumn { get; set; } = false;
 
+        public bool RelativeFileNames { get; set; }
+
         public CodeFile CurrentCodeFile { get; set; }
 
         public HashSet<CodeFile> CodeFiles { get; set; } = new HashSet<CodeFile>();
@@ -32,7 +34,7 @@ namespace PT.PM.Common.Json
                 {
                     textSpanString = textSpan.IsZero && EmptyTextSpanFormat != null
                         ? EmptyTextSpanFormat
-                        : textSpan.ToString(includeFileName);
+                        : textSpan.ToString(includeFileName, RelativeFileNames);
                 }
                 else
                 {

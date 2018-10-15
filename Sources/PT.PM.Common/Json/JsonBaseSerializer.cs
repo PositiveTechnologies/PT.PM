@@ -21,6 +21,8 @@ namespace PT.PM.Common.Json
 
         public bool LineColumnTextSpans { get; set; } = false;
 
+        public bool RelativeFileNames { get; set; } = false;
+
         public bool Strict { get; set; } = false;
 
         public string EmptyTextSpanFormat { get; set; } = null;
@@ -84,7 +86,8 @@ namespace PT.PM.Common.Json
                 JsonFile = JsonFile,
                 Logger = Logger,
                 CodeFiles = CodeFiles,
-                CurrentCodeFile = CurrectCodeFile
+                CurrentCodeFile = CurrectCodeFile,
+                RelativeFileNames = RelativeFileNames
             };
 
             var codeFileJsonConverter = new CodeFileJsonConverter

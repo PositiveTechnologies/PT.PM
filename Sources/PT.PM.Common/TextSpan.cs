@@ -123,7 +123,7 @@ namespace PT.PM.Common
 
         public override string ToString() => ToString(true);
 
-        public string ToString(bool includeFileName)
+        public string ToString(bool includeFileName, bool useRelativeName = false)
         {
             string result = Start == End
                 ? $"[{Start})"
@@ -131,7 +131,7 @@ namespace PT.PM.Common
 
             if (includeFileName && !(CodeFile is null))
             {
-                result = $"{result}; {CodeFile}";
+                result = $"{result}; {CodeFile.ToString(useRelativeName)}";
             }
 
             return result;

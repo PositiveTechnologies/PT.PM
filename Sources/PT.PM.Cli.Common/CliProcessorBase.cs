@@ -224,6 +224,10 @@ namespace PT.PM.Cli.Common
             {
                 workflow.RenderDirection = parameters.RenderDirection.ParseEnum(ContinueWithInvalidArgs, workflow.RenderDirection, Logger);
             }
+            if (parameters.RelativeFileNamesInTextSpans.HasValue)
+            {
+                workflow.RelativeNamesInTextSpans = parameters.RelativeFileNamesInTextSpans.Value;
+            }
 
             return workflow;
         }

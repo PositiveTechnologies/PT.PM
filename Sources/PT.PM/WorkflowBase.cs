@@ -110,6 +110,8 @@ namespace PT.PM
 
         public bool LineColumnTextSpans { get; set; } = false;
 
+        public bool RelativeNamesInTextSpans { get; set; } = false;
+
         public bool StrictJson { get; set; } = false;
 
         public string LogsDir { get; set; } = "";
@@ -322,7 +324,8 @@ namespace PT.PM
                     LineColumnTextSpans = LineColumnTextSpans,
                     Strict = StrictJson,
                     CodeFiles = sourceCodeFiles,
-                    CurrectCodeFile = result.SourceCodeFile
+                    CurrectCodeFile = result.SourceCodeFile,
+                    RelativeFileNames = RelativeNamesInTextSpans
                 };
                 string json = serializer.Serialize(result);
                 string name = string.IsNullOrEmpty(result.SourceCodeFile.Name) ? "" : result.SourceCodeFile.Name + ".";
