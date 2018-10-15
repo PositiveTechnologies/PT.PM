@@ -539,11 +539,37 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitCursor_manipulation_statements([NotNull] PlSqlParser.Cursor_manipulation_statementsContext context) { return VisitChildren(context); }
 
-        public Ust VisitClose_statement([NotNull] PlSqlParser.Close_statementContext context) { return VisitChildren(context); }
+        public Ust VisitClose_statement([NotNull] PlSqlParser.Close_statementContext context)
+        {
+
+            var invocation = new InvocationExpression
+            {
+                Target = new IdToken(context.CLOSE().GetText()),
+                Arguments = new ArgsUst(
+                    (Expression)Visit(context.cursor_name())
+                    ),
+                TextSpan = context.GetTextSpan()
+            };
+
+            return invocation;
+        }
 
         public Ust VisitOpen_statement([NotNull] PlSqlParser.Open_statementContext context)
         {
-            return VisitChildren(context);
+            var invocation = new InvocationExpression
+            {
+                Target = new IdToken(context.OPEN().GetText()),
+                Arguments = new ArgsUst(
+                    (Expression)Visit(context.cursor_name())
+                    ),
+                TextSpan = context.GetTextSpan()
+            };
+
+            if (context.expressions() != null)
+            {
+                invocation.Arguments.Collection.Add((Expression)Visit(context.expressions()));
+            }
+            return invocation;
         }
 
         public Ust VisitFetch_statement([NotNull] PlSqlParser.Fetch_statementContext context) { return VisitChildren(context); }
