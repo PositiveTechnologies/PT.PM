@@ -53,10 +53,10 @@ namespace PT.PM.Matching.Patterns
             return string.IsNullOrEmpty(result) ? "None" : result;
         }
 
-        public override MatchContext Match(UnaryOperatorLiteral UnaryOperatorLiteral, MatchContext context)
+        public override MatchContext Match(UnaryOperatorLiteral unaryOperatorLiteral, MatchContext context)
         {
-            return UnaryOperator.Equals(UnaryOperatorLiteral.UnaryOperator)
-                ? context.AddMatch(UnaryOperatorLiteral)
+            return UnaryOperator.Equals(unaryOperatorLiteral.UnaryOperator)
+                ? context.AddMatch(unaryOperatorLiteral)
                 : context.Fail();
         }
     }

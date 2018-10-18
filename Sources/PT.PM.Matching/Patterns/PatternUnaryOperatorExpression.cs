@@ -21,14 +21,13 @@ namespace PT.PM.Matching.Patterns
                     : "";
                 return $"{Operator}{spaceOrEmpty}{Expression}";
             }
-            else if (UnaryOperatorLiteral.PostfixTextUnaryOperator.ContainsValue(op))
+
+            if (UnaryOperatorLiteral.PostfixTextUnaryOperator.ContainsValue(op))
             {
                 return $"{Expression}{Operator}";
             }
-            else
-            {
-                return $"{Operator} {Expression}";
-            }
+
+            return $"{Operator} {Expression}";
         }
 
         public override MatchContext Match(UnaryOperatorExpression ust, MatchContext context)
