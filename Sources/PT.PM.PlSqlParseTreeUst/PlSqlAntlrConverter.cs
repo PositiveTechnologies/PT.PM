@@ -61,6 +61,43 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitParallel_enable_clause([NotNull] PlSqlParser.Parallel_enable_clauseContext context) { return VisitChildren(context); }
 
+        public Ust VisitProcedure_call([NotNull] PlSqlParser.Procedure_callContext context)
+        {
+            var function = new InvocationExpression
+            {
+                Target = (Expression)Visit(context.routine_name()),
+                TextSpan = context.GetTextSpan()
+            };
+
+            var argumentsContext = context.function_argument();
+            var arguments = new List<Expression>();
+
+            for (int i = 0; i < (argumentsContext?.ChildCount ?? 0); i++)
+            {
+                arguments.Add((Expression)Visit(argumentsContext.argument(i)));
+            }
+
+            function.Arguments = new ArgsUst(arguments);
+            return function;
+        }
+
+        public Ust VisitAlter_session([NotNull] PlSqlParser.Alter_sessionContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        /// <returns><see cref="AssignmentExpression"/></returns>
+        public Ust VisitAlter_session_set_clause([NotNull] PlSqlParser.Alter_session_set_clauseContext context)
+        {
+            var assignmentExpr = new AssignmentExpression
+            {
+                Right = (Expression)Visit(context.parameter_name()),
+                Left = (Expression)Visit(context.parameter_value()),
+                TextSpan = context.GetTextSpan()
+            };
+            return assignmentExpr;
+        }
+
         public Ust VisitPartition_by_clause([NotNull] PlSqlParser.Partition_by_clauseContext context) { return VisitChildren(context); }
 
         public Ust VisitResult_cache_clause([NotNull] PlSqlParser.Result_cache_clauseContext context) { return VisitChildren(context); }
@@ -202,6 +239,10 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitElement_spec_options([NotNull] PlSqlParser.Element_spec_optionsContext context) { return VisitChildren(context); }
 
         public Ust VisitSubprogram_spec([NotNull] PlSqlParser.Subprogram_specContext context) { return VisitChildren(context); }
+
+        public Ust VisitOverriding_subprogram_spec([NotNull] PlSqlParser.Overriding_subprogram_specContext context) { return VisitChildren(context); }
+
+        public Ust VisitOverriding_function_spec([NotNull] PlSqlParser.Overriding_function_specContext context) { return VisitChildren(context); }
 
         public Ust VisitType_procedure_spec([NotNull] PlSqlParser.Type_procedure_specContext context) { return VisitChildren(context); }
 
