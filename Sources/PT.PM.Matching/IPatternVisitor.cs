@@ -37,6 +37,8 @@ namespace PT.PM.Matching
         T Visit(PatternStringLiteral patternStringLiteral);
         T Visit(PatternStringRegexLiteral patternStringRegexLiteral);
         T Visit(PatternTryCatchStatement patternTryCatchStatement);
+        T Visit(PatternUnaryOperatorExpression patternUnaryOperatorExpression);
+        T Visit(PatternUnaryOperatorLiteral patternUnaryOperatorLiteral);
         T Visit(PatternVar patternVar);
         T Visit(PatternVarOrFieldDeclaration patternVarOrFieldDeclaration);
     }

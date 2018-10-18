@@ -199,6 +199,16 @@ namespace PT.PM.Matching
             return VisitChildren(patternVarOrFieldDeclaration);
         }
 
+        public virtual T Visit(PatternUnaryOperatorExpression patternUnaryOperatorExpression)
+        {
+            return VisitChildren(patternUnaryOperatorExpression);
+        }
+
+        public virtual T Visit(PatternUnaryOperatorLiteral patternUnaryOperatorLiteral)
+        {
+            return VisitChildren(patternUnaryOperatorLiteral);
+        }
+
         protected virtual T VisitChildren(PatternUst patternBase)
         {
             try
