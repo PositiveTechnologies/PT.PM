@@ -545,7 +545,6 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitExecute_immediate([NotNull] PlSqlParser.Execute_immediateContext context)
         {
-            List<Expression> exprs = new List<Expression>();
             var args = (Expression)VisitChildren(context.expression());
             var invocation = new InvocationExpression
             {
@@ -553,25 +552,22 @@ namespace PT.PM.SqlParseTreeUst
                 Arguments = new ArgsUst(args),
                 TextSpan = context.GetTextSpan()
             };
-            exprs.Add(invocation);
+
             if (context.using_clause() != null)
             {
-                exprs.Add((Expression)Visit(context.using_clause()));
+                invocation.Arguments.Collection.Add((Expression)Visit(context.using_clause()));
             }
 
             if (context.dynamic_returning_clause() != null)
             {
-                exprs.Add((Expression)Visit(context.dynamic_returning_clause()));
+                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.dynamic_returning_clause()), new List<Expression>()));
             }
 
             if (context.into_clause() != null)
             {
-                exprs.Add((Expression)Visit(context.into_clause()));
+                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.into_clause()), new List<Expression>()));
             }
-
-            SqlQueryStatement sqlStatement = new SqlQueryStatement(new IdToken(context.EXECUTE().GetText()), exprs, context.GetTextSpan());
-
-            return sqlStatement;
+            return invocation;
         }
 
         public Ust VisitDynamic_returning_clause([NotNull] PlSqlParser.Dynamic_returning_clauseContext context) { return VisitChildren(context); }
@@ -676,9 +672,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitQuery_block([NotNull] PlSqlParser.Query_blockContext context)
         {
-            var query = new SqlQueryStatement
+            var query = new InvocationExpression
             {
-                QueryCommand = new IdToken(context.SELECT().GetText(), context.SELECT().GetTextSpan()),
+                Target = new IdToken(context.SELECT().GetText(), context.SELECT().GetTextSpan()),
                 TextSpan = context.GetTextSpan()
             };
             var queryElements = new List<Expression>();
@@ -698,7 +694,7 @@ namespace PT.PM.SqlParseTreeUst
                     queryElements.Add((Expression)visited);
                 }
             }
-            query.QueryElements = queryElements;
+            query.Arguments = new ArgsUst(queryElements);
             return query;
         }
 
