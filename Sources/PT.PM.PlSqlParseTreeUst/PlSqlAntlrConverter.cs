@@ -674,7 +674,33 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSubquery_basic_elements([NotNull] PlSqlParser.Subquery_basic_elementsContext context) { return VisitChildren(context); }
 
-        public Ust VisitQuery_block([NotNull] PlSqlParser.Query_blockContext context) { return VisitChildren(context); }
+        public Ust VisitQuery_block([NotNull] PlSqlParser.Query_blockContext context)
+        {
+            var query = new SqlQueryStatement
+            {
+                QueryCommand = new IdToken(context.SELECT().GetText(), context.SELECT().GetTextSpan()),
+                TextSpan = context.GetTextSpan()
+            };
+            var queryElements = new List<Expression>();
+            for (int i = 1; i < context.ChildCount; i++)
+            {
+                var visited = Visit(context.GetChild(i));
+                if (visited is Collection collection)
+                {
+                    queryElements.AddRange(collection.Collection.Select(x => (Expression)x));
+                }
+                else if (visited is MultichildExpression multichild)
+                {
+                    queryElements.AddRange(ExtractMultiChild(multichild, new List<Expression>()));
+                }
+                else
+                {
+                    queryElements.Add((Expression)visited);
+                }
+            }
+            query.QueryElements = queryElements;
+            return query;
+        }
 
         public Ust VisitSelected_element([NotNull] PlSqlParser.Selected_elementContext context) { return VisitChildren(context); }
 
@@ -1047,7 +1073,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitTable_alias([NotNull] PlSqlParser.Table_aliasContext context) { return VisitChildren(context); }
 
-        public Ust VisitWhere_clause([NotNull] PlSqlParser.Where_clauseContext context) { return VisitChildren(context); }
+        public Ust VisitWhere_clause([NotNull] PlSqlParser.Where_clauseContext context)
+        {
+            return VisitChildren(context);
+        }
 
         public Ust VisitInto_clause([NotNull] PlSqlParser.Into_clauseContext context) { return VisitChildren(context); }
 
