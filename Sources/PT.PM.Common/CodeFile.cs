@@ -112,6 +112,8 @@ namespace PT.PM.Common
 
         public string GetSubstring(TextSpan textSpan)
         {
+            if (textSpan.Start + textSpan.Length > Code.Length)
+                return "";
             return Code.Substring(textSpan.Start, textSpan.Length);
         }
 
