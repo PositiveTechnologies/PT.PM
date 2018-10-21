@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Specific;
+using PT.PM.Common.Nodes.Sql;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
@@ -230,6 +231,21 @@ namespace PT.PM.Common.Nodes
         public virtual T Visit(DebuggerStatement debuggerStatement)
         {
             return VisitChildren(debuggerStatement);
+        }
+
+        public virtual T Visit(SqlQueryStatement sqlQueryStatement)
+        {
+            return VisitChildren(sqlQueryStatement);
+        }
+
+        public virtual T Visit(SqlBlockStatement sqlBlockStatement)
+        {
+            return VisitChildren(sqlBlockStatement);
+        }
+
+        public virtual T Visit(QueryArgs queryParameters)
+        {
+            return VisitChildren(queryParameters);
         }
 
         public virtual T Visit(FixedStatement fixedStatement)

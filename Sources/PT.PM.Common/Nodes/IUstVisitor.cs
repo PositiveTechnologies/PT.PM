@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Specific;
+using PT.PM.Common.Nodes.Sql;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
@@ -85,6 +86,9 @@ namespace PT.PM.Common.Nodes
         T Visit(LockStatement lockStatement);
         T Visit(UnsafeStatement unsafeStatement);
         T Visit(ArrayPatternExpression arrayPatternExpression);
+        T Visit(QueryArgs queryParameters);
+        T Visit(SqlQueryStatement sqlQueryStatement);
+        T Visit(SqlBlockStatement sqlBlockStatement);
 
         #endregion
 

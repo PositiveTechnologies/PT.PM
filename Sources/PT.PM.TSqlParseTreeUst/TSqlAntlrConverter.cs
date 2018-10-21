@@ -6,6 +6,7 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Sql;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.Switch;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
@@ -224,7 +225,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             if (context.table_sources() != null)
             {
-                exprs.Add((MultichildExpression)Visit(context.table_sources()));
+                exprs.Add((QueryArgs)Visit(context.table_sources()));
             }
             if (context.search_condition() != null)
             {
@@ -249,11 +250,11 @@ namespace PT.PM.SqlParseTreeUst
             return (Expression)Visit(context.GetChild(0));
         }
 
-        /// <returns><see cref="MultichildExpression"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitInsert_with_table_hints([NotNull] TSqlParser.Insert_with_table_hintsContext context)
         {
             var exprs = context.table_hint().Select(hint => (Expression)Visit(hint)).ToList();
-            var result = new MultichildExpression(exprs, context.GetTextSpan());
+            var result = new QueryArgs(exprs, context.GetTextSpan());
             return result;
         }
 
@@ -282,7 +283,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.insert_with_table_hints() != null)
             {
-                exprs.Add((MultichildExpression)Visit(context.insert_with_table_hints()));
+                exprs.Add((QueryArgs)Visit(context.insert_with_table_hints()));
             }
             if (context.column_name_list() != null)
             {
@@ -327,35 +328,36 @@ namespace PT.PM.SqlParseTreeUst
             }
         }
 
-        /// <returns><see cref="ExpressionStatement"/></returns>
+        /// <returns><see cref="SqlQueryStatement"/></returns>
         public Ust VisitSelect_statement([NotNull] TSqlParser.Select_statementContext context)
         {
-            var exprs = new List<Expression>();
+
+            SqlQueryStatement queryStatement = (SqlQueryStatement)Visit(context.query_expression());
 
             if (context.with_expression() != null)
             {
-                exprs.Add((Expression)Visit(context.with_expression()));
+                var withExpression = (Expression)Visit(context.with_expression());
+                var newQueryElements = new List<Expression>() { withExpression};
+                newQueryElements.AddRange(queryStatement.QueryElements);
+                queryStatement.QueryElements = newQueryElements;
             }
-            exprs.Add((Expression)Visit(context.query_expression()));
 
             if (context.order_by_clause() != null)
             {
-                exprs.Add((Expression)Visit(context.order_by_clause()));
+                queryStatement.QueryElements.Add((Expression)Visit(context.order_by_clause()));
             }
 
             if (context.for_clause() != null)
             {
-                exprs.Add(Visit(context.for_clause()).ToExpressionIfRequired());
+                queryStatement.QueryElements.Add(Visit(context.for_clause()).ToExpressionIfRequired());
             }
 
             if (context.option_clause() != null)
             {
-                exprs.Add(Visit(context.option_clause()).ToExpressionIfRequired());
+                queryStatement.QueryElements.Add(Visit(context.option_clause()).ToExpressionIfRequired());
             }
 
-            var selectLiteral = new IdToken("select", default(TextSpan));
-            var result = new InvocationExpression(selectLiteral, new ArgsUst(exprs), context.GetTextSpan());
-            return new ExpressionStatement(result);
+            return queryStatement;
         }
 
         /// <returns><see cref="ExpressionStatement"/></returns>
@@ -383,7 +385,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.with_table_hints() != null)
             {
-                exprs.Add((MultichildExpression)Visit(context.with_table_hints()));
+                exprs.Add((QueryArgs)Visit(context.with_table_hints()));
             }
 
             if (context.output_clause() != null)
@@ -393,7 +395,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.table_sources() != null)
             {
-                exprs.Add((MultichildExpression)Visit(context.table_sources()));
+                exprs.Add((QueryArgs)Visit(context.table_sources()));
             }
 
             if (context.search_condition_list() != null)
@@ -431,7 +433,7 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        /// <returns><see cref="MultichildExpression"/></returns>
+        /// <returns><see cref="Expression"/></returns>
         public Ust VisitOutput_dml_list_elem([NotNull] TSqlParser.Output_dml_list_elemContext context)
         {
             return VisitChildren(context);
@@ -676,7 +678,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public Ust VisitDeclare_statement([NotNull] TSqlParser.Declare_statementContext context)
         {
-            Statement result;
+            List<Statement> statements = new List<Statement>();
             if (context.LOCAL_ID() != null)
             {
                 TextSpan textSpan;
@@ -693,27 +695,26 @@ namespace PT.PM.SqlParseTreeUst
                 }
                 var assignment = new AssignmentExpression((Token)Visit(context.LOCAL_ID()), expression,
                     textSpan);
-                result = new ExpressionStatement(
+                statements.Add(new ExpressionStatement(
                     new VariableDeclarationExpression(new TypeToken("TABLE", default(TextSpan)),
-                    new[] { assignment }, context.GetTextSpan()));
+                    new[] { assignment }, context.GetTextSpan())));
             }
             else
             {
                 if (context.declare_local().Length == 1)
                 {
-                    result = new ExpressionStatement(
+                    statements.Add(new ExpressionStatement(
                         (VariableDeclarationExpression)Visit(context.declare_local(0)),
-                        context.GetTextSpan());
+                        context.GetTextSpan()));
                 }
                 else
                 {
-                    Statement[] statements = context.declare_local()
+                    statements.AddRange(context.declare_local()
                         .Select(local => new ExpressionStatement(
-                         (VariableDeclarationExpression)Visit(local))).ToArray();
-                    result = new BlockStatement(statements, context.GetTextSpan());
+                         (VariableDeclarationExpression)Visit(local))).ToArray());
                 }
             }
-            return result;
+            return new SqlBlockStatement(new IdToken("DECLARE"), statements, context.GetTextSpan());
         }
 
         /// <returns><see cref="Statement"/></returns>
@@ -745,11 +746,21 @@ namespace PT.PM.SqlParseTreeUst
             Expression target;
             IEnumerable<Expression> exprs;
             var executeBody = context.execute_body();
-
-            if (executeBody.func_proc_name() != null || executeBody.expression() != null)
+            var expression = executeBody.expression();
+            var funcProcName = executeBody.func_proc_name();
+            if (funcProcName != null || expression != null)
             {
-                target = (Expression)Visit((ParserRuleContext)executeBody.func_proc_name() ?? executeBody.expression());
-                exprs = executeBody.execute_statement_arg().Select(arg => Visit(arg).ToExpressionIfRequired());
+                if (funcProcName != null)
+                {
+                    target = (Expression)Visit((ParserRuleContext)funcProcName);
+                    exprs = executeBody.execute_statement_arg().Select(arg => Visit(arg).ToExpressionIfRequired());
+                }
+                else
+                {
+                    target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan());
+                    exprs = new List<Expression>() { (Expression)Visit(expression) };
+                    
+                }
             }
             else
             {
@@ -959,7 +970,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                result = (MultichildExpression)Visit(context.table_constraint());
+                result = (QueryArgs)Visit(context.table_constraint());
             }
             return result;
         }
@@ -1023,7 +1034,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 exprs.Add((Expression)Visit(context.search_condition()));
             }
-            return new MultichildExpression(exprs, context.GetTextSpan());
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="ArgsUst"/></returns>
@@ -1447,13 +1458,57 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Expression"/></returns>
         public Ust VisitQuery_expression([NotNull] TSqlParser.Query_expressionContext context)
         {
-            return VisitChildren(context);
+            if (context.ChildCount > 1)
+            {
+                List<Expression> exprs = new List<Expression>();
+                for (int i = 0; i < context.ChildCount; i++)
+                {
+                    var visited = Visit(context.GetChild(i));
+                    if(visited != null)
+                    {
+                        exprs.Add(new WrapperExpression(visited));
+                    }
+                }
+                return new SqlQueryStatement(((SqlQueryStatement)((WrapperExpression)exprs.FirstOrDefault())?.Node).QueryCommand,exprs, context.GetTextSpan());
+            }
+            else
+            {
+                return VisitChildren(context);
+            }
         }
 
         /// <returns><see cref="MultichildExpression"/></returns>
         public Ust VisitQuery_specification([NotNull] TSqlParser.Query_specificationContext context)
         {
-            return VisitChildren(context);
+            if (context.ChildCount == 0)
+            {
+                return null;
+            }
+
+            SqlQueryStatement queryStatement = null;
+
+            List<Expression> queryElements = new List<Expression>();
+            for (int i = 0; i < context.ChildCount; i++)
+            {
+                var queryElement = Visit(context.GetChild(i));
+
+                if(queryElement == null)
+                {
+                    continue;
+                }
+
+                if (queryElement is Expression expression)
+                {
+                    queryElements.Add(expression);
+                }
+                else
+                {
+                    queryElements.Add(new WrapperExpression(queryElement));
+                }
+            }
+
+            queryStatement = new SqlQueryStatement(queryElements.FirstOrDefault(), queryElements.GetRange(1, queryElements.Count - 1), context.GetTextSpan());
+            return queryStatement;
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
@@ -1547,7 +1602,9 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Expression"/></returns>
         public Ust VisitSelect_list([NotNull] TSqlParser.Select_listContext context)
         {
-            var result = new MultichildExpression(context.select_list_elem().Select(
+            var selectListElements = context.select_list_elem();
+            var visitedFirst = (Expression)Visit(selectListElements.First());
+            var result = new QueryArgs(selectListElements.Select(
                 elem => (Expression)Visit(elem)).ToList(), context.GetTextSpan());
             return result;
         }
@@ -1561,22 +1618,27 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="MultichildExpression"/></returns>
         public Ust VisitTable_sources([NotNull] TSqlParser.Table_sourcesContext context)
         {
-            var result = new MultichildExpression(
+            var result = new QueryArgs(
                 context.table_source().Select(tableSource =>
-                (Expression)Visit(tableSource)).ToList());
+                (Expression)Visit(tableSource)).ToList(), context.GetTextSpan());
             return result;
         }
 
-        /// <returns><see cref="MultichildExpression"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitTable_source([NotNull] TSqlParser.Table_sourceContext context)
         {
-            return (MultichildExpression)Visit(context.table_source_item_joined());
+            return (QueryArgs)Visit(context.table_source_item_joined());
         }
 
         /// <returns><see cref="MultichildExpression"/></returns>
         public Ust VisitTable_source_item_joined([NotNull] TSqlParser.Table_source_item_joinedContext context)
         {
-            return VisitChildren(context);
+            List<Expression> exprs = new List<Expression>();
+            for(int i = 0; i < context.ChildCount; i++)
+            {
+                exprs.Add((Expression)Visit(context.GetChild(i)));
+            }
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="Expression"/></returns>
@@ -1614,7 +1676,7 @@ namespace PT.PM.SqlParseTreeUst
                 }
             }
 
-            return new MultichildExpression(exprs);
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
@@ -1629,9 +1691,9 @@ namespace PT.PM.SqlParseTreeUst
             Expression result = (IdToken)Visit(context.table_name());
             if (context.with_table_hints() != null)
             {
-                var multichild = (MultichildExpression)Visit(context.with_table_hints());
-                multichild.Expressions.Add(result);
-                result = multichild;
+                var parameters = (QueryArgs)Visit(context.with_table_hints());
+                parameters.Parameters.Collection.Add(result);
+                result = parameters;
             }
             return result;
         }
@@ -1704,22 +1766,22 @@ namespace PT.PM.SqlParseTreeUst
             Expression result = (IdToken)Visit(context.id());
             if (context.with_table_hints() != null)
             {
-                var multichild = (MultichildExpression)Visit(context.with_table_hints());
-                multichild.Expressions.Add(result);
-                result = multichild;
+                var parameters = (QueryArgs)Visit(context.with_table_hints());
+                parameters.Parameters.Collection.Add(result);
+                result = parameters;
             }
             return result;
         }
 
-        /// <returns><see cref="MultichildExpression"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitWith_table_hints([NotNull] TSqlParser.With_table_hintsContext context)
         {
             var exprs = context.table_hint().Select(hint => (Expression)Visit(hint)).ToList();
-            var result = new MultichildExpression(exprs, context.GetTextSpan());
+            var result = new QueryArgs(exprs, context.GetTextSpan());
             return result;
         }
 
-        /// <returns><see cref="MultichildExpression"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitTable_hint([NotNull] TSqlParser.Table_hintContext context)
         {
             return VisitChildren(context);
@@ -1731,11 +1793,11 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
-        /// <returns><see cref="MultichildExpression"/></returns>
+        /// <returns><see cref="QueryArgs"/></returns>
         public Ust VisitColumn_alias_list([NotNull] TSqlParser.Column_alias_listContext context)
         {
             var exprs = context.column_alias().Select(column_alias => (Token)Visit(column_alias)).ToArray();
-            return new MultichildExpression(exprs, context.GetTextSpan());
+            return new QueryArgs(exprs, context.GetTextSpan());
         }
 
         /// <returns><see cref="Token"/></returns>
@@ -2523,7 +2585,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitExpression_elem([NotNull] TSqlParser.Expression_elemContext context)
         {
-            return VisitChildren(context);
+            return GetQueryArgs(context);
         }
 
         public Ust VisitOpen_xml([NotNull] TSqlParser.Open_xmlContext context)
@@ -2589,7 +2651,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitAs_column_alias([NotNull] TSqlParser.As_column_aliasContext context)
         {
-            return VisitChildren(context);
+            return GetQueryArgs(context);
         }
 
         public Ust VisitColumn_name_list_with_order([NotNull] TSqlParser.Column_name_list_with_orderContext context)
@@ -3859,6 +3921,20 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitMaterialized_column_definition([NotNull] TSqlParser.Materialized_column_definitionContext context)
         {
             return VisitChildren(context);
+        }
+
+
+        private QueryArgs GetQueryArgs(ParserRuleContext context)
+        {
+            QueryArgs QueryArgs = null;
+            List<Expression> elements = new List<Expression>();
+            for (int i = 0; i < context.ChildCount; i++)
+            {
+                var element = (Expression)Visit(context.GetChild(i));
+                elements.Add(element);
+            }
+            QueryArgs = new QueryArgs(elements, context.GetTextSpan());
+            return QueryArgs;
         }
     }
 }
