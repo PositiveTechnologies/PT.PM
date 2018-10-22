@@ -579,12 +579,19 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitClose_statement([NotNull] PlSqlParser.Close_statementContext context)
         {
 
+            var cursorArg = new ArgumentExpression
+            {
+                Argument = (Expression)Visit(context.cursor_name()),
+                Modifier = new InOutModifierLiteral
+                {
+                    ModifierType = InOutModifier.InOut
+                }
+            };
+
             var invocation = new InvocationExpression
             {
                 Target = new IdToken(context.CLOSE().GetText()),
-                Arguments = new ArgsUst(
-                    (Expression)Visit(context.cursor_name())
-                    ),
+                Arguments = new ArgsUst(cursorArg),
                 TextSpan = context.GetTextSpan()
             };
 
@@ -593,12 +600,19 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitOpen_statement([NotNull] PlSqlParser.Open_statementContext context)
         {
+            var cursorArg = new ArgumentExpression
+            {
+                Argument = (Expression)Visit(context.cursor_name()),
+                Modifier = new InOutModifierLiteral
+                {
+                    ModifierType = InOutModifier.InOut
+                }
+            };
+
             var invocation = new InvocationExpression
             {
                 Target = new IdToken(context.OPEN().GetText()),
-                Arguments = new ArgsUst(
-                    (Expression)Visit(context.cursor_name())
-                    ),
+                Arguments = new ArgsUst(cursorArg),
                 TextSpan = context.GetTextSpan()
             };
 
