@@ -6,7 +6,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAny : PatternUst<Ust>, IRegexPattern
+    public class PatternAny : PatternUst<Ust>, IRegexPattern, ITerminalPattern
     {
         public string Default => ".*";
 
