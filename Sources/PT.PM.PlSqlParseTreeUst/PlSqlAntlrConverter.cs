@@ -13,6 +13,7 @@ using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.PlSqlParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
+using Antlr4.Runtime;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -576,43 +577,12 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitCursor_manipulation_statements([NotNull] PlSqlParser.Cursor_manipulation_statementsContext context) { return VisitChildren(context); }
 
-        public Ust VisitClose_statement([NotNull] PlSqlParser.Close_statementContext context)
-        {
-
-            var cursorArg = new ArgumentExpression
-            {
-                Argument = (Expression)Visit(context.cursor_name()),
-                Modifier = new InOutModifierLiteral
-                {
-                    ModifierType = InOutModifier.InOut
-                }
-            };
-
-            var invocation = new InvocationExpression
-            {
-                Target = new IdToken(context.CLOSE().GetText()),
-                Arguments = new ArgsUst(cursorArg),
-                TextSpan = context.GetTextSpan()
-            };
-
-            return invocation;
-        }
-
         public Ust VisitOpen_statement([NotNull] PlSqlParser.Open_statementContext context)
         {
-            var cursorArg = new ArgumentExpression
-            {
-                Argument = (Expression)Visit(context.cursor_name()),
-                Modifier = new InOutModifierLiteral
-                {
-                    ModifierType = InOutModifier.InOut
-                }
-            };
-
             var invocation = new InvocationExpression
             {
-                Target = new IdToken(context.OPEN().GetText()),
-                Arguments = new ArgsUst(cursorArg),
+                Target = new IdToken(context.OPEN().GetText(), context.OPEN().GetTextSpan()),
+                Arguments = new ArgsUst((Expression)Visit(context.cursor_name())),
                 TextSpan = context.GetTextSpan()
             };
 
@@ -620,23 +590,19 @@ namespace PT.PM.SqlParseTreeUst
             {
                 invocation.Arguments.Collection.Add((Expression)Visit(context.expressions()));
             }
+
             return invocation;
         }
-
-        public Ust VisitFetch_statement([NotNull] PlSqlParser.Fetch_statementContext context) { return VisitChildren(context); }
 
         /// <summary>
         /// Convert OPEN cursorName FOR [QUERY|expression] to InvocationExpression
         /// </summary>
-        /// <returns><see cref="InvocationExpression"/></returns>
         public Ust VisitOpen_for_statement([NotNull] PlSqlParser.Open_for_statementContext context)
         {
             var invocation = new InvocationExpression
             {
-                Target = new IdToken($"{context.OPEN().GetText()}_{context.FOR().GetText()}"),
-                Arguments = new ArgsUst(
-                    (Expression)Visit(context.variable_name())
-                    ),
+                Target = new IdToken($"{context.OPEN().GetText()}", context.OPEN().GetTextSpan()),
+                Arguments = new ArgsUst((Expression)Visit(context.variable_name())),
                 TextSpan = context.GetTextSpan()
             };
 
@@ -649,7 +615,60 @@ namespace PT.PM.SqlParseTreeUst
             {
                 invocation.Arguments.Collection.Add((Expression)Visit(context.expression()));
             }
+
             return invocation;
+        }
+
+        public Ust VisitFetch_statement([NotNull] PlSqlParser.Fetch_statementContext context)
+        {
+            var variables = context.variable_name();
+            var argList = new List<Expression>(1 + variables.Length);
+            
+            argList.Add((Expression)Visit(context.cursor_name()));
+
+            for (int i = 0; i < variables.Length; i++)
+            {
+                argList.Add((Expression) Visit(variables[i]));
+            }
+
+            return new InvocationExpression
+            {
+                Target = new IdToken(context.FETCH().GetText(), context.FETCH().GetTextSpan()),
+                Arguments = new ArgsUst(argList),
+                TextSpan = context.GetTextSpan()
+            };
+        }
+
+        public Ust VisitClose_statement([NotNull] PlSqlParser.Close_statementContext context)
+        {
+            var cursorArg = (Expression) Visit(context.cursor_name());
+
+            var invocation = new InvocationExpression
+            {
+                Target = new IdToken(context.CLOSE().GetText()),
+                Arguments = new ArgsUst(cursorArg),
+                TextSpan = context.GetTextSpan()
+            };
+
+            return invocation;
+        }
+
+        public Ust VisitCursor_name([NotNull] PlSqlParser.Cursor_nameContext context)
+        {
+            return ConvertToInOutArg(context);
+        }
+        
+        public Ust VisitVariable_name([NotNull] PlSqlParser.Variable_nameContext context)
+        {
+            return ConvertToInOutArg(context);
+        }
+
+        private static ArgumentExpression ConvertToInOutArg(ParserRuleContext context)
+        {
+            var argModifier = new InOutModifierLiteral(InOutModifier.InOut, TextSpan.Zero);
+            TextSpan contextTextSpan = context.GetTextSpan();
+            var arg = new IdToken(context.GetText(), contextTextSpan);
+            return new ArgumentExpression(argModifier, arg, contextTextSpan);
         }
 
         public Ust VisitTransaction_control_statements([NotNull] PlSqlParser.Transaction_control_statementsContext context) { return VisitChildren(context); }
@@ -1163,11 +1182,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitTrigger_name([NotNull] PlSqlParser.Trigger_nameContext context) { return VisitChildren(context); }
 
-        public Ust VisitVariable_name([NotNull] PlSqlParser.Variable_nameContext context) { return VisitChildren(context); }
-
         public Ust VisitIndex_name([NotNull] PlSqlParser.Index_nameContext context) { return VisitChildren(context); }
-
-        public Ust VisitCursor_name([NotNull] PlSqlParser.Cursor_nameContext context) { return VisitChildren(context); }
 
         public Ust VisitRecord_name([NotNull] PlSqlParser.Record_nameContext context) { return VisitChildren(context); }
 
