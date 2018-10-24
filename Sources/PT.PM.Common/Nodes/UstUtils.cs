@@ -52,7 +52,7 @@ namespace PT.PM.Common.Nodes
             return arg is ArgumentExpression argExpression ? argExpression.Argument : arg;
         }
 
-        internal static string GenerateSignature(string id, List<ParameterDeclaration> parameters)
+        internal static string GenerateSignature(string id, List<Parameter> parameters)
         {
             string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Any"));
             return $"{id}({paramsString})";

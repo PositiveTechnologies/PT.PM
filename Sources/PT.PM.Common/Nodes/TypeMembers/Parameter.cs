@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
-    public class ParameterDeclaration : Ust
+    public class Parameter : Ust
     {
         public InOutModifierLiteral Modifier { get; set; }
 
@@ -14,7 +14,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public Expression Initializer { get; set; }
 
-        public ParameterDeclaration(InOutModifierLiteral modifier, TypeToken type,
+        public Parameter(InOutModifierLiteral modifier, TypeToken type,
             IdToken name, TextSpan textSpan = default)
             : base(textSpan)
         {
@@ -23,7 +23,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
             Name = name;
         }
 
-        public ParameterDeclaration()
+        public Parameter()
         {
         }
 

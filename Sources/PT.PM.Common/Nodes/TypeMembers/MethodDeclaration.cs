@@ -10,18 +10,18 @@ namespace PT.PM.Common.Nodes.TypeMembers
     {
         public TypeToken ReturnType { get; set; }
 
-        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
+        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
         public BlockStatement Body { get; set; }
 
         public string Signature => UstUtils.GenerateSignature(Name.TextValue, Parameters);
 
-        public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan)
+        public MethodDeclaration(IdToken name, IEnumerable<Parameter> parameters, BlockStatement body, TextSpan textSpan)
             : base(name, textSpan)
         {
-            Parameters = parameters as List<ParameterDeclaration>
+            Parameters = parameters as List<Parameter>
                 ?? parameters?.ToList()
-                ?? new List<ParameterDeclaration>();
+                ?? new List<Parameter>();
             Body = body;
         }
 

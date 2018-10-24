@@ -388,7 +388,7 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(methodDeclaration);
         }
 
-        public virtual T Visit(ParameterDeclaration parameterDeclaration)
+        public virtual T Visit(Parameter parameterDeclaration)
         {
             return VisitChildren(parameterDeclaration);
         }

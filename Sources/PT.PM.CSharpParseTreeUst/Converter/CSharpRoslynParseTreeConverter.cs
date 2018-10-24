@@ -206,7 +206,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 {
                     var name = "Indexer";
                     var parameters =
-                           indexerSyntax.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
+                           indexerSyntax.ParameterList.Parameters.Select(p => (Parameter)VisitAndReturnNullIfError(p))
                            .ToArray();
 
                     if (indexerSyntax.AccessorList == null)
@@ -244,7 +244,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 {
                     var id = ConvertId(operatorSyntax.OperatorToken);
                     var parameters =
-                        operatorSyntax.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
+                        operatorSyntax.ParameterList.Parameters.Select(p => (Parameter)VisitAndReturnNullIfError(p))
                         ;
 
                     BlockStatement body;
@@ -293,7 +293,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     }
 
                     var parameters =
-                        conversionOperatorSyntax.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
+                        conversionOperatorSyntax.ParameterList.Parameters.Select(p => (Parameter)VisitAndReturnNullIfError(p))
                         .ToArray();
 
                     var method = new MethodDeclaration(id, parameters, body, conversionOperatorSyntax.GetTextSpan())
@@ -338,7 +338,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 ex.TextSpan);
             var method = new MethodDeclaration(
                 new IdToken(name.TextValue + "_method", name.TextSpan),
-                Enumerable.Empty<ParameterDeclaration>(), body, textSpan);
+                Enumerable.Empty<Parameter>(), body, textSpan);
             return method;
         }
 
@@ -397,7 +397,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         protected MethodDeclaration ConvertAccessorToMethodDef(string name,
             AccessorDeclarationSyntax node,
-            IEnumerable<ParameterDeclaration> parameters = null)
+            IEnumerable<Parameter> parameters = null)
         {
             var methodLiteral = new IdToken(name + "_" + node.Keyword.ValueText,
                node.Keyword.GetTextSpan());
@@ -407,7 +407,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             var method = new MethodDeclaration(
                 methodLiteral,
-                parameters ?? new ParameterDeclaration[0],
+                parameters ?? new Parameter[0],
                 body ?? new BlockStatement(null, node.SemicolonToken.GetTextSpan()),
                 node.GetTextSpan())
             {

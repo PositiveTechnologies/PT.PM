@@ -28,10 +28,10 @@ namespace PT.PM.PhpParseTreeUst
             return new IdToken(text, terminalNode.GetTextSpan());
         }
 
-        private ParameterDeclaration[] ConvertParameters(PhpParser.FormalParameterListContext parameters)
+        private Parameter[] ConvertParameters(PhpParser.FormalParameterListContext parameters)
         {
-            ParameterDeclaration[] result = parameters.formalParameter()
-                .Select(p => (ParameterDeclaration)Visit(p)).ToArray();
+            Parameter[] result = parameters.formalParameter()
+                .Select(p => (Parameter)Visit(p)).ToArray();
             return result;
         }
 

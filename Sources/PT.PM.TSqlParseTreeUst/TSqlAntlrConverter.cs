@@ -479,19 +479,19 @@ namespace PT.PM.SqlParseTreeUst
             var id = (IdToken)Visit(context.func_proc_name());
             var body = new BlockStatement(
                 context.sql_clauses().sql_clause().Select(clause => (Statement)Visit(clause)).ToArray());
-            ParameterDeclaration[] parameters = context.procedure_param()
-                .Select(param => (ParameterDeclaration)Visit(param)).ToArray();
+            Parameter[] parameters = context.procedure_param()
+                .Select(param => (Parameter)Visit(param)).ToArray();
 
             var result = new MethodDeclaration(id, parameters, body, context.GetTextSpan());
             return result;
         }
 
-        /// <returns><see cref="ParameterDeclaration"/></returns>
+        /// <returns><see cref="Parameter"/></returns>
         public Ust VisitProcedure_param([NotNull] TSqlParser.Procedure_paramContext context)
         {
             var type = (TypeToken)Visit(context.data_type());
             var id = (IdToken)Visit(context.LOCAL_ID());
-            var result = new ParameterDeclaration(null, type, id, context.GetTextSpan());
+            var result = new Parameter(null, type, id, context.GetTextSpan());
             return result;
         }
 

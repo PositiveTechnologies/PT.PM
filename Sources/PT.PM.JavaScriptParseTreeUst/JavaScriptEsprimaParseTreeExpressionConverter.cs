@@ -465,9 +465,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new ArgsUst(args);
         }
 
-        private List<ParameterDeclaration> VisitParameters(List<INode> parameters)
+        private List<Parameter> VisitParameters(List<INode> parameters)
         {
-            var result = new List<ParameterDeclaration>(parameters.Count);
+            var result = new List<Parameter>(parameters.Count);
 
             foreach (INode param in parameters)
             {
@@ -481,7 +481,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     // TODO: extend parameter declaration
                     name = new UstTokens.IdToken("", GetTextSpan(param));
                 }
-                result.Add(new ParameterDeclaration(null, null, name, name.TextSpan));
+                result.Add(new Parameter(null, null, name, name.TextSpan));
             }
 
             return result;

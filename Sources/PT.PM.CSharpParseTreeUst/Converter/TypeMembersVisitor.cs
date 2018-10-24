@@ -49,7 +49,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var typeName = ConvertId(node.Identifier);
             // TODO: fix with args node
-            var args = node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
+            var args = node.ParameterList.Parameters.Select(p => (Parameter)VisitAndReturnNullIfError(p))
                 .ToArray();
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
             var body = (BlockStatement)VisitBlock(node.Body);
@@ -130,7 +130,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 }
             }
 
-            var parameters = node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p)).ToArray();
+            var parameters = node.ParameterList.Parameters.Select(p => (Parameter)VisitAndReturnNullIfError(p)).ToArray();
             var statement = node.Body == null ? null : (BlockStatement)VisitBlock(node.Body); // abstract method if null
             var modifiers = node.Modifiers.Select(ConvertModifier).ToList();
 
@@ -160,7 +160,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             TypeToken type = ConvertType(base.Visit(node.Type));
             var id = ConvertId(node.Identifier);
-            var result = new ParameterDeclaration(inOut, type, id, node.GetTextSpan());
+            var result = new Parameter(inOut, type, id, node.GetTextSpan());
             return result;
         }
 

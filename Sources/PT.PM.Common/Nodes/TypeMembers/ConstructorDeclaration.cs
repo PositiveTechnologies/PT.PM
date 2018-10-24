@@ -6,7 +6,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
 {
     public class ConstructorDeclaration : MethodDeclaration
     {
-        public ConstructorDeclaration(IdToken typeName, IEnumerable<ParameterDeclaration> parameters, BlockStatement body,
+        public ConstructorDeclaration(IdToken typeName, IEnumerable<Parameter> parameters, BlockStatement body,
             TextSpan textSpan)
             : base(typeName, parameters, body, textSpan)
         {

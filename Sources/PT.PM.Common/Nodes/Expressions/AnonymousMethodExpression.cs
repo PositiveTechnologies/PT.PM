@@ -6,7 +6,7 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class AnonymousMethodExpression : Expression
     {
-        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
+        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
         public Ust Body { get; set; }
 
@@ -18,10 +18,10 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override Expression[] GetArgs() => new Expression[0];
 
-        public AnonymousMethodExpression(IEnumerable<ParameterDeclaration> parameters, Ust body, TextSpan textSpan)
+        public AnonymousMethodExpression(IEnumerable<Parameter> parameters, Ust body, TextSpan textSpan)
             : base(textSpan)
         {
-            Parameters = parameters as List<ParameterDeclaration> ?? parameters.ToList();
+            Parameters = parameters as List<Parameter> ?? parameters.ToList();
             Body = body;
         }
 

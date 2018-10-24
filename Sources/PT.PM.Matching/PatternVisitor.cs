@@ -164,9 +164,9 @@ namespace PT.PM.Matching
             return VisitChildren(patternOr);
         }
 
-        public virtual T Visit(PatternParameterDeclaration patternParameterDeclaration)
+        public virtual T Visit(PatternParameter patternParameter)
         {
-            return VisitChildren(patternParameterDeclaration);
+            return VisitChildren(patternParameter);
         }
 
         public virtual T Visit(PatternStatements patternStatements)

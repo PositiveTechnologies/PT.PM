@@ -125,7 +125,7 @@ namespace PT.PM.Common.Nodes
         T Visit(FieldDeclaration fieldDeclaration);
         T Visit(PropertyDeclaration propertyDeclaration);
         T Visit(MethodDeclaration methodDeclaration);
-        T Visit(ParameterDeclaration parameterDeclaration);
+        T Visit(Parameter parameterDeclaration);
         T Visit(StatementDeclaration statementDeclaration);
 
         #endregion

@@ -51,7 +51,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitCreate_function_body([NotNull] PlSqlParser.Create_function_bodyContext context)
         {
             var name = (IdToken)Visit(context.function_name());
-            ParameterDeclaration[] parameters = context.parameter().Select(p => (ParameterDeclaration)Visit(p)).ToArray();
+            Parameter[] parameters = context.parameter().Select(p => (Parameter)Visit(p)).ToArray();
             var body = (BlockStatement)Visit(context.body());
 
             var result = new MethodDeclaration(name, parameters, body, context.GetTextSpan());
@@ -127,7 +127,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitCreate_procedure_body([NotNull] PlSqlParser.Create_procedure_bodyContext context)
         {
             var name = (IdToken)Visit(context.procedure_name());
-            ParameterDeclaration[] parameters = context.parameter().Select(p => (ParameterDeclaration)Visit(p)).ToArray();
+            Parameter[] parameters = context.parameter().Select(p => (Parameter)Visit(p)).ToArray();
             var decls = (BlockStatement)Visit(context.seq_of_declare_specs());
             var body = (BlockStatement)Visit(context.body());
 
@@ -282,17 +282,17 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitC_parameters_clause([NotNull] PlSqlParser.C_parameters_clauseContext context) { return VisitChildren(context); }
 
-        /// <returns><see cref="ParameterDeclaration"/></returns>
+        /// <returns><see cref="Parameter"/></returns>
         public Ust VisitParameter([NotNull] PlSqlParser.ParameterContext context)
         {
-            ParameterDeclaration result;
+            Parameter result;
             TypeToken typeToken = null;
             if (context.type_spec() != null)
             {
                 typeToken = (TypeToken)Visit(context.type_spec());
             }
             var name = (IdToken)Visit(context.parameter_name());
-            result = new ParameterDeclaration(null, typeToken, name, context.GetTextSpan());
+            result = new Parameter(null, typeToken, name, context.GetTextSpan());
             return result;
         }
 

@@ -29,13 +29,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var id = (IdToken)Visit(identifier);
 
             // TODO: Fix with ParamsNode
-            IEnumerable<ParameterDeclaration> parameters;
+            IEnumerable<Parameter> parameters;
             JavaParser.FormalParameterListContext formalParameterList = formalParameters.formalParameterList();
             if (formalParameterList == null)
-                parameters = Enumerable.Empty<ParameterDeclaration>();
+                parameters = Enumerable.Empty<Parameter>();
             else
                 parameters = formalParameterList.formalParameter()
-                    .Select(param => (ParameterDeclaration)Visit(param))
+                    .Select(param => (Parameter)Visit(param))
                     .Where(p => p != null).ToArray();
 
             BlockStatement body = methodBody != null

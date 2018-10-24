@@ -820,7 +820,7 @@ namespace PT.PM.PhpParseTreeUst
 
             var varInit = (AssignmentExpression)Visit(context.variableInitializer());
 
-            var result = new ParameterDeclaration(null, type, (IdToken)varInit.Left, context.GetTextSpan());
+            var result = new Parameter(null, type, (IdToken)varInit.Left, context.GetTextSpan());
             result.Initializer = varInit.Right;
             return result;
         }
@@ -899,7 +899,7 @@ namespace PT.PM.PhpParseTreeUst
             else if (context.Function() != null)
             {
                 var id = (IdToken)VisitIdentifier(context.identifier());
-                var parameters = (ParameterDeclaration[])ConvertParameters(context.formalParameterList());
+                var parameters = (Parameter[])ConvertParameters(context.formalParameterList());
                 var block = (BlockStatement)Visit(context.methodBody());
 
                 result = new MethodDeclaration(id, parameters, block, context.GetTextSpan());
@@ -1263,7 +1263,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitLambdaFunctionExpression(PhpParser.LambdaFunctionExpressionContext context)
         {
-            ParameterDeclaration[] parameters = ConvertParameters(context.formalParameterList());
+            Parameter[] parameters = ConvertParameters(context.formalParameterList());
             var body = (BlockStatement)Visit(context.blockStatement());
 
             var result = new AnonymousMethodExpression(parameters, body, context.GetTextSpan());

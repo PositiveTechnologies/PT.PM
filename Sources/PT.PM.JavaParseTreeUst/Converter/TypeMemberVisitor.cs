@@ -108,13 +108,13 @@ namespace PT.PM.JavaParseTreeUst.Converter
         public Ust VisitConstructorDeclaration(JavaParser.ConstructorDeclarationContext context)
         {
             var id = (IdToken)Visit(context.IDENTIFIER());
-            IEnumerable<ParameterDeclaration> parameters;
+            IEnumerable<Parameter> parameters;
             JavaParser.FormalParameterListContext formalParameterList = context.formalParameters().formalParameterList();
             if (formalParameterList == null)
-                parameters = Enumerable.Empty<ParameterDeclaration>();
+                parameters = Enumerable.Empty<Parameter>();
             else
                 parameters = formalParameterList.formalParameter()
-                    .Select(param => (ParameterDeclaration)Visit(param))
+                    .Select(param => (Parameter)Visit(param))
                     .Where(p => p != null).ToArray();
 
             var body = (BlockStatement)Visit(context.constructorBody);
@@ -171,7 +171,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             var type = (TypeToken)Visit(context.typeType());
             var id = (IdToken)Visit(context.variableDeclaratorId());
 
-            var result = new ParameterDeclaration(null, type, id, context.GetTextSpan());
+            var result = new Parameter(null, type, id, context.GetTextSpan());
             return result;
         }
     }

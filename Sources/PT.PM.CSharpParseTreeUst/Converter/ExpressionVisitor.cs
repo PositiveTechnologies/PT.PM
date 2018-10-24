@@ -24,8 +24,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
         {
-            var parameters = node.ParameterList == null ? new ParameterDeclaration[0] :
-                node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
+            var parameters = node.ParameterList == null ? new Parameter[0] :
+                node.ParameterList.Parameters.Select(p => (Parameter)VisitAndReturnNullIfError(p))
                 .ToArray();
             var body = (BlockStatement)VisitBlock(node.Block);
 
@@ -396,8 +396,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
         {
-            ParameterDeclaration[] parameters = node.Parameter == null ? new ParameterDeclaration[0] :
-                  new[] { (ParameterDeclaration)VisitParameter(node.Parameter) };
+            Parameter[] parameters = node.Parameter == null ? new Parameter[0] :
+                  new[] { (Parameter)VisitParameter(node.Parameter) };
 
             var result = GetAnonymousMethod(node, parameters);
             return result;
@@ -405,15 +405,15 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
         {
-            ParameterDeclaration[] parameters = node.ParameterList == null ? new ParameterDeclaration[0] :
-                 node.ParameterList.Parameters.Select(p => (ParameterDeclaration)VisitAndReturnNullIfError(p))
+            Parameter[] parameters = node.ParameterList == null ? new Parameter[0] :
+                 node.ParameterList.Parameters.Select(p => (Parameter)VisitAndReturnNullIfError(p))
                  .ToArray();
 
             var result = GetAnonymousMethod(node, parameters);
             return result;
         }
 
-        private Ust GetAnonymousMethod(LambdaExpressionSyntax node, ParameterDeclaration[] parameters)
+        private Ust GetAnonymousMethod(LambdaExpressionSyntax node, Parameter[] parameters)
         {
             var idNameSyntax = node.Body as IdentifierNameSyntax;
             Statement bodyStatement;

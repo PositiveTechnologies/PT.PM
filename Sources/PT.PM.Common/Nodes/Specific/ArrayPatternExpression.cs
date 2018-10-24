@@ -7,12 +7,12 @@ namespace PT.PM.Common.Nodes.Specific
 {
     public class ArrayPatternExpression : Expression
     {
-        public List<ParameterDeclaration> Elements { get; set; } = new List<ParameterDeclaration>();
+        public List<Parameter> Elements { get; set; } = new List<Parameter>();
 
-        public ArrayPatternExpression(IEnumerable<ParameterDeclaration> elements, TextSpan textSpan)
+        public ArrayPatternExpression(IEnumerable<Parameter> elements, TextSpan textSpan)
             : base(textSpan)
         {
-            Elements = elements as List<ParameterDeclaration> ?? elements.ToList();
+            Elements = elements as List<Parameter> ?? elements.ToList();
         }
 
         public ArrayPatternExpression()

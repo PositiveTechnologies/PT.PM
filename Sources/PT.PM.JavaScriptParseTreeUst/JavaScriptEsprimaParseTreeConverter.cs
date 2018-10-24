@@ -94,25 +94,25 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstSpecific.ArrayPatternExpression VisitArrayPattern(ArrayPattern arrayPattern)
         {
-            var elements = new List<ParameterDeclaration>(arrayPattern.Elements.Count);
+            var elements = new List<Parameter>(arrayPattern.Elements.Count);
 
             foreach (ArrayPatternElement elem in arrayPattern.Elements)
             {
-                ParameterDeclaration paramDecl = VisitArrayPatternElement(elem);
+                Parameter paramDecl = VisitArrayPatternElement(elem);
                 elements.Add(paramDecl);
             }
 
             return new UstSpecific.ArrayPatternExpression(elements, GetTextSpan(arrayPattern));
         }
 
-        private ParameterDeclaration VisitArrayPatternElement(ArrayPatternElement arrayPatternElement)
+        private Parameter VisitArrayPatternElement(ArrayPatternElement arrayPatternElement)
         {
-            ParameterDeclaration paramDecl;
+            Parameter paramDecl;
 
             if (arrayPatternElement is Identifier identifier)
             {
                 var name = VisitIdentifier(identifier);
-                paramDecl = new ParameterDeclaration(null, null, name, name.TextSpan);
+                paramDecl = new Parameter(null, null, name, name.TextSpan);
             }
             else if (arrayPatternElement is AssignmentPattern assignmentPattern)
             {
@@ -129,7 +129,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     name = null;
                 }
 
-                paramDecl = new ParameterDeclaration(null, null, name, assignExpr.TextSpan)
+                paramDecl = new Parameter(null, null, name, assignExpr.TextSpan)
                 {
                     Initializer = assignExpr.Right
                 };

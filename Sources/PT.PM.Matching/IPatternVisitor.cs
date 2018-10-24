@@ -32,7 +32,7 @@ namespace PT.PM.Matching
         T Visit(PatternNullLiteral patternNullLiteral);
         T Visit(PatternObjectCreateExpression patternObjectCreateExpression);
         T Visit(PatternOr patternOr);
-        T Visit(PatternParameterDeclaration patternParameterDeclaration);
+        T Visit(PatternParameter patternParameter);
         T Visit(PatternStatements patternStatements);
         T Visit(PatternStringLiteral patternStringLiteral);
         T Visit(PatternStringRegexLiteral patternStringRegexLiteral);
