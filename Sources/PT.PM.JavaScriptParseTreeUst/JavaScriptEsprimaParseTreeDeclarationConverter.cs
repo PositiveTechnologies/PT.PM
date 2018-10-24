@@ -171,7 +171,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             {
                 if (property.Key is Literal literal)
                 {
-                    name = new IdToken(literal.StringValue, GetTextSpan(literal));
+                    name = new IdToken(literal.StringValue ?? literal.Raw, GetTextSpan(literal));
                 }
                 else
                 {
