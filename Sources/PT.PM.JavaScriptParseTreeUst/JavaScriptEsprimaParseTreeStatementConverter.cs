@@ -137,11 +137,22 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstStmts.ForeachStatement VisitForInStatement(ForInStatement forInStatement)
         {
-            // TODO: type and all cases of varName
-            var varName = Visit(forInStatement.Left);
+            UstTokens.IdToken name = null;
+            var left = Visit(forInStatement.Left);
+            if (left is UstTokens.IdToken token)
+            {
+                name = token;
+            }
+            else if (left is UstStmts.ExpressionStatement exprStmt &&
+                exprStmt.Expression is UstExprs.VariableDeclarationExpression varDecl &&
+                varDecl.Variables.Count > 0 &&
+                varDecl.Variables[0].Left is UstTokens.IdToken idToken)
+            {
+                name = idToken;
+            }
             var inExpression = VisitExpression(forInStatement.Right);
             var body = VisitStatement(forInStatement.Body);
-            return new UstStmts.ForeachStatement(null, varName as UstTokens.IdToken, inExpression, body, GetTextSpan(forInStatement));
+            return new UstStmts.ForeachStatement(null, name, inExpression, body, GetTextSpan(forInStatement));
         }
 
         // TODO: maybe introduce the new ForOfStatement node
@@ -149,7 +160,11 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             UstTokens.IdToken name = null;
             var left = Visit(forOfStatement.Left);
-            if (left is UstStmts.ExpressionStatement exprStmt &&
+            if (left is UstTokens.IdToken token)
+            {
+                name = token;
+            }
+            else if (left is UstStmts.ExpressionStatement exprStmt &&
                 exprStmt.Expression is UstExprs.VariableDeclarationExpression varDecl &&
                 varDecl.Variables.Count > 0 &&
                 varDecl.Variables[0].Left is UstTokens.IdToken idToken)
