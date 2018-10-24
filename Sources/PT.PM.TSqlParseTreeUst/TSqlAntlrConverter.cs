@@ -731,9 +731,16 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
+                var cursor = (Token)Visit(context.cursor_name());
+                var argExpression = new ArgumentExpression
+                {
+                    Argument = cursor,
+                    Modifier = new InOutModifierLiteral { ModifierType = InOutModifier.InOut },
+                    TextSpan = cursor.TextSpan
+                };
                 var first = context.GetChild<ITerminalNode>(0);
                 var funcName = new IdToken(first.GetText(), first.GetTextSpan());
-                var args = new ArgsUst((Token)Visit(context.cursor_name()));
+                var args = new ArgsUst(argExpression);
                 var invocation = new InvocationExpression(funcName, args, context.GetTextSpan());
                 result = new ExpressionStatement(invocation);
             }
