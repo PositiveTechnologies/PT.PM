@@ -72,13 +72,11 @@ namespace PT.PM.Common
                 var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1);
                 
                 textSpans.Add(arrayCreationExpression.Type.TextSpan);
-                foldedResults.Add(arrayCreationExpression.Type, null);
                 
                 foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
                 {
                     value.Append(stringLiteral.Text);
                     textSpans.Add(stringLiteral.TextSpan);
-                    foldedResults.Add(stringLiteral, null);
                 }
                 
                 return new FoldResult(value.ToString(), textSpans);
@@ -204,6 +202,7 @@ namespace PT.PM.Common
             }
 
             foldedResults.Add(unaryOperatorExpression.Expression, foldResult);
+
             return null;
         }
 
@@ -242,11 +241,7 @@ namespace PT.PM.Common
             }
             textSpans.AddRange(rightFold.TextSpans);
 
-            FoldResult result = new FoldResult(foldedBinaryValue, leftFold.TextSpans);
-            foldedResults.Add(binaryOperatorExpression.Left, null);
-            foldedResults.Add(binaryOperatorExpression.Right, null);
-            
-            return result;
+            return new FoldResult(foldedBinaryValue, leftFold.TextSpans);
         }
         
         private FoldResult ProcessUnaryExpression(UnaryOperatorExpression unaryOperatorExpression, FoldResult foldResult,
@@ -255,10 +250,7 @@ namespace PT.PM.Common
             var textSpans = foldResult.TextSpans;
             textSpans.Add(unaryOperatorExpression.Operator.TextSpan);
             
-            FoldResult result = new FoldResult(resultValue, textSpans);
-            foldedResults.Add(unaryOperatorExpression.Expression, null);
-            
-            return result;
+            return new FoldResult(resultValue, textSpans);
         }
     }
 }
