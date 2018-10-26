@@ -22,7 +22,7 @@ namespace PT.PM.Common
         public bool TryFold(Ust ust, out FoldResult result)
         {
             if (!(ust is ArrayCreationExpression || ust is BinaryOperatorExpression || ust is UnaryOperatorExpression ||
-                  ust is Token))
+                  ust is StringLiteral || ust is IntLiteral || ust is FloatLiteral || ust is BooleanLiteral)) // TODO: optimize with O(1) complexity
             {
                 result = null;
                 return false;
@@ -34,15 +34,10 @@ namespace PT.PM.Common
             }
 
             result = TryFold(ust);
-            foldedResults.Add(ust, result);
 
-            if (result != null)
-            {
-                result.TextSpans.Sort();
-                return true;
-            }
+            NormalizeAndAdd(ust, ref result);
 
-            return false;
+            return result != null;
         }
 
         private FoldResult TryFold(Ust ust)
@@ -93,18 +88,31 @@ namespace PT.PM.Common
             object rightValue = rightFold?.Value;
             BinaryOperatorLiteral op = binaryOperatorExpression.Operator;
 
-            if (leftValue is string leftString && rightFold != null)
+            if ((leftValue is string || leftValue is StringBuilder) && rightFold != null)
             {
                 if (op.BinaryOperator == BinaryOperator.Plus || op.BinaryOperator == BinaryOperator.Concat)
                 {
                     // Use StringBuilder instead of immutable strings and concatenation
-                    string resultText = leftString + rightValue;
-                    FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, resultText);
+                    string rightString = rightValue.ToString();
+
+                    StringBuilder leftStringBuilder;
+                    if (leftValue is string leftString)
+                    {
+                        leftStringBuilder = new StringBuilder((leftString.Length + rightString.Length) * 2);
+                        leftStringBuilder.Append(leftString);
+                    }
+                    else
+                    {
+                        leftStringBuilder = (StringBuilder) leftValue;
+                    }
+                    leftStringBuilder.Append(rightString);
+                    
+                    FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, leftStringBuilder);
 
                     if (Logger.IsLogDebugs)
                     {
                         Logger.LogDebug(
-                            $"Strings {binaryOperatorExpression} concatenated to \"{resultText}\" at {binaryOperatorExpression.TextSpan}");
+                            $"Strings {binaryOperatorExpression} concatenated to \"{leftStringBuilder}\" at {binaryOperatorExpression.TextSpan}");
                     }
                     
                     return result;
@@ -176,9 +184,8 @@ namespace PT.PM.Common
                 }
             }
 
-            // Otherwise store result of the previous folding
-            foldedResults.Add(binaryOperatorExpression.Left, leftFold);
-            foldedResults.Add(binaryOperatorExpression.Right, rightFold);
+            NormalizeAndAdd(binaryOperatorExpression.Left, ref leftFold);
+            NormalizeAndAdd(binaryOperatorExpression.Right, ref rightFold);
             
             return null;
         }
@@ -201,7 +208,7 @@ namespace PT.PM.Common
                 }
             }
 
-            foldedResults.Add(unaryOperatorExpression.Expression, foldResult);
+            NormalizeAndAdd(unaryOperatorExpression.Expression, ref foldResult);
 
             return null;
         }
@@ -235,7 +242,7 @@ namespace PT.PM.Common
             FoldResult leftFold, FoldResult rightFold, object foldedBinaryValue)
         {
             var textSpans = leftFold.TextSpans;
-            if (!(foldedBinaryValue is string))
+            if (!(foldedBinaryValue is string || foldedBinaryValue is StringBuilder))
             {
                 textSpans.Add(binaryOperatorExpression.Operator.TextSpan); // FIXME: workaround for correct PatternStringRegexLiteral processing
             }
@@ -251,6 +258,17 @@ namespace PT.PM.Common
             textSpans.Add(unaryOperatorExpression.Operator.TextSpan);
             
             return new FoldResult(resultValue, textSpans);
+        }
+
+        private void NormalizeAndAdd(Ust ust, ref FoldResult result)
+        {
+            if (result?.Value is StringBuilder stringBuilder)
+            {
+                result = new FoldResult(stringBuilder.ToString(), result.TextSpans);
+            }
+
+            result?.TextSpans.Sort();
+            foldedResults.Add(ust, result);
         }
     }
 }
