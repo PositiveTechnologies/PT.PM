@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Transactions;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
@@ -12,67 +13,39 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common
 {
-    public enum FoldingResultType
-    {
-        Folded,
-        NotFolded,
-        FoldedChild, // for optimization
-    }
-    
-    public class FoldingResult
-    {
-        public FoldingResultType Type { get; }
-        
-        public object Value { get; private set; }
-        
-        public List<TextSpan> TextSpans { get; private set; }
-
-        public static FoldingResult CreateFolded(object value, TextSpan textSpan)
-        {
-            return new FoldingResult(FoldingResultType.Folded)
-            {
-                Value = value,
-                TextSpans = new List<TextSpan> {textSpan}
-            };
-        }
-        
-        public static FoldingResult CreateFolded(object value, List<TextSpan> textSpans)
-        {
-            return new FoldingResult(FoldingResultType.Folded)
-            {
-                Value = value,
-                TextSpans = textSpans
-            };
-        }
-
-        public static FoldingResult CreateNotFolded() => new FoldingResult(FoldingResultType.NotFolded);
-        
-        public static FoldingResult CreateFoldedChild() => new FoldingResult(FoldingResultType.FoldedChild);
-
-        private FoldingResult(FoldingResultType type) => Type = type;
-    }
-    
     public class UstConstantFolder : ILoggable
     {
-        private readonly Dictionary<Ust, FoldingResult> foldedResults = new Dictionary<Ust, FoldingResult>(UstRefComparer.Instance);
+        private readonly Dictionary<Ust, FoldResult> foldedResults = new Dictionary<Ust, FoldResult>(UstRefComparer.Instance);
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
-        
-        public bool TryFold(Ust ust, out FoldingResult result)
+
+        public bool TryFold(Ust ust, out FoldResult result)
         {
+            if (!(ust is ArrayCreationExpression || ust is BinaryOperatorExpression || ust is UnaryOperatorExpression ||
+                  ust is Token))
+            {
+                result = null;
+                return false;
+            }
+
             if (foldedResults.TryGetValue(ust, out result))
             {
-                return result?.Type == FoldingResultType.Folded;
+                return result != null;
             }
 
             result = TryFold(ust);
-            result.TextSpans?.Sort();
             foldedResults.Add(ust, result);
-            
-            return result?.Type == FoldingResultType.Folded;
+
+            if (result != null)
+            {
+                result.TextSpans.Sort();
+                return true;
+            }
+
+            return false;
         }
 
-        private FoldingResult TryFold(Ust ust)
+        private FoldResult TryFold(Ust ust)
         {
             switch (ust)
             {
@@ -86,11 +59,11 @@ namespace PT.PM.Common
                     return TryFoldToken(token);
                 // TODO: parenthesis
                 default:
-                    return FoldingResult.CreateNotFolded();
+                    return null;
             }
         }
 
-        private FoldingResult TryFoldArrayCreationExpression(ArrayCreationExpression arrayCreationExpression)
+        private FoldResult TryFoldArrayCreationExpression(ArrayCreationExpression arrayCreationExpression)
         {
             if (arrayCreationExpression.Type?.TypeText == "char" &&
                (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false))
@@ -99,35 +72,36 @@ namespace PT.PM.Common
                 var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1);
                 
                 textSpans.Add(arrayCreationExpression.Type.TextSpan);
-                foldedResults.Add(arrayCreationExpression.Type, FoldingResult.CreateFoldedChild());
+                foldedResults.Add(arrayCreationExpression.Type, null);
                 
                 foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
                 {
                     value.Append(stringLiteral.Text);
                     textSpans.Add(stringLiteral.TextSpan);
-                    foldedResults.Add(stringLiteral, FoldingResult.CreateFoldedChild());
+                    foldedResults.Add(stringLiteral, null);
                 }
                 
-                FoldingResult result = FoldingResult.CreateFolded(value.ToString(), textSpans);
-                return result;
+                return new FoldResult(value.ToString(), textSpans);
             }
 
-            return FoldingResult.CreateNotFolded();
+            return null;
         }
         
-        private FoldingResult TryFoldBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
+        private FoldResult TryFoldBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
         {
-            FoldingResult leftFolding = TryFold(binaryOperatorExpression.Left);
-            FoldingResult rightFolding = TryFold(binaryOperatorExpression.Right);
-            object leftValue = leftFolding?.Value;
-            object rightValue = rightFolding?.Value;
+            FoldResult leftFold = TryFold(binaryOperatorExpression.Left);
+            FoldResult rightFold = TryFold(binaryOperatorExpression.Right);
+            object leftValue = leftFold?.Value;
+            object rightValue = rightFold?.Value;
             BinaryOperatorLiteral op = binaryOperatorExpression.Operator;
 
-            if (leftValue is string leftString && rightFolding != null)
+            if (leftValue is string leftString && rightFold != null)
             {
                 if (op.BinaryOperator == BinaryOperator.Plus || op.BinaryOperator == BinaryOperator.Concat)
                 {
-                    FoldingResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFolding, rightFolding, leftString + rightValue);
+                    // Use StringBuilder instead of immutable strings and concatenation
+                    string resultText = leftString + rightValue;
+                    FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, resultText);
 
                     if (Logger.IsLogDebugs)
                     {
@@ -184,7 +158,7 @@ namespace PT.PM.Common
 
                         if (folded)
                         {
-                            FoldingResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFolding, rightFolding, resultInt);
+                            FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, resultInt);
                             
                             if (Logger.IsLogDebugs)
                             {
@@ -205,80 +179,84 @@ namespace PT.PM.Common
             }
 
             // Otherwise store result of the previous folding
-            foldedResults.Add(binaryOperatorExpression.Left, leftFolding);
-            foldedResults.Add(binaryOperatorExpression.Right, rightFolding);
-            return FoldingResult.CreateNotFolded();
+            foldedResults.Add(binaryOperatorExpression.Left, leftFold);
+            foldedResults.Add(binaryOperatorExpression.Right, rightFold);
+            
+            return null;
         }
 
-        private FoldingResult TryFoldUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression)
+        private FoldResult TryFoldUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression)
         {
-            FoldingResult foldingResult = TryFold(unaryOperatorExpression.Expression);
-            object value = foldingResult?.Value;
+            FoldResult foldResult = TryFold(unaryOperatorExpression.Expression);
+            object value = foldResult?.Value;
             
             if (unaryOperatorExpression.Operator.UnaryOperator == UnaryOperator.Minus)
             {
                 if (value is long longValue)
                 {
-                    return ProcessUnaryExpression(unaryOperatorExpression, foldingResult, -longValue);
+                    return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -longValue);
                 }
 
                 if (value is double doubleValue)
                 {
-                    return ProcessUnaryExpression(unaryOperatorExpression, foldingResult, -doubleValue);
+                    return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -doubleValue);
                 }
             }
-            
-            foldedResults.Add(unaryOperatorExpression.Expression, foldingResult);
-            return FoldingResult.CreateNotFolded();
+
+            foldedResults.Add(unaryOperatorExpression.Expression, foldResult);
+            return null;
         }
 
-        private FoldingResult TryFoldToken(Token token)
+        private FoldResult TryFoldToken(Token token)
         {
             if (token is StringLiteral stringLiteral)
             {
-                return FoldingResult.CreateFolded(stringLiteral.Text, stringLiteral.TextSpan);
+                return new FoldResult(stringLiteral.Text, stringLiteral.TextSpan);
             }
             
             if (token is IntLiteral intLiteral)
             {
-                return FoldingResult.CreateFolded(intLiteral.Value, intLiteral.TextSpan);
+                return new FoldResult(intLiteral.Value, intLiteral.TextSpan);
             }
 
             if (token is FloatLiteral floatLiteral)
             {
-                return FoldingResult.CreateFolded(floatLiteral.Value, floatLiteral.TextSpan);
+                return new FoldResult(floatLiteral.Value, floatLiteral.TextSpan);
             }
 
             if (token is BooleanLiteral booleanLiteral)
             {
-                return FoldingResult.CreateFolded(booleanLiteral.Value, booleanLiteral.TextSpan);
+                return new FoldResult(booleanLiteral.Value, booleanLiteral.TextSpan);
             }
 
-            return FoldingResult.CreateNotFolded();
+            return null;
         }
         
-        private FoldingResult ProcessBinaryExpression(BinaryOperatorExpression binaryOperatorExpression,
-            FoldingResult leftFolding, FoldingResult rightFolding, object foldedBinaryValue)
+        private FoldResult ProcessBinaryExpression(BinaryOperatorExpression binaryOperatorExpression,
+            FoldResult leftFold, FoldResult rightFold, object foldedBinaryValue)
         {
-            var textSpans = leftFolding.TextSpans;
-            textSpans.Add(binaryOperatorExpression.TextSpan);
-            textSpans.AddRange(rightFolding.TextSpans);
+            var textSpans = leftFold.TextSpans;
+            if (!(foldedBinaryValue is string))
+            {
+                textSpans.Add(binaryOperatorExpression.Operator.TextSpan); // FIXME: workaround for correct PatternStringRegexLiteral processing
+            }
+            textSpans.AddRange(rightFold.TextSpans);
 
-            FoldingResult result = FoldingResult.CreateFolded(foldedBinaryValue, leftFolding.TextSpans);
-            foldedResults.Add(binaryOperatorExpression.Left, FoldingResult.CreateFoldedChild());
-            foldedResults.Add(binaryOperatorExpression.Right, FoldingResult.CreateFoldedChild());
+            FoldResult result = new FoldResult(foldedBinaryValue, leftFold.TextSpans);
+            foldedResults.Add(binaryOperatorExpression.Left, null);
+            foldedResults.Add(binaryOperatorExpression.Right, null);
             
             return result;
         }
         
-        private FoldingResult ProcessUnaryExpression(UnaryOperatorExpression unaryOperatorExpression, FoldingResult foldingResult,
+        private FoldResult ProcessUnaryExpression(UnaryOperatorExpression unaryOperatorExpression, FoldResult foldResult,
             object resultValue)
         {
-            var textSpans = foldingResult.TextSpans;
+            var textSpans = foldResult.TextSpans;
             textSpans.Add(unaryOperatorExpression.Operator.TextSpan);
             
-            FoldingResult result = FoldingResult.CreateFolded(resultValue, textSpans);
-            foldedResults.Add(unaryOperatorExpression.Expression, FoldingResult.CreateFoldedChild());
+            FoldResult result = new FoldResult(resultValue, textSpans);
+            foldedResults.Add(unaryOperatorExpression.Expression, null);
             
             return result;
         }
