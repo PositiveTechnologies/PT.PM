@@ -26,14 +26,17 @@ namespace PT.PM.Matching.Patterns
             {
                 return String.Equals(stringLiteral.Text) ? context.AddMatch(stringLiteral) : context.Fail();
             }
-            
+
             if (context.UstConstantFolder != null &&
-                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult) &&
-                foldingResult.Value is string stringValue)
+                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult))
             {
-                return String.Equals(stringValue) ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                context.MatchedWithFolded = true;
+                if (foldingResult.Value is string stringValue)
+                {
+                    return String.Equals(stringValue) ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                }
             }
-            
+
             return context.Fail();
         }
     }

@@ -100,13 +100,15 @@ namespace PT.PM.Matching
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
-            if (ust != null && !(patternUst is PatternAny) && !context.Success)
+            if (ust != null && !(patternUst is PatternAny) && !context.MatchedWithFolded)
             {
                 foreach (Ust child in ust.Children)
                 {
                     TraverseChildren(patternUst, child, context, results);
                 }
             }
+
+            context.MatchedWithFolded = false;
         }
 
         private static void MatchAndAddResult(
@@ -119,8 +121,7 @@ namespace PT.PM.Matching
                     context.Locations.Add(ust.TextSpan);
                 }
 
-                var match = new MatchResult(
-                    ust.RootOrThis, context.PatternUst, context.Locations);
+                var match = new MatchResult(ust.RootOrThis, context.PatternUst, context.Locations);
 
                 results.Add(match);
                 context.Logger.LogInfo(match);

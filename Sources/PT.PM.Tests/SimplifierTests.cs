@@ -1,16 +1,14 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Dsl;
+using PT.PM.JavaParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
+using PT.PM.PhpParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PT.PM.JavaParseTreeUst;
-using PT.PM.PhpParseTreeUst;
 
 namespace PT.PM.Tests
 {

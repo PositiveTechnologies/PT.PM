@@ -26,12 +26,15 @@ namespace PT.PM.Matching.Patterns
             {
                 return Value == intLiteral.Value ? context.AddMatch(intLiteral) : context.Fail();
             }
-            
+
             if (context.UstConstantFolder != null &&
-                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult) &&
-                foldingResult.Value is long longValue)
+                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult))
             {
-                return Value == longValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                context.MatchedWithFolded = true;
+                if (foldingResult.Value is long longValue)
+                {
+                    return Value == longValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                }
             }
 
             return context.Fail();

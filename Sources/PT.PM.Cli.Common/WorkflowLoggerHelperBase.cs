@@ -4,7 +4,8 @@ using System;
 
 namespace PT.PM.Cli.Common
 {
-    public abstract class WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
+    public abstract class
+        WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
         where TStage : Enum
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
         where TMatchResult : MatchResultBase<TPattern>
@@ -26,38 +27,45 @@ namespace PT.PM.Cli.Common
 
             if (WorkflowResult.TotalTerminatedFilesCount > 0)
             {
-                Logger.LogInfo($"{"Terminated files count:",LoggerUtils.Align} {WorkflowResult.TotalTerminatedFilesCount}");
+                Logger.LogInfo(
+                    $"{"Terminated files count:",LoggerUtils.Align} {WorkflowResult.TotalTerminatedFilesCount}");
             }
+
             if (!WorkflowResult.Stage.Is(Stage.Pattern) || WorkflowResult.TotalProcessedFilesCount > 0)
             {
                 Logger.LogInfo($"{"Files count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedFilesCount}");
             }
+
             if (WorkflowResult.TotalProcessedFilesCount > 0)
             {
-                Logger.LogInfo($"{"Lines/chars count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedLinesCount} / {WorkflowResult.TotalProcessedCharsCount}");
+                Logger.LogInfo(
+                    $"{"Lines/chars count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedLinesCount} / {WorkflowResult.TotalProcessedCharsCount}");
             }
+
             Logger.LogInfo($"{"Patterns count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedPatternsCount}");
 
             string extraTimeInfo = WorkflowResult.ThreadCount == 1 ? "" : $" (average per thread)";
-            Logger.LogInfo($"{"Time format:",LoggerUtils.Align} {Utils.TimeSpanFormat.Replace("\\", "")}{extraTimeInfo}");
+            Logger.LogInfo(
+                $"{"Time format:",LoggerUtils.Align} {Utils.TimeSpanFormat.Replace("\\", "")}{extraTimeInfo}");
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
-                if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.File)
+                if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.File)
                 {
                     LogStageTime(nameof(Stage.File));
-                    if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.ParseTree)
+                    if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.ParseTree)
                     {
                         LogStageTime(nameof(Stage.ParseTree));
-                        if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.Ust)
+                        if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.Ust)
                         {
                             LogStageTime(nameof(Stage.Ust));
                             LogAdvancedStageInfo();
                         }
                     }
                 }
-                if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.Match ||
-                    Convert.ToInt32(WorkflowResult.Stage) == (int)Stage.Pattern)
+
+                if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.Match ||
+                    Convert.ToInt32(WorkflowResult.Stage) == (int) Stage.Pattern)
                 {
                     LogStageTime(nameof(Stage.Pattern));
                 }
@@ -94,10 +102,12 @@ namespace PT.PM.Cli.Common
                     ticks = GetTicksCount(stage);
                     break;
             }
+
             if (ticks > 0)
             {
                 long avgTicksPerThread = IsMultithreadStage(stage)
-                    ? ticks / (WorkflowResult.ThreadCount == 0 ? Environment.ProcessorCount : WorkflowResult.ThreadCount)
+                    ? ticks /
+                      (WorkflowResult.ThreadCount == 0 ? Environment.ProcessorCount : WorkflowResult.ThreadCount)
                     : ticks;
                 var timeSpan = new TimeSpan(avgTicksPerThread);
                 string percent = CalculateAndFormatPercent(ticks, WorkflowResult.TotalTimeTicks);
@@ -105,8 +115,10 @@ namespace PT.PM.Cli.Common
                 string extraInfo = "";
                 if (stage == nameof(Stage.ParseTree))
                 {
-                    string lexerPercent = CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks, WorkflowResult.TotalLexerParserTicks);
-                    string parserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks, WorkflowResult.TotalLexerParserTicks);
+                    string lexerPercent = CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks,
+                        WorkflowResult.TotalLexerParserTicks);
+                    string parserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks,
+                        WorkflowResult.TotalLexerParserTicks);
                     extraInfo = $" (Lexer: {lexerPercent}% + Parser: {parserPercent}%)";
                 }
 
@@ -123,7 +135,7 @@ namespace PT.PM.Cli.Common
 
         protected string CalculateAndFormatPercent(long part, long whole)
         {
-            return (whole == 0 ? 0 : ((double)part / whole * 100.0)).ToString("00.00");
+            return (whole == 0 ? 0 : ((double) part / whole * 100.0)).ToString("00.00");
         }
     }
 }

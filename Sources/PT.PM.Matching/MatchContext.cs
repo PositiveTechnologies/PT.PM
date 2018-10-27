@@ -21,6 +21,8 @@ namespace PT.PM.Matching
 
         public bool Success { get; private set; }
 
+        public bool MatchedWithFolded { get; set; }
+
         public bool IgnoreLocations { get; set; }
         
         public UstConstantFolder UstConstantFolder { get; }

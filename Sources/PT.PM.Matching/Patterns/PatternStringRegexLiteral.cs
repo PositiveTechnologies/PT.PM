@@ -1,5 +1,4 @@
-﻿using System;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
@@ -40,14 +39,17 @@ namespace PT.PM.Matching.Patterns
             {
                 return MatchContext(context, stringLiteral.Text, stringLiteral.EscapeCharsLength, null, stringLiteral.TextSpan.Start);
             }
-            
+
             if (context.UstConstantFolder != null &&
-                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult) &&
-                foldingResult.Value is string stringValue)
+                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult))
             {
-                return MatchContext(context, stringValue, 1, foldingResult.TextSpans, ust.TextSpan.Start);
+                context.MatchedWithFolded = true;
+                if (foldingResult.Value is string stringValue)
+                {
+                    return MatchContext(context, stringValue, 1, foldingResult.TextSpans, ust.TextSpan.Start);
+                }
             }
-            
+
             return context.Fail();
         }
 
