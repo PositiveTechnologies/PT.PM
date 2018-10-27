@@ -1,10 +1,11 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternUnaryOperatorExpression : PatternUst<UnaryOperatorExpression>
+    public class PatternUnaryOperatorExpression : PatternUst
     {
         public PatternUst Expression { get; set; }
 
@@ -30,15 +31,21 @@ namespace PT.PM.Matching.Patterns
             return $"{Operator} {Expression}";
         }
 
-        public override MatchContext Match(UnaryOperatorExpression ust, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext = Expression.MatchUst(ust.Expression, context);
+            var unaryOperatorExpression = ust as UnaryOperatorExpression;
+            if (unaryOperatorExpression == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = Expression.Match(unaryOperatorExpression.Expression, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Operator.Match(ust.Operator, newContext);
+            newContext = Operator.Match(unaryOperatorExpression.Operator, newContext);
 
             return newContext.AddUstIfSuccess(ust);
         }

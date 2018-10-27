@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBinaryOperatorExpression : PatternUst<BinaryOperatorExpression>
+    public class PatternBinaryOperatorExpression : PatternUst
     {
         public PatternUst Left { get; set; }
 
@@ -26,9 +27,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Left} {Operator} {Right}";
 
-        public override MatchContext Match(BinaryOperatorExpression binaryOperatorExpression, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext = Left.MatchUst(binaryOperatorExpression.Left, context);
+            var binaryOperatorExpression = ust as BinaryOperatorExpression;
+            if (binaryOperatorExpression == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = Left.Match(binaryOperatorExpression.Left, context);
             if (!newContext.Success)
             {
                 return newContext;
@@ -40,7 +47,7 @@ namespace PT.PM.Matching.Patterns
                 return newContext;
             }
 
-            newContext = Right.MatchUst(binaryOperatorExpression.Right, newContext);
+            newContext = Right.Match(binaryOperatorExpression.Right, newContext);
 
             return newContext.AddUstIfSuccess(binaryOperatorExpression);
         }

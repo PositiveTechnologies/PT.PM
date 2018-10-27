@@ -3,10 +3,11 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternTryCatchStatement : PatternUst<TryCatchStatement>
+    public class PatternTryCatchStatement : PatternUst
     {
         public List<PatternUst> ExceptionTypes { get; set; }
 
@@ -28,8 +29,14 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"try catch {{ }}";
 
-        public override MatchContext Match(TryCatchStatement tryCatchStatement, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
+            var tryCatchStatement = ust as TryCatchStatement;
+            if (tryCatchStatement == null)
+            {
+                return context.Fail();
+            }
+            
             MatchContext newContext;
 
             if (tryCatchStatement.CatchClauses == null)
@@ -46,7 +53,7 @@ namespace PT.PM.Matching.Patterns
                     }
 
                     return !ExceptionTypes.Any() ||
-                        ExceptionTypes.Any(type => type.MatchUst(catchClause.Type, context).Success);
+                        ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
                 });
 
                 newContext = context.Set(result);

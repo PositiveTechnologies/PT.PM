@@ -29,7 +29,7 @@ namespace PT.PM.Common
 
         public bool TryFold(Ust ust, out FoldResult result)
         {
-            if (!FoldingTypes.Contains(ust.GetType()))
+            if (ust == null || !FoldingTypes.Contains(ust.GetType()))
             {
                 result = null;
                 return false;

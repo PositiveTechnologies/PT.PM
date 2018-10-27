@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStatements : PatternUst<Ust>
+    public class PatternStatements : PatternUst
     {
         public List<PatternUst> Statements { get; set; } = new List<PatternUst>();
 
@@ -72,7 +72,7 @@ namespace PT.PM.Matching.Patterns
                 for (int i = 0; i < expressions.Length; i++)
                 {
                     newContext = MatchContext.CreateWithInputParamsAndVars(newContext);
-                    newContext = Statements[patternStatementInd].MatchUst(expressions[i], newContext);
+                    newContext = Statements[patternStatementInd].Match(expressions[i], newContext);
                     if (newContext.Success)
                     {
                         matchedTextSpans.AddRange(newContext.Locations);

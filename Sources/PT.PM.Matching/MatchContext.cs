@@ -65,7 +65,7 @@ namespace PT.PM.Matching
         public MatchContext AddMatch(Ust ust)
         {
             Success = true;
-            if (!IgnoreLocations && !ust.TextSpan.IsZero)
+            if (!IgnoreLocations && ust != null && !ust.TextSpan.IsZero)
             {
                 Locations.AddRange(ust.GetRealTextSpans());
             }

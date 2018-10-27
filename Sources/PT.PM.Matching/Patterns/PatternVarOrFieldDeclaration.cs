@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternVarOrFieldDeclaration : PatternUst<Ust>
+    public class PatternVarOrFieldDeclaration : PatternUst
     {
         public bool LocalVariable { get; set; }
 
@@ -50,7 +50,7 @@ namespace PT.PM.Matching.Patterns
 
         private MatchContext MatchFieldDeclaration(FieldDeclaration fieldDeclaration, MatchContext context)
         {
-            if (LocalVariable || fieldDeclaration.Variables.Count() != 1)
+            if (LocalVariable || fieldDeclaration.Variables.Count != 1)
             {
                 return context.Fail();
             }
@@ -61,36 +61,36 @@ namespace PT.PM.Matching.Patterns
                 return newContext;
             }
 
-            newContext = Type.MatchUst(fieldDeclaration.Type, newContext);
+            newContext = Type.Match(fieldDeclaration.Type, newContext);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = EnumerateVarsOrFiels(fieldDeclaration.Variables, newContext);
+            newContext = EnumerateVarsOrFields(fieldDeclaration.Variables, newContext);
 
             return newContext;
         }
 
         private MatchContext MatchVariableDeclaration(VariableDeclarationExpression variableDeclaration, MatchContext context)
         {
-            if (LocalVariable == false || Modifiers.Count() != 0)
+            if (LocalVariable == false || Modifiers.Count != 0)
             {
                 return context.Fail();
             }
 
-            MatchContext newContext = Type.MatchUst(variableDeclaration.Type, context);
+            MatchContext newContext = Type.Match(variableDeclaration.Type, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = EnumerateVarsOrFiels(variableDeclaration.Variables, newContext);
+            newContext = EnumerateVarsOrFields(variableDeclaration.Variables, newContext);
 
             return newContext;
         }
 
-        private MatchContext EnumerateVarsOrFiels(List<AssignmentExpression> variables, MatchContext context)
+        private MatchContext EnumerateVarsOrFields(List<AssignmentExpression> variables, MatchContext context)
         {
             var matchedTextSpans = new List<TextSpan>();
 
@@ -105,7 +105,7 @@ namespace PT.PM.Matching.Patterns
                 }
                 else
                 {
-                    match = Assignment.Left.MatchUst(variable.Left, altContext);
+                    match = Assignment.Left.Match(variable.Left, altContext);
                 }
                 if (match.Success)
                 {

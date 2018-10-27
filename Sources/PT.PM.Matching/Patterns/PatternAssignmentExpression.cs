@@ -1,9 +1,11 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternAssignmentExpression : PatternUst<AssignmentExpression>
+    public class PatternAssignmentExpression : PatternUst
     {
         public PatternUst Left { get; set; }
 
@@ -26,14 +28,20 @@ namespace PT.PM.Matching.Patterns
             return Right == null ? Left.ToString() : $"{Left} = {Right}";
         }
 
-        public override MatchContext Match(AssignmentExpression assign, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext = Left.MatchUst(assign.Left, context);
+            var assign = ust as AssignmentExpression;
+            if (assign == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = Left.Match(assign.Left, context);
             if (newContext.Success)
             {
                 if (Right != null && assign.Right != null)
                 {
-                    newContext = Right.MatchUst(assign.Right, newContext);
+                    newContext = Right.Match(assign.Right, newContext);
                 }
                 else if ((Right != null && assign.Right == null) ||
                          (Right == null && assign.Right != null))

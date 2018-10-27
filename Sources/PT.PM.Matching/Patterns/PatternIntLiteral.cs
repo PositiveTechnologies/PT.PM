@@ -4,7 +4,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntLiteral : PatternUst<Ust>, ITerminalPattern
+    public class PatternIntLiteral : PatternUst, ITerminalPattern
     {
         public long Value { get; set; }
 

@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
 {
-    public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>
+    public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>, IUst<PatternUst, PatternRoot>, IUst
     {
-        private PropertyComparer<PatternUst> propertyComparer = new PropertyComparer<PatternUst>()
+        private PropertyComparer<PatternUst> propertyComparer = new PropertyComparer<PatternUst>
         {
-            IgnoredProperties = new HashSet<string>() { nameof(Parent), nameof(Root), nameof(TextSpan) }
+            IgnoredProperties = new HashSet<string> { nameof(Parent), nameof(Root), nameof(TextSpan) }
         };
 
         public string Kind => GetType().Name;
@@ -27,6 +27,11 @@ namespace PT.PM.Matching.Patterns
 
         public TextSpan TextSpan { get; set; }
 
+        protected PatternUst(TextSpan textSpan = default)
+        {
+            TextSpan = textSpan;
+        }
+        
         public bool Equals(PatternUst other)
         {
             return CompareTo(other) == 0;
@@ -37,33 +42,6 @@ namespace PT.PM.Matching.Patterns
             return propertyComparer.Compare(this, other);
         }
 
-        public abstract MatchContext MatchUst(Ust ust, MatchContext context);
-    }
-
-    public abstract class PatternUst<TMatchUst> : PatternUst, IUst<PatternUst, PatternRoot>, IUst
-        where TMatchUst : Ust
-    {
-        public Type UstType => typeof(TMatchUst);
-
-        protected PatternUst()
-        {
-        }
-
-        protected PatternUst(TextSpan textSpan = default)
-        {
-            TextSpan = textSpan;
-        }
-
-        public override MatchContext MatchUst(Ust ust, MatchContext context)
-        {
-            if (ust is TMatchUst matchUst)
-            {
-                return Match(matchUst, context);
-            }
-
-            return context.Fail();
-        }
-
-        public abstract MatchContext Match(TMatchUst ust, MatchContext context);
+        public abstract MatchContext Match(Ust ust, MatchContext context);
     }
 }

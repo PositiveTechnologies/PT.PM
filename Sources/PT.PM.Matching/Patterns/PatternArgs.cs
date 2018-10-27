@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternArgs : PatternUst<ArgsUst>
+    public class PatternArgs : PatternUst
     {
         public List<PatternUst> Args { get; set; } = new List<PatternUst>();
 
@@ -27,12 +27,16 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(", ", Args);
 
-        public override MatchContext Match(ArgsUst argsUst, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext;
-
+            var argsUst = ust as ArgsUst;
+            if (argsUst == null)
+            {
+                return context.Fail();
+            }
+            
             List<Expression> args = argsUst.Collection;
-            newContext = MatchContext.CreateWithInputParamsAndVars(context);
+            MatchContext newContext = MatchContext.CreateWithInputParamsAndVars(context);
             var matchedTextSpans = new List<TextSpan>();
             int patternArgInd = 0;
             int argInd = 0;
@@ -49,7 +53,7 @@ namespace PT.PM.Matching.Patterns
                     if (patternArgInd + 1 < Args.Count)
                     {
                         Expression arg = UstUtils.GetArgWithoutModifier(args[argInd]);
-                        newContext = Args[patternArgInd + 1].MatchUst(arg, newContext);
+                        newContext = Args[patternArgInd + 1].Match(arg, newContext);
                         matchedTextSpans.AddRange(newContext.Locations);
                         if (newContext.Success)
                         {
@@ -65,15 +69,13 @@ namespace PT.PM.Matching.Patterns
                 else
                 {
                     Expression arg = UstUtils.GetArgWithoutModifier(args[argInd]);
-                    newContext = Args[patternArgInd].MatchUst(arg, newContext);
+                    newContext = Args[patternArgInd].Match(arg, newContext);
                     if (!newContext.Success)
                     {
                         break;
                     }
-                    else
-                    {
-                        matchedTextSpans.AddRange(newContext.Locations);
-                    }
+
+                    matchedTextSpans.AddRange(newContext.Locations);
                     patternArgInd += 1;
                     argInd += 1;
                 }

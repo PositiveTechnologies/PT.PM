@@ -1,10 +1,11 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternVar : PatternUst<IdToken>
+    public class PatternVar : PatternUst
     {
         public string Id { get; set; } = "";
 
@@ -36,17 +37,21 @@ namespace PT.PM.Matching.Patterns
             return Id + valueString;
         }
 
-        public override MatchContext Match(IdToken idToken, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext;
-
-            newContext = context;
+            var idToken = ust as IdToken;
+            if (idToken == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = context;
             if (idToken.Parent is AssignmentExpression parentAssignment &&
                 ReferenceEquals(idToken, parentAssignment.Left))
             {
                 if (Value != null)
                 {
-                    newContext = Value.MatchUst(idToken, newContext);
+                    newContext = Value.Match(idToken, newContext);
                     if (newContext.Success)
                     {
                         newContext.Vars[Id] = idToken;

@@ -1,11 +1,15 @@
-﻿using PT.PM.Common;
+﻿using System;
+using PT.PM.Common;
 using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIndexerExpression : PatternUst<IndexerExpression>, IPatternExpression
+    public class PatternIndexerExpression : PatternUst, IPatternExpression
     {
+        public Type UstType => typeof(IndexerExpression);
+        
         public PatternUst Target { get; set; }
 
         public PatternArgs Arguments { get; set; }
@@ -31,11 +35,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}[{Arguments}]";
 
-        public override MatchContext Match(IndexerExpression indexerExpression, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext;
-
-            newContext = Target.MatchUst(indexerExpression.Target, context);
+            var indexerExpression = ust as IndexerExpression;
+            if (indexerExpression == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = Target.Match(indexerExpression.Target, context);
             if (!newContext.Success)
             {
                 return newContext;
