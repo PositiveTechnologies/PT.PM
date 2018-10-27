@@ -15,14 +15,24 @@ namespace PT.PM.Common
 {
     public class UstConstantFolder : ILoggable
     {
+        private static readonly HashSet<Type> FoldingTypes = new HashSet<Type>
+        {
+            typeof(ArrayCreationExpression),
+            typeof(BinaryOperatorExpression),
+            typeof(UnaryOperatorExpression),
+            typeof(StringLiteral),
+            typeof(IntLiteral),
+            typeof(FloatLiteral),
+            typeof(BooleanLiteral)
+        };
+        
         private readonly Dictionary<Ust, FoldResult> foldedResults = new Dictionary<Ust, FoldResult>(UstRefComparer.Instance);
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool TryFold(Ust ust, out FoldResult result)
         {
-            if (!(ust is ArrayCreationExpression || ust is BinaryOperatorExpression || ust is UnaryOperatorExpression ||
-                  ust is StringLiteral || ust is IntLiteral || ust is FloatLiteral || ust is BooleanLiteral)) // TODO: optimize with O(1) complexity
+            if (!FoldingTypes.Contains(ust.GetType()))
             {
                 result = null;
                 return false;
