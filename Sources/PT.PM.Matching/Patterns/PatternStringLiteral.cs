@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStringLiteral : PatternUst<StringLiteral>, ITerminalPattern
+    public class PatternStringLiteral : PatternUst<Ust>, ITerminalPattern
     {
         public string String { get; set; } = "";
 
@@ -19,11 +20,21 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => '"' + String + '"';
 
-        public override MatchContext Match(StringLiteral stringLiteral, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            return String.Equals(stringLiteral.Text)
-                ? context.AddMatch(stringLiteral)
-                : context.Fail();
+            if (ust is StringLiteral stringLiteral)
+            {
+                return String.Equals(stringLiteral.Text) ? context.AddMatch(stringLiteral) : context.Fail();
+            }
+            
+            if (context.UstConstantFolder != null &&
+                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult) &&
+                foldingResult.Value is string stringValue)
+            {
+                return String.Equals(stringValue) ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+            }
+            
+            return context.Fail();
         }
     }
 }

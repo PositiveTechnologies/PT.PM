@@ -15,7 +15,7 @@ namespace PT.PM.Matching
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
-        public static readonly string[] KeySeparators = new[] { ",", ";" };
+        public static readonly string[] KeySeparators = { ",", ";" };
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -72,9 +72,9 @@ namespace PT.PM.Matching
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
 
-        public List<MatchResult> Match(Ust ust)
+        public List<MatchResult> Match(Ust ust, UstConstantFolder ustConstantFolder)
         {
-            var context = new MatchContext(this) { Logger = Logger };
+            var context = new MatchContext(this, ustConstantFolder) { Logger = Logger };
             var results = new List<MatchResult>();
 
             if (ust is RootUst rootUst)
@@ -100,7 +100,7 @@ namespace PT.PM.Matching
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
-            if (ust != null && !(patternUst is PatternAny))
+            if (ust != null && !(patternUst is PatternAny) && !context.Success)
             {
                 foreach (Ust child in ust.Children)
                 {

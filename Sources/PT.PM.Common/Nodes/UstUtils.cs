@@ -4,6 +4,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 
 namespace PT.PM.Common.Nodes
 {
@@ -12,6 +13,7 @@ namespace PT.PM.Common.Nodes
         public static Statement ToStatementIfRequired(this Ust ust)
         {
             Statement result = ust as Statement;
+            
             if (result == null)
             {
                 if (ust is Expression expr)
@@ -22,11 +24,8 @@ namespace PT.PM.Common.Nodes
                 {
                     result = new WrapperStatement(ust);
                 }
-                else
-                {
-                    result = null;
-                }
             }
+            
             return result;
         }
 
@@ -58,18 +57,22 @@ namespace PT.PM.Common.Nodes
             return $"{id}({paramsString})";
         }
 
-        public static List<TextSpan> GetAlignedTextSpan(Ust ust, TextSpan[] matchesLocations)
+        public static List<TextSpan> GetAlignedTextSpan(int escapeLength, List<TextSpan> foldedTextSpans, List<TextSpan> matchesLocations, int startOffset)
         {
-            List<TextSpan> result = new List<TextSpan>();
-            var initialTextSpans = ust.InitialTextSpans.OrderBy(x => x).ToList();
-            var escapeLength = (ust as StringLiteral)?.EscapeCharsLength ?? 1;
+            List<TextSpan> result = new List<TextSpan>(matchesLocations.Count);
 
             foreach (TextSpan location in matchesLocations)
             {
+                if (foldedTextSpans == null || foldedTextSpans.Count == 0)
+                {
+                    result.Add(location.AddOffset(startOffset));
+                    continue;
+                }
+                
                 int offset = 0;
                 int leftBound = 1;
                 int rightBound =
-                    initialTextSpans[0].Length - 2 * escapeLength + 1; // - quotes length and then + 1
+                    foldedTextSpans[0].Length - 2 * escapeLength + 1; // - quotes length and then + 1
                 TextSpan textSpan = TextSpan.Zero;
 
                 // Check first initial textspan separately
@@ -78,10 +81,10 @@ namespace PT.PM.Common.Nodes
                     textSpan = location;
                 }
 
-                for (int i = 1; i < initialTextSpans.Count; i++)
+                for (int i = 1; i < foldedTextSpans.Count; i++)
                 {
-                    var initTextSpan = initialTextSpans[i];
-                    var prevTextSpan = initialTextSpans[i - 1];
+                    var initTextSpan = foldedTextSpans[i];
+                    var prevTextSpan = foldedTextSpans[i - 1];
                     leftBound += prevTextSpan.Length - 2 * escapeLength;
                     rightBound += initTextSpan.Length - 2 * escapeLength;
                     offset += initTextSpan.Start - prevTextSpan.End + 2 * escapeLength;
@@ -96,23 +99,24 @@ namespace PT.PM.Common.Nodes
                         textSpan = location.AddOffset(offset);
                         if (location.End <= rightBound)
                         {
-                            result.Add(textSpan);
+                            result.Add(textSpan.AddOffset(startOffset));
                             break;
                         }
                     }
 
                     if (!textSpan.IsZero && location.End <= rightBound)
                     {
-                        result.Add(new TextSpan(textSpan.Start, location.Length + offset, textSpan.CodeFile));
+                        result.Add(new TextSpan(textSpan.Start + startOffset, location.Length + offset, textSpan.CodeFile));
                         break;
                     }
                 }
 
                 if (textSpan.IsZero)
                 {
-                    result.Add(location);
+                    result.Add(location.AddOffset(startOffset));
                 }
             }
+            
             return result;
         }
 

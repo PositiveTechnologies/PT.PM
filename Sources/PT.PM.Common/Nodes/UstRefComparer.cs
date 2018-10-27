@@ -5,7 +5,7 @@ namespace PT.PM.Common
 {
     public class UstRefComparer : IEqualityComparer<Ust>
     {
-        public static UstRefComparer Instance = new UstRefComparer();
+        public static readonly UstRefComparer Instance = new UstRefComparer();
 
         public bool Equals(Ust x, Ust y)
         {

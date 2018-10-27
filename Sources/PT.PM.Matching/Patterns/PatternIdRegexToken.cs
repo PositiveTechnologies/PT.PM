@@ -57,7 +57,7 @@ namespace PT.PM.Matching.Patterns
                 ? caseInsensitiveRegex
                 : this.regex;
             string tokenText = token.TextValue;
-            TextSpan textSpan = regex.Match(tokenText).GetTextSpan(tokenText);
+            TextSpan textSpan = regex.Match(tokenText).GetTextSpan();
 
             return !textSpan.IsZero
                 ? context.AddMatch(token)
