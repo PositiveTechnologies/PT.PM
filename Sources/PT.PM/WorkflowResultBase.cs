@@ -4,7 +4,6 @@ using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace PT.PM
@@ -22,7 +21,6 @@ namespace PT.PM
 
         private long totalReadTicks;
         private long totalConvertTicks;
-        private long totalSimplifyTicks;
         private long totalMatchTicks;
         private long totalPatternsTicks;
 
@@ -37,9 +35,9 @@ namespace PT.PM
 
         private int totalTerminatedFilesCount;
 
-        public WorkflowResultBase(IEnumerable<Language> languages, int threadCount, TStage stage)
+        public WorkflowResultBase(List<Language> languages, int threadCount, TStage stage)
         {
-            AnalyzedLanguages = languages.ToList();
+            AnalyzedLanguages = languages;
             ThreadCount = threadCount;
             Stage = stage;
         }
@@ -56,7 +54,7 @@ namespace PT.PM
 
         public TStage Stage { get; private set; }
 
-        public bool IsSimplifyUst { get; set; }
+        public bool IsFoldConstants { get; set; }
 
         public int ErrorCount { get; set; }
 
@@ -64,10 +62,23 @@ namespace PT.PM
         public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
 
         [JsonIgnore]
-        public IReadOnlyList<ParseTree> ParseTrees =>
-            parseTrees.Select(parseTree => parseTree.TryGetTarget(out ParseTree target) ? target : null)
-            .Where(parseTree => parseTree != null)
-            .ToList();
+        public IReadOnlyList<ParseTree> ParseTrees
+        {
+            get
+            {
+                var result = new List<ParseTree>(parseTrees.Count);
+
+                foreach (WeakReference<ParseTree> parseTree in parseTrees)
+                {
+                    if (parseTree.TryGetTarget(out ParseTree target))
+                    {
+                        result.Add(target);
+                    }
+                }
+
+                return result;
+            }
+        }
 
         [JsonIgnore]
         public IReadOnlyList<RootUst> Usts => usts;
@@ -81,7 +92,6 @@ namespace PT.PM
         public long TotalReadTicks => totalReadTicks;
         public long TotalLexerParserTicks => totalLexerTicks + totalParserTicks;
         public long TotalConvertTicks => totalConvertTicks;
-        public long TotalSimplifyTicks => totalSimplifyTicks;
         public long TotalMatchTicks => totalMatchTicks;
         public long TotalPatternsTicks => totalPatternsTicks;
 
@@ -164,11 +174,6 @@ namespace PT.PM
             AddTime(ref totalConvertTicks, convertTime);
         }
 
-        public void AddSimplifyTime(TimeSpan simplifyTime)
-        {
-            AddTime(ref totalSimplifyTicks, simplifyTime);
-        }
-
         public void AddMatchTime(TimeSpan matchTime)
         {
             AddTime(ref totalMatchTicks, matchTime);
@@ -199,7 +204,6 @@ namespace PT.PM
             totalLexerTicks +
             totalParserTicks +
             totalConvertTicks +
-            totalSimplifyTicks +
             totalMatchTicks +
             totalPatternsTicks;
 

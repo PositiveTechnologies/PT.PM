@@ -134,9 +134,9 @@ namespace PT.PM.Cli.Common
             {
                 workflow.ThreadCount = parameters.ThreadCount.Value;
             }
-            if (parameters.NotSimplifyUst.HasValue)
+            if (parameters.NotFoldConstants.HasValue)
             {
-                workflow.IsSimplifyUst = !parameters.NotSimplifyUst.Value;
+                workflow.IsFoldConstants = !parameters.NotFoldConstants.Value;
             }
             if (parameters.MaxStackSize.HasValue)
             {

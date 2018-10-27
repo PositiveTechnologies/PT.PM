@@ -10,8 +10,6 @@ namespace PT.PM.Cli.Common
         where TMatchResult : MatchResultBase<TPattern>
         where TRenderStage : Enum
     {
-        protected const string SimplifiedUstStageName = "SimplifiedUst";
-
         public ILogger Logger { get; set; }
 
         public TWorkflowResult WorkflowResult { get; set; }
@@ -54,10 +52,6 @@ namespace PT.PM.Cli.Common
                         if (Convert.ToInt32(WorkflowResult.Stage) >= (int)Stage.Ust)
                         {
                             LogStageTime(nameof(Stage.Ust));
-                            if (WorkflowResult.IsSimplifyUst)
-                            {
-                                LogStageTime(SimplifiedUstStageName);
-                            }
                             LogAdvancedStageInfo();
                         }
                     }
@@ -89,9 +83,6 @@ namespace PT.PM.Cli.Common
                     break;
                 case nameof(Stage.Ust):
                     ticks = WorkflowResult.TotalConvertTicks;
-                    break;
-                case SimplifiedUstStageName:
-                    ticks = WorkflowResult.TotalSimplifyTicks;
                     break;
                 case nameof(Stage.Match):
                     ticks = WorkflowResult.TotalMatchTicks;

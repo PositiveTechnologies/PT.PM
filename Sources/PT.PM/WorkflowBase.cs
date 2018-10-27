@@ -6,7 +6,6 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Utils;
-using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Json;
@@ -48,7 +47,7 @@ namespace PT.PM
 
         public bool IsDumpJsonOutput { get; set; } = false;
 
-        public bool IsSimplifyUst { get; set; } = true;
+        public bool IsFoldConstants { get; set; } = true;
 
         public bool IsIgnoreFilenameWildcards { get; set; } = false;
 
@@ -239,7 +238,7 @@ namespace PT.PM
                             Strict = StrictJson,
                             CodeFiles = workflowResult.SourceCodeFiles
                         };
-                        jsonUstSerializer.ReadCodeFileEvent += (object sender, (CodeFile, TimeSpan) fileAndTime) =>
+                        jsonUstSerializer.ReadCodeFileEvent += (sender, fileAndTime) =>
                         {
                             LogCodeFile(fileAndTime, workflowResult);
                         };
@@ -259,18 +258,6 @@ namespace PT.PM
                     if (result == null)
                     {
                         return null;
-                    }
-
-                    if (IsSimplifyUst)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        var simplifier = new UstSimplifier { Logger = logger };
-                        stopwatch.Restart();
-                        result = simplifier.Simplify(result);
-                        stopwatch.Stop();
-                        Logger.LogInfo($"Ust of file {result.SourceCodeFile.Name} simplified {GetElapsedString(stopwatch)}.");
-                        workflowResult.AddSimplifyTime(stopwatch.Elapsed);
                     }
 
                     DumpUst(result, workflowResult.SourceCodeFiles);

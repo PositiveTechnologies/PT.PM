@@ -23,8 +23,8 @@ namespace PT.PM.Cli.Common
         [Option('t', "threads", HelpText = "Number of processing threads")]
         public int? ThreadCount { get; set; }
 
-        [Option("not-simplify-ust", HelpText = "Do not simplify ust")]
-        public bool? NotSimplifyUst { get; set; }
+        [Option("not-fold-consts", HelpText = "Do not propagate and fold constants")]
+        public bool? NotFoldConstants { get; set; }
 
         [Option('s', "stage", HelpText = "End processing stage. By default: Match")]
         public string Stage { get; set; }
