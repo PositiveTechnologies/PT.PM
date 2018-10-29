@@ -35,14 +35,17 @@ namespace PT.PM.Common
                 return false;
             }
 
-            if (foldedResults.TryGetValue(ust, out result))
+            lock (ust)
             {
-                return result != null;
+                if (foldedResults.TryGetValue(ust, out result))
+                {
+                    return result != null;
+                }
+
+                result = TryFold(ust);
+
+                NormalizeAndAdd(ust, ref result);
             }
-
-            result = TryFold(ust);
-
-            NormalizeAndAdd(ust, ref result);
 
             return result != null;
         }
