@@ -46,7 +46,7 @@ namespace PT.PM.Matching
         public MatchContext(PatternRoot patternUst, UstConstantFolder ustConstantFolder, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
-            UstConstantFolder = ustConstantFolder ?? throw new ArgumentNullException(nameof(ustConstantFolder));
+            UstConstantFolder = ustConstantFolder;
             if (vars != null)
             {
                 Vars = vars;

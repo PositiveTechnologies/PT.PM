@@ -69,7 +69,7 @@ namespace PT.PM
                     Logger = Logger,
                     Patterns = ConvertPatterns(result),
                     IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards,
-                    IsFoldConstants = IsFoldConstants
+                    UstConstantFolder = IsFoldConstants ? new UstConstantFolder() : null
                 };
 
                 var parallelOptions = PrepareParallelOptions(cancellationToken);
