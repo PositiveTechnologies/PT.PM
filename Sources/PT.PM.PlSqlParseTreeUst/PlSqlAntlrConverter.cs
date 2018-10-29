@@ -433,7 +433,11 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                result = VisitChildren(context);
+                result = new WhileStatement
+                {
+                    Embedded = block,
+                    TextSpan = textSpan
+                };
             }
             return result;
         }
@@ -601,7 +605,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var invocation = new InvocationExpression
             {
-                Target = new IdToken($"{context.OPEN().GetText()}", context.OPEN().GetTextSpan()),
+                Target = new IdToken(context.OPEN().GetText(), context.OPEN().GetTextSpan()),
                 Arguments = new ArgsUst((Expression)Visit(context.variable_name())),
                 TextSpan = context.GetTextSpan()
             };
@@ -645,7 +649,7 @@ namespace PT.PM.SqlParseTreeUst
 
             var invocation = new InvocationExpression
             {
-                Target = new IdToken(context.CLOSE().GetText()),
+                Target = new IdToken(context.CLOSE().GetText(), context.CLOSE().GetTextSpan()),
                 Arguments = new ArgsUst(cursorArg),
                 TextSpan = context.GetTextSpan()
             };
