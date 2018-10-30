@@ -151,12 +151,21 @@ namespace PT.PM.Common
                                 if (rightInt == 0)
                                 {
                                     folded = false;
-                                    break;
                                 }
-                                resultInt = leftInt / rightInt;
+                                else
+                                {
+                                    resultInt = leftInt / rightInt;
+                                }
                                 break;
                             case BinaryOperator.Mod:
-                                resultInt = leftInt % rightInt;
+                                if (rightInt == 0)
+                                {
+                                    folded = false;
+                                }
+                                else
+                                {
+                                    resultInt = leftInt % rightInt;
+                                }
                                 break;
                             case BinaryOperator.BitwiseAnd:
                                 resultInt = leftInt & rightInt;

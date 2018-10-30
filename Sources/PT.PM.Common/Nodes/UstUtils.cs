@@ -212,12 +212,10 @@ namespace PT.PM.Common.Nodes
         {
             if (usts.Count() == 0)
             {
-                return default(TextSpan);
+                return default;
             }
-            else
-            {
-                return usts.First().TextSpan.Union(usts.LastOrDefault(x => !x.TextSpan.IsZero)?.TextSpan ?? TextSpan.Zero);
-            }
+
+            return usts.First().TextSpan.Union(usts.LastOrDefault(x => !x.TextSpan.IsZero)?.TextSpan ?? TextSpan.Zero);
         }
 
         public static int CompareTo<T>(this IEnumerable<T> collection1, IEnumerable<T> collection2) where T : Ust
