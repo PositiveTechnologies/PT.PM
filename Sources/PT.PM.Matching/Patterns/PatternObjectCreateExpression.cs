@@ -1,10 +1,12 @@
-﻿using PT.PM.Common;
+﻿using System;
+using System.Collections.Generic;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternObjectCreateExpression : PatternUst
+    public class PatternObjectCreateExpression : PatternUst, IPatternExpression
     {
         public PatternUst Type { get; set; }
 
@@ -41,5 +43,23 @@ namespace PT.PM.Matching.Patterns
 
             return newContext.AddUstIfSuccess(objectCreateExpression);
         }
+        
+        public PatternUst[] GetArgs()
+        {
+            var result = new List<PatternUst>();
+            result.Add(Type);
+            if (Arguments is PatternArgs patternArgs)
+            {
+                result.AddRange(patternArgs.Args);
+            }
+            else
+            {
+                result.Add(Arguments);
+            }
+
+            return result.ToArray();
+        }
+
+        public Type UstType => typeof(ObjectCreateExpression);
     }
 }
