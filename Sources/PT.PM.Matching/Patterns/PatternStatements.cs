@@ -31,14 +31,17 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(";\n", Statements);
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var blockStatement = ust as BlockStatement;
-            if (blockStatement == null ||
-                (!(blockStatement.Parent is MethodDeclaration) &&
-                 !(blockStatement.Parent is ConstructorDeclaration) &&
-                 !(blockStatement.Parent is NamespaceDeclaration) &&
-                 !(blockStatement.Parent is RootUst)))
+            Ust parent = context.LastParent;
+            
+            if (blockStatement == null || parent == null)
+            {
+                return context.Fail();
+            }
+
+            if (!(parent is MethodDeclaration || parent is NamespaceDeclaration || parent is RootUst))
             {
                 return context.Fail();
             }
@@ -72,7 +75,7 @@ namespace PT.PM.Matching.Patterns
                 for (int i = 0; i < expressions.Length; i++)
                 {
                     newContext = MatchContext.CreateWithInputParamsAndVars(newContext);
-                    newContext = Statements[patternStatementInd].Match(expressions[i], newContext);
+                    newContext = Statements[patternStatementInd].MatchUst(expressions[i], newContext);
                     if (newContext.Success)
                     {
                         matchedTextSpans.AddRange(newContext.Locations);

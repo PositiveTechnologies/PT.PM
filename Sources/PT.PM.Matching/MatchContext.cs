@@ -1,5 +1,4 @@
-﻿using System;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
@@ -9,6 +8,8 @@ namespace PT.PM.Matching
 {
     public class MatchContext : ILoggable
     {
+        private readonly List<Ust> parentStack;
+
         public PatternRoot PatternUst { get; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
@@ -34,24 +35,25 @@ namespace PT.PM.Matching
 
         public static MatchContext CreateWithInputParams(MatchContext context, Dictionary<string, IdToken> vars = null)
         {
-            return new MatchContext(context.PatternUst, context.UstConstantFolder, vars)
+            return new MatchContext(context.PatternUst, context.UstConstantFolder, context.parentStack, vars)
             {
                 Logger = context.Logger,
                 FindAllAlternatives = context.FindAllAlternatives
             };
         }
 
-        public static implicit operator bool(MatchContext context) => context.Success;
-
-        public MatchContext(PatternRoot patternUst, UstConstantFolder ustConstantFolder, Dictionary<string, IdToken> vars = null)
+        public MatchContext(PatternRoot patternUst, UstConstantFolder ustConstantFolder, List<Ust> parentStack, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
             UstConstantFolder = ustConstantFolder;
+            this.parentStack = parentStack; 
             if (vars != null)
             {
                 Vars = vars;
             }
         }
+
+        public static implicit operator bool(MatchContext context) => context.Success;
 
         public MatchContext AddUstIfSuccess(Ust ust)
         {
@@ -99,6 +101,18 @@ namespace PT.PM.Matching
             Success = success;
             return this;
         }
+
+        public void PushParent(Ust parent)
+        {
+            parentStack.Add(parent);
+        }
+
+        public void PopParent()
+        {
+            parentStack.RemoveAt(parentStack.Count - 1);
+        }
+
+        public Ust LastParent => parentStack.Count > 1 ? parentStack[parentStack.Count - 2] : null;
 
         public override string ToString()
         {

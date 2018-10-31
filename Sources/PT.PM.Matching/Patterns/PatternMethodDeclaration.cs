@@ -52,7 +52,7 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var methodDeclaration = ust as MethodDeclaration;
             if (methodDeclaration == null)
@@ -66,7 +66,7 @@ namespace PT.PM.Matching.Patterns
                 return newContext;
             }
 
-            newContext = Name.Match(methodDeclaration.Name, newContext);
+            newContext = Name.MatchUst(methodDeclaration.Name, newContext);
             if (!newContext.Success)
             {
                 return newContext;
@@ -78,14 +78,14 @@ namespace PT.PM.Matching.Patterns
                 {
                     if (Body is PatternArbitraryDepth || Body is PatternStatements)
                     {
-                        newContext = Body.Match(methodDeclaration.Body, newContext);
+                        newContext = Body.MatchUst(methodDeclaration.Body, newContext);
                     }
                     else
                     {
                         var otherStatements = methodDeclaration.Body.Statements;
                         if (otherStatements.Count == 1)
                         {
-                            newContext = Body.Match(otherStatements.First(), newContext);
+                            newContext = Body.MatchUst(otherStatements.First(), newContext);
                         }
                         else
                         {
@@ -112,14 +112,7 @@ namespace PT.PM.Matching.Patterns
             Modifiers = modifiers?.ToList() ?? new List<PatternUst>();
             Name = name;
             AnyBody = anyBody;
-            if (anyBody)
-            {
-                Body = null;
-            }
-            else
-            {
-                Body = new PatternStatements();
-            }
+            Body = anyBody ? null : new PatternStatements();
         }
     }
 }

@@ -35,7 +35,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}[{Arguments}]";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var indexerExpression = ust as IndexerExpression;
             if (indexerExpression == null)
@@ -43,13 +43,13 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Target.Match(indexerExpression.Target, context);
+            MatchContext newContext = Target.MatchUst(indexerExpression.Target, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Arguments.Match(indexerExpression.Arguments, newContext);
+            newContext = Arguments.MatchUst(indexerExpression.Arguments, newContext);
 
             return newContext.AddUstIfSuccess(indexerExpression);
         }

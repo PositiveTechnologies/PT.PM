@@ -1,6 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using PT.PM.Matching.Patterns;
 using System;
@@ -10,11 +9,11 @@ using System.Threading;
 
 namespace PT.PM.Matching
 {
-    public class PatternNormalizer : PatternVisitor<PatternUst>, ILoggable
+    public class PatternNormalizer : PatternVisitor<PatternUst>
     {
         private static PropertyCloner<PatternUst> propertyEnumerator = new PropertyCloner<PatternUst>
         {
-            IgnoredProperties = new HashSet<string>() { nameof(Ust.Parent), nameof(Ust.Root) }
+            IgnoredProperties = new HashSet<string> { nameof(PatternUst.Parent), nameof(PatternUst.Root) }
         };
 
         public PatternRoot Normalize(PatternRoot pattern)
@@ -38,8 +37,12 @@ namespace PT.PM.Matching
         public override PatternUst Visit(PatternArgs patternExpressions)
         {
             // #* #* ... #* -> #*
-            List<PatternUst> args = patternExpressions.Args
-                .Select(item => (PatternUst)Visit(item)).ToList();
+            var args = new List<PatternUst>(patternExpressions.Args.Count);
+            foreach (PatternUst arg in patternExpressions.Args)
+            {
+                args.Add(arg);
+            }
+
             int index = 0;
             while (index < args.Count)
             {
@@ -54,8 +57,8 @@ namespace PT.PM.Matching
                     index++;
                 }
             }
-            var result = new PatternArgs(args);
-            return result;
+
+            return new PatternArgs(args);
         }
 
         public override PatternUst Visit(PatternOr patternOr)
@@ -65,9 +68,13 @@ namespace PT.PM.Matching
                 return Visit(patternOr.Patterns[0]);
             }
 
-            IEnumerable<PatternUst> exprs = patternOr.Patterns
-                .Select(e => Visit(e))
-                .OrderBy(e => e);
+            var exprs = new List<PatternUst>(patternOr.Patterns.Count);
+            foreach (PatternUst pattern in patternOr.Patterns)
+            {
+                exprs.Add(pattern);
+            }
+            exprs.Sort();
+            
             return new PatternOr(exprs, patternOr.TextSpan);
         }
 
@@ -78,6 +85,7 @@ namespace PT.PM.Matching
             if (regexString.StartsWith("^") && regexString.EndsWith("$"))
             {
                 string newRegexString = regexString.Substring(1, regexString.Length - 2);
+
                 if (newRegexString.All(c => char.IsLetterOrDigit(c) || c == '_'))
                 {
                     return new PatternIdToken(
@@ -97,13 +105,11 @@ namespace PT.PM.Matching
                     patternIntLiteral.MinValue,
                     patternIntLiteral.TextSpan);
             }
-            else
-            {
-                return new PatternIntRangeLiteral(
-                    patternIntLiteral.MinValue,
-                    patternIntLiteral.MaxValue,
-                    patternIntLiteral.TextSpan);
-            }
+
+            return new PatternIntRangeLiteral(
+                patternIntLiteral.MinValue,
+                patternIntLiteral.MaxValue,
+                patternIntLiteral.TextSpan);
         }
 
         public override PatternUst Visit(PatternAnd patternAnd)
@@ -113,9 +119,13 @@ namespace PT.PM.Matching
                 return Visit(patternAnd.Patterns[0]);
             }
 
-            IEnumerable<PatternUst> exprs = patternAnd.Patterns
-                .Select(e => Visit(e))
-                .OrderBy(e => e);
+            var exprs = new List<PatternUst>(patternAnd.Patterns.Count);
+            foreach (PatternUst pattern in patternAnd.Patterns)
+            {
+                exprs.Add(pattern);
+            }
+            exprs.Sort();
+
             return new PatternAnd(exprs, patternAnd.TextSpan);
         }
 

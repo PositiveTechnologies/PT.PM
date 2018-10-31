@@ -28,7 +28,7 @@ namespace PT.PM.Matching.Patterns
             return Boolean.ToString();
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var booleanLiteral = ust as BooleanLiteral;
             if (booleanLiteral == null)

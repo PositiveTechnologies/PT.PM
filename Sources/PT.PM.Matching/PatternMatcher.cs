@@ -38,11 +38,13 @@ namespace PT.PM.Matching
                     patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceCodeFile.FullName) ?? true);
                 }
 
+                var parentStack = new List<Ust>();
+                
                 var result = new List<MatchResult>();
                 foreach (PatternRoot pattern in patterns)
                 {
                     pattern.Logger = Logger;
-                    var results = pattern.Match(ust, UstConstantFolder);
+                    var results = pattern.Match(ust, UstConstantFolder, parentStack);
                     result.AddRange(results);
                 }
 

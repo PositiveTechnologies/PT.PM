@@ -37,7 +37,7 @@ namespace PT.PM.Matching.Patterns
             return Id + valueString;
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var idToken = ust as IdToken;
             if (idToken == null)
@@ -46,12 +46,12 @@ namespace PT.PM.Matching.Patterns
             }
             
             MatchContext newContext = context;
-            if (idToken.Parent is AssignmentExpression parentAssignment &&
+            if (context.LastParent is AssignmentExpression parentAssignment &&
                 ReferenceEquals(idToken, parentAssignment.Left))
             {
                 if (Value != null)
                 {
-                    newContext = Value.Match(idToken, newContext);
+                    newContext = Value.MatchUst(idToken, newContext);
                     if (newContext.Success)
                     {
                         newContext.Vars[Id] = idToken;

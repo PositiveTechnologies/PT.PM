@@ -34,27 +34,16 @@ namespace PT.PM.Matching.Patterns
             RegexString = regex;
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             if (Any)
             {
-                if (ust == null)
-                {
-                    return context.MakeSuccess();
-                }
-                return context.AddMatch(ust);
+                return ust == null ? context.MakeSuccess() : context.AddMatch(ust);
             }
 
-            string treeString;
-
-            if (UseUstString)
-            {
-                treeString = ust.ToString();
-            }
-            else
-            {
-                treeString = ust.CurrentCodeFile?.GetSubstring(ust.TextSpan) ?? "";
-            }
+            string treeString = UseUstString
+                ? ust.ToString()
+                : ust.CurrentCodeFile?.GetSubstring(ust.TextSpan) ?? "";
 
             int escapeCharsLength = (ust as StringLiteral)?.EscapeCharsLength ?? 0;
             List<TextSpan> matches = Regex.MatchRegex(treeString, escapeCharsLength);

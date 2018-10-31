@@ -44,30 +44,23 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}({Arguments})";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var invocation = ust as InvocationExpression;
             if (invocation == null)
             {
                 return context.Fail();
             }
-            
-            MatchContext newContext = Target.Match(invocation.Target, context);
-            if (!newContext.Success)
+
+            context = Target.MatchUst(invocation.Target, context);
+            if (!context.Success)
             {
-                return newContext;
+                return context;
             }
 
-            if (Arguments is PatternArgs patternArgs)
-            {
-                newContext = patternArgs.Match(invocation.Arguments, newContext);
-            }
-            else
-            {
-                newContext = Arguments.Match(invocation.Arguments, newContext);
-            }
+            context = Arguments.MatchUst(invocation.Arguments, context);
 
-            return newContext.AddUstIfSuccess(invocation);
+            return context.AddUstIfSuccess(invocation);
         }
     }
 }

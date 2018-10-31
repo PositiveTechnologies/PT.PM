@@ -3,10 +3,12 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>, IUst<PatternUst, PatternRoot>, IUst
+    public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>, IUst
     {
         private PropertyComparer<PatternUst> propertyComparer = new PropertyComparer<PatternUst>
         {
@@ -42,6 +44,14 @@ namespace PT.PM.Matching.Patterns
             return propertyComparer.Compare(this, other);
         }
 
-        public abstract MatchContext Match(Ust ust, MatchContext context);
+        public MatchContext MatchUst(Ust ust, MatchContext context)
+        {
+            context.PushParent(ust);
+            context = Match(ust, context);
+            context.PopParent();
+            return context;
+        }
+
+        protected abstract MatchContext Match(Ust ust, MatchContext context);
     }
 }

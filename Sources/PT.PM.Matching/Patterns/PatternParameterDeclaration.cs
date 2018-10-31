@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var parameterDeclaration = ust as ParameterDeclaration;
             if (parameterDeclaration == null)
@@ -33,13 +33,13 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Type.Match(parameterDeclaration.Type, context);
+            MatchContext newContext = Type.MatchUst(parameterDeclaration.Type, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Name.Match(parameterDeclaration.Name, newContext);
+            newContext = Name.MatchUst(parameterDeclaration.Name, newContext);
 
             return newContext.AddUstIfSuccess(parameterDeclaration);
         }

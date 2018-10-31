@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $@"<""{(Any ? "" : Regex.ToString())}"">";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust is StringLiteral stringLiteral)
             {

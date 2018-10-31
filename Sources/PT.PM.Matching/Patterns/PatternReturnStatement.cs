@@ -21,7 +21,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"return {Expression}";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var returnStatement = ust as ReturnStatement;
             if (returnStatement == null)
@@ -29,7 +29,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Expression.Match(returnStatement.Return, context);
+            MatchContext newContext = Expression.MatchUst(returnStatement.Return, context);
 
             return newContext.Success
                 ? newContext.AddMatch(returnStatement)

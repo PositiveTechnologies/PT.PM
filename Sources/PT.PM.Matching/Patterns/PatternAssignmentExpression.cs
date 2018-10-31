@@ -28,23 +28,24 @@ namespace PT.PM.Matching.Patterns
             return Right == null ? Left.ToString() : $"{Left} = {Right}";
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var assign = ust as AssignmentExpression;
             if (assign == null)
             {
                 return context.Fail();
             }
-            
-            MatchContext newContext = Left.Match(assign.Left, context);
+
+            MatchContext newContext = Left.MatchUst(assign.Left, context);
+
             if (newContext.Success)
             {
                 if (Right != null && assign.Right != null)
                 {
-                    newContext = Right.Match(assign.Right, newContext);
+                    newContext = Right.MatchUst(assign.Right, newContext);
                 }
-                else if ((Right != null && assign.Right == null) ||
-                         (Right == null && assign.Right != null))
+                else if (Right != null && assign.Right == null ||
+                         Right == null && assign.Right != null)
                 {
                     newContext = newContext.Fail();
                 }

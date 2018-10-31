@@ -110,7 +110,7 @@ namespace PT.PM.Matching.Patterns
             return $"<({result})>";
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust is IntLiteral intLiteral)
             {
