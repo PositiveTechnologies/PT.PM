@@ -27,22 +27,6 @@ namespace PT.PM.Tests
             CheckVisitorMethods(typeof(IPatternVisitor<>), typeof(PatternUst));
         }
 
-        [Test]
-        public void Check_AllDescendants_HaveParentsAfterConvert()
-        {
-            string fileName = Path.Combine(TestUtility.GrammarsDirectory, "csharp", "not-ready-examples", "AllInOne.cs");
-            WorkflowResult result = TestUtility.CheckFile(fileName, Stage.Ust);
-
-            IEnumerable<Ust> descendantsExceptFirst = result.Usts.First().WhereDescendantsOrSelf().Skip(1);
-            foreach (var descendant in descendantsExceptFirst)
-            {
-                if (!(descendant is RootUst))
-                {
-                    Assert.IsNotNull(descendant.Parent);
-                }
-            }
-        }
-
         private static void CheckVisitorMethods(Type visitorType, Type baseClass)
         {
             MethodInfo[] iUstVisitorMethods = visitorType.GetMethods();
