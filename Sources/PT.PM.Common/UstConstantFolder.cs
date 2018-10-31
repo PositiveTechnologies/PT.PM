@@ -16,11 +16,7 @@ namespace PT.PM.Common
         {
             typeof(ArrayCreationExpression),
             typeof(BinaryOperatorExpression),
-            typeof(UnaryOperatorExpression),
-            typeof(StringLiteral),
-            typeof(IntLiteral),
-            typeof(FloatLiteral),
-            typeof(BooleanLiteral)
+            typeof(UnaryOperatorExpression)
         };
         
         private readonly Dictionary<Ust, FoldResult> foldedResults = new Dictionary<Ust, FoldResult>(UstRefComparer.Instance);
@@ -52,6 +48,11 @@ namespace PT.PM.Common
 
         private FoldResult TryGetOrFold(Ust ust)
         {
+            if (ust != null && foldedResults.TryGetValue(ust, out FoldResult result))
+            {
+                return result;
+            }
+            
             switch (ust)
             {
                 case ArrayCreationExpression arrayCreationExpression:
