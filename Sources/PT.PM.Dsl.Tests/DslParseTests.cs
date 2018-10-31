@@ -48,11 +48,11 @@ namespace PT.PM.Dsl.Tests
         {
             string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
-            var processor = new DslProcessor() { Logger = logger, PatternExpressionInsideStatement = false };
+            var processor = new DslProcessor { Logger = logger, PatternExpressionInsideStatement = false };
             PatternRoot result = processor.Deserialize(new CodeFile(data) { PatternKey = fileName });
             if (fileName == "DebugInfo.pattern")
             {
-                new HashSet<Language>() { Php.Language };
+                new HashSet<Language> { Php.Language };
             }
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 

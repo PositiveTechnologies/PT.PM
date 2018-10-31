@@ -76,7 +76,6 @@ namespace PT.PM.AntlrUtils
 
             result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())
             {
-                Parent = result,
                 Root = result
             })
             .ToArray();

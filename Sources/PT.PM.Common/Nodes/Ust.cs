@@ -7,9 +7,9 @@ using System.Text;
 namespace PT.PM.Common.Nodes
 {
     [DebuggerDisplay("{ToStringWithoutLineBreaks()}")]
-    public abstract class Ust : IComparable<Ust>, IEquatable<Ust>, IUst<Ust, RootUst>, IUst
+    public abstract class Ust : IComparable<Ust>, IEquatable<Ust>, IUst
     {
-        private static PrettyPrinter debuggerPrinter = new PrettyPrinter
+        private static readonly PrettyPrinter debuggerPrinter = new PrettyPrinter
         {
             MaxMessageLength = 0,
             ReduceWhitespaces = true
@@ -20,8 +20,6 @@ namespace PT.PM.Common.Nodes
         public int KindId => GetType().Name.GetHashCode();
 
         public RootUst Root { get; set; }
-
-        public Ust Parent { get; set; }
 
         public virtual bool IsTerminal => false;
 

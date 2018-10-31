@@ -120,20 +120,26 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static bool IsInsideSingleBlockStatement(this Ust ust)
+        public static bool IsInsideSingleBlockStatement(this Ust ust, List<Ust> parentStack)
         {
+            int index = parentStack.Count;
+            
             Ust parent = ust;
             Ust prev = ust;
+
             while (parent != null && !(parent is Statement) &&
-                 !(parent is ConditionalExpression conditionalExpression && !ReferenceEquals(conditionalExpression.Condition, prev)))
+                   !(parent is ConditionalExpression conditionalExpression &&
+                     !ReferenceEquals(conditionalExpression.Condition, prev)))
             {
                 prev = parent;
-                parent = parent.Parent;
-            }
+                index--;
 
-            if (parent == null)
-            {
-                return false;
+                if (index < 0)
+                {
+                    return false;
+                }
+                
+                parent = parentStack[index];
             }
 
             if (parent is ConditionalExpression)
@@ -141,8 +147,12 @@ namespace PT.PM.Common.Nodes
                 return true;
             }
 
-            Statement statement = (Statement)parent;
-            return statement.Parent is Statement parentStatement && !(parentStatement is BlockStatement);
+            if (index - 1 < 0)
+            {
+                return false;
+            }
+
+            return parentStack[index - 1] is Statement parentStatement && !(parentStatement is BlockStatement);
         }
 
         public static AssignmentExpression CreateAssignExpr(Expression left, Expression right, TextSpan textSpan, string assignExprOpText, TextSpan assignOpTextSpan)
@@ -193,7 +203,6 @@ namespace PT.PM.Common.Nodes
                 {
                     if (child != null)
                     {
-                        child.Parent = localUst;
                         child.Root = root;
                         if (child is RootUst rootUstChild)
                         {

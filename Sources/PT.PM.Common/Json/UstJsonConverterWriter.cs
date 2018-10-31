@@ -57,8 +57,8 @@ namespace PT.PM.Common.Json
                 if (include)
                 {
                     include =
-                        propName != nameof(Ust.Root) &&
-                        propName != nameof(Ust.Parent) &&
+                        propName != "Root" &&
+                        propName != "Parent" &&
                         propName != nameof(ILoggable.Logger) &&
                         propName != nameof(Ust.InitialTextSpans);
                     if (include)
