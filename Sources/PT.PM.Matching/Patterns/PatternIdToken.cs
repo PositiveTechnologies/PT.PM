@@ -2,10 +2,11 @@
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdToken : PatternUst<Token>, ITerminalPattern
+    public class PatternIdToken : PatternUst, ITerminalPattern
     {
         private string id = "";
         private Regex caseInsensitiveRegex;
@@ -33,40 +34,37 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Id;
 
-        public override MatchContext Match(Token token, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext;
-
+            var token = ust as Token;
+            if (token == null)
+            {
+                return context.Fail();
+            }
+            
             if (!(token is CommentLiteral))
             {
                 string tokenText = token.TextValue;
                 if (token.Root.Language.IsCaseInsensitive)
                 {
-                    TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan(tokenText);
+                    TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan();
                     if (!textSpan.IsZero)
                     {
-                        newContext = context.AddMatch(token);
+                        return context.AddMatch(token);
                     }
-                    else
-                    {
-                        newContext = context.Fail();
-                    }
+
+                    return context.Fail();
                 }
-                else if (id.Equals(tokenText))
+
+                if (id.Equals(tokenText))
                 {
-                    newContext = context.AddMatch(token);
+                    return context.AddMatch(token);
                 }
-                else
-                {
-                    newContext = context.Fail();
-                }
-            }
-            else
-            {
-                newContext = context.Fail();
+                
+                return context.Fail();
             }
 
-            return newContext;
+            return context.Fail();
         }
     }
 }

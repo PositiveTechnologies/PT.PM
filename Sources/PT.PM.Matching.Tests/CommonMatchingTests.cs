@@ -20,7 +20,7 @@ namespace PT.PM.Matching.Tests
     {
         private PatternConverter patternsConverter;
         private MemoryPatternsRepository patternsRepository;
-        private MemoryCodeRepository sourceCodeRep;
+        private SourceCodeRepository sourceCodeRep;
         private Workflow workflow;
 
         [SetUp]
@@ -28,31 +28,8 @@ namespace PT.PM.Matching.Tests
         {
             patternsConverter = new PatternConverter();
             patternsRepository = new MemoryPatternsRepository();
-            sourceCodeRep = new MemoryCodeRepository(
-                "<?php \n" +
-                "test_call_0();\n" +
-                "test_call_1(a);\n" +
-                "test_call_2(a, e);\n" +
-                "test_call_3(c, d, a);\n" +
-                "test_call_4(c, d, a, e);\n" +
-                "$member->$password->$reference = \"hardcoded\";\n" +
-                "\n" +
-                "$password = a;\n" +
-                "call_with_password_param(1, $password, 2);\n" +
-                "\n" +
-                "$password2 = \"1234\";\n" +
-                "if ($password2->Length > 0) { }\n" +
-                "test_call_5(1, $password2, 2);\n" +
-                "$concat = \"111\" .\n" +
-                "   \"222222222\"   .  \n" +
-                "  \"333\";",
-
-                "samples.php"
-            );
-            workflow = new Workflow(sourceCodeRep, patternsRepository)
-            {
-                Logger = new LoggerMessageCounter()
-            };
+            sourceCodeRep = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, "common-matching.php"));
+            workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = new LoggerMessageCounter() };
         }
 
         [TestCase("#()", new[] { 0 })]
@@ -213,10 +190,12 @@ namespace PT.PM.Matching.Tests
             var processor = new DslProcessor();
             string pattern = "<[ \"\\d+\" ]>";
             PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { PatternKey = pattern });
-            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
             WorkflowResult workflowResult = workflow.Process();
             List<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto().ToList();
             patternsRepository.Clear();
+
+            Assert.AreEqual(2, matchResults.Count);
 
             LineColumnTextSpan textSpan = matchResults[1].LineColumnTextSpan;
             Assert.AreEqual(15, textSpan.BeginLine);
@@ -228,9 +207,9 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Create_PatternWithWrongLanguage_ThrowsException()
         {
-            Assert.Throws(typeof(ArgumentException), () => new PatternRoot()
+            Assert.Throws(typeof(ArgumentException), () => new PatternRoot
             {
-                Languages = new HashSet<Language>() { Aspx.Language }
+                Languages = new HashSet<Language> { Aspx.Language }
             });
         }
 

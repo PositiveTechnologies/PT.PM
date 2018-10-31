@@ -63,6 +63,9 @@ namespace PT.PM.Tests
 
             HashSet<Language> cSharpLang = "c#".ParseLanguages();
             Assert.AreEqual(CSharp.Language, cSharpLang.First());
+            
+            HashSet<Language> javaScriptLang = "js".ParseLanguages();
+            Assert.AreEqual(JavaScript.Language, javaScriptLang.First());
         }
 
         [TestCase("CSharp", "Patterns.cs")]

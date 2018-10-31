@@ -15,7 +15,7 @@ namespace PT.PM.Matching
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
 
-        public static readonly string[] KeySeparators = new[] { ",", ";" };
+        public static readonly string[] KeySeparators = { ",", ";" };
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -72,9 +72,9 @@ namespace PT.PM.Matching
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
 
-        public List<MatchResult> Match(Ust ust)
+        public List<MatchResult> Match(Ust ust, UstConstantFolder ustConstantFolder)
         {
-            var context = new MatchContext(this) { Logger = Logger };
+            var context = new MatchContext(this, ustConstantFolder) { Logger = Logger };
             var results = new List<MatchResult>();
 
             if (ust is RootUst rootUst)
@@ -100,27 +100,28 @@ namespace PT.PM.Matching
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
-            if (ust != null && !(patternUst is PatternAny))
+            if (ust != null && !(patternUst is PatternAny) && !context.MatchedWithFolded)
             {
                 foreach (Ust child in ust.Children)
                 {
                     TraverseChildren(patternUst, child, context, results);
                 }
             }
+
+            context.MatchedWithFolded = false;
         }
 
         private static void MatchAndAddResult(
             PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
-            if (patternUst.MatchUst(ust, context).Success)
+            if (patternUst.Match(ust, context).Success)
             {
                 if (context.Locations.Count == 0)
                 {
                     context.Locations.Add(ust.TextSpan);
                 }
 
-                var match = new MatchResult(
-                    ust.RootOrThis, context.PatternUst, context.Locations);
+                var match = new MatchResult(ust.RootOrThis, context.PatternUst, context.Locations);
 
                 results.Add(match);
                 context.Logger.LogInfo(match);

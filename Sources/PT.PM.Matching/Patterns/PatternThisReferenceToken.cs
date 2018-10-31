@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternThisReferenceToken : PatternUst<ThisReferenceToken>, ITerminalPattern
+    public class PatternThisReferenceToken : PatternUst, ITerminalPattern
     {
 
         public PatternThisReferenceToken()
@@ -17,9 +18,11 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "this";
 
-        public override MatchContext Match(ThisReferenceToken thisReferenceToken, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            return context.AddMatch(thisReferenceToken);
+            return ust is ThisReferenceToken thisReferenceToken
+                ? context.AddMatch(thisReferenceToken)
+                : context.Fail();
         }
     }
 }

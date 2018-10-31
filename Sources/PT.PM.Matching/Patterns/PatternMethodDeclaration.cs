@@ -3,10 +3,11 @@ using PT.PM.Common.Nodes.TypeMembers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternMethodDeclaration : PatternUst<MethodDeclaration>
+    public class PatternMethodDeclaration : PatternUst
     {
         public bool AnyBody { get; set; }
 
@@ -51,15 +52,21 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override MatchContext Match(MethodDeclaration methodDeclaration, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
+            var methodDeclaration = ust as MethodDeclaration;
+            if (methodDeclaration == null)
+            {
+                return context.Fail();
+            } 
+            
             MatchContext newContext = Modifiers.MatchSubset(methodDeclaration.Modifiers, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Name.MatchUst(methodDeclaration.Name, newContext);
+            newContext = Name.Match(methodDeclaration.Name, newContext);
             if (!newContext.Success)
             {
                 return newContext;
@@ -71,14 +78,14 @@ namespace PT.PM.Matching.Patterns
                 {
                     if (Body is PatternArbitraryDepth || Body is PatternStatements)
                     {
-                        newContext = Body.MatchUst(methodDeclaration.Body, newContext);
+                        newContext = Body.Match(methodDeclaration.Body, newContext);
                     }
                     else
                     {
                         var otherStatements = methodDeclaration.Body.Statements;
-                        if (otherStatements.Count() == 1)
+                        if (otherStatements.Count == 1)
                         {
-                            newContext = Body.MatchUst(otherStatements.First(), newContext);
+                            newContext = Body.Match(otherStatements.First(), newContext);
                         }
                         else
                         {

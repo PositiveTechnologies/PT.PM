@@ -1,10 +1,11 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntRangeLiteral : PatternUst<IntLiteral>, ITerminalPattern
+    public class PatternIntRangeLiteral : PatternUst, ITerminalPattern
     {
         public long MinValue { get; set; } = long.MinValue;
 
@@ -109,11 +110,28 @@ namespace PT.PM.Matching.Patterns
             return $"<({result})>";
         }
 
-        public override MatchContext Match(IntLiteral intLiteral, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            return intLiteral.Value >= MinValue && intLiteral.Value < MaxValue
-                ? context.AddMatch(intLiteral)
-                : context.Fail();
+            if (ust is IntLiteral intLiteral)
+            {
+                return MinValue <= intLiteral.Value && MaxValue > intLiteral.Value
+                    ? context.AddMatch(intLiteral)
+                    : context.Fail();
+            }
+
+            if (context.UstConstantFolder != null &&
+                context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldingResult))
+            {
+                context.MatchedWithFolded = true;
+                if (foldingResult.Value is long longValue)
+                {
+                    return MinValue <= longValue && MaxValue > longValue
+                        ? context.AddMatches(foldingResult.TextSpans)
+                        : context.Fail();
+                }
+            }
+
+            return context.Fail();
         }
     }
 }

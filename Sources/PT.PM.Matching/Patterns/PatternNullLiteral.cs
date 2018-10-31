@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternNullLiteral : PatternUst<NullLiteral>, ITerminalPattern
+    public class PatternNullLiteral : PatternUst, ITerminalPattern
     {
         public PatternNullLiteral()
         {
@@ -16,9 +17,11 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "null";
 
-        public override MatchContext Match(NullLiteral nullLiteral, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            return context.AddMatch(nullLiteral);
+            return ust is NullLiteral nullLiteral
+                ? context.AddMatch(nullLiteral)
+                : context.Fail();
         }
     }
 }

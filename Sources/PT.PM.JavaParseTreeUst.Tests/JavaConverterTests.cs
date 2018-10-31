@@ -52,10 +52,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 "ArrayInitialization.java"
             );
 
-            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust)
-            {
-                IsSimplifyUst = false
-            };
+            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust);
             var workflowResult = workflow.Process();
             var ust = workflowResult.Usts.First();
             var intType = new TypeToken("int");

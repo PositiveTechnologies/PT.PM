@@ -1,4 +1,5 @@
-﻿using PT.PM.Common;
+﻿using System;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
@@ -20,7 +21,11 @@ namespace PT.PM.Matching
 
         public bool Success { get; private set; }
 
+        public bool MatchedWithFolded { get; set; }
+
         public bool IgnoreLocations { get; set; }
+        
+        public UstConstantFolder UstConstantFolder { get; }
 
         public static MatchContext CreateWithInputParamsAndVars(MatchContext context)
         {
@@ -29,7 +34,7 @@ namespace PT.PM.Matching
 
         public static MatchContext CreateWithInputParams(MatchContext context, Dictionary<string, IdToken> vars = null)
         {
-            return new MatchContext(context.PatternUst, vars)
+            return new MatchContext(context.PatternUst, context.UstConstantFolder, vars)
             {
                 Logger = context.Logger,
                 FindAllAlternatives = context.FindAllAlternatives
@@ -38,9 +43,10 @@ namespace PT.PM.Matching
 
         public static implicit operator bool(MatchContext context) => context.Success;
 
-        public MatchContext(PatternRoot patternUst, Dictionary<string, IdToken> vars = null)
+        public MatchContext(PatternRoot patternUst, UstConstantFolder ustConstantFolder, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
+            UstConstantFolder = ustConstantFolder;
             if (vars != null)
             {
                 Vars = vars;
@@ -59,7 +65,7 @@ namespace PT.PM.Matching
         public MatchContext AddMatch(Ust ust)
         {
             Success = true;
-            if (!IgnoreLocations && !ust.TextSpan.IsZero)
+            if (!IgnoreLocations && ust != null && !ust.TextSpan.IsZero)
             {
                 Locations.AddRange(ust.GetRealTextSpans());
             }

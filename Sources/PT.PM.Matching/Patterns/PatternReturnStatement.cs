@@ -1,10 +1,11 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes.Statements;
 using System;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Statements;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternReturnStatement : PatternUst<ReturnStatement>
+    public class PatternReturnStatement : PatternUst
     {
         public PatternUst Expression { get; set; } = new PatternAny();
 
@@ -20,9 +21,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"return {Expression}";
 
-        public override MatchContext Match(ReturnStatement returnStatement, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext = Expression.MatchUst(returnStatement.Return, context);
+            var returnStatement = ust as ReturnStatement;
+            if (returnStatement == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = Expression.Match(returnStatement.Return, context);
 
             return newContext.Success
                 ? newContext.AddMatch(returnStatement)

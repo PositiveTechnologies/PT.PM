@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.TypeMembers;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternParameterDeclaration : PatternUst<ParameterDeclaration>
+    public class PatternParameterDeclaration : PatternUst
     {
         public PatternUst Type { get; set; }
 
@@ -24,15 +25,21 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Type != null ? $"{Type} {Name}" : Name.ToString();
 
-        public override MatchContext Match(ParameterDeclaration parameterDeclaration, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext = Type.MatchUst(parameterDeclaration.Type, context);
+            var parameterDeclaration = ust as ParameterDeclaration;
+            if (parameterDeclaration == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = Type.Match(parameterDeclaration.Type, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Name.MatchUst(parameterDeclaration.Name, newContext);
+            newContext = Name.Match(parameterDeclaration.Name, newContext);
 
             return newContext.AddUstIfSuccess(parameterDeclaration);
         }

@@ -1,5 +1,4 @@
-﻿using PT.PM.AntlrUtils;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Utils;
@@ -48,10 +47,10 @@ namespace PT.PM
 
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ??
-                new WorkflowResult(AnalyzedLanguages.ToArray(), ThreadCount, Stage);
+                new WorkflowResult(AnalyzedLanguages.ToList(), ThreadCount, Stage);
             result.BaseLanguages = BaseLanguages.ToArray();
             result.RenderStages = RenderStages;
-            result.IsSimplifyUst = IsSimplifyUst;
+            result.IsFoldConstants = IsFoldConstants;
 
             IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
             if (fileNames is IList<string> fileNamesList)
@@ -69,7 +68,8 @@ namespace PT.PM
                 {
                     Logger = Logger,
                     Patterns = ConvertPatterns(result),
-                    IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards
+                    IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards,
+                    UstConstantFolder = IsFoldConstants ? new UstConstantFolder() : null
                 };
 
                 var parallelOptions = PrepareParallelOptions(cancellationToken);
@@ -160,7 +160,7 @@ namespace PT.PM
             catch (ThreadAbortException)
             {
                 workflowResult.AddTerminatedFilesCount(1);
-                Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terimated due to depleted timeout ({FileTimeout})"));
+                Logger.LogInfo(new OperationCanceledException($"Processing of {fileName} terminated due to depleted timeout ({FileTimeout})"));
                 Thread.ResetAbort();
             }
             catch (Exception ex)

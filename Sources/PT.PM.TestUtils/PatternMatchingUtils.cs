@@ -2,13 +2,13 @@
 using PT.PM.Common.CodeRepository;
 using PT.PM.Dsl;
 using PT.PM.Matching.PatternsRepository;
-using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Matching;
 
-namespace PT.PM.Matching.Tests
+namespace PT.PM.TestUtils
 {
-    public class PatternMatchingUtils
+    public static class PatternMatchingUtils
     {
         public static MatchResultDto[] GetMatches(string code, string pattern, Language analyseLanguage)
         {
@@ -24,10 +24,7 @@ namespace PT.PM.Matching.Tests
                 Languages = new HashSet<Language>(analyzedLanguages)
             };
             var patternsRep = new MemoryPatternsRepository();
-            var workflow = new Workflow(sourceCodeRep, patternsRep)
-            {
-                Logger = new LoggerMessageCounter()
-            };
+            var workflow = new Workflow(sourceCodeRep, patternsRep);
 
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { PatternKey = pattern });

@@ -2,10 +2,11 @@
 using PT.PM.Common.Nodes.GeneralScope;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternClassDeclaration : PatternUst<TypeDeclaration>
+    public class PatternClassDeclaration : PatternUst
     {
         public List<PatternUst> Modifiers { get; set; }
 
@@ -44,8 +45,14 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override MatchContext Match(TypeDeclaration typeDeclaration, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
+            var typeDeclaration = ust as TypeDeclaration;
+            if (typeDeclaration == null)
+            {
+                return context.Fail();
+            }
+            
             MatchContext newContext = Modifiers.MatchSubset(typeDeclaration.Modifiers, context);
             if (!newContext.Success)
             {
@@ -54,7 +61,7 @@ namespace PT.PM.Matching.Patterns
 
             if (Name != null)
             {
-                newContext = Name.MatchUst(typeDeclaration.Name, newContext);
+                newContext = Name.Match(typeDeclaration.Name, newContext);
                 if (!newContext.Success)
                 {
                     return newContext;

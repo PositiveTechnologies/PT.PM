@@ -3,7 +3,7 @@ using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternArbitraryDepth : PatternUst<Ust>
+    public class PatternArbitraryDepth : PatternUst
     {
         public PatternUst Pattern { get; set; }
 
@@ -24,7 +24,7 @@ namespace PT.PM.Matching.Patterns
                 return "#*";
             }
 
-            return "<{ " + Pattern.ToString() + " }>";
+            return "<{ " + Pattern + " }>";
         }
 
         public override MatchContext Match(Ust ust, MatchContext context)
@@ -43,7 +43,8 @@ namespace PT.PM.Matching.Patterns
                 }
                 return context.Fail();
             }
-            return Pattern.MatchUst(other, context);
+            
+            return Pattern.Match(other, context);
         }
     }
 }

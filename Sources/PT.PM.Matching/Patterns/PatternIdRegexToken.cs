@@ -1,10 +1,11 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIdRegexToken : PatternUst<Token>, IRegexPattern, ITerminalPattern
+    public class PatternIdRegexToken : PatternUst, IRegexPattern, ITerminalPattern
     {
         private Regex regex;
         private Regex caseInsensitiveRegex;
@@ -51,13 +52,19 @@ namespace PT.PM.Matching.Patterns
             return $"<[{regexString}]>";
         }
 
-        public override MatchContext Match(Token token, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
+            var token = ust as Token;
+            if (token == null)
+            {
+                return context.Fail();
+            }
+            
             Regex regex = token.Root.Language.IsCaseInsensitive
                 ? caseInsensitiveRegex
                 : this.regex;
             string tokenText = token.TextValue;
-            TextSpan textSpan = regex.Match(tokenText).GetTextSpan(tokenText);
+            TextSpan textSpan = regex.Match(tokenText).GetTextSpan();
 
             return !textSpan.IsZero
                 ? context.AddMatch(token)

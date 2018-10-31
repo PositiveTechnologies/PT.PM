@@ -2,12 +2,11 @@
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternStringRegexLiteral : PatternUst<StringLiteral>, IRegexPattern, ITerminalPattern
+    public class PatternStringRegexLiteral : PatternUst, IRegexPattern, ITerminalPattern
     {
         public string Default => ".*";
 
@@ -34,19 +33,34 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $@"<""{(Any ? "" : Regex.ToString())}"">";
 
-        public override MatchContext Match(StringLiteral stringLiteral, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            IEnumerable<TextSpan> matches = Regex
-                .MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength);
-
-            if (stringLiteral.InitialTextSpans?.Any() ?? false)
+            if (ust is StringLiteral stringLiteral)
             {
-                matches = UstUtils.GetAlignedTextSpan(stringLiteral, matches.ToArray());
+                return MatchContext(context, stringLiteral.Text, stringLiteral.EscapeCharsLength, null, stringLiteral.TextSpan.Start);
             }
 
-            matches = matches.Select(location => location.AddOffset(stringLiteral.TextSpan.Start));
+            if (context.UstConstantFolder != null &&
+                context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldResult))
+            {
+                context.MatchedWithFolded = true;
+                if (foldResult.Value is string stringValue)
+                {
+                    return MatchContext(context, stringValue, 1, foldResult.TextSpans, ust.TextSpan.Start);
+                }
+            }
 
-            return matches.Count() > 0
+            return context.Fail();
+        }
+
+        private MatchContext MatchContext(MatchContext context, string text, int escapeCharsLength,
+            List<TextSpan> foldedTextSpans, int startOffset)
+        {
+            List<TextSpan> matches = Regex.MatchRegex(text, escapeCharsLength);
+
+            matches = UstUtils.GetAlignedTextSpan(escapeCharsLength, foldedTextSpans, matches, startOffset);
+
+            return matches.Count > 0
                 ? context.AddMatches(matches)
                 : context.Fail();
         }

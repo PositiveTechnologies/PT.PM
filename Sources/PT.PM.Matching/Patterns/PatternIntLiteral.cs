@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntLiteral : PatternUst<IntLiteral>, ITerminalPattern
+    public class PatternIntLiteral : PatternUst, ITerminalPattern
     {
         public long Value { get; set; }
 
@@ -19,11 +20,24 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Value.ToString();
 
-        public override MatchContext Match(IntLiteral intLiteral, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            return intLiteral.Value == Value
-                ? context.AddMatch(intLiteral)
-                : context.Fail();
+            if (ust is IntLiteral intLiteral)
+            {
+                return Value == intLiteral.Value ? context.AddMatch(intLiteral) : context.Fail();
+            }
+
+            if (context.UstConstantFolder != null &&
+                context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldingResult))
+            {
+                context.MatchedWithFolded = true;
+                if (foldingResult.Value is long longValue)
+                {
+                    return Value == longValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                }
+            }
+
+            return context.Fail();
         }
     }
 }

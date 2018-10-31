@@ -137,6 +137,14 @@ namespace PT.PM.Common
             return result;
         }
 
+        public static bool operator <(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) < 0;
+        
+        public static bool operator <=(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) <= 0;
+        
+        public static bool operator >(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) > 0;
+        
+        public static bool operator >=(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) >= 0;
+
         public int CompareTo(object obj)
         {
             if (obj is TextSpan otherTextSpan)

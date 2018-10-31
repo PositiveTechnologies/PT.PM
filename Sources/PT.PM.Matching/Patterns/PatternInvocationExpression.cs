@@ -1,11 +1,15 @@
-﻿using PT.PM.Common;
+﻿using System;
+using PT.PM.Common;
 using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternInvocationExpression : PatternUst<InvocationExpression>, IPatternExpression
+    public class PatternInvocationExpression : PatternUst, IPatternExpression
     {
+        public Type UstType => typeof(InvocationExpression);
+        
         public PatternUst Target { get; set; }
 
         public PatternUst Arguments { get; set; }
@@ -40,11 +44,15 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}({Arguments})";
 
-        public override MatchContext Match(InvocationExpression invocation, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext;
-
-            newContext = Target.MatchUst(invocation.Target, context);
+            var invocation = ust as InvocationExpression;
+            if (invocation == null)
+            {
+                return context.Fail();
+            }
+            
+            MatchContext newContext = Target.Match(invocation.Target, context);
             if (!newContext.Success)
             {
                 return newContext;
@@ -52,11 +60,11 @@ namespace PT.PM.Matching.Patterns
 
             if (Arguments is PatternArgs patternArgs)
             {
-                 newContext = patternArgs.Match(invocation.Arguments, newContext);
+                newContext = patternArgs.Match(invocation.Arguments, newContext);
             }
             else
             {
-                newContext = Arguments.MatchUst(invocation.Arguments, newContext);
+                newContext = Arguments.Match(invocation.Arguments, newContext);
             }
 
             return newContext.AddUstIfSuccess(invocation);

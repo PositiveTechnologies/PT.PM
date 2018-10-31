@@ -2,10 +2,11 @@
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternUnaryOperatorLiteral : PatternUst<UnaryOperatorLiteral>
+    public class PatternUnaryOperatorLiteral : PatternUst
     {
         public UnaryOperator UnaryOperator { get; set; }
 
@@ -53,8 +54,14 @@ namespace PT.PM.Matching.Patterns
             return string.IsNullOrEmpty(result) ? "None" : result;
         }
 
-        public override MatchContext Match(UnaryOperatorLiteral unaryOperatorLiteral, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
+            var unaryOperatorLiteral = ust as UnaryOperatorLiteral;
+            if (unaryOperatorLiteral == null)
+            {
+                return context.Fail();
+            }
+            
             return UnaryOperator.Equals(unaryOperatorLiteral.UnaryOperator)
                 ? context.AddMatch(unaryOperatorLiteral)
                 : context.Fail();

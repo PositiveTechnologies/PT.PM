@@ -10,22 +10,27 @@ namespace PT.PM.Matching
         private static readonly Regex SupressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        public static TextSpan[] MatchRegex(this Regex patternRegex, string text, int escapeCharsLength = 0)
+        public static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int escapeCharsLength = 0)
         {
+            if (patternRegex.ToString() == ".*")
+            {
+                return new List<TextSpan> { new TextSpan(escapeCharsLength, text.Length) };
+            }
+            
             MatchCollection matches = patternRegex.Matches(text);
             var result = new List<TextSpan>(matches.Count);
 
             foreach (Match match in matches)
             {
-                TextSpan textSpan = match.GetTextSpan(text, escapeCharsLength);
+                TextSpan textSpan = match.GetTextSpan(escapeCharsLength);
                 if (match.Success)
                     result.Add(textSpan);
             }
 
-            return result.ToArray();
+            return result;
         }
 
-        public static TextSpan GetTextSpan(this Match match, string text, int escapeCharsLength = 0)
+        public static TextSpan GetTextSpan(this Match match, int escapeCharsLength = 0)
         {
             if (!match.Success || match.Length == 0)
             {
@@ -39,7 +44,7 @@ namespace PT.PM.Matching
         public static IEnumerable<MatchResultDto> ToDto(this IEnumerable<IMatchResultBase> matchResults)
         {
             return matchResults
-                .Where(result => result as MatchResult != null)
+                .Where(result => result is MatchResult)
                 .Select(result => new MatchResultDto((MatchResult)result));
         }
 

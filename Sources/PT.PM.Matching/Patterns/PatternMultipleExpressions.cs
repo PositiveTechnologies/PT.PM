@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternMultipleExpressions : PatternUst<Expression>
+    public class PatternMultipleExpressions : PatternUst
     {
         public PatternMultipleExpressions()
         {
@@ -16,9 +17,11 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "#*";
 
-        public override MatchContext Match(Expression expression, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
-            return context.AddMatch(expression);
+            return ust is Expression expression
+                ? context.AddMatch(expression)
+                : context.Fail();
         }
     }
 }

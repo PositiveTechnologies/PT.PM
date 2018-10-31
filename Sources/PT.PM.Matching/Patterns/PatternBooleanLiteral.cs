@@ -1,9 +1,10 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBooleanLiteral : PatternUst<BooleanLiteral>, ITerminalPattern
+    public class PatternBooleanLiteral : PatternUst, ITerminalPattern
     {
         public bool? Boolean { get; set; }
 
@@ -27,8 +28,14 @@ namespace PT.PM.Matching.Patterns
             return Boolean.ToString();
         }
 
-        public override MatchContext Match(BooleanLiteral booleanLiteral, MatchContext context)
+        public override MatchContext Match(Ust ust, MatchContext context)
         {
+            var booleanLiteral = ust as BooleanLiteral;
+            if (booleanLiteral == null)
+            {
+                return context.Fail();
+            }
+            
             return (Boolean == null || Boolean.Value.Equals(booleanLiteral.Value))
                 ? context.AddMatch(booleanLiteral)
                 : context.Fail();
