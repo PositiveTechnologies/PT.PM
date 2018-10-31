@@ -41,7 +41,7 @@ namespace PT.PM.Matching.Patterns
             }
 
             if (context.UstConstantFolder != null &&
-                context.UstConstantFolder.TryFold(ust, out FoldResult foldResult))
+                context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldResult))
             {
                 context.MatchedWithFolded = true;
                 if (foldResult.Value is string stringValue)

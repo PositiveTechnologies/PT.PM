@@ -27,7 +27,7 @@ namespace PT.PM.Common
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public bool TryFold(Ust ust, out FoldResult result)
+        public bool TryGetOrFold(Ust ust, out FoldResult result)
         {
             if (ust == null || !FoldingTypes.Contains(ust.GetType()))
             {
@@ -42,7 +42,7 @@ namespace PT.PM.Common
                     return result != null;
                 }
 
-                result = TryFold(ust);
+                result = TryGetOrFold(ust);
 
                 NormalizeAndAdd(ust, ref result);
             }
@@ -50,7 +50,7 @@ namespace PT.PM.Common
             return result != null;
         }
 
-        private FoldResult TryFold(Ust ust)
+        private FoldResult TryGetOrFold(Ust ust)
         {
             switch (ust)
             {
@@ -92,8 +92,8 @@ namespace PT.PM.Common
         
         private FoldResult TryFoldBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
         {
-            FoldResult leftFold = TryFold(binaryOperatorExpression.Left);
-            FoldResult rightFold = TryFold(binaryOperatorExpression.Right);
+            FoldResult leftFold = TryGetOrFold(binaryOperatorExpression.Left);
+            FoldResult rightFold = TryGetOrFold(binaryOperatorExpression.Right);
             object leftValue = leftFold?.Value;
             object rightValue = rightFold?.Value;
             BinaryOperatorLiteral op = binaryOperatorExpression.Operator;
@@ -211,7 +211,7 @@ namespace PT.PM.Common
 
         private FoldResult TryFoldUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression)
         {
-            FoldResult foldResult = TryFold(unaryOperatorExpression.Expression);
+            FoldResult foldResult = TryGetOrFold(unaryOperatorExpression.Expression);
             object value = foldResult?.Value;
             
             if (unaryOperatorExpression.Operator.UnaryOperator == UnaryOperator.Minus)

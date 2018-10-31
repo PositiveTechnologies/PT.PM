@@ -28,7 +28,7 @@ namespace PT.PM.Matching.Patterns
             }
 
             if (context.UstConstantFolder != null &&
-                context.UstConstantFolder.TryFold(ust, out FoldResult foldingResult))
+                context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldingResult))
             {
                 context.MatchedWithFolded = true;
                 if (foldingResult.Value is string stringValue)
