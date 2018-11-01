@@ -94,12 +94,24 @@ namespace PT.PM.Common
         private FoldResult TryFoldBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
         {
             FoldResult leftFold = TryGetOrFold(binaryOperatorExpression.Left);
+            if (leftFold == null)
+            {
+                NormalizeAndAdd(binaryOperatorExpression.Left, ref leftFold);
+                return null;
+            }
+            
             FoldResult rightFold = TryGetOrFold(binaryOperatorExpression.Right);
-            object leftValue = leftFold?.Value;
-            object rightValue = rightFold?.Value;
+            if (rightFold == null)
+            {
+                NormalizeAndAdd(binaryOperatorExpression.Right, ref rightFold);
+                return null;
+            }
+            
+            object leftValue = leftFold.Value;
+            object rightValue = rightFold.Value;
             BinaryOperatorLiteral op = binaryOperatorExpression.Operator;
 
-            if ((leftValue is string || leftValue is StringBuilder) && rightFold != null)
+            if (leftValue is string || leftValue is StringBuilder)
             {
                 if (op.BinaryOperator == BinaryOperator.Plus || op.BinaryOperator == BinaryOperator.Concat)
                 {
@@ -204,31 +216,31 @@ namespace PT.PM.Common
                 }
             }
 
-            NormalizeAndAdd(binaryOperatorExpression.Left, ref leftFold);
-            NormalizeAndAdd(binaryOperatorExpression.Right, ref rightFold);
-            
             return null;
         }
 
         private FoldResult TryFoldUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression)
         {
             FoldResult foldResult = TryGetOrFold(unaryOperatorExpression.Expression);
-            object value = foldResult?.Value;
-            
+
+            if (foldResult == null)
+            {
+                NormalizeAndAdd(unaryOperatorExpression.Expression, ref foldResult);
+                return null;
+            }
+
             if (unaryOperatorExpression.Operator.UnaryOperator == UnaryOperator.Minus)
             {
-                if (value is long longValue)
+                if (foldResult.Value is long longValue)
                 {
                     return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -longValue);
                 }
 
-                if (value is double doubleValue)
+                if (foldResult.Value is double doubleValue)
                 {
                     return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -doubleValue);
                 }
             }
-
-            NormalizeAndAdd(unaryOperatorExpression.Expression, ref foldResult);
 
             return null;
         }
@@ -288,7 +300,7 @@ namespace PT.PM.Common
             }
 
             result?.TextSpans.Sort();
-            foldedResults.Add(ust, result);
+            foldedResults[ust] = result;
         }
     }
 }

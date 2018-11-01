@@ -16,7 +16,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_JavaScriptTestPatterns_MatchedExpected()
         {
-            var jsCodeAndPatterns = new Tuple<string, string>[]
+            var jsCodeAndPatterns = new []
             {
                 new Tuple<string, string>("document.body.innerHTML=\"<svg/onload=alert(1)>\"", "#.innerHTML=<[\"\"]>"),
                 new Tuple<string, string>("document.write(\"\\u003csvg/onload\\u003dalert(1)\\u003e\")", "document.write(<[\"\"]>)"),
