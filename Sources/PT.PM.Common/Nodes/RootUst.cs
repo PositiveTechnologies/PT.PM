@@ -1,6 +1,7 @@
 ﻿using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes
 {
@@ -16,6 +17,9 @@ namespace PT.PM.Common.Nodes
 
         public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
 
+        [JsonIgnore]
+        public Dictionary<Ust, List<TextSpan>> TextSpans { get; } = new Dictionary<Ust, List<TextSpan>>(UstRefComparer.Instance);
+        
         public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
 
         public Ust Node

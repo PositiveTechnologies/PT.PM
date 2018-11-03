@@ -47,7 +47,7 @@ namespace PT.PM.Matching.Patterns
 
             int escapeCharsLength = (ust as StringLiteral)?.EscapeCharsLength ?? 0;
             List<TextSpan> matches = Regex.MatchRegex(treeString, escapeCharsLength);
-            matches = UstUtils.GetAlignedTextSpan(escapeCharsLength, ust.InitialTextSpans, matches, ust.TextSpan.Start);
+            matches = UstUtils.GetAlignedTextSpan(escapeCharsLength, null, matches, ust.TextSpan.Start);
 
             return matches.Count > 0
                 ? context.AddMatches(matches)

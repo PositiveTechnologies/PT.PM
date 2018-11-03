@@ -10,8 +10,8 @@ namespace PT.PM.Common.Json
 {
     public class UstJsonConverterReader : JsonConverter, ILoggable
     {
-        private Stack<RootUst> rootAncestors = new Stack<RootUst>();
-        private Stack<Ust> ancestors = new Stack<Ust>();
+        private readonly Stack<RootUst> rootAncestors = new Stack<RootUst>();
+        private readonly Stack<Ust> ancestors = new Stack<Ust>();
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -93,18 +93,15 @@ namespace PT.PM.Common.Json
             }
 
             List<TextSpan> textSpans =
-                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList() ?? null;
+                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList();
 
             if (textSpans != null && textSpans.Count > 0)
             {
-                if (textSpans.Count == 1)
+                ust.TextSpan = textSpans[0];
+
+                if (textSpans.Count > 1 && rootAncestors.Count > 0)
                 {
-                    ust.TextSpan = textSpans[0];
-                }
-                else
-                {
-                    ust.InitialTextSpans = textSpans;
-                    ust.TextSpan = textSpans.First();
+                    rootAncestors.Peek().TextSpans.Add(ust, textSpans);
                 }
             }
 

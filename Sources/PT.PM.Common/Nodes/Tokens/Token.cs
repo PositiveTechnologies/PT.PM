@@ -6,8 +6,6 @@ namespace PT.PM.Common.Nodes.Tokens
     {
         public abstract string TextValue { get; }
 
-        public override bool IsTerminal => true;
-
         protected Token(TextSpan textSpan)
             : base(textSpan)
         {
@@ -32,11 +30,6 @@ namespace PT.PM.Common.Nodes.Tokens
             if (other == null)
             {
                 return 1;
-            }
-
-            if (!other.IsTerminal)
-            {
-                return -1;
             }
 
             var nodeTypeResult = KindId - other.KindId;

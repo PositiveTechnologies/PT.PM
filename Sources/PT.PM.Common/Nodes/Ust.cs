@@ -20,13 +20,9 @@ namespace PT.PM.Common.Nodes
         [JsonIgnore]
         public TextSpan TextSpan { get; set; }
 
-        public List<TextSpan> InitialTextSpans { get; set; }
-
         public string Kind => GetType().Name;
 
         public int KindId => GetType().Name.GetHashCode();
-
-        public virtual bool IsTerminal => false;
 
         public LineColumnTextSpan LineColumnTextSpan => CurrentCodeFile?.GetLineColumnTextSpan(TextSpan);
 
@@ -40,9 +36,9 @@ namespace PT.PM.Common.Nodes
 
         public List<TextSpan> GetRealTextSpans()
         {
-            if (InitialTextSpans != null && InitialTextSpans.Count > 0)
+            if (Root != null && Root.TextSpans.TryGetValue(this, out List<TextSpan> textSpans))
             {
-                return InitialTextSpans;
+                return textSpans;
             }
             
             return new List<TextSpan> { TextSpan };
