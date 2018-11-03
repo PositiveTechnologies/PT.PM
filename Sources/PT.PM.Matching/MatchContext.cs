@@ -104,15 +104,15 @@ namespace PT.PM.Matching
 
         public void PushParent(Ust parent)
         {
-            parentStack.Add(parent);
+            parentStack?.Add(parent);
         }
 
         public void PopParent()
         {
-            parentStack.RemoveAt(parentStack.Count - 1);
+            parentStack?.RemoveAt(parentStack.Count - 1);
         }
 
-        public Ust LastParent => parentStack.Count > 1 ? parentStack[parentStack.Count - 2] : null;
+        public Ust LastParent => parentStack?.Count > 1 ? parentStack[parentStack.Count - 2] : null;
 
         public override string ToString()
         {
