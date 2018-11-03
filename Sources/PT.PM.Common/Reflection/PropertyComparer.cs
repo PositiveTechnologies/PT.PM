@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -13,15 +14,12 @@ namespace PT.PM.Common.Reflection
 
         public int Compare(object node, object other)
         {
-            if (node == null && other == null)
+            if (other == null)
             {
-                return 0;
+                return node == null ? 0 : 1;
             }
-            else if (node != null && other == null)
-            {
-                return 1;
-            }
-            else if (node == null && other != null)
+            
+            if (node == null)
             {
                 return -1;
             }
@@ -37,7 +35,7 @@ namespace PT.PM.Common.Reflection
                 }
             }
 
-            int result = 0;
+            int result;
             var type1Interfaces = type1.GetInterfaces();
             if (type1Interfaces.Contains(typeof(IComparable)))
             {
@@ -61,8 +59,8 @@ namespace PT.PM.Common.Reflection
             }
             else if (type1.IsSubclassOf(typeof(T)) || type1 == typeof(T))
             {
-                PropertyInfo[] properties1 = ReflectionCache.GetReadWriteClassProperties(type1);
-                PropertyInfo[] properties2 = ReflectionCache.GetReadWriteClassProperties(type2);
+                PropertyInfo[] properties1 = type1.GetReadWriteClassProperties();
+                PropertyInfo[] properties2 = type2.GetReadWriteClassProperties();
 
                 if (properties1.Length != properties2.Length)
                 {

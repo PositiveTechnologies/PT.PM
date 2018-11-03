@@ -12,10 +12,7 @@ namespace PT.PM.Common
 
             foreach (Ust child in ust.Children)
             {
-                if (child != null)
-                {
-                    child.ApplyActionToDescendantsAndSelf(action);
-                }
+                child?.ApplyActionToDescendantsAndSelf(action);
             }
         }
 

@@ -120,41 +120,6 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static bool IsInsideSingleBlockStatement(this Ust ust, List<Ust> parentStack)
-        {
-            int index = parentStack.Count;
-            
-            Ust parent = ust;
-            Ust prev = ust;
-
-            while (parent != null && !(parent is Statement) &&
-                   !(parent is ConditionalExpression conditionalExpression &&
-                     !ReferenceEquals(conditionalExpression.Condition, prev)))
-            {
-                prev = parent;
-                index--;
-
-                if (index < 0)
-                {
-                    return false;
-                }
-                
-                parent = parentStack[index];
-            }
-
-            if (parent is ConditionalExpression)
-            {
-                return true;
-            }
-
-            if (index - 1 < 0)
-            {
-                return false;
-            }
-
-            return parentStack[index - 1] is Statement parentStatement && !(parentStatement is BlockStatement);
-        }
-
         public static AssignmentExpression CreateAssignExpr(Expression left, Expression right, TextSpan textSpan, string assignExprOpText, TextSpan assignOpTextSpan)
         {
             BinaryOperatorLiteral binaryOperator = null;
@@ -216,10 +181,45 @@ namespace PT.PM.Common.Nodes
                 }
             }
         }
+        
+        public static Dictionary<Ust, UstWithParent> GetUstWithParents(this Ust ust)
+        {
+            if (ust == null)
+            {
+                return null;
+            }
+
+            var result = new Dictionary<Ust, UstWithParent>(UstRefComparer.Instance);
+            
+            GetUstWithParents(ust, null);
+
+            void GetUstWithParents(Ust localUst, UstWithParent parent)
+            {
+                if (localUst == null)
+                {
+                    return;
+                }
+
+                if (localUst is IUstWithParent iUstWithParent)
+                {
+                    iUstWithParent.Parent = parent.Ust;
+                }
+                
+                var ustWithParent = new UstWithParent(localUst, parent);
+                result.Add(localUst, ustWithParent);
+
+                foreach (Ust child in localUst.Children)
+                {
+                    GetUstWithParents(child, ustWithParent);
+                }
+            }
+
+            return result;
+        }
 
         public static TextSpan GetTextSpan(this IEnumerable<Ust> usts)
         {
-            if (usts.Count() == 0)
+            if (!usts.Any())
             {
                 return default;
             }
