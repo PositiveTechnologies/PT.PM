@@ -72,6 +72,10 @@ namespace PT.PM.Common.Json
             {
                 ust.Root = rootAncestors.Peek();
             }
+            if (ancestors.Count > 0 && ust is IUstWithParent ustWithParent)
+            {
+                ustWithParent.Parent = ancestors.Peek();
+            }
 
             if (rootUst != null)
             {

@@ -4,17 +4,19 @@ using System.Linq;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
-    public class AnonymousMethodExpression : Expression
+    public class AnonymousMethodExpression : Expression, IUstWithParent
     {
-        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
+        public List<ParameterDeclaration> Parameters { get; } = new List<ParameterDeclaration>();
 
+        public Ust Parent { get; set; }
+    
         public Ust Body { get; set; }
 
-        public string GetId(Ust parent) => parent is AssignmentExpression assignment 
+        public string Id => Parent is AssignmentExpression assignment 
             ? assignment.Left.ToString()
             : LineColumnTextSpan.ToString();
 
-        public string GetSignature(Ust parent) => UstUtils.GenerateSignature(GetId(parent), Parameters);
+        public string Signature => UstUtils.GenerateSignature(Id, Parameters);
 
         public override Expression[] GetArgs() => new Expression[0];
 

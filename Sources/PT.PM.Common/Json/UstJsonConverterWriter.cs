@@ -28,7 +28,7 @@ namespace PT.PM.Common.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new InvalidOperationException($"Use {(GetType().Name.Replace("Writer", "Reader"))} for JSON reading");
+            throw new InvalidOperationException($"Use {GetType().Name.Replace("Writer", "Reader")} for JSON reading");
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
