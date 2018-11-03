@@ -74,7 +74,7 @@ namespace PT.PM.Dsl.Tests
         {
             string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
-            var processor = new DslProcessor() { Logger = logger };
+            var processor = new DslProcessor { Logger = logger };
             PatternRoot result = processor.Deserialize(new CodeFile(data) { PatternKey = fileName });
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
         }

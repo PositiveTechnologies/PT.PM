@@ -10,14 +10,12 @@ namespace PT.PM.Matching.Patterns
 {
     public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>, IUst
     {
-        private PropertyComparer<PatternUst> propertyComparer = new PropertyComparer<PatternUst>
+        private static readonly PropertyComparer<PatternUst> propertyComparer = new PropertyComparer<PatternUst>
         {
             IgnoredProperties = new HashSet<string> { nameof(Parent), nameof(Root), nameof(TextSpan) }
         };
 
         public string Kind => GetType().Name;
-
-        public int KindId => GetType().Name.GetHashCode();
 
         public virtual bool Any => true;
 

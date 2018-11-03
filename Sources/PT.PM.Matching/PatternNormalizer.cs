@@ -71,7 +71,7 @@ namespace PT.PM.Matching
             var exprs = new List<PatternUst>(patternOr.Patterns.Count);
             foreach (PatternUst pattern in patternOr.Patterns)
             {
-                exprs.Add(pattern);
+                exprs.Add(Visit(pattern));
             }
             exprs.Sort();
             
@@ -122,7 +122,7 @@ namespace PT.PM.Matching
             var exprs = new List<PatternUst>(patternAnd.Patterns.Count);
             foreach (PatternUst pattern in patternAnd.Patterns)
             {
-                exprs.Add(pattern);
+                exprs.Add(Visit(pattern));
             }
             exprs.Sort();
 
