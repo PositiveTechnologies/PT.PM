@@ -16,10 +16,9 @@ using System.Threading;
 
 namespace PT.PM.Cli.Common
 {
-    public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TParameters, TRenderStage>
+    public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TParameters, TRenderStage>
         where TStage : Enum
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
-        where TMatchResult : MatchResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TParameters : CliParameters, new()
         where TRenderStage : Enum
     {
@@ -109,7 +108,7 @@ namespace PT.PM.Cli.Common
             return result;
         }
 
-        protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage>
+        protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage>
             InitWorkflow(TParameters parameters)
         {
             var workflow = CreateWorkflow(parameters);
@@ -239,7 +238,7 @@ namespace PT.PM.Cli.Common
             return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, parameters.PatternIds, Logger);
         }
 
-        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> CreateWorkflow(TParameters parameters);
+        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage> CreateWorkflow(TParameters parameters);
 
         protected abstract void LogStatistics(TWorkflowResult workflowResult);
 
@@ -349,7 +348,7 @@ namespace PT.PM.Cli.Common
             }
         }
 
-        protected void LogOutput(TimeSpan totalElapsed, WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> workflow, TWorkflowResult workflowResult)
+        protected void LogOutput(TimeSpan totalElapsed, WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage> workflow, TWorkflowResult workflowResult)
         {
             Logger.LogInfo("");
 

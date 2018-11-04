@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow : WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, Stage>
+    public class Workflow : WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, Stage>
     {
         public Workflow()
             : this(null)

@@ -21,10 +21,9 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
+    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage> : ILoggable
         where TStage : Enum
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
-        where TMatchResult : MatchResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
         protected ILogger logger = DummyLogger.Instance;
@@ -205,7 +204,6 @@ namespace PT.PM
                         return null;
                     }
 
-                    workflowResult.AddResultEntity(parseTree);
                     workflowResult.AddLexerTime(parseTree.LexerTimeSpan);
                     workflowResult.AddParserTicks(parseTree.ParserTimeSpan);
 
