@@ -35,7 +35,7 @@ namespace PT.PM.Matching.PatternsRepository
 
         protected override List<PatternDto> InitPatterns()
         {
-            JToken[] jsonTokens;
+            JEnumerable<JToken> jsonTokens;
 
             try
             {
@@ -45,7 +45,7 @@ namespace PT.PM.Matching.PatternsRepository
             {
                 Logger.LogError(new ParsingException(
                    new CodeFile(patternsData) { PatternKey = DefaultKey }, ex, ex.FormatExceptionMessage()));
-                jsonTokens = ArrayUtils<JToken>.EmptyArray;
+                jsonTokens = JEnumerable<JToken>.Empty;
             }
 
             var result = new List<PatternDto>();
@@ -94,7 +94,7 @@ namespace PT.PM.Matching.PatternsRepository
                     }
                     else
                     {
-                        patternDto = new PatternDto()
+                        patternDto = new PatternDto
                         {
                             Name = token[nameof(PatternDto.Name)]?.ToString() ?? string.Empty,
                             Key = token[nameof(PatternDto.Key)]?.ToString() ?? string.Empty,

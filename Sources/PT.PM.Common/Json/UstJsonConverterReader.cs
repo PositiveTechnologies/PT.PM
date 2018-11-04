@@ -93,7 +93,7 @@ namespace PT.PM.Common.Json
             }
 
             List<TextSpan> textSpans =
-                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList();
+                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer);
 
             if (textSpans != null && textSpans.Count > 0)
             {

@@ -3,26 +3,40 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PT.PM.Common.Json
 {
     public static class JsonUtils
     {
-        public static IEnumerable<TextSpan> ToTextSpans(this JToken textSpanToken, JsonSerializer jsonSerializer)
+        public static List<TextSpan> ToTextSpans(this JToken textSpanToken, JsonSerializer jsonSerializer)
         {
-            return textSpanToken
-                .ReadArray()
-                .Select(token => token.ToObject<TextSpan>(jsonSerializer));
+            if (textSpanToken is JArray jArray)
+            {
+                var result = new List<TextSpan>(jArray.Count);
+
+                foreach (JToken elem in jArray)
+                {
+                    result.Add(elem.ToObject<TextSpan>(jsonSerializer));
+                }
+
+                return result;
+            }
+
+            if (textSpanToken is JToken jToken)
+            {
+                return new List<TextSpan> {jToken.ToObject<TextSpan>(jsonSerializer)};
+            }
+
+            return null;
         }
 
-        public static JToken[] ReadArray(this JToken jArrayOrToken)
+        public static JEnumerable<JToken> ReadArray(this JToken jArrayOrToken)
         {
             return jArrayOrToken is JArray jArray
-                ? jArray.Children().ToArray()
+                ? jArray.Children()
                 : jArrayOrToken is JToken jToken
-                ? new JToken[] { jToken }
-                : new JToken[0];
+                ? new JEnumerable<JToken>(new [] {jToken})
+                : JEnumerable<JToken>.Empty;
         }
 
         public static void LogError(this ILogger logger, CodeFile jsonFile, IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
