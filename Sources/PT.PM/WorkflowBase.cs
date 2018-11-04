@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage> : ILoggable
+    public abstract class WorkflowBase<TStage, TWorkflowResult, TPattern, TRenderStage> : ILoggable
         where TStage : Enum
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum

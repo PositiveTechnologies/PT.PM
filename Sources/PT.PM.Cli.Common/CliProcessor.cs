@@ -5,16 +5,16 @@ using PT.PM.Matching;
 
 namespace PT.PM.Cli.Common
 {
-    public class CliProcessor : CliProcessorBase<RootUst, Stage, WorkflowResult, PatternRoot, CliParameters, Stage>
+    public class CliProcessor : CliProcessorBase<Stage, WorkflowResult, PatternRoot, CliParameters, Stage>
     {
         public override string CoreName => "PT.PM";
 
-        protected override WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, Stage> CreateWorkflow(CliParameters parameters)
+        protected override WorkflowBase<Stage, WorkflowResult, PatternRoot, Stage> CreateWorkflow(CliParameters parameters)
         {
             return new Workflow();
         }
 
-        protected override WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, Stage>
+        protected override WorkflowBase<Stage, WorkflowResult, PatternRoot, Stage>
             InitWorkflow(CliParameters parameters)
         {
             var workflow = (Workflow)base.InitWorkflow(parameters);

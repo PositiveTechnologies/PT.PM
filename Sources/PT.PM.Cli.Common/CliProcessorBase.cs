@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace PT.PM.Cli.Common
 {
-    public abstract class CliProcessorBase<TInputGraph, TStage, TWorkflowResult, TPattern, TParameters, TRenderStage>
+    public abstract class CliProcessorBase<TStage, TWorkflowResult, TPattern, TParameters, TRenderStage>
         where TStage : Enum
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TParameters : CliParameters, new()
@@ -108,7 +108,7 @@ namespace PT.PM.Cli.Common
             return result;
         }
 
-        protected virtual WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage>
+        protected virtual WorkflowBase<TStage, TWorkflowResult, TPattern, TRenderStage>
             InitWorkflow(TParameters parameters)
         {
             var workflow = CreateWorkflow(parameters);
@@ -238,7 +238,7 @@ namespace PT.PM.Cli.Common
             return RepositoryFactory.CreatePatternsRepository(parameters.Patterns, parameters.PatternIds, Logger);
         }
 
-        protected abstract WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage> CreateWorkflow(TParameters parameters);
+        protected abstract WorkflowBase<TStage, TWorkflowResult, TPattern, TRenderStage> CreateWorkflow(TParameters parameters);
 
         protected abstract void LogStatistics(TWorkflowResult workflowResult);
 
@@ -348,7 +348,7 @@ namespace PT.PM.Cli.Common
             }
         }
 
-        protected void LogOutput(TimeSpan totalElapsed, WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TRenderStage> workflow, TWorkflowResult workflowResult)
+        protected void LogOutput(TimeSpan totalElapsed, WorkflowBase<TStage, TWorkflowResult, TPattern, TRenderStage> workflow, TWorkflowResult workflowResult)
         {
             Logger.LogInfo("");
 
