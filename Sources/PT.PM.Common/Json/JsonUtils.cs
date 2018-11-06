@@ -1,44 +1,11 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PT.PM.Common.Exceptions;
 using System;
-using System.Collections.Generic;
 
 namespace PT.PM.Common.Json
 {
     public static class JsonUtils
     {
-        public static List<TextSpan> ToTextSpans(this JToken textSpanToken, JsonSerializer jsonSerializer)
-        {
-            if (textSpanToken is JArray jArray)
-            {
-                var result = new List<TextSpan>(jArray.Count);
-
-                foreach (JToken elem in jArray)
-                {
-                    result.Add(elem.ToObject<TextSpan>(jsonSerializer));
-                }
-
-                return result;
-            }
-
-            if (textSpanToken is JToken jToken)
-            {
-                return new List<TextSpan> {jToken.ToObject<TextSpan>(jsonSerializer)};
-            }
-
-            return null;
-        }
-
-        public static JEnumerable<JToken> ReadArray(this JToken jArrayOrToken)
-        {
-            return jArrayOrToken is JArray jArray
-                ? jArray.Children()
-                : jArrayOrToken is JToken jToken
-                ? new JEnumerable<JToken>(new [] {jToken})
-                : JEnumerable<JToken>.Empty;
-        }
-
         public static void LogError(this ILogger logger, CodeFile jsonFile, IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
         {
             string errorMessage = GenerateErrorPositionMessage(jsonFile, jsonLineInfo, out TextSpan errorTextSpan);

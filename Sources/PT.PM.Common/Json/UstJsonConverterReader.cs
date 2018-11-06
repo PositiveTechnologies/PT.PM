@@ -92,18 +92,42 @@ namespace PT.PM.Common.Json
                 Logger.LogError(JsonFile, jObject, ex);
             }
 
-            List<TextSpan> textSpans =
-                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer);
+            JToken textSpanToken = jObject[nameof(Ust.TextSpan)];
+            TextSpan textSpan = default;
 
-            if (textSpans != null && textSpans.Count > 0)
+            if (textSpanToken is JArray textSpanArray)
             {
-                ust.TextSpan = textSpans[0];
-
-                if (textSpans.Count > 1 && rootAncestors.Count > 0)
+                if (textSpanArray.Count > 1)
                 {
-                    rootAncestors.Peek().TextSpans.Add(ust, textSpans);
+                    var textSpans = new List<TextSpan>(textSpanArray.Count);
+                    for (int i = 0; i < textSpanArray.Count; i++)
+                    {
+                        TextSpan arrayTextSpan = textSpanArray[i].ToObject<TextSpan>(serializer);
+
+                        if (i == 0)
+                        {
+                            textSpan = arrayTextSpan;
+                        }
+
+                        textSpans.Add(arrayTextSpan);
+                    }
+
+                    if (rootAncestors.Count > 0)
+                    {
+                        rootAncestors.Peek().TextSpans.Add(ust, textSpans);
+                    }
+                }
+                else
+                {
+                    textSpan = textSpanArray[0].ToObject<TextSpan>(serializer);
                 }
             }
+            else if (textSpanToken is JToken token)
+            {
+                textSpan = token.ToObject<TextSpan>(serializer);
+            }
+
+            ust.TextSpan = textSpan;
 
             if (!IgnoreExtraProcess)
             {
