@@ -1495,7 +1495,7 @@ namespace PT.PM.SqlParseTreeUst
             }
         }
 
-        /// <returns><see cref="ExpressionStatement"/></returns>
+        /// <returns><see cref="SqlQuery"/></returns>
         public Ust VisitQuery_specification([NotNull] TSqlParser.Query_specificationContext context)
         {
             if (context.ChildCount == 0)
@@ -1526,7 +1526,7 @@ namespace PT.PM.SqlParseTreeUst
             }
 
             query = new SqlQuery(queryElements.FirstOrDefault(), queryElements.GetRange(1, queryElements.Count - 1), context.GetTextSpan());
-            return new ExpressionStatement(query);
+            return query;
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
