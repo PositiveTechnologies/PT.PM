@@ -260,5 +260,24 @@ namespace PT.PM.Common.Nodes
 
             return 0;
         }
+
+        public static List<Expression> ExtractMultiChild(MultichildExpression multiChild, List<Expression> expressions)
+        {
+            expressions = expressions ?? new List<Expression>();
+
+            for (int i = 0; i < multiChild.Expressions.Count; i++)
+            {
+                var current = multiChild.Expressions[i];
+                if (current is MultichildExpression nested)
+                {
+                    expressions = ExtractMultiChild(nested, expressions);
+                }
+                else
+                {
+                    expressions.Add(current);
+                }
+            }
+            return expressions;
+        }
     }
 }
