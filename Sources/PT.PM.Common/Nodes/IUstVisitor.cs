@@ -87,7 +87,7 @@ namespace PT.PM.Common.Nodes
         T Visit(UnsafeStatement unsafeStatement);
         T Visit(ArrayPatternExpression arrayPatternExpression);
         T Visit(QueryArgs queryParameters);
-        T Visit(SqlQueryStatement sqlQueryStatement);
+        T Visit(SqlQuery sqlQueryStatement);
         T Visit(SqlBlockStatement sqlBlockStatement);
 
         #endregion

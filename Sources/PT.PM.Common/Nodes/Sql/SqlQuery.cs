@@ -7,29 +7,24 @@ using System.Text;
 
 namespace PT.PM.Common.Nodes.Sql
 {
-    public class SqlQueryStatement : Statement
+    public class SqlQuery : Expression
     {
         public Expression QueryCommand { get; set; }
 
         public List<Expression> QueryElements { get; set; } = new List<Expression>();
 
-        public SqlQueryStatement(Expression queryKey, IEnumerable<Expression> queryElements,TextSpan textSpan)
+        public SqlQuery(Expression queryKey, IEnumerable<Expression> queryElements,TextSpan textSpan)
             : base(textSpan)
         {
             QueryCommand = queryKey ?? throw new ArgumentNullException(nameof(queryKey));
             QueryElements = queryElements?.ToList() ?? QueryElements;
         }
 
-        public SqlQueryStatement()
+        public SqlQuery()
         {
         }
 
-        public override Ust[] GetChildren()
-        {
-            var children = new List<Ust>() { QueryCommand };
-            children.AddRange(QueryElements);
-            return children.ToArray();
-        }
+        public override Ust[] GetChildren() => GetArgs();
 
         public override string ToString()
         {
@@ -42,6 +37,13 @@ namespace PT.PM.Common.Nodes.Sql
                 builder.Append(" ");
             }
             return builder.ToString();
+        }
+
+        public override Expression[] GetArgs()
+        {
+            var args = new List<Expression>() { QueryCommand };
+            args.AddRange(QueryElements);
+            return args.ToArray();
         }
     }
 }

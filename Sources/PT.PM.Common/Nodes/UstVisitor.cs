@@ -233,7 +233,7 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(debuggerStatement);
         }
 
-        public virtual T Visit(SqlQueryStatement sqlQueryStatement)
+        public virtual T Visit(SqlQuery sqlQueryStatement)
         {
             return VisitChildren(sqlQueryStatement);
         }
