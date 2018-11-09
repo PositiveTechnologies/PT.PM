@@ -639,7 +639,21 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitCreateFunction([NotNull] MySqlParser.CreateFunctionContext context)
         {
-            return VisitChildren(context);
+            var funcName = (IdToken)Visit(context.fullId());
+            var returnType = (TypeToken)Visit(context.dataType());
+
+            var funcParams = new List<ParameterDeclaration>();
+            var paramContext = context.functionParameter();
+            for (int i = 0; i < paramContext.Length; i++)
+            {
+                funcParams.Add((ParameterDeclaration)Visit(paramContext[i]));
+            }
+            var body = (BlockStatement)Visit(context.routineBody());
+
+            return new MethodDeclaration(funcName, funcParams, body, context.GetTextSpan())
+            {
+                ReturnType = returnType
+            };
         }
 
         public Ust VisitCreateIndex([NotNull] MySqlParser.CreateIndexContext context)
