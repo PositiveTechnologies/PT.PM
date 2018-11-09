@@ -10,6 +10,10 @@ using static PT.PM.Common.Nodes.UstUtils;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Sql;
 using PT.PM.Common.Nodes.Collections;
+using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
+using System;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -24,7 +28,15 @@ namespace PT.PM.SqlParseTreeUst
             var resultNodes = new Statement[statements.Length];
             for(int i = 0; i < statements.Length; i++)
             {
-                resultNodes[i] = (Statement)Visit(statements[i]);
+                var visited = Visit(statements[i]);
+                if (visited is Statement statement)
+                {
+                    resultNodes[i] = statement;
+                }
+                else
+                {
+                    resultNodes[i] = new WrapperStatement(visited);
+                }
             }
             root.Nodes = resultNodes.ToArray();
             return root;
@@ -642,7 +654,16 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitCreateProcedure([NotNull] MySqlParser.CreateProcedureContext context)
         {
-            return VisitChildren(context);
+            var procName = (IdToken)Visit(context.fullId());
+            var procParams = new List<ParameterDeclaration>();
+            var paramContext = context.procedureParameter();
+            for (int i = 0; i < paramContext.Length; i++)
+            {
+                procParams.Add((ParameterDeclaration)Visit(paramContext[i]));
+            }
+            var body = (BlockStatement)Visit(context.routineBody());
+
+            return new MethodDeclaration(procName, procParams, body, context.GetTextSpan());
         }
 
         public Ust VisitCreateServer([NotNull] MySqlParser.CreateServerContext context)
@@ -822,7 +843,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitDimensionDataType([NotNull] MySqlParser.DimensionDataTypeContext context)
         {
-            return VisitChildren(context);
+            return new TypeToken(context.typeName.Text, context.GetTextSpan());
         }
 
         public Ust VisitDmlStatement([NotNull] MySqlParser.DmlStatementContext context)
@@ -1753,7 +1774,11 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitProcedureParameter([NotNull] MySqlParser.ProcedureParameterContext context)
         {
-            return VisitChildren(context);
+            Enum.TryParse(context.direction.Text, out InOutModifier modifierType);
+            var modifier = new InOutModifierLiteral(modifierType, context.direction.GetTextSpan());
+            var id = (IdToken)Visit(context.uid());
+            var type = (TypeToken)Visit(context.dataType());
+            return new ParameterDeclaration(modifier, type, id, context.GetTextSpan());
         }
 
         public Ust VisitProcedureSqlStatement([NotNull] MySqlParser.ProcedureSqlStatementContext context)
@@ -1963,9 +1988,15 @@ namespace PT.PM.SqlParseTreeUst
             var funcArgs = new List<Expression>();
             if (argList != null)
             {
-                funcArgs = ExtractMultiChild(
-                    (MultichildExpression)VisitChildren(context.functionArgs()),
-                    new List<Expression>());
+                var visitedArgs = (Expression)VisitChildren(context.functionArgs());
+                if (visitedArgs is MultichildExpression multichild)
+                {
+                    funcArgs = ExtractMultiChild(multichild, funcArgs);
+                }
+                else
+                {
+                    funcArgs.Add(visitedArgs);
+                }
             }
 
             return new InvocationExpression(funcName, new ArgsUst(funcArgs), context.GetTextSpan());
@@ -2073,7 +2104,12 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSetNames([NotNull] MySqlParser.SetNamesContext context)
         {
-            return VisitChildren(context);
+            return new AssignmentExpression()
+            {
+                Left = new IdToken(context.NAMES().GetText(), context.NAMES().GetTextSpan()),
+                Right = new StringLiteral(context.charsetName().GetText(), context.charsetName().GetTextSpan()),
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitSetPassword([NotNull] MySqlParser.SetPasswordContext context)
@@ -2083,7 +2119,12 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSetPasswordStatement([NotNull] MySqlParser.SetPasswordStatementContext context)
         {
-            return VisitChildren(context);
+            return new AssignmentExpression()
+            {
+                Left = new IdToken(context.PASSWORD().GetText(), context.PASSWORD().GetTextSpan()),
+                Right = (Expression)Visit(context.passwordFunctionClause()),
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitSetStatement([NotNull] MySqlParser.SetStatementContext context)
