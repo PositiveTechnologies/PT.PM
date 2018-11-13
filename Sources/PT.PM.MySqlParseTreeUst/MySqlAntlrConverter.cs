@@ -38,7 +38,7 @@ namespace PT.PM.SqlParseTreeUst
                     resultNodes[i] = new WrapperStatement(visited);
                 }
             }
-            root.Nodes = resultNodes.ToArray();
+            root.Nodes = new Ust[] { new BlockStatement(resultNodes, context.GetTextSpan()) };
             return root;
         }
 
@@ -419,7 +419,30 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitBlockStatement([NotNull] MySqlParser.BlockStatementContext context)
         {
-            return VisitChildren(context);
+            var statements = new List<Statement>();
+            for(int i = 0; i < context.ChildCount; i++)
+            {
+                var child = context.GetChild(i);
+                if(child is MySqlParser.UidContext)
+                {
+                    continue;
+                }
+                var visited = Visit(child);
+                if (visited is Statement statement)
+                {
+                    statements.Add(statement);
+                }
+                else if (visited != null)
+                {
+                    statements.Add(new WrapperStatement(visited));
+                }
+            }
+
+            return new BlockStatement
+            {
+                Statements = statements,
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitBooleanLiteral([NotNull] MySqlParser.BooleanLiteralContext context)
