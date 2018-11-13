@@ -519,7 +519,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitCloseCursor([NotNull] MySqlParser.CloseCursorContext context)
         {
-            return VisitChildren(context);
+            var cursorArg = ConvertToInOutArgument(context.uid());
+            var funcName = new IdToken(context.CLOSE().GetText(), context.CLOSE().GetTextSpan());
+            return new InvocationExpression(funcName, new ArgsUst(cursorArg), context.GetTextSpan());
         }
 
         public Ust VisitCollateExpressionAtom([NotNull] MySqlParser.CollateExpressionAtomContext context)
@@ -1013,7 +1015,24 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitFetchCursor([NotNull] MySqlParser.FetchCursorContext context)
         {
-            return VisitChildren(context);
+            var result = new SqlQuery
+            {
+                QueryCommand = new IdToken(context.FETCH().GetText(), context.FETCH().GetTextSpan()),
+                TextSpan = context.GetTextSpan()
+            };
+
+            var queryElements = new List<Expression>
+            {
+                ConvertToInOutArgument(context.uid())
+            };
+
+            for (int i = 2; i < context.ChildCount; i++)
+            {
+                queryElements.Add((Expression)Visit(context.GetChild(i)));
+            }
+
+            result.QueryElements = queryElements;
+            return result;
         }
 
         public Ust VisitFileSizeLiteral([NotNull] MySqlParser.FileSizeLiteralContext context)
@@ -1573,7 +1592,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitOpenCursor([NotNull] MySqlParser.OpenCursorContext context)
         {
-            return VisitChildren(context);
+            var cursorArg = ConvertToInOutArgument(context.uid());
+            var funcName = new IdToken(context.OPEN().GetText(), context.OPEN().GetTextSpan());
+            return new InvocationExpression(funcName, new ArgsUst(cursorArg), context.GetTextSpan());
         }
 
         public Ust VisitOptimizeTable([NotNull] MySqlParser.OptimizeTableContext context)
@@ -2173,7 +2194,25 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSetVariable([NotNull] MySqlParser.SetVariableContext context)
         {
-            return VisitChildren(context);
+            var variablesContext = context.variableClause();
+            var expressionsContext = context.expression();
+            List<AssignmentExpression> assignments = new List<AssignmentExpression>(variablesContext.Length);
+
+            for (int i = 0; i < variablesContext.Length; i++)
+            {
+                assignments.Add(new AssignmentExpression
+                {
+                    Right = (Expression)Visit(variablesContext[i]),
+                    Left = (Expression)Visit(expressionsContext[i]),
+                    TextSpan = context.GetTextSpan()
+                });
+            }
+
+            return new VariableDeclarationExpression
+            {
+                Variables = assignments,
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitShortRevoke([NotNull] MySqlParser.ShortRevokeContext context)
