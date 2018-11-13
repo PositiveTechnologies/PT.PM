@@ -17,7 +17,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "#*";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             return ust is Expression expression
                 ? context.AddMatch(expression)

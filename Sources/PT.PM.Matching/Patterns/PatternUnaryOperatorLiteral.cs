@@ -54,7 +54,7 @@ namespace PT.PM.Matching.Patterns
             return string.IsNullOrEmpty(result) ? "None" : result;
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var unaryOperatorLiteral = ust as UnaryOperatorLiteral;
             if (unaryOperatorLiteral == null)

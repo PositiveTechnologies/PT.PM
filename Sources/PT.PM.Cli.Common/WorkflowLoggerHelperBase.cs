@@ -5,10 +5,9 @@ using System;
 namespace PT.PM.Cli.Common
 {
     public abstract class
-        WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
+        WorkflowLoggerHelperBase<TStage, TWorkflowResult, TPattern, TRenderStage> : ILoggable
         where TStage : Enum
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
-        where TMatchResult : MatchResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
         public ILogger Logger { get; set; }

@@ -17,7 +17,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => "base";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var baseReferenceToken = ust as BaseReferenceToken;
             if (baseReferenceToken == null)

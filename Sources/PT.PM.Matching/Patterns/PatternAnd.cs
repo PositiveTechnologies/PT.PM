@@ -17,7 +17,7 @@ namespace PT.PM.Matching.Patterns
         public PatternAnd(IEnumerable<PatternUst> expressions, TextSpan textSpan) :
             base(textSpan)
         {
-            Patterns = expressions?.ToList()
+            Patterns = expressions as List<PatternUst> ?? expressions?.ToList()
                 ?? throw new ArgumentNullException(nameof(expressions));
         }
 
@@ -28,20 +28,18 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"({(string.Join(" <&> ", Patterns))})";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
-            MatchContext newContext = context;
-
             foreach (PatternUst pattern in Patterns)
             {
-                newContext = pattern.Match(ust, newContext);
-                if (!newContext.Success)
+                context = pattern.MatchUst(ust, context);
+                if (!context.Success)
                 {
-                    return newContext.Fail();
+                    return context.Fail();
                 }
             }
 
-            return newContext.AddMatch(ust);
+            return context.AddMatch(ust);
         }
     }
 }

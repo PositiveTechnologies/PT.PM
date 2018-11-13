@@ -110,7 +110,6 @@ namespace PT.PM.PhpParseTreeUst
         {
             int jsStopCodeInd = context.start.TokenIndex;
             var jsCode = new StringBuilder();
-            int wsLength = 0;
             for (int j = jsStartCodeInd; j < jsStopCodeInd; j++)
             {
                 if (Tokens[j].Type == PhpLexer.ScriptText)
@@ -119,7 +118,6 @@ namespace PT.PM.PhpParseTreeUst
                 }
                 else
                 {
-                    wsLength = Tokens[j].Text.Length;
                     if (GetLastNotWhitespace(jsCode) == '=')
                     {
                         jsCode.Append('_');

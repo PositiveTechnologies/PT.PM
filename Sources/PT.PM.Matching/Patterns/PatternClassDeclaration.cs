@@ -45,7 +45,7 @@ namespace PT.PM.Matching.Patterns
             return result;
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var typeDeclaration = ust as TypeDeclaration;
             if (typeDeclaration == null)
@@ -61,7 +61,7 @@ namespace PT.PM.Matching.Patterns
 
             if (Name != null)
             {
-                newContext = Name.Match(typeDeclaration.Name, newContext);
+                newContext = Name.MatchUst(typeDeclaration.Name, newContext);
                 if (!newContext.Success)
                 {
                     return newContext;
@@ -77,7 +77,7 @@ namespace PT.PM.Matching.Patterns
 
             if (Body != null)
             {
-                if (!typeDeclaration.TypeMembers.Any(m => Body.Match(m, newContext).Success))
+                if (!typeDeclaration.TypeMembers.Any(m => Body.MatchUst(m, newContext).Success))
                 {
                     return newContext.Fail();
                 }

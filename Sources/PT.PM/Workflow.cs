@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public class Workflow : WorkflowBase<RootUst, Stage, WorkflowResult, PatternRoot, MatchResult, Stage>
+    public class Workflow : WorkflowBase<Stage, WorkflowResult, PatternRoot, Stage>
     {
         public Workflow()
             : this(null)
@@ -140,7 +140,7 @@ namespace PT.PM
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
-                    IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
+                    List<MatchResult> matchResults = patternMatcher.Match(ust);
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");

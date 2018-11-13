@@ -10,8 +10,8 @@ namespace PT.PM.Common.Json
 {
     public class UstJsonConverterReader : JsonConverter, ILoggable
     {
-        private Stack<RootUst> rootAncestors = new Stack<RootUst>();
-        private Stack<Ust> ancestors = new Stack<Ust>();
+        private readonly Stack<RootUst> rootAncestors = new Stack<RootUst>();
+        private readonly Stack<Ust> ancestors = new Stack<Ust>();
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -72,9 +72,9 @@ namespace PT.PM.Common.Json
             {
                 ust.Root = rootAncestors.Peek();
             }
-            if (ancestors.Count > 0)
+            if (ancestors.Count > 0 && ust is IUstWithParent ustWithParent)
             {
-                ust.Parent = ancestors.Peek();
+                ustWithParent.Parent = ancestors.Peek();
             }
 
             if (rootUst != null)
@@ -92,21 +92,42 @@ namespace PT.PM.Common.Json
                 Logger.LogError(JsonFile, jObject, ex);
             }
 
-            List<TextSpan> textSpans =
-                jObject[nameof(Ust.TextSpan)]?.ToTextSpans(serializer).ToList() ?? null;
+            JToken textSpanToken = jObject[nameof(Ust.TextSpan)];
+            TextSpan textSpan = default;
 
-            if (textSpans != null && textSpans.Count > 0)
+            if (textSpanToken is JArray textSpanArray)
             {
-                if (textSpans.Count == 1)
+                if (textSpanArray.Count > 1)
                 {
-                    ust.TextSpan = textSpans[0];
+                    var textSpans = new List<TextSpan>(textSpanArray.Count);
+                    for (int i = 0; i < textSpanArray.Count; i++)
+                    {
+                        TextSpan arrayTextSpan = textSpanArray[i].ToObject<TextSpan>(serializer);
+
+                        if (i == 0)
+                        {
+                            textSpan = arrayTextSpan;
+                        }
+
+                        textSpans.Add(arrayTextSpan);
+                    }
+
+                    if (rootAncestors.Count > 0)
+                    {
+                        rootAncestors.Peek().TextSpans.Add(ust, textSpans);
+                    }
                 }
                 else
                 {
-                    ust.InitialTextSpans = textSpans;
-                    ust.TextSpan = textSpans.First();
+                    textSpan = textSpanArray[0].ToObject<TextSpan>(serializer);
                 }
             }
+            else if (textSpanToken is JToken token)
+            {
+                textSpan = token.ToObject<TextSpan>(serializer);
+            }
+
+            ust.TextSpan = textSpan;
 
             if (!IgnoreExtraProcess)
             {

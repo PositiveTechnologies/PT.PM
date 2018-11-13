@@ -31,7 +31,7 @@ namespace PT.PM.Matching.Patterns
             return $"{Operator} {Expression}";
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var unaryOperatorExpression = ust as UnaryOperatorExpression;
             if (unaryOperatorExpression == null)
@@ -39,13 +39,13 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Expression.Match(unaryOperatorExpression.Expression, context);
+            MatchContext newContext = Expression.MatchUst(unaryOperatorExpression.Expression, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Operator.Match(unaryOperatorExpression.Operator, newContext);
+            newContext = Operator.MatchUst(unaryOperatorExpression.Operator, newContext);
 
             return newContext.AddUstIfSuccess(ust);
         }

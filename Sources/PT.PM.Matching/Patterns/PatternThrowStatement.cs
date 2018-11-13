@@ -21,7 +21,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"throw {Expression}";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var throwStatement = ust as ThrowStatement;
             if (throwStatement == null)
@@ -29,7 +29,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Expression.Match(throwStatement.ThrowExpression, context);
+            MatchContext newContext = Expression.MatchUst(throwStatement.ThrowExpression, context);
 
             return newContext.Success
                 ? newContext.AddMatch(throwStatement)

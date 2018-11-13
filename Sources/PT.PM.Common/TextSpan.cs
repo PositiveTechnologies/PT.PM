@@ -4,9 +4,7 @@ namespace PT.PM.Common
 {
     public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
-        public readonly static TextSpan Zero = default;
-
-        private static char[] semicolon = new char[] { ';' };
+        public static readonly TextSpan Zero = default;
 
         public TextSpan(int start, int length, CodeFile codeFile = null)
         {

@@ -21,10 +21,9 @@ using System.Threading.Tasks;
 
 namespace PT.PM
 {
-    public abstract class WorkflowBase<TInputGraph, TStage, TWorkflowResult, TPattern, TMatchResult, TRenderStage> : ILoggable
+    public abstract class WorkflowBase<TStage, TWorkflowResult, TPattern, TRenderStage> : ILoggable
         where TStage : Enum
-        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
-        where TMatchResult : MatchResultBase<TPattern>
+        where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
         protected ILogger logger = DummyLogger.Instance;
@@ -170,13 +169,13 @@ namespace PT.PM
                     {
                         var parser = detectionResult.Language.CreateParser();
                         parser.Logger = Logger;
-                        if (parser is AntlrParser antlrParser)
+                        if (parser is AntlrParser)
                         {
                             AntlrParser.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;
-                            if (parser is JavaScriptEsprimaParser javaScriptParser)
-                            {
-                                javaScriptParser.JavaScriptType = JavaScriptType;
-                            }
+                        }
+                        if (parser is JavaScriptEsprimaParser javaScriptParser)
+                        {
+                            javaScriptParser.JavaScriptType = JavaScriptType;
                         }
                         parseTree = parser.Parse(sourceCodeFile);
                     }
@@ -205,7 +204,6 @@ namespace PT.PM
                         return null;
                     }
 
-                    workflowResult.AddResultEntity(parseTree);
                     workflowResult.AddLexerTime(parseTree.LexerTimeSpan);
                     workflowResult.AddParserTicks(parseTree.ParserTimeSpan);
 

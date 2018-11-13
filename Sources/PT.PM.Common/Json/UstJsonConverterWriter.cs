@@ -28,7 +28,7 @@ namespace PT.PM.Common.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new InvalidOperationException($"Use {(GetType().Name.Replace("Writer", "Reader"))} for JSON reading");
+            throw new InvalidOperationException($"Use {GetType().Name.Replace("Writer", "Reader")} for JSON reading");
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -57,10 +57,10 @@ namespace PT.PM.Common.Json
                 if (include)
                 {
                     include =
-                        propName != nameof(Ust.Root) &&
-                        propName != nameof(Ust.Parent) &&
+                        propName != "Root" &&
+                        propName != "Parent" &&
                         propName != nameof(ILoggable.Logger) &&
-                        propName != nameof(Ust.InitialTextSpans);
+                        propName != nameof(RootUst.TextSpans);
                     if (include)
                     {
                         if (ExcludeDefaults)
@@ -73,17 +73,18 @@ namespace PT.PM.Common.Json
                             }
                             else if (propType == typeof(string))
                             {
-                                include = !string.IsNullOrEmpty(((string)propValue));
+                                include = !string.IsNullOrEmpty(((string) propValue));
                             }
                             else if (propType.IsArray)
                             {
-                                include = ((Array)propValue).Length > 0;
+                                include = ((Array) propValue).Length > 0;
                             }
                             else
                             {
                                 include = !propValue.Equals(GetDefaultValue(propType));
                             }
                         }
+
                         if (include)
                         {
                             include = propName != nameof(Ust.TextSpan) || IncludeTextSpans;
@@ -104,9 +105,9 @@ namespace PT.PM.Common.Json
                     JToken jToken = null;
 
                     if (value is Ust ust && propName == nameof(Ust.TextSpan) &&
-                        ust.InitialTextSpans != null && ust.InitialTextSpans.Count > 0)
+                        ust.Root != null && ust.Root.TextSpans.TryGetValue(ust, out List<TextSpan> textSpans))
                     {
-                        jToken = JToken.FromObject(ust.InitialTextSpans, serializer);
+                        jToken = JToken.FromObject(textSpans, serializer);
                     }
                     else
                     {
@@ -126,6 +127,7 @@ namespace PT.PM.Common.Json
                         jObject.Add(propName, jToken);
                     }
                 }
+
             }
 
             return jObject;

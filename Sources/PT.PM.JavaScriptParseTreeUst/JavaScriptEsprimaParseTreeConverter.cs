@@ -51,12 +51,10 @@ namespace PT.PM.JavaScriptParseTreeUst
                     comments.Add(new CommentLiteral(SourceCodeFile.GetSubstring(textSpan), textSpan)
                     {
                         Root = rootUst,
-                        Parent = rootUst
                     });
                 }
 
                 rootUst.Comments = comments.ToArray();
-                rootUst.Parent = ParentRoot;
                 rootUst.Root = ParentRoot;
                 rootUst.TextSpan = GetTextSpan(esprimaParseTree.SyntaxTree);
                 rootUst.FillAscendants();

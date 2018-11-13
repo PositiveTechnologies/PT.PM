@@ -25,7 +25,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"new {Type}({Arguments})";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var objectCreateExpression = ust as ObjectCreateExpression;
             if (objectCreateExpression == null)
@@ -33,13 +33,13 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Type.Match(objectCreateExpression.Type, context);
+            MatchContext newContext = Type.MatchUst(objectCreateExpression.Type, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Arguments.Match(objectCreateExpression.Arguments, newContext);
+            newContext = Arguments.MatchUst(objectCreateExpression.Arguments, newContext);
 
             return newContext.AddUstIfSuccess(objectCreateExpression);
         }

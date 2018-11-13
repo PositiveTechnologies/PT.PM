@@ -18,7 +18,7 @@ namespace PT.PM.Matching.Patterns
         public PatternOr(IEnumerable<PatternUst> patterns, TextSpan textSpan = default)
             : base(textSpan)
         {
-            Patterns = patterns?.ToList()
+            Patterns = patterns as List<PatternUst> ?? patterns?.ToList()
                 ?? throw new ArgumentNullException(nameof(patterns));
         }
 
@@ -30,7 +30,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"({(string.Join(" <|> ", Patterns))})";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var matchedTextSpans = new List<TextSpan>();
 
@@ -38,7 +38,7 @@ namespace PT.PM.Matching.Patterns
             foreach (PatternUst pattern in Patterns)
             {
                 var altContext = MatchContext.CreateWithInputParamsAndVars(context);
-                MatchContext match = pattern.Match(ust, altContext);
+                MatchContext match = pattern.MatchUst(ust, altContext);
                 if (match.Success)
                 {
                     success = true;

@@ -7,23 +7,22 @@ using System.Text;
 namespace PT.PM.Common.Nodes
 {
     [DebuggerDisplay("{ToStringWithoutLineBreaks()}")]
-    public abstract class Ust : IComparable<Ust>, IEquatable<Ust>, IUst<Ust, RootUst>, IUst
+    public abstract class Ust : IComparable<Ust>, IEquatable<Ust>, IUst
     {
-        private static PrettyPrinter debuggerPrinter = new PrettyPrinter
+        private static readonly PrettyPrinter debuggerPrinter = new PrettyPrinter
         {
             MaxMessageLength = 0,
             ReduceWhitespaces = true
         };
+        
+        public RootUst Root { get; set; }
+
+        [JsonIgnore]
+        public TextSpan TextSpan { get; set; }
 
         public string Kind => GetType().Name;
 
         public int KindId => GetType().Name.GetHashCode();
-
-        public RootUst Root { get; set; }
-
-        public Ust Parent { get; set; }
-
-        public virtual bool IsTerminal => false;
 
         public LineColumnTextSpan LineColumnTextSpan => CurrentCodeFile?.GetLineColumnTextSpan(TextSpan);
 
@@ -31,31 +30,18 @@ namespace PT.PM.Common.Nodes
 
         public RootUst RootOrThis => this is RootUst rootUst ? rootUst : Root;
 
-        [JsonIgnore]
-        public TextSpan TextSpan { get; set; }
-
         public Ust[] Children => GetChildren();
 
         public string ToStringWithoutLineBreaks() => debuggerPrinter?.Print(ToString()) ?? "";
 
-        /// <summary>
-        /// The list of text spans before any UST transformation or reduction.
-        /// For example it won't be empty for concatenation of several strings,
-        /// i.e. "1" + "2" + "3" -> "123".
-        /// These spans map on an original source code.
-        /// </summary>
-        public List<TextSpan> InitialTextSpans { get; set; }
-
         public List<TextSpan> GetRealTextSpans()
         {
-            if (InitialTextSpans != null && InitialTextSpans.Count > 0)
+            if (Root != null && Root.TextSpans.TryGetValue(this, out List<TextSpan> textSpans))
             {
-                return InitialTextSpans;
+                return textSpans;
             }
-            else
-            {
-                return new List<TextSpan>() { TextSpan };
-            }
+            
+            return new List<TextSpan> { TextSpan };
         }
 
         protected Ust()

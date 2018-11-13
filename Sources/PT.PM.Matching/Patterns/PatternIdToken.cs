@@ -34,7 +34,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => Id;
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var token = ust as Token;
             if (token == null)

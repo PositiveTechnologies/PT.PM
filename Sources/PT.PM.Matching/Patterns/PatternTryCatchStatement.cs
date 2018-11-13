@@ -29,7 +29,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"try catch {{ }}";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var tryCatchStatement = ust as TryCatchStatement;
             if (tryCatchStatement == null)
@@ -53,7 +53,7 @@ namespace PT.PM.Matching.Patterns
                     }
 
                     return !ExceptionTypes.Any() ||
-                        ExceptionTypes.Any(type => type.Match(catchClause.Type, context).Success);
+                        ExceptionTypes.Any(type => type.MatchUst(catchClause.Type, context).Success);
                 });
 
                 newContext = context.Set(result);

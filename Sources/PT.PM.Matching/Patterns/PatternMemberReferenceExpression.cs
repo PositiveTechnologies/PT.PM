@@ -24,7 +24,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Target}.{Name}";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var memberRef = ust as MemberReferenceExpression;
             if (memberRef == null)
@@ -32,13 +32,13 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Target.Match(memberRef.Target, context);
+            MatchContext newContext = Target.MatchUst(memberRef.Target, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Name.Match(memberRef.Name, newContext);
+            newContext = Name.MatchUst(memberRef.Name, newContext);
 
             return newContext.AddUstIfSuccess(memberRef);
         }

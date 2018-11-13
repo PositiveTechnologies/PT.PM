@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{string.Join(", ", Modifiers)} {Type} {Assignment}";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust is FieldDeclaration fieldDeclaration)
             {
@@ -61,7 +61,7 @@ namespace PT.PM.Matching.Patterns
                 return newContext;
             }
 
-            newContext = Type.Match(fieldDeclaration.Type, newContext);
+            newContext = Type.MatchUst(fieldDeclaration.Type, newContext);
             if (!newContext.Success)
             {
                 return newContext;
@@ -79,7 +79,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            MatchContext newContext = Type.Match(variableDeclaration.Type, context);
+            MatchContext newContext = Type.MatchUst(variableDeclaration.Type, context);
             if (!newContext.Success)
             {
                 return newContext;
@@ -101,11 +101,11 @@ namespace PT.PM.Matching.Patterns
                 MatchContext match;
                 if (Assignment.Right != null)
                 {
-                    match = Assignment.Match(variable, altContext);
+                    match = Assignment.MatchUst(variable, altContext);
                 }
                 else
                 {
-                    match = Assignment.Left.Match(variable.Left, altContext);
+                    match = Assignment.Left.MatchUst(variable.Left, altContext);
                 }
                 if (match.Success)
                 {

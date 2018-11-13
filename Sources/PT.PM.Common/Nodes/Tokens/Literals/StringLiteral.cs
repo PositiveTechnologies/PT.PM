@@ -36,7 +36,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
                 return baseCompareResult;
             }
 
-            return String.Compare(Text, ((StringLiteral)other).Text, StringComparison.Ordinal); // TODO: Regular expressions ???
+            return String.Compare(Text, ((StringLiteral)other).Text, StringComparison.Ordinal);
         }
 
         public override string ToString() => $"\"{Text}\"";

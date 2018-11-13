@@ -8,14 +8,10 @@ using System.Threading;
 
 namespace PT.PM
 {
-    public abstract class WorkflowResultBase<TStage, TPattern, TMatchResult, TRenderStage>
+    public abstract class WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TStage : Enum
-        where TMatchResult : MatchResultBase<TPattern>
         where TRenderStage : Enum
     {
-        // Erase parse trees if required because they are intermediate objects.
-        private List<WeakReference<ParseTree>> parseTrees = new List<WeakReference<ParseTree>>();
-
         private List<RootUst> usts = new List<RootUst>();
         private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
 
@@ -62,25 +58,6 @@ namespace PT.PM
         public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
 
         [JsonIgnore]
-        public IReadOnlyList<ParseTree> ParseTrees
-        {
-            get
-            {
-                var result = new List<ParseTree>(parseTrees.Count);
-
-                foreach (WeakReference<ParseTree> parseTree in parseTrees)
-                {
-                    if (parseTree.TryGetTarget(out ParseTree target))
-                    {
-                        result.Add(target);
-                    }
-                }
-
-                return result;
-            }
-        }
-
-        [JsonIgnore]
         public IReadOnlyList<RootUst> Usts => usts;
 
         [JsonIgnore]
@@ -112,21 +89,6 @@ namespace PT.PM
         public void AddResultEntity(CodeFile sourceCodeFile)
         {
             AddEntity(SourceCodeFiles, sourceCodeFile);
-        }
-
-        public void AddResultEntity(ParseTree parseTree)
-        {
-            if (ThreadCount == 1)
-            {
-                parseTrees.Add(new WeakReference<ParseTree>(parseTree));
-            }
-            else
-            {
-                lock (parseTrees)
-                {
-                    parseTrees.Add(new WeakReference<ParseTree>(parseTree));
-                }
-            }
         }
 
         public void AddResultEntity(RootUst ust)

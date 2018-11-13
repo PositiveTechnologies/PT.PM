@@ -27,14 +27,14 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => string.Join(", ", Args);
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var argsUst = ust as ArgsUst;
             if (argsUst == null)
             {
                 return context.Fail();
             }
-            
+
             List<Expression> args = argsUst.Collection;
             MatchContext newContext = MatchContext.CreateWithInputParamsAndVars(context);
             var matchedTextSpans = new List<TextSpan>();
@@ -48,12 +48,12 @@ namespace PT.PM.Matching.Patterns
                 }
 
                 newContext = MatchContext.CreateWithInputParamsAndVars(newContext);
-                if (Args[patternArgInd] is PatternMultipleExpressions multiExprArg)
+                if (Args[patternArgInd] is PatternMultipleExpressions)
                 {
                     if (patternArgInd + 1 < Args.Count)
                     {
                         Expression arg = UstUtils.GetArgWithoutModifier(args[argInd]);
-                        newContext = Args[patternArgInd + 1].Match(arg, newContext);
+                        newContext = Args[patternArgInd + 1].MatchUst(arg, newContext);
                         matchedTextSpans.AddRange(newContext.Locations);
                         if (newContext.Success)
                         {
@@ -64,12 +64,13 @@ namespace PT.PM.Matching.Patterns
                     {
                         matchedTextSpans.AddRange(newContext.Locations);
                     }
+
                     argInd += 1;
                 }
                 else
                 {
                     Expression arg = UstUtils.GetArgWithoutModifier(args[argInd]);
-                    newContext = Args[patternArgInd].Match(arg, newContext);
+                    newContext = Args[patternArgInd].MatchUst(arg, newContext);
                     if (!newContext.Success)
                     {
                         break;
@@ -86,14 +87,9 @@ namespace PT.PM.Matching.Patterns
                 patternArgInd += 1;
             }
 
-            if (argInd != args.Count || patternArgInd != Args.Count)
-            {
-                newContext = context.Fail();
-            }
-            else
-            {
-                newContext = context.AddMatches(matchedTextSpans);
-            }
+            newContext = argInd != args.Count || patternArgInd != Args.Count
+                ? context.Fail()
+                : context.AddMatches(matchedTextSpans);
 
             return newContext.AddUstIfSuccess(argsUst);
         }

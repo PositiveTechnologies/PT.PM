@@ -72,9 +72,9 @@ namespace PT.PM.Matching
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
 
-        public List<MatchResult> Match(Ust ust, UstConstantFolder ustConstantFolder)
+        public List<MatchResult> Match(Ust ust, UstConstantFolder ustConstantFolder, List<Ust> parentStack)
         {
-            var context = new MatchContext(this, ustConstantFolder) { Logger = Logger };
+            var context = new MatchContext(this, ustConstantFolder, parentStack) { Logger = Logger };
             var results = new List<MatchResult>();
 
             if (ust is RootUst rootUst)
@@ -102,10 +102,12 @@ namespace PT.PM.Matching
 
             if (ust != null && !(patternUst is PatternAny) && !context.MatchedWithFolded)
             {
+                context.PushParent(ust);
                 foreach (Ust child in ust.Children)
                 {
                     TraverseChildren(patternUst, child, context, results);
                 }
+                context.PopParent();
             }
 
             context.MatchedWithFolded = false;
@@ -114,7 +116,7 @@ namespace PT.PM.Matching
         private static void MatchAndAddResult(
             PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
-            if (patternUst.Match(ust, context).Success)
+            if (patternUst.MatchUst(ust, context).Success)
             {
                 if (context.Locations.Count == 0)
                 {

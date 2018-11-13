@@ -20,7 +20,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => '"' + String + '"';
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust is StringLiteral stringLiteral)
             {

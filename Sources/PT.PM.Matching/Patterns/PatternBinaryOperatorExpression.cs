@@ -27,7 +27,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString() => $"{Left} {Operator} {Right}";
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var binaryOperatorExpression = ust as BinaryOperatorExpression;
             if (binaryOperatorExpression == null)
@@ -35,19 +35,19 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
             
-            MatchContext newContext = Left.Match(binaryOperatorExpression.Left, context);
+            MatchContext newContext = Left.MatchUst(binaryOperatorExpression.Left, context);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Operator.Match(binaryOperatorExpression.Operator, newContext);
+            newContext = Operator.MatchUst(binaryOperatorExpression.Operator, newContext);
             if (!newContext.Success)
             {
                 return newContext;
             }
 
-            newContext = Right.Match(binaryOperatorExpression.Right, newContext);
+            newContext = Right.MatchUst(binaryOperatorExpression.Right, newContext);
 
             return newContext.AddUstIfSuccess(binaryOperatorExpression);
         }

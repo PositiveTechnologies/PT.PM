@@ -27,24 +27,20 @@ namespace PT.PM.Matching.Patterns
             return "<{ " + Pattern + " }>";
         }
 
-        public override MatchContext Match(Ust ust, MatchContext context)
+        protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var result = ust.AnyDescendantOrSelf(ustNode => MatchExpression(ustNode, context).Success);
             return context.Set(result).AddUstIfSuccess(ust);
         }
 
-        protected MatchContext MatchExpression(Ust other, MatchContext context)
+        private MatchContext MatchExpression(Ust other, MatchContext context)
         {
             if (Pattern == null)
             {
-                if (other == null)
-                {
-                    return context;
-                }
-                return context.Fail();
+                return other == null ? context : context.Fail();
             }
-            
-            return Pattern.Match(other, context);
+
+            return Pattern.MatchUst(other, context);
         }
     }
 }
