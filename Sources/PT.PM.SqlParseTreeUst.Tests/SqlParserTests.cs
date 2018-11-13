@@ -7,18 +7,13 @@ namespace PT.PM.SqlParseTreeUst.Tests
     [TestFixture]
     public class SqlParserTests
     {
-        [Test]
-        public void Parse_PlSqlFiles_WithoutErrors()
+        [TestCase("mysql")]
+        [TestCase("plsql")]
+        [TestCase("tsql")]
+        public void Parse_SqlFiles_WithoutErrors(string dialect)
         {
-            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "plsql", "examples"),
-                PlSql.Language, Stage.ParseTree);
-        }
-
-        [Test]
-        public void Parse_TSqlSyntax_WithoutErrors()
-        {
-            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "tsql", "examples"),
-                TSql.Language, Stage.ParseTree);
+            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, dialect, "examples"),
+                SqlTestUtils.Languages[dialect], Stage.ParseTree);
         }
     }
 }
