@@ -1458,7 +1458,22 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitLoopStatement([NotNull] MySqlParser.LoopStatementContext context)
         {
-            return VisitChildren(context);
+            var loopBlock = new BlockStatement()
+            {
+                TextSpan = context.GetTextSpan()
+            };
+
+            var statementsContext = context.procedureSqlStatement();
+            for (int i = 0; i < statementsContext.Length; i++)
+            {
+                loopBlock.Statements.Add((Statement)Visit(statementsContext[i]));
+            }
+
+            return new WhileStatement
+            {
+                Embedded = loopBlock,
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitMasterBoolOption([NotNull] MySqlParser.MasterBoolOptionContext context)
