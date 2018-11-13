@@ -140,7 +140,7 @@ namespace PT.PM
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
-                    IEnumerable<MatchResult> matchResults = patternMatcher.Match(ust);
+                    List<MatchResult> matchResults = patternMatcher.Match(ust);
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");

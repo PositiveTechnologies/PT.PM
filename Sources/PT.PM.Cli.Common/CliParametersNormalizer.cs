@@ -137,49 +137,50 @@ namespace PT.PM.Cli.Common
         {
             if (type == typeof(int))
             {
-                return AddArgValueIfSuccess(int.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(int.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(uint))
+            if (type == typeof(uint))
             {
-                return AddArgValueIfSuccess(uint.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(uint.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(byte))
+            if (type == typeof(byte))
             {
-                return AddArgValueIfSuccess(byte.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(byte.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(sbyte))
+            if (type == typeof(sbyte))
             {
-                return AddArgValueIfSuccess(sbyte.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(sbyte.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(short))
+            if (type == typeof(short))
             {
-                return AddArgValueIfSuccess(short.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(short.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(ushort))
+            if (type == typeof(ushort))
             {
-                return AddArgValueIfSuccess(ushort.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(ushort.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(long))
+            if (type == typeof(long))
             {
-                return AddArgValueIfSuccess(long.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(long.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(ulong))
+            if (type == typeof(ulong))
             {
-                return AddArgValueIfSuccess(ulong.TryParse(outValue, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(ulong.TryParse(outValue, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(float))
+            if (type == typeof(float))
             {
-                return AddArgValueIfSuccess(float.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(float.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(double))
+            if (type == typeof(double))
             {
-                return AddArgValueIfSuccess(double.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(double.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(decimal))
+            if (type == typeof(decimal))
             {
-                return AddArgValueIfSuccess(decimal.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var _), outArgs, outArg, outValue);
+                return AddArgValueIfSuccess(decimal.TryParse(outValue, NumberStyles.Any, CultureInfo.InvariantCulture, out _), outArgs, outArg, outValue);
             }
-            else if (type == typeof(bool))
+
+            if (type == typeof(bool))
             {
                 bool b = true;
                 if (!CheckTypes || bool.TryParse(outValue, out b))
@@ -188,27 +189,29 @@ namespace PT.PM.Cli.Common
                     {
                         return CheckDuplicatesAndAdd(outArgs, outArg, outValue);
                     }
-                    else if (b)
+
+                    if (b)
                     {
                         return CheckDuplicatesAndAdd(outArgs, outArg, null);
                     }
 
                     Tuple<string, string> duplicate;
-                    if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg2 => outArg2.Item1 == outArg)) != default)
+                    if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg2 => outArg2.Item1 == outArg)) !=
+                        default)
                     {
                         Logger.LogError(new ArgumentException("Duplicate argument", outArg));
                         outArgs.Remove(duplicate);
                         return false;
                     }
+
                     return true;
                 }
-                else
-                {
-                    Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument `{outArg}`"));
-                    return false;
-                }
+
+                Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument `{outArg}`"));
+                return false;
             }
-            else if (type.BaseType == typeof(Enum))
+
+            if (type.BaseType == typeof(Enum))
             {
                 bool success = true;
                 try
@@ -225,17 +228,16 @@ namespace PT.PM.Cli.Common
             return AddArgValueIfSuccess(true, outArgs, outArg, outValue);
         }
 
-        private bool AddArgValueIfSuccess(bool success, List<Tuple<string, string>> outArgs, string outArg, string outValue)
+        private bool AddArgValueIfSuccess(bool success, List<Tuple<string, string>> outArgs, string outArg,
+            string outValue)
         {
             if (success || !CheckTypes)
             {
                 return CheckDuplicatesAndAdd(outArgs, outArg, outValue);
             }
-            else
-            {
-                Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument {outArg}"));
-                return false;
-            }
+
+            Logger.LogError(new FormatException($"Incorrect value `{outValue}` of argument {outArg}"));
+            return false;
         }
 
         private bool CheckDuplicatesAndAdd(List<Tuple<string, string>> outArgs, string arg, string value)

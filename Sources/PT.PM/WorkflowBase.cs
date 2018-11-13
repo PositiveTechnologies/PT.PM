@@ -169,13 +169,13 @@ namespace PT.PM
                     {
                         var parser = detectionResult.Language.CreateParser();
                         parser.Logger = Logger;
-                        if (parser is AntlrParser antlrParser)
+                        if (parser is AntlrParser)
                         {
                             AntlrParser.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;
-                            if (parser is JavaScriptEsprimaParser javaScriptParser)
-                            {
-                                javaScriptParser.JavaScriptType = JavaScriptType;
-                            }
+                        }
+                        if (parser is JavaScriptEsprimaParser javaScriptParser)
+                        {
+                            javaScriptParser.JavaScriptType = JavaScriptType;
                         }
                         parseTree = parser.Parse(sourceCodeFile);
                     }

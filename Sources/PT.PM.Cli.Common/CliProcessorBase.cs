@@ -39,7 +39,7 @@ namespace PT.PM.Cli.Common
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
-            var paramsNormalizer = new CliParametersNormalizer<TParameters>()
+            var paramsNormalizer = new CliParametersNormalizer<TParameters>
             {
                 Logger = Logger
             };
