@@ -10,6 +10,7 @@ using PT.PM.TestUtils;
 using NUnit.Framework;
 using PT.PM.Common.Nodes.GeneralScope;
 using System.IO;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.JavaParseTreeUst.Tests
 {
@@ -52,9 +53,11 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 "ArrayInitialization.java"
             );
 
+            RootUst ust = null;
             var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust);
-            var workflowResult = workflow.Process();
-            var ust = workflowResult.Usts.First();
+            workflow.UstConverted += (sender, rootUst) => ust = rootUst;
+            workflow.Process();
+
             var intType = new TypeToken("int");
 
             var arrayData = new List<Tuple<List<Expression>, List<Expression>>>();
@@ -102,9 +105,10 @@ namespace PT.PM.JavaParseTreeUst.Tests
                 "StringLiteralWithoutQuotes.java"
             );
 
+            RootUst ust = null;
             var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust);
-            var workflowResult = workflow.Process();
-            var ust = workflowResult.Usts.First();
+            workflow.UstConverted += (sender, rootUst) => ust = rootUst;
+            workflow.Process();
 
             Assert.IsTrue(ust.AnyDescendantOrSelf(ustNode =>
                 ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
@@ -114,8 +118,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         public void Convert_Java_BaseTypesExist()
         {
             string fileName = Path.Combine(TestUtility.GrammarsDirectory, "java", "examples", "AllInOne7.java");
-            var workflowResults = TestUtility.CheckFile(fileName, Stage.Ust);
-            var ust = workflowResults.Usts.First();
+            TestUtility.CheckFile(fileName, Stage.Ust, out RootUst ust);
             bool result = ust.AnyDescendantOrSelf(descendant =>
             {
                 return descendant is TypeDeclaration typeDeclaration &&

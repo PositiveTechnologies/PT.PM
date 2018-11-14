@@ -12,7 +12,6 @@ namespace PT.PM
         where TStage : Enum
         where TRenderStage : Enum
     {
-        private List<RootUst> usts = new List<RootUst>();
         private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
 
         private long totalReadTicks;
@@ -58,9 +57,6 @@ namespace PT.PM
         public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
 
         [JsonIgnore]
-        public IReadOnlyList<RootUst> Usts => usts;
-
-        [JsonIgnore]
         public IReadOnlyList<IMatchResultBase> MatchResults => matchResults;
 
         [JsonIgnore]
@@ -89,11 +85,6 @@ namespace PT.PM
         public void AddResultEntity(CodeFile sourceCodeFile)
         {
             AddEntity(SourceCodeFiles, sourceCodeFile);
-        }
-
-        public void AddResultEntity(RootUst ust)
-        {
-            AddEntity(usts, ust);
         }
 
         public void AddResultEntity(IEnumerable<IMatchResultBase> matchResults)

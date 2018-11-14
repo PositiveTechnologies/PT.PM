@@ -637,7 +637,7 @@ namespace PT.PM.PatternEditor
             TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
             ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
 
-            if (Stage >= Stage.Ust && workflowResult.Usts.FirstOrDefault() != null)
+            if (Stage >= Stage.Ust)
             {
                 UstJson = FileExt.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
             }

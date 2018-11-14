@@ -15,49 +15,42 @@ namespace PT.PM
 
         public HashSet<Stage> Stages { get; set; } = new HashSet<Stage>();
 
-        public WorkflowResult WorkflowResult { get; set; }
-
         public GraphvizOutputFormat RenderFormat { get; set; }
 
         public GraphvizDirection RenderDirection { get; set; }
 
         public bool IncludeHiddenTokens { get; set; } = false;
 
-        public StageRenderer(WorkflowResult workflowResult)
+        public StageRenderer()
         {
-            WorkflowResult = workflowResult;
         }
 
-        public void Render()
+        public void Render(RootUst ust)
         {
-
-            foreach (RootUst ust in WorkflowResult.Usts)
+            try
             {
-                try
+                var renderer = new StageDotRenderer
                 {
-                    var renderer = new StageDotRenderer
-                    {
-                        RenderStages = Stages,
-                        IncludeHiddenTokens = IncludeHiddenTokens,
-                        RenderDirection = RenderDirection
-                    };
+                    RenderStages = Stages,
+                    IncludeHiddenTokens = IncludeHiddenTokens,
+                    RenderDirection = RenderDirection
+                };
 
-                    string dotGraph = renderer.Render(ust);
+                string dotGraph = renderer.Render(ust);
 
-                    string fileName =
-                        (!string.IsNullOrEmpty(Path.GetFileName(ust.SourceCodeFile.Name)) ? ust.SourceCodeFile.Name + "." : "")
-                        + "ust";
-                    var graph = new GraphvizGraph(dotGraph)
-                    {
-                        OutputFormat = RenderFormat,
-                        Logger = Logger
-                    };
-                    graph.Render(Path.Combine(DumpDir, fileName));
-                }
-                catch (Exception ex) when (!(ex is ThreadAbortException))
+                string fileName =
+                    (!string.IsNullOrEmpty(Path.GetFileName(ust.SourceCodeFile.Name)) ? ust.SourceCodeFile.Name + "." : "")
+                    + "ust";
+                var graph = new GraphvizGraph(dotGraph)
                 {
-                    Logger.LogError(ex);
-                }
+                    OutputFormat = RenderFormat,
+                    Logger = Logger
+                };
+                graph.Render(Path.Combine(DumpDir, fileName));
+            }
+            catch (Exception ex) when (!(ex is ThreadAbortException))
+            {
+                Logger.LogError(ex);
             }
         }
     }

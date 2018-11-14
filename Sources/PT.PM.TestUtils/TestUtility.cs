@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.TestUtils
 {
@@ -48,10 +49,18 @@ namespace PT.PM.TestUtils
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
             Language language = null, int maxStackSize = 0)
         {
+            return CheckFile(fileName, endStage, out RootUst _, logger, shouldContainsErrors, isIgnoreFilenameWildcards,
+                language, maxStackSize);
+        }
+
+        public static WorkflowResult CheckFile(string fileName, Stage endStage, out RootUst ust,
+            ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
+            Language language = null, int maxStackSize = 0)
+        {
             var codeRepository = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormalizeDirSeparator()));
             if (language != null)
             {
-                codeRepository.Languages = new HashSet<Language>() { language };
+                codeRepository.Languages = new HashSet<Language> { language };
             }
 
             var log = logger ?? new LoggerMessageCounter();
@@ -61,6 +70,9 @@ namespace PT.PM.TestUtils
                 Logger = log
             };
 
+            RootUst tempUst = null;
+            workflow.UstConverted += (sender, rootUst) => tempUst = rootUst;
+            
             WorkflowResult workflowResult = null;
             if (maxStackSize == 0)
             {
@@ -73,6 +85,7 @@ namespace PT.PM.TestUtils
                 thread.Join();
             }
 
+            ust = tempUst;
             string errorString = string.Empty;
             if (log is LoggerMessageCounter loggerMessageCounter)
             {

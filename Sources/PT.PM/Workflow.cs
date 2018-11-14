@@ -130,26 +130,26 @@ namespace PT.PM
 
         private void ProcessFile(string fileName, PatternMatcher patternMatcher, WorkflowResult workflowResult, CancellationToken cancellationToken = default)
         {
-            RootUst ust = null;
+            RootUst rootUst = null;
             try
             {
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingStarted, fileName));
 
-                ust = ReadParseAndConvert(fileName, workflowResult);
-                if (ust != null && Stage >= Stage.Match)
+                rootUst = ReadParseAndConvert(fileName, workflowResult);
+                if (rootUst != null && Stage >= Stage.Match)
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
-                    List<MatchResult> matchResults = patternMatcher.Match(ust);
+                    List<MatchResult> matchResults = patternMatcher.Match(rootUst);
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {ust.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");
+                    Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");
                     workflowResult.AddMatchTime(stopwatch.Elapsed);
                     workflowResult.AddResultEntity(matchResults);
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    RenderGraphs(workflowResult);
+                    RenderGraphs(rootUst, workflowResult.RenderStages);
                 }
             }
             catch (OperationCanceledException)
@@ -177,7 +177,7 @@ namespace PT.PM
                 Logger.LogInfo(new ProgressEventArgs(progress, fileName));
                 Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingCompleted, fileName));
 
-                if (ust == null)
+                if (rootUst == null)
                 {
                     Logger.LogInfo(new MessageEventArgs(MessageType.ProcessingIgnored, fileName));
                 }
@@ -186,11 +186,11 @@ namespace PT.PM
             }
         }
 
-        private void RenderGraphs(WorkflowResult result)
+        private void RenderGraphs(RootUst rootUst, HashSet<Stage> renderStages)
         {
-            if (result.RenderStages.Any())
+            if (renderStages.Any())
             {
-                var renderer = new StageRenderer(result)
+                var renderer = new StageRenderer
                 {
                     Logger = Logger,
                     DumpDir = DumpDir,
@@ -198,7 +198,7 @@ namespace PT.PM
                     RenderFormat = RenderFormat,
                     RenderDirection = RenderDirection
                 };
-                renderer.Render();
+                renderer.Render(rootUst);
             }
         }
     }

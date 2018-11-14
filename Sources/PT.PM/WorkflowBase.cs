@@ -28,9 +28,6 @@ namespace PT.PM
     {
         protected ILogger logger = DummyLogger.Instance;
         protected Task filesCountTask;
-        protected Task<TPattern[]> convertPatternsTask;
-
-        protected Language[] languages;
 
         public TStage Stage { get; set; }
 
@@ -115,6 +112,8 @@ namespace PT.PM
         public string DumpDir { get; set; } = "";
 
         public string TempDir { get; set; } = "";
+
+        public event EventHandler<RootUst> UstConverted;
 
         public abstract TWorkflowResult Process(TWorkflowResult workflowResult = null, CancellationToken cancellationToken = default);
 
@@ -259,7 +258,7 @@ namespace PT.PM
                     }
 
                     DumpUst(result, workflowResult.SourceCodeFiles);
-                    workflowResult.AddResultEntity(result);
+                    UstConverted?.Invoke(this, result);
 
                     cancellationToken.ThrowIfCancellationRequested();
                 }
