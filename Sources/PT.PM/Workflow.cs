@@ -64,13 +64,7 @@ namespace PT.PM
 
             try
             {
-                var patternMatcher = new PatternMatcher
-                {
-                    Logger = Logger,
-                    Patterns = ConvertPatterns(result),
-                    IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards,
-                    UstConstantFolder = IsFoldConstants ? new UstConstantFolder() : null
-                };
+                List<PatternRoot> patterns = ConvertPatterns(result);
 
                 var parallelOptions = PrepareParallelOptions(cancellationToken);
                 Parallel.ForEach(
@@ -79,6 +73,15 @@ namespace PT.PM
                     fileName =>
                     {
                         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+                        var patternMatcher = new PatternMatcher
+                        {
+                            Logger = Logger,
+                            Patterns = patterns,
+                            IsIgnoreFilenameWildcards = IsIgnoreFilenameWildcards,
+                            UstConstantFolder = IsFoldConstants ? new UstConstantFolder() : null
+                        };
+
                         ProcessFileWithTimeout(fileName, patternMatcher, result, parallelOptions.CancellationToken);
                     });
             }
