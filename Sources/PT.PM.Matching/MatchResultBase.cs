@@ -12,7 +12,7 @@ namespace PT.PM.Matching
 
     public abstract class MatchResultBase<TPattern>
     {
-        public RootUst RootUst { get; set; }
+        public CodeFile SourceCodeFile { get; set; }
 
         public TPattern Pattern { get; set; }
 

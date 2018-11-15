@@ -10,8 +10,6 @@ namespace PT.PM.Matching
     {
         public string PatternKey => Pattern.Key;
 
-        public CodeFile SourceCodeFile => RootUst.SourceCodeFile;
-
         public TextSpan TextSpan => TextSpans.FirstOrDefault();
 
         public bool Suppressed { get; }
@@ -20,17 +18,17 @@ namespace PT.PM.Matching
         {
         }
 
-        public MatchResult(RootUst rootUst, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
+        public MatchResult(CodeFile sourceCodeFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
-            RootUst = rootUst ?? throw new ArgumentNullException(nameof(rootUst));
+            SourceCodeFile = sourceCodeFile ?? throw new ArgumentNullException(nameof(sourceCodeFile));
             Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
             TextSpans = textSpans?.ToArray() ?? throw new ArgumentNullException(nameof(textSpans));
 
             TextSpan lastTextSpan = textSpans.LastOrDefault();
             if (lastTextSpan != default)
             {
-                Suppressed = PatternUtils.IsSuppressed(rootUst.SourceCodeFile,
-                    lastTextSpan.GetLineColumnTextSpan(rootUst.SourceCodeFile));
+                Suppressed = PatternUtils.IsSuppressed(SourceCodeFile,
+                    lastTextSpan.GetLineColumnTextSpan(SourceCodeFile));
             }
         }
 
