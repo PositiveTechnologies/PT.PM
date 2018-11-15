@@ -792,7 +792,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitDeallocatePrepare([NotNull] MySqlParser.DeallocatePrepareContext context)
         {
-            return VisitChildren(context);
+            var funcId = (IdToken)ExtracLiteral(context.dropFormat);
+            var arg = ConvertToInOutArgument(context.uid());
+            return new InvocationExpression(funcId, new ArgsUst(arg), context.GetTextSpan());
         }
 
         public Ust VisitDecimalLiteral([NotNull] MySqlParser.DecimalLiteralContext context)
@@ -993,7 +995,12 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitExecuteStatement([NotNull] MySqlParser.ExecuteStatementContext context)
         {
-            return VisitChildren(context);
+            return new InvocationExpression
+            {
+                Target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan()),
+                Arguments = new ArgsUst((Expression)Visit(context.uid())),
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitExistsExpessionAtom([NotNull] MySqlParser.ExistsExpessionAtomContext context)
@@ -1812,7 +1819,27 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitPrepareStatement([NotNull] MySqlParser.PrepareStatementContext context)
         {
-            return VisitChildren(context);
+            Expression prepareArg = default;
+            if(context.query != null)
+            {
+                prepareArg = (Expression)ExtracLiteral(context.query);
+            }
+            else
+            {
+                prepareArg = (Expression)ExtracLiteral(context.variable);
+            }
+
+            var prepareFunc = new InvocationExpression
+            {
+                Target = new IdToken(context.PREPARE().GetText(), context.PREPARE().GetTextSpan()),
+                Arguments = new ArgsUst(prepareArg),
+                TextSpan = context.PREPARE().GetTextSpan().Union(prepareArg.TextSpan)
+            };
+
+            return new AssignmentExpression(
+                new IdToken(context.uid().GetText(), context.uid().GetTextSpan()),
+                prepareFunc,
+                context.GetTextSpan());
         }
 
         public Ust VisitPrimaryKeyColumnConstraint([NotNull] MySqlParser.PrimaryKeyColumnConstraintContext context)
@@ -1850,7 +1877,7 @@ namespace PT.PM.SqlParseTreeUst
             Enum.TryParse(context.direction.Text, out InOutModifier modifierType);
             var modifier = new InOutModifierLiteral(modifierType, context.direction.GetTextSpan());
             var id = (IdToken)Visit(context.uid());
-            var type = (TypeToken)Visit(context.dataType());
+            var type = new TypeToken(context.dataType().GetText(), context.dataType().GetTextSpan());
             return new ParameterDeclaration(modifier, type, id, context.GetTextSpan());
         }
 
@@ -2225,8 +2252,8 @@ namespace PT.PM.SqlParseTreeUst
             {
                 assignments.Add(new AssignmentExpression
                 {
-                    Right = (Expression)Visit(variablesContext[i]),
-                    Left = (Expression)Visit(expressionsContext[i]),
+                    Left = (Expression)Visit(variablesContext[i]),
+                    Right = (Expression)Visit(expressionsContext[i]),
                     TextSpan = context.GetTextSpan()
                 });
             }
