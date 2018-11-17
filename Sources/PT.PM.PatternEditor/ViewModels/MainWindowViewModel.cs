@@ -23,19 +23,18 @@ namespace PT.PM.PatternEditor
 {
     public class MainWindowViewModel : ReactiveObject
     {
-        private Window window;
-        private ColumnDefinition patternsPanelColumn;
-        private TextBox sourceCodeTextBox;
-        private ListBox sourceCodeErrorsListBox;
-        private ListBox matchResultListBox;
-        private TextBox logger;
+        private readonly Window window;
+        private readonly ColumnDefinition patternsPanelColumn;
+        private readonly TextBox sourceCodeTextBox;
+        private readonly ListBox sourceCodeErrorsListBox;
+        private readonly ListBox matchResultListBox;
         private string oldSelectedLanguage;
         private string sourceCodeFileName;
         private bool fileOpened;
         private string oldSourceCode = "";
         private Stage oldEndStage;
         private JavaScriptType oldJavaScriptType;
-        private LanguageDetector languageDetector = new ParserLanguageDetector();
+        private readonly LanguageDetector languageDetector = new ParserLanguageDetector();
         private string tokensHeader;
         private string parseTreeHeader;
         private string sourceCodeErrorsText = "Errors";
@@ -71,11 +70,9 @@ namespace PT.PM.PatternEditor
             sourceCodeTextBox = window.Find<TextBox>("SourceCode");
             sourceCodeErrorsListBox = window.Find<ListBox>("SourceCodeErrors");
             matchResultListBox = window.Find<ListBox>("MatchingResult");
-            logger = window.Find<TextBox>("Logger");
 
-            patternsPanelColumn.Width = GridLength.Parse(Settings.PatternsPanelWidth.ToString(), CultureInfo.InvariantCulture);
-            sourceCodeErrorsListBox.DoubleTapped +=
-            (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            patternsPanelColumn.Width = GridLength.Parse(Settings.PatternsPanelWidth.ToString());
+            sourceCodeErrorsListBox.DoubleTapped += (sender, e) =>
             {
                 GuiUtils.ProcessErrorOnDoubleClick(sourceCodeErrorsListBox, sourceCodeTextBox);
             };
@@ -176,6 +173,7 @@ namespace PT.PM.PatternEditor
         {
             window.GetObservable(Window.WidthProperty)
                 .Throttle(TimeSpan.FromMilliseconds(250))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(width =>
                 {
                     if (window.WindowState != WindowState.Maximized)
@@ -188,6 +186,7 @@ namespace PT.PM.PatternEditor
 
             window.GetObservable(Window.HeightProperty)
                 .Throttle(TimeSpan.FromMilliseconds(250))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(height =>
                 {
                     if (window.WindowState != WindowState.Maximized)
@@ -201,6 +200,7 @@ namespace PT.PM.PatternEditor
             Observable.FromEventPattern<PointEventArgs>(
                 ev => window.PositionChanged += ev, ev => window.PositionChanged -= ev)
                 .Throttle(TimeSpan.FromMilliseconds(250))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(ev =>
                 {
                     if (window.WindowState != WindowState.Maximized)
@@ -213,6 +213,7 @@ namespace PT.PM.PatternEditor
 
             Observable.FromEventPattern(
                 ev => window.Closed += ev, ev => window.Closed -= ev)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(ev =>
                 {
                     ServiceLocator.PatternsViewModel.SavePatterns();
@@ -591,7 +592,7 @@ namespace PT.PM.PatternEditor
             {
                 patternRepository = new MemoryPatternsRepository();
             }
-            var workflow = new Workflow(sourceCodeRep, patternRepository, stage: Stage)
+            var workflow = new Workflow(sourceCodeRep, patternRepository, Stage)
             {
                 IndentedDump = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
@@ -624,7 +625,7 @@ namespace PT.PM.PatternEditor
             workflow.DumpStages = dumpStages;
 
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
+            List<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto().ToList();
             sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
 
             ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
@@ -642,7 +643,7 @@ namespace PT.PM.PatternEditor
                 UstJson = FileExt.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
             }
 
-            MatchingResultText = "MATCHINGS" + (matchResults.Count() > 0 ? $" ({matchResults.Count()})" : "");
+            MatchingResultText = "MATCHINGS" + (matchResults.Count > 0 ? $" ({matchResults.Count})" : "");
 
             if (SourceCodeLogger.ErrorCount == 0)
             {

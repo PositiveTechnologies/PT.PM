@@ -13,7 +13,7 @@
     </DataTemplate>
   </UserControl.DataTemplates>
   
-  <StackPanel Grid.Column="0" Gap="7">
+  <StackPanel Grid.Column="0" Spacing="7">
     <Grid ColumnDefinitions="100,100,*" Height="30">
       <TextBlock Grid.Column="0" FontWeight="Medium" FontSize="20" Text="PATTERNS" />
       <Button Grid.Column="1" Content="Open" HorizontalAlignment="Left" Width="100" Command="{Binding OpenPatterns}"/>
@@ -44,7 +44,7 @@
     </Grid>
 
     <Expander Header="Extra Info" IsExpanded="{Binding IsPatternExtraInfoExpanded, Mode=TwoWay}" >
-      <StackPanel Gap="7">
+      <StackPanel Spacing="7">
         <Grid ColumnDefinitions="100,*">
           <TextBlock Text="CweId" />
           <TextBox Grid.Column="1" Text="{Binding CweId}" />
