@@ -18,7 +18,7 @@ namespace PT.PM.Matching.Patterns
             UnaryOperator op = Operator.UnaryOperator;
             if (UnaryOperatorLiteral.PrefixTextUnaryOperator.ContainsValue(op))
             {
-                string spaceOrEmpty = op == UnaryOperator.Delete || op == UnaryOperator.TypeOf ||
+                string spaceOrEmpty = op == UnaryOperator.Delete || op == UnaryOperator.DeleteArray || op == UnaryOperator.TypeOf ||
                                       op == UnaryOperator.Await || op == UnaryOperator.Void
                     ? " "
                     : "";

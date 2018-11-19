@@ -17,6 +17,7 @@
         Dereference,   // *a
         AddressOf,     // &a
         Delete,        // delete a
+        DeleteArray,   // delete[] a
         TypeOf,        // typeof a
 
         // C#

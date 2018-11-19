@@ -16,6 +16,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ["*"] = UnaryOperator.Dereference,
             ["&"] = UnaryOperator.AddressOf,
             ["delete"] = UnaryOperator.Delete,
+            ["delete[]"] = UnaryOperator.DeleteArray,
             ["typeof"] = UnaryOperator.TypeOf,
             ["await"] = UnaryOperator.Await
         };
