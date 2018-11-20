@@ -9,17 +9,12 @@ namespace PT.PM.Common.Utils
 {
     public static class CommonUtils
     {
-        private static bool? isWindows = null;
-        private static bool? isCoreApp = null;
+        private static bool? isWindows;
+        private static bool? isCoreApp;
 
         public const string Prefix = "pt.pm_";
 
-        public static string FormatJson(string json)
-        {
-            dynamic parsedJson = JsonConvert.DeserializeObject(json);
-            string formattedJson = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-            return formattedJson;
-        }
+        public const double Epsilon = 0.0000001;
 
         public static bool TryConvertToInt64(this string value, int fromBase, out long result)
         {
