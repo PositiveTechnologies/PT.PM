@@ -43,9 +43,6 @@ namespace PT.PM.Cli.Common
 
             Logger.LogInfo($"{"Patterns count:",LoggerUtils.Align} {WorkflowResult.TotalProcessedPatternsCount}");
 
-            string extraTimeInfo = WorkflowResult.ThreadCount == 1 ? "" : $" (average per thread)";
-            Logger.LogInfo(
-                $"{"Time format:",LoggerUtils.Align} {Utils.TimeSpanFormat.Replace("\\", "")}{extraTimeInfo}");
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
@@ -79,7 +76,7 @@ namespace PT.PM.Cli.Common
 
         protected void LogStageTime(string stage)
         {
-            long ticks = 0;
+            long ticks;
             switch (stage)
             {
                 case nameof(Stage.File):
@@ -104,11 +101,6 @@ namespace PT.PM.Cli.Common
 
             if (ticks > 0)
             {
-                long avgTicksPerThread = IsMultithreadStage(stage)
-                    ? ticks /
-                      (WorkflowResult.ThreadCount == 0 ? Environment.ProcessorCount : WorkflowResult.ThreadCount)
-                    : ticks;
-                var timeSpan = new TimeSpan(avgTicksPerThread);
                 string percent = CalculateAndFormatPercent(ticks, WorkflowResult.TotalTimeTicks);
 
                 string extraInfo = "";
@@ -121,20 +113,15 @@ namespace PT.PM.Cli.Common
                     extraInfo = $" (Lexer: {lexerPercent}% + Parser: {parserPercent}%)";
                 }
 
-                Logger.LogInfo($"{stage + " time:",LoggerUtils.Align} {timeSpan.Format()} {percent}%{extraInfo}");
+                Logger.LogInfo($"{stage + " time ratio:",LoggerUtils.Align} {percent}%{extraInfo}");
             }
         }
 
         protected virtual long GetTicksCount(string stage) => 0;
 
-        protected virtual bool IsMultithreadStage(string stage)
-        {
-            return stage != nameof(Stage.Pattern);
-        }
-
         protected string CalculateAndFormatPercent(long part, long whole)
         {
-            return (whole == 0 ? 0 : ((double) part / whole * 100.0)).ToString("00.00");
+            return (whole == 0 ? 0 : (double) part / whole * 100.0).ToString("00.00");
         }
     }
 }
