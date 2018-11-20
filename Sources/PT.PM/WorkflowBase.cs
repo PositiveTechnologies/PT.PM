@@ -39,13 +39,13 @@ namespace PT.PM
 
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
-        public LanguageDetector LanguageDetector { get; set; } = new ParserLanguageDetector();
+        public LanguageDetector LanguageDetector { get; } = new ParserLanguageDetector();
 
-        public bool IsDumpJsonOutput { get; set; } = false;
+        public bool IsDumpJsonOutput { get; set; }
 
         public bool IsFoldConstants { get; set; } = true;
 
-        public bool IsIgnoreFilenameWildcards { get; set; } = false;
+        public bool IsIgnoreFilenameWildcards { get; set; }
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 

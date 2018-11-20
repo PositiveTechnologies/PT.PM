@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using PT.PM.Common;
-using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using System;
 using System.Collections.Generic;
@@ -15,12 +14,12 @@ namespace PT.PM
         private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
 
         private long totalReadTicks;
-        private long totalConvertTicks;
-        private long totalMatchTicks;
-        private long totalPatternsTicks;
-
         private long totalLexerTicks;
         private long totalParserTicks;
+        private long totalConvertTicks;
+        private long totalMatchTicks;
+
+        private long totalPatternsTicks;
 
         private int totalProcessedFilesCount;
         private int totalProcessedCharsCount;
@@ -39,15 +38,15 @@ namespace PT.PM
 
         public string RootPath { get; set; }
 
-        public IReadOnlyList<Language> AnalyzedLanguages { get; private set; }
+        public IReadOnlyList<Language> AnalyzedLanguages { get; }
 
         public IReadOnlyList<Language> BaseLanguages { get; set; }
 
         public HashSet<TRenderStage> RenderStages { get; set; } = new HashSet<TRenderStage>();
 
-        public int ThreadCount { get; private set; }
+        public int ThreadCount { get; }
 
-        public TStage Stage { get; private set; }
+        public TStage Stage { get; }
 
         public bool IsFoldConstants { get; set; }
 
@@ -67,10 +66,10 @@ namespace PT.PM
         public long TotalConvertTicks => totalConvertTicks;
         public long TotalMatchTicks => totalMatchTicks;
         public long TotalPatternsTicks => totalPatternsTicks;
-
         public long TotalLexerTicks => totalLexerTicks;
-        public int TotalMatchesCount => MatchResults.Count;
         public long TotalParserTicks => totalParserTicks;
+
+        public int TotalMatchesCount => MatchResults.Count;
 
         public int TotalProcessedFilesCount => totalProcessedFilesCount;
         public int TotalProcessedCharsCount => totalProcessedCharsCount;
@@ -134,7 +133,7 @@ namespace PT.PM
 
         public void AddPatternsTime(TimeSpan patternsTime)
         {
-            AddTime(ref totalPatternsTicks, patternsTime);
+            Interlocked.Add(ref totalPatternsTicks, patternsTime.Ticks);
         }
 
         public void AddProcessedPatternsCount(int patternsCount)
@@ -153,65 +152,32 @@ namespace PT.PM
         }
 
         public virtual long TotalTimeTicks =>
-            totalReadTicks +
-            totalLexerTicks +
-            totalParserTicks +
-            totalConvertTicks +
-            totalMatchTicks +
-            totalPatternsTicks;
+            totalReadTicks + totalLexerTicks + totalParserTicks + totalConvertTicks + totalMatchTicks + totalPatternsTicks;
 
         protected void AddEntity<T>(ICollection<T> collection, T entity)
         {
-            if (ThreadCount == 1)
+            lock (collection)
             {
                 collection.Add(entity);
-            }
-            else
-            {
-                lock (collection)
-                {
-                    collection.Add(entity);
-                }
             }
         }
 
         protected void AddEntities<T>(List<T> collection, IEnumerable<T> entities)
         {
-            if (ThreadCount == 1)
+            lock (collection)
             {
                 collection.AddRange(entities);
-            }
-            else
-            {
-                lock (collection)
-                {
-                    collection.AddRange(entities);
-                }
             }
         }
 
         protected void AddInt(ref int total, int value)
         {
-            if (ThreadCount == 1)
-            {
-                total += value;
-            }
-            else
-            {
-                Interlocked.Add(ref total, value);
-            }
+            Interlocked.Add(ref total, value);
         }
 
-        protected void AddTime(ref long total, TimeSpan timeSpan)
+        protected void AddTime(ref long totalTicks, TimeSpan timeSpan)
         {
-            if (ThreadCount == 1)
-            {
-                total += timeSpan.Ticks;
-            }
-            else
-            {
-                Interlocked.Add(ref total, timeSpan.Ticks);
-            }
+            Interlocked.Add(ref totalTicks, timeSpan.Ticks);
         }
     }
 }
