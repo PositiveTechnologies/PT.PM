@@ -78,7 +78,7 @@ namespace PT.PM.PatternEditor
             };
             matchResultListBox.DoubleTapped += MatchingResultListBox_DoubleTapped;
 
-            SourceCodeLogger = GuiLogger.CreateSourceCodeLogger(SourceCodeErrors);
+            SourceCodeLogger = GuiLogger.CreateSourceCodeLogger(SourceCodeErrors, MatchingResults);
             languageDetector.Logger = SourceCodeLogger;
 
             OpenSourceCodeFile = ReactiveCommand.Create(async () =>
@@ -625,7 +625,6 @@ namespace PT.PM.PatternEditor
             workflow.DumpStages = dumpStages;
 
             WorkflowResult workflowResult = workflow.Process();
-            List<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto().ToList();
             sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
 
             ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
@@ -643,7 +642,7 @@ namespace PT.PM.PatternEditor
                 UstJson = FileExt.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
             }
 
-            MatchingResultText = "MATCHINGS" + (matchResults.Count > 0 ? $" ({matchResults.Count})" : "");
+            MatchingResultText = "MATCHINGS" + (workflowResult.TotalMatchesCount > 0 ? $" ({workflowResult.TotalMatchesCount})" : "");
 
             if (SourceCodeLogger.ErrorCount == 0)
             {
@@ -655,15 +654,6 @@ namespace PT.PM.PatternEditor
                 SourceCodeErrorsIsVisible = true;
                 SourceCodeErrorsText = $"ERRORS ({SourceCodeLogger.ErrorCount})";
             }
-
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                MatchingResults.Clear();
-                foreach (MatchResultDto matchResult in matchResults)
-                {
-                    MatchingResults.Add(new MatchResultViewModel(matchResult));
-                }
-            });
         }
 
         private void DetectLanguageIfRequired()
