@@ -155,12 +155,13 @@ namespace PT.PM.Tests
 
             var workflow = new Workflow(codeRepository)
             {
-                PatternsRepository = patternsRepository
+                PatternsRepository = patternsRepository,
+                Logger = logger
             };
             var result = workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
-            Assert.AreEqual(1, result.MatchResults.Count);
+            Assert.AreEqual(1, logger.Matches.Count);
         }
     }
 }

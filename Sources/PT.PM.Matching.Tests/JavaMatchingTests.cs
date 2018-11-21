@@ -17,11 +17,10 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.java");
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);
-            WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults
-                .ToDto()
-                .OrderBy(r => r.PatternKey);
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository) {Logger = logger};
+            workflow.Process();
+            IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto().OrderBy(r => r.PatternKey);
             IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains("Java")).ToArray();
             foreach (PatternDto dto in patternDtos)

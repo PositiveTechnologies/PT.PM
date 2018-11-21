@@ -21,7 +21,6 @@ namespace PT.PM.Matching.Tests
         private PatternConverter patternsConverter;
         private MemoryPatternsRepository patternsRepository;
         private SourceCodeRepository sourceCodeRep;
-        private Workflow workflow;
 
         [SetUp]
         public void Init()
@@ -29,7 +28,6 @@ namespace PT.PM.Matching.Tests
             patternsConverter = new PatternConverter();
             patternsRepository = new MemoryPatternsRepository();
             sourceCodeRep = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, "common-matching.php"));
-            workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = new LoggerMessageCounter() };
         }
 
         [TestCase("#()", new[] { 0 })]
@@ -44,9 +42,11 @@ namespace PT.PM.Matching.Tests
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
-            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
-            WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
+            patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, patternsRepository) {Logger = logger};
+            workflow.Process();
+            IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
 
             Assert.AreEqual(matchMethodNumbers.Contains(0) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_0")));
@@ -61,10 +61,11 @@ namespace PT.PM.Matching.Tests
         {
             var codeRepository = new MemoryCodeRepository("class P { void Main() { Func(ref a); } }", "test.cs");
             var patternsRepository = new DslPatternRepository("Func(a)", "CSharp");
-            workflow = new Workflow(codeRepository, patternsRepository);
-            WorkflowResult result = workflow.Process();
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(codeRepository, patternsRepository) {Logger = logger};
+            workflow.Process();
 
-            Assert.AreEqual(1, result.MatchResults.Count);
+            Assert.AreEqual(1, logger.Matches.Count);
         }
 
         [TestCase("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);")]
@@ -75,8 +76,10 @@ namespace PT.PM.Matching.Tests
             PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
-            WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, patternsRepository) {Logger = logger};
+            workflow.Process();
+            IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
 
             int expectedMatchingCount = patternData.Contains("password") ? 1 : 0;
@@ -90,8 +93,10 @@ namespace PT.PM.Matching.Tests
             PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
-            WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            workflow.Process();
+            IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
 
             int expectedMatchingCount = patternData.Contains("~<[@pwd]>.Length") ? 0 : 1;
@@ -113,8 +118,10 @@ namespace PT.PM.Matching.Tests
             };
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
-            WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto();
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            workflow.Process();
+            IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
 
             Assert.AreEqual(1, matchResults.Count());
@@ -131,11 +138,13 @@ namespace PT.PM.Matching.Tests
             };
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
-            WorkflowResult workflowResult = workflow.Process();
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            workflow.Process();
             patternsRepository.Clear();
 
-            Assert.AreEqual(1, workflowResult.MatchResults.Count);
-            Assert.AreEqual(7, ((MatchResult)workflowResult.MatchResults[0]).TextSpans.Length);
+            Assert.AreEqual(1, logger.Matches.Count);
+            Assert.AreEqual(7, ((MatchResult)logger.Matches[0]).TextSpans.Length);
         }
 
         [Test]
@@ -191,8 +200,10 @@ namespace PT.PM.Matching.Tests
             string pattern = "<[ \"\\d+\" ]>";
             PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { PatternKey = pattern });
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
-            WorkflowResult workflowResult = workflow.Process();
-            List<MatchResultDto> matchResults = workflowResult.MatchResults.ToDto().ToList();
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            workflow.Process();
+            List<MatchResultDto> matchResults = logger.Matches.ToDto().ToList();
             patternsRepository.Clear();
 
             Assert.AreEqual(2, matchResults.Count);
