@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using PT.PM.Common;
-using PT.PM.Matching;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using PT.PM.Matching;
 
 namespace PT.PM
 {
@@ -11,8 +11,6 @@ namespace PT.PM
         where TStage : Enum
         where TRenderStage : Enum
     {
-        private List<IMatchResultBase> matchResults = new List<IMatchResultBase>();
-
         private long totalReadTicks;
         private long totalLexerTicks;
         private long totalParserTicks;
@@ -28,6 +26,9 @@ namespace PT.PM
         private int totalProcessedPatternsCount;
 
         private int totalTerminatedFilesCount;
+
+        protected int totalSuppressedCount;
+        protected int totalMatchesCount;
 
         public WorkflowResultBase(List<Language> languages, int threadCount, TStage stage)
         {
@@ -56,9 +57,6 @@ namespace PT.PM
         public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
 
         [JsonIgnore]
-        public IReadOnlyList<IMatchResultBase> MatchResults => matchResults;
-
-        [JsonIgnore]
         public List<TPattern> Patterns { get; set; } = new List<TPattern>();
 
         public long TotalReadTicks => totalReadTicks;
@@ -69,7 +67,8 @@ namespace PT.PM
         public long TotalLexerTicks => totalLexerTicks;
         public long TotalParserTicks => totalParserTicks;
 
-        public int TotalMatchesCount => MatchResults.Count;
+        public int TotalSuppressedCount => totalSuppressedCount;
+        public int TotalMatchesCount => totalMatchesCount;
 
         public int TotalProcessedFilesCount => totalProcessedFilesCount;
         public int TotalProcessedCharsCount => totalProcessedCharsCount;
@@ -84,11 +83,6 @@ namespace PT.PM
         public void AddResultEntity(CodeFile sourceCodeFile)
         {
             AddEntity(SourceCodeFiles, sourceCodeFile);
-        }
-
-        public void AddResultEntity(IEnumerable<IMatchResultBase> matchResults)
-        {
-            AddEntities(this.matchResults, matchResults);
         }
 
         public void AddResultEntity(IEnumerable<TPattern> patterns)
@@ -139,6 +133,32 @@ namespace PT.PM
         public void AddProcessedPatternsCount(int patternsCount)
         {
             AddInt(ref totalProcessedPatternsCount, patternsCount);
+        }
+
+        public virtual void ProcessMatchResult(IMatchResultBase matchResult)
+        {
+            int matchedResultCount = 0;
+            int suppressedCount = 0;
+
+            GetMatchesCount(matchResult, ref matchedResultCount, ref suppressedCount);
+
+            Interlocked.Add(ref totalMatchesCount, matchedResultCount);
+            Interlocked.Add(ref totalSuppressedCount, suppressedCount);
+        }
+
+        protected static void GetMatchesCount(IMatchResultBase matchResult, ref int matchedResultCount, ref int suppressedCount)
+        {
+            int patternsCount = PatternRoot.ExtractKeys(matchResult.PatternKey).Length;
+            if (patternsCount == 0)
+            {
+                patternsCount = 1;
+            }
+
+            matchedResultCount += patternsCount;
+            if (matchResult.Suppressed)
+            {
+                suppressedCount += patternsCount;
+            }
         }
 
         public void AddLexerTime(TimeSpan lexerTime)

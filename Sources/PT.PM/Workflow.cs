@@ -143,12 +143,16 @@ namespace PT.PM
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
-                    List<MatchResult> matchResults = patternMatcher.Match(rootUst);
+                    var matchResults = patternMatcher.Match(rootUst);
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");
                     workflowResult.AddMatchTime(stopwatch.Elapsed);
-                    workflowResult.AddResultEntity(matchResults);
+
+                    foreach (IMatchResultBase matchResult in matchResults)
+                    {
+                        workflowResult.ProcessMatchResult(matchResult);
+                    }
 
                     cancellationToken.ThrowIfCancellationRequested();
 
