@@ -3034,5 +3034,10 @@ namespace PT.PM.SqlParseTreeUst
         {
             return VisitChildren(context);
         }
+
+        public Ust VisitDelimiter([NotNull] MySqlParser.DelimiterContext context)
+        {
+            return VisitChildren(context);
+        }
     }
 }
