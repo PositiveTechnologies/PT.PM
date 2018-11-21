@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes.Tokens;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -54,6 +55,11 @@ namespace PT.PM.Matching.Patterns
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
+            if (Any && ust is Expression)
+            {
+                return context.AddMatch(ust);
+            }
+
             var token = ust as Token;
             if (token == null)
             {
