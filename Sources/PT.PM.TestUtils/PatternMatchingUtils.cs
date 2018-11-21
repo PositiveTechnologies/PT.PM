@@ -24,16 +24,17 @@ namespace PT.PM.TestUtils
                 Languages = new HashSet<Language>(analyzedLanguages)
             };
             var patternsRep = new MemoryPatternsRepository();
-            var workflow = new Workflow(sourceCodeRep, patternsRep);
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, patternsRep) {Logger = logger};
 
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { PatternKey = pattern });
             patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageUtils.PatternLanguages.Values);
             patternNode.DebugInfo = pattern;
             var patternsConverter = new PatternConverter();
-            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
-            WorkflowResult workflowResult = workflow.Process();
-            MatchResultDto[] matchResults = workflowResult.MatchResults.ToDto()
+            patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
+            workflow.Process();
+            MatchResultDto[] matchResults = logger.Matches.ToDto()
                 .OrderBy(r => r.PatternKey)
                 .ToArray();
 

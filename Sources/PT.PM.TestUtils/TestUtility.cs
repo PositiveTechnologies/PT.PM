@@ -8,6 +8,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using PT.PM.Common.Nodes;
+using PT.PM.Matching;
 
 namespace PT.PM.TestUtils
 {
@@ -45,7 +46,7 @@ namespace PT.PM.TestUtils
             }
         }
 
-        public static WorkflowResult CheckFile(string fileName, Stage endStage,
+        public static IReadOnlyList<IMatchResultBase> CheckFile(string fileName, Stage endStage,
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
             Language language = null, int maxStackSize = 0)
         {
@@ -53,7 +54,7 @@ namespace PT.PM.TestUtils
                 language, maxStackSize);
         }
 
-        public static WorkflowResult CheckFile(string fileName, Stage endStage, out RootUst ust,
+        public static IReadOnlyList<IMatchResultBase> CheckFile(string fileName, Stage endStage, out RootUst ust,
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
             Language language = null, int maxStackSize = 0)
         {
@@ -76,7 +77,7 @@ namespace PT.PM.TestUtils
             WorkflowResult workflowResult = null;
             if (maxStackSize == 0)
             {
-                workflowResult = workflow.Process();
+                workflow.Process();
             }
             else
             {
@@ -87,10 +88,18 @@ namespace PT.PM.TestUtils
 
             ust = tempUst;
             string errorString = string.Empty;
+            IReadOnlyList<IMatchResultBase> matchResults;
+
             if (log is LoggerMessageCounter loggerMessageCounter)
             {
                 errorString = loggerMessageCounter.ErrorsString;
+                matchResults = loggerMessageCounter.Matches;
             }
+            else
+            {
+                matchResults = new List<IMatchResultBase>();
+            }
+
             if (!shouldContainsErrors)
             {
                 Assert.AreEqual(0, log.ErrorCount, errorString);
@@ -100,13 +109,13 @@ namespace PT.PM.TestUtils
                 Assert.Greater(log.ErrorCount, 0);
             }
 
-            return workflowResult;
+            return matchResults;
         }
 
-        public static WorkflowResult CheckProject(string projectPath, Language language, Stage endStage,
+        public static void CheckProject(string projectPath, Language language, Stage endStage,
             string searchPattern = "*.*", Func<string, bool> searchPredicate = null)
         {
-            var logger = new LoggerMessageCounter() { LogToConsole = false };
+            var logger = new LoggerMessageCounter { LogToConsole = false };
             var repository = new DirectoryCodeRepository(projectPath, language)
             {
                 SearchPattern = searchPattern,
@@ -117,11 +126,9 @@ namespace PT.PM.TestUtils
                 Logger = logger,
                 ThreadCount = 1
             };
-            WorkflowResult workflowResult = workflow.Process();
+            workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
-
-            return workflowResult;
         }
 
         /// <summary>
