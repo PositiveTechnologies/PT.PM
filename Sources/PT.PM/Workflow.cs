@@ -173,7 +173,6 @@ namespace PT.PM
             }
             finally
             {
-                workflowResult.AddProcessedFilesCount(1);
                 double progress = workflowResult.TotalFilesCount == 0
                     ? workflowResult.TotalProcessedFilesCount
                     : (double)workflowResult.TotalProcessedFilesCount / workflowResult.TotalFilesCount;

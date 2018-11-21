@@ -274,6 +274,7 @@ namespace PT.PM
 
             Logger.LogInfo($"File {fileAndTime.Item1} read (Elapsed: {elapsed.Format()}).");
 
+            workflowResult.AddProcessedFilesCount(1);
             workflowResult.AddProcessedCharsCount(codeFile.Code.Length);
             workflowResult.AddProcessedLinesCount(codeFile.GetLinesCount());
             workflowResult.AddReadTime(elapsed);
