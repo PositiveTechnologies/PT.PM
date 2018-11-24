@@ -36,8 +36,8 @@ namespace PT.PM.Cli.Common
 
         public TWorkflowResult Process(string[] args)
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
             var paramsNormalizer = new CliParametersNormalizer<TParameters>
             {

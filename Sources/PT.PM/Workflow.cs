@@ -43,7 +43,8 @@ namespace PT.PM
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
             CancellationToken cancellationToken = default)
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ??
@@ -72,8 +73,6 @@ namespace PT.PM
                     parallelOptions,
                     fileName =>
                     {
-                        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
                         var patternMatcher = new PatternMatcher
                         {
                             Logger = Logger,
