@@ -35,17 +35,15 @@ namespace PT.PM.Common.CodeRepository
 
                 return true;
             }
-            else
-            {
-                return !fileExtension.EndsWith("json", StringComparison.OrdinalIgnoreCase);
-            }
+
+            return !fileExtension.EndsWith("json", StringComparison.OrdinalIgnoreCase);
         }
 
         private bool IsLanguageIgnored(Language language, string fileExtension, bool withParser)
         {
             if (language.Extensions.Any(ext => ext == fileExtension))
             {
-                return withParser ? !language.IsParserExists() : false;
+                return withParser && !language.IsParserExists();
             }
 
             if (LanguageUtils.SuperLanguages.TryGetValue(language, out HashSet<Language> superLanguages))

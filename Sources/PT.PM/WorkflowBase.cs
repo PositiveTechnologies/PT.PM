@@ -124,20 +124,14 @@ namespace PT.PM
 
         protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default)
         {
-            if (Stage.IsLess(PM.Stage.File))
-            {
-                return null;
-            }
-
-            RootUst result = null;
-            var stopwatch = new Stopwatch();
             if (SourceCodeRepository.IsFileIgnored(fileName, true))
             {
                 Logger.LogInfo($"File {fileName} not read.");
                 return null;
             }
 
-            stopwatch.Restart();
+            RootUst result = null;
+            var stopwatch = Stopwatch.StartNew();
             CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
             stopwatch.Stop();
 
