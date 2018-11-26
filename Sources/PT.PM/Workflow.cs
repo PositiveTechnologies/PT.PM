@@ -60,7 +60,7 @@ namespace PT.PM
             }
             else
             {
-                filesCountTask = Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
+                Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
             }
 
             try
@@ -145,7 +145,7 @@ namespace PT.PM
                     var matchResults = patternMatcher.Match(rootUst);
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");
+                    Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {stopwatch.GetElapsedString()}.");
                     workflowResult.AddMatchTime(stopwatch.Elapsed);
 
                     foreach (IMatchResultBase matchResult in matchResults)
