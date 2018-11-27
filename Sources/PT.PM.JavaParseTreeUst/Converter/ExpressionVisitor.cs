@@ -57,7 +57,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         {
                             var invocation = (InvocationExpression)Visit(context.methodCall());
                             return new InvocationExpression(
-                                new MemberReferenceExpression(target, invocation.Target, target.TextSpan.Union(invocation.TextSpan)),
+                                new MemberReferenceExpression(target, invocation.Target, target.TextSpan.Union(invocation.Target.TextSpan)),
                                 invocation.Arguments,
                                 textSpan);
                         }
