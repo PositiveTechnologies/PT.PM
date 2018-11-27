@@ -471,7 +471,7 @@ namespace PT.PM.Dsl
                 ? new PatternOr(values)
                 : values.Count() == 1
                 ? values.First()
-                : new PatternIdRegexToken();
+                : new PatternAny();
 
             PatternUst result;
             if (context.PatternVar() != null)

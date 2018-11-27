@@ -20,7 +20,7 @@ namespace PT.PM.Matching.Patterns
             Id = id;
         }
 
-        public PatternUst Value { get; set; } = new PatternIdRegexToken();
+        public PatternUst Value { get; set; } = new PatternAny();
 
         public override string ToString()
         {
@@ -28,7 +28,8 @@ namespace PT.PM.Matching.Patterns
             if (Parent is PatternAssignmentExpression parentAssignment &&
                 ReferenceEquals(this, parentAssignment.Left))
             {
-                if (!(Value is PatternIdRegexToken patternIdRegexToken && patternIdRegexToken.Any))
+                if (!((Value is PatternAny patternAny && patternAny.Any)
+                    ||(Value is PatternIdRegexToken regexPattern&& regexPattern.Any)))
                 {
                     valueString = ": " + Value.ToString();
                 }
