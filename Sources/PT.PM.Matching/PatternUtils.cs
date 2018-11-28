@@ -32,7 +32,7 @@ namespace PT.PM.Matching
 
         public static TextSpan GetTextSpan(this Match match, int escapeCharsLength = 0)
         {
-            if (!match.Success || match.Length == 0)
+            if (!match.Success)
             {
                 return TextSpan.Zero;
             }

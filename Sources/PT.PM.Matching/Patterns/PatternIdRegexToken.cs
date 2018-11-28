@@ -64,9 +64,8 @@ namespace PT.PM.Matching.Patterns
                 ? caseInsensitiveRegex
                 : this.regex;
             string tokenText = token.TextValue;
-            TextSpan textSpan = regex.Match(tokenText).GetTextSpan();
 
-            return !textSpan.IsZero
+            return regex.Match(tokenText).Success
                 ? context.AddMatch(token)
                 : context.Fail();
         }
