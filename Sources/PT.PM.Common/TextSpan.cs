@@ -109,7 +109,7 @@ namespace PT.PM.Common
 
         public override int GetHashCode()
         {
-            int result = Hash.Combine(Start, Length);
+            int result = (Start << 16) + Length;
 
             if (!(CodeFile is null))
             {
