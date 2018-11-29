@@ -1,16 +1,16 @@
 ﻿using Avalonia.Controls;
+using AvaloniaEdit;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Utils;
 using PT.PM.PatternEditor.ViewModels;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace PT.PM.PatternEditor
 {
     internal class GuiUtils
     {
-        internal static void ProcessErrorOnDoubleClick(ListBox errorsListBox, TextBox inputTextBox)
+        internal static void ProcessErrorOnDoubleClick(ListBox errorsListBox, TextEditor inputTextBox)
         {
             errorsListBox.Focus();
 
@@ -19,8 +19,8 @@ namespace PT.PM.PatternEditor
                 !pmException.TextSpan.IsZero)
             {
                 inputTextBox.SelectionStart = pmException.TextSpan.Start;
-                inputTextBox.SelectionEnd = pmException.TextSpan.End;
-                inputTextBox.CaretIndex = inputTextBox.SelectionEnd + 1;
+                inputTextBox.SelectionLength = pmException.TextSpan.Length;
+                inputTextBox.CaretOffset = pmException.TextSpan.End;
             }
         }
 

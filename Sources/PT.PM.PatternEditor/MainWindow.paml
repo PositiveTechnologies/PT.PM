@@ -1,6 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui" Design.Width="1024" Design.Height="768"
         Title="Pattern Editor" Icon="resm:PT.PM.PatternEditor.PT.PM.ico?assembly=PT.PM.PatternEditor"
         xmlns:PatternEditor="clr-namespace:PT.PM.PatternEditor;assembly=PT.PM.PatternEditor"
+        xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         Width="{Binding Width, Mode=TwoWay}" Height="{Binding Height, Mode=TwoWay}" Background="#CFD8DC">
   <Window.Styles>
     <Style Selector="TextBlock">
@@ -39,8 +40,10 @@
         <DropDown Grid.Column="12" Items="{Binding JavaScriptTypes}" SelectedItem="{Binding JavaScriptType}" IsVisible="{Binding IsJavaScriptTypeVisible}" />
       </Grid>
 
-      <TextBox Grid.Row="1" Name="SourceCode" AcceptsReturn="true" />
-      
+      <Border Grid.Row="1" BorderThickness="1" BorderBrush="#FF828790">
+        <ae:TextEditor Name="SourceCode" FontFamily="Consolas" FontSize="12" />
+      </Border>
+
       <Expander Grid.Row="2" IsVisible="{Binding SourceCodeErrorsIsVisible}" Header="{Binding SourceCodeErrorsText}" IsExpanded="{Binding IsErrorsExpanded, Mode=TwoWay}" FontSize="18" FontWeight="Medium" Margin="0,10,0,0" >
         <Grid RowDefinitions="80" >
           <ListBox Name="SourceCodeErrors" Items="{Binding SourceCodeErrors}" MinHeight="80"/>

@@ -1,5 +1,6 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
              xmlns:c="clr-namespace:PT.PM.PatternEditor;assembly=PT.PM.PatternEditor">
   <UserControl.Styles>
     <Style Selector="TextBlock">
@@ -73,7 +74,10 @@
       <TextBlock Text="DSL"/>
       <TextBlock Grid.Column="1" Text="{Binding TextBoxPosition}"/>
     </Grid>
-    <TextBox Name="PatternData" TextWrapping="Wrap" AcceptsReturn="true" MinHeight="100"/>
+
+    <Border Grid.Row="1" BorderThickness="1" BorderBrush="#FF828790">
+      <ae:TextEditor Name="PatternData" WordWrap="true" FontFamily="Consolas" FontSize="12" MinHeight="100" />
+    </Border>
 
     <TextBlock Text="JSON"/>
     <TextBox AcceptsReturn="true" IsReadOnly="true" Text="{Binding PatternJson, Mode=OneWay}" MaxHeight="200" />

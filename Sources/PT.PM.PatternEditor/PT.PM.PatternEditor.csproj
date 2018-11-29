@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.7.0" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="0.7.0" />
     <PackageReference Include="Avalonia.Desktop" Version="0.7.0" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.7.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />

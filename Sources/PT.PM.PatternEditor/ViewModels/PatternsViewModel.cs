@@ -1,6 +1,6 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Threading;
+using AvaloniaEdit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PT.PM.Common;
@@ -29,7 +29,7 @@ namespace PT.PM.PatternEditor.Pattern
         private bool oldIsIncludeCode;
 
         private ListBox patternsListBox;
-        private TextBox patternTextBox;
+        private TextEditor patternTextBox;
         private ListBox patternErrorsListBox;
         private TextBox logger;
 
@@ -40,11 +40,12 @@ namespace PT.PM.PatternEditor.Pattern
         private DslProcessor dslProcessor = new DslProcessor();
         private StringBuilder log = new StringBuilder();
         private CodeFile patternFile;
+        private int prevCaretOffset;
 
         public PatternsViewModel(PatternUserControl patternUserControl)
         {
             patternsListBox = patternUserControl.Find<ListBox>("PatternsListBox");
-            patternTextBox = patternUserControl.Find<TextBox>("PatternData");
+            patternTextBox = patternUserControl.Find<TextEditor>("PatternData");
             patternErrorsListBox = patternUserControl.Find<ListBox>("PatternErrors");
             logger = patternUserControl.Find<TextBox>("Logger");
 
@@ -88,16 +89,21 @@ namespace PT.PM.PatternEditor.Pattern
             patternLogger.LogEvent += PatternLogger_LogEvent;
             dslProcessor.Logger = patternLogger;
 
-            patternTextBox.GetObservable(TextBox.CaretIndexProperty)
-                .Subscribe(UpdatePatternCaretIndex);
+            Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                .Subscribe(_ => UpdatePatternCaretIndex());
 
-            patternTextBox.GetObservable(TextBox.TextProperty)
+            var patternTextBoxObserable = Observable.FromEventPattern<EventHandler, EventArgs>(
+                h => patternTextBox.TextChanged += h,
+                h => patternTextBox.TextChanged -= h);
+
+            patternTextBoxObserable
                 .Throttle(TimeSpan.FromMilliseconds(250))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(str =>
                 {
                     if (SelectedPattern != null)
                     {
-                        Value = str;
+                        Value = patternTextBox.Text;
                     }
                 });
 
@@ -505,18 +511,22 @@ namespace PT.PM.PatternEditor.Pattern
             }
         }
 
-        private void UpdatePatternCaretIndex(int caretIndex)
+        private void UpdatePatternCaretIndex()
         {
-            if (patternFile != null)
+            if (patternTextBox.CaretOffset != prevCaretOffset)
             {
-                patternFile.GetLineColumnFromLinear(caretIndex, out int line, out int column);
-                PatternTextBoxPosition = $"Caret: {line}:{column}";
+                prevCaretOffset = patternTextBox.CaretOffset;
+                if (patternFile != null)
+                {
+                    patternFile.GetLineColumnFromLinear(patternTextBox.CaretOffset, out int line, out int column);
+                    PatternTextBoxPosition = $"Caret: {line}:{column}";
+                }
+                else
+                {
+                    PatternTextBoxPosition = "";
+                }
+                this.RaisePropertyChanged(nameof(PatternTextBoxPosition));
             }
-            else
-            {
-                PatternTextBoxPosition = "";
-            }
-            Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(PatternTextBoxPosition)));
         }
 
         public List<PatternDto> LoadPatterns()

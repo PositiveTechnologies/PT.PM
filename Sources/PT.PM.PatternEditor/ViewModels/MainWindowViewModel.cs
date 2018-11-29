@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Threading;
+using AvaloniaEdit;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Utils;
@@ -13,7 +15,6 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -25,7 +26,7 @@ namespace PT.PM.PatternEditor
     {
         private readonly Window window;
         private readonly ColumnDefinition patternsPanelColumn;
-        private readonly TextBox sourceCodeTextBox;
+        private readonly TextEditor sourceCodeTextBox;
         private readonly ListBox sourceCodeErrorsListBox;
         private readonly ListBox matchResultListBox;
         private string oldSelectedLanguage;
@@ -48,6 +49,7 @@ namespace PT.PM.PatternEditor
         private bool oldIsIncludeCode;
         private bool oldIsLeftRightDir;
         private CodeFile sourceCode;
+        private int prevSourceCodeStart, prevSourceCodeLength;
 
         public MainWindowViewModel(Window w)
         {
@@ -67,7 +69,7 @@ namespace PT.PM.PatternEditor
             }
 
             patternsPanelColumn = window.Find<Grid>("MainGrid").ColumnDefinitions[0];
-            sourceCodeTextBox = window.Find<TextBox>("SourceCode");
+            sourceCodeTextBox = window.Find<TextEditor>("SourceCode");
             sourceCodeErrorsListBox = window.Find<ListBox>("SourceCodeErrors");
             matchResultListBox = window.Find<ListBox>("MatchingResult");
 
@@ -146,12 +148,12 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(SelectedLanguage));
             this.RaisePropertyChanged(nameof(OpenedFileName));
 
-            sourceCodeTextBox.GetObservable(TextBox.SelectionStartProperty)
-                .Subscribe(UpdateSourceCodeSelection);
-            sourceCodeTextBox.GetObservable(TextBox.SelectionEndProperty)
-                .Subscribe(UpdateSourceCodeSelection);
+            Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                .Subscribe(_ => UpdateSourceCodeSelection());
 
-            sourceCodeTextBox.GetObservable(TextBox.TextProperty)
+            Observable.FromEventPattern<EventHandler, EventArgs>(
+                h => sourceCodeTextBox.TextChanged += h,
+                h => sourceCodeTextBox.TextChanged -= h)
                 .Throttle(TimeSpan.FromMilliseconds(500))
                 .Subscribe(str => CheckSourceCode());
 
@@ -222,27 +224,35 @@ namespace PT.PM.PatternEditor
                 });
         }
 
-        private void UpdateSourceCodeSelection(int index)
+        private void UpdateSourceCodeSelection()
         {
-            if (sourceCode != null)
+            int sourceCodeStart = sourceCodeTextBox.SelectionStart;
+            int sourceCodeLength = sourceCodeTextBox.SelectionLength;
+            if (sourceCodeStart != prevSourceCodeStart || sourceCodeLength != prevSourceCodeLength)
             {
-                int start = sourceCodeTextBox.SelectionStart;
-                int end = sourceCodeTextBox.SelectionEnd;
-                if (start > end)
+                prevSourceCodeStart = sourceCodeStart;
+                prevSourceCodeLength = sourceCodeLength;
+
+                if (sourceCode != null)
                 {
-                    int t = start;
-                    start = end;
-                    end = t;
+                    int start = sourceCodeTextBox.SelectionStart;
+                    int end = sourceCodeTextBox.SelectionStart + sourceCodeTextBox.SelectionLength;
+                    if (start > end)
+                    {
+                        int t = start;
+                        start = end;
+                        end = t;
+                    }
+                    var textSpan = TextSpan.FromBounds(start, end);
+                    var lineColumnTextSpan = sourceCode.GetLineColumnTextSpan(textSpan);
+                    SourceCodeTextBoxPosition = $"Range: {lineColumnTextSpan}; LineColumn: {textSpan}";
                 }
-                var textSpan = TextSpan.FromBounds(start, end);
-                var lineColumnTextSpan = sourceCode.GetLineColumnTextSpan(textSpan);
-                SourceCodeTextBoxPosition = $"Range: {lineColumnTextSpan}; LineColumn: {textSpan}";
+                else
+                {
+                    SourceCodeTextBoxPosition = $"";
+                }
+                this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition));
             }
-            else
-            {
-                SourceCodeTextBoxPosition = $"";
-            }
-            Dispatcher.UIThread.InvokeAsync(() => this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition)));
         }
 
         private void MatchingResultListBox_DoubleTapped(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -252,8 +262,8 @@ namespace PT.PM.PatternEditor
                 var matchResult = matchResultViewModel.MatchResult;
                 sourceCodeTextBox.Focus();
                 sourceCodeTextBox.SelectionStart = matchResult.TextSpan.Start;
-                sourceCodeTextBox.SelectionEnd = matchResult.TextSpan.End;
-                sourceCodeTextBox.CaretIndex = sourceCodeTextBox.SelectionEnd;
+                sourceCodeTextBox.SelectionLength = matchResult.TextSpan.Length;
+                sourceCodeTextBox.CaretOffset = matchResult.TextSpan.End;
             }
         }
 
