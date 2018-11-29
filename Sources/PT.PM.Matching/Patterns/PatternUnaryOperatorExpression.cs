@@ -54,11 +54,8 @@ namespace PT.PM.Matching.Patterns
 
         public PatternUst[] GetArgs()
         {
-            var result = new List<PatternUst>();
-            result.Add(Expression);
-            // FIXME
-            // result.Add(Operator);
-            return result.ToArray();
+            // FIXME: add `Operator` to args
+            return new [] {Expression};
         }
 
         public Type UstType => typeof(UnaryOperatorExpression);

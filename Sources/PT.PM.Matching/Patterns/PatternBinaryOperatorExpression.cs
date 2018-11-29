@@ -56,12 +56,8 @@ namespace PT.PM.Matching.Patterns
 
         public PatternUst[] GetArgs()
         {
-            var result = new List<PatternUst>();
-            result.Add(Left);
-            result.Add(Right);
-            // FIXME
-            // result.Add(Operator);
-            return result.ToArray();
+            // FIXME: add `Operator` to args
+            return new [] {Left, Right};
         }
 
         public Type UstType => typeof(BinaryOperatorExpression);
