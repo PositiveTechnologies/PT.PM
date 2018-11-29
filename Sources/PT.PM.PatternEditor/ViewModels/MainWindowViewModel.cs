@@ -1,8 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Threading;
 using AvaloniaEdit;
+using AvaloniaEdit.Highlighting;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Utils;
@@ -51,6 +51,15 @@ namespace PT.PM.PatternEditor
         private CodeFile sourceCode;
         private int prevSourceCodeStart, prevSourceCodeLength;
 
+        private Dictionary<string, string> highlightings = new Dictionary<string, string>
+        {
+            ["CSharp"] = "C#",
+            ["Java"] = "Java",
+            ["Php"] = "PHP",
+            ["JavaScript"] = "JavaScript",
+            ["Html"] = "HTML",
+        };
+
         public MainWindowViewModel(Window w)
         {
             window = w;
@@ -85,12 +94,14 @@ namespace PT.PM.PatternEditor
 
             OpenSourceCodeFile = ReactiveCommand.Create(async () =>
             {
-                var dialog = new OpenFileDialog();
-                string[] fileNames = await dialog.ShowAsync(window);
-                if (fileNames != null)
+                var dialog = new OpenFileDialog
                 {
-                    string fileName = fileNames.Single();
-                    OpenedFileName = fileName;
+                    Title = "Open source code file"
+                };
+                string[] fileNames = await dialog.ShowAsync(window);
+                if (fileNames?.Any() == true)
+                {
+                    OpenedFileName = fileNames[0];
                     fileOpened = true;
                     sourceCodeTextBox.Text = FileExt.ReadAllText(sourceCodeFileName);
                 }
@@ -148,6 +159,11 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(SelectedLanguage));
             this.RaisePropertyChanged(nameof(OpenedFileName));
 
+            if (highlightings.TryGetValue(SelectedLanguage.Key, out string highlighting))
+            {
+                sourceCodeTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
+            }
+
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Subscribe(_ => UpdateSourceCodeSelection());
 
@@ -155,6 +171,7 @@ namespace PT.PM.PatternEditor
                 h => sourceCodeTextBox.TextChanged += h,
                 h => sourceCodeTextBox.TextChanged -= h)
                 .Throttle(TimeSpan.FromMilliseconds(500))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(str => CheckSourceCode());
 
             SetupWindowSubscriptions();
@@ -310,6 +327,11 @@ namespace PT.PM.PatternEditor
             {
                 if (Settings.SourceCodeLanguage != value.Key)
                 {
+                    if (highlightings.TryGetValue(value.Key, out string highlighting))
+                    {
+                        sourceCodeTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
+                    }
+
                     Settings.SourceCodeLanguage = value.Key;
                     Settings.Save();
                     this.RaisePropertyChanged();
