@@ -1,11 +1,13 @@
-﻿using PT.PM.Common.Nodes;
+﻿using System;
+using System.Collections.Generic;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternUnaryOperatorExpression : PatternUst
+    public class PatternUnaryOperatorExpression : PatternUst, IPatternExpression
     {
         public PatternUst Expression { get; set; }
 
@@ -49,5 +51,16 @@ namespace PT.PM.Matching.Patterns
 
             return newContext.AddUstIfSuccess(ust);
         }
+
+        public PatternUst[] GetArgs()
+        {
+            var result = new List<PatternUst>();
+            result.Add(Expression);
+            // FIXME
+            // result.Add(Operator);
+            return result.ToArray();
+        }
+
+        public Type UstType => typeof(UnaryOperatorExpression);
     }
 }
