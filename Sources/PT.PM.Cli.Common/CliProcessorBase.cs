@@ -36,8 +36,8 @@ namespace PT.PM.Cli.Common
 
         public TWorkflowResult Process(string[] args)
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
             var paramsNormalizer = new CliParametersNormalizer<TParameters>
             {
@@ -390,35 +390,7 @@ namespace PT.PM.Cli.Common
 
         protected virtual void LogMatchesCount(TWorkflowResult workflowResult)
         {
-            int matchedResultCount = 0;
-            int suppressedCount = 0;
-
-            foreach (IMatchResultBase matchResult in workflowResult.MatchResults)
-            {
-                GetMatchesCount(matchResult, ref matchedResultCount, ref suppressedCount);
-            }
-
-            Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {matchedResultCount} ({suppressedCount} suppressed)");
-        }
-
-        protected static void GetMatchesCount(IMatchResultBase matchResult, ref int matchedResultCount, ref int suppressedCount)
-        {
-            int patternsCount = ExtractKeys(matchResult.PatternKey).Length;
-            if (patternsCount == 0)
-            {
-                patternsCount = 1;
-            }
-
-            matchedResultCount += patternsCount;
-            if (matchResult.Suppressed)
-            {
-                suppressedCount += patternsCount;
-            }
-        }
-
-        protected static string[] ExtractKeys(string keys)
-        {
-            return keys.Split(PatternRoot.KeySeparators, StringSplitOptions.RemoveEmptyEntries);
+            Logger.LogInfo($"{"Matches count: ",LoggerUtils.Align} {workflowResult.TotalMatchesCount} ({workflowResult.TotalSuppressedCount} suppressed)");
         }
 
         private void LogInfoAndErrors(string[] args, IEnumerable<Error> errors)
@@ -471,7 +443,7 @@ namespace PT.PM.Cli.Common
 
         private void SplitOnLinesAndLog(string str)
         {
-            string[] lines = str.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] lines = str.Split(new [] { "\r\n", "\n" }, StringSplitOptions.None);
             foreach (string line in lines)
             {
                 Logger.LogInfo(line);

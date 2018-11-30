@@ -43,7 +43,8 @@ namespace PT.PM
         public override WorkflowResult Process(WorkflowResult workflowResult = null,
             CancellationToken cancellationToken = default)
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
             BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ??
@@ -59,7 +60,7 @@ namespace PT.PM
             }
             else
             {
-                filesCountTask = Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
+                Task.Factory.StartNew(() => result.TotalFilesCount = fileNames.Count());
             }
 
             try
@@ -72,8 +73,6 @@ namespace PT.PM
                     parallelOptions,
                     fileName =>
                     {
-                        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
                         var patternMatcher = new PatternMatcher
                         {
                             Logger = Logger,
@@ -143,12 +142,16 @@ namespace PT.PM
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
-                    List<MatchResult> matchResults = patternMatcher.Match(rootUst);
+                    var matchResults = patternMatcher.Match(rootUst);
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {GetElapsedString(stopwatch)}.");
+                    Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {stopwatch.GetElapsedString()}.");
                     workflowResult.AddMatchTime(stopwatch.Elapsed);
-                    workflowResult.AddResultEntity(matchResults);
+
+                    foreach (IMatchResultBase matchResult in matchResults)
+                    {
+                        workflowResult.ProcessMatchResult(matchResult);
+                    }
 
                     cancellationToken.ThrowIfCancellationRequested();
 

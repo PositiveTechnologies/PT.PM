@@ -154,9 +154,9 @@ namespace PT.PM.Tests
                 StrictJson = strict,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = !linearTextSpans,
-                Logger = logger,
+                Logger = logger
             };
-            WorkflowResult newResult = newWorkflow.Process();
+            newWorkflow.Process();
 
             if (checkStrict && strict)
             {
@@ -165,13 +165,13 @@ namespace PT.PM.Tests
             else
             {
                 Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
-                Assert.GreaterOrEqual(newResult.MatchResults.Count, 1);
+                Assert.GreaterOrEqual(logger.Matches.Count, 1);
 
                 if (includeTextSpans)
                 {
                     if (inputFileName == "MultiTextSpan")
                     {
-                        var matchResult = (MatchResult)newResult.MatchResults[1];
+                        var matchResult = (MatchResult)logger.Matches[1];
                         Assert.AreEqual(2, matchResult.TextSpans.Length);
 
                         LineColumnTextSpan actualOriginTextSpan = originFile.GetLineColumnTextSpan(matchResult.TextSpans[1]);
@@ -182,7 +182,7 @@ namespace PT.PM.Tests
                     }
                     else
                     {
-                        var match = (MatchResult)newResult.MatchResults.FirstOrDefault();
+                        var match = (MatchResult)logger.Matches.FirstOrDefault();
                         Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), result.SourceCodeFiles.First().GetLineColumnTextSpan(match.TextSpan));
                     }
                 }

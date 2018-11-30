@@ -4,10 +4,13 @@ using PT.PM.Common.Utils;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PT.PM
 {
@@ -83,5 +86,7 @@ namespace PT.PM
 
             return $"{assemblyName?.Version} ({buildTime.ToString(CultureInfo.InvariantCulture)})";
         }
+
+        public static string GetElapsedString(this Stopwatch stopwatch) => $"(Elapsed: {stopwatch.Elapsed.Format()})";
     }
 }

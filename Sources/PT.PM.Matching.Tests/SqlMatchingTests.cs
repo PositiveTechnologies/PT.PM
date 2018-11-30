@@ -29,9 +29,10 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormalizeDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);
 
-            var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository);
+            var logger = new LoggerMessageCounter();
+            var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository) {Logger = logger};
             WorkflowResult workflowResult = workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = workflowResult.MatchResults
+            IEnumerable<MatchResultDto> matchResults = logger.Matches
                 .ToDto()
                 .OrderBy(r => r.PatternKey);
             IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()

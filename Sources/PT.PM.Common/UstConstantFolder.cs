@@ -19,7 +19,7 @@ namespace PT.PM.Common
             typeof(UnaryOperatorExpression)
         };
         
-        private readonly Dictionary<Ust, FoldResult> foldedResults = new Dictionary<Ust, FoldResult>(UstRefComparer.Instance);
+        private readonly Dictionary<TextSpan, FoldResult> foldedResults = new Dictionary<TextSpan, FoldResult>();
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -33,7 +33,7 @@ namespace PT.PM.Common
 
             lock (ust)
             {
-                if (foldedResults.TryGetValue(ust, out result))
+                if (foldedResults.TryGetValue(ust.TextSpan, out result))
                 {
                     return result != null;
                 }
@@ -48,7 +48,7 @@ namespace PT.PM.Common
 
         private FoldResult TryGetOrFold(Ust ust)
         {
-            if (ust != null && foldedResults.TryGetValue(ust, out FoldResult result))
+            if (ust != null && foldedResults.TryGetValue(ust.TextSpan, out FoldResult result))
             {
                 return result;
             }
@@ -300,7 +300,7 @@ namespace PT.PM.Common
             }
 
             result?.TextSpans.Sort();
-            foldedResults[ust] = result;
+            foldedResults[ust.TextSpan] = result;
         }
     }
 }

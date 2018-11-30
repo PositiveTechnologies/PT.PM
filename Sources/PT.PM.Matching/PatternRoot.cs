@@ -17,6 +17,11 @@ namespace PT.PM.Matching
 
         public static readonly string[] KeySeparators = { ",", ";" };
 
+        public static string[] ExtractKeys(string keys)
+        {
+            return keys.Split(KeySeparators, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public string Key { get; set; } = "";

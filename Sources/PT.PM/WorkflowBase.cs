@@ -27,7 +27,6 @@ namespace PT.PM
         where TRenderStage : Enum
     {
         protected ILogger logger = DummyLogger.Instance;
-        protected Task filesCountTask;
 
         public TStage Stage { get; set; }
 
@@ -122,22 +121,16 @@ namespace PT.PM
             Stage = stage;
         }
 
-        protected RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default)
+        public RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default)
         {
-            if (Stage.IsLess(PM.Stage.File))
-            {
-                return null;
-            }
-
-            RootUst result = null;
-            var stopwatch = new Stopwatch();
             if (SourceCodeRepository.IsFileIgnored(fileName, true))
             {
                 Logger.LogInfo($"File {fileName} not read.");
                 return null;
             }
 
-            stopwatch.Restart();
+            RootUst result = null;
+            var stopwatch = Stopwatch.StartNew();
             CodeFile sourceCodeFile = SourceCodeRepository.ReadFile(fileName);
             stopwatch.Stop();
 
@@ -196,7 +189,7 @@ namespace PT.PM
                     }
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {shortFileName} parsed {GetElapsedString(stopwatch)}.");
+                    Logger.LogInfo($"File {shortFileName} parsed {stopwatch.GetElapsedString()}.");
 
                     if (parseTree == null)
                     {
@@ -249,7 +242,7 @@ namespace PT.PM
                     }
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {shortFileName} converted {GetElapsedString(stopwatch)}.");
+                    Logger.LogInfo($"File {shortFileName} converted {stopwatch.GetElapsedString()}.");
                     workflowResult.AddConvertTime(stopwatch.Elapsed);
 
                     if (result == null)
@@ -398,7 +391,7 @@ namespace PT.PM
             return result;
         }
 
-        protected ParallelOptions PrepareParallelOptions(CancellationToken cancellationToken)
+        public ParallelOptions PrepareParallelOptions(CancellationToken cancellationToken)
         {
             return new ParallelOptions
             {
@@ -406,7 +399,5 @@ namespace PT.PM
                 CancellationToken = cancellationToken
             };
         }
-
-        protected string GetElapsedString(Stopwatch stopwatch) => $"(Elapsed: {stopwatch.Elapsed.Format()})";
     }
 }

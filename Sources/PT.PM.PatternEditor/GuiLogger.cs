@@ -3,7 +3,9 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.PatternEditor.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using PT.PM.Matching;
 
 namespace PT.PM.PatternEditor
 {
@@ -15,27 +17,38 @@ namespace PT.PM.PatternEditor
 
         internal readonly ObservableCollection<ErrorViewModel> ErrorsCollection;
 
+        internal readonly ObservableCollection<MatchResultViewModel> MatchResultsCollection;
+
         internal bool IsPatternLogger { get; }
 
         public bool IsLogDebugs { get; set; }
 
         public string LogsDir { get; set; } = "";
 
-        public static GuiLogger CreateSourceCodeLogger(ObservableCollection<ErrorViewModel> errorsCollection) =>
-            new GuiLogger(errorsCollection, false);
+        public static GuiLogger CreateSourceCodeLogger(ObservableCollection<ErrorViewModel> errorsCollection,
+            ObservableCollection<MatchResultViewModel> matchResultCollection)
+        {
+            return new GuiLogger(errorsCollection, false, matchResultCollection);
+        }
 
         public static GuiLogger CreatePatternLogger(ObservableCollection<ErrorViewModel> errorsCollection) =>
-            new GuiLogger(errorsCollection, true);
+            new GuiLogger(errorsCollection, true, null);
 
-        private GuiLogger(ObservableCollection<ErrorViewModel> errorsCollection, bool logPatternErrors)
+        private GuiLogger(ObservableCollection<ErrorViewModel> errorsCollection, bool logPatternErrors,
+            ObservableCollection<MatchResultViewModel> matchResultsCollection)
         {
             ErrorsCollection = errorsCollection;
             IsPatternLogger = logPatternErrors;
+            MatchResultsCollection = matchResultsCollection;
         }
 
         public void Clear()
         {
             ErrorCount = 0;
+            if (MatchResultsCollection != null)
+            {
+                Dispatcher.UIThread.InvokeAsync(MatchResultsCollection.Clear);
+            }
             Dispatcher.UIThread.InvokeAsync(ErrorsCollection.Clear);
         }
 
@@ -69,9 +82,15 @@ namespace PT.PM.PatternEditor
             }
             LogEvent?.Invoke(this, "Error: " + message);
         }
-
+        
         public void LogInfo(object infoObj)
         {
+            if (infoObj is MatchResult matchResult && MatchResultsCollection != null)
+            {
+                var matchResultViewModel = new MatchResultViewModel(new MatchResultDto(matchResult));
+                Dispatcher.UIThread.InvokeAsync(() => MatchResultsCollection.Add(matchResultViewModel));
+            }
+
             LogEvent?.Invoke(this, infoObj.ToString());
         }
 

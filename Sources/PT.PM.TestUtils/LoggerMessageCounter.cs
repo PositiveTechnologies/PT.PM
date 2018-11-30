@@ -1,9 +1,9 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.Matching;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace PT.PM.TestUtils
 {
@@ -14,9 +14,9 @@ namespace PT.PM.TestUtils
 
         private HashSet<string> errorFiles = new HashSet<string>();
 
-        public int ErrorCount => Errors.Count;
+        private List<IMatchResultBase> matches = new List<IMatchResultBase>();
 
-        public double ErrorFilesCount => errorFiles.Count;
+        public int ErrorCount => Errors.Count;
 
         public int InfoMessageCount => infoMessages.Count;
 
@@ -29,6 +29,8 @@ namespace PT.PM.TestUtils
         public bool IsLogDebugs { get; set; } = true;
 
         public string LogsDir { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
+        public IReadOnlyList<IMatchResultBase> Matches => matches;
 
         public void LogError(Exception ex)
         {
@@ -46,17 +48,6 @@ namespace PT.PM.TestUtils
             Debug.Write(message);
         }
 
-        public void LogError(string message)
-        {
-            lock (Errors)
-            {
-                Errors.Add(message);
-            }
-            message = message.TrimEnd() + Environment.NewLine;
-            LogToConsoleIfNeeded(message);
-            Debug.Write(message);
-        }
-
         public void LogInfo(object infoObj)
         {
             string message;
@@ -68,6 +59,14 @@ namespace PT.PM.TestUtils
             }
             else
             {
+                if (infoObj is IMatchResultBase matchResult)
+                {
+                    lock (matches)
+                    {
+                        matches.Add(matchResult);
+                    }
+                }
+
                 message = infoObj.ToString();
             }
             message = message.TrimEnd() + Environment.NewLine;
@@ -86,16 +85,6 @@ namespace PT.PM.TestUtils
             }
             message = message.TrimEnd() + Environment.NewLine;
             LogToConsoleIfNeeded(message);
-        }
-
-        public bool ContainsErrorMessagePart(string errorMessagePart)
-        {
-            return Errors.Any(msg => msg.Contains(errorMessagePart));
-        }
-
-        public bool ContainsDebugMessagePart(string debugMessagePart)
-        {
-            return debugMessages.Any(msg => msg.Contains(debugMessagePart));
         }
 
         public void LogDebug(string message)
