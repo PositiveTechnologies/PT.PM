@@ -1,10 +1,12 @@
-﻿using PT.PM.Common;
+﻿using System;
+using System.Collections.Generic;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternBinaryOperatorExpression : PatternUst
+    public class PatternBinaryOperatorExpression : PatternUst, IPatternExpression
     {
         public PatternUst Left { get; set; }
 
@@ -51,5 +53,13 @@ namespace PT.PM.Matching.Patterns
 
             return newContext.AddUstIfSuccess(binaryOperatorExpression);
         }
+
+        public PatternUst[] GetArgs()
+        {
+            // FIXME: add `Operator` to args
+            return new [] {Left, Right};
+        }
+
+        public Type UstType => typeof(BinaryOperatorExpression);
     }
 }
