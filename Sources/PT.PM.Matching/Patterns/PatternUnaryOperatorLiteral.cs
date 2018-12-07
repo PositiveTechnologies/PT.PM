@@ -6,7 +6,7 @@ using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternUnaryOperatorLiteral : PatternUst
+    public class PatternUnaryOperatorLiteral : PatternUst, ITerminalPattern
     {
         public UnaryOperator UnaryOperator { get; set; }
 

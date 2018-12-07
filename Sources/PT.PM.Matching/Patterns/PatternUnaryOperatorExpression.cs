@@ -54,7 +54,6 @@ namespace PT.PM.Matching.Patterns
 
         public PatternUst[] GetArgs()
         {
-            // FIXME: add `Operator` to args
             return new [] {Expression};
         }
 
