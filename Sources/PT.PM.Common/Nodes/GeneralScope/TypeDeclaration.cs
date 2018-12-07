@@ -12,23 +12,23 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public List<TypeToken> BaseTypes { get; set; } = new List<TypeToken>();
 
-        public List<EntityDeclaration> TypeMembers { get; set; } = new List<EntityDeclaration>();
+        public List<Ust> TypeMembers { get; set; } = new List<Ust>();
 
-        public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<EntityDeclaration> typeMembers,
+        public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<Ust> typeMembers,
              TextSpan textSpan) : base(name, textSpan)
         {
             Type = type;
             BaseTypes = new List<TypeToken>();
-            TypeMembers = typeMembers as List<EntityDeclaration> ?? typeMembers.ToList();
+            TypeMembers = typeMembers as List<Ust> ?? typeMembers.ToList();
         }
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, List<TypeToken> baseTypes,
-            IEnumerable<EntityDeclaration> typeMembers, TextSpan textSpan)
+            IEnumerable<Ust> typeMembers, TextSpan textSpan)
             : base(name, textSpan)
         {
             Type = type;
             BaseTypes = baseTypes;
-            TypeMembers = typeMembers as List<EntityDeclaration> ?? typeMembers.ToList();
+            TypeMembers = typeMembers as List<Ust> ?? typeMembers.ToList();
         }
 
         public TypeDeclaration()
