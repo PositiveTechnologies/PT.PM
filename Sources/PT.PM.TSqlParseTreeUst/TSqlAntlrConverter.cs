@@ -1157,7 +1157,18 @@ namespace PT.PM.SqlParseTreeUst
             {
                 var expr1 = (Expression)Visit(context.expression(0));
                 var expr2 = (Expression)Visit(context.expression(1));
-                var opText = RemoveSpaces(context.GetChild(1).GetText());
+                var opToken = context.GetChild(1);
+                TextSpan opTextSpan = TextSpan.Zero;
+                if(opToken is ITerminalNode terminal)
+                {
+                    opTextSpan = terminal.GetTextSpan();
+                }
+                else if(opToken is ParserRuleContext otherType)
+                {
+                    opTextSpan = otherType.GetTextSpan();
+                }
+
+                var opText = RemoveSpaces(opToken.GetText());
                 if (opText == "=")
                 {
                     opText = "==";
@@ -1167,7 +1178,7 @@ namespace PT.PM.SqlParseTreeUst
                 {
                     op = BinaryOperator.Equal;
                 }
-                var opLiteral = new BinaryOperatorLiteral(op, context.GetTextSpan());
+                var opLiteral = new BinaryOperatorLiteral(op, opTextSpan);
                 var result = new BinaryOperatorExpression(expr1, opLiteral, expr2, context.GetTextSpan());
                 return result;
             }
