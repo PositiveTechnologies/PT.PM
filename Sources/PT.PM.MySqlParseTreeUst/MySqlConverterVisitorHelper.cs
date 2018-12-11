@@ -14,10 +14,10 @@ namespace PT.PM.SqlParseTreeUst
     {
         public override Ust VisitTerminal(ITerminalNode node)
         {
-            return ExtracLiteral(node.Symbol);
+            return ExtractLiteral(node.Symbol);
         }
 
-        private Ust ExtracLiteral(IToken token)
+        private Ust ExtractLiteral(IToken token)
         {
             string text = token.Text;
             TextSpan textSpan = token.GetTextSpan();

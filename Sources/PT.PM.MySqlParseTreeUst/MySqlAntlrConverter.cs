@@ -779,7 +779,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitDeallocatePrepare([NotNull] MySqlParser.DeallocatePrepareContext context)
         {
-            var funcId = (IdToken)ExtracLiteral(context.dropFormat);
+            var funcId = (IdToken)ExtractLiteral(context.dropFormat);
             var arg = context.uid().ConvertToInOutArgument();
             return new InvocationExpression(funcId, new ArgsUst(arg), context.GetTextSpan());
         }
@@ -1828,7 +1828,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitPrepareStatement([NotNull] MySqlParser.PrepareStatementContext context)
         {
-            var prepareArg = (Expression)ExtracLiteral(context.query ?? context.variable);
+            var prepareArg = (Expression)ExtractLiteral(context.query ?? context.variable);
 
             var prepareFunc = new InvocationExpression
             {
