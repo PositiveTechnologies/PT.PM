@@ -529,7 +529,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitCloseCursor([NotNull] MySqlParser.CloseCursorContext context)
         {
-            var cursorArg = ConvertToInOutArgument(context.uid());
+            var cursorArg = context.uid().ConvertToInOutArgument();
             var funcName = new IdToken(context.CLOSE().GetText(), context.CLOSE().GetTextSpan());
             return new InvocationExpression(funcName, new ArgsUst(cursorArg), context.GetTextSpan());
         }
@@ -780,7 +780,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitDeallocatePrepare([NotNull] MySqlParser.DeallocatePrepareContext context)
         {
             var funcId = (IdToken)ExtracLiteral(context.dropFormat);
-            var arg = ConvertToInOutArgument(context.uid());
+            var arg = context.uid().ConvertToInOutArgument();
             return new InvocationExpression(funcId, new ArgsUst(arg), context.GetTextSpan());
         }
 
@@ -801,7 +801,8 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitDeclareCursor([NotNull] MySqlParser.DeclareCursorContext context)
         {
-            return VisitChildren(context);
+            var exprList = ExtractMultiChild((MultichildExpression)VisitChildren(context));
+            return new SqlQuery(exprList[0], exprList.GetRange(1, exprList.Count - 1), context.GetTextSpan());
         }
 
         public Ust VisitDeclareHandler([NotNull] MySqlParser.DeclareHandlerContext context)
@@ -1040,7 +1041,7 @@ namespace PT.PM.SqlParseTreeUst
 
             var queryElements = new List<Expression>
             {
-                ConvertToInOutArgument(context.uid())
+                context.uid().ConvertToInOutArgument()
             };
 
             int startIndex = context.children.IndexOf(context.uid()) + 1;
@@ -1116,22 +1117,24 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitFunctionArgs([NotNull] MySqlParser.FunctionArgsContext context)
         {
-            var funcArgs = new List<Expression>();
+            List<Expression> funcArgs = null;
             var visitedArgs = (Expression)VisitChildren(context);
             if (visitedArgs is MultichildExpression multichild)
             {
-                funcArgs = ExtractMultiChild(multichild);
+                var argList = ExtractMultiChild(multichild);
+                funcArgs = new List<Expression>(argList.Count);
+                funcArgs.AddRange(funcArgs);
             }
             else
             {
-                funcArgs.Add(visitedArgs);
+                funcArgs = new List<Expression> { visitedArgs };
             }
             return new ArgsUst(funcArgs);
         }
 
         public Ust VisitFunctionCall([NotNull] MySqlParser.FunctionCallContext context)
         {
-            return VisitChildren(context);
+            return Visit(context.GetChild(0));
         }
 
         public Ust VisitFunctionCallExpressionAtom([NotNull] MySqlParser.FunctionCallExpressionAtomContext context)
@@ -1628,7 +1631,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitOpenCursor([NotNull] MySqlParser.OpenCursorContext context)
         {
-            var cursorArg = ConvertToInOutArgument(context.uid());
+            var cursorArg = context.uid().ConvertToInOutArgument();
             var funcName = new IdToken(context.OPEN().GetText(), context.OPEN().GetTextSpan());
             return new InvocationExpression(funcName, new ArgsUst(cursorArg), context.GetTextSpan());
         }
