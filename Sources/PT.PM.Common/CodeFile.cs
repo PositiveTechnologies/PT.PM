@@ -88,7 +88,7 @@ namespace PT.PM.Common
 
             if (line < 0 || line >= lineIndexes.Length)
             {
-                throw new IndexOutOfRangeException(nameof(line));
+               return string.Empty;
             }
 
             int endInd;
