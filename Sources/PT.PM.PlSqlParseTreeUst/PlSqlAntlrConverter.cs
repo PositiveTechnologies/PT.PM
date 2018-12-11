@@ -566,12 +566,12 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.dynamic_returning_clause() != null)
             {
-                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.dynamic_returning_clause()), new List<Expression>()));
+                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.dynamic_returning_clause())));
             }
 
             if (context.into_clause() != null)
             {
-                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.into_clause()), new List<Expression>()));
+                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.into_clause())));
             }
             return invocation;
         }
@@ -725,7 +725,7 @@ namespace PT.PM.SqlParseTreeUst
                 }
                 else if (visited is MultichildExpression multichild)
                 {
-                    queryElements.AddRange(ExtractMultiChild(multichild, new List<Expression>()));
+                    queryElements.AddRange(ExtractMultiChild(multichild));
                 }
                 else
                 {
