@@ -1,21 +1,20 @@
-﻿using System;
-using System.Linq;
-using PT.PM.Common;
+﻿using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using Antlr4.Runtime.Misc;
-using PT.PM.Common.Nodes.Sql;
-using PT.PM.MySqlParseTreeUst;
-using PT.PM.Common.Nodes.Tokens;
-using System.Collections.Generic;
-using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.Common.Nodes.Sql;
+using PT.PM.Common.Nodes.Statements;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.TypeMembers;
+using PT.PM.MySqlParseTreeUst;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static PT.PM.Common.Nodes.UstUtils;
-using Antlr4.Runtime.Tree;
-using Antlr4.Runtime;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -26,11 +25,11 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitRoot([NotNull] MySqlParser.RootContext context)
         {
             var statements = context.sqlStatements().sqlStatement();
-            var resultNodes = new Statement[statements.Length];
-            for (int i = 0; i < statements.Length; i++)
+            var resultNodes = new List<Statement>(statements.Length);
+            foreach (var statement in statements)
             {
-                var visited = Visit(statements[i]);
-                resultNodes[i] = visited.ToStatementIfRequired();
+                var visited = Visit(statement);
+                resultNodes.Add(visited.ToStatementIfRequired());
             }
             root.Nodes = new Ust[] { new BlockStatement(resultNodes, context.GetTextSpan()) };
             return root;
@@ -414,9 +413,8 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitBlockStatement([NotNull] MySqlParser.BlockStatementContext context)
         {
             var statements = new List<Statement>();
-            for (int i = 0; i < context.ChildCount; i++)
+            foreach (var child in context.children)
             {
-                var child = context.GetChild(i);
                 if (child is MySqlParser.UidContext)
                 {
                     continue;
@@ -656,9 +654,9 @@ namespace PT.PM.SqlParseTreeUst
 
             var paramContext = context.functionParameter();
             var funcParams = new List<ParameterDeclaration>(paramContext.Length);
-            for (int i = 0; i < paramContext.Length; i++)
+            foreach (var param in paramContext)
             {
-                funcParams.Add((ParameterDeclaration)Visit(paramContext[i]));
+                funcParams.Add((ParameterDeclaration)Visit(param));
             }
             var body = (BlockStatement)Visit(context.routineBody());
 
@@ -681,11 +679,11 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitCreateProcedure([NotNull] MySqlParser.CreateProcedureContext context)
         {
             var procName = (IdToken)Visit(context.fullId());
-            var procParams = new List<ParameterDeclaration>();
             var paramContext = context.procedureParameter();
-            for (int i = 0; i < paramContext.Length; i++)
+            var procParams = new List<ParameterDeclaration>(paramContext.Length);
+            foreach (var param in paramContext)
             {
-                procParams.Add((ParameterDeclaration)Visit(paramContext[i]));
+                procParams.Add((ParameterDeclaration)Visit(param));
             }
             var body = (BlockStatement)Visit(context.routineBody());
 
@@ -1046,9 +1044,9 @@ namespace PT.PM.SqlParseTreeUst
 
             int startIndex = context.children.IndexOf(context.uid()) + 1;
 
-            for (int i = startIndex; i < context.ChildCount; i++)
+            foreach (var child in context.children)
             {
-                queryElements.Add((Expression)Visit(context.GetChild(i)));
+                queryElements.Add((Expression)Visit(child));
             }
 
             result.QueryElements = queryElements;
@@ -1121,9 +1119,7 @@ namespace PT.PM.SqlParseTreeUst
             var visitedArgs = (Expression)VisitChildren(context);
             if (visitedArgs is MultichildExpression multichild)
             {
-                var argList = ExtractMultiChild(multichild);
-                funcArgs = new List<Expression>(argList.Count);
-                funcArgs.AddRange(funcArgs);
+                funcArgs = ExtractMultiChild(multichild);
             }
             else
             {
@@ -1522,9 +1518,9 @@ namespace PT.PM.SqlParseTreeUst
             };
 
             var statementsContext = context.procedureSqlStatement();
-            for (int i = 0; i < statementsContext.Length; i++)
+            foreach (var statement in statementsContext)
             {
-                loopBlock.Statements.Add((Statement)Visit(statementsContext[i]));
+                loopBlock.Statements.Add((Statement)Visit(statement));
             }
 
             return new WhileStatement
@@ -2409,7 +2405,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSimpleId([NotNull] MySqlParser.SimpleIdContext context)
         {
-            if(context is ITerminalNode terminal)
+            if (context is ITerminalNode terminal)
             {
                 return VisitTerminal(terminal);
             }
