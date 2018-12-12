@@ -800,6 +800,13 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitDeclareCursor([NotNull] MySqlParser.DeclareCursorContext context)
         {
             var exprList = ExtractMultiChild((MultichildExpression)VisitChildren(context));
+            var cursorVar = exprList[1];
+            exprList[1] = new ArgumentExpression
+            {
+                Modifier = new InOutModifierLiteral(InOutModifier.InOut, cursorVar.TextSpan),
+                Argument = cursorVar,
+                TextSpan = cursorVar.TextSpan
+            };
             return new SqlQuery(exprList[0], exprList.GetRange(1, exprList.Count - 1), context.GetTextSpan());
         }
 
@@ -1031,9 +1038,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitFetchCursor([NotNull] MySqlParser.FetchCursorContext context)
         {
-            var result = new SqlQuery
+            var result = new InvocationExpression
             {
-                QueryCommand = new IdToken(context.FETCH().GetText(), context.FETCH().GetTextSpan()),
+                Target = new IdToken(context.FETCH().GetText(), context.FETCH().GetTextSpan()),
                 TextSpan = context.GetTextSpan()
             };
 
@@ -1044,12 +1051,12 @@ namespace PT.PM.SqlParseTreeUst
 
             int startIndex = context.children.IndexOf(context.uid()) + 1;
 
-            foreach (var child in context.children)
+            for (int i = 2; i < context.ChildCount; i++)
             {
-                queryElements.Add((Expression)Visit(child));
+                queryElements.Add((Expression)Visit(context.GetChild(i)));
             }
 
-            result.QueryElements = queryElements;
+            result.Arguments = new ArgsUst(queryElements);
             return result;
         }
 
