@@ -280,7 +280,7 @@ namespace PT.PM.AntlrUtils
         }
 
 
-        protected Ust ExtractLiteral(IToken token)
+        protected Token ExtractLiteral(IToken token)
         {
             string text = token.Text;
             TextSpan textSpan = token.GetTextSpan();

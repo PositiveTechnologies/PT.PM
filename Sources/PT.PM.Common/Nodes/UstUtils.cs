@@ -260,26 +260,25 @@ namespace PT.PM.Common.Nodes
             return 0;
         }
 
-        public static List<Expression> ExtractMultiChild(MultichildExpression multiChild)
+        public static List<Expression> ExtractMultiChild(MultichildExpression multichild)
         {
             void ExtractMultiChildToLinear(MultichildExpression multichildExpression, List<Expression> result)
             {
-                for (int i = 0; i < multichildExpression.Expressions.Count; i++)
+                foreach (var expression in multichildExpression.Expressions)
                 {
-                    var current = multichildExpression.Expressions[i];
-                    if (current is MultichildExpression nested)
+                    if (expression is MultichildExpression nested)
                     {
                         ExtractMultiChildToLinear(nested, result);
                     }
                     else
                     {
-                        result.Add(current);
+                        result.Add(expression);
                     }
                 }
             }
 
             var linearResult = new List<Expression>();
-            ExtractMultiChildToLinear(multiChild, linearResult);
+            ExtractMultiChildToLinear(multichild, linearResult);
 
             return linearResult;
         }
