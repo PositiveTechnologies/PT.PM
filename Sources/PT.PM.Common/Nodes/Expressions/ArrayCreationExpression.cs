@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Expressions
     {
         public TypeToken Type { get; set; }
 
+        public IdToken KeywordNew { get; set; }
+
         public List<Expression> Sizes { get; set; }
 
         public List<Expression> Initializers { get; set; }
@@ -63,6 +65,13 @@ namespace PT.PM.Common.Nodes.Expressions
             }
 
             var otherArrayCreation = (ArrayCreationExpression)other;
+
+            int compareKeywordNewResult = KeywordNew.CompareTo(otherArrayCreation.KeywordNew);
+            if (compareKeywordNewResult != 0)
+            {
+                return compareKeywordNewResult;
+            }
+
             int compareSizesResult = Sizes.CompareTo(otherArrayCreation.Sizes);
             if (compareSizesResult != 0)
             {
