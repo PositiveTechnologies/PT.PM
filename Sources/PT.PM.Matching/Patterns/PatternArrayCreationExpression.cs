@@ -10,6 +10,8 @@ namespace PT.PM.Matching.Patterns
     {
         public PatternUst Type { get; set; }
 
+        public bool StackAllocated { get; set; } = false;
+
         public List<PatternUst> Sizes { get; set; }
 
         public List<PatternUst> Initializers { get; set; }
@@ -33,6 +35,12 @@ namespace PT.PM.Matching.Patterns
         {
             var arrayCreationExpression = ust as ArrayCreationExpression;
             if (arrayCreationExpression == null)
+            {
+                return context.Fail();
+            }
+
+            // If we're looking for a stack allocated array there should be NO `new` keyword
+            if (StackAllocated && arrayCreationExpression.KeywordNew != null)
             {
                 return context.Fail();
             }
