@@ -2236,7 +2236,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var variablesContext = context.variableClause();
             var expressionsContext = context.expression();
-            List<AssignmentExpression> assignments = new List<AssignmentExpression>(variablesContext.Length);
+            var assignments = new List<AssignmentExpression>(variablesContext.Length);
 
             for (int i = 0; i < variablesContext.Length; i++)
             {
