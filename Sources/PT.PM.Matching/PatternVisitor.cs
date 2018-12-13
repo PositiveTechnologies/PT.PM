@@ -44,6 +44,11 @@ namespace PT.PM.Matching
             return VisitChildren(patternArgs);
         }
 
+        public T Visit(PatternArrayCreationExpression patternArrayCreationExpression)
+        {
+            return VisitChildren(patternArrayCreationExpression);
+        }
+
         public virtual T Visit(PatternAssignmentExpression patternAssignmentExpression)
         {
             return VisitChildren(patternAssignmentExpression);

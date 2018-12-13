@@ -39,7 +39,7 @@ namespace PT.PM.Tests
                         var parameters = methodInfo.GetParameters();
                         return parameters.Length > 0 && parameters[0].ParameterType == type;
                     }) != null,
-                    $"Visitor for Type {type} is not exists");
+                    $"Visitor for Type {type} does not exist");
             }
         }
 

@@ -8,6 +8,7 @@ namespace PT.PM.Matching
         T Visit(PatternAnd patternAnd);
         T Visit(PatternAny patternAny);
         T Visit(PatternArgs patternArgs);
+        T Visit(PatternArrayCreationExpression patternArrayCreationExpression);
         T Visit(PatternAssignmentExpression patternAssignmentExpression);
         T Visit(PatternThisReferenceToken patternThisReferenceToken);
         T Visit(PatternBaseReferenceToken patternBaseReferenceToken);
