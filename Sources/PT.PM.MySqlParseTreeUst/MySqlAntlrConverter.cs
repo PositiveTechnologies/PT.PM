@@ -387,7 +387,22 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitBinaryComparasionPredicate([NotNull] MySqlParser.BinaryComparasionPredicateContext context)
         {
-            return VisitChildren(context);
+            var comparison = new BinaryOperatorExpression
+            {
+                Left = (Expression)Visit(context.left),
+                Right = (Expression)Visit(context.right),
+                TextSpan = context.GetTextSpan()
+            };
+            var opText = context.comparisonOperator().GetText();
+            BinaryOperator op;
+
+            if(!BinaryOperatorLiteral.TextBinaryOperator.TryGetValue(opText, out op))
+            {
+                op = BinaryOperator.Equal;
+            }
+
+            comparison.Operator = new BinaryOperatorLiteral(op, context.comparisonOperator().GetTextSpan());
+            return comparison;
         }
 
         public Ust VisitBinaryExpressionAtom([NotNull] MySqlParser.BinaryExpressionAtomContext context)
@@ -594,6 +609,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitConstant([NotNull] MySqlParser.ConstantContext context)
         {
+            if(context.nullLiteral != null)
+            {
+                return new NullLiteral();
+            }
             return VisitChildren(context);
         }
 
@@ -968,7 +987,12 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitElifAlternative([NotNull] MySqlParser.ElifAlternativeContext context)
         {
-            return VisitChildren(context);
+            return new IfElseStatement
+            {
+                Condition = (Expression)Visit(context.expression()),
+                TrueStatement = new BlockStatement(context.procedureSqlStatement().Select(x => Visit(x).ToStatementIfRequired())),
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitEmptyStatement([NotNull] MySqlParser.EmptyStatementContext context)
@@ -1284,7 +1308,18 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitIfStatement([NotNull] MySqlParser.IfStatementContext context)
         {
-            return VisitChildren(context);
+            var ifStatement = new IfElseStatement
+            {
+                Condition = (Expression)Visit(context.expression()),
+                TrueStatement = new BlockStatement(context._thenStatements.Select(x => Visit(x).ToStatementIfRequired())),
+                TextSpan = context.GetTextSpan()
+            };
+
+            var falseStatement = new BlockStatement(context.elifAlternative().Select(x => Visit(x).ToStatementIfRequired()));
+            falseStatement.Statements.Add(new BlockStatement(context._elseStatements.Select(x => Visit(x).ToStatementIfRequired())));
+            ifStatement.FalseStatement = falseStatement;
+
+            return ifStatement;
         }
 
         public Ust VisitIgnoreDbReplication([NotNull] MySqlParser.IgnoreDbReplicationContext context)

@@ -12,20 +12,12 @@ namespace PT.PM.Matching.Tests
 {
     public class SqlMatchingTests
     {
-        [Test]
-        public void Match_TestPatternsPlSql_MatchedAllDefault()
+        [TestCase("tsql", "tsql_patterns.sql")]
+        [TestCase("plsql", "plsql_patterns.sql")]
+        [TestCase("mysql", "mysql_patterns.sql")]
+        public void Match_TestPatternsSql_MatchedAllDefault(string dialect, string patternsFileName)
         {
-            Match_TestPatternsSql_MatchedAllDefault(PlSql.Language, "plsql_patterns.sql");
-        }
-
-        [Test]
-        public void Match_TestPatternsTSql_MatchedAllDefault()
-        {
-            Match_TestPatternsSql_MatchedAllDefault(TSql.Language, "tsql_patterns.sql");
-        }
-
-        private void Match_TestPatternsSql_MatchedAllDefault(Language language, string patternsFileName)
-        {
+            var language = LanguageUtils.ParseLanguages(dialect).ToList()[0];
             var path = Path.Combine(TestUtility.TestsDataPath, patternsFileName.NormalizeDirSeparator());
             var sourceCodeRep = new FileCodeRepository(path);
 
