@@ -66,7 +66,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
             var otherArrayCreation = (ArrayCreationExpression)other;
 
-            int compareKeywordNewResult = KeywordNew.CompareTo(otherArrayCreation.KeywordNew);
+            int compareKeywordNewResult = (KeywordNew == null && otherArrayCreation.KeywordNew == null) ? 0 : KeywordNew?.CompareTo(otherArrayCreation.KeywordNew) ?? -1;
             if (compareKeywordNewResult != 0)
             {
                 return compareKeywordNewResult;
