@@ -820,14 +820,16 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (context.GRANT().Length > 0)
             {
-                string str = context.GRANT(0).GetText().ToLowerInvariant();
-                if (context.ALL() != null)
+                string str = context.GRANT(0).GetText();
+                var funcName = new IdToken(str, context.GRANT(0).GetTextSpan());
+                var args = new List<Expression>(context.children.Count - 1);
+
+                foreach(var children in context.children.Skip(1))
                 {
-                    str += "_" + context.ALL().GetText().ToLowerInvariant();
+                    args.Add((Expression)Visit(children));
                 }
-                var funcName = new IdToken(str, context.GetTextSpan());
-                var args = new ArgsUst();
-                expr = new InvocationExpression(funcName, args, context.GetTextSpan());
+
+                expr = new InvocationExpression(funcName, new ArgsUst(args), context.GetTextSpan());
             }
             else if (context.REVERT() != null)
             {

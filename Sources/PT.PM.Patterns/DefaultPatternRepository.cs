@@ -174,8 +174,8 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>(LanguageUtils.SqlLanguages.Values),
                 Node = new PatternInvocationExpression
                 {
-                    Target = new PatternIdToken("grant_all"),
-                    Arguments = new PatternArgs(new PatternMultipleExpressions())
+                    Target = new PatternIdRegexToken("grant"),
+                    Arguments = new PatternArgs(new PatternIdRegexToken("all"), new PatternMultipleExpressions())
                 }
             });
 

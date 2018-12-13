@@ -1870,17 +1870,15 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitGrant_statement([NotNull] PlSqlParser.Grant_statementContext context)
         {
-            string funcName = "grant";
+            string funcName = context.GRANT(0).GetText();
             TextSpan textSpan = context.GRANT(0).GetTextSpan();
-            var allKeyword = context.object_privilege()?.FirstOrDefault(priv => priv.ALL() != null);
-            if (allKeyword != null)
-            {
-                funcName += "_all";
-                textSpan = textSpan.Union(allKeyword.GetTextSpan());
-            }
             var funcId = new IdToken(funcName, textSpan);
-            var args = new ArgsUst(VisitList(context.children.Skip(1).ToArray()).ToExpressionIfRequired());
-            var result = new ExpressionStatement(new InvocationExpression(funcId, args, context.GetTextSpan()));
+            var args = new List<Expression>();
+            foreach(var children in context.children.Skip(1))
+            {
+                args.Add(Visit(children).ToExpressionIfRequired());
+            }
+            var result = new ExpressionStatement(new InvocationExpression(funcId, new ArgsUst(args), context.GetTextSpan()));
             return result;
         }
 

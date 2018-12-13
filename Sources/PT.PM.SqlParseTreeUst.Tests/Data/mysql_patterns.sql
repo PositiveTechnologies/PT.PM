@@ -32,3 +32,6 @@ END;
     end if;
   RETURN result;
   END;
+
+
+  GRANT ALL ON test.* TO ''@'localhost';

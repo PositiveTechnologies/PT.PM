@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
@@ -1203,7 +1204,21 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitGrantStatement([NotNull] MySqlParser.GrantStatementContext context)
         {
-            return VisitChildren(context);
+            var grantContext = context.GRANT(0);
+            var grantId = new IdToken(grantContext.GetText(), grantContext.GetTextSpan());
+            var args = new List<Expression>();
+
+            foreach(var children in context.children.Skip(1))
+            {
+                args.Add(Visit(children).ToExpressionIfRequired());
+            }
+
+            return new InvocationExpression
+            {
+                Target = grantId,
+                Arguments = new ArgsUst(args),
+                TextSpan = context.GetTextSpan()
+            };
         }
 
         public Ust VisitGroupByItem([NotNull] MySqlParser.GroupByItemContext context)

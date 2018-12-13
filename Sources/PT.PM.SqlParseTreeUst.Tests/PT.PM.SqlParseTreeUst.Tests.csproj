@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <None Update="Data\mysql_patterns.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\plsql_patterns.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
