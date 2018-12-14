@@ -328,11 +328,11 @@ namespace PT.PM.SqlParseTreeUst
             }
         }
 
-        /// <returns><see cref="SqlQueryStatement"/></returns>
+        /// <returns><see cref="SqlQuery"/></returns>
         public Ust VisitSelect_statement([NotNull] TSqlParser.Select_statementContext context)
         {
 
-            SqlQueryStatement queryStatement = (SqlQueryStatement)Visit(context.query_expression());
+            SqlQuery queryStatement = (SqlQuery)Visit(context.query_expression());
 
             if (context.with_expression() != null)
             {
@@ -357,7 +357,7 @@ namespace PT.PM.SqlParseTreeUst
                 queryStatement.QueryElements.Add(Visit(context.option_clause()).ToExpressionIfRequired());
             }
 
-            return queryStatement;
+            return new ExpressionStatement(queryStatement);
         }
 
         /// <returns><see cref="ExpressionStatement"/></returns>
@@ -820,14 +820,16 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (context.GRANT().Length > 0)
             {
-                string str = context.GRANT(0).GetText().ToLowerInvariant();
-                if (context.ALL() != null)
+                string str = context.GRANT(0).GetText();
+                var funcName = new IdToken(str, context.GRANT(0).GetTextSpan());
+                var args = new List<Expression>(context.children.Count - 1);
+
+                foreach(var children in context.children.Skip(1))
                 {
-                    str += "_" + context.ALL().GetText().ToLowerInvariant();
+                    args.Add((Expression)Visit(children));
                 }
-                var funcName = new IdToken(str, context.GetTextSpan());
-                var args = new ArgsUst();
-                expr = new InvocationExpression(funcName, args, context.GetTextSpan());
+
+                expr = new InvocationExpression(funcName, new ArgsUst(args), context.GetTextSpan());
             }
             else if (context.REVERT() != null)
             {
@@ -1487,7 +1489,7 @@ namespace PT.PM.SqlParseTreeUst
                         exprs.Add(new WrapperExpression(visited));
                     }
                 }
-                return new SqlQueryStatement(((SqlQueryStatement)((WrapperExpression)exprs.FirstOrDefault())?.Node).QueryCommand,exprs, context.GetTextSpan());
+                return new SqlQuery(((SqlQuery)((WrapperExpression)exprs.FirstOrDefault())?.Node).QueryCommand,exprs, context.GetTextSpan());
             }
             else
             {
@@ -1495,7 +1497,7 @@ namespace PT.PM.SqlParseTreeUst
             }
         }
 
-        /// <returns><see cref="MultichildExpression"/></returns>
+        /// <returns><see cref="SqlQuery"/></returns>
         public Ust VisitQuery_specification([NotNull] TSqlParser.Query_specificationContext context)
         {
             if (context.ChildCount == 0)
@@ -1503,7 +1505,7 @@ namespace PT.PM.SqlParseTreeUst
                 return null;
             }
 
-            SqlQueryStatement queryStatement = null;
+            SqlQuery query = null;
 
             List<Expression> queryElements = new List<Expression>();
             for (int i = 0; i < context.ChildCount; i++)
@@ -1525,8 +1527,8 @@ namespace PT.PM.SqlParseTreeUst
                 }
             }
 
-            queryStatement = new SqlQueryStatement(queryElements.FirstOrDefault(), queryElements.GetRange(1, queryElements.Count - 1), context.GetTextSpan());
-            return queryStatement;
+            query = new SqlQuery(queryElements.FirstOrDefault(), queryElements.GetRange(1, queryElements.Count - 1), context.GetTextSpan());
+            return query;
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>

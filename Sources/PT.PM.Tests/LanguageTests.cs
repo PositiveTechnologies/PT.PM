@@ -39,6 +39,7 @@ namespace PT.PM.Tests
 
             CollectionAssert.Contains(languages, PlSql.Language);
             CollectionAssert.Contains(languages, TSql.Language);
+            CollectionAssert.Contains(languages, MySql.Language);
 
             CollectionAssert.Contains(languages, Uncertain.Language);
         }
@@ -46,8 +47,8 @@ namespace PT.PM.Tests
         [Test]
         public void Parse_String_CorrectLanguages()
         {
-            var sqlLanguages = new Language[] { TSql.Language, PlSql.Language };
-            CollectionAssert.AreEquivalent(sqlLanguages, "TSQL plsql".ParseLanguages());
+            var sqlLanguages = new Language[] { TSql.Language, PlSql.Language, MySql.Language };
+            CollectionAssert.AreEquivalent(sqlLanguages, "TSQL plsql MySql".ParseLanguages());
 
             CollectionAssert.AreEquivalent(sqlLanguages, "Sql".ParseLanguages());
 

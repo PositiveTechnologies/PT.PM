@@ -7,6 +7,7 @@ using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using PT.PM.Matching.PatternsRepository;
 using PT.PM.PhpParseTreeUst;
+using PT.PM.SqlParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -140,7 +141,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Poor Error Handling: Empty Default Exception Handler",
-                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values.Where(x => x != MySql.Language)),
                 Node = new PatternTryCatchStatement { IsCatchBodyEmpty = true }
             });
 
@@ -173,8 +174,8 @@ namespace PT.PM.Patterns.PatternsRepository
                 Languages = new HashSet<Language>(LanguageUtils.SqlLanguages.Values),
                 Node = new PatternInvocationExpression
                 {
-                    Target = new PatternIdToken("grant_all"),
-                    Arguments = new PatternArgs(new PatternMultipleExpressions())
+                    Target = new PatternIdRegexToken("grant"),
+                    Arguments = new PatternArgs(new PatternIdRegexToken("all"), new PatternMultipleExpressions())
                 }
             });
 

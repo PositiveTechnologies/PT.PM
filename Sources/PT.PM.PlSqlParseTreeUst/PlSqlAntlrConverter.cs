@@ -14,6 +14,7 @@ using PT.PM.PlSqlParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
+using static PT.PM.Common.Nodes.UstUtils;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -565,12 +566,12 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.dynamic_returning_clause() != null)
             {
-                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.dynamic_returning_clause()), new List<Expression>()));
+                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.dynamic_returning_clause())));
             }
 
             if (context.into_clause() != null)
             {
-                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.into_clause()), new List<Expression>()));
+                invocation.Arguments.Collection.AddRange(ExtractMultiChild((MultichildExpression)Visit(context.into_clause())));
             }
             return invocation;
         }
@@ -724,7 +725,7 @@ namespace PT.PM.SqlParseTreeUst
                 }
                 else if (visited is MultichildExpression multichild)
                 {
-                    queryElements.AddRange(ExtractMultiChild(multichild, new List<Expression>()));
+                    queryElements.AddRange(ExtractMultiChild(multichild));
                 }
                 else
                 {
@@ -1869,17 +1870,15 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitGrant_statement([NotNull] PlSqlParser.Grant_statementContext context)
         {
-            string funcName = "grant";
+            string funcName = context.GRANT(0).GetText();
             TextSpan textSpan = context.GRANT(0).GetTextSpan();
-            var allKeyword = context.object_privilege()?.FirstOrDefault(priv => priv.ALL() != null);
-            if (allKeyword != null)
-            {
-                funcName += "_all";
-                textSpan = textSpan.Union(allKeyword.GetTextSpan());
-            }
             var funcId = new IdToken(funcName, textSpan);
-            var args = new ArgsUst(VisitList(context.children.Skip(1).ToArray()).ToExpressionIfRequired());
-            var result = new ExpressionStatement(new InvocationExpression(funcId, args, context.GetTextSpan()));
+            var args = new List<Expression>();
+            foreach(var children in context.children.Skip(1))
+            {
+                args.Add(Visit(children).ToExpressionIfRequired());
+            }
+            var result = new ExpressionStatement(new InvocationExpression(funcId, new ArgsUst(args), context.GetTextSpan()));
             return result;
         }
 

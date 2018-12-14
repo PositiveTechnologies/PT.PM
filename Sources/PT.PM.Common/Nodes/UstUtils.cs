@@ -4,7 +4,6 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Transactions;
 
 namespace PT.PM.Common.Nodes
 {
@@ -13,7 +12,7 @@ namespace PT.PM.Common.Nodes
         public static Statement ToStatementIfRequired(this Ust ust)
         {
             Statement result = ust as Statement;
-            
+
             if (result == null)
             {
                 if (ust is Expression expr)
@@ -25,7 +24,7 @@ namespace PT.PM.Common.Nodes
                     result = new WrapperStatement(ust);
                 }
             }
-            
+
             return result;
         }
 
@@ -68,7 +67,7 @@ namespace PT.PM.Common.Nodes
                     result.Add(location.AddOffset(startOffset));
                     continue;
                 }
-                
+
                 int offset = 0;
                 int leftBound = 1;
                 int rightBound =
@@ -116,7 +115,7 @@ namespace PT.PM.Common.Nodes
                     result.Add(location.AddOffset(startOffset));
                 }
             }
-            
+
             return result;
         }
 
@@ -181,7 +180,7 @@ namespace PT.PM.Common.Nodes
                 }
             }
         }
-        
+
         public static Dictionary<Ust, UstWithParent> GetUstWithParents(this Ust ust)
         {
             if (ust == null)
@@ -190,7 +189,7 @@ namespace PT.PM.Common.Nodes
             }
 
             var result = new Dictionary<Ust, UstWithParent>(UstRefComparer.Instance);
-            
+
             GetUstWithParents(ust, null);
 
             void GetUstWithParents(Ust localUst, UstWithParent parent)
@@ -204,7 +203,7 @@ namespace PT.PM.Common.Nodes
                 {
                     iUstWithParent.Parent = parent.Ust;
                 }
-                
+
                 var ustWithParent = new UstWithParent(localUst, parent);
                 result.Add(localUst, ustWithParent);
 
@@ -259,6 +258,29 @@ namespace PT.PM.Common.Nodes
             }
 
             return 0;
+        }
+
+        public static List<Expression> ExtractMultiChild(MultichildExpression multichild)
+        {
+            void ExtractMultiChildToLinear(MultichildExpression multichildExpression, List<Expression> result)
+            {
+                foreach (var expression in multichildExpression.Expressions)
+                {
+                    if (expression is MultichildExpression nested)
+                    {
+                        ExtractMultiChildToLinear(nested, result);
+                    }
+                    else
+                    {
+                        result.Add(expression);
+                    }
+                }
+            }
+
+            var linearResult = new List<Expression>();
+            ExtractMultiChildToLinear(multichild, linearResult);
+
+            return linearResult;
         }
     }
 }

@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Antlr4.Runtime.Misc;
+using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.AntlrUtils
 {
@@ -101,6 +104,14 @@ namespace PT.PM.AntlrUtils
             }
 
             logger.LogError(new ConversionException(currentFileData, message: exceptionText) { TextSpan = textSpan });
+        }
+
+        public static ArgumentExpression ConvertToInOutArgument(this ParserRuleContext context)
+        {
+            var argModifier = new InOutModifierLiteral(InOutModifier.InOut, TextSpan.Zero);
+            TextSpan contextTextSpan = context.GetTextSpan();
+            var arg = new IdToken(context.GetText(), contextTextSpan);
+            return new ArgumentExpression(argModifier, arg, contextTextSpan);
         }
     }
 }

@@ -2,10 +2,8 @@
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PT.PM.SqlParseTreeUst
@@ -52,25 +50,6 @@ namespace PT.PM.SqlParseTreeUst
                 }
             }
             return result;
-        }
-
-        public List<Expression> ExtractMultiChild(MultichildExpression multiChild, List<Expression> expressions)
-        {
-            expressions = expressions ?? new List<Expression>();
-
-            for(int i = 0; i < multiChild.Expressions.Count; i++)
-            {
-                var current = multiChild.Expressions[i];
-                if(current is MultichildExpression nested)
-                {
-                   expressions = ExtractMultiChild(nested, expressions);
-                }
-                else
-                {
-                    expressions.Add(current);
-                }
-            }
-            return expressions;
         }
     }
 }
