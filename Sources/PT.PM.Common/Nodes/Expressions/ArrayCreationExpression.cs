@@ -32,6 +32,10 @@ namespace PT.PM.Common.Nodes.Expressions
         public override Ust[] GetChildren()
         {
             var result = new List<Ust>();
+            if (KeywordNew != null)
+            {
+                result.Add(KeywordNew);
+            }
             result.Add(Type);
             if (Sizes != null)
             {
@@ -46,7 +50,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override Expression[] GetArgs()
         {
-            var result = new List<Expression> { Type };
+            var result = new List<Expression>();
+            if (KeywordNew != null)
+            {
+                result.Add(KeywordNew);
+            }
+            result.Add(Type);
             result.AddRange(Sizes);
             return result.ToArray();
         }
