@@ -123,6 +123,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             var result = new ArrayCreationExpression(type, sizes, inits, node.GetTextSpan());
 
+            IdToken keywordNew = ConvertId(node.NewKeyword);
+            result.KeywordNew = keywordNew;
+
             return result;
         }
 
@@ -157,6 +160,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             sizes.Add(new IntLiteral(0, node.CloseBracketToken.GetTextSpan()));
 
             var result = new ArrayCreationExpression(type, sizes, new Expression[0], node.GetTextSpan());
+
+            IdToken keywordNew = ConvertId(node.NewKeyword);
+            result.KeywordNew = keywordNew;
+
             return result;
         }
 
