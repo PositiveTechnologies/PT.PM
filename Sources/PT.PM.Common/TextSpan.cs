@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace PT.PM.Common
 {
@@ -65,7 +66,7 @@ namespace PT.PM.Common
             int unionStart = Math.Min(Start, span.Start);
             int unionEnd = Math.Max(End, span.End);
 
-            return FromBounds(unionStart, unionEnd);
+            return FromBounds(unionStart, unionEnd, CodeFile);
         }
 
         public bool Includes(TextSpan span)
