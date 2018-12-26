@@ -72,6 +72,7 @@ namespace PT.PM.Common
         private FoldResult TryFoldArrayCreationExpression(ArrayCreationExpression arrayCreationExpression)
         {
             if (arrayCreationExpression.Type?.TypeText == "char" &&
+                arrayCreationExpression.Initializers.Count > 0 &&
                (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false))
             {
                 var value = new StringBuilder();
