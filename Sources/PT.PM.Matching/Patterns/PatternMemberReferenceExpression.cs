@@ -35,7 +35,14 @@ namespace PT.PM.Matching.Patterns
             MatchContext newContext = Target.MatchUst(memberRef.Target, context);
             if (!newContext.Success)
             {
-                return newContext;
+                // Ugly hack to handle optional `this`
+                if (Target is PatternMemberReferenceExpression patternMemberReference && patternMemberReference.Target is PatternThisReferenceToken)
+                {
+                    newContext = patternMemberReference.Name.MatchUst(memberRef.Target, context);
+                }
+
+                if (!newContext.Success)
+                    return newContext;
             }
 
             newContext = Name.MatchUst(memberRef.Name, newContext);
