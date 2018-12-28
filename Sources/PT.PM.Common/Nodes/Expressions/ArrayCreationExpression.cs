@@ -93,7 +93,8 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override string ToString()
         {
-            return $"new {Type}[{string.Join(", ", Sizes)}]";
+            string keywordNew = KeywordNew == null ? "" : "new";
+            return $"{keywordNew} {Type}[{string.Join(", ", Sizes)}]";
         }
     }
 }
