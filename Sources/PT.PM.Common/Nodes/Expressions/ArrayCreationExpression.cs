@@ -6,9 +6,9 @@ namespace PT.PM.Common.Nodes.Expressions
 {
     public class ArrayCreationExpression : Expression
     {
-        public TypeToken Type { get; set; }
-
         public IdToken KeywordNew { get; set; }
+
+        public TypeToken Type { get; set; }
 
         public List<Expression> Sizes { get; set; }
 
