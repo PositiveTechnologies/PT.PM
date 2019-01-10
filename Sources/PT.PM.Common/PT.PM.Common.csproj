@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+    <PackageReference Include="MessagePack" Version="1.7.3.4" />
+    <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
