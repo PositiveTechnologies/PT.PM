@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Utils;
-using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
 using System;
 using System.Collections.Generic;
@@ -90,9 +89,8 @@ namespace PT.PM.Cli.Common
         {
             TWorkflowResult result = null;
 
-            int maxStackSize = parameters.MaxStackSize.HasValue
-                    ? parameters.MaxStackSize.Value.ConvertToInt32(ContinueWithInvalidArgs, DefaultMaxStackSize, Logger)
-                    : DefaultMaxStackSize;
+            int maxStackSize = parameters.MaxStackSize?.ConvertToInt32(ContinueWithInvalidArgs, DefaultMaxStackSize, Logger)
+                               ?? DefaultMaxStackSize;
 
             if (maxStackSize == 0)
             {
@@ -200,7 +198,6 @@ namespace PT.PM.Cli.Common
             }
             if (parameters.StartStage != null)
             {
-                workflow.SourceCodeRepository.LoadJson = IsLoadJson(parameters.StartStage);
                 workflow.StartStage = parameters.StartStage.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);
             }
             if (parameters.DumpStages?.Count() > 0)
@@ -223,6 +220,11 @@ namespace PT.PM.Cli.Common
             {
                 workflow.RenderDirection = parameters.RenderDirection.ParseEnum(ContinueWithInvalidArgs, workflow.RenderDirection, Logger);
             }
+            if (parameters.SerializationFormat != null)
+            {
+                workflow.SerializationFormat =
+                    parameters.SerializationFormat.ParseEnum(ContinueWithInvalidArgs, workflow.SerializationFormat, Logger);
+            }
 
             return workflow;
         }
@@ -230,7 +232,7 @@ namespace PT.PM.Cli.Common
         protected virtual SourceCodeRepository CreateSourceCodeRepository(TParameters parameters)
         {
             return RepositoryFactory
-                .CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, parameters.TempDir);
+                .CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, parameters.TempDir, parameters);
         }
 
         protected virtual IPatternsRepository CreatePatternsRepository(TParameters parameters)
@@ -241,8 +243,6 @@ namespace PT.PM.Cli.Common
         protected abstract WorkflowBase<TStage, TWorkflowResult, TPattern, TRenderStage> CreateWorkflow(TParameters parameters);
 
         protected abstract void LogStatistics(TWorkflowResult workflowResult);
-
-        protected abstract bool IsLoadJson(string startStageString);
 
         private TWorkflowResult ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
         {

@@ -88,5 +88,8 @@ namespace PT.PM.Cli.Common
 
         [Option("render-direction", HelpText = "Graph render direction (TopBottom, LeftRight, etc.)")]
         public string RenderDirection { get; set; }
+
+        [Option("serialize-format", HelpText = "Serialize format (json, msgpack)")]
+        public string SerializationFormat { get; set; }
     }
 }
