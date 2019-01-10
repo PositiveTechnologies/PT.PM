@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using Antlr4.Runtime.Tree;
-using PT.PM.Common;
 using PT.PM.Common.Utils;
 
 namespace PT.PM.JavaParseTreeUst.Converter

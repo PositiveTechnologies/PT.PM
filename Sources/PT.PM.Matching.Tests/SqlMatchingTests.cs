@@ -2,7 +2,6 @@
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Utils;
-using PT.PM.SqlParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;

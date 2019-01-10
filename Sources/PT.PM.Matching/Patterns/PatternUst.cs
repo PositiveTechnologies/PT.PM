@@ -3,8 +3,6 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using PT.PM.Common.Exceptions;
 
 namespace PT.PM.Matching.Patterns
 {

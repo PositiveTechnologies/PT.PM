@@ -3,7 +3,6 @@ using PT.PM.JavaParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PT.PM.Patterns.PatternsRepository
 {

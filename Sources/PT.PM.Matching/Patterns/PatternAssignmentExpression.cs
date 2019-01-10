@@ -1,6 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Matching.Patterns

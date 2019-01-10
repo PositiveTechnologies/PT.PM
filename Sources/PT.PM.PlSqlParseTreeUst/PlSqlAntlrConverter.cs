@@ -4,7 +4,6 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Sql;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;

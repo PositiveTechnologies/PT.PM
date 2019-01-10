@@ -1,7 +1,6 @@
 ﻿using Esprima.Ast;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
 using System.Collections.Generic;

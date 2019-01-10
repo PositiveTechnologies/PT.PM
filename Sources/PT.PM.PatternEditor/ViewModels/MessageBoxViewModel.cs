@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
-using System;
 
 namespace PT.PM.PatternEditor
 {
