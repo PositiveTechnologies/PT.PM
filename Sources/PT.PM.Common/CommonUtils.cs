@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using PT.PM.Common.Nodes.Expressions;
+﻿using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,12 @@ namespace PT.PM.Common.Utils
         public const string Prefix = "pt.pm_";
 
         public const double Epsilon = 0.0000001;
+
+        private static Dictionary<SerializationFormat, string> Extensions = new Dictionary<SerializationFormat, string>
+        {
+            [SerializationFormat.Json] = "json",
+            [SerializationFormat.MessagePack] = "msgpack"
+        };
 
         public static bool TryConvertToInt64(this string value, int fromBase, out long result)
         {
@@ -134,6 +139,26 @@ namespace PT.PM.Common.Utils
                     throw;
                 }
             }
+        }
+
+        public static string GetExtension(this SerializationFormat format) => Extensions[format];
+
+        public static SerializationFormat? GetFormatByExtension(string ext)
+        {
+            if (ext.StartsWith("."))
+            {
+                ext = ext.Substring(1);
+            }
+
+            foreach (var pair in Extensions)
+            {
+                if (pair.Value == ext)
+                {
+                    return pair.Key;
+                }
+            }
+
+            return null;
         }
     }
 }
