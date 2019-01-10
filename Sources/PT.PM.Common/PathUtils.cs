@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PT.PM.Common.Utils
 {
@@ -37,11 +36,14 @@ namespace PT.PM.Common.Utils
 
         public static string NormalizeDirSeparator(this string path)
         {
-            string notPlatformSeparator = CommonUtils.IsWindows ? "/" : "\\";
+            char notPlatformSeparator = CommonUtils.IsWindows ? '/' : '\\';
 
-            if (path.Contains(notPlatformSeparator))
+            foreach (char c in path)
             {
-                return path.Replace(notPlatformSeparator, Path.DirectorySeparatorChar.ToString());
+                if (c == notPlatformSeparator)
+                {
+                    return path.Replace(notPlatformSeparator, Path.DirectorySeparatorChar);
+                }
             }
 
             return path;
@@ -62,9 +64,13 @@ namespace PT.PM.Common.Utils
     {
         public static string ReadAllText(string path) => File.ReadAllText(path.NormalizeFilePath());
 
+        public static byte[] ReadAllBytes(string path) => File.ReadAllBytes(path.NormalizeFilePath());
+
         public static void WriteAllText(string path, string contents) => File.WriteAllText(path.NormalizeFilePath(), contents);
 
         public static void WriteAllLines(string path, IEnumerable<string> contents) => File.WriteAllLines(path.NormalizeFilePath(), contents);
+
+        public static void WriteAllBytes(string path, byte[] content) => File.WriteAllBytes(path.NormalizeDirPath(), content);
 
         public static bool Exists(string path) => File.Exists(path.NormalizeFilePath());
 
