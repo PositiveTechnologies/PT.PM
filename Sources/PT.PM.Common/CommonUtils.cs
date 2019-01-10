@@ -18,7 +18,7 @@ namespace PT.PM.Common.Utils
         private static Dictionary<SerializationFormat, string> Extensions = new Dictionary<SerializationFormat, string>
         {
             [SerializationFormat.Json] = "json",
-            [SerializationFormat.MessagePack] = "msgpack"
+            [SerializationFormat.MsgPack] = "msgpack"
         };
 
         public static bool TryConvertToInt64(this string value, int fromBase, out long result)
