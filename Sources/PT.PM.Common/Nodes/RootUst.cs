@@ -1,40 +1,53 @@
 ﻿using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 using Newtonsoft.Json;
+using PT.PM.Common.Files;
+using PT.PM.Common.MessagePack;
 
 namespace PT.PM.Common.Nodes
 {
+    [MessagePackObject]
+    [MessagePackFormatter(typeof(RootUstFormatter))]
     public class RootUst : Ust
     {
         private Language[] sublanguges;
 
+        [Key(UstFieldOffset)]
         public Language Language { get; }
 
+        [Key(UstFieldOffset + 1)]
         public CodeFile SourceCodeFile { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
 
+        [Key(UstFieldOffset + 3)]
         public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
 
+        [Key(UstFieldOffset + 4)]
+        public int LineOffset { get; set; }
+
+        [IgnoreMember]
         [JsonIgnore]
         public Dictionary<Ust, List<TextSpan>> TextSpans { get; } = new Dictionary<Ust, List<TextSpan>>(UstRefComparer.Instance);
-        
+
+        [IgnoreMember]
         public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
 
+        [IgnoreMember]
         public Ust Node
         {
             get => Nodes.FirstOrDefault();
             set => Nodes = new[] { value };
         }
 
-        public int LineOffset { get; set; }
-
         public RootUst(CodeFile sourceCodeFile, Language language)
         {
             SourceCodeFile = sourceCodeFile ?? CodeFile.Empty;
             Language = language;
-            TextSpan = new TextSpan(0, SourceCodeFile.Code.Length);
+            TextSpan = new TextSpan(0, SourceCodeFile.Data.Length);
         }
 
         public override Ust[] GetChildren()

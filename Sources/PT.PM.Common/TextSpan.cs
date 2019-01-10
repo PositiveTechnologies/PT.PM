@@ -1,8 +1,12 @@
 ﻿using System;
-using System.IO;
+using MessagePack;
+using PT.PM.Common.Files;
+using PT.PM.Common.MessagePack;
 
 namespace PT.PM.Common
 {
+    [MessagePackObject]
+    [MessagePackFormatter(typeof(TextSpanFormatter))]
     public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
         public static readonly TextSpan Zero = default;
@@ -31,14 +35,19 @@ namespace PT.PM.Common
             CodeFile = textSpan.CodeFile;
         }
 
+        [Key(0)]
         public int Start { get; }
 
+        [Key(1)]
         public int Length { get; }
 
+        [Key(2)]
         public CodeFile CodeFile { get; set; }
 
+        [IgnoreMember]
         public int End => Start + Length;
 
+        [IgnoreMember]
         public bool IsZero => Start == 0 && Length == 0 && CodeFile == null;
 
         public TextSpan Union(TextSpan span)
