@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.CodeRepository
 {
@@ -12,12 +13,13 @@ namespace PT.PM.Common.CodeRepository
     {
         protected IEnumerable<string> fullNames;
 
-        public FileCodeRepository(string fileName, Language language = null)
-            : this(new string[] { fileName }, language)
+        public FileCodeRepository(string fileName, Language language = null, SerializationFormat? format = null)
+            : this(new string[] { fileName }, language, format)
         {
         }
 
-        public FileCodeRepository(IEnumerable<string> fileNames, Language language = null)
+        public FileCodeRepository(IEnumerable<string> fileNames, Language language = null, SerializationFormat? format = null)
+            : base(format)
         {
             fullNames = fileNames;
             if (language != null)
@@ -29,27 +31,30 @@ namespace PT.PM.Common.CodeRepository
 
         public override IEnumerable<string> GetFileNames() => fullNames;
 
-        public override CodeFile ReadFile(string fileName)
+        public override IFile ReadFile(string fileName)
         {
-            CodeFile result;
+            IFile result;
+            string rootPath = "";
+            string name = "";
+
             try
             {
-                result = new CodeFile(ReadCode(fileName))
+                if (!string.IsNullOrEmpty(fileName))
                 {
-                    RootPath = !string.IsNullOrEmpty(fileName) ? Path.GetDirectoryName(fileName): "",
-                    Name = Path.GetFileName(fileName)
-                };
+                    rootPath = Path.GetDirectoryName(fileName);
+                }
+                name = Path.GetFileName(fileName);
+                result = Read(fileName);
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = new CodeFile("")
-                {
-                    RootPath = !string.IsNullOrEmpty(fileName) ? Path.GetDirectoryName(fileName) : "",
-                    Name = Path.GetFileName(fileName)
-                };
+                result = CodeFile.Empty;
                 Logger.LogError(new ReadException(result, ex));
             }
-            
+
+            result.RootPath = rootPath;
+            result.Name = name;
+
             return result;
         }
 
@@ -57,12 +62,24 @@ namespace PT.PM.Common.CodeRepository
         {
             if (Languages.Count == 1)
             {
-                return withParser ? !Languages.First().IsParserExists() : false;
+                return withParser && !Languages.First().IsParserExists();
             }
 
             return base.IsFileIgnored(fileName, withParser);
         }
 
-        protected virtual string ReadCode(string fileName) => FileExt.ReadAllText(fileName);
+        protected virtual IFile Read(string fileName)
+        {
+            IFile result;
+            if (Format == SerializationFormat.MsgPack)
+            {
+                result = new BinaryFile(FileExt.ReadAllBytes(fileName));
+            }
+            else
+            {
+                result = new CodeFile(FileExt.ReadAllText(fileName));
+            }
+            return result;
+        }
     }
 }

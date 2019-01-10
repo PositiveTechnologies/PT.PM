@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using PT.PM.Common.CodeRepository;
 using PT.PM.TestUtils;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,9 +55,7 @@ namespace PT.PM.Matching.Tests
         public void Match_Issue156_ObjectCreationByFullyQualifiedName()
         {
             var workflow = new Workflow(
-                new MemoryCodeRepository(new Dictionary<string, string>
-                {
-                    ["test.java"] = @"
+                new MemoryCodeRepository(@"
                     public class ProcessBuilderExample
                     {
                         public static void main(String[] args)
@@ -66,8 +63,8 @@ namespace PT.PM.Matching.Tests
                             ProcessBuilder pb = new Java.Lang.ProcessBuilder(""bbb"", ""aaa"");
                             Process process = pb.start();
                         }
-                    }"
-                }),
+                    }",
+                    "test.java"),
                 new DslPatternRepository("new Java.Lang.ProcessBuilder(...)", "java"));
 
             WorkflowResult result = workflow.Process();

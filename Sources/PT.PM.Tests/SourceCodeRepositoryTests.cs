@@ -1,11 +1,11 @@
 ﻿using NUnit.Framework;
-using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.CSharpParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Tests
 {
@@ -19,7 +19,7 @@ namespace PT.PM.Tests
             var fileCodeRepository = new FileCodeRepository(fullName);
             IEnumerable<string> fileNames = fileCodeRepository.GetFileNames();
 
-            CodeFile sourceCode = fileCodeRepository.ReadFile(fileNames.Single());
+            var sourceCode = (CodeFile)fileCodeRepository.ReadFile(fileNames.Single());
 
             Assert.AreEqual("1.cs", sourceCode.Name);
             Assert.AreEqual("", sourceCode.RelativePath);
@@ -31,7 +31,7 @@ namespace PT.PM.Tests
         public void AggregateFiles_TestProject_CorrectCountAndRelativePaths()
         {
             string rootPath = Path.Combine(TestUtility.TestsDataPath, "Test Project");
-            var repository = new DirectoryCodeRepository(rootPath, CSharp.Language);
+            var repository = new DirectoryCodeRepository(rootPath, languages: CSharp.Language);
             var fileNames = repository.GetFileNames().Select(fileName => repository.ReadFile(fileName)).ToArray();
 
             Assert.AreEqual(7, fileNames.Length);
@@ -45,7 +45,7 @@ namespace PT.PM.Tests
         [Test]
         public void Check_AspxFileWithCSharpLanguage_NotIgnored()
         {
-            var repository = new DirectoryCodeRepository("", CSharp.Language);
+            var repository = new DirectoryCodeRepository("", languages: CSharp.Language);
 
             Assert.IsFalse(repository.IsFileIgnored("page.aspx", true));
         }

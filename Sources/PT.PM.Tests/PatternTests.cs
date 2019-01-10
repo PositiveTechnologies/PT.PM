@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using NUnit.Framework;
 using PT.PM.Cli.Common;
-using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Dsl;
 using PT.PM.Matching;
@@ -12,16 +10,14 @@ using PT.PM.PhpParseTreeUst;
 using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Tests
 {
     [TestFixture]
     public class PatternTests
     {
-        SourceCodeRepository codeRepository = new MemoryCodeRepository(new Dictionary<string, string>
-        {
-            ["test.php"] = "<?php $a = 42;"
-        }, Php.Language);
+        SourceCodeRepository codeRepository = new MemoryCodeRepository("<?php $a = 42;", "test.php", Php.Language);
 
         PatternRoot pattern = new PatternRoot
         {

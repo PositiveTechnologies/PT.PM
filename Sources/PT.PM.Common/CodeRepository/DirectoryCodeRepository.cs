@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.CodeRepository
 {
@@ -18,13 +19,13 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
-        public DirectoryCodeRepository(string directoryPath, params Language[] languages)
-            : this(directoryPath, (IEnumerable<Language>)languages)
+        public DirectoryCodeRepository(string directoryPath, SerializationFormat? format = null, params Language[] languages)
+            : this(directoryPath, languages, format)
         {
         }
 
-        public DirectoryCodeRepository(string directoryPath, IEnumerable<Language> languages)
-            : base()
+        public DirectoryCodeRepository(string directoryPath, IEnumerable<Language> languages, SerializationFormat? format = null)
+            : base(format)
         {
             RootPath = directoryPath;
             if (RootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
@@ -44,12 +45,10 @@ namespace PT.PM.Common.CodeRepository
                 return Enumerable.Empty<string>();
             }
 
-            IEnumerable<string> result = DirectoryExt.EnumerateFiles(RootPath, SearchPattern, SearchOption);
-
-            if (LoadJson)
-            {
-                result = result.Where(name => Path.GetExtension(name).EqualsIgnoreCase(".json"));
-            }
+            string searchPattern = Format == null
+                ? SearchPattern
+                : "*." + ((SerializationFormat)Format).GetExtension();
+            IEnumerable<string> result = DirectoryExt.EnumerateFiles(RootPath, searchPattern, SearchOption);
 
             if (SearchPredicate != null)
             {
@@ -59,7 +58,7 @@ namespace PT.PM.Common.CodeRepository
             return result;
         }
 
-        public override CodeFile ReadFile(string fileName)
+        public override IFile ReadFile(string fileName)
         {
             string name = Path.GetFileName(fileName);
             string relativePath;
@@ -90,26 +89,23 @@ namespace PT.PM.Common.CodeRepository
                 rootPath = "";
             }
 
-            CodeFile result;
+            IFile result;
             try
             {
-                result = new CodeFile(FileExt.ReadAllText(fileName))
-                {
-                    RootPath = rootPath,
-                    RelativePath = relativePath,
-                    Name = name
-                };
+                result = Format == SerializationFormat.MsgPack
+                    ? (IFile)new BinaryFile(FileExt.ReadAllBytes(fileName))
+                    : new CodeFile(FileExt.ReadAllText(fileName));
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = new CodeFile("")
-                {
-                    RootPath = rootPath,
-                    RelativePath = relativePath,
-                    Name = name
-                };
+                result = CodeFile.Empty;
                 Logger.LogError(new ReadException(result, ex));
             }
+
+            result.RootPath = rootPath;
+            result.RelativePath = relativePath;
+            result.Name = name;
+
             return result;
         }
 

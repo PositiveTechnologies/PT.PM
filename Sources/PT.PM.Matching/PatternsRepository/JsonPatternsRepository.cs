@@ -8,6 +8,7 @@ using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching.PatternsRepository
 {
@@ -96,12 +97,11 @@ namespace PT.PM.Matching.PatternsRepository
 
                         var codeFileJsonConverter = new CodeFileJsonConverter
                         {
-                            Logger = Logger
-                        };
-
-                        codeFileJsonConverter.SetCurrentCodeFileEvent += (sender, codeFile) =>
-                        {
-                            textSpanJsonConverter.CurrentCodeFile = codeFile;
+                            Logger = Logger,
+                            SetCurrentCodeFileAction = codeFile =>
+                            {
+                                textSpanJsonConverter.CurrentCodeFile = codeFile;
+                            }
                         };
 
                         converters.Add(codeFileJsonConverter);
