@@ -3,6 +3,7 @@ using PT.PM.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using PT.PM.Common.Files;
 using PT.PM.Matching;
 
 namespace PT.PM
@@ -54,7 +55,7 @@ namespace PT.PM
         public int ErrorCount { get; set; }
 
         [JsonIgnore]
-        public HashSet<CodeFile> SourceCodeFiles { get; } = new HashSet<CodeFile>();
+        public HashSet<IFile> SourceCodeFiles { get; } = new HashSet<IFile>();
 
         [JsonIgnore]
         public List<TPattern> Patterns { get; set; } = new List<TPattern>();
@@ -80,7 +81,7 @@ namespace PT.PM
 
         public int TotalFilesCount { get; set; }
 
-        public void AddResultEntity(CodeFile sourceCodeFile)
+        public void AddResultEntity(IFile sourceCodeFile)
         {
             AddEntity(SourceCodeFiles, sourceCodeFile);
         }
