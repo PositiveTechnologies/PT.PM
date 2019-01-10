@@ -8,6 +8,7 @@ using PT.PM.TestUtils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Tests
 {
@@ -80,6 +81,7 @@ namespace PT.PM.Tests
                            : Directory.GetFiles(path);
             var codeRepository = new FileCodeRepository(files);
 
+            var logger = new LoggerMessageCounter();
             var workflow = new Workflow(codeRepository)
             {
                 DumpStages = new HashSet<Stage>() { Stage.Ust },
@@ -94,8 +96,10 @@ namespace PT.PM.Tests
             };
             WorkflowResult result = workflow.Process();
 
-            CodeFile preprocessedFile = result.SourceCodeFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
-            CodeFile originFile = result.SourceCodeFiles.FirstOrDefault(f => f.Name == "origin.php");
+            Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
+
+            CodeFile preprocessedFile = (CodeFile)result.SourceCodeFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
+            CodeFile originFile = (CodeFile)result.SourceCodeFiles.FirstOrDefault(f => f.Name == "origin.php");
 
             LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3);
             LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
@@ -139,8 +143,8 @@ namespace PT.PM.Tests
             }
 
             // Deserialization
-            var logger = new LoggerMessageCounter();
-            var newCodeRepository = new FileCodeRepository(jsonFiles) { LoadJson = true };
+            var newLogger = new LoggerMessageCounter();
+            var newCodeRepository = new FileCodeRepository(jsonFiles, format: SerializationFormat.Json);
 
             var newPatternsRepository = checkPatternSerialization
                 ? new JsonPatternsRepository(File.ReadAllText(Path.Combine(TestUtility.TestsOutputPath, "patterns.json")))
@@ -154,24 +158,24 @@ namespace PT.PM.Tests
                 StrictJson = strict,
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = !linearTextSpans,
-                Logger = logger
+                Logger = newLogger
             };
             newWorkflow.Process();
 
             if (checkStrict && strict)
             {
-                Assert.IsTrue(logger.ErrorsString.Contains("ExcessProperty"));
+                Assert.IsTrue(newLogger.ErrorsString.Contains("ExcessProperty"));
             }
             else
             {
-                Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
-                Assert.GreaterOrEqual(logger.Matches.Count, 1);
+                Assert.AreEqual(0, newLogger.ErrorCount, newLogger.ErrorsString);
+                Assert.GreaterOrEqual(newLogger.Matches.Count, 1);
 
                 if (includeTextSpans)
                 {
                     if (inputFileName == "MultiTextSpan")
                     {
-                        var matchResult = (MatchResult)logger.Matches[1];
+                        var matchResult = (MatchResult)newLogger.Matches[1];
                         Assert.AreEqual(2, matchResult.TextSpans.Length);
 
                         LineColumnTextSpan actualOriginTextSpan = originFile.GetLineColumnTextSpan(matchResult.TextSpans[1]);
@@ -182,8 +186,11 @@ namespace PT.PM.Tests
                     }
                     else
                     {
-                        var match = (MatchResult)logger.Matches.FirstOrDefault();
-                        Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), result.SourceCodeFiles.First().GetLineColumnTextSpan(match.TextSpan));
+                        var match = (MatchResult)newLogger.Matches[0];
+                        var enumerator = result.SourceCodeFiles.GetEnumerator();
+                        enumerator.MoveNext();
+                        var firstFile = (CodeFile)enumerator.Current;
+                        Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), firstFile.GetLineColumnTextSpan(match.TextSpan));
                     }
                 }
             }
