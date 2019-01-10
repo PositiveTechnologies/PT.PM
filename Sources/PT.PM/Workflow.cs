@@ -148,7 +148,7 @@ namespace PT.PM
                     Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {stopwatch.GetElapsedString()}.");
                     workflowResult.AddMatchTime(stopwatch.Elapsed);
 
-                    foreach (IMatchResultBase matchResult in matchResults)
+                    foreach (MatchResult matchResult in matchResults)
                     {
                         workflowResult.ProcessMatchResult(matchResult);
                     }
