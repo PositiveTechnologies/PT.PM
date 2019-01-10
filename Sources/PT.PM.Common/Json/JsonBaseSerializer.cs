@@ -2,10 +2,11 @@
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonBaseSerializer<T> : ILoggable
+    public abstract class JsonBaseSerializer<T> : ISerializer
     {
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
@@ -27,9 +28,9 @@ namespace PT.PM.Common.Json
 
         public CodeFile CurrectCodeFile { get; set; }
 
-        public HashSet<CodeFile> CodeFiles { get; set; } = new HashSet<CodeFile>();
+        public HashSet<IFile> CodeFiles { get; set; } = new HashSet<IFile>();
 
-        public event EventHandler<(CodeFile, TimeSpan)> ReadCodeFileEvent;
+        public Action<(IFile, TimeSpan)> ReadCodeFileAction { get; set; }
 
         public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
 
@@ -39,7 +40,7 @@ namespace PT.PM.Common.Json
         {
             JsonFile = jsonFile;
             JsonSerializerSettings jsonSettings = PrepareSettings(false, jsonFile);
-            return JsonConvert.DeserializeObject<T>(jsonFile.Code, jsonSettings);
+            return JsonConvert.DeserializeObject<T>(jsonFile.Data, jsonSettings);
         }
 
         public virtual string Serialize(T node)
@@ -95,9 +96,9 @@ namespace PT.PM.Common.Json
                 Logger = Logger
             };
 
-            codeFileJsonConverter.ReadCodeFileEvent += ReadCodeFileEvent;
+            codeFileJsonConverter.ReadCodeFileAction = ReadCodeFileAction;
 
-            codeFileJsonConverter.SetCurrentCodeFileEvent += (object sender, CodeFile codeFile) =>
+            codeFileJsonConverter.SetCurrentCodeFileAction = codeFile =>
             {
                 textSpanJsonConverter.CurrentCodeFile = codeFile;
             };

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Json
@@ -17,9 +18,9 @@ namespace PT.PM.Common.Json
 
         public CodeFile JsonFile { get; set; } = CodeFile.Empty;
 
-        public event EventHandler<CodeFile> SetCurrentCodeFileEvent;
+        public Action<CodeFile> SetCurrentCodeFileAction { get; set; }
 
-        internal event EventHandler<(CodeFile, TimeSpan)> ReadCodeFileEvent;
+        public Action<(IFile, TimeSpan)> ReadCodeFileAction { get; set; }
 
         public override void WriteJson(JsonWriter writer, CodeFile sourceCodeFile, JsonSerializer serializer)
         {
@@ -40,9 +41,9 @@ namespace PT.PM.Common.Json
                 jObject.Add(nameof(sourceCodeFile.Name), sourceCodeFile.Name);
 
             if (IncludeCode &&
-                (!ExcludeDefaults || !string.IsNullOrEmpty(sourceCodeFile.Code)))
+                (!ExcludeDefaults || !string.IsNullOrEmpty(sourceCodeFile.Data)))
             {
-                jObject.Add(nameof(sourceCodeFile.Code), sourceCodeFile.Code);
+                jObject.Add(nameof(CodeFile.Data), sourceCodeFile.Data);
             }
 
             jObject.WriteTo(writer);
@@ -52,7 +53,7 @@ namespace PT.PM.Common.Json
         {
             JObject obj = JObject.Load(reader);
 
-            string code = (string)obj[nameof(CodeFile.Code)];
+            string code = (string)obj[nameof(CodeFile.Data)];
             string rootPath = (string)obj[nameof(CodeFile.RootPath)] ?? "";
             string relativePath = (string)obj[nameof(CodeFile.RelativePath)] ?? "";
             string name = (string)obj[nameof(CodeFile.Name)] ?? "";
@@ -80,8 +81,8 @@ namespace PT.PM.Common.Json
                 Name = name
             };
 
-            ReadCodeFileEvent?.Invoke(this, (result, stopwatch.Elapsed));
-            SetCurrentCodeFileEvent?.Invoke(this, result);
+            ReadCodeFileAction?.Invoke((result, stopwatch.Elapsed));
+            SetCurrentCodeFileAction?.Invoke(result);
 
             return result;
         }
