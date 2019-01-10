@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System;
+using MessagePack;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
+    [MessagePackObject]
     public class NamespaceDeclaration : Ust
     {
+        [Key(UstFieldOffset)]
         public StringLiteral Name { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public List<Ust> Members { get; set; }
 
         public NamespaceDeclaration(StringLiteral name, Ust member,

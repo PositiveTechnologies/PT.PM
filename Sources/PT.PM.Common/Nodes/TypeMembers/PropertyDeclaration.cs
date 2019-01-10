@@ -1,12 +1,16 @@
 ﻿using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
+    [MessagePackObject]
     public class PropertyDeclaration : EntityDeclaration
     {
+        [Key(EntityFieldOffset)]
         public TypeToken Type { get; set; }
 
+        [Key(EntityFieldOffset + 1)]
         public Ust Body { get; set; }
 
         public PropertyDeclaration(TypeToken type, IdToken name, Ust body, TextSpan textSpan)

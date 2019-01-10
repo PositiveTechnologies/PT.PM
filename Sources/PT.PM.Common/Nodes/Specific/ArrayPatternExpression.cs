@@ -2,11 +2,14 @@
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Specific
 {
+    [MessagePackObject]
     public class ArrayPatternExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public List<ParameterDeclaration> Elements { get; set; } = new List<ParameterDeclaration>();
 
         public ArrayPatternExpression(IEnumerable<ParameterDeclaration> elements, TextSpan textSpan)

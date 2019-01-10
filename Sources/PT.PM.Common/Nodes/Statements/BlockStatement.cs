@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class BlockStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public List<Statement> Statements { get; set; } = new List<Statement>();
 
         public BlockStatement(IEnumerable<Statement> statements)

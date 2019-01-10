@@ -1,11 +1,15 @@
-﻿using PT.PM.Common.Nodes.Tokens;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class LabelStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public IdToken Label { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Statement Body { get; set; }
 
         public LabelStatement(IdToken label, Statement body, TextSpan textSpan)

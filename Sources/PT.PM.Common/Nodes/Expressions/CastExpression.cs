@@ -1,11 +1,15 @@
-﻿using PT.PM.Common.Nodes.Tokens;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class CastExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Expression Expression { get; set; }
 
         public CastExpression(TypeToken type, Expression expression, TextSpan textSpan)

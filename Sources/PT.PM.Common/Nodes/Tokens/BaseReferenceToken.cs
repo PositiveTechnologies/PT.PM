@@ -1,7 +1,9 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.Tokens
 {
+    [MessagePackObject]
     public class BaseReferenceToken : Expression
     {
         public BaseReferenceToken(TextSpan textSpan)

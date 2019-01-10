@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using MessagePack;
 using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class DoWhileStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public Statement EmbeddedStatement { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Expression Condition { get; set; }
 
         public DoWhileStatement(Statement embeddedStatement, Expression condition, TextSpan textSpan)

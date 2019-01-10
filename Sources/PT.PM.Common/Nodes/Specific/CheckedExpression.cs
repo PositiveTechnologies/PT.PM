@@ -1,9 +1,12 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.Specific
 {
+    [MessagePackObject]
     public class CheckedExpression : SpecificExpression
     {
+        [Key(UstFieldOffset)]
         public Expression Expression { get; set; }
 
         public CheckedExpression(Expression checkedExpression, TextSpan textSpan)

@@ -1,12 +1,16 @@
 ﻿using PT.PM.Common.Nodes.Collections;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class IndexerExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public Expression Target { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public ArgsUst Arguments { get; set; }
 
         public IndexerExpression(Expression target, ArgsUst args, TextSpan textSpan)

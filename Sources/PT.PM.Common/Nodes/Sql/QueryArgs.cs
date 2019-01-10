@@ -2,11 +2,14 @@
 using PT.PM.Common.Nodes.Expressions;
 using System;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Sql
 {
+    [MessagePackObject]
     public class QueryArgs : Expression
     {
+        [Key(UstFieldOffset)]
         public Collection Parameters { get; set; }
 
         public QueryArgs(IEnumerable<Expression> elements, TextSpan textSpan)

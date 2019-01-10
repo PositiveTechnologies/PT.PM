@@ -1,9 +1,11 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Collections
 {
+    [MessagePackObject]
     public class ArgsUst : CollectionNode<Expression>
     {
         public ArgsUst(IEnumerable<Expression> args, TextSpan textSpan)

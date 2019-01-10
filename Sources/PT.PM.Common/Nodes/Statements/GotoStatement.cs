@@ -1,9 +1,12 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class GotoStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public Expression Id { get; set; }
 
         public GotoStatement()

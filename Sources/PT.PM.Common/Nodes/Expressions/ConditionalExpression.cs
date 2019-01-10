@@ -1,13 +1,17 @@
-﻿using System;
+﻿using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class ConditionalExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public Expression Condition { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Expression TrueExpression { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public Expression FalseExpression { get; set; }
 
         public ConditionalExpression(Expression condition, Expression trueExpression, Expression falseExpression,

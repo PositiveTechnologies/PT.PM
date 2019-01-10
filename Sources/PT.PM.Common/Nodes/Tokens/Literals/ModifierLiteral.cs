@@ -1,15 +1,19 @@
 ﻿using System;
+using MessagePack;
 using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class ModifierLiteral : Literal
     {
-        [JsonIgnore]
+        [Key(UstFieldOffset)]
         public Modifier Modifier { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public string ModifierName { get; private set; }
 
+        [IgnoreMember]
         public override string TextValue => ModifierName;
 
         public ModifierLiteral(Modifier modifier, TextSpan textSpan)

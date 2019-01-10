@@ -1,21 +1,28 @@
 ﻿using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class AnonymousMethodExpression : Expression, IUstWithParent
     {
+        [Key(UstFieldOffset)]
         public List<ParameterDeclaration> Parameters { get; } = new List<ParameterDeclaration>();
 
+        [IgnoreMember]
         public Ust Parent { get; set; }
     
+        [Key(UstFieldOffset + 1)]
         public Ust Body { get; set; }
 
+        [IgnoreMember]
         public string Id => Parent is AssignmentExpression assignment 
             ? assignment.Left.ToString()
             : LineColumnTextSpan.ToString();
 
+        [IgnoreMember]
         public string Signature => UstUtils.GenerateSignature(Id, Parameters);
 
         public override Expression[] GetArgs() => new Expression[0];

@@ -1,17 +1,23 @@
 ﻿using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class ArrayCreationExpression : Expression
     {
-        public IdToken KeywordNew { get; set; }
+        [Key(UstFieldOffset)]
+        public IdToken Type { get; set; }
 
-        public TypeToken Type { get; set; }
+        [Key(UstFieldOffset + 1)]
+        public TypeToken KeywordNew { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public List<Expression> Sizes { get; set; }
 
+        [Key(UstFieldOffset + 3)]
         public List<Expression> Initializers { get; set; }
 
         public ArrayCreationExpression(TypeToken type, IEnumerable<Expression> sizes, IEnumerable<Expression> inits,

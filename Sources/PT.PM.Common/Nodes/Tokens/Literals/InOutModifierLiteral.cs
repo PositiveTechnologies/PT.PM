@@ -1,9 +1,14 @@
-﻿namespace PT.PM.Common.Nodes.Tokens.Literals
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class InOutModifierLiteral : Token
     {
+        [Key(UstFieldOffset)]
         public InOutModifier ModifierType { get; set; }
 
+        [IgnoreMember]
         public override string TextValue => ModifierType.ToString();
 
         public InOutModifierLiteral(InOutModifier modifierType, TextSpan textSpan)

@@ -1,18 +1,22 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Expressions;
-using System;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class IfElseStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public Expression Condition { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Statement TrueStatement { get; set; }
 
         /// <summary>
         /// Optional
         /// </summary>
+        [Key(UstFieldOffset + 2)]
         public Statement FalseStatement { get; set; }
 
         public IfElseStatement(Expression condition, Statement trueStatement, TextSpan textSpan)

@@ -1,14 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 {
+    [MessagePackObject]
     public class TryCatchStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public BlockStatement TryBlock { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public List<CatchClause> CatchClauses { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public BlockStatement FinallyBlock { get; set; }
 
         public TryCatchStatement(BlockStatement tryBlock, TextSpan textSpan)

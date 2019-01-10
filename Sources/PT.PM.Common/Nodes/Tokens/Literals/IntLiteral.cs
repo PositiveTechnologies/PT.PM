@@ -1,13 +1,18 @@
-﻿namespace PT.PM.Common.Nodes.Tokens.Literals
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class IntLiteral : Literal
     {
+        [Key(UstFieldOffset)]
         public long Value { get; set; }
 
+        [IgnoreMember]
         public override string TextValue => Value.ToString();
 
         public IntLiteral(long value)
-            : this(value, default(TextSpan))
+            : this(value, default)
         {
         }
 

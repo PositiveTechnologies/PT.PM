@@ -1,12 +1,16 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common.Nodes.Specific
 {
+    [MessagePackObject]
     public class AsExpression : SpecificExpression
     {
+        [Key(UstFieldOffset)]
         public Expression Expression { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public TypeToken Type { get; set; }
 
         public AsExpression(Expression expression, TypeToken type, TextSpan textSpan)

@@ -1,5 +1,8 @@
-﻿namespace PT.PM.Common.Nodes.Tokens.Literals
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class NullLiteral : Literal
     {
         public NullLiteral(TextSpan textSpan)
@@ -11,6 +14,7 @@
         {
         }
 
+        [IgnoreMember]
         public override string TextValue => "null";
     }
 }

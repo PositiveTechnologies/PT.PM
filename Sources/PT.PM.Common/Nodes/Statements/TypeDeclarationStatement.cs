@@ -1,9 +1,12 @@
-﻿using PT.PM.Common.Nodes.GeneralScope;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.GeneralScope;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class TypeDeclarationStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public TypeDeclaration TypeDeclaration { get;set; }
 
         public TypeDeclarationStatement()

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class MultichildExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public List<Expression> Expressions { get; set; }
 
         public MultichildExpression(IEnumerable<Expression> children, TextSpan textSpan)

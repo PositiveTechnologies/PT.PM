@@ -1,13 +1,17 @@
 ﻿using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class VariableDeclarationExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 
+        [Key(UstFieldOffset + 1)] 
         public List<AssignmentExpression> Variables { get; set; }
 
         public VariableDeclarationExpression(TypeToken type, IEnumerable<AssignmentExpression> variables,

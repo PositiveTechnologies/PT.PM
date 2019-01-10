@@ -1,11 +1,15 @@
-﻿using PT.PM.Common.Nodes.Tokens.Literals;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class ArgumentExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public InOutModifierLiteral Modifier { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Expression Argument { get; set; }
 
         public ArgumentExpression(InOutModifierLiteral argumentModifier, Expression argument,
