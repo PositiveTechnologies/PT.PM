@@ -87,10 +87,18 @@ namespace PT.PM.Common.Utils
 
             if (!path.StartsWith(PathUtils.LongPrefix))
             {
-                files = files.Select(file => file.DenormalizePath());
+                foreach (string file in files)
+                {
+                    yield return file.DenormalizePath();
+                }
             }
-
-            return files;
+            else
+            {
+                foreach (string file in files)
+                {
+                    yield return file;
+                }
+            }
         }
 
         public static IEnumerable<string> EnumerateFileSystemEntries(string path)
@@ -99,10 +107,18 @@ namespace PT.PM.Common.Utils
 
             if (!path.StartsWith(PathUtils.LongPrefix))
             {
-                fileSystemEntries = fileSystemEntries.Select(fileSystemEntry => fileSystemEntry.DenormalizePath());
+                foreach (string fileSystemEntry in fileSystemEntries)
+                {
+                    yield return fileSystemEntry.DenormalizePath();
+                }
             }
-
-            return fileSystemEntries;
+            else
+            {
+                foreach (string fileSystemEntry in fileSystemEntries)
+                {
+                    yield return fileSystemEntry;
+                }
+            }
         }
 
         public static string[] GetDirectories(string path)
