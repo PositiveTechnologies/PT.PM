@@ -11,6 +11,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.PlSqlParseTreeUst;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Antlr4.Runtime;
 using static PT.PM.Common.Nodes.UstUtils;
@@ -1321,7 +1322,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 text = text.ToLowerInvariant().Replace("f", "").Replace("d", "");
-                result = new FloatLiteral(double.Parse(text), context.GetTextSpan());
+                result = new FloatLiteral(double.Parse(text, CultureInfo.InvariantCulture), context.GetTextSpan());
             }
             return result;
         }

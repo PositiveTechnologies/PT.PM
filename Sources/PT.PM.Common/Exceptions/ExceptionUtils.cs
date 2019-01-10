@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 
 namespace PT.PM.Common.Exceptions
@@ -67,7 +68,7 @@ namespace PT.PM.Common.Exceptions
                 {
                     index2++;
                 }
-                line = int.Parse(stackTrace.Substring(digitIndex, index2 - digitIndex));
+                line = int.Parse(stackTrace.Substring(digitIndex, index2 - digitIndex), CultureInfo.InvariantCulture);
 
                 return pathString;
             }

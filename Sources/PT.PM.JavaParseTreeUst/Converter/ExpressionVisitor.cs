@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
+﻿using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
@@ -9,6 +8,7 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Utils;
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace PT.PM.JavaParseTreeUst.Converter
@@ -454,7 +454,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             ITerminalNode floatLiteral = context.FLOAT_LITERAL();
             if (floatLiteral != null)
             {
-                return new FloatLiteral(double.Parse(literalText), textSpan);
+                return new FloatLiteral(double.Parse(literalText, CultureInfo.InvariantCulture), textSpan);
             }
 
             literalText = literalText.Replace("0x", "");

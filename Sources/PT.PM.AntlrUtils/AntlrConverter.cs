@@ -7,6 +7,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
@@ -15,7 +16,7 @@ using PT.PM.Common.Utils;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrConverter : IParseTreeToUstConverter, IParseTreeVisitor<Ust>, ILoggable
+    public abstract class AntlrConverter : IParseTreeToUstConverter, IParseTreeVisitor<Ust>
     {
         protected static readonly Regex RegexHexLiteral = new Regex(@"^0[xX]([a-fA-F0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
         protected static readonly Regex RegexOctalLiteral = new Regex(@"^0([0-7]+)([uUlL]{0,2})$", RegexOptions.Compiled);
@@ -317,7 +318,7 @@ namespace PT.PM.AntlrUtils
                 {
                     result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
                 }
-                else if (double.TryParse(text, out double floatValue))
+                else if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out double floatValue))
                 {
                     result = new FloatLiteral(floatValue, textSpan);
                 }

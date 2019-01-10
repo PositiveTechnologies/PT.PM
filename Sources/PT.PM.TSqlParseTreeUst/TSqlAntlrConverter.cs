@@ -15,6 +15,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.TSqlParseTreeUst;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace PT.PM.SqlParseTreeUst
@@ -2118,11 +2119,11 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (context.DECIMAL() != null)
             {
-                result = new IntLiteral(long.Parse(text), textSpan);
+                result = new IntLiteral(long.Parse(text, CultureInfo.InvariantCulture), textSpan);
             }
             else
             {
-                result = new FloatLiteral(double.Parse(text), textSpan);
+                result = new FloatLiteral(double.Parse(text, CultureInfo.InvariantCulture), textSpan);
             }
             return result;
         }

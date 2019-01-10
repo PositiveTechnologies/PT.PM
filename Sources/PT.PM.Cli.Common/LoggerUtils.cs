@@ -19,8 +19,8 @@ namespace PT.PM.Cli.Common
 
             Process currentProcess = Process.GetCurrentProcess();
             string processBitsString = (Environment.Is64BitProcess ? "64" : "32") + "-bit";
-            double peakVirtualSet = currentProcess.PeakVirtualMemorySize64 / TwoInPower20;
-            double peakWorkingSet = currentProcess.PeakWorkingSet64 / TwoInPower20;
+            double peakVirtualSet = (double)currentProcess.PeakVirtualMemorySize64 / TwoInPower20;
+            double peakWorkingSet = (double)currentProcess.PeakWorkingSet64 / TwoInPower20;
             logger.LogInfo($"{"Peak virtual/working set:",Align} {peakVirtualSet} / {peakWorkingSet} MB, {processBitsString}");
         }
     }
