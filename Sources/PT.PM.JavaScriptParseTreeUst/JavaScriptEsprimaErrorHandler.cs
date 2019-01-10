@@ -3,6 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using System;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Files;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {

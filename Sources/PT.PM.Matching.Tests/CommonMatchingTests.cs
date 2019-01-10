@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching.Tests
 {

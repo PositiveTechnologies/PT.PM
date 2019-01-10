@@ -6,6 +6,7 @@ using PT.PM.Common.Reflection;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching.Json
 {

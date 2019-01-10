@@ -127,7 +127,6 @@ namespace PT.PM.Common.Json
                         jObject.Add(propName, jToken);
                     }
                 }
-
             }
 
             return jObject;

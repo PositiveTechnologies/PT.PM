@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common
 {
@@ -59,7 +60,7 @@ namespace PT.PM.Common
             return resultTextSpan;
         }
 
-        public static TextSpan ParseAnyTextSpan(string textSpanString, out bool isLineColumn, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
+        public static TextSpan ParseAnyTextSpan(string textSpanString, out bool isLineColumn, CodeFile currentCodeFile, HashSet<IFile> codeFiles)
         {
             TextSpan result;
 
@@ -77,7 +78,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
+        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<IFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -85,7 +86,7 @@ namespace PT.PM.Common
                 ? parts[1].Trim()
                 : null;
 
-            CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
+            CodeFile codeFile = (CodeFile)GetCodeFile(fileName, currentCodeFile, codeFiles);
 
             TextSpan result;
             try
@@ -128,7 +129,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
+        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, HashSet<IFile> codeFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -136,7 +137,7 @@ namespace PT.PM.Common
                 ? parts[1].Trim()
                 : null;
 
-            CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
+            CodeFile codeFile = (CodeFile)GetCodeFile(fileName, currentCodeFile, codeFiles);
 
             LineColumnTextSpan result;
             string firstPart = parts[0].Trim().Substring(1, parts[0].Length - 2);
@@ -191,9 +192,9 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
+        public static IFile GetCodeFile(string fileName, IFile currentCodeFile, HashSet<IFile> codeFiles)
         {
-            CodeFile result = null;
+            IFile result = null;
             if (fileName == null)
             {
                 result = currentCodeFile;

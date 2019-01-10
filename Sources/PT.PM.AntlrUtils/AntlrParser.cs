@@ -8,15 +8,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrParser : ILanguageParser
     {
-        private static long processedFilesCount = 0;
-        private static long processedBytesCount = 0;
-        private static long checkNumber = 0;
-        private static volatile bool excessMemory = false;
+        private static long processedFilesCount;
+        private static long processedBytesCount;
+        private static long checkNumber;
+        private static volatile bool excessMemory;
 
         private static Dictionary<Language, ATN> lexerAtns = new Dictionary<Language, ATN>();
 
@@ -68,7 +69,7 @@ namespace PT.PM.AntlrUtils
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
-            if (sourceCodeFile.Code == null)
+            if (sourceCodeFile.Data == null)
             {
                 return null;
             }
@@ -134,7 +135,7 @@ namespace PT.PM.AntlrUtils
             finally
             {
                 long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
-                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceCodeFile.Code.Length);
+                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceCodeFile.Data.Length);
 
                 long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
                 bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
@@ -217,7 +218,7 @@ namespace PT.PM.AntlrUtils
         /// <returns></returns>
         protected virtual string PreprocessText(CodeFile file)
         {
-            var text = file.Code;
+            var text = file.Data;
             var result = new StringBuilder(text.Length);
             int i = 0;
             while (i < text.Length)

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PT.PM.Common.Exceptions;
 using System;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Json
 {

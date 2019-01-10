@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
@@ -13,10 +14,6 @@ namespace PT.PM.AntlrUtils
         public bool IsPattern { get; set; }
 
         public int LineOffset { get; set; }
-
-        public AntlrMemoryErrorListener()
-        {
-        }
 
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {

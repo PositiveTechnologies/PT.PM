@@ -10,6 +10,7 @@ using PT.PM.CSharpParseTreeUst.RoslynUstVisitor;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -17,7 +18,6 @@ namespace PT.PM.CSharpParseTreeUst
     {
         private Stack<bool> runAtServer = new Stack<bool>();
         private CodeFile sourceCodeFile;
-        private int namespaceDepth;
 
         public Language Language => Aspx.Language;
 
@@ -30,8 +30,6 @@ namespace PT.PM.CSharpParseTreeUst
         public AspxConverter()
         {
             AnalyzedLanguages = Language.GetSelfAndSublanguages();
-
-            namespaceDepth = 0;
             runAtServer.Push(false);
         }
 
@@ -86,7 +84,6 @@ namespace PT.PM.CSharpParseTreeUst
         public override Ust Visit(AspxNode.HtmlTag node)
         {
             runAtServer.Push(node.Attributes.IsRunAtServer);
-            namespaceDepth++;
 
             var members = new List<Ust>();
             foreach (var child in node.Children)
@@ -98,7 +95,6 @@ namespace PT.PM.CSharpParseTreeUst
                 }
             }
 
-            namespaceDepth--;
             runAtServer.Pop();
 
             if (members.Count == 1)

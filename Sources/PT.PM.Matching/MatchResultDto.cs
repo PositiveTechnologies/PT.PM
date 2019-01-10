@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using System.Linq;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
@@ -20,10 +21,10 @@ namespace PT.PM.Matching
         public MatchResultDto(MatchResult matchResult)
         {
             CodeFile sourceCodeFile = matchResult.SourceCodeFile;
-            string code = sourceCodeFile.Code;
+            string code = sourceCodeFile.Data;
             TextSpan = matchResult.TextSpans.Where(textSpan =>
                 textSpan.Start >= 0 &&
-                textSpan.End <= textSpan.GetCodeFile(sourceCodeFile).Code.Length)
+                textSpan.End <= textSpan.GetCodeFile(sourceCodeFile).Data.Length)
                 .Union();
             LineColumnTextSpan = sourceCodeFile.GetLineColumnTextSpan(TextSpan);
 

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM
 {
@@ -27,12 +28,12 @@ namespace PT.PM
             List<Language> langs = (languages ?? LanguageUtils.LanguagesWithParser).ToList();
 
             // Any PHP file contains start tag.
-            if (!codeFile.Code.Contains("<?"))
+            if (!codeFile.Data.Contains("<?"))
             {
                 langs.Remove(langs.FirstOrDefault(l => l == Php.Language));
             }
             // Aspx and html code contains at least one tag.
-            if (!openTagRegex.IsMatch(codeFile.Code) || !closeTagRegex.IsMatch(codeFile.Code))
+            if (!openTagRegex.IsMatch(codeFile.Data) || !closeTagRegex.IsMatch(codeFile.Data))
             {
                 langs.Remove(langs.FirstOrDefault(l => l == Aspx.Language));
                 langs.Remove(langs.FirstOrDefault(l => l == Html.Language));

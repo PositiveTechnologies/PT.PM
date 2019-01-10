@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using PT.PM.Common.Exceptions;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -18,7 +19,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
-            if (sourceCodeFile.Code == null)
+            if (sourceCodeFile.Data == null)
             {
                 return null;
             }
@@ -26,7 +27,7 @@ namespace PT.PM.CSharpParseTreeUst
             try
             {
                 var filePath = Path.Combine(sourceCodeFile.RelativePath, sourceCodeFile.Name);
-                SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCodeFile.Code, null, filePath);
+                SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCodeFile.Data, null, filePath);
                 var result = new CSharpRoslynParseTree(syntaxTree);
                 SyntaxNode root = syntaxTree.GetRoot();
                 result.Comments = root.DescendantTrivia().Where(node =>

@@ -1,4 +1,5 @@
-﻿using PT.PM.Common.Nodes;
+﻿using PT.PM.Common.Files;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Common.Json
 {

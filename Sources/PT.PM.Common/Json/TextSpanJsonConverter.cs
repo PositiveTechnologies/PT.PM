@@ -2,8 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Json
 {
@@ -17,7 +17,7 @@ namespace PT.PM.Common.Json
 
         public CodeFile CurrentCodeFile { get; set; }
 
-        public HashSet<CodeFile> CodeFiles { get; set; } = new HashSet<CodeFile>();
+        public HashSet<IFile> CodeFiles { get; set; } = new HashSet<IFile>();
 
         public CodeFile JsonFile { get; set; } = CodeFile.Empty;
 

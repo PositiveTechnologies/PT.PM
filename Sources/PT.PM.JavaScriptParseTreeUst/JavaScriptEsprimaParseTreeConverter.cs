@@ -10,6 +10,7 @@ using UstSpecific = PT.PM.Common.Nodes.Specific;
 using PT.PM.Common.Nodes.TypeMembers;
 using Esprima;
 using System.Threading;
+using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.JavaScriptParseTreeUst

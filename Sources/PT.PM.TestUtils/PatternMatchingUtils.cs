@@ -4,6 +4,7 @@ using PT.PM.Dsl;
 using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Files;
 using PT.PM.Matching;
 
 namespace PT.PM.TestUtils

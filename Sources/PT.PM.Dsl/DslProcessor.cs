@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Files;
 using PT.PM.Matching;
 
 namespace PT.PM.Dsl
@@ -18,7 +19,7 @@ namespace PT.PM.Dsl
 
         public PatternRoot Deserialize(CodeFile data)
         {
-            if (string.IsNullOrEmpty(data.Code))
+            if (string.IsNullOrEmpty(data.Data))
             {
                 throw new ParsingException(data, message: "Pattern value can not be empty.");
             }
@@ -30,7 +31,7 @@ namespace PT.PM.Dsl
                 PatternExpressionInsideStatement = PatternExpressionInsideStatement,
                 Data = data
             };
-            DslParser.PatternContext patternContext = parser.Parse(data.PatternKey, data.Code);
+            DslParser.PatternContext patternContext = parser.Parse(data.PatternKey, data.Data);
 
             PatternRoot patternNode = converter.Convert(patternContext);
             patternNode.CodeFile = data;

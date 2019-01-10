@@ -19,6 +19,7 @@ using PT.PM.JavaScriptParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PhpParseTreeUst
 {

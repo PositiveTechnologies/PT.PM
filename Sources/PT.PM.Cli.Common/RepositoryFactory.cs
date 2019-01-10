@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
 
 namespace PT.PM.Cli.Common
@@ -39,8 +40,7 @@ namespace PT.PM.Cli.Common
                 }
                 else
                 {
-                    sourceCodeRepository = new FileCodeRepository(path);
-                    sourceCodeRepository.LoadJson = extension.EqualsIgnoreCase(".json");
+                    sourceCodeRepository = new FileCodeRepository(path, format: CommonUtils.GetFormatByExtension(extension));
                 }
             }
             else

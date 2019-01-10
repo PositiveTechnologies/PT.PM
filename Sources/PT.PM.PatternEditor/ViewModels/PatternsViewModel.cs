@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PatternEditor.Pattern
 {
@@ -468,7 +469,7 @@ namespace PT.PM.PatternEditor.Pattern
                             Indented = true
                         };
 
-                        jsonPatternSerializer.CodeFiles = new HashSet<CodeFile>() { patternNode.CodeFile };
+                        jsonPatternSerializer.CodeFiles = new HashSet<IFile> { patternNode.CodeFile };
                         jsonPatternSerializer.CurrectCodeFile = patternNode.CodeFile;
                         PatternJson = jsonPatternSerializer.Serialize(patternNode);
                         FileExt.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern-ust.json"), PatternJson);

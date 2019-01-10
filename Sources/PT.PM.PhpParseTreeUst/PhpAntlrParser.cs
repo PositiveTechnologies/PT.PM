@@ -1,8 +1,8 @@
 ﻿using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.JavaScriptParseTreeUst;
 using System.IO;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PhpParseTreeUst
 {

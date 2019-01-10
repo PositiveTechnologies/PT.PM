@@ -3,6 +3,7 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using System;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -14,16 +15,15 @@ namespace PT.PM.CSharpParseTreeUst
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
-            if (sourceCodeFile.Code == null)
+            if (sourceCodeFile.Data == null)
             {
                 return null;
             }
 
             try
             {
-                AspxParseTree result = null;
                 var parser = new global::AspxParser.AspxParser(sourceCodeFile.RelativePath);
-                var source = new AspxSource(sourceCodeFile.FullName, sourceCodeFile.Code);
+                var source = new AspxSource(sourceCodeFile.FullName, sourceCodeFile.Data);
                 AspxParseResult aspxTree = parser.Parse(source);
                 foreach (var error in aspxTree.ParseErrors)
                 {
@@ -32,7 +32,7 @@ namespace PT.PM.CSharpParseTreeUst
                         TextSpan = error.Location.GetTextSpan()
                     });
                 }
-                result = new AspxParseTree(aspxTree.RootNode);
+                var result = new AspxParseTree(aspxTree.RootNode);
                 result.SourceCodeFile = sourceCodeFile;
 
                 return result;

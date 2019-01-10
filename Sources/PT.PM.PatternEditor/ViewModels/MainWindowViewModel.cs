@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PatternEditor
 {
@@ -657,7 +658,7 @@ namespace PT.PM.PatternEditor
             workflow.DumpStages = dumpStages;
 
             WorkflowResult workflowResult = workflow.Process();
-            sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
+            sourceCode = (CodeFile)workflowResult.SourceCodeFiles.FirstOrDefault();
 
             ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
 

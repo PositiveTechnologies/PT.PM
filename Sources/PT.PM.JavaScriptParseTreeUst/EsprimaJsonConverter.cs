@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common;
 using System;
 using System.Reflection;
+using PT.PM.Common.Files;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using MessagePack;
 
-namespace PT.PM.Common
+namespace PT.PM.Common.Files
 {
-    public class CodeFile : IEquatable<CodeFile>, IComparable<CodeFile>, IComparable
+    [MessagePackObject]
+    public class CodeFile : File<string>
     {
         private int[] lineIndexes;
 
@@ -13,30 +14,22 @@ namespace PT.PM.Common
         public const int StartColumn = 1;
 
         public static CodeFile Empty => new CodeFile("");
+        
+        [IgnoreMember]
+        public override FileType Type => FileType.CodeFile;
 
-        public string RootPath { get; set; } = "";
-
-        public string RelativePath { get; set; } = "";
-
-        public string Name { get; set; } = "";
-
-        public string Code { get; } = "";
-
-        public string PatternKey { get; set; } = null;
-
-        public string RelativeName => Path.Combine(RelativePath, Name);
-
-        public string FullName => Path.Combine(RootPath, RelativePath, Name);
+        [IgnoreMember]
+        public override bool IsEmpty => Data.Length == 0;
 
         public CodeFile(string code)
+            : base(code)
         {
-            Code = code ?? "";
             InitLineIndexes();
         }
 
         public override string ToString() => !string.IsNullOrEmpty(RelativeName)
             ? RelativeName
-            : Code;
+            : Data;
 
         public LineColumnTextSpan GetLineColumnTextSpan(TextSpan textSpan)
         {
@@ -95,33 +88,30 @@ namespace PT.PM.Common
             if (line + 1 < lineIndexes.Length)
             {
                 endInd = lineIndexes[line + 1] - 1;
-                if (endInd - 1 > 0 && Code[endInd - 1] == '\r')
+                if (endInd - 1 > 0 && Data[endInd - 1] == '\r')
                 {
                     endInd--;
                 }
             }
             else
             {
-                endInd = Code.Length;
+                endInd = Data.Length;
             }
 
-            return Code.Substring(lineIndexes[line], endInd - lineIndexes[line]);
+            return Data.Substring(lineIndexes[line], endInd - lineIndexes[line]);
         }
-
-        public bool IsEmpty => string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(Code);
 
         public string GetSubstring(TextSpan textSpan)
         {
-            if (textSpan.End > Code.Length)
+            if (textSpan.End > Data.Length)
                 return "";
-            return Code.Substring(textSpan.Start, textSpan.Length);
+
+            return Data.Substring(textSpan.Start, textSpan.Length);
         }
 
         private void InitLineIndexes()
         {
-            int currentLine = StartLine;
-            int currentColumn = StartColumn;
-            string text = Code;
+            string text = Data;
 
             var lineIndexesBuffer = new List<int>(text.Length / 25) { 0 };
             int textIndex = 0;
@@ -130,17 +120,11 @@ namespace PT.PM.Common
                 char c = text[textIndex];
                 if (c == '\r' || c == '\n')
                 {
-                    currentLine++;
-                    currentColumn = StartColumn;
                     if (c == '\r' && textIndex + 1 < text.Length && text[textIndex + 1] == '\n')
                     {
                         textIndex++;
                     }
                     lineIndexesBuffer.Add(textIndex + 1);
-                }
-                else
-                {
-                    currentColumn++;
                 }
                 textIndex++;
             }
@@ -148,70 +132,9 @@ namespace PT.PM.Common
             lineIndexes = lineIndexesBuffer.ToArray();
         }
 
-        public static bool operator ==(CodeFile codeFile1, CodeFile codeFile2)
+        protected override int CompareData(string data1, string data2)
         {
-            if (codeFile1 is null)
-            {
-                return codeFile2 is null;
-            }
-
-            return codeFile1.Equals(codeFile2);
-        }
-
-        public static bool operator !=(CodeFile codeFile1, CodeFile codeFile2)
-        {
-            if (codeFile1 is null)
-            {
-                return !(codeFile2 is null);
-            }
-
-            return !codeFile1.Equals(codeFile2);
-        }
-
-        public override bool Equals(object obj) => Equals(obj as CodeFile);
-
-        public bool Equals(CodeFile other)
-        {
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            if (other is null)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(other.FullName))
-            {
-                return Code == other.Code;
-            }
-
-            return FullName == other.FullName;
-        }
-
-        public override int GetHashCode()
-        {
-            return string.IsNullOrEmpty(RelativeName)
-                ? Code.GetHashCode()
-                : RelativeName.GetHashCode();
-        }
-
-        public int CompareTo(object obj) => CompareTo(obj as CodeFile);
-
-        public int CompareTo(CodeFile other)
-        {
-            if (other is null)
-            {
-                return 1;
-            }
-
-            if (string.IsNullOrEmpty(FullName) && string.IsNullOrEmpty(other.FullName))
-            {
-                return Code.CompareTo(other.Code);
-            }
-
-            return FullName.CompareTo(other.FullName);
+            return String.Compare(data1, data2, StringComparison.Ordinal);
         }
     }
 }

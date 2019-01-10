@@ -5,8 +5,8 @@ using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -24,7 +24,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public ParseTree Parse(CodeFile sourceCodeFile)
         {
-            if (sourceCodeFile.Code == null)
+            if (sourceCodeFile.Data == null)
             {
                 return null;
             }
@@ -44,14 +44,14 @@ namespace PT.PM.JavaScriptParseTreeUst
                     Tolerant = true,
                     ErrorHandler = errorHandler
                 };
-                var parser = new JavaScriptParser(sourceCodeFile.Code, parserOptions);
+                var parser = new JavaScriptParser(sourceCodeFile.Data, parserOptions);
 
                 var stopwatch = Stopwatch.StartNew();
                 Program ast = parser.ParseProgram(JavaScriptType == JavaScriptType.Strict);
                 stopwatch.Stop();
                 TimeSpan parserTimeSpan = stopwatch.Elapsed;
 
-                var scanner = new Scanner(sourceCodeFile.Code, parserOptions);
+                var scanner = new Scanner(sourceCodeFile.Data, parserOptions);
                 errorHandler.Scanner = scanner;
                 errorHandler.Logger = DummyLogger.Instance; // Ignore errors on tokenization because of the first stage
                 var comments = new List<Comment>();

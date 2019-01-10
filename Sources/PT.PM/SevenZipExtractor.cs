@@ -2,6 +2,7 @@
 using PT.PM.Common.Exceptions;
 using System;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM
 {

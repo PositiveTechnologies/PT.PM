@@ -3,7 +3,6 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.PatternEditor.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using PT.PM.Matching;
 
@@ -66,7 +65,7 @@ namespace PT.PM.PatternEditor
 
             if (ex is PMException pmException)
             {
-                logToGui = !(IsPatternLogger ^ pmException.CodeFile.PatternKey != null);
+                logToGui = !(IsPatternLogger ^ pmException.File.PatternKey != null);
             }
 
             if (logToGui)

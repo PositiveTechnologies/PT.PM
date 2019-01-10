@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Cli.Common
 {
@@ -169,7 +170,7 @@ namespace PT.PM.Cli.Common
         protected void ExtractLogInfo(TextSpan textSpan, CodeFile sourceFile, out LineColumnTextSpan lineColumnTextSpan, out string code)
         {
             lineColumnTextSpan = sourceFile.GetLineColumnTextSpan(textSpan);
-            code = sourceFile.Code.Substring(textSpan);
+            code = sourceFile.Data.Substring(textSpan);
             code = CodePrinter.Print(code);
         }
 

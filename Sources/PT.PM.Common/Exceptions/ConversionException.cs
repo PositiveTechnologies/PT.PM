@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Exceptions
 {
@@ -17,7 +18,7 @@ namespace PT.PM.Common.Exceptions
         public ConversionException(CodeFile codeFile, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            CodeFile = codeFile ?? CodeFile.Empty;
+            File = codeFile ?? CodeFile.Empty;
         }
     }
 }

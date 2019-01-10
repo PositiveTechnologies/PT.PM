@@ -4,6 +4,7 @@ using PT.PM.TestUtils;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.PhpParseTreeUst.Tests
