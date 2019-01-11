@@ -7,6 +7,7 @@ using MessagePack.Formatters;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
+using static MessagePack.MessagePackBinary;
 
 namespace PT.PM.Common.MessagePack
 {
@@ -53,25 +54,25 @@ namespace PT.PM.Common.MessagePack
         {
             if (value is null)
             {
-                return MessagePackBinary.WriteNil(ref bytes, offset);
+                return WriteNil(ref bytes, offset);
             }
 
             int newOffset = offset;
-            newOffset += MessagePackBinary.WriteByte(ref bytes, newOffset, (byte) value.Type);
-            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.RootPath);
-            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.RelativePath);
-            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.Name);
-            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.PatternKey);
+            newOffset += WriteByte(ref bytes, newOffset, (byte) value.Type);
+            newOffset += WriteString(ref bytes, newOffset, value.RootPath);
+            newOffset += WriteString(ref bytes, newOffset, value.RelativePath);
+            newOffset += WriteString(ref bytes, newOffset, value.Name);
+            newOffset += WriteString(ref bytes, newOffset, value.PatternKey);
 
             if (string.IsNullOrEmpty(value.FullName))
             {
                 if (value is TextFile sourceFile)
                 {
-                    newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, sourceFile.Data);
+                    newOffset += WriteString(ref bytes, newOffset, sourceFile.Data);
                 }
                 else if (value is BinaryFile binaryFile)
                 {
-                    newOffset += MessagePackBinary.WriteBytes(ref bytes, newOffset, binaryFile.Data);
+                    newOffset += WriteBytes(ref bytes, newOffset, binaryFile.Data);
                 }
             }
 
@@ -88,27 +89,27 @@ namespace PT.PM.Common.MessagePack
             int newOffset = offset;
             try
             {
-                if (MessagePackBinary.IsNil(bytes, offset))
+                if (IsNil(bytes, offset))
                 {
-                    MessagePackBinary.ReadNil(bytes, offset, out readSize);
+                    ReadNil(bytes, offset, out readSize);
                     return null;
                 }
 
-                FileType fileType = (FileType) MessagePackBinary.ReadByte(bytes, offset, out int size);
+                FileType fileType = (FileType) ReadByte(bytes, offset, out int size);
                 newOffset += size;
                 
-                string rootPath = MessagePackBinary.ReadString(bytes, newOffset, out size) ?? "";
+                string rootPath = ReadString(bytes, newOffset, out size) ?? "";
                 rootPath = rootPath.NormalizeDirSeparator();
                 newOffset += size;
                 
-                string relativePath = MessagePackBinary.ReadString(bytes, newOffset, out size) ?? "";
+                string relativePath = ReadString(bytes, newOffset, out size) ?? "";
                 relativePath = relativePath.NormalizeDirSeparator();
                 newOffset += size;
                 
-                string name = MessagePackBinary.ReadString(bytes, newOffset, out size) ?? "";
+                string name = ReadString(bytes, newOffset, out size) ?? "";
                 newOffset += size;
                 
-                string patternKey = MessagePackBinary.ReadString(bytes, newOffset, out size);
+                string patternKey = ReadString(bytes, newOffset, out size);
                 newOffset += size;
 
                 string fullName = Path.Combine(rootPath, relativePath, name);
@@ -135,7 +136,7 @@ namespace PT.PM.Common.MessagePack
                     string code;
                     if (string.IsNullOrEmpty(fullName))
                     {
-                        code = MessagePackBinary.ReadString(bytes, newOffset, out size);
+                        code = ReadString(bytes, newOffset, out size);
                         newOffset += size;
                     }
                     else
@@ -159,7 +160,7 @@ namespace PT.PM.Common.MessagePack
                     byte[] data;
                     if (string.IsNullOrEmpty(fullName))
                     {
-                        data = MessagePackBinary.ReadBytes(bytes, newOffset, out size);
+                        data = ReadBytes(bytes, newOffset, out size);
                         newOffset += size;
                     }
                     else

@@ -3,6 +3,7 @@ using MessagePack;
 using MessagePack.Formatters;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
+using static MessagePack.MessagePackBinary;
 
 namespace PT.PM.Common.MessagePack
 {
@@ -51,18 +52,18 @@ namespace PT.PM.Common.MessagePack
             int newOffset = offset;
             if (!IsLineColumn)
             {
-                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.Start);
-                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.Length);
+                newOffset += WriteInt32(ref bytes, newOffset, value.Start);
+                newOffset += WriteInt32(ref bytes, newOffset, value.Length);
             }
             else
             {
                 TextFile sourceFile = value.GetSourceFile(SourceFile);
                 LineColumnTextSpan lcTextSpan = sourceFile.GetLineColumnTextSpan(value);
 
-                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.BeginLine);
-                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.BeginColumn);
-                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.EndLine);
-                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.EndColumn);
+                newOffset += WriteInt32(ref bytes, newOffset, lcTextSpan.BeginLine);
+                newOffset += WriteInt32(ref bytes, newOffset, lcTextSpan.BeginColumn);
+                newOffset += WriteInt32(ref bytes, newOffset, lcTextSpan.EndLine);
+                newOffset += WriteInt32(ref bytes, newOffset, lcTextSpan.EndColumn);
             }
 
             var fileFormatter = formatterResolver.GetFormatter<TextFile>();
@@ -83,9 +84,9 @@ namespace PT.PM.Common.MessagePack
 
                 if (!IsLineColumn)
                 {
-                    start = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    start = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
-                    length = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    length = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
 
                     sourceFile = sourceFileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size)
@@ -93,13 +94,13 @@ namespace PT.PM.Common.MessagePack
                 }
                 else
                 {
-                    int beginLine = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    int beginLine = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
-                    int beginColumn = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    int beginColumn = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
-                    int endLine = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    int endLine = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
-                    int endColumn = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    int endColumn = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
 
                     sourceFile = sourceFileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size)
