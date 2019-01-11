@@ -48,7 +48,7 @@ namespace PT.PM.Common.CodeRepository
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = CodeFile.Empty;
+                result = TextFile.Empty;
                 Logger.LogError(new ReadException(result, ex));
             }
 
@@ -77,7 +77,7 @@ namespace PT.PM.Common.CodeRepository
             }
             else
             {
-                result = new CodeFile(FileExt.ReadAllText(fileName));
+                result = new TextFile(FileExt.ReadAllText(fileName));
             }
             return result;
         }

@@ -55,7 +55,7 @@ namespace PT.PM
         public int ErrorCount { get; set; }
 
         [JsonIgnore]
-        public HashSet<IFile> SourceCodeFiles { get; } = new HashSet<IFile>();
+        public HashSet<IFile> SourceFiles { get; } = new HashSet<IFile>();
 
         [JsonIgnore]
         public List<TPattern> Patterns { get; set; } = new List<TPattern>();
@@ -81,9 +81,9 @@ namespace PT.PM
 
         public int TotalFilesCount { get; set; }
 
-        public void AddResultEntity(IFile sourceCodeFile)
+        public void AddResultEntity(IFile sourceFile)
         {
-            AddEntity(SourceCodeFiles, sourceCodeFile);
+            AddEntity(SourceFiles, sourceFile);
         }
 
         public void AddResultEntity(IEnumerable<TPattern> patterns)

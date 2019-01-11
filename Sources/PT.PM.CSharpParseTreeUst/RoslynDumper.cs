@@ -28,7 +28,7 @@ namespace PT.PM.CSharpParseTreeUst
             };
 
             string result = JsonConvert.SerializeObject(roslynParseTree.SyntaxTree.GetRoot(), serializerSettings);
-            Dump(result, parseTree.SourceCodeFile, false);
+            Dump(result, parseTree.SourceFile, false);
         }
     }
 }

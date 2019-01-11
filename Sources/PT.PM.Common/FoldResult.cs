@@ -8,7 +8,7 @@ namespace PT.PM.Common
     public class FoldResult
     {
 #if DEBUG
-        public CodeFile CodeFile { get; set; }
+        public TextFile TextFile { get; set; }
 #endif
         
         public object Value { get; }
@@ -30,7 +30,7 @@ namespace PT.PM.Common
         {
             return Value + " at " +
 #if DEBUG
-                string.Join("; ", TextSpans.Select(textSpan => CodeFile?.GetLineColumnTextSpan(textSpan).ToString() ?? textSpan.ToString()));
+                string.Join("; ", TextSpans.Select(textSpan => TextFile?.GetLineColumnTextSpan(textSpan).ToString() ?? textSpan.ToString()));
 #else
                 string.Join("; ", TextSpans);
 #endif

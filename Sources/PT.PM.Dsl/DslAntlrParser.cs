@@ -19,11 +19,11 @@ namespace PT.PM.Dsl
         public DslParser.PatternContext Parse(string patternKey, string data)
         {
             DslParser.PatternContext pattern = null;
-            var codeFile = new CodeFile(data) { PatternKey = patternKey ?? data };
+            var sourceFile = new TextFile(data) { PatternKey = patternKey ?? data };
             var errorListener = new AntlrMemoryErrorListener()
             {
                 IsPattern = true,
-                CodeFile = codeFile,
+                SourceFile = sourceFile,
                 Logger = Logger
             };
             try
@@ -42,7 +42,7 @@ namespace PT.PM.Dsl
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ParsingException(codeFile, ex));
+                Logger.LogError(new ParsingException(sourceFile, ex));
                 throw;
             }
 

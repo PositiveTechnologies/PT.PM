@@ -23,8 +23,8 @@ namespace PT.PM.Matching.Json
 
         public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
 
-        public PatternJsonConverterReader(CodeFile jsonFile)
-            : base(jsonFile)
+        public PatternJsonConverterReader(TextFile serializedFile)
+            : base(serializedFile)
         {
         }
 
@@ -52,7 +52,7 @@ namespace PT.PM.Matching.Json
                     FilenameWildcard = (string)jObject[nameof(PatternRoot.FilenameWildcard)] ?? DefaultFilenameWildcard,
                     Languages = resultLanguages,
                     DataFormat = (string)jObject[nameof(PatternRoot.DataFormat)] ?? DefaultDataFormat,
-                    CodeFile = jObject[nameof(PatternRoot.CodeFile)]?.ToObject<CodeFile>(serializer) ?? CodeFile.Empty,
+                    File = jObject[nameof(PatternRoot.File)]?.ToObject<TextFile>(serializer) ?? TextFile.Empty,
                 };
 
                 target = root;

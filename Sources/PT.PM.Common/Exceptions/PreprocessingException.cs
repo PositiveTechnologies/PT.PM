@@ -8,7 +8,7 @@ namespace PT.PM.Common.Exceptions
         public PreprocessingException(IFile file, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            File = file ?? CodeFile.Empty;
+            File = file ?? TextFile.Empty;
         }
     }
 }

@@ -46,7 +46,7 @@ namespace PT.PM.Matching.PatternsRepository
             catch (Exception ex)
             {
                 Logger.LogError(new ParsingException(
-                   new CodeFile(patternsData) { PatternKey = DefaultKey }, ex, ex.FormatExceptionMessage()));
+                   new TextFile(patternsData) { PatternKey = DefaultKey }, ex, ex.FormatExceptionMessage()));
             }
 
             List<PatternDto> result;
@@ -80,7 +80,7 @@ namespace PT.PM.Matching.PatternsRepository
                     {
                         patternJsonSerializer = new JsonSerializer();
                         var converters = patternJsonSerializer.Converters;
-                        var patternJsonConverterReader = new PatternJsonConverterReader(new CodeFile(patternsData))
+                        var patternJsonConverterReader = new PatternJsonConverterReader(new TextFile(patternsData))
                         {
                             Logger = Logger,
                             DefaultDataFormat = DefaultDataFormat,
@@ -95,16 +95,16 @@ namespace PT.PM.Matching.PatternsRepository
                         };
                         converters.Add(textSpanJsonConverter);
 
-                        var codeFileJsonConverter = new CodeFileJsonConverter
+                        var sourceFileJsonConverter = new SourceFileJsonConverter
                         {
                             Logger = Logger,
-                            SetCurrentCodeFileAction = codeFile =>
+                            SetCurrentSourceFileAction = sourceFile =>
                             {
-                                textSpanJsonConverter.CurrentCodeFile = codeFile;
+                                textSpanJsonConverter.CurrentSourceFile = sourceFile;
                             }
                         };
 
-                        converters.Add(codeFileJsonConverter);
+                        converters.Add(sourceFileJsonConverter);
                     }
 
                     PatternRoot patternRoot = token.ToObject<PatternRoot>(patternJsonSerializer);

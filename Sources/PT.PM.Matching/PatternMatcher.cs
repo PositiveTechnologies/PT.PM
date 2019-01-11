@@ -35,7 +35,7 @@ namespace PT.PM.Matching
                     .Where(pattern => pattern.Languages.Any(patternLang => ust.Sublanguages.Contains(patternLang)));
                 if (!IsIgnoreFilenameWildcards)
                 {
-                    patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceCodeFile.FullName) ?? true);
+                    patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceFile.FullName) ?? true);
                 }
 
                 var parentStack = new List<Ust>();
@@ -52,7 +52,7 @@ namespace PT.PM.Matching
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new MatchingException(ust.SourceCodeFile, ex));
+                Logger.LogError(new MatchingException(ust.SourceFile, ex));
                 return new List<MatchResult>();
             }
         }

@@ -16,10 +16,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public ParsingException(IFile codeFile, Exception ex = null, string message = "")
+        public ParsingException(IFile sourceFile, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            File = codeFile ?? CodeFile.Empty;
+            File = sourceFile ?? TextFile.Empty;
         }
     }
 }

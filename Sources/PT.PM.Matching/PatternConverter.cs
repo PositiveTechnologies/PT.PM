@@ -51,7 +51,7 @@ namespace PT.PM.Matching
             var result = new List<PatternRoot>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
             {
-                CodeFile patternFile = new CodeFile(patternDto.Value)
+                var patternFile = new TextFile(patternDto.Value)
                 {
                     Name = patternDto.Name,
                     PatternKey = patternDto.Key
@@ -108,7 +108,7 @@ namespace PT.PM.Matching
                 {
                     if (serializer is JsonPatternSerializer jsonPatternSerializer)
                     {
-                        jsonPatternSerializer.CurrectCodeFile = pattern.CodeFile;
+                        jsonPatternSerializer.CurrectSourceFile = pattern.File;
                     }
                     string serialized = serializer.Serialize(pattern);
                     PatternDto patternDto = new PatternDto
@@ -124,7 +124,7 @@ namespace PT.PM.Matching
                 }
                 catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
-                    Logger.LogError(new ConversionException(pattern.CodeFile, ex, $"Error while \"{pattern.Key}\" pattern serialising"));
+                    Logger.LogError(new ConversionException(pattern.File, ex, $"Error while \"{pattern.Key}\" pattern serialising"));
                 }
             }
             return result;

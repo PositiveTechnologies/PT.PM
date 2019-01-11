@@ -67,22 +67,22 @@ namespace PT.PM.AntlrUtils
             Parser = InitParser(null);
         }
 
-        public ParseTree Parse(CodeFile sourceCodeFile)
+        public ParseTree Parse(TextFile sourceFile)
         {
-            if (sourceCodeFile.Data == null)
+            if (sourceFile.Data == null)
             {
                 return null;
             }
 
             AntlrParseTree result = null;
-            var filePath = sourceCodeFile.RelativeName;
+            var filePath = sourceFile.RelativeName;
             var errorListener = new AntlrMemoryErrorListener();
-            errorListener.CodeFile = sourceCodeFile;
+            errorListener.SourceFile = sourceFile;
             errorListener.Logger = Logger;
             errorListener.LineOffset = LineOffset;
             try
             {
-                var preprocessedText = PreprocessText(sourceCodeFile);
+                var preprocessedText = PreprocessText(sourceFile);
                 AntlrInputStream inputStream;
                 if (Language.IsCaseInsensitive)
                 {
@@ -116,7 +116,7 @@ namespace PT.PM.AntlrUtils
                 stopwatch.Restart();
                 var codeTokenSource = new ListTokenSource(tokens);
                 var codeTokenStream = new CommonTokenStream(codeTokenSource);
-                ParserRuleContext syntaxTree = ParseTokens(sourceCodeFile, errorListener, codeTokenStream);
+                ParserRuleContext syntaxTree = ParseTokens(sourceFile, errorListener, codeTokenStream);
                 stopwatch.Stop();
                 TimeSpan parserTimeSpan = stopwatch.Elapsed;
 
@@ -126,16 +126,16 @@ namespace PT.PM.AntlrUtils
 
                 result.Tokens = tokens;
                 result.Comments = commentTokens;
-                result.SourceCodeFile = sourceCodeFile;
+                result.SourceFile = sourceFile;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ParsingException(sourceCodeFile, ex));
+                Logger.LogError(new ParsingException(sourceFile, ex));
             }
             finally
             {
                 long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
-                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceCodeFile.Data.Length);
+                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceFile.Data.Length);
 
                 long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
                 bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
@@ -159,7 +159,7 @@ namespace PT.PM.AntlrUtils
                             parserAtns.Remove(Language);
                         }
 
-                        Logger.LogInfo($"Memory cleared due to big memory consumption during {sourceCodeFile.RelativeName} parsing.");
+                        Logger.LogInfo($"Memory cleared due to big memory consumption during {sourceFile.RelativeName} parsing.");
                     }
                 }
                 else
@@ -171,7 +171,7 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-        protected ParserRuleContext ParseTokens(CodeFile sourceCodeFile,
+        protected ParserRuleContext ParseTokens(TextFile sourceFile,
             AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
@@ -216,7 +216,7 @@ namespace PT.PM.AntlrUtils
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        protected virtual string PreprocessText(CodeFile file)
+        protected virtual string PreprocessText(TextFile file)
         {
             var text = file.Data;
             var result = new StringBuilder(text.Length);

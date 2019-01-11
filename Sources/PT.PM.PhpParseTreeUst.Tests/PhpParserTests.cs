@@ -28,11 +28,11 @@ namespace PT.PM.PhpParseTreeUst.Tests
             {
                 var phpParser = new PhpAntlrParser();
                 string code = fileText.Replace("\r\n", lineEnd);
-                var sourceCodeFile = new CodeFile(code)
+                var sourceFile = new TextFile(code)
                 {
                     Name = "newLine.php",
                 };
-                var parseTree = (PhpAntlrParseTree)phpParser.Parse(sourceCodeFile);
+                var parseTree = (PhpAntlrParseTree)phpParser.Parse(sourceFile);
                 var converter = new PhpAntlrParseTreeConverter();
                 RootUst ust = converter.Convert(parseTree);
 

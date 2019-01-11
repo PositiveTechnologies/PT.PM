@@ -15,18 +15,18 @@ namespace PT.PM.Common.Json
 
         public bool IsLineColumn { get; set; } = false;
 
-        public CodeFile CurrentCodeFile { get; set; }
+        public TextFile CurrentSourceFile { get; set; }
 
-        public HashSet<IFile> CodeFiles { get; set; } = new HashSet<IFile>();
+        public HashSet<IFile> SourceFiles { get; set; } = new HashSet<IFile>();
 
-        public CodeFile JsonFile { get; set; } = CodeFile.Empty;
+        public TextFile SerializedFile { get; set; } = TextFile.Empty;
 
         public override void WriteJson(JsonWriter writer, TextSpan textSpan, JsonSerializer serializer)
         {
             try
             {
                 string textSpanString;
-                bool includeFileName = textSpan.CodeFile != CurrentCodeFile;
+                bool includeFileName = textSpan.File != CurrentSourceFile;
 
                 if (!IsLineColumn)
                 {
@@ -42,14 +42,14 @@ namespace PT.PM.Common.Json
                     }
                     else
                     {
-                        CodeFile codeFile = textSpan.GetCodeFile(CurrentCodeFile);
-                        if (codeFile != null)
+                        TextFile sourceFile = textSpan.GetSourceFile(CurrentSourceFile);
+                        if (sourceFile != null)
                         {
-                            textSpanString = codeFile.GetLineColumnTextSpan(textSpan).ToString(includeFileName);
+                            textSpanString = sourceFile.GetLineColumnTextSpan(textSpan).ToString(includeFileName);
                         }
                         else
                         {
-                            Logger.LogError(JsonFile, (writer as JTokenWriter)?.CurrentToken , $"Unable convert {nameof(TextSpan)} to {nameof(LineColumnTextSpan)} due to undefined file");
+                            Logger.LogError(SerializedFile, (writer as JTokenWriter)?.CurrentToken , $"Unable convert {nameof(TextSpan)} to {nameof(LineColumnTextSpan)} due to undefined file");
                             textSpanString = LineColumnTextSpan.Zero.ToString();
                         }
                     }
@@ -59,7 +59,7 @@ namespace PT.PM.Common.Json
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(JsonFile, (writer as JTokenWriter)?.CurrentToken, ex);
+                Logger.LogError(SerializedFile, (writer as JTokenWriter)?.CurrentToken, ex);
             }
         }
 
@@ -73,18 +73,18 @@ namespace PT.PM.Common.Json
 
                 if (textSpanString != EmptyTextSpanFormat)
                 {
-                    result = TextUtils.ParseAnyTextSpan(textSpanString, out bool isLineColumn, CurrentCodeFile, CodeFiles);
+                    result = TextUtils.ParseAnyTextSpan(textSpanString, out bool isLineColumn, CurrentSourceFile, SourceFiles);
                     IsLineColumn = isLineColumn;
                 }
 
-                if (result.CodeFile == CurrentCodeFile)
+                if (result.File == CurrentSourceFile)
                 {
-                    result.CodeFile = null;
+                    result.File = null;
                 }
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(JsonFile, (reader as JTokenReader)?.CurrentToken, ex);
+                Logger.LogError(SerializedFile, (reader as JTokenReader)?.CurrentToken, ex);
             }
 
             return result;

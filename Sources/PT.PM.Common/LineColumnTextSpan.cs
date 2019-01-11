@@ -15,24 +15,24 @@ namespace PT.PM.Common
 
         public int EndColumn { get; set; }
 
-        public CodeFile CodeFile { get; set; }
+        public TextFile File { get; set; }
 
         public LineColumnTextSpan()
         {
         }
 
-        public LineColumnTextSpan(int line, int column, CodeFile codeFile = null)
-            : this(line, column, line, column, codeFile)
+        public LineColumnTextSpan(int line, int column, TextFile sourceFile = null)
+            : this(line, column, line, column, sourceFile)
         {
         }
 
-        public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn, CodeFile codeFile = null)
+        public LineColumnTextSpan(int beginLine, int beginColumn, int endLine, int endColumn, TextFile sourceFile = null)
         {
             BeginLine = beginLine;
             BeginColumn = beginColumn;
             EndLine = endLine;
             EndColumn = endColumn;
-            CodeFile = codeFile;
+            File = sourceFile;
         }
 
         public LineColumnTextSpan AddLineOffset(int lineOffset)
@@ -59,9 +59,9 @@ namespace PT.PM.Common
                     : $"[{BeginLine},{BeginColumn}..{EndLine},{EndColumn})";
             }
 
-            if (includeFileName && CodeFile != null)
+            if (includeFileName && File != null)
             {
-                result = $"{result}; {CodeFile}";
+                result = $"{result}; {File}";
             }
 
             return result;
@@ -82,7 +82,7 @@ namespace PT.PM.Common
 
         public bool Equals(LineColumnTextSpan other)
         {
-            return CodeFile == other.CodeFile &&
+            return File == other.File &&
                    BeginLine == other.BeginLine &&
                    BeginColumn == other.BeginColumn &&
                    EndLine == other.EndLine &&

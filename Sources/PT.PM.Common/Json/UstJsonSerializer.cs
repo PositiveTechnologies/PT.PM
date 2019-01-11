@@ -5,9 +5,9 @@ namespace PT.PM.Common.Json
 {
     public class UstJsonSerializer : JsonBaseSerializer<Ust>
     {
-        protected override UstJsonConverterReader CreateConverterReader(CodeFile jsonFile)
+        protected override UstJsonConverterReader CreateConverterReader(TextFile serializedFile)
         {
-            return new UstJsonConverterReader(jsonFile);
+            return new UstJsonConverterReader(serializedFile);
         }
 
         protected override UstJsonConverterWriter CreateConverterWriter()

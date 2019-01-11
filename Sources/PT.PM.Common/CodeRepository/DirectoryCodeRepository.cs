@@ -94,11 +94,11 @@ namespace PT.PM.Common.CodeRepository
             {
                 result = Format == SerializationFormat.MsgPack
                     ? (IFile)new BinaryFile(FileExt.ReadAllBytes(fileName))
-                    : new CodeFile(FileExt.ReadAllText(fileName));
+                    : new TextFile(FileExt.ReadAllText(fileName));
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = CodeFile.Empty;
+                result = TextFile.Empty;
                 Logger.LogError(new ReadException(result, ex));
             }
 

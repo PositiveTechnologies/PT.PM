@@ -8,7 +8,7 @@ namespace PT.PM.Common.Exceptions
     {
         public string ExceptionType => GetType().Name;
 
-        public IFile File { get; set; } = CodeFile.Empty;
+        public IFile File { get; set; } = TextFile.Empty;
 
         public TextSpan TextSpan { get; set; }
 

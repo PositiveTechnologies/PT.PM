@@ -21,7 +21,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public Language Language => JavaScript.Language;
 
-        public CodeFile SourceCodeFile { get; set; }
+        public TextFile SourceFile { get; set; }
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
@@ -34,13 +34,13 @@ namespace PT.PM.JavaScriptParseTreeUst
             try
             {
                 var esprimaParseTree = (JavaScriptEsprimaParseTree)langParseTree;
-                if (SourceCodeFile == null)
+                if (SourceFile == null)
                 {
-                    SourceCodeFile = esprimaParseTree.SourceCodeFile;
+                    SourceFile = esprimaParseTree.SourceFile;
                 }
                 var program = VisitProgram(esprimaParseTree.SyntaxTree);
 
-                var rootUst = new RootUst(SourceCodeFile, JavaScript.Language)
+                var rootUst = new RootUst(SourceFile, JavaScript.Language)
                 {
                     Nodes = new Ust[] { program },
                 };
@@ -49,7 +49,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 foreach (Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new CommentLiteral(SourceCodeFile.GetSubstring(textSpan), textSpan)
+                    comments.Add(new CommentLiteral(SourceFile.GetSubstring(textSpan), textSpan)
                     {
                         Root = rootUst,
                     });
@@ -64,7 +64,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(SourceCodeFile, ex));
+                Logger.LogError(new ConversionException(SourceFile, ex));
                 return null;
             }
         }
@@ -86,7 +86,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             }
             catch (Exception ex)
             {
-                Logger?.LogError(new ConversionException(SourceCodeFile, ex));
+                Logger?.LogError(new ConversionException(SourceFile, ex));
                 return null;
             }
         }
@@ -158,7 +158,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             string message = node == null
                 ? $"{nameof(node)} can not be null"
                 : $"Unknow {nameof(INode)} type {node.Type}";
-            Logger.LogError(new ConversionException(SourceCodeFile, message: message));
+            Logger.LogError(new ConversionException(SourceFile, message: message));
             return null;
         }
 

@@ -39,7 +39,7 @@ namespace PT.PM
                 string dotGraph = renderer.Render(ust);
 
                 string fileName =
-                    (!string.IsNullOrEmpty(Path.GetFileName(ust.SourceCodeFile.Name)) ? ust.SourceCodeFile.Name + "." : "")
+                    (!string.IsNullOrEmpty(Path.GetFileName(ust.SourceFile.Name)) ? ust.SourceFile.Name + "." : "")
                     + "ust";
                 var graph = new GraphvizGraph(dotGraph)
                 {

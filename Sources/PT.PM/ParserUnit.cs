@@ -56,9 +56,9 @@ namespace PT.PM
             this.thread = thread;
         }
 
-        public void Parse(CodeFile codeFile)
+        public void Parse(TextFile sourceFile)
         {
-            ParseTree = parser.Parse(codeFile);
+            ParseTree = parser.Parse(sourceFile);
         }
 
         public override string ToString()

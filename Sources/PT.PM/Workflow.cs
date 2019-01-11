@@ -145,7 +145,7 @@ namespace PT.PM
                     var matchResults = patternMatcher.Match(rootUst);
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {rootUst.SourceCodeFile.Name} matched with patterns {stopwatch.GetElapsedString()}.");
+                    Logger.LogInfo($"File {rootUst.SourceFile.Name} matched with patterns {stopwatch.GetElapsedString()}.");
                     workflowResult.AddMatchTime(stopwatch.Elapsed);
 
                     foreach (MatchResult matchResult in matchResults)

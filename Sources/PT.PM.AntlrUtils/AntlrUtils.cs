@@ -73,7 +73,7 @@ namespace PT.PM.AntlrUtils
         }
 
         public static void LogConversionError(this ILogger logger, Exception ex,
-            ParserRuleContext context, CodeFile currentFileData)
+            ParserRuleContext context, TextFile currentFileData)
         {
             StackTrace stackTrace = new StackTrace(ex, true);
             int frameNumber = 0;

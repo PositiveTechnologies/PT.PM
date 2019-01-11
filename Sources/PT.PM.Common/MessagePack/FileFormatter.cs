@@ -9,25 +9,25 @@ using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.MessagePack
 {
-    public class FileFormatter : IMessagePackFormatter<IFile>, IMessagePackFormatter<CodeFile>, ILoggable
+    public class FileFormatter : IMessagePackFormatter<IFile>, IMessagePackFormatter<TextFile>, ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public HashSet<IFile> SourceFiles { get; private set; }
 
-        public Action<(IFile, TimeSpan)> ReadCodeFileAction { get; private set; }
+        public Action<(IFile, TimeSpan)> ReadSourceFileAction { get; private set; }
 
         public static FileFormatter CreateWriter()
         {
             return new FileFormatter();
         }
 
-        public static FileFormatter CreateReader(HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readCodeFileAction)
+        public static FileFormatter CreateReader(HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction)
         {
             return new FileFormatter
             {
                 SourceFiles = sourceFiles,
-                ReadCodeFileAction = readCodeFileAction
+                ReadSourceFileAction = readSourceFileAction
             };
         }
 
@@ -35,7 +35,7 @@ namespace PT.PM.Common.MessagePack
         {
         }
         
-        public int Serialize(ref byte[] bytes, int offset, CodeFile value, IFormatterResolver formatterResolver)
+        public int Serialize(ref byte[] bytes, int offset, TextFile value, IFormatterResolver formatterResolver)
         {
             return Serialize(ref bytes, offset, (IFile)value, formatterResolver);
         }
@@ -58,9 +58,9 @@ namespace PT.PM.Common.MessagePack
 
                 if (string.IsNullOrEmpty(value.FullName))
                 {
-                    if (value is CodeFile codeFile)
+                    if (value is TextFile sourceFile)
                     {
-                        writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, codeFile.Data);
+                        writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, sourceFile.Data);
                     }
                     else if (value is BinaryFile binaryFile)
                     {
@@ -72,9 +72,9 @@ namespace PT.PM.Common.MessagePack
             return writeSize;
         }
 
-        CodeFile IMessagePackFormatter<CodeFile>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
+        TextFile IMessagePackFormatter<TextFile>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
         {
-            return (CodeFile)((IMessagePackFormatter<IFile>)this).Deserialize(bytes, offset, formatterResolver, out readSize);
+            return (TextFile)((IMessagePackFormatter<IFile>)this).Deserialize(bytes, offset, formatterResolver, out readSize);
         }
 
         IFile IMessagePackFormatter<IFile>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
@@ -118,7 +118,7 @@ namespace PT.PM.Common.MessagePack
             }
             
             var stopwatch = Stopwatch.StartNew();
-            if (fileType == FileType.CodeFile)
+            if (fileType == FileType.TextFile)
             {
                 string code;
                 if (string.IsNullOrEmpty(fullName))
@@ -138,7 +138,7 @@ namespace PT.PM.Common.MessagePack
                         Logger.LogError(new FileLoadException($"Error during {fullName} file reading", ex));
                     }
                 }
-                result = new CodeFile(code);
+                result = new TextFile(code);
             }
             else
             {
@@ -177,7 +177,7 @@ namespace PT.PM.Common.MessagePack
                 }
             }
 
-            ReadCodeFileAction?.Invoke((result, stopwatch.Elapsed));
+            ReadSourceFileAction?.Invoke((result, stopwatch.Elapsed));
 
             return result;
         }

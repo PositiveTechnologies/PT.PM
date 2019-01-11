@@ -105,10 +105,10 @@ namespace PT.PM.Cli.Common
             }
             else
             {
-                CodeFile patternsFile;
+                TextFile patternsFile;
                 if (patternsString.EndsWith(".pattern", StringComparison.OrdinalIgnoreCase))
                 {
-                    patternsFile = new CodeFile(FileExt.ReadAllText(patternsString))
+                    patternsFile = new TextFile(FileExt.ReadAllText(patternsString))
                     {
                         PatternKey = patternsString,
                         Name = patternsString
@@ -116,7 +116,7 @@ namespace PT.PM.Cli.Common
                 }
                 else
                 {
-                    patternsFile = new CodeFile(patternsString);
+                    patternsFile = new TextFile(patternsString);
                 }
 
                 var processor = new DslProcessor();

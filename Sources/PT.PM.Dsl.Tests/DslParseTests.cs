@@ -50,7 +50,7 @@ namespace PT.PM.Dsl.Tests
             string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor { Logger = logger, PatternExpressionInsideStatement = false };
-            PatternRoot result = processor.Deserialize(new CodeFile(data) { PatternKey = fileName });
+            PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = fileName });
             if (fileName == "DebugInfo.pattern")
             {
                 new HashSet<Language> { Php.Language };
@@ -76,7 +76,7 @@ namespace PT.PM.Dsl.Tests
             string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new LoggerMessageCounter();
             var processor = new DslProcessor { Logger = logger };
-            PatternRoot result = processor.Deserialize(new CodeFile(data) { PatternKey = fileName });
+            PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = fileName });
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
         }
 
@@ -86,7 +86,7 @@ namespace PT.PM.Dsl.Tests
             var logger = new LoggerMessageCounter();
             var data = "(?i)password(?-i)]> = <[\"\\w*\" || null]>";
             var processor = new DslProcessor() { Logger = logger };
-            PatternRoot result = processor.Deserialize(new CodeFile(data) { PatternKey = "ErrorneousPattern" });
+            PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = "ErrorneousPattern" });
             Assert.AreEqual(5, logger.ErrorCount);
         }
 
@@ -97,7 +97,7 @@ namespace PT.PM.Dsl.Tests
             Assert.Throws(typeof(ConversionException), () =>
             {
                 var processor = new DslProcessor();
-                PatternRoot result = processor.Deserialize(new CodeFile(data) { PatternKey = "Unnamed" });
+                PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = "Unnamed" });
             });
         }
     }

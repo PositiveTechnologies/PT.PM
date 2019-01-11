@@ -62,7 +62,7 @@ namespace PT.PM.Matching
 
         public PatternUst Node { get; set; } = new PatternAny();
 
-        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
+        public TextFile File { get; set; } = TextFile.Empty;
 
         public PatternRoot()
         {
@@ -129,7 +129,7 @@ namespace PT.PM.Matching
                     context.Locations.Add(ust.TextSpan);
                 }
 
-                var match = new MatchResult(ust.CurrentCodeFile, context.PatternUst, context.Locations);
+                var match = new MatchResult(ust.CurrentSourceFile, context.PatternUst, context.Locations);
 
                 results.Add(match);
                 context.Logger.LogInfo(match);

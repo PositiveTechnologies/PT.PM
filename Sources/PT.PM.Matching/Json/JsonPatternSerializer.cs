@@ -7,9 +7,9 @@ namespace PT.PM.Matching.Json
     {
         public string Format => "Json";
 
-        protected override UstJsonConverterReader CreateConverterReader(CodeFile jsonFile)
+        protected override UstJsonConverterReader CreateConverterReader(TextFile serializedFile)
         {
-            return new PatternJsonConverterReader(jsonFile);
+            return new PatternJsonConverterReader(serializedFile);
         }
 
         protected override UstJsonConverterWriter CreateConverterWriter()

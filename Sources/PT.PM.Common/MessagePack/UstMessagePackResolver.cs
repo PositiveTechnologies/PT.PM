@@ -18,36 +18,36 @@ namespace PT.PM.Common.MessagePack
 
         public RootUstFormatter RootUstFormatter { get; } = new RootUstFormatter();
         
-        public static UstMessagePackResolver CreateWriter(CodeFile codeFile, bool isLineColumn, ILogger logger)
+        public static UstMessagePackResolver CreateWriter(TextFile sourceFile, bool isLineColumn, ILogger logger)
         {
-            var textSpanFormatter = TextSpanFormatter.CreateWriter(codeFile);
+            var textSpanFormatter = TextSpanFormatter.CreateWriter(sourceFile);
             textSpanFormatter.IsLineColumn = isLineColumn;
             textSpanFormatter.Logger = logger;
 
-            var codeFileFormatter = FileFormatter.CreateWriter();
-            codeFileFormatter.Logger = logger;
+            var sourceFileFormatter = FileFormatter.CreateWriter();
+            sourceFileFormatter.Logger = logger;
 
             return new UstMessagePackResolver
             {
                 TextSpanFormatter = textSpanFormatter,
-                FileFormatter = codeFileFormatter
+                FileFormatter = sourceFileFormatter
             };
         }
 
         public static UstMessagePackResolver CreateReader(BinaryFile serializedFile, bool isLineColumn,
-            HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readCodeFileAction, ILogger logger)
+            HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction, ILogger logger)
         {
             var textSpanFormatter = TextSpanFormatter.CreateReader(serializedFile);
             textSpanFormatter.IsLineColumn = isLineColumn;
             textSpanFormatter.Logger = logger;
 
-            var codeFileFormatter = FileFormatter.CreateReader(sourceFiles, readCodeFileAction);
-            codeFileFormatter.Logger = logger;
+            var sourceFileFormatter = FileFormatter.CreateReader(sourceFiles, readSourceFileAction);
+            sourceFileFormatter.Logger = logger;
 
             return new UstMessagePackResolver
             {
                 TextSpanFormatter = textSpanFormatter,
-                FileFormatter = codeFileFormatter
+                FileFormatter = sourceFileFormatter
             };
         }
 
@@ -60,7 +60,7 @@ namespace PT.PM.Common.MessagePack
                 return (IMessagePackFormatter<T>) TextSpanFormatter;
             }
 
-            if (type == typeof(CodeFile))
+            if (type == typeof(TextFile))
             {
                 return (IMessagePackFormatter<T>) FileFormatter;
             }

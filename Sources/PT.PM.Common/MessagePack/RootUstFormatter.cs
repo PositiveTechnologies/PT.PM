@@ -19,8 +19,8 @@ namespace PT.PM.Common.MessagePack
             var languageFormatter = formatterResolver.GetFormatter<Language>();
             writeSize += languageFormatter.Serialize(ref bytes, offset + writeSize, value.Language, formatterResolver);
 
-            var fileFormatter = formatterResolver.GetFormatter<CodeFile>();
-            writeSize += fileFormatter.Serialize(ref bytes, offset + writeSize, value.SourceCodeFile, formatterResolver);
+            var fileFormatter = formatterResolver.GetFormatter<TextFile>();
+            writeSize += fileFormatter.Serialize(ref bytes, offset + writeSize, value.SourceFile, formatterResolver);
 
             var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
             writeSize += ustsFormatter.Serialize(ref bytes, offset + writeSize, value.Nodes, formatterResolver);
@@ -45,12 +45,12 @@ namespace PT.PM.Common.MessagePack
             Language language = languageFormatter.Deserialize(bytes, offset, formatterResolver, out int size);
             readSize += size;
 
-            var fileFormatter = formatterResolver.GetFormatter<CodeFile>();
-            CodeFile codeFile = fileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
+            var fileFormatter = formatterResolver.GetFormatter<TextFile>();
+            TextFile sourceFile = fileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
             readSize += size;
 
             var textSpanFormatter = (TextSpanFormatter)formatterResolver.GetFormatter<TextSpan>();
-            textSpanFormatter.CodeFile = codeFile;
+            textSpanFormatter.SourceFile = sourceFile;
 
             var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
             Ust[] nodes = ustsFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
@@ -67,7 +67,7 @@ namespace PT.PM.Common.MessagePack
             TextSpan textSpan = textSpanFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
             readSize += size;
 
-            CurrentRoot = new RootUst(codeFile, language)
+            CurrentRoot = new RootUst(sourceFile, language)
             {
                 Nodes = nodes,
                 Comments = comments,

@@ -11,7 +11,7 @@ namespace PT.PM.JavaScriptParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public CodeFile CodeFile { get; }
+        public TextFile SourceFile { get; }
 
         public string Source { get; set; }
 
@@ -23,11 +23,11 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public Scanner Scanner { get; internal set; }
 
-        public CodeFile OriginFile { get; internal set; }
+        public TextFile OriginFile { get; internal set; }
 
-        public JavaScriptEsprimaErrorHandler(CodeFile codeFile)
+        public JavaScriptEsprimaErrorHandler(TextFile sourceFile)
         {
-            CodeFile = codeFile ?? throw new ArgumentNullException(nameof(codeFile));
+            SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
         }
 
         public void ThrowError(int index, int line, int column, string message)
@@ -81,10 +81,10 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public ParsingException CreateException(int index, string message)
         {
-            var codeFile = OriginFile ?? CodeFile;
+            var sourceFile = OriginFile ?? SourceFile;
             TextSpan textSpan = new TextSpan(index + Offset, 0);
-            message = codeFile.GetLineColumnTextSpan(textSpan) + "; " + Regex.Replace(message, @"Line \d+': ", "");
-            return new ParsingException(codeFile, message: message)
+            message = sourceFile.GetLineColumnTextSpan(textSpan) + "; " + Regex.Replace(message, @"Line \d+': ", "");
+            return new ParsingException(sourceFile, message: message)
             {
                 TextSpan = textSpan
             };

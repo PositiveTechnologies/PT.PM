@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using MessagePack;
 using MessagePack.Formatters;
 using PT.PM.Common.Files;
@@ -12,20 +11,20 @@ namespace PT.PM.Common.MessagePack
 
         public bool IsLineColumn { get; set; }
 
-        public CodeFile CodeFile { get; internal set; }
+        public TextFile SourceFile { get; internal set; }
 
         public BinaryFile SerializedFile { get; private set; }
 
-        public static TextSpanFormatter CreateWriter(CodeFile codeFile)
+        public static TextSpanFormatter CreateWriter(TextFile sourceFile)
         {
-            if (codeFile == null)
+            if (sourceFile == null)
             {
-                throw new ArgumentNullException(nameof(codeFile));
+                throw new ArgumentNullException(nameof(sourceFile));
             }
 
             return new TextSpanFormatter
             {
-                CodeFile = codeFile
+                SourceFile = sourceFile
             };
         }
 
@@ -57,12 +56,12 @@ namespace PT.PM.Common.MessagePack
             }
             else
             {
-                CodeFile codeFile = value.GetCodeFile(CodeFile);
+                TextFile sourceFile = value.GetSourceFile(SourceFile);
                 LineColumnTextSpan lcTextSpan;
 
-                if (codeFile != null)
+                if (sourceFile != null)
                 {
-                    lcTextSpan = codeFile.GetLineColumnTextSpan(value);
+                    lcTextSpan = sourceFile.GetLineColumnTextSpan(value);
                 }
                 else
                 {
@@ -76,8 +75,8 @@ namespace PT.PM.Common.MessagePack
                 writeSize += MessagePackBinary.WriteInt32(ref bytes, offset + writeSize, lcTextSpan.EndColumn);
             }
 
-            var fileFormatter = formatterResolver.GetFormatter<CodeFile>();
-            writeSize += fileFormatter.Serialize(ref bytes, offset + writeSize, value.CodeFile, formatterResolver);
+            var fileFormatter = formatterResolver.GetFormatter<TextFile>();
+            writeSize += fileFormatter.Serialize(ref bytes, offset + writeSize, value.File, formatterResolver);
 
             return writeSize;
         }
@@ -89,8 +88,8 @@ namespace PT.PM.Common.MessagePack
 
             int size;
             int start, length;
-            CodeFile codeFile;
-            var codeFileFormatter = formatterResolver.GetFormatter<CodeFile>();
+            TextFile sourceFile;
+            var sourceFileFormatter = formatterResolver.GetFormatter<TextFile>();
 
             if (!IsLineColumn)
             {
@@ -99,8 +98,8 @@ namespace PT.PM.Common.MessagePack
                 length = MessagePackBinary.ReadInt32(bytes, offset + readSize, out size);
                 readSize += size;
 
-                codeFile = codeFileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size)
-                           ?? CodeFile;
+                sourceFile = sourceFileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size)
+                           ?? SourceFile;
             }
             else
             {
@@ -113,15 +112,15 @@ namespace PT.PM.Common.MessagePack
                 int endColumn = MessagePackBinary.ReadInt32(bytes, offset + readSize, out size);
                 readSize += size;
 
-                codeFile = codeFileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size)
-                           ?? CodeFile;
+                sourceFile = sourceFileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size)
+                           ?? SourceFile;
 
-                start = codeFile.GetLinearFromLineColumn(beginLine, beginColumn);
-                length = codeFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
+                length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
             }
 
             readSize += size;
-            result = new TextSpan(start, length, codeFile == CodeFile ? null : codeFile);
+            result = new TextSpan(start, length, sourceFile == SourceFile ? null : sourceFile);
 
             return result;
         }

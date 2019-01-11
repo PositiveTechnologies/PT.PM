@@ -105,7 +105,7 @@ namespace PT.PM.Common.Nodes
 
                     if (!textSpan.IsZero && location.End <= rightBound)
                     {
-                        result.Add(new TextSpan(textSpan.Start + startOffset, location.Length + offset, textSpan.CodeFile));
+                        result.Add(new TextSpan(textSpan.Start + startOffset, location.Length + offset, textSpan.File));
                         break;
                     }
                 }

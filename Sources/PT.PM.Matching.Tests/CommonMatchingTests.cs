@@ -41,7 +41,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternExpressionsInCalls(string patternData, params int[] matchMethodNumbers)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
             var logger = new LoggerMessageCounter();
@@ -74,7 +74,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternVarWithRegex(string patternData)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             var logger = new LoggerMessageCounter();
@@ -91,7 +91,7 @@ namespace PT.PM.Matching.Tests
         public void Match_PasswordCheckInsideStatement(string patternData)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             var logger = new LoggerMessageCounter();
@@ -199,7 +199,7 @@ namespace PT.PM.Matching.Tests
         {
             var processor = new DslProcessor();
             string pattern = "<[ \"\\d+\" ]>";
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { PatternKey = pattern });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(pattern) { PatternKey = pattern });
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };

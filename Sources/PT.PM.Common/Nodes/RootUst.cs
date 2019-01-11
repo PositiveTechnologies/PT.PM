@@ -1,4 +1,4 @@
-﻿using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
 using MessagePack;
@@ -17,8 +17,9 @@ namespace PT.PM.Common.Nodes
         [Key(UstFieldOffset)]
         public Language Language { get; }
 
+        [JsonProperty("SourceCodeFile")] // TODO: back compatibility with extenral serializers
         [Key(UstFieldOffset + 1)]
-        public CodeFile SourceCodeFile { get; set; }
+        public TextFile SourceFile { get; set; }
 
         [Key(UstFieldOffset + 2)]
         public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
@@ -43,11 +44,11 @@ namespace PT.PM.Common.Nodes
             set => Nodes = new[] { value };
         }
 
-        public RootUst(CodeFile sourceCodeFile, Language language)
+        public RootUst(TextFile sourceFile, Language language)
         {
-            SourceCodeFile = sourceCodeFile ?? CodeFile.Empty;
+            SourceFile = sourceFile ?? TextFile.Empty;
             Language = language;
-            TextSpan = new TextSpan(0, SourceCodeFile.Data.Length);
+            TextSpan = new TextSpan(0, SourceFile.Data.Length);
         }
 
         public override Ust[] GetChildren()
@@ -77,7 +78,7 @@ namespace PT.PM.Common.Nodes
 
         public override string ToString()
         {
-            return $"{SourceCodeFile.Name}: {base.ToString()}";
+            return $"{SourceFile.Name}: {base.ToString()}";
         }
     }
 }

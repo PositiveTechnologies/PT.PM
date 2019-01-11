@@ -7,7 +7,7 @@ namespace PT.PM.Common
     {
         public abstract Language SourceLanguage { get; }
 
-        public CodeFile SourceCodeFile { get; set; }
+        public TextFile SourceFile { get; set; }
 
         public TimeSpan LexerTimeSpan { get; set; }
 

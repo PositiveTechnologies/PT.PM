@@ -29,7 +29,7 @@ namespace PT.PM.PhpParseTreeUst
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
             new PhpAntlrParseTree((PhpParser.HtmlDocumentContext)syntaxTree);
 
-        protected override string PreprocessText(CodeFile file)
+        protected override string PreprocessText(TextFile file)
         {
             var result = base.PreprocessText(file);
 

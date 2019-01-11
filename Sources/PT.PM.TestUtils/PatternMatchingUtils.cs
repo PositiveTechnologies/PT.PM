@@ -29,7 +29,7 @@ namespace PT.PM.TestUtils
             var workflow = new Workflow(sourceCodeRep, patternsRep) {Logger = logger};
 
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { PatternKey = pattern });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(pattern) { PatternKey = pattern });
             patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageUtils.PatternLanguages.Values);
             patternNode.DebugInfo = pattern;
             var patternsConverter = new PatternConverter();

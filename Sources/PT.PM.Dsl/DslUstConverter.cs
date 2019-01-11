@@ -22,7 +22,7 @@ namespace PT.PM.Dsl
 
         public bool PatternExpressionInsideStatement { get; set; } = true;
 
-        public CodeFile Data { get; set; }
+        public TextFile Data { get; set; }
 
         public PatternRoot Convert(DslParser.PatternContext pattern)
         {

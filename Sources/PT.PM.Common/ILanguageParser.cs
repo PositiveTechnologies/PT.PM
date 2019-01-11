@@ -6,6 +6,6 @@ namespace PT.PM.Common
     {
         Language Language { get; }
 
-        ParseTree Parse(CodeFile sourceCodeFile);
+        ParseTree Parse(TextFile sourceFile);
     }
 }

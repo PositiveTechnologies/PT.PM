@@ -4,7 +4,7 @@ using MessagePack;
 namespace PT.PM.Common.Files
 {
     [MessagePackObject]
-    [Union((int)FileType.CodeFile, typeof(CodeFile))]
+    [Union((int)FileType.TextFile, typeof(TextFile))]
     [Union((int)FileType.BinaryFile, typeof(BinaryFile))]
     public abstract class File<T> : IFile, IEquatable<File<T>>, IComparable<File<T>>
         where T : class
@@ -46,24 +46,24 @@ namespace PT.PM.Common.Files
 
         public override string ToString() => FullName;
 
-        public static bool operator ==(File<T> codeFile1, File<T> codeFile2)
+        public static bool operator ==(File<T> sourceFile1, File<T> sourceFile2)
         {
-            if (codeFile1 is null)
+            if (sourceFile1 is null)
             {
-                return codeFile2 is null;
+                return sourceFile2 is null;
             }
 
-            return codeFile1.Equals(codeFile2);
+            return sourceFile1.Equals(sourceFile2);
         }
 
-        public static bool operator !=(File<T> codeFile1, File<T> codeFile2)
+        public static bool operator !=(File<T> sourceFile1, File<T> sourceFile2)
         {
-            if (codeFile1 is null)
+            if (sourceFile1 is null)
             {
-                return !(codeFile2 is null);
+                return !(sourceFile2 is null);
             }
 
-            return !codeFile1.Equals(codeFile2);
+            return !sourceFile1.Equals(sourceFile2);
         }
 
         public override bool Equals(object obj) => Equals(obj as File<T>);

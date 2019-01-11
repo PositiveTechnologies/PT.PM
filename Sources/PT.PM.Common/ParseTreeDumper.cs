@@ -32,10 +32,10 @@ namespace PT.PM.Common
 
         public abstract void DumpTree(ParseTree parseTree);
 
-        protected void Dump(string data, CodeFile sourceCodeFile, bool tokens)
+        protected void Dump(string data, TextFile sourceFile, bool tokens)
         {
             DirectoryExt.CreateDirectory(DumpDir);
-            string name = string.IsNullOrEmpty(sourceCodeFile.Name) ? "" : sourceCodeFile.Name + ".";
+            string name = string.IsNullOrEmpty(sourceFile.Name) ? "" : sourceFile.Name + ".";
             FileExt.WriteAllText(Path.Combine(DumpDir, $"{name}{(tokens ? TokensSuffix : ParseTreeSuffix)}"), data);
         }
     }

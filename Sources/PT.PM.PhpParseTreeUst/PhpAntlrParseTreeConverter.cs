@@ -95,7 +95,7 @@ namespace PT.PM.PhpParseTreeUst
             }
 
             var result = AnalyzedLanguages.Contains(Html.Language)
-                ? new RootUst(root.SourceCodeFile, Html.Language)
+                ? new RootUst(root.SourceFile, Html.Language)
                 {
                     Node = new StringLiteral(text.ToString(), context.GetTextSpan())
                     {
@@ -133,10 +133,10 @@ namespace PT.PM.PhpParseTreeUst
 
             int offset = Tokens[jsStartCodeInd].StartIndex;
 
-            var sourceCodeFile = new CodeFile(jsCode.ToString())
+            var sourceFile = new TextFile(jsCode.ToString())
             {
-                Name = root.SourceCodeFile.Name,
-                RelativePath = root.SourceCodeFile.RelativePath,
+                Name = root.SourceFile.Name,
+                RelativePath = root.SourceFile.RelativePath,
             };
 
             var javaScriptParser = new JavaScriptEsprimaParser
@@ -144,10 +144,10 @@ namespace PT.PM.PhpParseTreeUst
                 Logger = Logger,
                 JavaScriptType = JavaScriptType,
                 Offset = offset,
-                OriginFile = root.SourceCodeFile
+                OriginFile = root.SourceFile
             };
 
-            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceCodeFile);
+            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceFile);
             if (parseTree == null)
             {
                 return null;
@@ -156,7 +156,7 @@ namespace PT.PM.PhpParseTreeUst
             var javaScriptConverter = new JavaScriptEsprimaParseTreeConverter
             {
                 Logger = Logger,
-                SourceCodeFile = root.SourceCodeFile,
+                SourceFile = root.SourceFile,
                 ParentRoot = root,
                 Offset = offset
             };

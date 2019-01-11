@@ -98,8 +98,8 @@ namespace PT.PM.Tests
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
-            CodeFile preprocessedFile = (CodeFile)result.SourceCodeFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
-            CodeFile originFile = (CodeFile)result.SourceCodeFiles.FirstOrDefault(f => f.Name == "origin.php");
+            var preprocessedFile = (TextFile)result.SourceFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
+            var originFile = (TextFile)result.SourceFiles.FirstOrDefault(f => f.Name == "origin.php");
 
             LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3);
             LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
@@ -187,9 +187,9 @@ namespace PT.PM.Tests
                     else
                     {
                         var match = (MatchResult)newLogger.Matches[0];
-                        var enumerator = result.SourceCodeFiles.GetEnumerator();
+                        var enumerator = result.SourceFiles.GetEnumerator();
                         enumerator.MoveNext();
-                        var firstFile = (CodeFile)enumerator.Current;
+                        var firstFile = (TextFile)enumerator.Current;
                         Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), firstFile.GetLineColumnTextSpan(match.TextSpan));
                     }
                 }

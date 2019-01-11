@@ -15,10 +15,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public ConversionException(CodeFile codeFile, Exception ex = null, string message = "")
+        public ConversionException(TextFile sourceFile, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            File = codeFile ?? CodeFile.Empty;
+            File = sourceFile ?? TextFile.Empty;
         }
     }
 }

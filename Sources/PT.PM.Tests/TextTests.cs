@@ -15,15 +15,15 @@ namespace PT.PM.Tests
                           "row3\r" +
                           "row4";
 
-            var sourceCodeFile = new CodeFile(text);
-            int linearPos = sourceCodeFile.GetLinearFromLineColumn(4, 4);
+            var sourceFile = new TextFile(text);
+            int linearPos = sourceFile.GetLinearFromLineColumn(4, 4);
             Assert.AreEqual('4', text[linearPos]);
 
-            sourceCodeFile.GetLineColumnFromLinear(linearPos, out int line, out int column);
+            sourceFile.GetLineColumnFromLinear(linearPos, out int line, out int column);
             Assert.AreEqual(4, line);
             Assert.AreEqual(4, column);
 
-            Assert.AreEqual(4, sourceCodeFile.GetLinesCount());
+            Assert.AreEqual(4, sourceFile.GetLinesCount());
         }
 
         [Test]
@@ -34,13 +34,13 @@ namespace PT.PM.Tests
                           "row3\r" +
                           "";
 
-            var textFile = new CodeFile(text);
+            var textFile = new TextFile(text);
             Assert.AreEqual("row1", textFile.GetStringAtLine(1));
             Assert.AreEqual("", textFile.GetStringAtLine(2));
             Assert.AreEqual("row3", textFile.GetStringAtLine(3));
             Assert.AreEqual("", textFile.GetStringAtLine(4));
 
-            Assert.AreEqual("row1", new CodeFile("row1").GetStringAtLine(1));
+            Assert.AreEqual("row1", new TextFile("row1").GetStringAtLine(1));
         }
 
         [Test]

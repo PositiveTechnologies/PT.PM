@@ -9,6 +9,6 @@ namespace PT.PM.Matching
 
         string Serialize(PatternRoot patternRoot);
 
-        PatternRoot Deserialize(CodeFile data);
+        PatternRoot Deserialize(TextFile data);
     }
 }

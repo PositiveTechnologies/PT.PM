@@ -68,7 +68,7 @@ namespace PT.PM
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                throw new ReadException(new CodeFile("") { Name = zipPath }, message: errorMessage);
+                throw new ReadException(new TextFile("") { Name = zipPath }, message: errorMessage);
             }
         }
     }

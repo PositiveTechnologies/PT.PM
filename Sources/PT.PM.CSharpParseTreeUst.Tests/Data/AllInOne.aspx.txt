@@ -1,5 +1,5 @@
 <!-- Directive for ASP.NET Web Pages https://msdn.microsoft.com/en-us/library/t8syafc7(v=vs.100).aspx -->
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="FormWithBaseMaster.aspx.cs" MasterPageFile="BaseMasterPage.master"%>
+<%@ Page Language="C#" AutoEventWireup="true" SourceFile="FormWithBaseMaster.aspx.cs" MasterPageFile="BaseMasterPage.master"%>
 
 <!-- Server-Side Include Directive Syntax http://msdn.microsoft.com/en-us/library/3207d0e3(v=vs.100).aspx -->
 

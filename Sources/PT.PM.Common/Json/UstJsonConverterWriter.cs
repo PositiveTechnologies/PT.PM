@@ -44,7 +44,8 @@ namespace PT.PM.Common.Json
             jObject.Add(nameof(Ust.Kind), type.Name);
             PropertyInfo[] properties = type.GetReadWriteClassProperties();
 
-            if (type.Name == nameof(RootUst))
+            bool isRootUst = type == typeof(RootUst);
+            if (isRootUst)
             {
                 jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.Key);
             }
@@ -124,6 +125,12 @@ namespace PT.PM.Common.Json
 
                     if (jToken != null)
                     {
+                        if (isRootUst && propName == nameof(RootUst.SourceFile))
+                        {
+                            // TODO: back compatibility with extenral serializers
+                            propName = "SourceCodeFile";
+                        }
+
                         jObject.Add(propName, jToken);
                     }
                 }

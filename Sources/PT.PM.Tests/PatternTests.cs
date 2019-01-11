@@ -126,11 +126,11 @@ namespace PT.PM.Tests
             };
 
             string json = jsonSerializer.Serialize(patternRoot);
-            PatternRoot nodeFromJson = jsonSerializer.Deserialize(new CodeFile(json) { PatternKey = "PatternWithVar" });
+            PatternRoot nodeFromJson = jsonSerializer.Deserialize(new TextFile(json) { PatternKey = "PatternWithVar" });
 
             var dslSeializer = new DslProcessor() { PatternExpressionInsideStatement = false };
             var nodeFromDsl = dslSeializer.Deserialize(
-                new CodeFile("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);") { PatternKey = "PatternWithVar2" });
+                new TextFile("<[@pwd:password]> = #; ... #(#*, <[@pwd]>, #*);") { PatternKey = "PatternWithVar2" });
 
             Assert.IsTrue(nodeFromJson.Node.Equals(patternRoot.Node));
             Assert.IsTrue(nodeFromJson.Node.Equals(nodeFromDsl.Node));

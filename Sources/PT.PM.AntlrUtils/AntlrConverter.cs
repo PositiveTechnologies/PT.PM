@@ -57,7 +57,7 @@ namespace PT.PM.AntlrUtils
             try
             {
                 Tokens = Language.Sublanguages.Length > 0 ? antlrParseTree.Tokens : new List<IToken>();
-                root = new RootUst(langParseTree.SourceCodeFile, Language);
+                root = new RootUst(langParseTree.SourceFile, Language);
                 Ust visited = Visit(tree);
                 if (visited is RootUst rootUst)
                 {
@@ -71,7 +71,7 @@ namespace PT.PM.AntlrUtils
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
+                Logger.LogError(new ConversionException(langParseTree.SourceFile, ex));
                 return null;
             }
 
@@ -101,7 +101,7 @@ namespace PT.PM.AntlrUtils
             {
                 if (tree is ParserRuleContext parserRuleContext)
                 {
-                    Logger.LogConversionError(ex, parserRuleContext, root.SourceCodeFile);
+                    Logger.LogConversionError(ex, parserRuleContext, root.SourceFile);
                 }
                 return DefaultResult;
             }

@@ -5,7 +5,7 @@ using MessagePack;
 namespace PT.PM.Common.Files
 {
     [MessagePackObject]
-    public class CodeFile : File<string>
+    public class TextFile : File<string>
     {
         private int[] lineIndexes;
 
@@ -13,15 +13,15 @@ namespace PT.PM.Common.Files
 
         public const int StartColumn = 1;
 
-        public static CodeFile Empty => new CodeFile("");
+        public static TextFile Empty => new TextFile("");
         
         [IgnoreMember]
-        public override FileType Type => FileType.CodeFile;
+        public override FileType Type => FileType.TextFile;
 
         [IgnoreMember]
         public override bool IsEmpty => Data.Length == 0;
 
-        public CodeFile(string code)
+        public TextFile(string code)
             : base(code)
         {
             InitLineIndexes();
@@ -36,7 +36,7 @@ namespace PT.PM.Common.Files
             GetLineColumnFromLinear(textSpan.Start, out int beginLine, out int beginColumn);
             GetLineColumnFromLinear(textSpan.End, out int endLine, out int endColumn);
 
-            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, textSpan.CodeFile);
+            return new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, textSpan.File);
         }
 
         public void GetLineColumnFromLinear(int position, out int line, out int column)
@@ -56,7 +56,7 @@ namespace PT.PM.Common.Files
             int start = GetLinearFromLineColumn(textSpan.BeginLine, textSpan.BeginColumn);
             int end = GetLinearFromLineColumn(textSpan.EndLine, textSpan.EndColumn);
 
-            var result = TextSpan.FromBounds(start, end, textSpan.CodeFile);
+            var result = TextSpan.FromBounds(start, end, textSpan.File);
             return result;
         }
 

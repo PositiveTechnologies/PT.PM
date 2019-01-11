@@ -11,7 +11,7 @@ namespace PT.PM.Common
     {
         public static readonly TextSpan Zero = default;
 
-        public TextSpan(int start, int length, CodeFile codeFile = null)
+        public TextSpan(int start, int length, TextFile sourceFile = null)
         {
             if (start < 0)
             {
@@ -25,14 +25,14 @@ namespace PT.PM.Common
 
             Start = start;
             Length = length;
-            CodeFile = codeFile;
+            File = sourceFile;
         }
 
         public TextSpan(TextSpan textSpan)
         {
             Start = textSpan.Start;
             Length = textSpan.Length;
-            CodeFile = textSpan.CodeFile;
+            File = textSpan.File;
         }
 
         [Key(0)]
@@ -42,19 +42,19 @@ namespace PT.PM.Common
         public int Length { get; }
 
         [Key(2)]
-        public CodeFile CodeFile { get; set; }
+        public TextFile File { get; set; }
 
         [IgnoreMember]
         public int End => Start + Length;
 
         [IgnoreMember]
-        public bool IsZero => Start == 0 && Length == 0 && CodeFile == null;
+        public bool IsZero => Start == 0 && Length == 0 && File == null;
 
         public TextSpan Union(TextSpan span)
         {
-            if (CodeFile != span.CodeFile)
+            if (File != span.File)
             {
-                if (IsZero || (CodeFile != null && span.CodeFile == null))
+                if (IsZero || (File != null && span.File == null))
                 {
                     return span;
                 }
@@ -75,22 +75,22 @@ namespace PT.PM.Common
             int unionStart = Math.Min(Start, span.Start);
             int unionEnd = Math.Max(End, span.End);
 
-            return FromBounds(unionStart, unionEnd, CodeFile);
+            return FromBounds(unionStart, unionEnd, File);
         }
 
         public bool Includes(TextSpan span)
         {
-            return CodeFile == span.CodeFile && span.Start >= Start && span.End <= End;
+            return File == span.File && span.Start >= Start && span.End <= End;
         }
 
         public TextSpan AddOffset(int offset)
         {
-            return new TextSpan(Start + offset, Length, CodeFile);
+            return new TextSpan(Start + offset, Length, File);
         }
 
-        public static TextSpan FromBounds(int start, int end, CodeFile codeFile = null)
+        public static TextSpan FromBounds(int start, int end, TextFile sourceFile = null)
         {
-            return new TextSpan(start, end - start, codeFile);
+            return new TextSpan(start, end - start, sourceFile);
         }
 
         public static bool operator ==(TextSpan left, TextSpan right) => left.Equals(right);
@@ -109,7 +109,7 @@ namespace PT.PM.Common
 
         public bool Equals(TextSpan other)
         {
-            if (CodeFile != other.CodeFile)
+            if (File != other.File)
             {
                 return false;
             }
@@ -121,9 +121,9 @@ namespace PT.PM.Common
         {
             int result = (Start << 16) + Length;
 
-            if (!(CodeFile is null))
+            if (!(File is null))
             {
-                result = Hash.Combine(CodeFile.GetHashCode(), result);
+                result = Hash.Combine(File.GetHashCode(), result);
             }
 
             return result;
@@ -137,9 +137,9 @@ namespace PT.PM.Common
                 ? $"[{Start})"
                 : $"[{Start}..{End})";
 
-            if (includeFileName && !(CodeFile is null))
+            if (includeFileName && !(File is null))
             {
-                result = $"{result}; {CodeFile}";
+                result = $"{result}; {File}";
             }
 
             return result;
@@ -165,11 +165,9 @@ namespace PT.PM.Common
 
         public int CompareTo(TextSpan other)
         {
-            if (CodeFile != other.CodeFile)
+            if (File != other.File)
             {
-                return CodeFile != null
-                    ? CodeFile.CompareTo(other.CodeFile)
-                    : 1;
+                return File?.CompareTo(other.File) ?? 1;
             }
 
             int diff = Start - other.Start;

@@ -14,14 +14,14 @@ namespace PT.PM.Common.MessagePack
 
         public byte[] Serialize(RootUst rootUst)
         {
-            var writerResolver = UstMessagePackResolver.CreateWriter(rootUst.SourceCodeFile, LineColumnTextSpans, Logger);
+            var writerResolver = UstMessagePackResolver.CreateWriter(rootUst.SourceFile, LineColumnTextSpans, Logger);
             return MessagePackSerializer.Serialize(rootUst, writerResolver);
         }
 
-        public RootUst Deserialize(BinaryFile serializedFile, HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readCodeFileAction)
+        public RootUst Deserialize(BinaryFile serializedFile, HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction)
         {
             var readerResolver =
-                UstMessagePackResolver.CreateReader(serializedFile, LineColumnTextSpans, sourceFiles, readCodeFileAction, Logger);
+                UstMessagePackResolver.CreateReader(serializedFile, LineColumnTextSpans, sourceFiles, readSourceFileAction, Logger);
             var result = MessagePackSerializer.Deserialize<RootUst>(serializedFile.Data, readerResolver);
             result.FillAscendants();
             return result;

@@ -40,7 +40,7 @@ namespace PT.PM.PatternEditor.Pattern
         private GuiLogger patternLogger;
         private DslProcessor dslProcessor = new DslProcessor();
         private StringBuilder log = new StringBuilder();
-        private CodeFile patternFile;
+        private TextFile patternFile;
         private int prevCaretOffset;
 
         public PatternsViewModel(PatternUserControl patternUserControl)
@@ -439,20 +439,20 @@ namespace PT.PM.PatternEditor.Pattern
                 ServiceLocator.MainWindowViewModel.SourceCodeLogger.Clear();
                 patternLogger.Clear();
 
-                patternFile = CodeFile.Empty;
+                patternFile = TextFile.Empty;
                 PatternRoot patternNode = null;
                 try
                 {
                     if (!string.IsNullOrEmpty(patternTextBox.Text))
                     {
-                        patternNode = dslProcessor.Deserialize(new CodeFile(patternTextBox.Text) { PatternKey = Key });
+                        patternNode = dslProcessor.Deserialize(new TextFile(patternTextBox.Text) { PatternKey = Key });
                         patternNode.Languages = SelectedPattern.Languages.ParseLanguages(allByDefault: false, patternLanguages: true);
                     }
                 }
                 catch
                 {
                 }
-                patternFile = patternNode?.CodeFile;
+                patternFile = patternNode?.File;
 
                 if (patternLogger.ErrorCount == 0)
                 {
@@ -469,8 +469,8 @@ namespace PT.PM.PatternEditor.Pattern
                             Indented = true
                         };
 
-                        jsonPatternSerializer.CodeFiles = new HashSet<IFile> { patternNode.CodeFile };
-                        jsonPatternSerializer.CurrectCodeFile = patternNode.CodeFile;
+                        jsonPatternSerializer.SourceFiles = new HashSet<IFile> { patternNode.File };
+                        jsonPatternSerializer.CurrectSourceFile = patternNode.File;
                         PatternJson = jsonPatternSerializer.Serialize(patternNode);
                         FileExt.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern-ust.json"), PatternJson);
                     }

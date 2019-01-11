@@ -55,10 +55,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 }
                 else
                 {
-                    result = new RootUst(langParseTree.SourceCodeFile, Language);
+                    result = new RootUst(langParseTree.SourceFile, Language);
                     result.Node = visited;
                 }
-                result.SourceCodeFile = langParseTree.SourceCodeFile;
+                result.SourceFile = langParseTree.SourceFile;
                 result.Comments = roslynParseTree.Comments.Select(c =>
                     new CommentLiteral(c.ToString(), c.GetTextSpan())
                     {
@@ -71,7 +71,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
+                Logger.LogError(new ConversionException(langParseTree.SourceFile, ex));
                 return null;
             }
         }

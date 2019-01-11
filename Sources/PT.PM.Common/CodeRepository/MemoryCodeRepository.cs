@@ -40,7 +40,7 @@ namespace PT.PM.Common.CodeRepository
             }
             else
             {
-                result = new CodeFile((string)Data[fileName]);
+                result = new TextFile((string)Data[fileName]);
             }
             return result;
         }

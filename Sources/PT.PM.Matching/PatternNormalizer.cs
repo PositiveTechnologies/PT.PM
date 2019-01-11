@@ -23,7 +23,7 @@ namespace PT.PM.Matching
                 Logger = pattern.Logger,
                 Key = pattern.Key,
                 FilenameWildcard = pattern.FilenameWildcard,
-                CodeFile = pattern.CodeFile,
+                File = pattern.File,
                 Languages = new HashSet<Language>(pattern.Languages),
                 DataFormat = pattern.DataFormat,
                 DebugInfo = pattern.DebugInfo,
@@ -147,7 +147,7 @@ namespace PT.PM.Matching
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(patternBase.Root?.CodeFile, ex)
+                Logger.LogError(new ConversionException(patternBase.Root?.File, ex)
                 {
                     TextSpan = patternBase.TextSpan
                 });

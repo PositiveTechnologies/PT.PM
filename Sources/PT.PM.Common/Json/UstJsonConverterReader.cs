@@ -18,13 +18,13 @@ namespace PT.PM.Common.Json
 
         public override bool CanWrite => false;
 
-        public CodeFile JsonFile { get; } = CodeFile.Empty;
+        public TextFile SerializedFile { get; } = TextFile.Empty;
 
         public bool IgnoreExtraProcess { get; set; } = false;
 
-        public UstJsonConverterReader(CodeFile jsonFile)
+        public UstJsonConverterReader(TextFile serializedFile)
         {
-            JsonFile = jsonFile;
+            SerializedFile = serializedFile;
         }
 
         public override bool CanConvert(Type objectType)
@@ -45,7 +45,7 @@ namespace PT.PM.Common.Json
 
             if (!ReflectionCache.TryGetClassType(kind, out Type type))
             {
-                JsonUtils.LogError(Logger, JsonFile, jObject, $"Unknown UST {nameof(Ust.Kind)} {kind}");
+                JsonUtils.LogError(Logger, SerializedFile, jObject, $"Unknown UST {nameof(Ust.Kind)} {kind}");
                 return null;
             }
 
@@ -90,7 +90,7 @@ namespace PT.PM.Common.Json
             }
             catch (Exception ex)
             {
-                Logger.LogError(JsonFile, jObject, ex);
+                Logger.LogError(SerializedFile, jObject, ex);
             }
 
             JToken textSpanToken = jObject[nameof(Ust.TextSpan)];

@@ -135,10 +135,10 @@ namespace PT.PM.Common.Nodes
         public int KindId => GetType().Name.GetHashCode();
 
         [IgnoreMember]
-        public LineColumnTextSpan LineColumnTextSpan => CurrentCodeFile?.GetLineColumnTextSpan(TextSpan);
+        public LineColumnTextSpan LineColumnTextSpan => CurrentSourceFile?.GetLineColumnTextSpan(TextSpan);
 
         [IgnoreMember]
-        public CodeFile CurrentCodeFile => this is RootUst rootUst ? rootUst.SourceCodeFile : Root?.SourceCodeFile;
+        public TextFile CurrentSourceFile => this is RootUst rootUst ? rootUst.SourceFile : Root?.SourceFile;
 
         [IgnoreMember]
         public RootUst RootOrThis => this is RootUst rootUst ? rootUst : Root;

@@ -13,33 +13,33 @@ namespace PT.PM.CSharpParseTreeUst
 
         public Language Language => Aspx.Language;
 
-        public ParseTree Parse(CodeFile sourceCodeFile)
+        public ParseTree Parse(TextFile sourceFile)
         {
-            if (sourceCodeFile.Data == null)
+            if (sourceFile.Data == null)
             {
                 return null;
             }
 
             try
             {
-                var parser = new global::AspxParser.AspxParser(sourceCodeFile.RelativePath);
-                var source = new AspxSource(sourceCodeFile.FullName, sourceCodeFile.Data);
+                var parser = new global::AspxParser.AspxParser(sourceFile.RelativePath);
+                var source = new AspxSource(sourceFile.FullName, sourceFile.Data);
                 AspxParseResult aspxTree = parser.Parse(source);
                 foreach (var error in aspxTree.ParseErrors)
                 {
-                    Logger.LogError(new ParsingException(sourceCodeFile, message: error.Message)
+                    Logger.LogError(new ParsingException(sourceFile, message: error.Message)
                     {
                         TextSpan = error.Location.GetTextSpan()
                     });
                 }
                 var result = new AspxParseTree(aspxTree.RootNode);
-                result.SourceCodeFile = sourceCodeFile;
+                result.SourceFile = sourceFile;
 
                 return result;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ParsingException(sourceCodeFile, ex));
+                Logger.LogError(new ParsingException(sourceFile, ex));
                 return null;
             }
         }

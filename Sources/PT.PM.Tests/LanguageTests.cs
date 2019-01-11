@@ -80,7 +80,7 @@ namespace PT.PM.Tests
         public void DetectLanguage_SourceCode_CorrectLanguage(string expectedLanguage, string fileName)
         {
             var sourceCode =
-                new CodeFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
+                new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
             DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(sourceCode);
             Assert.NotNull(detectedLanguage);
             Assert.AreEqual(expectedLanguage, detectedLanguage.Language.Key);
@@ -100,7 +100,7 @@ namespace PT.PM.Tests
             var languageDetector = new ParserLanguageDetector();
             DetectionResult detectionResult;
 
-            var plSqlFile = new CodeFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
+            var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
             detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { PlSql.Language, TSql.Language });
 
             Assert.NotNull(detectionResult.ParseTree);

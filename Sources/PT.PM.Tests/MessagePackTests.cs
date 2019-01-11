@@ -97,10 +97,10 @@ namespace PT.PM.Tests
             else
             {
                 var match = (MatchResult)newLogger.Matches[0];
-                using (var sourceCodeFilesEnumerator = result.SourceCodeFiles.GetEnumerator())
+                using (var sourceFilesEnumerator = result.SourceFiles.GetEnumerator())
                 {
-                    sourceCodeFilesEnumerator.MoveNext();
-                    var firstFile = (CodeFile) sourceCodeFilesEnumerator.Current;
+                    sourceFilesEnumerator.MoveNext();
+                    var firstFile = (TextFile)sourceFilesEnumerator.Current;
                     Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), firstFile.GetLineColumnTextSpan(match.TextSpan));
                 }
             }

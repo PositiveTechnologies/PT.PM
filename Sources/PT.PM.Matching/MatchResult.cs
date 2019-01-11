@@ -18,23 +18,23 @@ namespace PT.PM.Matching
         {
         }
 
-        public MatchResult(CodeFile sourceCodeFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
+        public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
-            SourceCodeFile = sourceCodeFile ?? throw new ArgumentNullException(nameof(sourceCodeFile));
+            SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
             Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
             TextSpans = textSpans?.ToArray() ?? throw new ArgumentNullException(nameof(textSpans));
 
             TextSpan lastTextSpan = textSpans.LastOrDefault();
             if (lastTextSpan != default)
             {
-                Suppressed = PatternUtils.IsSuppressed(SourceCodeFile,
-                    lastTextSpan.GetLineColumnTextSpan(SourceCodeFile));
+                Suppressed = PatternUtils.IsSuppressed(SourceFile,
+                    lastTextSpan.GetLineColumnTextSpan(SourceFile));
             }
         }
 
         public override string ToString()
         {
-            return $"Pattern {Pattern} mathched at {(string.Join(", ", TextSpans.Select(textSpan => SourceCodeFile.GetLineColumnTextSpan(textSpan))))}";
+            return $"Pattern {Pattern} mathched at {(string.Join(", ", TextSpans.Select(textSpan => SourceFile.GetLineColumnTextSpan(textSpan))))}";
         }
     }
 }

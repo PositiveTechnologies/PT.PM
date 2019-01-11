@@ -17,7 +17,7 @@ namespace PT.PM.CSharpParseTreeUst
     public class AspxConverter : DepthFirstAspxWithoutCloseTagVisitor<Ust>, IParseTreeToUstConverter
     {
         private Stack<bool> runAtServer = new Stack<bool>();
-        private CodeFile sourceCodeFile;
+        private TextFile sourceFile;
 
         public Language Language => Aspx.Language;
 
@@ -39,7 +39,7 @@ namespace PT.PM.CSharpParseTreeUst
             try
             {
                 RootUst result;
-                sourceCodeFile = langParseTree.SourceCodeFile;
+                sourceFile = langParseTree.SourceFile;
                 Ust visited = aspxParseTree.Root.Accept(this);
                 if (visited is RootUst rootUst)
                 {
@@ -47,7 +47,7 @@ namespace PT.PM.CSharpParseTreeUst
                 }
                 else
                 {
-                    result = new RootUst(sourceCodeFile, Language);
+                    result = new RootUst(sourceFile, Language);
                     result.Node = visited;
                 }
                 result.FillAscendants();
@@ -56,7 +56,7 @@ namespace PT.PM.CSharpParseTreeUst
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile, ex));
+                Logger.LogError(new ConversionException(aspxParseTree.SourceFile, ex));
                 return null;
             }
         }
@@ -158,7 +158,7 @@ namespace PT.PM.CSharpParseTreeUst
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
             var converter = new CSharpRoslynParseTreeConverter();
-            RootUst result = converter.Convert(new CSharpRoslynParseTree(tree) { SourceCodeFile = sourceCodeFile });
+            RootUst result = converter.Convert(new CSharpRoslynParseTree(tree) { SourceFile = sourceFile });
             if (result != null)
             {
                 result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(location.Start));
@@ -172,8 +172,8 @@ namespace PT.PM.CSharpParseTreeUst
             var converter = new CSharpRoslynParseTreeConverter();
             Ust result = converter.Visit(node);
             RootUst resultRoot =
-                result as RootUst ?? new RootUst(sourceCodeFile, CSharp.Language) { Node = result, TextSpan = result.TextSpan };
-            resultRoot.SourceCodeFile = sourceCodeFile;
+                result as RootUst ?? new RootUst(sourceFile, CSharp.Language) { Node = result, TextSpan = result.TextSpan };
+            resultRoot.SourceFile = sourceFile;
             result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(offset));
             return result;
         }

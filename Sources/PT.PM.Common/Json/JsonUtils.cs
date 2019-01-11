@@ -7,28 +7,28 @@ namespace PT.PM.Common.Json
 {
     public static class JsonUtils
     {
-        public static void LogError(this ILogger logger, CodeFile jsonFile, IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
+        public static void LogError(this ILogger logger, TextFile serializedFile, IJsonLineInfo jsonLineInfo, Exception ex, bool isError = true)
         {
-            string errorMessage = GenerateErrorPositionMessage(jsonFile, jsonLineInfo, out TextSpan errorTextSpan) +
+            string errorMessage = GenerateErrorPositionMessage(serializedFile, jsonLineInfo, out TextSpan errorTextSpan) +
                                   "; " + ex.FormatExceptionMessage();
-            LogErrorOrWarning(logger, jsonFile, isError, errorMessage, errorTextSpan);
+            LogErrorOrWarning(logger, serializedFile, isError, errorMessage, errorTextSpan);
         }
 
-        public static void LogError(this ILogger logger, CodeFile jsonFile, IJsonLineInfo jsonLineInfo, string message, bool isError = true)
+        public static void LogError(this ILogger logger, TextFile serializedFile, IJsonLineInfo jsonLineInfo, string message, bool isError = true)
         {
-            string errorMessage = GenerateErrorPositionMessage(jsonFile, jsonLineInfo, out TextSpan errorTextSpan) +
+            string errorMessage = GenerateErrorPositionMessage(serializedFile, jsonLineInfo, out TextSpan errorTextSpan) +
                                   "; " + message;
-            LogErrorOrWarning(logger, jsonFile, isError, errorMessage, errorTextSpan);
+            LogErrorOrWarning(logger, serializedFile, isError, errorMessage, errorTextSpan);
         }
 
-        private static string GenerateErrorPositionMessage(CodeFile jsonFile, IJsonLineInfo jsonLineInfo,
+        private static string GenerateErrorPositionMessage(TextFile serializedFile, IJsonLineInfo jsonLineInfo,
             out TextSpan errorTextSpan)
         {
             if (jsonLineInfo != null)
             {
                 int errorLine = jsonLineInfo.LineNumber;
                 int errorColumn = jsonLineInfo.LinePosition;
-                errorTextSpan = new TextSpan(jsonFile.GetLinearFromLineColumn(errorLine, errorColumn), 0);
+                errorTextSpan = new TextSpan(serializedFile.GetLinearFromLineColumn(errorLine, errorColumn), 0);
                 return $"File position: {new LineColumnTextSpan(errorLine, errorColumn)}";
             }
 
@@ -36,9 +36,9 @@ namespace PT.PM.Common.Json
             return "";
         }
 
-        private static void LogErrorOrWarning(this ILogger logger, CodeFile jsonFile, bool isError, string errorMessage, TextSpan errorTextSpan)
+        private static void LogErrorOrWarning(this ILogger logger, TextFile serializedFile, bool isError, string errorMessage, TextSpan errorTextSpan)
         {
-            var exception = new ConversionException(jsonFile, null, errorMessage) { TextSpan = errorTextSpan };
+            var exception = new ConversionException(serializedFile, null, errorMessage) { TextSpan = errorTextSpan };
 
             if (isError)
             {
@@ -46,7 +46,7 @@ namespace PT.PM.Common.Json
             }
             else
             {
-                logger.LogInfo($"{jsonFile}: " + errorMessage);
+                logger.LogInfo($"{serializedFile}: " + errorMessage);
             }
         }
     }

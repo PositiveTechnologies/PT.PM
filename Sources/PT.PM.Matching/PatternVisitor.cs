@@ -227,7 +227,7 @@ namespace PT.PM.Matching
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(patternBase.Root?.CodeFile, ex)
+                Logger.LogError(new ConversionException(patternBase.Root?.File, ex)
                 {
                     TextSpan = patternBase.TextSpan
                 });

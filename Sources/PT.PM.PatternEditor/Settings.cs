@@ -37,7 +37,7 @@ namespace PT.PM.PatternEditor
 
         public bool LogExpanded { get; set; } = false;
 
-        public string SourceCodeFile { get; set; } = "";
+        public string SourceFile { get; set; } = "";
 
         public string SourceCode { get; set; } = "";
 

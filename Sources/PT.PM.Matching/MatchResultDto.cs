@@ -20,16 +20,16 @@ namespace PT.PM.Matching
 
         public MatchResultDto(MatchResult matchResult)
         {
-            CodeFile sourceCodeFile = matchResult.SourceCodeFile;
-            string code = sourceCodeFile.Data;
+            TextFile sourceFile = matchResult.SourceFile;
+            string code = sourceFile.Data;
             TextSpan = matchResult.TextSpans.Where(textSpan =>
                 textSpan.Start >= 0 &&
-                textSpan.End <= textSpan.GetCodeFile(sourceCodeFile).Data.Length)
+                textSpan.End <= textSpan.GetSourceFile(sourceFile).Data.Length)
                 .Union();
-            LineColumnTextSpan = sourceCodeFile.GetLineColumnTextSpan(TextSpan);
+            LineColumnTextSpan = sourceFile.GetLineColumnTextSpan(TextSpan);
 
             PatternKey = matchResult.Pattern.Key;
-            SourceFile = sourceCodeFile.FullName;
+            SourceFile = sourceFile.FullName;
             MatchedCode = code.Substring(TextSpan);
             Suppressed = matchResult.Suppressed;
         }

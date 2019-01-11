@@ -17,7 +17,7 @@ namespace PT.PM.Dsl
         {
         }
 
-        public PatternRoot Deserialize(CodeFile data)
+        public PatternRoot Deserialize(TextFile data)
         {
             if (string.IsNullOrEmpty(data.Data))
             {
@@ -34,7 +34,7 @@ namespace PT.PM.Dsl
             DslParser.PatternContext patternContext = parser.Parse(data.PatternKey, data.Data);
 
             PatternRoot patternNode = converter.Convert(patternContext);
-            patternNode.CodeFile = data;
+            patternNode.File = data;
 
             var preprocessor = new PatternNormalizer() { Logger = Logger };
             patternNode = preprocessor.Normalize(patternNode);
