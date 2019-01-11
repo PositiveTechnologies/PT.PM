@@ -14,9 +14,9 @@ namespace PT.PM.Common.MessagePack
 
         public FileFormatter FileFormatter { get; private set; }
 
-        public LanguageFormatter LanguageFormatter { get; } = new LanguageFormatter();
+        public LanguageFormatter LanguageFormatter { get; private set; }
 
-        public RootUstFormatter RootUstFormatter { get; } = new RootUstFormatter();
+        public RootUstFormatter RootUstFormatter { get; private set; }
         
         public static UstMessagePackResolver CreateWriter(TextFile sourceFile, bool isLineColumn, ILogger logger)
         {
@@ -27,10 +27,16 @@ namespace PT.PM.Common.MessagePack
             var sourceFileFormatter = FileFormatter.CreateWriter();
             sourceFileFormatter.Logger = logger;
 
+            var languageFormatter = LanguageFormatter.CreateWriter();
+
+            var rootUstFormatter = RootUstFormatter.CreateWriter();
+
             return new UstMessagePackResolver
             {
+                LanguageFormatter = languageFormatter,
                 TextSpanFormatter = textSpanFormatter,
-                FileFormatter = sourceFileFormatter
+                FileFormatter = sourceFileFormatter,
+                RootUstFormatter = rootUstFormatter
             };
         }
 
@@ -41,13 +47,19 @@ namespace PT.PM.Common.MessagePack
             textSpanFormatter.IsLineColumn = isLineColumn;
             textSpanFormatter.Logger = logger;
 
-            var sourceFileFormatter = FileFormatter.CreateReader(sourceFiles, readSourceFileAction);
+            var sourceFileFormatter = FileFormatter.CreateReader(serializedFile, sourceFiles, readSourceFileAction);
             sourceFileFormatter.Logger = logger;
+
+            var languageFormatter = LanguageFormatter.CreateReader(serializedFile);
+
+            var rootUstFormatter = RootUstFormatter.CreateReader(serializedFile);
 
             return new UstMessagePackResolver
             {
+                LanguageFormatter = languageFormatter,
                 TextSpanFormatter = textSpanFormatter,
-                FileFormatter = sourceFileFormatter
+                FileFormatter = sourceFileFormatter,
+                RootUstFormatter = rootUstFormatter
             };
         }
 

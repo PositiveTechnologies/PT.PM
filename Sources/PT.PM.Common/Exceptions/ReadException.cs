@@ -10,10 +10,5 @@ namespace PT.PM.Common.Exceptions
         {
             File = file;
         }
-
-        public override string ToString()
-        {
-            return $"File {File.RelativeName} not found or can not be read.";
-        }
     }
 }

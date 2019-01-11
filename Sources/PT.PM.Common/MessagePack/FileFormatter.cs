@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using MessagePack;
 using MessagePack.Formatters;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
 
@@ -12,6 +13,8 @@ namespace PT.PM.Common.MessagePack
     public class FileFormatter : IMessagePackFormatter<IFile>, IMessagePackFormatter<TextFile>, ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
+
+        public BinaryFile SerializedFile { get; private set; }
 
         public HashSet<IFile> SourceFiles { get; private set; }
 
@@ -22,10 +25,16 @@ namespace PT.PM.Common.MessagePack
             return new FileFormatter();
         }
 
-        public static FileFormatter CreateReader(HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction)
+        public static FileFormatter CreateReader(BinaryFile serializedFile, HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction)
         {
+            if (serializedFile == null)
+            {
+                throw new ArgumentNullException(nameof(serializedFile));
+            }
+
             return new FileFormatter
             {
+                SerializedFile = serializedFile,
                 SourceFiles = sourceFiles,
                 ReadSourceFileAction = readSourceFileAction
             };
@@ -42,34 +51,31 @@ namespace PT.PM.Common.MessagePack
 
         public int Serialize(ref byte[] bytes, int offset, IFile value, IFormatterResolver formatterResolver)
         {
-            int writeSize = 0;
-
             if (value is null)
             {
-                writeSize += MessagePackBinary.WriteNil(ref bytes, offset);
+                return MessagePackBinary.WriteNil(ref bytes, offset);
             }
-            else
-            {
-                writeSize += MessagePackBinary.WriteByte(ref bytes, offset, (byte) value.Type);
-                writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, value.RootPath);
-                writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, value.RelativePath);
-                writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, value.Name);
-                writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, value.PatternKey);
 
-                if (string.IsNullOrEmpty(value.FullName))
+            int newOffset = offset;
+            newOffset += MessagePackBinary.WriteByte(ref bytes, newOffset, (byte) value.Type);
+            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.RootPath);
+            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.RelativePath);
+            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.Name);
+            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.PatternKey);
+
+            if (string.IsNullOrEmpty(value.FullName))
+            {
+                if (value is TextFile sourceFile)
                 {
-                    if (value is TextFile sourceFile)
-                    {
-                        writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, sourceFile.Data);
-                    }
-                    else if (value is BinaryFile binaryFile)
-                    {
-                        writeSize += MessagePackBinary.WriteBytes(ref bytes, offset + writeSize, binaryFile.Data);
-                    }
+                    newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, sourceFile.Data);
+                }
+                else if (value is BinaryFile binaryFile)
+                {
+                    newOffset += MessagePackBinary.WriteBytes(ref bytes, newOffset, binaryFile.Data);
                 }
             }
 
-            return writeSize;
+            return newOffset - offset;
         }
 
         TextFile IMessagePackFormatter<TextFile>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
@@ -79,107 +85,125 @@ namespace PT.PM.Common.MessagePack
 
         IFile IMessagePackFormatter<IFile>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
         {
-            readSize = 0;
-
-            if (MessagePackBinary.IsNil(bytes, offset))
+            int newOffset = offset;
+            try
             {
-                MessagePackBinary.ReadNil(bytes, offset, out readSize);
-                return null;
-            }
-
-            FileType fileType = (FileType)MessagePackBinary.ReadByte(bytes, offset, out int size);
-            readSize += size;
-            string rootPath = MessagePackBinary.ReadString(bytes, offset + readSize, out size) ?? "";
-            rootPath = rootPath.NormalizeDirSeparator();
-            readSize += size;
-            string relativePath = MessagePackBinary.ReadString(bytes, offset + readSize, out size) ?? "";
-            relativePath = relativePath.NormalizeDirSeparator();
-            readSize += size;
-            string name = MessagePackBinary.ReadString(bytes, offset + readSize, out size) ?? "";
-            readSize += size;
-            string patternKey = MessagePackBinary.ReadString(bytes, offset + readSize, out size);
-            readSize += size;
-
-            string fullName = Path.Combine(rootPath, relativePath, name);
-            IFile result;
-
-            if (SourceFiles != null && !string.IsNullOrEmpty(fullName))
-            {
-                lock (SourceFiles)
+                if (MessagePackBinary.IsNil(bytes, offset))
                 {
-                    foreach (IFile sourceFile in SourceFiles)
+                    MessagePackBinary.ReadNil(bytes, offset, out readSize);
+                    return null;
+                }
+
+                FileType fileType = (FileType) MessagePackBinary.ReadByte(bytes, offset, out int size);
+                newOffset += size;
+                
+                string rootPath = MessagePackBinary.ReadString(bytes, newOffset, out size) ?? "";
+                rootPath = rootPath.NormalizeDirSeparator();
+                newOffset += size;
+                
+                string relativePath = MessagePackBinary.ReadString(bytes, newOffset, out size) ?? "";
+                relativePath = relativePath.NormalizeDirSeparator();
+                newOffset += size;
+                
+                string name = MessagePackBinary.ReadString(bytes, newOffset, out size) ?? "";
+                newOffset += size;
+                
+                string patternKey = MessagePackBinary.ReadString(bytes, newOffset, out size);
+                newOffset += size;
+
+                string fullName = Path.Combine(rootPath, relativePath, name);
+                IFile result;
+
+                if (SourceFiles != null && !string.IsNullOrEmpty(fullName))
+                {
+                    lock (SourceFiles)
                     {
-                        if (sourceFile.RelativePath == relativePath && sourceFile.Name == name)
+                        foreach (IFile sourceFile in SourceFiles)
                         {
-                            return sourceFile;
+                            if (sourceFile.RelativePath == relativePath && sourceFile.Name == name)
+                            {
+                                readSize = newOffset - offset;
+                                return sourceFile;
+                            }
                         }
                     }
                 }
-            }
-            
-            var stopwatch = Stopwatch.StartNew();
-            if (fileType == FileType.TextFile)
-            {
-                string code;
-                if (string.IsNullOrEmpty(fullName))
+
+                var stopwatch = Stopwatch.StartNew();
+                if (fileType == FileType.TextFile)
                 {
-                    code = MessagePackBinary.ReadString(bytes, offset + readSize, out size);
-                    readSize += size;
+                    string code;
+                    if (string.IsNullOrEmpty(fullName))
+                    {
+                        code = MessagePackBinary.ReadString(bytes, newOffset, out size);
+                        newOffset += size;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            code = File.ReadAllText(fullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            code = "";
+                            Logger.LogError(new ReadException(SerializedFile, ex,
+                                $"Error during opening the file {fullName}"));
+                        }
+                    }
+
+                    result = new TextFile(code);
                 }
                 else
                 {
-                    try
+                    byte[] data;
+                    if (string.IsNullOrEmpty(fullName))
                     {
-                        code = File.ReadAllText(fullName);
+                        data = MessagePackBinary.ReadBytes(bytes, newOffset, out size);
+                        newOffset += size;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        code = "";
-                        Logger.LogError(new FileLoadException($"Error during {fullName} file reading", ex));
+                        try
+                        {
+                            data = File.ReadAllBytes(fullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            data = new byte[0];
+                            Logger.LogError(new ReadException(SerializedFile, ex,
+                                $"Error during opening the file {fullName}"));
+                        }
+                    }
+
+                    result = new BinaryFile(data);
+                }
+
+                stopwatch.Stop();
+
+                result.RootPath = rootPath;
+                result.RelativePath = relativePath;
+                result.Name = name;
+                result.PatternKey = patternKey;
+
+                if (SourceFiles != null)
+                {
+                    lock (SourceFiles)
+                    {
+                        SourceFiles.Add(result);
                     }
                 }
-                result = new TextFile(code);
+
+                ReadSourceFileAction?.Invoke((result, stopwatch.Elapsed));
+
+                readSize = newOffset - offset;
+
+                return result;
             }
-            else
+            catch (InvalidOperationException ex) // Catch incorrect format exceptions
             {
-                byte[] data;
-                if (string.IsNullOrEmpty(fullName))
-                {
-                    data = MessagePackBinary.ReadBytes(bytes, offset + readSize, out size);
-                    readSize += size;
-                }
-                else
-                {
-                    try
-                    {
-                        data = File.ReadAllBytes(fullName);
-                    }
-                    catch (Exception ex)
-                    {
-                        data = new byte[0];
-                        Logger.LogError(new FileLoadException($"Error during {fullName} file reading", ex));
-                    }
-                }
-                result = new BinaryFile(data);
+                throw new ReadException(SerializedFile, ex, $"Error during reading {nameof(IFile)} or {nameof(TextFile)} at {newOffset} offset; Message: {ex.Message}");
             }
-            stopwatch.Stop();
-
-            result.RootPath = rootPath;
-            result.RelativePath = relativePath;
-            result.Name = name;
-            result.PatternKey = patternKey;
-
-            if (SourceFiles != null)
-            {
-                lock (SourceFiles)
-                {
-                    SourceFiles.Add(result);
-                }
-            }
-
-            ReadSourceFileAction?.Invoke((result, stopwatch.Elapsed));
-
-            return result;
         }
     }
 }

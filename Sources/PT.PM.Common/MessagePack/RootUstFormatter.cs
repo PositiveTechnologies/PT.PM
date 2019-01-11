@@ -1,5 +1,7 @@
+using System;
 using MessagePack;
 using MessagePack.Formatters;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
@@ -10,72 +12,107 @@ namespace PT.PM.Common.MessagePack
     {
         public RootUst CurrentRoot { get; internal set; }
 
+        public BinaryFile SerializedFile { get; private set; }
+
+        public static RootUstFormatter CreateWriter()
+        {
+            return new RootUstFormatter();
+        }
+
+        public static RootUstFormatter CreateReader(BinaryFile serializedFile)
+        {
+            if (serializedFile == null)
+            {
+                throw new ArgumentNullException(nameof(serializedFile));
+            }
+
+            return new RootUstFormatter
+            {
+                SerializedFile = serializedFile
+            };
+        }
+
+        private RootUstFormatter()
+        {
+        }
+
         public int Serialize(ref byte[] bytes, int offset, RootUst value, IFormatterResolver formatterResolver)
         {
+            int newOffset = offset;
             CurrentRoot = value;
 
-            int writeSize = 0;
-
             var languageFormatter = formatterResolver.GetFormatter<Language>();
-            writeSize += languageFormatter.Serialize(ref bytes, offset + writeSize, value.Language, formatterResolver);
+            newOffset += languageFormatter.Serialize(ref bytes, newOffset, value.Language, formatterResolver);
 
             var fileFormatter = formatterResolver.GetFormatter<TextFile>();
-            writeSize += fileFormatter.Serialize(ref bytes, offset + writeSize, value.SourceFile, formatterResolver);
+            newOffset += fileFormatter.Serialize(ref bytes, newOffset, value.SourceFile, formatterResolver);
 
             var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
-            writeSize += ustsFormatter.Serialize(ref bytes, offset + writeSize, value.Nodes, formatterResolver);
+            newOffset += ustsFormatter.Serialize(ref bytes, newOffset, value.Nodes, formatterResolver);
 
             var commentsFormatter = formatterResolver.GetFormatter<CommentLiteral[]>();
-            writeSize += commentsFormatter.Serialize(ref bytes, offset + writeSize, value.Comments, formatterResolver);
+            newOffset += commentsFormatter.Serialize(ref bytes, newOffset, value.Comments, formatterResolver);
 
-            writeSize += MessagePackBinary.WriteInt32(ref bytes, offset + writeSize, value.LineOffset);
+            newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.LineOffset);
 
             var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>();
-            writeSize += textSpanFormatter.Serialize(ref bytes, offset + writeSize, value.TextSpan, formatterResolver);
-            writeSize += MessagePackBinary.WriteString(ref bytes, offset + writeSize, value.Key);
+            newOffset += textSpanFormatter.Serialize(ref bytes, newOffset, value.TextSpan, formatterResolver);
+            newOffset += MessagePackBinary.WriteString(ref bytes, newOffset, value.Key);
 
-            return writeSize;
+            return newOffset - offset;
         }
 
         public RootUst Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
         {
-            readSize = 0;
-
-            var languageFormatter = formatterResolver.GetFormatter<Language>();
-            Language language = languageFormatter.Deserialize(bytes, offset, formatterResolver, out int size);
-            readSize += size;
-
-            var fileFormatter = formatterResolver.GetFormatter<TextFile>();
-            TextFile sourceFile = fileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
-            readSize += size;
-
-            var textSpanFormatter = (TextSpanFormatter)formatterResolver.GetFormatter<TextSpan>();
-            textSpanFormatter.SourceFile = sourceFile;
-
-            var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
-            Ust[] nodes = ustsFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
-            readSize += size;
-
-            var commentsFormatter = formatterResolver.GetFormatter<CommentLiteral[]>();
-            CommentLiteral[] comments =
-                commentsFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
-            readSize += size;
-
-            int lineOffset = MessagePackBinary.ReadInt32(bytes, offset + readSize, out size);
-            readSize += size;
-
-            TextSpan textSpan = textSpanFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size);
-            readSize += size;
-
-            CurrentRoot = new RootUst(sourceFile, language)
+            int newOffset = offset;
+            try
             {
-                Nodes = nodes,
-                Comments = comments,
-                LineOffset = lineOffset,
-                TextSpan = textSpan
-            };
+                var languageFormatter = formatterResolver.GetFormatter<Language>();
+                Language language = languageFormatter.Deserialize(bytes, newOffset, formatterResolver, out int size);
+                newOffset += size;
 
-            return CurrentRoot;
+                var fileFormatter = formatterResolver.GetFormatter<TextFile>();
+                TextFile sourceFile = fileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                newOffset += size;
+
+                var textSpanFormatter = (TextSpanFormatter) formatterResolver.GetFormatter<TextSpan>();
+                if (textSpanFormatter is TextSpanFormatter formatter)
+                {
+                    formatter.SourceFile = sourceFile;
+                }
+
+                var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
+                Ust[] nodes = ustsFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                newOffset += size;
+
+                var commentsFormatter = formatterResolver.GetFormatter<CommentLiteral[]>();
+                CommentLiteral[] comments =
+                    commentsFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                newOffset += size;
+
+                int lineOffset = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                newOffset += size;
+
+                TextSpan textSpan =
+                    textSpanFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                newOffset += size;
+
+                CurrentRoot = new RootUst(sourceFile, language)
+                {
+                    Nodes = nodes,
+                    Comments = comments,
+                    LineOffset = lineOffset,
+                    TextSpan = textSpan
+                };
+
+                readSize = newOffset - offset;
+
+                return CurrentRoot;
+            }
+            catch (InvalidOperationException ex) // Catch incorrect format exceptions
+            {
+                throw new ReadException(SerializedFile, ex, $"Error during reading {nameof(RootUst)} at {newOffset} offset; Message: {ex.Message}");
+            }
         }
     }
 }

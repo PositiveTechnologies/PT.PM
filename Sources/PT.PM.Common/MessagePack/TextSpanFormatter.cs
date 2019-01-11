@@ -1,6 +1,7 @@
 using System;
 using MessagePack;
 using MessagePack.Formatters;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 
 namespace PT.PM.Common.MessagePack
@@ -47,82 +48,85 @@ namespace PT.PM.Common.MessagePack
 
         public int Serialize(ref byte[] bytes, int offset, TextSpan value, IFormatterResolver formatterResolver)
         {
-            int writeSize = 0;
-
+            int newOffset = offset;
             if (!IsLineColumn)
             {
-                writeSize += MessagePackBinary.WriteInt32(ref bytes, offset, value.Start);
-                writeSize += MessagePackBinary.WriteInt32(ref bytes, offset + writeSize, value.Length);
+                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.Start);
+                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.Length);
             }
             else
             {
                 TextFile sourceFile = value.GetSourceFile(SourceFile);
-                LineColumnTextSpan lcTextSpan;
+                LineColumnTextSpan lcTextSpan = sourceFile.GetLineColumnTextSpan(value);
 
-                if (sourceFile != null)
-                {
-                    lcTextSpan = sourceFile.GetLineColumnTextSpan(value);
-                }
-                else
-                {
-                    lcTextSpan = LineColumnTextSpan.Zero;
-                    // TODO: Log error
-                }
-
-                writeSize += MessagePackBinary.WriteInt32(ref bytes, offset, lcTextSpan.BeginLine);
-                writeSize += MessagePackBinary.WriteInt32(ref bytes, offset + writeSize, lcTextSpan.BeginColumn);
-                writeSize += MessagePackBinary.WriteInt32(ref bytes, offset + writeSize, lcTextSpan.EndLine);
-                writeSize += MessagePackBinary.WriteInt32(ref bytes, offset + writeSize, lcTextSpan.EndColumn);
+                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.BeginLine);
+                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.BeginColumn);
+                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.EndLine);
+                newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, lcTextSpan.EndColumn);
             }
 
             var fileFormatter = formatterResolver.GetFormatter<TextFile>();
-            writeSize += fileFormatter.Serialize(ref bytes, offset + writeSize, value.File, formatterResolver);
+            newOffset += fileFormatter.Serialize(ref bytes, newOffset, value.File, formatterResolver);
 
-            return writeSize;
+            return newOffset - offset;
         }
 
         public TextSpan Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
         {
-            readSize = 0;
-            TextSpan result = TextSpan.Zero;
-
-            int size;
-            int start, length;
-            TextFile sourceFile;
-            var sourceFileFormatter = formatterResolver.GetFormatter<TextFile>();
-
-            if (!IsLineColumn)
+            int newOffset = offset;
+            try
             {
-                start = MessagePackBinary.ReadInt32(bytes, offset, out size);
-                readSize += size;
-                length = MessagePackBinary.ReadInt32(bytes, offset + readSize, out size);
-                readSize += size;
+                int size;
+                int start, length;
+                TextFile sourceFile;
+                var sourceFileFormatter = formatterResolver.GetFormatter<TextFile>();
 
-                sourceFile = sourceFileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size)
-                           ?? SourceFile;
+                if (!IsLineColumn)
+                {
+                    start = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
+                    length = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
+
+                    sourceFile = sourceFileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size)
+                                 ?? SourceFile;
+                }
+                else
+                {
+                    int beginLine = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
+                    int beginColumn = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
+                    int endLine = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
+                    int endColumn = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
+
+                    sourceFile = sourceFileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size)
+                                 ?? SourceFile;
+
+                    try
+                    {
+                        start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
+                        length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(new ReadException(SerializedFile, ex, $"Error during linear to line-column TextSpan conversion; Message: {ex.Message}"));
+                        start = 0;
+                        length = 0;
+                    }
+                }
+
+                newOffset += size;
+                readSize = newOffset - offset;
+
+                return new TextSpan(start, length, sourceFile == SourceFile ? null : sourceFile);
             }
-            else
+            catch (InvalidOperationException ex) // Catch incorrect format exceptions
             {
-                int beginLine = MessagePackBinary.ReadInt32(bytes, offset, out size);
-                readSize += size;
-                int beginColumn = MessagePackBinary.ReadInt32(bytes, offset + readSize, out size);
-                readSize += size;
-                int endLine = MessagePackBinary.ReadInt32(bytes, offset + readSize, out size);
-                readSize += size;
-                int endColumn = MessagePackBinary.ReadInt32(bytes, offset + readSize, out size);
-                readSize += size;
-
-                sourceFile = sourceFileFormatter.Deserialize(bytes, offset + readSize, formatterResolver, out size)
-                           ?? SourceFile;
-
-                start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
-                length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                throw new ReadException(SerializedFile, ex, $"Error during reading {nameof(TextSpan)} at {newOffset} offset; Message: {ex.Message}");
             }
-
-            readSize += size;
-            result = new TextSpan(start, length, sourceFile == SourceFile ? null : sourceFile);
-
-            return result;
         }
     }
 }
