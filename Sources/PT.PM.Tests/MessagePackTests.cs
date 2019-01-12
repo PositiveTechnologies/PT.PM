@@ -32,8 +32,14 @@ namespace PT.PM.Tests
             CheckMsgPackSerialization("empty-try-catch.php", damaged: true);
         }
 
+        [Test]
+        public void Serialize_MsgPack_IncorrectFilePathCatchErrors()
+        {
+            CheckMsgPackSerialization("empty-try-catch.php", incorrectFilePath: true);
+        }
+
         private static void CheckMsgPackSerialization(string inputFileName, bool linearTextSpans = false,
-            bool damaged = false)
+            bool damaged = false, bool incorrectFilePath = false)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
             string ext = SerializationFormat.MsgPack.GetExtension();
@@ -67,9 +73,19 @@ namespace PT.PM.Tests
                 string shortFileName = Path.GetFileName(file) + ".ust." + ext;
                 string serializedFile = Path.Combine(TestUtility.TestsOutputPath, shortFileName);
 
-                if (damaged)
+                if (damaged || incorrectFilePath)
                 {
                     byte[] bytes = File.ReadAllBytes(serializedFile);
+                    if (damaged)
+                    {
+                        errorOffset = 4 + path.Length + 1;
+                        errorValue = 123;
+                    }
+                    else
+                    {
+                        errorOffset = 4 + 2;
+                        errorValue = 123;
+                    }
                     bytes[errorOffset] = errorValue;
                     File.WriteAllBytes(serializedFile, bytes);
                 }
@@ -95,6 +111,12 @@ namespace PT.PM.Tests
                 Assert.AreEqual(1, newLogger.ErrorCount);
                 Assert.IsTrue(newLogger.ErrorsString.Contains(errorValue.ToString()));
                 Assert.IsTrue(newLogger.ErrorsString.Contains(errorOffset.ToString()));
+                return;
+            }
+            else if (incorrectFilePath)
+            {
+                Assert.AreEqual(1, newLogger.ErrorCount);
+                Assert.IsTrue(newLogger.ErrorsString.Contains("ReadException"));
                 return;
             }
 

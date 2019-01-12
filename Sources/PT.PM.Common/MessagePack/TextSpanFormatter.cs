@@ -78,7 +78,7 @@ namespace PT.PM.Common.MessagePack
             try
             {
                 int size;
-                int start, length;
+                int start = 0, length = 0;
                 TextFile sourceFile;
                 var sourceFileFormatter = formatterResolver.GetFormatter<TextFile>();
 
@@ -108,14 +108,15 @@ namespace PT.PM.Common.MessagePack
 
                     try
                     {
-                        start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
-                        length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                        if (!sourceFile.IsEmpty) // TODO: maybe add IsError property
+                        {
+                            start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
+                            length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                        }
                     }
                     catch (Exception ex)
                     {
                         Logger.LogError(new ReadException(SerializedFile, ex, $"Error during linear to line-column TextSpan conversion; Message: {ex.Message}"));
-                        start = 0;
-                        length = 0;
                     }
                 }
 
