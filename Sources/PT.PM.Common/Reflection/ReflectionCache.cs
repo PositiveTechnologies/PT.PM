@@ -31,11 +31,6 @@ namespace PT.PM.Common.Reflection
                 return result;
             });
 
-        public static bool ContainsKind(string kind)
-        {
-            return UstKindClassType.Value.ContainsKey(kind.ToLowerInvariant());
-        }
-
         public static bool TryGetClassType(string kind, out Type type)
         {
             return UstKindClassType.Value.TryGetValue(kind.ToLowerInvariant(), out type);
@@ -43,7 +38,7 @@ namespace PT.PM.Common.Reflection
 
         public static PropertyInfo[] GetReadWriteClassProperties(this Type objectType)
         {
-            PropertyInfo[] result = null;
+            PropertyInfo[] result;
             if (!ustNodeProperties.TryGetValue(objectType, out result))
             {
                 result = objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance)

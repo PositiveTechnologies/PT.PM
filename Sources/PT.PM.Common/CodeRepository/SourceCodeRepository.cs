@@ -12,7 +12,7 @@ namespace PT.PM.Common.CodeRepository
 
         public string RootPath { get; protected set; } = "";
 
-        public HashSet<Language> Languages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
+        public HashSet<Language> Languages { get; set; } = new HashSet<Language>(LanguageUtils.LanguageInfos.Keys);
 
         public SerializationFormat? Format { get; }
 
@@ -48,7 +48,7 @@ namespace PT.PM.Common.CodeRepository
 
         private bool IsLanguageIgnored(Language language, string fileExtension, bool withParser)
         {
-            if (language.Extensions.Any(ext => ext == fileExtension))
+            if (language.GetExtensions().Any(ext => ext == fileExtension))
             {
                 return withParser && !language.IsParserExists();
             }

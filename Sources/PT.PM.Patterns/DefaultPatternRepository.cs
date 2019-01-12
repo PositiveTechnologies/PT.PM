@@ -1,13 +1,8 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.JavaParseTreeUst;
-using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using PT.PM.Matching.PatternsRepository;
-using PT.PM.PhpParseTreeUst;
-using PT.PM.SqlParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -58,7 +53,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedPassword",
-                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages),
                 Node = new PatternOr
                 (
                     new PatternBinaryOperatorExpression
@@ -105,10 +100,10 @@ namespace PT.PM.Patterns.PatternsRepository
                 DebugInfo = "InsecureTransport",
                 Languages = new HashSet<Language>
                 {
-                    CSharp.Language,
-                    Java.Language,
-                    Php.Language,
-                    JavaScript.Language
+                    Language.CSharp,
+                    Language.Java,
+                    Language.Php,
+                    Language.JavaScript
                 },
                 Node = new PatternStringRegexLiteral(@"^http://[\w@][\w.:@]+/?[\w\.?=%&=\-@/$,]*$")
             });
@@ -117,7 +112,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureRandomness",
-                Languages = new HashSet<Language>() { CSharp.Language, Java.Language },
+                Languages = new HashSet<Language>() { Language.CSharp, Language.Java },
                 Node = new PatternObjectCreateExpression
                 {
                     Type = new PatternIdToken("Random"),
@@ -129,7 +124,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PasswordInComment. Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.",
-                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages),
                 Node = new PatternOr
                 (
                     new PatternCommentRegex("(?i)(password|pwd)\\s*=\\s*[\"\\w]+"),
@@ -141,7 +136,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Poor Error Handling: Empty Default Exception Handler",
-                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values.Where(x => x != MySql.Language)),
+                Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Where(x => x != Language.MySql)),
                 Node = new PatternTryCatchStatement { IsCatchBodyEmpty = true }
             });
 
@@ -149,7 +144,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Erroneous Null Comparison",
-                Languages = new HashSet<Language>(LanguageUtils.SqlLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.SqlLanguages),
                 Node = new PatternOr
                 (
                     new PatternBinaryOperatorExpression
@@ -171,7 +166,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Privilege Management: Overly Broad Grant",
-                Languages = new HashSet<Language>(LanguageUtils.SqlLanguages.Values),
+                Languages = new HashSet<Language>(LanguageUtils.SqlLanguages),
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("grant"),

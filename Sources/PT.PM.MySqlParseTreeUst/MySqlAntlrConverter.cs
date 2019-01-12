@@ -20,7 +20,9 @@ namespace PT.PM.SqlParseTreeUst
 {
     public partial class MySqlAntlrConverter : AntlrConverter, IMySqlParserVisitor<Ust>
     {
-        public override Language Language => MySql.Language;
+        public override Language Language => Language.MySql;
+
+        public static MySqlAntlrConverter Create() => new MySqlAntlrConverter();
 
         public Ust VisitRoot([NotNull] MySqlParser.RootContext context)
         {

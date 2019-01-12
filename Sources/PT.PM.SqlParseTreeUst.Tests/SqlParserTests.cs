@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using System.Linq;
+using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.TestUtils;
-using System.IO;
-using System.Linq;
 
 namespace PT.PM.SqlParseTreeUst.Tests
 {

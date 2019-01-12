@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.JavaParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
@@ -16,7 +15,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InadequateRsaPadding. Weak Encryption: Inadequate RSA Padding. ",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -41,7 +40,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicAlgorithm. Weak Encryption: Broken or Risky Cryptographic Algorithm" +
                     "https://cwe.mitre.org/data/definitions/327.html",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -65,7 +64,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyBroadPath. Cookie Security: Overly Broad Path.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -81,7 +80,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "OverlyBroadDomain Cookie Security: Overly Broad Domain.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -97,7 +96,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PoorSeeding.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -113,7 +112,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "WeakCryptographicHash.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -129,7 +128,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AndroidPermissionCheck. Often Misused: Android Permission Check.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -145,7 +144,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "AndroidHostnameVerificationDisabled. Insecure SSL: Android Hostname Verification Disabled.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternOr
                 (
                     new PatternObjectCreateExpression
@@ -165,7 +164,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SAXReaderExternalEntity",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs(new PatternNot(new PatternStringRegexLiteral())),
@@ -185,7 +184,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "XmlExternalEntity",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs(new PatternNot(new PatternStringRegexLiteral())),
@@ -205,7 +204,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "StickyBroadcast. Android Bad Practices: Sticky Broadcast.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs(new PatternAny()),
@@ -221,7 +220,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "SendStickyBroadcastAsUser. Android Bad Practices: Sticky Broadcast.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs
@@ -242,7 +241,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "InsecureSSL. Insecure SSL: Android Socket.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs
@@ -262,7 +261,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "HardcodedSalt. Weak Cryptographic Hash: Hardcoded Salt.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs
@@ -283,7 +282,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "MissingReceiverPermission. The program sends a broadcast without specifying the receiver permission. " +
                             "Broadcasts sent without the receiver permission are accessible to any receiver. If these broadcasts contain sensitive data or reach a malicious receiver, the application may be compromised.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs(new PatternAny()),
@@ -302,7 +301,7 @@ namespace PT.PM.Patterns.PatternsRepository
                     "Receiver registered without the broadcaster permission will receive messages from any broadcaster. " +
                     "If these messages contain malicious data or come from a malicious broadcaster, the application may be compromised. " +
                     "Use this form: public abstract Intent registerReceiver (BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler)",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternInvocationExpression
                 {
                     Arguments = new PatternArgs
@@ -322,7 +321,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "CookieNotSentOverSSL. Cookie Security: Cookie not Sent Over SSL.",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternStatements
                 (
                     new PatternVarOrFieldDeclaration
@@ -369,7 +368,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Use of NullPointerException Catch to Detect NULL Pointer Dereference",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternTryCatchStatement
                 {
                     ExceptionTypes = new List<PatternUst> { new PatternIdToken("NullPointerException") },
@@ -381,7 +380,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "UsingCloneWithoutCloneable. Using clone method without implementing Clonable",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternAnd
                 (
                     new PatternClassDeclaration
@@ -410,7 +409,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "ExtendingSecurityManagerWithoutFinal. Class extending SecurityManager is not final",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternAnd
                 (
                     new PatternClassDeclaration
@@ -438,7 +437,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "ImproperValidationEmptyMethodFull. Improper Certificate Validation (Empty method)",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternClassDeclaration
                 {
                     BaseTypes = new List<PatternUst>
@@ -493,7 +492,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "ImproperValidationEmptyMethodPartial. Improper Certificate Validation (Empty method)",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternClassDeclaration
                 {
                     BaseTypes = new List<PatternUst>
@@ -516,7 +515,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "PoorLoggingPractice. Declare logger not static or final",
-                Languages = new HashSet<Language>() { Java.Language },
+                Languages = new HashSet<Language>() { Language.Java },
                 Node = new PatternAnd
                 (
                     new PatternNot

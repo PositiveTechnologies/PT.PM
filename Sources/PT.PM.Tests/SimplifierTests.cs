@@ -1,14 +1,12 @@
-﻿using NUnit.Framework;
-using PT.PM.Common;
-using PT.PM.Dsl;
-using PT.PM.JavaParseTreeUst;
-using PT.PM.Matching;
-using PT.PM.Matching.Patterns;
-using PT.PM.PhpParseTreeUst;
-using PT.PM.TestUtils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
+using PT.PM.Common;
+using PT.PM.Dsl;
+using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
+using PT.PM.TestUtils;
 
 namespace PT.PM.Tests
 {
@@ -20,19 +18,19 @@ namespace PT.PM.Tests
         {
             string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "simplify-sample.php"));
 
-            var matches = PatternMatchingUtils.GetMatches(code, "<[\"Hello World!\"]>", Php.Language);
+            var matches = PatternMatchingUtils.GetMatches(code, "<[\"Hello World!\"]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(2, 7, 2, 29), matches[0].LineColumnTextSpan); // TODO: should be (2, 8, 2, 30)
             
-            matches = PatternMatchingUtils.GetMatches(code, "<[86400]>", Php.Language);
+            matches = PatternMatchingUtils.GetMatches(code, "<[86400]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(3, 6, 3, 18), matches[0].LineColumnTextSpan);
             
-            matches = PatternMatchingUtils.GetMatches(code, "<[42]>", Php.Language);
+            matches = PatternMatchingUtils.GetMatches(code, "<[42]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(4, 6, 4, 15), matches[0].LineColumnTextSpan);
             
-            matches = PatternMatchingUtils.GetMatches(code, "<[-3]>", Php.Language);
+            matches = PatternMatchingUtils.GetMatches(code, "<[-3]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(5, 6, 5, 8), matches[0].LineColumnTextSpan);
             
-            //matches = PatternMatchingUtils.GetMatches(code, "<[-3.1]>", Php.Language); // TODO: fix float literal patterns
+            //matches = PatternMatchingUtils.GetMatches(code, "<[-3.1]>", Language.Php); // TODO: fix float literal patterns
             //Assert.AreEqual(new LineColumnTextSpan(6, 6, 6, 10), matches.Length);
         }
 
@@ -41,7 +39,7 @@ namespace PT.PM.Tests
         {
             string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "FoldArrayOfChars.java"));
 
-            var matches = PatternMatchingUtils.GetMatches(code, "<[\"none\"]>", Java.Language);
+            var matches = PatternMatchingUtils.GetMatches(code, "<[\"none\"]>", Language.Java);
             Assert.AreEqual(new LineColumnTextSpan(3, 21, 3, 44), matches[0].LineColumnTextSpan); // TODO: should be (3, 20, 3, 42)
         }
 

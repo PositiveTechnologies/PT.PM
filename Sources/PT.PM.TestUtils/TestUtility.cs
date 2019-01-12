@@ -48,7 +48,7 @@ namespace PT.PM.TestUtils
 
         public static IReadOnlyList<IMatchResultBase> CheckFile(string fileName, Stage endStage,
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
-            Language language = null, int maxStackSize = 0)
+            Language? language = null, int maxStackSize = 0)
         {
             return CheckFile(fileName, endStage, out RootUst _, logger, shouldContainsErrors, isIgnoreFilenameWildcards,
                 language, maxStackSize);
@@ -56,12 +56,12 @@ namespace PT.PM.TestUtils
 
         public static IReadOnlyList<IMatchResultBase> CheckFile(string fileName, Stage endStage, out RootUst ust,
             ILogger logger = null, bool shouldContainsErrors = false, bool isIgnoreFilenameWildcards = false,
-            Language language = null, int maxStackSize = 0)
+            Language? language = null, int maxStackSize = 0)
         {
             var codeRepository = new FileCodeRepository(Path.Combine(TestsDataPath, fileName.NormalizeDirSeparator()));
             if (language != null)
             {
-                codeRepository.Languages = new HashSet<Language> { language };
+                codeRepository.Languages = new HashSet<Language> { language.Value };
             }
 
             var log = logger ?? new LoggerMessageCounter();

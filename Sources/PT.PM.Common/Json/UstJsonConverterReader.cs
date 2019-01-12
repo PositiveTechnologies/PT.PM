@@ -57,7 +57,7 @@ namespace PT.PM.Common.Json
                 string languageString = (string)jObject?[nameof(RootUst.Language)] ?? "";
                 Language language = !string.IsNullOrEmpty(languageString)
                     ? languageString.ParseLanguages().FirstOrDefault()
-                    : Uncertain.Language;
+                    : Language.Uncertain;
 
                 rootUst = new RootUst(null, language);
                 ProcessRootUst(rootUst);

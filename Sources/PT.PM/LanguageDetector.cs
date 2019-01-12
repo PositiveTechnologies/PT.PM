@@ -1,7 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Utils;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.PhpParseTreeUst;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,15 +34,15 @@ namespace PT.PM
             {
                 string[] extensions = GetExtensions(sourceFile.Name);
                 List<Language> finalLanguages = GetLanguagesIntersection(extensions, languages);
-                if (finalLanguages.Count == 1 || finalLanguages.Any(final => final == CSharp.Language))
+                if (finalLanguages.Count == 1 || finalLanguages.Any(final => final == Language.CSharp))
                 {
                     result = new DetectionResult(finalLanguages[0]);
                 }
                 else if (finalLanguages.Count > 1)
                 {
-                    if (finalLanguages.Count == 2 && finalLanguages.Contains(Html.Language) && finalLanguages.Contains(Php.Language))
+                    if (finalLanguages.Count == 2 && finalLanguages.Contains(Language.Html) && finalLanguages.Contains(Language.Php))
                     {
-                        result = new DetectionResult(Php.Language);
+                        result = new DetectionResult(Language.Php);
                     }
                     else
                     {
@@ -56,7 +54,7 @@ namespace PT.PM
             else
             {
                 result = Detect(sourceFile, languages);
-                LogDetection(result, languages ?? LanguageUtils.Languages.Values, sourceFile);
+                LogDetection(result, languages ?? LanguageUtils.Languages, sourceFile);
             }
 
             return result;
@@ -66,7 +64,7 @@ namespace PT.PM
 
         protected void LogDetection(DetectionResult detectionResult, IEnumerable<Language> languages, TextFile sourceFile)
         {
-            string languagesString = string.Join(", ", languages.Select(lang => lang.Title));
+            string languagesString = string.Join(", ", languages.Select(lang => LanguageUtils.LanguageInfos[lang].Title));
             if (detectionResult != null)
             {
                 Logger.LogDebug($"Language {detectionResult.Language} (from {languagesString}) detected for file \"{sourceFile}\". ");
@@ -100,10 +98,10 @@ namespace PT.PM
             foreach (var extension in extensions)
             {
                 var normalizedExtension = extension.ToLowerInvariant();
-                foreach (Language language in LanguageUtils.Languages.Values)
+                foreach (Language language in LanguageUtils.Languages)
                 {
                     var extensionIsFine = string.IsNullOrEmpty(normalizedExtension) ||
-                        language.Extensions.Contains(normalizedExtension);
+                        language.GetExtensions().Contains(normalizedExtension);
                     var languageIsFine = languages == null || languages.Contains(language);
                     if (extensionIsFine && languageIsFine)
                     {

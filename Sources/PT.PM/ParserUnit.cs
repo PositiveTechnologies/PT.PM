@@ -49,7 +49,7 @@ namespace PT.PM
 
         public ParserUnit(Language language, Thread thread)
         {
-            Language = language ?? throw new NullReferenceException(nameof(language));
+            Language = language;
             parser = language.CreateParser();
             logger = new ParserUnitLogger();
             parser.Logger = logger;

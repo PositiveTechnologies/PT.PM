@@ -8,9 +8,11 @@ namespace PT.PM.PhpParseTreeUst
 {
     public class PhpAntlrParser : AntlrParser
     {
-        public override Language Language => Php.Language;
+        public override Language Language => Language.Php;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.lower;
+
+        public static PhpAntlrParser Create() => new PhpAntlrParser();
 
         public PhpAntlrParser()
         {

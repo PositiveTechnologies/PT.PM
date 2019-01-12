@@ -13,18 +13,18 @@ namespace PT.PM.Common.CodeRepository
     {
         protected IEnumerable<string> fullNames;
 
-        public FileCodeRepository(string fileName, Language language = null, SerializationFormat? format = null)
+        public FileCodeRepository(string fileName, Language? language = null, SerializationFormat? format = null)
             : this(new string[] { fileName }, language, format)
         {
         }
 
-        public FileCodeRepository(IEnumerable<string> fileNames, Language language = null, SerializationFormat? format = null)
+        public FileCodeRepository(IEnumerable<string> fileNames, Language? language = null, SerializationFormat? format = null)
             : base(format)
         {
             fullNames = fileNames;
-            if (language != null)
+            if (language.HasValue)
             {
-                Languages = new HashSet<Language>() { language };
+                Languages = new HashSet<Language> { language.Value };
             }
             RootPath = string.Join("; ", fileNames);
         }

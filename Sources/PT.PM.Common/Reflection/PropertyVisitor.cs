@@ -17,7 +17,7 @@ namespace PT.PM.Common.Reflection
         {
             if (node == null)
             {
-                return default(TOutput);
+                return default;
             }
 
             Type type = node.GetType();

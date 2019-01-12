@@ -6,7 +6,9 @@ namespace PT.PM.JavaParseTreeUst
 {
     public class JavaAntlrParser : AntlrParser
     {
-        public override Language Language => Java.Language;
+        public override Language Language => Language.Java;
+
+        public static JavaAntlrParser Create() => new JavaAntlrParser();
 
         public JavaAntlrParser()
         {

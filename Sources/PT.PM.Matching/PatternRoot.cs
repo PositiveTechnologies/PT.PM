@@ -46,10 +46,10 @@ namespace PT.PM.Matching
             get => languages;
             set
             {
-                Language notPatternLang = value.FirstOrDefault(lang => !lang.IsPattern);
-                if (notPatternLang != null)
+                Language notPatternLang = value.FirstOrDefault(lang => !LanguageUtils.LanguageInfos[lang].IsPattern);
+                if (notPatternLang != Language.Uncertain)
                 {
-                    throw new ArgumentException($"Unable to create pattern for {notPatternLang.Title}");
+                    throw new ArgumentException($"Unable to create pattern for {LanguageUtils.LanguageInfos[notPatternLang].Title}");
                 }
                 languages = value;
             }

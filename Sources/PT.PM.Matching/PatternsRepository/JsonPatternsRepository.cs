@@ -24,7 +24,7 @@ namespace PT.PM.Matching.PatternsRepository
 
         public string DefaultFilenameWildcard { get; set; } = "";
 
-        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
+        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages);
 
         public JsonPatternsRepository(string patternsData)
         {

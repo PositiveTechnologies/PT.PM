@@ -15,7 +15,9 @@ namespace PT.PM.CSharpParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language Language => CSharp.Language;
+        public Language Language => Language.CSharp;
+
+        public static CSharpRoslynParser Create() => new CSharpRoslynParser();
 
         public ParseTree Parse(TextFile sourceFile)
         {

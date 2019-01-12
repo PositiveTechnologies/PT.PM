@@ -23,11 +23,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language Language => CSharp.Language;
+        public Language Language => Language.CSharp;
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public RootUst ParentRoot { get; set; }
+
+        public static CSharpRoslynParseTreeConverter Create() => new CSharpRoslynParseTreeConverter();
 
         public CSharpRoslynParseTreeConverter()
         {
@@ -90,7 +92,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (root == null)
             {
-                root = new RootUst(null, CSharp.Language)
+                root = new RootUst(null, Language.CSharp)
                 {
                     TextSpan = node.GetTextSpan()
                 };

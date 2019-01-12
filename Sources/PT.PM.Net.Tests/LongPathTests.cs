@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
-using PT.PM.Cli.Tests;
-using PT.PM.Common.Utils;
+﻿using PT.PM.Cli.Tests;
 using System.IO;
+using NUnit.Framework;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Net.Tests
 {

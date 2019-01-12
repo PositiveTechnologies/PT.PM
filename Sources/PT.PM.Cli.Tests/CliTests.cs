@@ -1,9 +1,9 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.IO;
+using NUnit.Framework;
 using PT.PM.Cli.Common;
 using PT.PM.Common;
 using PT.PM.TestUtils;
-using System.Collections.Generic;
-using System.IO;
 
 namespace PT.PM.Cli.Tests
 {

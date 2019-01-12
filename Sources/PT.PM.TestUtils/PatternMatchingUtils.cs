@@ -30,7 +30,7 @@ namespace PT.PM.TestUtils
 
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(new TextFile(pattern) { PatternKey = pattern });
-            patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageUtils.PatternLanguages.Values);
+            patternNode.Languages = new HashSet<Language>(patternLanguages ?? LanguageUtils.PatternLanguages);
             patternNode.DebugInfo = pattern;
             var patternsConverter = new PatternConverter();
             patternsRep.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));

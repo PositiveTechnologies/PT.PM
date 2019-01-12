@@ -1,5 +1,5 @@
-﻿using PT.PM.Common;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.Files;
 
 namespace PT.PM.Tests

@@ -1,6 +1,5 @@
 ﻿using System;
 using MessagePack;
-using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {

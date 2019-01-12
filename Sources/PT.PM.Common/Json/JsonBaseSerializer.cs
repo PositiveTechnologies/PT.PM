@@ -111,7 +111,6 @@ namespace PT.PM.Common.Json
                 {
                     stringEnumConverter,
                     jsonConverter,
-                    LanguageJsonConverter.Instance,
                     textSpanJsonConverter,
                     sourceFileJsonConverter
                 }

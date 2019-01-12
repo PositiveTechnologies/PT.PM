@@ -115,7 +115,7 @@ namespace PT.PM.Matching
                     {
                         DataFormat = pattern.DataFormat,
                         Key = pattern.Key,
-                        Languages = new HashSet<string>(pattern.Languages.Select(lang => lang.Key)),
+                        Languages = new HashSet<string>(pattern.Languages.Select(lang => lang.ToString())),
                         Value = serialized,
                         Description = pattern.DebugInfo,
                         FilenameWildcard = pattern.FilenameWildcard

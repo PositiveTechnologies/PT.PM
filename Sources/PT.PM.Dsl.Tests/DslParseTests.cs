@@ -1,14 +1,13 @@
-﻿using NUnit.Framework;
-using PT.PM.Common;
-using PT.PM.Common.Exceptions;
-using PT.PM.Matching;
-using PT.PM.Patterns.PatternsRepository;
-using PT.PM.PhpParseTreeUst;
-using PT.PM.TestUtils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
+using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
+using PT.PM.Matching;
+using PT.PM.Patterns.PatternsRepository;
+using PT.PM.TestUtils;
 
 namespace PT.PM.Dsl.Tests
 {
@@ -53,7 +52,7 @@ namespace PT.PM.Dsl.Tests
             PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = fileName });
             if (fileName == "DebugInfo.pattern")
             {
-                new HashSet<Language> { Php.Language };
+                new HashSet<Language> { Language.Php };
             }
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 

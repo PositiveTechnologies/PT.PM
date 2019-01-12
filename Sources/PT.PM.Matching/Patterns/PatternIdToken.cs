@@ -45,7 +45,7 @@ namespace PT.PM.Matching.Patterns
             if (!(token is CommentLiteral))
             {
                 string tokenText = token.TextValue;
-                if (token.Root.Language.IsCaseInsensitive)
+                if (token.Root.Language.IsCaseInsensitive())
                 {
                     TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan();
                     if (!textSpan.IsZero)

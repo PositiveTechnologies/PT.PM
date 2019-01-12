@@ -1,14 +1,14 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Files;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
 using PT.PM.TestUtils;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using PT.PM.Common.Files;
 
 namespace PT.PM.Tests
 {

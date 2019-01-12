@@ -6,7 +6,7 @@ namespace PT.PM.SqlParseTreeUst
 {
     class MySqlAntlrParseTree : AntlrParseTree
     {
-        public override Language SourceLanguage => MySql.Language;
+        public override Language SourceLanguage => Language.MySql;
 
         public MySqlAntlrParseTree()
         {

@@ -1,12 +1,12 @@
-﻿using NUnit.Framework;
-using PT.PM.Common.Nodes;
-using PT.PM.Matching;
-using PT.PM.Matching.Patterns;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MessagePack;
+using NUnit.Framework;
+using PT.PM.Common.Nodes;
+using PT.PM.Matching;
+using PT.PM.Matching.Patterns;
 
 namespace PT.PM.Tests
 {

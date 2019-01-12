@@ -1,11 +1,11 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.TestUtils;
-using NUnit.Framework;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.Common.Files;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.TestUtils;
 
 namespace PT.PM.PhpParseTreeUst.Tests
 {
@@ -15,7 +15,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         public void Parse_PhpSyntax_WithoutErrors()
         {
             TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "php", "examples"),
-                Php.Language, Stage.ParseTree, searchPredicate: fileName => !fileName.Contains("Error"));
+                Language.Php, Stage.ParseTree, searchPredicate: fileName => !fileName.Contains("Error"));
         }
 
         [Test]

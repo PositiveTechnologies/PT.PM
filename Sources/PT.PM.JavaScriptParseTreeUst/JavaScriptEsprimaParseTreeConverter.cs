@@ -19,7 +19,7 @@ namespace PT.PM.JavaScriptParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language Language => JavaScript.Language;
+        public Language Language => Language.JavaScript;
 
         public TextFile SourceFile { get; set; }
 
@@ -28,6 +28,8 @@ namespace PT.PM.JavaScriptParseTreeUst
         public RootUst ParentRoot { get; set; }
 
         public int Offset { get; set; }
+
+        public static JavaScriptEsprimaParseTreeConverter Create() => new JavaScriptEsprimaParseTreeConverter();
 
         public RootUst Convert(ParseTree langParseTree)
         {
@@ -40,7 +42,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 }
                 var program = VisitProgram(esprimaParseTree.SyntaxTree);
 
-                var rootUst = new RootUst(SourceFile, JavaScript.Language)
+                var rootUst = new RootUst(SourceFile, Language.JavaScript)
                 {
                     Nodes = new Ust[] { program },
                 };

@@ -16,11 +16,13 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
-        public Language Language => JavaScript.Language;
+        public Language Language => Language.JavaScript;
 
         public int Offset { get; set; }
 
         public TextFile OriginFile { get; set; }
+
+        public static JavaScriptEsprimaParser Create() => new JavaScriptEsprimaParser();
 
         public ParseTree Parse(TextFile sourceFile)
         {

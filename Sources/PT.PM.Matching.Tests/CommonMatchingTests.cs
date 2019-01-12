@@ -1,18 +1,15 @@
-﻿using NUnit.Framework;
-using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.Dsl;
-using PT.PM.JavaParseTreeUst;
-using PT.PM.Matching.Patterns;
-using PT.PM.Matching.PatternsRepository;
-using PT.PM.PhpParseTreeUst;
-using PT.PM.TestUtils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
+using PT.PM.Common;
+using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Files;
+using PT.PM.Dsl;
+using PT.PM.Matching.Patterns;
+using PT.PM.Matching.PatternsRepository;
+using PT.PM.TestUtils;
 
 namespace PT.PM.Matching.Tests
 {
@@ -110,7 +107,7 @@ namespace PT.PM.Matching.Tests
             PatternRoot pattern = new PatternRoot
             {
                 DebugInfo = "Test PatternAny",
-                Languages = new HashSet<Language> { Php.Language },
+                Languages = new HashSet<Language> { Language.Php },
                 Node = new PatternAssignmentExpression
                 {
                     Left = new PatternAny("password"),
@@ -134,7 +131,7 @@ namespace PT.PM.Matching.Tests
             PatternRoot pattern = new PatternRoot
             {
                 DebugInfo = "Test PatternAny",
-                Languages = new HashSet<Language> { Php.Language },
+                Languages = new HashSet<Language> { Language.Php },
                 Node = new PatternAny("password")
             };
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
@@ -154,7 +151,7 @@ namespace PT.PM.Matching.Tests
             var code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
             var pattern = "new XMLUtil().parse(<[~\".*\"]>)";
 
-            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Java.Language);
+            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Java);
             Assert.AreEqual(4, matchResults.Length);
         }
 
@@ -173,7 +170,7 @@ namespace PT.PM.Matching.Tests
                 "?>";
             var pattern = "Comment: <[ \"(?i)(password|pwd)\\s*(\\=|is|\\:)\" ]>";
 
-            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Php);
 
             LineColumnTextSpan textSpan0 = matchResults[0].LineColumnTextSpan;
             Assert.AreEqual(2, textSpan0.BeginLine);
@@ -221,7 +218,7 @@ namespace PT.PM.Matching.Tests
         {
             Assert.Throws(typeof(ArgumentException), () => new PatternRoot
             {
-                Languages = new HashSet<Language> { Aspx.Language }
+                Languages = new HashSet<Language> { Language.Aspx }
             });
         }
 
@@ -236,7 +233,7 @@ namespace PT.PM.Matching.Tests
 
             var pattern = "<[password]> = <[\"\"]>";
 
-            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Php);
 
             Assert.AreEqual(2, matchResults.Length);
             Assert.AreEqual(1, matchResults.Count(matchResult => matchResult.Suppressed));

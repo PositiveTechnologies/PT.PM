@@ -32,7 +32,7 @@ namespace PT.PM.Dsl
                 var result = new PatternRoot
                 {
                     Node = VisitPattern(pattern),
-                    Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values)
+                    Languages = new HashSet<Language>(LanguageUtils.PatternLanguages)
                 };
                 var ascendantsFiller = new PatternAscendantsFiller(result);
                 ascendantsFiller.FillAscendants();
@@ -154,7 +154,7 @@ namespace PT.PM.Dsl
 
         public PatternUst VisitPatternNotExpression(DslParser.PatternNotExpressionContext context)
         {
-            var expression = (PatternUst)VisitExpression(context.expression());
+            var expression = VisitExpression(context.expression());
             return new PatternNot(expression, context.GetTextSpan());
         }
 

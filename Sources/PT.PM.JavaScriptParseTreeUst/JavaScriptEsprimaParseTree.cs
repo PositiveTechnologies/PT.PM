@@ -8,7 +8,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public class JavaScriptEsprimaParseTree : ParseTree
     {
-        public override Language SourceLanguage => JavaScript.Language;
+        public override Language SourceLanguage => Language.JavaScript;
 
         public Program SyntaxTree { get; }
 

@@ -1,10 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.TestUtils;
-using NUnit.Framework;
 using PT.PM.Common.Nodes.GeneralScope;
-using System.IO;
-using System;
 using PT.PM.Common.Nodes;
 
 namespace PT.PM.CSharpParseTreeUst.Tests

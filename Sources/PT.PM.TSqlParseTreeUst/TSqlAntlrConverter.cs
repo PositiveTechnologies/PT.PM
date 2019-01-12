@@ -22,7 +22,9 @@ namespace PT.PM.SqlParseTreeUst
 {
     public partial class TSqlAntlrConverter : AntlrConverter, ITSqlParserVisitor<Ust>
     {
-        public override Language Language => TSql.Language;
+        public override Language Language => Language.TSql;
+
+        public static TSqlAntlrConverter Create() => new TSqlAntlrConverter();
 
         public Ust VisitTsql_file([NotNull] TSqlParser.Tsql_fileContext context)
         {

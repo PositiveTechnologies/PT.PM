@@ -84,7 +84,7 @@ namespace PT.PM.AntlrUtils
             {
                 var preprocessedText = PreprocessText(sourceFile);
                 AntlrInputStream inputStream;
-                if (Language.IsCaseInsensitive)
+                if (Language.IsCaseInsensitive())
                 {
                     inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
                 }
@@ -259,7 +259,7 @@ namespace PT.PM.AntlrUtils
                     string stringAtn = lexer ? LexerSerializedATN : ParserSerializedATN;
                     atn = new ATNDeserializer().Deserialize(stringAtn.ToCharArray());
                     atns.Add(Language, atn);
-                    Logger.LogDebug($"New ATN initialized for {Language.Key} {(lexer ? "lexer" : "parser")}.");
+                    Logger.LogDebug($"New ATN initialized for {Language} {(lexer ? "lexer" : "parser")}.");
                 }
             }
 

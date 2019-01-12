@@ -18,7 +18,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
 {
     public partial class JavaAntlrParseTreeConverter : AntlrConverter, IJavaParserVisitor<Ust>
     {
-        public override Language Language => Java.Language;
+        public override Language Language => Language.Java;
+
+        public static JavaAntlrParseTreeConverter Create() => new JavaAntlrParseTreeConverter();
 
         public Ust VisitCompilationUnit(JavaParser.CompilationUnitContext context)
         {

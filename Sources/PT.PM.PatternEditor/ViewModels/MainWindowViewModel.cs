@@ -6,7 +6,6 @@ using AvaloniaEdit.Highlighting;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
 using PT.PM.Common.Utils;
-using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
@@ -30,7 +29,7 @@ namespace PT.PM.PatternEditor
         private readonly TextEditor sourceCodeTextBox;
         private readonly ListBox sourceCodeErrorsListBox;
         private readonly ListBox matchResultListBox;
-        private string oldSelectedLanguage;
+        private Language oldSelectedLanguage;
         private string sourceFileName;
         private bool fileOpened;
         private string oldSourceCode = "";
@@ -52,13 +51,13 @@ namespace PT.PM.PatternEditor
         private TextFile sourceCode;
         private int prevSourceCodeStart, prevSourceCodeLength;
 
-        private readonly Dictionary<string, string> highlightings = new Dictionary<string, string>
+        private readonly Dictionary<Language, string> highlightings = new Dictionary<Language, string>
         {
-            ["CSharp"] = "C#",
-            ["Java"] = "Java",
-            ["Php"] = "PHP",
-            ["JavaScript"] = "JavaScript",
-            ["Html"] = "HTML",
+            [Language.CSharp] = "C#",
+            [Language.Java] = "Java",
+            [Language.Php] = "PHP",
+            [Language.JavaScript] = "JavaScript",
+            [Language.Html] = "HTML",
         };
 
         public MainWindowViewModel(Window w)
@@ -160,7 +159,7 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(SelectedLanguage));
             this.RaisePropertyChanged(nameof(OpenedFileName));
 
-            if (highlightings.TryGetValue(SelectedLanguage.Key, out string highlighting))
+            if (highlightings.TryGetValue(SelectedLanguage, out string highlighting))
             {
                 sourceCodeTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
             }
@@ -316,25 +315,17 @@ namespace PT.PM.PatternEditor
 
         public Language SelectedLanguage
         {
-            get
-            {
-                HashSet<Language> languages = LanguageUtils.ParseLanguages(Settings.SourceCodeLanguage);
-                if (languages.Count > 0)
-                {
-                    return languages.First();
-                }
-                return CSharp.Language;
-            }
+            get => Settings.SourceCodeLanguage;
             set
             {
-                if (Settings.SourceCodeLanguage != value.Key)
+                if (Settings.SourceCodeLanguage != value)
                 {
-                    if (highlightings.TryGetValue(value.Key, out string highlighting))
+                    if (highlightings.TryGetValue(value, out string highlighting))
                     {
                         sourceCodeTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
                     }
 
-                    Settings.SourceCodeLanguage = value.Key;
+                    Settings.SourceCodeLanguage = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
@@ -362,7 +353,7 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public bool IsJavaScriptTypeVisible => SelectedLanguage == JavaScript.Language;
+        public bool IsJavaScriptTypeVisible => SelectedLanguage == Language.JavaScript;
 
         public ReactiveCommand OpenSourceFile { get; }
 
@@ -435,7 +426,7 @@ namespace PT.PM.PatternEditor
             set => this.RaiseAndSetIfChanged(ref ustJson, value);
         }
 
-        public bool IsTokensVisible => SelectedLanguage?.HaveAntlrParser == true;
+        public bool IsTokensVisible => SelectedLanguage.HasAntlrParser();
 
         public bool IsUstJsonVisible => Stage >= Stage.Ust;
 
@@ -614,7 +605,7 @@ namespace PT.PM.PatternEditor
         {
             SourceCodeLogger.Clear();
 
-            var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text, language: SelectedLanguage ?? CSharp.Language);
+            var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text, language: SelectedLanguage);
             IPatternsRepository patternRepository;
             if (!string.IsNullOrEmpty(ServiceLocator.PatternsViewModel.Value))
             {
@@ -634,10 +625,10 @@ namespace PT.PM.PatternEditor
                 Logger = SourceCodeLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,
                 DumpDir = ServiceLocator.TempDirectory,
-                RenderStages = new HashSet<Stage>() { Stage.Ust },
+                RenderStages = new HashSet<Stage> { Stage.Ust },
                 RenderDirection = IsLeftRightDir ? GraphvizDirection.LeftRight : GraphvizDirection.TopBottom
             };
-            if (SelectedLanguage == JavaScript.Language)
+            if (SelectedLanguage == Language.JavaScript)
             {
                 workflow.JavaScriptType = JavaScriptType;
             }
@@ -645,7 +636,7 @@ namespace PT.PM.PatternEditor
             var dumpStages = new HashSet<Stage>();
             if (Stage >= Stage.ParseTree)
             {
-                if (SelectedLanguage != CSharp.Language)
+                if (SelectedLanguage != Language.CSharp)
                 {
                     // TODO: ignore C# parse tree dump due to the huge size
                     dumpStages.Add(Stage.ParseTree);
@@ -668,8 +659,8 @@ namespace PT.PM.PatternEditor
             Tokens = FileExt.Exists(tokensFileName) ? FileExt.ReadAllText(tokensFileName) : "";
             ParseTree = FileExt.Exists(parseTreeFileName) ? FileExt.ReadAllText(parseTreeFileName) : "";
 
-            TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
-            ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
+            TokensHeader = "Tokens" + (SelectedLanguage.HasAntlrParser() ? " (ANTLR)" : "");
+            ParseTreeHeader = "Parse Tree" + (SelectedLanguage.HasAntlrParser() ? " (ANTLR)" : "");
 
             if (Stage >= Stage.Ust)
             {

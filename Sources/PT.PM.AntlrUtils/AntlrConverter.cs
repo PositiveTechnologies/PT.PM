@@ -48,15 +48,15 @@ namespace PT.PM.AntlrUtils
             ParserRuleContext tree = antlrParseTree.SyntaxTree;
             ICharStream inputStream = tree.start.InputStream ?? tree.stop?.InputStream;
 
-            if (tree == null || inputStream == null)
+            if (inputStream == null)
             {
                 return null;
             }
 
-            RootUst result = null;
+            RootUst result;
             try
             {
-                Tokens = Language.Sublanguages.Length > 0 ? antlrParseTree.Tokens : new List<IToken>();
+                Tokens = Language.GetSublanguages().Length > 0 ? antlrParseTree.Tokens : new List<IToken>();
                 root = new RootUst(langParseTree.SourceFile, Language);
                 Ust visited = Visit(tree);
                 if (visited is RootUst rootUst)

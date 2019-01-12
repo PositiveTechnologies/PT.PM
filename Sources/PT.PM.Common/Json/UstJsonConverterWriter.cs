@@ -47,7 +47,7 @@ namespace PT.PM.Common.Json
             bool isRootUst = type == typeof(RootUst);
             if (isRootUst)
             {
-                jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.Key);
+                jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.ToString());
             }
 
             foreach (PropertyInfo prop in properties)
@@ -115,7 +115,7 @@ namespace PT.PM.Common.Json
                         object propVal = prop.GetValue(value, null);
                         if (propVal is IEnumerable<Language> languages)
                         {
-                            jToken = JToken.FromObject(string.Join(",", languages.Select(l => l.Key)), serializer);
+                            jToken = JToken.FromObject(string.Join(",", languages), serializer);
                         }
                         else if (propVal != null)
                         {

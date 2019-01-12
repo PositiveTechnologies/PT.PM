@@ -7,13 +7,13 @@ namespace PT.PM.Common.CodeRepository
     {
         public Dictionary<string, object> Data { get; set; }
 
-        public MemoryCodeRepository(string code, string fileName = "", Language language = null)
+        public MemoryCodeRepository(string code, string fileName = "", Language? language = null)
             : base(fileName, language, null)
         {
             Data = new Dictionary<string, object> { [fileName] = code };
         }
 
-        public MemoryCodeRepository(byte[] bytes, string fileName = "", Language language = null)
+        public MemoryCodeRepository(byte[] bytes, string fileName = "", Language? language = null)
             : base(fileName, language, SerializationFormat.MsgPack)
         {
             Data = new Dictionary<string, object> { [fileName] = bytes };

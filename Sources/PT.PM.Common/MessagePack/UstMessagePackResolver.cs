@@ -14,8 +14,6 @@ namespace PT.PM.Common.MessagePack
 
         public FileFormatter FileFormatter { get; private set; }
 
-        public LanguageFormatter LanguageFormatter { get; private set; }
-
         public RootUstFormatter RootUstFormatter { get; private set; }
         
         public static UstMessagePackResolver CreateWriter(TextFile sourceFile, bool isLineColumn, ILogger logger)
@@ -27,13 +25,10 @@ namespace PT.PM.Common.MessagePack
             var sourceFileFormatter = FileFormatter.CreateWriter();
             sourceFileFormatter.Logger = logger;
 
-            var languageFormatter = LanguageFormatter.CreateWriter();
-
             var rootUstFormatter = RootUstFormatter.CreateWriter();
 
             return new UstMessagePackResolver
             {
-                LanguageFormatter = languageFormatter,
                 TextSpanFormatter = textSpanFormatter,
                 FileFormatter = sourceFileFormatter,
                 RootUstFormatter = rootUstFormatter
@@ -50,13 +45,10 @@ namespace PT.PM.Common.MessagePack
             var sourceFileFormatter = FileFormatter.CreateReader(serializedFile, sourceFiles, readSourceFileAction);
             sourceFileFormatter.Logger = logger;
 
-            var languageFormatter = LanguageFormatter.CreateReader(serializedFile);
-
             var rootUstFormatter = RootUstFormatter.CreateReader(serializedFile);
 
             return new UstMessagePackResolver
             {
-                LanguageFormatter = languageFormatter,
                 TextSpanFormatter = textSpanFormatter,
                 FileFormatter = sourceFileFormatter,
                 RootUstFormatter = rootUstFormatter
@@ -75,11 +67,6 @@ namespace PT.PM.Common.MessagePack
             if (type == typeof(TextFile))
             {
                 return (IMessagePackFormatter<T>) FileFormatter;
-            }
-
-            if (type == typeof(Language))
-            {
-                return (IMessagePackFormatter<T>) LanguageFormatter;
             }
 
             if (type == typeof(RootUst))

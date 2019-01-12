@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
-using PT.PM.SqlParseTreeUst;
 using System.Collections.Generic;
 
 namespace PT.PM.Patterns.PatternsRepository
@@ -16,8 +15,8 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Dangerous Function",
-                Languages = new HashSet<Language>() { PlSql.Language },
-                Node = new PatternInvocationExpression()
+                Languages = new HashSet<Language> { Language.PlSql },
+                Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
                     {
@@ -32,8 +31,8 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
-                Languages = new HashSet<Language>() { PlSql.Language },
-                Node = new PatternInvocationExpression()
+                Languages = new HashSet<Language> { Language.PlSql },
+                Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("^(md2|md4|md5)$"),
                     Arguments = new PatternArgs(new PatternMultipleExpressions())
@@ -44,7 +43,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Weak Cryptographic Hash (MD2, MD4, MD5, RIPEMD-160, and SHA-1)",
-                Languages = new HashSet<Language>() { PlSql.Language },
+                Languages = new HashSet<Language> { Language.PlSql },
                 Node = new PatternMemberReferenceExpression
                 {
                     Target = new PatternIdToken("dbms_crypto"),
@@ -56,7 +55,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Insecure Randomness",
-                Languages = new HashSet<Language>() { PlSql.Language },
+                Languages = new HashSet<Language> { Language.PlSql },
                 Node = new PatternInvocationExpression
                 {
                     Target = new PatternMemberReferenceExpression
@@ -72,7 +71,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: Cursor Snarfing",
-                Languages = new HashSet<Language>() { PlSql.Language },
+                Languages = new HashSet<Language> { Language.PlSql },
                 Node = new PatternStatements
                 (
                     new PatternAssignmentExpression
@@ -104,7 +103,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Unreleased Resource: File Snarfing",
-                Languages = new HashSet<Language>() { PlSql.Language },
+                Languages = new HashSet<Language> { Language.PlSql },
                 Node = new PatternStatements
                 (
                     new PatternArbitraryDepth

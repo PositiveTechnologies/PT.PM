@@ -1,7 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.PhpParseTreeUst;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,13 +28,13 @@ namespace PT.PM
             // Any PHP file contains start tag.
             if (!sourceFile.Data.Contains("<?"))
             {
-                langs.Remove(langs.FirstOrDefault(l => l == Php.Language));
+                langs.Remove(langs.FirstOrDefault(l => l == Language.Php));
             }
             // Aspx and html code contains at least one tag.
             if (!openTagRegex.IsMatch(sourceFile.Data) || !closeTagRegex.IsMatch(sourceFile.Data))
             {
-                langs.Remove(langs.FirstOrDefault(l => l == Aspx.Language));
-                langs.Remove(langs.FirstOrDefault(l => l == Html.Language));
+                langs.Remove(langs.FirstOrDefault(l => l == Language.Aspx));
+                langs.Remove(langs.FirstOrDefault(l => l == Language.Html));
             }
             var parseUnits = new Queue<ParserUnit>(langs.Count);
 
@@ -81,7 +79,7 @@ namespace PT.PM
                 }
                 else
                 {
-                    if (parseUnit.ParseErrorCount == 0 && parseUnit.Language != Aspx.Language)
+                    if (parseUnit.ParseErrorCount == 0 && parseUnit.Language != Language.Aspx)
                     {
                         break;
                     }
@@ -121,7 +119,7 @@ namespace PT.PM
                         resultErrorsCount = errorCount;
                         result = parseUnit;
                     }
-                    else if (errorCount == resultErrorsCount && previousLanguage != null)
+                    else if (errorCount == resultErrorsCount && previousLanguage != Language.Uncertain)
                     {
                         result = new ParserUnit(previousLanguage, null);
                     }

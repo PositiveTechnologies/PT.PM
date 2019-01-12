@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using NUnit.Framework;
 using PT.PM.TestUtils;
-using System.IO;
 
 namespace PT.PM.JavaParseTreeUst.Tests
 {

@@ -30,6 +30,11 @@ namespace PT.PM
     {
         protected ILogger logger = DummyLogger.Instance;
 
+        static WorkflowBase()
+        {
+            Utils.RegisterAllParsersAndCovnerters();
+        }
+
         public TStage Stage { get; set; }
 
         public TStage StartStage { get; set; }
@@ -86,7 +91,7 @@ namespace PT.PM
 
         public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
 
-        public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
+        public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages);
 
         public HashSet<TRenderStage> RenderStages { get; set; } = new HashSet<TRenderStage>();
 
@@ -364,7 +369,7 @@ namespace PT.PM
             if (IsDumpJsonOutput)
             {
                 string json = JsonConvert.SerializeObject(workflow,
-                    IndentedDump ? Formatting.Indented : Formatting.None, LanguageJsonConverter.Instance);
+                    IndentedDump ? Formatting.Indented : Formatting.None);
                 DirectoryExt.CreateDirectory(DumpDir);
                 FileExt.WriteAllText(Path.Combine(DumpDir, "output.json"), json);
             }
@@ -430,13 +435,13 @@ namespace PT.PM
                 Language superLangInfo = language;
                 do
                 {
-                    superLangInfo = LanguageUtils.Languages.FirstOrDefault(l => l.Value.Sublanguages.Contains(superLangInfo)).Value;
-                    if (superLangInfo != null)
+                    superLangInfo = LanguageUtils.Languages.FirstOrDefault(l => l.GetSublanguages().Contains(superLangInfo));
+                    if (superLangInfo != Language.Uncertain)
                     {
                         result.Add(superLangInfo);
                     }
                 }
-                while (superLangInfo != null);
+                while (superLangInfo != Language.Uncertain);
             }
             return result;
         }

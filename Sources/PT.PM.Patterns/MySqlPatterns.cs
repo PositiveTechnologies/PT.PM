@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
-using PT.PM.SqlParseTreeUst;
 using System.Collections.Generic;
 
 namespace PT.PM.Patterns.PatternsRepository
@@ -11,7 +10,7 @@ namespace PT.PM.Patterns.PatternsRepository
         public IEnumerable<PatternRoot> CreateMySqlPatterns()
         {
             var patterns = new List<PatternRoot>();
-            var mysql = new HashSet<Language> { MySql.Language };
+            var mysql = new HashSet<Language> { Language.MySql };
 
             patterns.Add(new PatternRoot
             {

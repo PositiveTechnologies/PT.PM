@@ -1,14 +1,13 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.IO;
+using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.CodeRepository;
+using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
 using PT.PM.Matching;
-using PT.PM.Matching.PatternsRepository;
 using PT.PM.Patterns.PatternsRepository;
 using PT.PM.TestUtils;
-using System.Collections.Generic;
-using System.IO;
-using PT.PM.Common.Files;
 
 namespace PT.PM.Tests
 {
@@ -59,7 +58,7 @@ namespace PT.PM.Tests
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
-            int errorOffset = 106;
+            int errorOffset = 4 + path.Length + 1;
             byte errorValue = 123;
 
             var serializedFiles = new List<string>();

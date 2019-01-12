@@ -10,9 +10,9 @@ namespace PT.PM.PatternEditor
 {
     class App : Application
     {
-
         public override void Initialize()
         {
+            Utils.RegisterAllParsersAndCovnerters();
             AvaloniaXamlLoader.Load(this);
             base.Initialize();
         }

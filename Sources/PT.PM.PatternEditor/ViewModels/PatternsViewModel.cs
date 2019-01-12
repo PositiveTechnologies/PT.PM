@@ -546,7 +546,7 @@ namespace PT.PM.PatternEditor.Pattern
         {
             var newPattern = new PatternDto
             {
-                Languages = new HashSet<string>(LanguageUtils.PatternLanguages.Keys)
+                Languages = new HashSet<string>(LanguageUtils.PatternLanguages.Select(lang => lang.ToString()))
             };
             newPattern.Key = Guid.NewGuid().ToString();
             newPattern.Name = "New Pattern";

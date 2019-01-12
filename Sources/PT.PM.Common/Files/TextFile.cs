@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using MessagePack;
 
 namespace PT.PM.Common.Files

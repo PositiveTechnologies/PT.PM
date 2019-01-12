@@ -5,11 +5,13 @@ using PT.PM.MySqlParseTreeUst;
 
 namespace PT.PM.SqlParseTreeUst
 {
-    class MySqlAntlrParser : AntlrParser
+    public class MySqlAntlrParser : AntlrParser
     {
-        public override Language Language => MySql.Language;
+        public override Language Language => Language.MySql;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.UPPER;
+
+        public static MySqlAntlrParser Create() => new MySqlAntlrParser();
 
         public MySqlAntlrParser()
         {

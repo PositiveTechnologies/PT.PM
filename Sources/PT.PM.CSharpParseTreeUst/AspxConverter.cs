@@ -19,13 +19,15 @@ namespace PT.PM.CSharpParseTreeUst
         private Stack<bool> runAtServer = new Stack<bool>();
         private TextFile sourceFile;
 
-        public Language Language => Aspx.Language;
+        public Language Language => Language.Aspx;
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public RootUst ParentRoot { get; set; }
+
+        public static AspxConverter Create() => new AspxConverter();
 
         public AspxConverter()
         {
@@ -172,7 +174,7 @@ namespace PT.PM.CSharpParseTreeUst
             var converter = new CSharpRoslynParseTreeConverter();
             Ust result = converter.Visit(node);
             RootUst resultRoot =
-                result as RootUst ?? new RootUst(sourceFile, CSharp.Language) { Node = result, TextSpan = result.TextSpan };
+                result as RootUst ?? new RootUst(sourceFile, Language.CSharp) { Node = result, TextSpan = result.TextSpan };
             resultRoot.SourceFile = sourceFile;
             result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(offset));
             return result;

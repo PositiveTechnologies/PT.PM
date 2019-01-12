@@ -31,17 +31,17 @@ namespace PT.PM.Matching
             string languages = "";
             var patternLanguages = LanguageUtils.PatternLanguages;
 
-            if (patternLanguages.All(lang => Languages.Contains(lang.Key)))
+            if (patternLanguages.All(lang => Languages.Contains(lang.ToString())))
             {
                 languages = "Universal";
             }
             else if (patternLanguages.All(lang =>
-                lang.Value.IsSql ? Languages.Contains(lang.Key) : true))
+                !lang.IsSql() || Languages.Contains(lang.ToString())))
             {
                 languages = "SQL";
                 string rest = string.Join(", ", patternLanguages.Where(lang =>
-                    !lang.Value.IsSql && Languages.Contains(lang.Key))
-                    .Select(lang => lang.Key));
+                    !lang.IsSql() && Languages.Contains(lang.ToString()))
+                    .Select(lang => lang.ToString()));
                 if (rest != "")
                 {
                     languages += ", " + rest;
