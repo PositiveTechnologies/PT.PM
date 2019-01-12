@@ -328,6 +328,7 @@ namespace PT.PM
                     var ustJsonSerializer = new UstJsonSerializer();
                     ustJsonSerializer.CurrectSourceFile = result.SourceFile;
                     ustJsonSerializer.IncludeTextSpans = DumpWithTextSpans;
+                    ustJsonSerializer.IncludeCode = IncludeCodeInDump;
                     ustJsonSerializer.Indented = IndentedDump;
                     ustJsonSerializer.Strict = StrictJson;
                     serializer = ustJsonSerializer;
