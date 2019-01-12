@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using MessagePack;
 
 namespace PT.PM.Common.Files
@@ -41,10 +42,15 @@ namespace PT.PM.Common.Files
 
         public void GetLineColumnFromLinear(int position, out int line, out int column)
         {
+            if (position < 0 || position > Data.Length)
+            {
+                throw new IndexOutOfRangeException($"linear position {position} out of range for file {FullName}");
+            }
+
             line = Array.BinarySearch(lineIndexes, position);
             if (line < 0)
             {
-                line = (line == -1) ? 0 : (~line - 1);
+                line = line == -1 ? 0 : ~line - 1;
             }
 
             column = position - lineIndexes[line] + StartColumn;
@@ -62,11 +68,29 @@ namespace PT.PM.Common.Files
 
         public int GetLinearFromLineColumn(int line, int column)
         {
-            return lineIndexes[line - StartLine] + column - StartColumn;
+            int lineOffset = line - StartLine;
+            if (lineOffset < 0 || lineOffset >= lineIndexes.Length)
+            {
+                throw new ArgumentOutOfRangeException($"Line {line} out of range for file {FullName}");
+            }
+
+            int result = lineIndexes[lineOffset] + column - StartColumn;
+
+            if (result < 0 || result > Data.Length)
+            {
+                throw new ArgumentOutOfRangeException($"Line {line} and Column {column} out of range for file {FullName}");
+            }
+
+            return result;
         }
 
         public int GetLineLinearIndex(int lineIndex)
         {
+            if (lineIndex < 0 || lineIndex >= lineIndexes.Length)
+            {
+                throw new ArgumentOutOfRangeException($"Line {lineIndex} out of range for file {FullName}");
+            }
+
             return lineIndexes[lineIndex];
         }
 

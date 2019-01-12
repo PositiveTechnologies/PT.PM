@@ -52,7 +52,7 @@ namespace PT.PM.PatternEditor
         private TextFile sourceCode;
         private int prevSourceCodeStart, prevSourceCodeLength;
 
-        private Dictionary<string, string> highlightings = new Dictionary<string, string>
+        private readonly Dictionary<string, string> highlightings = new Dictionary<string, string>
         {
             ["CSharp"] = "C#",
             ["Java"] = "Java",
@@ -242,17 +242,17 @@ namespace PT.PM.PatternEditor
                 });
         }
 
-        private void UpdateSourceCodeSelection()
+        private void UpdateSourceCodeSelection(bool force = false)
         {
-            int sourceCodeStart = sourceCodeTextBox.SelectionStart;
-            int sourceCodeLength = sourceCodeTextBox.SelectionLength;
-            if (sourceCodeStart != prevSourceCodeStart || sourceCodeLength != prevSourceCodeLength)
+            try
             {
-                prevSourceCodeStart = sourceCodeStart;
-                prevSourceCodeLength = sourceCodeLength;
-
-                if (sourceCode != null)
+                int sourceCodeStart = sourceCodeTextBox.SelectionStart;
+                int sourceCodeLength = sourceCodeTextBox.SelectionLength;
+                if (force || sourceCodeStart != prevSourceCodeStart || sourceCodeLength != prevSourceCodeLength)
                 {
+                    prevSourceCodeStart = sourceCodeStart;
+                    prevSourceCodeLength = sourceCodeLength;
+
                     int start = sourceCodeTextBox.SelectionStart;
                     int end = sourceCodeTextBox.SelectionStart + sourceCodeTextBox.SelectionLength;
                     if (start > end)
@@ -261,16 +261,17 @@ namespace PT.PM.PatternEditor
                         start = end;
                         end = t;
                     }
+
                     var textSpan = TextSpan.FromBounds(start, end);
                     var lineColumnTextSpan = sourceCode.GetLineColumnTextSpan(textSpan);
-                    SourceCodeTextBoxPosition = $"Range: {lineColumnTextSpan}; LineColumn: {textSpan}";
+                    SourceCodeTextBoxPosition = $"Range: {textSpan}; LineColumn: {lineColumnTextSpan}";
                 }
-                else
-                {
-                    SourceCodeTextBoxPosition = $"";
-                }
-                this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition));
             }
+            catch
+            {
+                SourceCodeTextBoxPosition = $"";
+            }
+            this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition));
         }
 
         private void MatchingResultListBox_DoubleTapped(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -593,8 +594,7 @@ namespace PT.PM.PatternEditor
                 oldIsLeftRightDir != Settings.IsLeftRightDir)
             {
                 Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
-                string sourceCode = sourceCodeTextBox.Text;
-                Settings.SourceCode = !string.IsNullOrEmpty(OpenedFileName) ? "" : sourceCode;
+                Settings.SourceCode = !string.IsNullOrEmpty(OpenedFileName) ? "" : sourceCodeTextBox.Text;
                 Settings.Save();
 
                 RunWorkflow();
@@ -659,6 +659,7 @@ namespace PT.PM.PatternEditor
 
             WorkflowResult workflowResult = workflow.Process();
             sourceCode = (TextFile)workflowResult.SourceFiles.FirstOrDefault();
+            UpdateSourceCodeSelection(true);
 
             ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
 

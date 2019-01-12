@@ -13,11 +13,11 @@ namespace PT.PM.Common
         private static Dictionary<Language, Type> parsers;
         private static Dictionary<Language, Type> converters;
 
-        public readonly static Dictionary<string, Language> Languages;
+        public static readonly Dictionary<string, Language> Languages;
         public readonly static Dictionary<string, Language> PatternLanguages;
-        public readonly static Dictionary<string, Language> SqlLanguages;
-        public readonly static Dictionary<Language, HashSet<Language>> SuperLanguages;
-        public readonly static HashSet<Language> LanguagesWithParser;
+        public static readonly Dictionary<string, Language> SqlLanguages;
+        public static readonly Dictionary<Language, HashSet<Language>> SuperLanguages;
+        public static readonly HashSet<Language> LanguagesWithParser;
 
         static LanguageUtils()
         {
@@ -49,7 +49,7 @@ namespace PT.PM.Common
 
                     foreach (AssemblyName assemblyName in localAssembly.GetReferencedAssemblies())
                     {
-                        if (!assemblies.Any(a => a.FullName == assemblyName.FullName))
+                        if (assemblies.All(a => a.FullName != assemblyName.FullName))
                         {
                             LoadAndProcessReferencedAssembly(Assembly.Load(assemblyName));
                         }
