@@ -7,9 +7,9 @@ using System.Linq;
 using System.Threading;
 using PT.PM.Common.Files;
 
-namespace PT.PM.Common.CodeRepository
+namespace PT.PM.Common.SourceRepository
 {
-    public class DirectoryCodeRepository : SourceCodeRepository
+    public class DirectorySourceRepository : SourceRepository
     {
         public string SearchPattern { get; set; } = "*.*";
 
@@ -19,12 +19,12 @@ namespace PT.PM.Common.CodeRepository
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
-        public DirectoryCodeRepository(string directoryPath, SerializationFormat? format = null, params Language[] languages)
+        public DirectorySourceRepository(string directoryPath, SerializationFormat? format = null, params Language[] languages)
             : this(directoryPath, languages, format)
         {
         }
 
-        public DirectoryCodeRepository(string directoryPath, IEnumerable<Language> languages, SerializationFormat? format = null)
+        public DirectorySourceRepository(string directoryPath, IEnumerable<Language> languages, SerializationFormat? format = null)
             : base(format)
         {
             RootPath = directoryPath;

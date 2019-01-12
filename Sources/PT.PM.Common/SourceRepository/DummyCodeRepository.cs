@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using PT.PM.Common.Files;
 
-namespace PT.PM.Common.CodeRepository
+namespace PT.PM.Common.SourceRepository
 {
-    public class DummyCodeRepository : SourceCodeRepository
+    public class DummySourceRepository : SourceRepository
     {
-        public static DummyCodeRepository Instance = new DummyCodeRepository();
+        public static DummySourceRepository Instance = new DummySourceRepository();
 
-        public DummyCodeRepository()
+        public DummySourceRepository()
             : base(null)
         {
         }

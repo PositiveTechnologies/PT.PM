@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Files;
 using PT.PM.Dsl;
 using PT.PM.Matching.Patterns;
@@ -18,14 +18,14 @@ namespace PT.PM.Matching.Tests
     {
         private PatternConverter patternsConverter;
         private MemoryPatternsRepository patternsRepository;
-        private SourceCodeRepository sourceCodeRep;
+        private SourceRepository sourceRep;
 
         [SetUp]
         public void Init()
         {
             patternsConverter = new PatternConverter();
             patternsRepository = new MemoryPatternsRepository();
-            sourceCodeRep = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, "common-matching.php"));
+            sourceRep = new FileSourceRepository(Path.Combine(TestUtility.TestsDataPath, "common-matching.php"));
         }
 
         [TestCase("#()", new[] { 0 })]
@@ -42,7 +42,7 @@ namespace PT.PM.Matching.Tests
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) {Logger = logger};
+            var workflow = new Workflow(sourceRep, patternsRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -57,7 +57,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_RefOutArg()
         {
-            var codeRepository = new MemoryCodeRepository("class P { void Main() { Func(ref a); } }", "test.cs");
+            var codeRepository = new MemorySourceRepository("class P { void Main() { Func(ref a); } }", "test.cs");
             var patternsRepository = new DslPatternRepository("Func(a)", "CSharp");
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(codeRepository, patternsRepository) {Logger = logger};
@@ -75,7 +75,7 @@ namespace PT.PM.Matching.Tests
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) {Logger = logger};
+            var workflow = new Workflow(sourceRep, patternsRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -92,7 +92,7 @@ namespace PT.PM.Matching.Tests
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -117,7 +117,7 @@ namespace PT.PM.Matching.Tests
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -137,7 +137,7 @@ namespace PT.PM.Matching.Tests
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             patternsRepository.Clear();
 
@@ -199,7 +199,7 @@ namespace PT.PM.Matching.Tests
             PatternRoot patternNode = processor.Deserialize(new TextFile(pattern) { PatternKey = pattern });
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             List<MatchResultDto> matchResults = logger.Matches.ToDto().ToList();
             patternsRepository.Clear();

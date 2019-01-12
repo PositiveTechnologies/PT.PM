@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Json;
 using PT.PM.Common.Nodes;
@@ -39,7 +39,7 @@ namespace PT.PM
 
         public TStage StartStage { get; set; }
 
-        public SourceCodeRepository SourceCodeRepository { get; set; }
+        public SourceRepository SourceRepository { get; set; }
 
         public IPatternsRepository PatternsRepository { get; set; }
 
@@ -61,9 +61,9 @@ namespace PT.PM
             set
             {
                 logger = value;
-                if (SourceCodeRepository != null)
+                if (SourceRepository != null)
                 {
-                    SourceCodeRepository.Logger = Logger;
+                    SourceRepository.Logger = Logger;
                 }
                 if (PatternsRepository != null)
                 {
@@ -89,7 +89,7 @@ namespace PT.PM
 
         public int MaxStackSize { get; set; } = Utils.DefaultMaxStackSize;
 
-        public HashSet<Language> AnalyzedLanguages => SourceCodeRepository?.Languages ?? new HashSet<Language>();
+        public HashSet<Language> AnalyzedLanguages => SourceRepository?.Languages ?? new HashSet<Language>();
 
         public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages);
 
@@ -132,7 +132,7 @@ namespace PT.PM
 
         public RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default)
         {
-            if (SourceCodeRepository.IsFileIgnored(fileName, true))
+            if (SourceRepository.IsFileIgnored(fileName, true))
             {
                 Logger.LogInfo($"File {fileName} not read.");
                 return null;
@@ -140,7 +140,7 @@ namespace PT.PM
 
             RootUst result = null;
             var stopwatch = Stopwatch.StartNew();
-            var sourceFile = SourceCodeRepository.ReadFile(fileName);
+            var sourceFile = SourceRepository.ReadFile(fileName);
             stopwatch.Stop();
 
             LogSourceFile((sourceFile, stopwatch.Elapsed), workflowResult);

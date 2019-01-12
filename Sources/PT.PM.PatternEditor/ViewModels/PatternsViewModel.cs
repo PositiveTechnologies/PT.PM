@@ -436,7 +436,7 @@ namespace PT.PM.PatternEditor.Pattern
                 oldIsLinearTextSpans = Settings.IsLinearTextSpans;
                 oldIsIncludeCode = Settings.IsIncludeCode;
 
-                ServiceLocator.MainWindowViewModel.SourceCodeLogger.Clear();
+                ServiceLocator.MainWindowViewModel.SourceLogger.Clear();
                 patternLogger.Clear();
 
                 patternFile = TextFile.Empty;

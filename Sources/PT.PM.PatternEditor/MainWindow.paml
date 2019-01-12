@@ -31,7 +31,7 @@
             <TextBlock Text="{Binding OpenedFullFileName}" />
           </ToolTip.Tip>
         </TextBlock>
-        <TextBlock Text="{Binding SourceCodeTextBoxPosition}" Grid.Column="6" Margin="10,0,0,0" />
+        <TextBlock Text="{Binding SourceTextBoxPosition}" Grid.Column="6" Margin="10,0,0,0" />
         <TextBlock Grid.Column="7" Text="Stage"/>
         <DropDown Grid.Column="8" Items="{Binding Stages}" SelectedItem="{Binding Stage}" />
         <TextBlock Grid.Column="9" Margin="10,0,0,0" Text="Language"/>
@@ -41,12 +41,12 @@
       </Grid>
 
       <Border Grid.Row="1" BorderThickness="1" BorderBrush="#FF828790">
-        <ae:TextEditor Name="SourceCode" FontFamily="Consolas" FontSize="12" />
+        <ae:TextEditor Name="Source" FontFamily="Consolas" FontSize="12" />
       </Border>
 
-      <Expander Grid.Row="2" IsVisible="{Binding SourceCodeErrorsIsVisible}" Header="{Binding SourceCodeErrorsText}" IsExpanded="{Binding IsErrorsExpanded, Mode=TwoWay}" FontSize="18" FontWeight="Medium" Margin="0,10,0,0" >
+      <Expander Grid.Row="2" IsVisible="{Binding SourceErrorsIsVisible}" Header="{Binding SourceErrorsText}" IsExpanded="{Binding IsErrorsExpanded, Mode=TwoWay}" FontSize="18" FontWeight="Medium" Margin="0,10,0,0" >
         <Grid RowDefinitions="80" >
-          <ListBox Name="SourceCodeErrors" Items="{Binding SourceCodeErrors}" MinHeight="80"/>
+          <ListBox Name="SourceErrors" Items="{Binding SourceErrors}" MinHeight="80"/>
         </Grid>
       </Expander>
 

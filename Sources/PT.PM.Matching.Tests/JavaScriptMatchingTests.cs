@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.TestUtils;
 
 namespace PT.PM.Matching.Tests
@@ -63,10 +63,10 @@ namespace PT.PM.Matching.Tests
         public void Match_TestPatternsJavaScript_MatchedAllDefault()
         {
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.js");
-            var sourceCodeRep = new FileCodeRepository(path);
+            var sourceRep = new FileSourceRepository(path);
 
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository) {Logger = logger};
+            var workflow = new Workflow(sourceRep, Global.PatternsRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches
                 .ToDto().OrderBy(r => r.PatternKey);

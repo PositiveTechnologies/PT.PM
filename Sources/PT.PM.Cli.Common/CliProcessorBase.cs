@@ -2,7 +2,7 @@
 using CommandLine.Text;
 using Newtonsoft.Json;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Utils;
 using PT.PM.Matching.PatternsRepository;
 using System;
@@ -111,11 +111,11 @@ namespace PT.PM.Cli.Common
         {
             var workflow = CreateWorkflow(parameters);
 
-            workflow.SourceCodeRepository = CreateSourceCodeRepository(parameters);
+            workflow.SourceRepository = CreateSourceRepository(parameters);
 
             if (parameters.Languages?.Count() > 0)
             {
-                workflow.SourceCodeRepository.Languages = parameters.Languages.ParseLanguages();
+                workflow.SourceRepository.Languages = parameters.Languages.ParseLanguages();
             }
 
             workflow.PatternsRepository = CreatePatternsRepository(parameters);
@@ -229,10 +229,10 @@ namespace PT.PM.Cli.Common
             return workflow;
         }
 
-        protected virtual SourceCodeRepository CreateSourceCodeRepository(TParameters parameters)
+        protected virtual SourceRepository CreateSourceRepository(TParameters parameters)
         {
             return RepositoryFactory
-                .CreateSourceCodeRepository(parameters.InputFileNameOrDirectory, parameters.TempDir, parameters);
+                .CreateSourceRepository(parameters.InputFileNameOrDirectory, parameters.TempDir, parameters);
         }
 
         protected virtual IPatternsRepository CreatePatternsRepository(TParameters parameters)

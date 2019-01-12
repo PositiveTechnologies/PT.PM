@@ -7,18 +7,18 @@ using System.Linq;
 using System.Threading;
 using PT.PM.Common.Files;
 
-namespace PT.PM.Common.CodeRepository
+namespace PT.PM.Common.SourceRepository
 {
-    public class FileCodeRepository : SourceCodeRepository
+    public class FileSourceRepository : SourceRepository
     {
         protected IEnumerable<string> fullNames;
 
-        public FileCodeRepository(string fileName, Language? language = null, SerializationFormat? format = null)
+        public FileSourceRepository(string fileName, Language? language = null, SerializationFormat? format = null)
             : this(new string[] { fileName }, language, format)
         {
         }
 
-        public FileCodeRepository(IEnumerable<string> fileNames, Language? language = null, SerializationFormat? format = null)
+        public FileSourceRepository(IEnumerable<string> fileNames, Language? language = null, SerializationFormat? format = null)
             : base(format)
         {
             fullNames = fileNames;

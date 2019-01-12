@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
 using PT.PM.TestUtils;
@@ -63,24 +63,24 @@ namespace PT.PM.Tests
         [TestCase(Language.TSql, "tsql_patterns.sql")]
         [TestCase(Language.Aspx, "Patterns.aspx")]
         [TestCase(Language.JavaScript, "Patterns.js")]
-        public void DetectLanguage_SourceCode_CorrectLanguage(Language expectedLanguage, string fileName)
+        public void DetectLanguage_Source_CorrectLanguage(Language expectedLanguage, string fileName)
         {
-            var sourceCode =
+            var source =
                 new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
-            DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(sourceCode);
+            DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(source);
             Assert.AreEqual(expectedLanguage, detectedLanguage.Language);
         }
 
         [Test]
         public void IgnoreFileDueToAnalyzedLanguages()
         {
-            var sourceCodeRepository = new MemoryCodeRepository("");
-            sourceCodeRepository.Languages = new HashSet<Language> { Language.PlSql, Language.TSql };
-            Assert.IsTrue(sourceCodeRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
+            var sourceRepository = new MemorySourceRepository("");
+            sourceRepository.Languages = new HashSet<Language> { Language.PlSql, Language.TSql };
+            Assert.IsTrue(sourceRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
         }
 
         [Test]
-        public void DetectLanguageIfRequired_SourceCode_CorrectLanguage()
+        public void DetectLanguageIfRequired_Source_CorrectLanguage()
         {
             var languageDetector = new ParserLanguageDetector();
             DetectionResult detectionResult;

@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Dsl;
 using PT.PM.Matching.PatternsRepository;
 using System.Collections.Generic;
@@ -20,13 +20,13 @@ namespace PT.PM.TestUtils
             IEnumerable<Language> analyzedLanguages,
             IEnumerable<Language> patternLanguages = null)
         {
-            var sourceCodeRep = new MemoryCodeRepository(code)
+            var sourceRep = new MemorySourceRepository(code)
             {
                 Languages = new HashSet<Language>(analyzedLanguages)
             };
             var patternsRep = new MemoryPatternsRepository();
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRep) {Logger = logger};
+            var workflow = new Workflow(sourceRep, patternsRep) {Logger = logger};
 
             var processor = new DslProcessor();
             PatternRoot patternNode = processor.Deserialize(new TextFile(pattern) { PatternKey = pattern });

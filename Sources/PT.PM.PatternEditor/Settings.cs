@@ -40,11 +40,11 @@ namespace PT.PM.PatternEditor
 
         public string SourceFile { get; set; } = "";
 
-        public string SourceCode { get; set; } = "";
+        public string Source { get; set; } = "";
 
         public Stage SelectedStage { get; set; } = Stage.Match;
 
-        public Language SourceCodeLanguage { get; set; } = Language.Uncertain;
+        public Language SourceLanguage { get; set; } = Language.Uncertain;
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 

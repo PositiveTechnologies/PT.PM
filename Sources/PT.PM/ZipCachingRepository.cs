@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace PT.PM
 {
-    public class ZipCachingRepository : DirectoryCodeRepository
+    public class ZipCachingRepository : DirectorySourceRepository
     {
         public bool Rewrite { get; set; } = false;
 

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Files;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
@@ -79,7 +79,7 @@ namespace PT.PM.Tests
             string[] files = File.Exists(path)
                            ? new string[] { path }
                            : Directory.GetFiles(path);
-            var codeRepository = new FileCodeRepository(files);
+            var codeRepository = new FileSourceRepository(files);
 
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(codeRepository)
@@ -144,7 +144,7 @@ namespace PT.PM.Tests
 
             // Deserialization
             var newLogger = new LoggerMessageCounter();
-            var newCodeRepository = new FileCodeRepository(jsonFiles, format: SerializationFormat.Json);
+            var newCodeRepository = new FileSourceRepository(jsonFiles, format: SerializationFormat.Json);
 
             var newPatternsRepository = checkPatternSerialization
                 ? new JsonPatternsRepository(File.ReadAllText(Path.Combine(TestUtility.TestsOutputPath, "patterns.json")))

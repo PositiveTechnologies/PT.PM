@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.GeneralScope;
@@ -41,7 +41,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [Test]
         public void Convert_JavaArrayInitialization()
         {
-            var sourceCodeRep = new MemoryCodeRepository(
+            var sourceRep = new MemorySourceRepository(
                 "class ArrayInitialization {\r\n" +
                     "public void init() {\r\n" +
                         "int[] arr1 = new int[] { 1, 2, 3 };\r\n" +
@@ -54,7 +54,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
             );
 
             RootUst ust = null;
-            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust);
+            var workflow = new Workflow(sourceRep, stage: Stage.Ust);
             workflow.UstConverted += (sender, rootUst) => ust = rootUst;
             workflow.Process();
 
@@ -94,7 +94,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [Test]
         public void Convert_Char_StringLiteralWithoutQuotes()
         {
-            var sourceCodeRep = new MemoryCodeRepository(
+            var sourceRep = new MemorySourceRepository(
                 @"class foo {
                     bar() {
                         obj.f1 = 'a';
@@ -106,7 +106,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
             );
 
             RootUst ust = null;
-            var workflow = new Workflow(sourceCodeRep, stage: Stage.Ust);
+            var workflow = new Workflow(sourceRep, stage: Stage.Ust);
             workflow.UstConverted += (sender, rootUst) => ust = rootUst;
             workflow.Process();
 

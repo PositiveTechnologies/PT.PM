@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using PT.PM.Cli.Common;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Files;
 using PT.PM.Dsl;
 using PT.PM.Matching;
@@ -17,7 +17,7 @@ namespace PT.PM.Tests
     [TestFixture]
     public class PatternTests
     {
-        SourceCodeRepository codeRepository = new MemoryCodeRepository("<?php $a = 42;", "test.php", Language.Php);
+        SourceRepository codeRepository = new MemorySourceRepository("<?php $a = 42;", "test.php", Language.Php);
 
         PatternRoot pattern = new PatternRoot
         {

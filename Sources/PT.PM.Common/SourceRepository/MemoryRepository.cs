@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Files;
 
-namespace PT.PM.Common.CodeRepository
+namespace PT.PM.Common.SourceRepository
 {
-    public class MemoryCodeRepository : FileCodeRepository
+    public class MemorySourceRepository : FileSourceRepository
     {
         public Dictionary<string, object> Data { get; set; }
 
-        public MemoryCodeRepository(string code, string fileName = "", Language? language = null)
+        public MemorySourceRepository(string code, string fileName = "", Language? language = null)
             : base(fileName, language, null)
         {
             Data = new Dictionary<string, object> { [fileName] = code };
         }
 
-        public MemoryCodeRepository(byte[] bytes, string fileName = "", Language? language = null)
+        public MemorySourceRepository(byte[] bytes, string fileName = "", Language? language = null)
             : base(fileName, language, SerializationFormat.MsgPack)
         {
             Data = new Dictionary<string, object> { [fileName] = bytes };

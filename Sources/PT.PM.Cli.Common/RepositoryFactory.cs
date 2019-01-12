@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
@@ -15,7 +15,7 @@ namespace PT.PM.Cli.Common
 {
     public static class RepositoryFactory
     {
-        public static SourceCodeRepository CreateSourceCodeRepository(string path, string tempDir,
+        public static SourceRepository CreateSourceRepository(string path, string tempDir,
             CliParameters parameters)
         {
             Stage startStage = parameters.StartStage.ParseEnum(true, Stage.File);
@@ -29,14 +29,14 @@ namespace PT.PM.Cli.Common
                 }
             }
 
-            SourceCodeRepository sourceCodeRepository;
+            SourceRepository sourceRepository;
             if (string.IsNullOrWhiteSpace(path))
             {
-                sourceCodeRepository = DummyCodeRepository.Instance;
+                sourceRepository = DummySourceRepository.Instance;
             }
             else if (DirectoryExt.Exists(path))
             {
-                sourceCodeRepository = new DirectoryCodeRepository(path, format);
+                sourceRepository = new DirectorySourceRepository(path, format);
             }
             else if (FileExt.Exists(path))
             {
@@ -48,11 +48,11 @@ namespace PT.PM.Cli.Common
                     {
                         zipCachingRepository.ExtractPath = tempDir;
                     }
-                    sourceCodeRepository = zipCachingRepository;
+                    sourceRepository = zipCachingRepository;
                 }
                 else
                 {
-                    sourceCodeRepository = new FileCodeRepository(path, format: CommonUtils.GetFormatByExtension(extension));
+                    sourceRepository = new FileSourceRepository(path, format: CommonUtils.GetFormatByExtension(extension));
                 }
             }
             else
@@ -79,10 +79,10 @@ namespace PT.PM.Cli.Common
                 {
                     zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
                 }
-                sourceCodeRepository = zipAtUrlCachedCodeRepository;
+                sourceRepository = zipAtUrlCachedCodeRepository;
             }
 
-            return sourceCodeRepository;
+            return sourceRepository;
         }
 
         public static IPatternsRepository CreatePatternsRepository(string patternsString,

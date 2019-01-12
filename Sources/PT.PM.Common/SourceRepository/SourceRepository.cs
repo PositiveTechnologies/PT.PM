@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Files;
 
-namespace PT.PM.Common.CodeRepository
+namespace PT.PM.Common.SourceRepository
 {
-    public abstract class SourceCodeRepository : ILoggable
+    public abstract class SourceRepository : ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -16,7 +16,7 @@ namespace PT.PM.Common.CodeRepository
 
         public SerializationFormat? Format { get; }
 
-        protected SourceCodeRepository(SerializationFormat? format)
+        protected SourceRepository(SerializationFormat? format)
         {
             Format = format;
         }

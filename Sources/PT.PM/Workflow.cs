@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Utils;
 using PT.PM.Dsl;
@@ -25,14 +25,14 @@ namespace PT.PM
         {
         }
 
-        public Workflow(SourceCodeRepository sourceCodeRepository = null,
+        public Workflow(SourceRepository sourceRepository = null,
             IPatternsRepository patternsRepository = null, Stage stage = Stage.Match)
             : base(stage)
         {
             LogsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PT.PM");
             DumpDir = LogsDir;
             TempDir = Path.Combine(Path.GetTempPath(), "PT.PM");
-            SourceCodeRepository = sourceCodeRepository;
+            SourceRepository = sourceRepository;
             PatternsRepository = patternsRepository ?? new DefaultPatternRepository();
             IPatternSerializer jsonNodeSerializer = new JsonPatternSerializer();
             IPatternSerializer dslNodeSerializer = new DslProcessor();
@@ -53,7 +53,7 @@ namespace PT.PM
             result.RenderStages = RenderStages;
             result.IsFoldConstants = IsFoldConstants;
 
-            IEnumerable<string> fileNames = SourceCodeRepository.GetFileNames();
+            IEnumerable<string> fileNames = SourceRepository.GetFileNames();
             if (fileNames is IList<string> fileNamesList)
             {
                 result.TotalFilesCount = fileNamesList.Count;
@@ -92,7 +92,7 @@ namespace PT.PM
             DumpJsonOutput(result);
             result.ErrorCount = logger?.ErrorCount ?? 0;
 
-            result.RootPath = SourceCodeRepository.RootPath;
+            result.RootPath = SourceRepository.RootPath;
 
             return result;
         }

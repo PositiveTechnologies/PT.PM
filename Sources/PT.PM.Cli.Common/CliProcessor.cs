@@ -16,7 +16,7 @@ namespace PT.PM.Cli.Common
         {
             var workflow = (Workflow)base.InitWorkflow(parameters);
 
-            if (parameters.StartStage == null && workflow.SourceCodeRepository.Format != null)
+            if (parameters.StartStage == null && workflow.SourceRepository.Format != null)
             {
                 workflow.StartStage = Stage.Ust;
             }

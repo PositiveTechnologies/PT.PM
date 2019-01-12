@@ -24,7 +24,7 @@ namespace PT.PM.PatternEditor
 
         public string LogsDir { get; set; } = "";
 
-        public static GuiLogger CreateSourceCodeLogger(ObservableCollection<ErrorViewModel> errorsCollection,
+        public static GuiLogger CreateSourceLogger(ObservableCollection<ErrorViewModel> errorsCollection,
             ObservableCollection<MatchResultViewModel> matchResultCollection)
         {
             return new GuiLogger(errorsCollection, false, matchResultCollection);
