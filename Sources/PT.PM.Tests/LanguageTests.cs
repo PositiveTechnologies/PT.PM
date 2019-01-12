@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -20,29 +21,14 @@ namespace PT.PM.Tests
         }
 
         [Test]
-        public void CollectLanguages_Assemblies()
+        public void AllLanguageEnumsHaveCorrespondingInfos()
         {
-            var languages = LanguageUtils.Languages;
+            var enumValues = (Language[])Enum.GetValues(typeof(Language));
 
-            CollectionAssert.Contains(languages, Language.C);
-            CollectionAssert.Contains(languages, Language.CPlusPlus);
-            CollectionAssert.Contains(languages, Language.ObjectiveC);
-
-            CollectionAssert.Contains(languages, Language.Aspx);
-            CollectionAssert.Contains(languages, Language.CSharp);
-
-            CollectionAssert.Contains(languages, Language.Java);
-
-            CollectionAssert.Contains(languages, Language.JavaScript);
-
-            CollectionAssert.Contains(languages, Language.Html);
-            CollectionAssert.Contains(languages, Language.Php);
-
-            CollectionAssert.Contains(languages, Language.PlSql);
-            CollectionAssert.Contains(languages, Language.TSql);
-            CollectionAssert.Contains(languages, Language.MySql);
-
-            CollectionAssert.Contains(languages, Language.Uncertain);
+            foreach (Language enumValue in enumValues)
+            {
+                Assert.IsTrue(LanguageUtils.LanguageInfos.ContainsKey(enumValue));
+            }
         }
 
         [Test]
