@@ -126,7 +126,7 @@ namespace PT.PM.Common.Nodes
         public TextSpan TextSpan { get; set; }
 
         [Key(1)]
-        public string Key { get; set; }
+        public int Key { get; set; }
 
         [IgnoreMember]
         public string Kind => GetType().Name;
