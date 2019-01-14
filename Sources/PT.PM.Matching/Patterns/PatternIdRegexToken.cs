@@ -54,19 +54,18 @@ namespace PT.PM.Matching.Patterns
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
-            var token = ust as Token;
-            if (token == null)
+            if (!(ust is IdToken || ust is TypeToken))
             {
                 return context.Fail();
             }
             
-            Regex regex = token.Root.Language.IsCaseInsensitive
+            Regex regex = ust.Root.Language.IsCaseInsensitive
                 ? caseInsensitiveRegex
                 : this.regex;
-            string tokenText = token.TextValue;
+            string tokenText = ((Token)ust).TextValue;
 
             return regex.Match(tokenText).Success
-                ? context.AddMatch(token)
+                ? context.AddMatch(ust)
                 : context.Fail();
         }
     }
