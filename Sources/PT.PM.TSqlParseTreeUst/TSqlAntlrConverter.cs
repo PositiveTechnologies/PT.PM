@@ -735,11 +735,10 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 var cursor = (Token)Visit(context.cursor_name());
-                var argExpression = new ArgumentExpression
+                var argExpression = new ArgumentExpression(cursor.TextSpan)
                 {
                     Argument = cursor,
-                    Modifier = new InOutModifierLiteral { ModifierType = InOutModifier.InOut },
-                    TextSpan = cursor.TextSpan
+                    Modifier = new InOutModifierLiteral { ModifierType = InOutModifier.InOut }
                 };
                 var first = context.GetChild<ITerminalNode>(0);
                 var funcName = new IdToken(first.GetText(), first.GetTextSpan());
@@ -769,7 +768,7 @@ namespace PT.PM.SqlParseTreeUst
                 {
                     target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan());
                     exprs = new List<Expression>() { (Expression)Visit(expression) };
-                    
+
                 }
             }
             else

@@ -42,7 +42,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 }
                 var program = VisitProgram(esprimaParseTree.SyntaxTree);
 
-                var rootUst = new RootUst(SourceFile, Language.JavaScript)
+                var rootUst = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree))
                 {
                     Nodes = new Ust[] { program },
                 };
@@ -59,7 +59,6 @@ namespace PT.PM.JavaScriptParseTreeUst
 
                 rootUst.Comments = comments.ToArray();
                 rootUst.Root = ParentRoot;
-                rootUst.TextSpan = GetTextSpan(esprimaParseTree.SyntaxTree);
                 rootUst.FillAscendants();
 
                 return rootUst;

@@ -20,6 +20,11 @@ namespace PT.PM.Common.Nodes.Expressions
             Argument = argument;
         }
 
+        public ArgumentExpression(TextSpan textSpan)
+            : base(textSpan)
+        {
+        }
+
         public ArgumentExpression()
         {
         }

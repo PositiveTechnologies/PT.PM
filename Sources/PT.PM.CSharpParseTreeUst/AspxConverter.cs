@@ -174,7 +174,7 @@ namespace PT.PM.CSharpParseTreeUst
             var converter = new CSharpRoslynParseTreeConverter();
             Ust result = converter.Visit(node);
             RootUst resultRoot =
-                result as RootUst ?? new RootUst(sourceFile, Language.CSharp) { Node = result, TextSpan = result.TextSpan };
+                result as RootUst ?? new RootUst(sourceFile, Language.CSharp, result.TextSpan) { Node = result };
             resultRoot.SourceFile = sourceFile;
             result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(offset));
             return result;

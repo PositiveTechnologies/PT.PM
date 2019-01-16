@@ -17,7 +17,7 @@ namespace PT.PM.Common.Nodes
         [Key(UstFieldOffset)]
         public Language Language { get; }
 
-        [JsonProperty("SourceCodeFile")] // TODO: back compatibility with extenral serializers
+        [JsonProperty("SourceCodeFile")] // TODO: back compatibility with external serializers
         [Key(UstFieldOffset + 1)]
         public TextFile SourceFile { get; set; }
 
@@ -31,10 +31,6 @@ namespace PT.PM.Common.Nodes
         public int LineOffset { get; set; }
 
         [IgnoreMember]
-        [JsonIgnore]
-        public Dictionary<Ust, List<TextSpan>> TextSpans { get; } = new Dictionary<Ust, List<TextSpan>>(UstRefComparer.Instance);
-
-        [IgnoreMember]
         public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
 
         [IgnoreMember]
@@ -45,10 +41,16 @@ namespace PT.PM.Common.Nodes
         }
 
         public RootUst(TextFile sourceFile, Language language)
+            : this(sourceFile, language, TextSpan.Zero)
+        {
+        }
+
+        public RootUst(TextFile sourceFile, Language language, TextSpan textSpan)
+            : base(textSpan)
         {
             SourceFile = sourceFile ?? TextFile.Empty;
             Language = language;
-            TextSpan = new TextSpan(0, SourceFile.Data.Length);
+            TextSpans = new[] {textSpan.IsZero ? new TextSpan(0, SourceFile.Data.Length) : textSpan};
         }
 
         public override Ust[] GetChildren()

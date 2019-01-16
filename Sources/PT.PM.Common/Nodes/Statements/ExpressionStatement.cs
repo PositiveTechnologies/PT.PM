@@ -14,10 +14,9 @@ namespace PT.PM.Common.Nodes.Statements
         }
 
         public ExpressionStatement(Expression expression, TextSpan textSpan = default)
-            : base(textSpan)
+            : base(textSpan.IsZero ? expression.TextSpan : textSpan)
         {
             Expression = expression;
-            TextSpan = textSpan.IsZero ? expression.TextSpan : textSpan;
         }
 
         public override Ust[] GetChildren() => new Ust[] { Expression };

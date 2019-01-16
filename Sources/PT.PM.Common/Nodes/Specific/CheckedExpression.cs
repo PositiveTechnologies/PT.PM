@@ -13,7 +13,6 @@ namespace PT.PM.Common.Nodes.Specific
             : base(textSpan)
         {
             Expression = checkedExpression;
-            TextSpan = textSpan;
         }
 
         public CheckedExpression()

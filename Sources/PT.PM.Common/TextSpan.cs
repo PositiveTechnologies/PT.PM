@@ -54,7 +54,7 @@ namespace PT.PM.Common
         {
             if (File != span.File)
             {
-                if (IsZero || (File != null && span.File == null))
+                if (IsZero || File != null && span.File == null)
                 {
                     return span;
                 }
@@ -146,11 +146,11 @@ namespace PT.PM.Common
         }
 
         public static bool operator <(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) < 0;
-        
+
         public static bool operator <=(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) <= 0;
-        
+
         public static bool operator >(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) > 0;
-        
+
         public static bool operator >=(TextSpan textSpan1, TextSpan textSpan2) => textSpan1.CompareTo(textSpan2) >= 0;
 
         public int CompareTo(object obj)

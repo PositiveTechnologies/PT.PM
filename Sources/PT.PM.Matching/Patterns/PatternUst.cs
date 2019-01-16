@@ -3,6 +3,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -17,8 +18,10 @@ namespace PT.PM.Matching.Patterns
 
         public virtual bool Any => true;
 
+        [JsonIgnore]
         public PatternRoot Root { get; set; }
 
+        [JsonIgnore]
         public PatternUst Parent { get; set; }
 
         public LineColumnTextSpan LineColumnTextSpan => Root?.File.GetLineColumnTextSpan(TextSpan);

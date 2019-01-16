@@ -20,6 +20,11 @@ namespace PT.PM.Common.Nodes.Statements
             Embedded = embedded;
         }
 
+        public WhileStatement(TextSpan textSpan)
+            : base(textSpan)
+        {
+        }
+
         public WhileStatement()
         {
         }

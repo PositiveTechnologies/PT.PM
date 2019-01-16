@@ -54,11 +54,8 @@ namespace PT.PM.Common.Json
 
             if (type == typeof(RootUst))
             {
-                string languageString = (string)jObject?[nameof(RootUst.Language)] ?? "";
-                Language language = !string.IsNullOrEmpty(languageString)
-                    ? languageString.ParseLanguages().FirstOrDefault()
-                    : Language.Uncertain;
-
+                string languageString = (string)jObject[nameof(RootUst.Language)] ?? "";
+                Enum.TryParse(languageString, out Language language);
                 rootUst = new RootUst(null, language);
                 ProcessRootUst(rootUst);
 
@@ -94,41 +91,26 @@ namespace PT.PM.Common.Json
             }
 
             JToken textSpanToken = jObject[nameof(Ust.TextSpan)];
-            TextSpan textSpan = default;
+            TextSpan[] textSpans;
 
             if (textSpanToken is JArray textSpanArray)
             {
-                if (textSpanArray.Count > 1)
+                textSpans = new TextSpan[textSpanArray.Count];
+                for (int i = 0; i < textSpanArray.Count; i++)
                 {
-                    var textSpans = new List<TextSpan>(textSpanArray.Count);
-                    for (int i = 0; i < textSpanArray.Count; i++)
-                    {
-                        TextSpan arrayTextSpan = textSpanArray[i].ToObject<TextSpan>(serializer);
-
-                        if (i == 0)
-                        {
-                            textSpan = arrayTextSpan;
-                        }
-
-                        textSpans.Add(arrayTextSpan);
-                    }
-
-                    if (rootAncestors.Count > 0)
-                    {
-                        rootAncestors.Peek().TextSpans.Add(ust, textSpans);
-                    }
-                }
-                else
-                {
-                    textSpan = textSpanArray[0].ToObject<TextSpan>(serializer);
+                    textSpans[i] = textSpanArray[i].ToObject<TextSpan>(serializer);
                 }
             }
             else if (textSpanToken is JToken token)
             {
-                textSpan = token.ToObject<TextSpan>(serializer);
+                textSpans = new [] {token.ToObject<TextSpan>(serializer)};
+            }
+            else
+            {
+                textSpans = new TextSpan[0];
             }
 
-            ust.TextSpan = textSpan;
+            ust.TextSpans = textSpans;
 
             if (!IgnoreExtraProcess)
             {

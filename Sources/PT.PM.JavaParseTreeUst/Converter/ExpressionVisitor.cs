@@ -102,12 +102,11 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.INSTANCEOF: // x instanceof y -> (y)x != null
                         var expression = (Expression)Visit(context.expression(0));
                         var type = (TypeToken)Visit(context.typeType());
-                        result = new BinaryOperatorExpression
+                        result = new BinaryOperatorExpression(context.GetTextSpan())
                         {
                             Left = new CastExpression(type, expression, context.GetTextSpan()),
-                            Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual, default(TextSpan)),
-                            Right = new NullLiteral(default(TextSpan)),
-                            TextSpan = context.GetTextSpan(),
+                            Operator = new BinaryOperatorLiteral(BinaryOperator.NotEqual, default),
+                            Right = new NullLiteral(default),
                             Root = root
                         };
                         return result;

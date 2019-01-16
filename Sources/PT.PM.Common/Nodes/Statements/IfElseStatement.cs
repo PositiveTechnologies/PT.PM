@@ -26,6 +26,11 @@ namespace PT.PM.Common.Nodes.Statements
             TrueStatement = trueStatement;
         }
 
+        public IfElseStatement(TextSpan textSpan)
+            : base(textSpan)
+        {
+        }
+
         public IfElseStatement()
         {
         }

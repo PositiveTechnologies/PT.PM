@@ -29,6 +29,10 @@ namespace PT.PM.Common.Nodes.TypeMembers
             Name = name;
         }
 
+        public ParameterDeclaration(TextSpan textSpan)
+        {
+        }
+
         public ParameterDeclaration()
         {
         }

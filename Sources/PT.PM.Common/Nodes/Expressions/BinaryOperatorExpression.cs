@@ -15,16 +15,21 @@ namespace PT.PM.Common.Nodes.Expressions
         [Key(UstFieldOffset + 2)]
         public Expression Right { get; set; }
 
-        public BinaryOperatorExpression()
-        {
-        }
-
         public BinaryOperatorExpression(Expression left, BinaryOperatorLiteral op, Expression right, TextSpan textSpan)
             : base(textSpan)
         {
             Left = left;
             Operator = op;
             Right = right;
+        }
+
+        public BinaryOperatorExpression(TextSpan textSpan)
+            : base(textSpan)
+        {
+        }
+
+        public BinaryOperatorExpression()
+        {
         }
 
         public override Ust[] GetChildren() => new Ust[] { Left, Operator, Right };

@@ -64,11 +64,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         }
 
         public BinaryOperatorLiteral(string op, TextSpan textSpan)
+            : base(textSpan)
         {
-            BinaryOperator binaryOperator = BinaryOperator.None;
-            TextBinaryOperator.TryGetValue(op, out binaryOperator);
-            BinaryOperator = binaryOperator;
-            TextSpan = textSpan;
+            if (TextBinaryOperator.TryGetValue(op, out var binaryOperator))
+            {
+                BinaryOperator = binaryOperator;
+            }
         }
 
         public BinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan)

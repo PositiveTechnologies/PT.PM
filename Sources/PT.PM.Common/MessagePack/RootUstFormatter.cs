@@ -76,7 +76,7 @@ namespace PT.PM.Common.MessagePack
                 TextFile sourceFile = fileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
                 newOffset += size;
 
-                var textSpanFormatter = (TextSpanFormatter) formatterResolver.GetFormatter<TextSpan>();
+                var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>();
                 if (textSpanFormatter is TextSpanFormatter formatter)
                 {
                     formatter.SourceFile = sourceFile;
@@ -101,13 +101,12 @@ namespace PT.PM.Common.MessagePack
                 int key = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
                 newOffset += size;
 
-                CurrentRoot = new RootUst(sourceFile, language)
+                CurrentRoot = new RootUst(sourceFile, language, textSpan)
                 {
                     Key = key,
                     Nodes = nodes,
                     Comments = comments,
-                    LineOffset = lineOffset,
-                    TextSpan = textSpan
+                    LineOffset = lineOffset
                 };
 
                 readSize = newOffset - offset;

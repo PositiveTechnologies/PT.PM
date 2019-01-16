@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
-using System.Collections.Generic;
 using System.Text;
 using MessagePack;
 using PT.PM.Common.Files;
@@ -118,15 +117,21 @@ namespace PT.PM.Common.Nodes
             ReduceWhitespaces = true
         };
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public RootUst Root { get; set; }
 
-        [JsonIgnore]
-        [Key(0)]
-        public TextSpan TextSpan { get; set; }
+        [Key(0), JsonProperty("TextSpan"), JsonIgnore] // TODO: back compatibility with external serializers
+        public TextSpan[] TextSpans { get; set; } // TODO: make it `protected set`
 
         [Key(1)]
         public int Key { get; set; }
+
+        [IgnoreMember, JsonIgnore]
+        public TextSpan TextSpan
+        {
+            get => TextSpans?.Length > 0 ? TextSpans[0] : TextSpan.Zero;
+            set => TextSpans = new[] {value}; // TODO: try to remove setter (use TextSpans instead)
+        }
 
         [IgnoreMember]
         public string Kind => GetType().Name;
@@ -148,24 +153,14 @@ namespace PT.PM.Common.Nodes
 
         public string ToStringWithoutLineBreaks() => debuggerPrinter?.Print(ToString()) ?? "";
 
-        public List<TextSpan> GetRealTextSpans()
-        {
-            if (Root != null && Root.TextSpans.TryGetValue(this, out List<TextSpan> textSpans))
-            {
-                return textSpans;
-            }
-            
-            return new List<TextSpan> { TextSpan };
-        }
-
         protected Ust()
         {
+            TextSpans = new TextSpan[0];
         }
 
         protected Ust(TextSpan textSpan)
-            : this()
         {
-            TextSpan = textSpan;
+            TextSpans = new [] { textSpan };
         }
 
         public abstract Ust[] GetChildren();

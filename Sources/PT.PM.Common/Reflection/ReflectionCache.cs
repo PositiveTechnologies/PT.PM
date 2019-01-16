@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace PT.PM.Common.Reflection
 {
@@ -38,11 +39,12 @@ namespace PT.PM.Common.Reflection
 
         public static PropertyInfo[] GetReadWriteClassProperties(this Type objectType)
         {
-            PropertyInfo[] result;
-            if (!ustNodeProperties.TryGetValue(objectType, out result))
+            if (!ustNodeProperties.TryGetValue(objectType, out PropertyInfo[] result))
             {
                 result = objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(prop => prop.CanWrite && prop.CanRead).ToArray();
+                    .Where(prop => prop.CanWrite && prop.CanRead &&
+                                   (prop.GetCustomAttribute<JsonIgnoreAttribute>() == null || prop.Name == nameof(Ust.TextSpans)))
+                    .ToArray();
                 ustNodeProperties.TryAdd(objectType, result);
             }
             return result;

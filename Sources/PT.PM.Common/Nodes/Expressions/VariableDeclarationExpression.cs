@@ -11,7 +11,7 @@ namespace PT.PM.Common.Nodes.Expressions
         [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 
-        [Key(UstFieldOffset + 1)] 
+        [Key(UstFieldOffset + 1)]
         public List<AssignmentExpression> Variables { get; set; }
 
         public VariableDeclarationExpression(TypeToken type, IEnumerable<AssignmentExpression> variables,
@@ -20,6 +20,11 @@ namespace PT.PM.Common.Nodes.Expressions
         {
             Type = type;
             Variables = variables as List<AssignmentExpression> ?? variables.ToList();
+        }
+
+        public VariableDeclarationExpression(TextSpan textSpan)
+            : base(textSpan)
+        {
         }
 
         public VariableDeclarationExpression()
