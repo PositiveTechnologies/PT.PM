@@ -134,7 +134,6 @@ namespace PT.PM.Common.Nodes
         #region Other
 
         T Visit(RootUst rootUst);
-        T Visit(NotImplementedUst notImplementedNode);
         T Visit(Collection collection);
 
         #endregion

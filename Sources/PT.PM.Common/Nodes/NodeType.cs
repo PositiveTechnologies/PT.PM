@@ -2,7 +2,7 @@ namespace PT.PM.Common.Nodes
 {
     public enum NodeType
     {
-        RootUst,
+        RootUst = 0,
 
         // Collections
         ArgsUst,
@@ -27,12 +27,12 @@ namespace PT.PM.Common.Nodes
         VariableDeclarationExpression,
         WrapperExpression,
         YieldExpression,
-        
+
         // Generate Scope
         NamespaceDeclaration,
         TypeDeclaration,
         UsingDeclaration,
-        
+
         // Specific
         ArrayPatternExpression,
         AsExpression,
@@ -43,12 +43,12 @@ namespace PT.PM.Common.Nodes
         LockStatement,
         UnsafeStatement,
         WithStatement,
-        
+
         // Sql
         QueryArgs,
         SqlBlockStatement,
         SqlQuery,
-        
+
         // Statements
         SwitchSection,
         SwitchStatement,
@@ -70,7 +70,7 @@ namespace PT.PM.Common.Nodes
         TypeDeclarationStatement,
         WhileStatement,
         WrapperStatement,
-        
+
         // Literals
         BinaryOperatorLiteral,
         BooleanLiteral,
@@ -83,13 +83,13 @@ namespace PT.PM.Common.Nodes
         StringLiteral,
         TypeTypeLiteral,
         UnaryOperatorLiteral,
-        
+
         // Tokens
         BaseReferenceToken,
         IdToken,
         ThisReferenceToken,
         TypeToken,
-        
+
         // Type Members
         ConstructorDeclaration,
         FieldDeclaration,
