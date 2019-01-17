@@ -14,12 +14,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\ArrayExamples.cs" />
     <Compile Remove="Data\ParseError.cs" />
     <Compile Remove="Data\Patterns.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Data\AllInOne.aspx.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\ArrayExamples.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\HardcodedPassword.aspx">

@@ -30,5 +30,12 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             });
             Assert.IsTrue(result, "Ust doesn't contain type declaration node with IDisposable base type");
         }
+
+        [Test]
+        public void Check_Array_Initializations()
+        {
+            string fileName = Path.Combine(TestUtility.TestsDataPath, "ArrayExamples.cs");
+            TestUtility.CheckFile(fileName, Stage.Ust, out RootUst ust);
+        }
     }
 }
