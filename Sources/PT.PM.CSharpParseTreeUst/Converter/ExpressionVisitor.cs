@@ -500,7 +500,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
             else
             {
-                result = new MultichildExpression(children, node.GetTextSpan());
+                result = new MultichildExpression(children, textSpan);
             }
 
             return result;
