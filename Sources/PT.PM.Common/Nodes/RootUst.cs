@@ -36,7 +36,7 @@ namespace PT.PM.Common.Nodes
         [IgnoreMember]
         public Ust Node
         {
-            get => Nodes.FirstOrDefault();
+            get => Nodes.Length > 0 ? Nodes[0] : null;
             set => Nodes = new[] { value };
         }
 

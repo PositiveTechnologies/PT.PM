@@ -64,7 +64,7 @@ namespace PT.PM.Tests
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
-            int errorOffset = 4 + path.Length + 1;
+            int errorOffset = 5;
             byte errorValue = 123;
 
             var serializedFiles = new List<string>();
@@ -78,13 +78,11 @@ namespace PT.PM.Tests
                     byte[] bytes = File.ReadAllBytes(serializedFile);
                     if (damaged)
                     {
-                        errorOffset = 4 + path.Length + 1;
-                        errorValue = 123;
+                        errorOffset += path.Length + 1;
                     }
                     else
                     {
-                        errorOffset = 4 + 2;
-                        errorValue = 123;
+                        errorOffset += 2;
                     }
                     bytes[errorOffset] = errorValue;
                     File.WriteAllBytes(serializedFile, bytes);
@@ -113,10 +111,12 @@ namespace PT.PM.Tests
                 Assert.IsTrue(newLogger.ErrorsString.Contains(errorOffset.ToString()));
                 return;
             }
-            else if (incorrectFilePath)
+
+            if (incorrectFilePath)
             {
-                Assert.AreEqual(1, newLogger.ErrorCount);
-                Assert.IsTrue(newLogger.ErrorsString.Contains("ReadException"));
+                string firstError = newLogger.Errors[0];
+                Assert.IsTrue(firstError.Contains("ReadException"));
+                Assert.IsTrue(firstError.Contains("C:{"));
                 return;
             }
 

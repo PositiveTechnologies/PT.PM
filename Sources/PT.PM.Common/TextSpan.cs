@@ -23,6 +23,14 @@ namespace PT.PM.Common
                 throw new ArgumentOutOfRangeException(nameof(length));
             }
 
+            if (sourceFile != null)
+            {
+                if (start + length > sourceFile.Data.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(length), "TextSpan borders are out of range");
+                }
+            }
+
             Start = start;
             Length = length;
             File = sourceFile;

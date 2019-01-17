@@ -9,37 +9,43 @@ namespace PT.PM.Common.MessagePack
 {
     public class TextSpanFormatter : IMessagePackFormatter<TextSpan>, ILoggable
     {
+        private TextFile[] localSourceFiles;
+
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool IsLineColumn { get; set; }
 
-        public TextFile SourceFile { get; internal set; }
+        public TextFile[] LocalSourceFiles
+        {
+            get => localSourceFiles;
+            internal set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(LocalSourceFiles));
+                }
+
+                if (value.Length == 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(LocalSourceFiles));
+                }
+
+                localSourceFiles = value;
+            }
+        }
 
         public BinaryFile SerializedFile { get; private set; }
 
-        public static TextSpanFormatter CreateWriter(TextFile sourceFile)
+        public static TextSpanFormatter CreateWriter()
         {
-            if (sourceFile == null)
-            {
-                throw new ArgumentNullException(nameof(sourceFile));
-            }
-
-            return new TextSpanFormatter
-            {
-                SourceFile = sourceFile
-            };
+            return new TextSpanFormatter();
         }
 
         public static TextSpanFormatter CreateReader(BinaryFile serializedFile)
         {
-            if (serializedFile == null)
-            {
-                throw new ArgumentNullException(nameof(serializedFile));
-            }
-
             return new TextSpanFormatter
             {
-                SerializedFile = serializedFile
+                SerializedFile = serializedFile ?? throw new ArgumentNullException(nameof(serializedFile))
             };
         }
 
@@ -57,7 +63,7 @@ namespace PT.PM.Common.MessagePack
             }
             else
             {
-                TextFile sourceFile = value.GetSourceFile(SourceFile);
+                TextFile sourceFile = value.GetSourceFile(LocalSourceFiles[0]);
                 LineColumnTextSpan lcTextSpan = sourceFile.GetLineColumnTextSpan(value);
 
                 newOffset += WriteInt32(ref bytes, newOffset, lcTextSpan.BeginLine);
@@ -66,8 +72,15 @@ namespace PT.PM.Common.MessagePack
                 newOffset += WriteInt32(ref bytes, newOffset, lcTextSpan.EndColumn);
             }
 
-            var fileFormatter = formatterResolver.GetFormatter<TextFile>();
-            newOffset += fileFormatter.Serialize(ref bytes, newOffset, value.File, formatterResolver);
+            int fileIndex = value.File == null ? 0 : Array.IndexOf(LocalSourceFiles, value.File);
+
+            if (fileIndex == -1)
+            {
+                Logger.LogError(new ReadException(SerializedFile, message:
+                    $"{nameof(TextSpan.File)} of {nameof(TextSpan)} {value} is not correctly mapped in {nameof(RootUstFormatter)}"));
+            }
+
+            newOffset += WriteInt32(ref bytes, newOffset, fileIndex);
 
             return newOffset - offset;
         }
@@ -79,8 +92,7 @@ namespace PT.PM.Common.MessagePack
             {
                 int size;
                 int start = 0, length = 0;
-                TextFile sourceFile;
-                var sourceFileFormatter = formatterResolver.GetFormatter<TextFile>();
+                TextFile sourceFile = null;
 
                 if (!IsLineColumn)
                 {
@@ -89,8 +101,18 @@ namespace PT.PM.Common.MessagePack
                     length = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
 
-                    sourceFile = sourceFileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size)
-                                 ?? SourceFile;
+                    int fileIndex = ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
+
+                    if (fileIndex < 0 || fileIndex >= LocalSourceFiles.Length)
+                    {
+                        Logger.LogError(new ReadException(SerializedFile,
+                            message: $"Incorrect file index {fileIndex} for {nameof(TextSpan)} [{start}..{length}) at {newOffset} offset"));
+                    }
+                    else
+                    {
+                        sourceFile = LocalSourceFiles[fileIndex];
+                    }
                 }
                 else
                 {
@@ -103,27 +125,34 @@ namespace PT.PM.Common.MessagePack
                     int endColumn = ReadInt32(bytes, newOffset, out size);
                     newOffset += size;
 
-                    sourceFile = sourceFileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size)
-                                 ?? SourceFile;
+                    int fileIndex = ReadInt32(bytes, newOffset, out size);
+                    newOffset += size;
 
-                    try
+                    if (fileIndex < 0 || fileIndex >= LocalSourceFiles.Length)
                     {
-                        if (!sourceFile.IsEmpty) // TODO: maybe add IsError property
+                        Logger.LogError(new ReadException(SerializedFile,
+                            message: $"Incorrect file index {fileIndex} for {nameof(TextSpan)} [{beginLine},{beginColumn}..{endLine},{endColumn}) at {newOffset} offset"));
+                    }
+                    else
+                    {
+                        sourceFile = LocalSourceFiles[fileIndex];
+
+                        try
                         {
                             start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
                             length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(new ReadException(SerializedFile, ex, $"Error during linear to line-column TextSpan conversion; Message: {ex.Message}"));
+                        catch (Exception ex)
+                        {
+                            Logger.LogError(new ReadException(SerializedFile, ex,
+                                $"Error during linear to line-column {nameof(LineColumnTextSpan)} [{beginLine},{beginColumn}..{endLine},{endColumn}) conversion; Message: {ex.Message}"));
+                        }
                     }
                 }
 
-                newOffset += size;
                 readSize = newOffset - offset;
 
-                return new TextSpan(start, length, sourceFile == SourceFile ? null : sourceFile);
+                return new TextSpan(start, length, sourceFile == LocalSourceFiles[0] ? null : sourceFile);;
             }
             catch (InvalidOperationException ex) // Catch incorrect format exceptions
             {

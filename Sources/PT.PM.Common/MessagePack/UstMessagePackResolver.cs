@@ -15,10 +15,10 @@ namespace PT.PM.Common.MessagePack
         public FileFormatter FileFormatter { get; private set; }
 
         public RootUstFormatter RootUstFormatter { get; private set; }
-        
-        public static UstMessagePackResolver CreateWriter(TextFile sourceFile, bool isLineColumn, ILogger logger)
+
+        public static UstMessagePackResolver CreateWriter(bool isLineColumn, ILogger logger)
         {
-            var textSpanFormatter = TextSpanFormatter.CreateWriter(sourceFile);
+            var textSpanFormatter = TextSpanFormatter.CreateWriter();
             textSpanFormatter.IsLineColumn = isLineColumn;
             textSpanFormatter.Logger = logger;
 
@@ -45,7 +45,7 @@ namespace PT.PM.Common.MessagePack
             var sourceFileFormatter = FileFormatter.CreateReader(serializedFile, sourceFiles, readSourceFileAction);
             sourceFileFormatter.Logger = logger;
 
-            var rootUstFormatter = RootUstFormatter.CreateReader(serializedFile);
+            var rootUstFormatter = RootUstFormatter.CreateReader(serializedFile, sourceFiles);
 
             return new UstMessagePackResolver
             {

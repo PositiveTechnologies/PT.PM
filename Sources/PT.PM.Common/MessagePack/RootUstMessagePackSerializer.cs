@@ -14,7 +14,7 @@ namespace PT.PM.Common.MessagePack
 
         public byte[] Serialize(RootUst rootUst)
         {
-            var writerResolver = UstMessagePackResolver.CreateWriter(rootUst.SourceFile, LineColumnTextSpans, Logger);
+            var writerResolver = UstMessagePackResolver.CreateWriter(LineColumnTextSpans, Logger);
             return MessagePackSerializer.Serialize(rootUst, writerResolver);
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MessagePack;
 using MessagePack.Formatters;
 using PT.PM.Common.Exceptions;
@@ -14,21 +15,19 @@ namespace PT.PM.Common.MessagePack
 
         public BinaryFile SerializedFile { get; private set; }
 
+        public HashSet<IFile> SourceFiles { get; private set; }
+
         public static RootUstFormatter CreateWriter()
         {
             return new RootUstFormatter();
         }
 
-        public static RootUstFormatter CreateReader(BinaryFile serializedFile)
+        public static RootUstFormatter CreateReader(BinaryFile serializedFile, HashSet<IFile> sourceFiles)
         {
-            if (serializedFile == null)
-            {
-                throw new ArgumentNullException(nameof(serializedFile));
-            }
-
             return new RootUstFormatter
             {
-                SerializedFile = serializedFile
+                SerializedFile = serializedFile ?? throw new ArgumentNullException(nameof(serializedFile)),
+                SourceFiles = sourceFiles ?? throw new ArgumentNullException(nameof(sourceFiles))
             };
         }
 
@@ -44,8 +43,26 @@ namespace PT.PM.Common.MessagePack
             var languageFormatter = formatterResolver.GetFormatter<Language>();
             newOffset += languageFormatter.Serialize(ref bytes, newOffset, value.Language, formatterResolver);
 
-            var fileFormatter = formatterResolver.GetFormatter<TextFile>();
-            newOffset += fileFormatter.Serialize(ref bytes, newOffset, value.SourceFile, formatterResolver);
+            var localSourceFiles = new List<TextFile> {CurrentRoot.SourceFile};
+            value.ApplyActionToDescendantsAndSelf(ust =>
+            {
+                foreach (TextSpan textSpan in ust.TextSpans)
+                {
+                    if (textSpan.File != null && !localSourceFiles.Contains(textSpan.File))
+                    {
+                        localSourceFiles.Add(textSpan.File);
+                    }
+                }
+            });
+
+            var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>();
+            if (textSpanFormatter is TextSpanFormatter formatter)
+            {
+                formatter.LocalSourceFiles = localSourceFiles.ToArray();
+            }
+
+            var filesFormatter = formatterResolver.GetFormatter<TextFile[]>();
+            newOffset += filesFormatter.Serialize(ref bytes, newOffset, localSourceFiles.ToArray(), formatterResolver);
 
             var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
             newOffset += ustsFormatter.Serialize(ref bytes, newOffset, value.Nodes, formatterResolver);
@@ -55,7 +72,6 @@ namespace PT.PM.Common.MessagePack
 
             newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.LineOffset);
 
-            var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>();
             newOffset += textSpanFormatter.Serialize(ref bytes, newOffset, value.TextSpan, formatterResolver);
 
             newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.Key);
@@ -72,14 +88,22 @@ namespace PT.PM.Common.MessagePack
                 Language language = languageFormatter.Deserialize(bytes, newOffset, formatterResolver, out int size);
                 newOffset += size;
 
-                var fileFormatter = formatterResolver.GetFormatter<TextFile>();
-                TextFile sourceFile = fileFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                var filesFormatter = formatterResolver.GetFormatter<TextFile[]>();
+                TextFile[] localSourceFiles = filesFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
                 newOffset += size;
+
+                lock (SourceFiles)
+                {
+                    foreach (TextFile localSourceFile in localSourceFiles)
+                    {
+                        SourceFiles.Add(localSourceFile);
+                    }
+                }
 
                 var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>();
                 if (textSpanFormatter is TextSpanFormatter formatter)
                 {
-                    formatter.SourceFile = sourceFile;
+                    formatter.LocalSourceFiles = localSourceFiles;
                 }
 
                 var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
@@ -101,7 +125,7 @@ namespace PT.PM.Common.MessagePack
                 int key = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
                 newOffset += size;
 
-                CurrentRoot = new RootUst(sourceFile, language, textSpan)
+                CurrentRoot = new RootUst(localSourceFiles[0], language, textSpan)
                 {
                     Key = key,
                     Nodes = nodes,

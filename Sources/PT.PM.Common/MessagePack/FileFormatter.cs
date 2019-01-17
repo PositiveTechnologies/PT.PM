@@ -28,15 +28,10 @@ namespace PT.PM.Common.MessagePack
 
         public static FileFormatter CreateReader(BinaryFile serializedFile, HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction)
         {
-            if (serializedFile == null)
-            {
-                throw new ArgumentNullException(nameof(serializedFile));
-            }
-
             return new FileFormatter
             {
-                SerializedFile = serializedFile,
-                SourceFiles = sourceFiles,
+                SerializedFile = serializedFile ?? throw new ArgumentNullException(nameof(serializedFile)),
+                SourceFiles = sourceFiles ?? throw new ArgumentNullException(nameof(sourceFiles)),
                 ReadSourceFileAction = readSourceFileAction
             };
         }
@@ -44,7 +39,7 @@ namespace PT.PM.Common.MessagePack
         private FileFormatter()
         {
         }
-        
+
         public int Serialize(ref byte[] bytes, int offset, TextFile value, IFormatterResolver formatterResolver)
         {
             return Serialize(ref bytes, offset, (IFile)value, formatterResolver);
@@ -97,18 +92,18 @@ namespace PT.PM.Common.MessagePack
 
                 FileType fileType = (FileType) ReadByte(bytes, offset, out int size);
                 newOffset += size;
-                
+
                 string rootPath = ReadString(bytes, newOffset, out size) ?? "";
                 rootPath = rootPath.NormalizeDirSeparator();
                 newOffset += size;
-                
+
                 string relativePath = ReadString(bytes, newOffset, out size) ?? "";
                 relativePath = relativePath.NormalizeDirSeparator();
                 newOffset += size;
-                
+
                 string name = ReadString(bytes, newOffset, out size) ?? "";
                 newOffset += size;
-                
+
                 string patternKey = ReadString(bytes, newOffset, out size);
                 newOffset += size;
 
@@ -186,14 +181,6 @@ namespace PT.PM.Common.MessagePack
                 result.RelativePath = relativePath;
                 result.Name = name;
                 result.PatternKey = patternKey;
-
-                if (SourceFiles != null)
-                {
-                    lock (SourceFiles)
-                    {
-                        SourceFiles.Add(result);
-                    }
-                }
 
                 ReadSourceFileAction?.Invoke((result, stopwatch.Elapsed));
 
