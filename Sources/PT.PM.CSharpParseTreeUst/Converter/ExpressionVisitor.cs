@@ -488,10 +488,21 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitInitializerExpression(InitializerExpressionSyntax node)
         {
+            Ust result = null;
             var children = node.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e))
                 .ToArray();
-            
-            var result = new MultichildExpression(children, node.GetTextSpan());
+            var textSpan = node.GetTextSpan();
+
+            if (node.Kind() == SyntaxKind.ArrayInitializerExpression)
+            {
+                var sizes = new List<Expression> { new IntLiteral(children.Length) };
+                result = new ArrayCreationExpression(new TypeToken("", textSpan), sizes, children.ToList(), textSpan);
+            }
+            else
+            {
+                result = new MultichildExpression(children, textSpan);
+            }
+
             return result;
         }
 
