@@ -4,7 +4,7 @@ using System;
 
 namespace PT.PM.Matching.Patterns
 {
-    class PatternTupleCreateExpression : PatternUst, IPatternExpression
+    public class PatternTupleCreateExpression : PatternUst, IPatternExpression
     {
         private PatternUst[] args = new PatternUst[0];
 

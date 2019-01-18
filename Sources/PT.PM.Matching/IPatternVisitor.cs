@@ -32,6 +32,7 @@ namespace PT.PM.Matching
         T Visit(PatternNot patternNot);
         T Visit(PatternNullLiteral patternNullLiteral);
         T Visit(PatternObjectCreateExpression patternObjectCreateExpression);
+        T Visit(PatternTupleCreateExpression patternTupleCreateExpression);
         T Visit(PatternOr patternOr);
         T Visit(PatternParameterDeclaration patternParameterDeclaration);
         T Visit(PatternStatements patternStatements);

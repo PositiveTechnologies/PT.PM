@@ -413,6 +413,11 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(collection);
         }
 
+        public T Visit(TupleCreateExpression tupleCreateExpression)
+        {
+            return VisitChildren(tupleCreateExpression);
+        }
+
         protected virtual T VisitChildren(Ust ust)
         {
             if (ust == null)
