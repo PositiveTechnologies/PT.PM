@@ -17,6 +17,7 @@
     <Compile Remove="Data\ArrayExamples.cs" />
     <Compile Remove="Data\ParseError.cs" />
     <Compile Remove="Data\Patterns.cs" />
+    <Compile Remove="Data\ValueTuple.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +40,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\TestAspxParser.aspx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\ValueTuple.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
