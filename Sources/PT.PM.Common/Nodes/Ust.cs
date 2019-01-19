@@ -130,7 +130,18 @@ namespace PT.PM.Common.Nodes
         public TextSpan TextSpan
         {
             get => TextSpans?.Length > 0 ? TextSpans[0] : TextSpan.Zero;
-            set => TextSpans = new[] {value}; // TODO: try to remove setter (use TextSpans instead)
+            set
+            {
+                // TODO: try to remove setter (use TextSpans instead)
+                if (TextSpans?.Length == 1) // Prevent excess allocation
+                {
+                    TextSpans[0] = value;
+                }
+                else
+                {
+                    TextSpans = new[] {value};
+                }
+            }
         }
 
         [IgnoreMember]
@@ -150,6 +161,28 @@ namespace PT.PM.Common.Nodes
 
         [IgnoreMember]
         public Ust[] Children => GetChildren();
+
+        public int GetKey()
+        {
+            if (Key != 0)
+            {
+                return Key;
+            }
+
+            if (TextSpans == null)
+            {
+                return 0;
+            }
+
+            int result = TextSpans[0].GetHashCode();
+
+            for (int i = 1; i < TextSpans.Length; i++)
+            {
+                result = Hash.Combine(result, TextSpans[i].GetHashCode());
+            }
+
+            return result;
+        }
 
         public string ToStringWithoutLineBreaks() => debuggerPrinter?.Print(ToString()) ?? "";
 
