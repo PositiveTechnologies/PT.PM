@@ -22,10 +22,10 @@ namespace PT.PM.Common.Files
         public string Name { get; set; } = "";
 
         [Key(3)]
-        public string PatternKey { get; set; } = null;
+        public string PatternKey { get; set; }
 
         [Key(4)]
-        public T Data { get; protected set; }
+        public T Data { get; }
 
         [IgnoreMember]
         public object Content => Data;
@@ -109,7 +109,7 @@ namespace PT.PM.Common.Files
                 return CompareData(Data, other.Data);
             }
 
-            return FullName.CompareTo(other.FullName);
+            return String.Compare(FullName, other.FullName, StringComparison.Ordinal);
         }
 
         protected abstract int CompareData(T data1, T data2);

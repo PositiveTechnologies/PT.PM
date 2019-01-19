@@ -232,37 +232,25 @@ namespace PT.PM
                     }
                     else
                     {
-                        ISerializer serializer;
-
                         void ReadSourceFileAction((IFile, TimeSpan) fileAndTime) => LogSourceFile(fileAndTime, workflowResult);
 
                         if (SerializationFormat == SerializationFormat.Json)
                         {
                             var jsonUstSerializer = new UstJsonSerializer
                             {
-                                Strict = StrictJson
+                                SourceFiles = workflowResult.SourceFiles,
+                                ReadSourceFileAction = ReadSourceFileAction,
+                                Strict = StrictJson,
+                                LineColumnTextSpans = LineColumnTextSpans,
+                                Logger = Logger
                             };
-                            jsonUstSerializer.SourceFiles = workflowResult.SourceFiles;
-                            jsonUstSerializer.ReadSourceFileAction = ReadSourceFileAction;
-                            serializer = jsonUstSerializer;
+                            result = (RootUst) jsonUstSerializer.Deserialize((TextFile)sourceFile);
                         }
                         else
                         {
-                            var msgPackSerializer = new RootUstMessagePackSerializer();
-                            serializer = msgPackSerializer;
-                        }
-
-                        serializer.Logger = Logger;
-                        serializer.LineColumnTextSpans = LineColumnTextSpans;
-
-                        if (SerializationFormat == SerializationFormat.Json)
-                        {
-                            result = (RootUst) ((UstJsonSerializer)serializer).Deserialize((TextFile)sourceFile);
-                        }
-                        else
-                        {
-                            result = ((RootUstMessagePackSerializer)serializer).
-                                Deserialize((BinaryFile)sourceFile, workflowResult.SourceFiles, ReadSourceFileAction);
+                            BinaryFile binaryFile = (BinaryFile) sourceFile;
+                            result = RootUstMessagePackSerializer.Deserialize(
+                                binaryFile, LineColumnTextSpans, workflowResult.SourceFiles, ReadSourceFileAction, Logger, out _);
                         }
 
                         if (result == null || !AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
@@ -304,7 +292,7 @@ namespace PT.PM
                 workflowResult.AddProcessedCharsCount(sourceFile.Data.Length);
                 workflowResult.AddProcessedLinesCount(sourceFile.GetLinesCount());
             }
-            
+
             workflowResult.AddReadTime(elapsed);
             workflowResult.AddResultEntity(file);
         }
@@ -326,39 +314,28 @@ namespace PT.PM
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.Ust)))
             {
-                ISerializer serializer;
-
-                if (SerializationFormat == SerializationFormat.Json)
-                {
-                    var ustJsonSerializer = new UstJsonSerializer();
-                    ustJsonSerializer.CurrectSourceFile = result.SourceFile;
-                    ustJsonSerializer.IncludeTextSpans = DumpWithTextSpans;
-                    ustJsonSerializer.IncludeCode = IncludeCodeInDump;
-                    ustJsonSerializer.Indented = IndentedDump;
-                    ustJsonSerializer.Strict = StrictJson;
-                    serializer = ustJsonSerializer;
-                }
-                else
-                {
-                    var msgPackSerializer = new RootUstMessagePackSerializer();
-                    serializer = msgPackSerializer;
-                }
-
-                serializer.Logger = Logger;
-                serializer.LineColumnTextSpans = LineColumnTextSpans;
-
                 DirectoryExt.CreateDirectory(DumpDir);
                 string name = string.IsNullOrEmpty(result.SourceFile.Name) ? "" : result.SourceFile.Name + ".";
                 string dumpName = Path.Combine(DumpDir, name + "ust." + SerializationFormat.GetExtension());
 
                 if (SerializationFormat == SerializationFormat.Json)
                 {
-                    string json = ((UstJsonSerializer)serializer).Serialize(result);
+                    var ustJsonSerializer = new UstJsonSerializer
+                    {
+                        CurrectSourceFile = result.SourceFile,
+                        IncludeTextSpans = DumpWithTextSpans,
+                        IncludeCode = IncludeCodeInDump,
+                        Indented = IndentedDump,
+                        Strict = StrictJson,
+                        LineColumnTextSpans = LineColumnTextSpans,
+                        Logger = Logger
+                    };
+                    string json = ustJsonSerializer.Serialize(result);
                     FileExt.WriteAllText(dumpName, json);
                 }
                 else
                 {
-                    byte[] bytes = ((RootUstMessagePackSerializer)serializer).Serialize(result);
+                    byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, logger);
                     FileExt.WriteAllBytes(dumpName, bytes);
                 }
             }

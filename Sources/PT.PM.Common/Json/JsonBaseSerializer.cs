@@ -6,7 +6,7 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonBaseSerializer<T> : ISerializer
+    public abstract class JsonBaseSerializer<T>
     {
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
