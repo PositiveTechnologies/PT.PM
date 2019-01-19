@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Files;
+using PT.PM.Common.MessagePack;
 using PT.PM.Common.Utils;
 using PT.PM.Matching;
 using PT.PM.Patterns.PatternsRepository;
@@ -111,6 +113,10 @@ namespace PT.PM.Tests
                 Assert.IsTrue(newLogger.ErrorsString.Contains(errorOffset.ToString()));
                 return;
             }
+
+            var binaryFile = (BinaryFile)newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
+            RootUstMessagePackSerializer.Deserialize(binaryFile, !linearTextSpans, new HashSet<IFile>(), null, logger, out int readSize);
+            Assert.AreEqual(binaryFile.Data.Length, readSize);
 
             if (incorrectFilePath)
             {
