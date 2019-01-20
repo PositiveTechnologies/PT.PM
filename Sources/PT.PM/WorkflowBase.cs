@@ -28,6 +28,8 @@ namespace PT.PM
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
+        private int currentId = 0;
+
         protected ILogger logger = DummyLogger.Instance;
 
         static WorkflowBase()
@@ -268,6 +270,8 @@ namespace PT.PM
                     {
                         return null;
                     }
+
+                    result.ApplyActionToDescendantsAndSelf(ust => ust.Key = Interlocked.Increment(ref currentId));
 
                     DumpUst(result);
                     UstConverted?.Invoke(this, result);
