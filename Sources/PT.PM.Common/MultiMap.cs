@@ -10,7 +10,7 @@ namespace PT.PM.Common
     /// <remarks>
     /// Inspired by http://stackoverflow.com/questions/146204/duplicate-keys-in-net-dictionaries
     /// </remarks>
-    public class MultiMap<TKey, TValue> : ICollection<KeyValuePair<TKey, List<TValue>>>, IEnumerable<KeyValuePair<TKey, List<TValue>>>, IEnumerable
+    public class MultiMap<TKey, TValue> : ICollection<KeyValuePair<TKey, List<TValue>>>
     {
         private readonly Dictionary<TKey, List<TValue>> storage;
 

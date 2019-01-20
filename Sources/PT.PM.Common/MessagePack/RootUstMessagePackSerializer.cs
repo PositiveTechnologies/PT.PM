@@ -23,7 +23,7 @@ namespace PT.PM.Common.MessagePack
             return MessagePackBinary.FastCloneWithResize(result, writeSize);
         }
 
-        protected static byte[] Serialize(RootUst rootUst, bool isLineColumn, ILogger logger, out int writeSize)
+        public static byte[] Serialize(RootUst rootUst, bool isLineColumn, ILogger logger, out int writeSize)
         {
             var textSpanFormatter = TextSpanFormatter.CreateWriter();
             textSpanFormatter.IsLineColumn = isLineColumn;
@@ -100,6 +100,6 @@ namespace PT.PM.Common.MessagePack
             return StandardResolver.Instance.GetFormatter<T>();
         }
 
-        protected RootUstMessagePackSerializer() {}
+        private RootUstMessagePackSerializer() {}
     }
 }
