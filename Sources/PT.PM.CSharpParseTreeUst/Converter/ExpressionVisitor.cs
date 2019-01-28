@@ -89,15 +89,20 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     Right = (Expression)VisitAndReturnNullIfError(arg.Expression),
                     TextSpan = arg.GetTextSpan()
                 };
-                if (arg.NameColon == null)
-                {
-                    assignment.Left = new IdToken($"Item{i + 1}");
-                }
-                else
-                {
-                    assignment.Left = (Expression)VisitAndReturnNullIfError(arg.NameColon.Name);
-                }
+
+                assignment.Left = new IdToken($"Item{i + 1}", assignment.TextSpan);
                 result.Initializers.Add(assignment);
+
+                if (arg.NameColon != null)
+                {
+                    var name = (Expression)VisitAndReturnNullIfError(arg.NameColon.Name);
+                    result.Initializers.Add(new AssignmentExpression
+                    {
+                        Left = name,
+                        Right = new MemberReferenceExpression(null, new IdToken($"Item{i + 1}", name.TextSpan), name.TextSpan),
+                        TextSpan = assignment.TextSpan
+                    });
+                }
             }
 
             return result;
@@ -207,10 +212,28 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitAssignmentExpression(AssignmentExpressionSyntax node)
         {
+            var textSpan = node.GetTextSpan();
+            if (node.Left is TupleExpressionSyntax tupleLeft 
+                && node.Right is TupleExpressionSyntax tupleRight)
+            {
+                var assignments = new List<AssignmentExpression>();
+                for(int i = 0; i < tupleLeft.Arguments.Count; i++)
+                {
+                    var leftNode = ((DeclarationExpressionSyntax)tupleLeft.Arguments[i].Expression)?.Designation;
+                    assignments.Add(new AssignmentExpression
+                    {
+                        Left = (Expression)base.Visit(leftNode),
+                        Right = (Expression)base.Visit(tupleRight.Arguments[i]),
+                        TextSpan = textSpan
+                    });
+                }
+                return new VariableDeclarationExpression(null, assignments, textSpan);
+            }
+
             var left = (Expression)base.Visit(node.Left);
             var right = (Expression)base.Visit(node.Right);
 
-            return UstUtils.CreateAssignExpr(left, right, node.GetTextSpan(),
+            return UstUtils.CreateAssignExpr(left, right, textSpan,
                 node.OperatorToken.ValueText, node.OperatorToken.GetTextSpan());
         }
 
