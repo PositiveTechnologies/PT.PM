@@ -2,6 +2,7 @@
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using MessagePack.LZ4;
 using MessagePack.Resolvers;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes;
@@ -20,6 +21,12 @@ namespace PT.PM.Common.MessagePack
         public static byte[] Serialize(RootUst rootUst, bool isLineColumn, bool compress, ILogger logger)
         {
             byte[] result = Serialize(rootUst, isLineColumn, compress, logger, out int writeSize);
+
+            if (compress)
+            {
+                return result;
+            }
+
             return MessagePackBinary.FastCloneWithResize(result, writeSize);
         }
 
@@ -42,14 +49,6 @@ namespace PT.PM.Common.MessagePack
                 rootUstFormatter = rootUstFormatter
             };
 
-            if (compress)
-            {
-                // TODO: make effective buffer reusing
-                var result = LZ4MessagePackSerializer.Serialize(rootUst, writerResolver);
-                writeSize = result.Length;
-                return result;
-            }
-
             if (buffer == null)
             {
                 buffer = new byte[ushort.MaxValue + 1];
@@ -57,12 +56,18 @@ namespace PT.PM.Common.MessagePack
 
             writeSize = rootUstFormatter.Serialize(ref buffer, 0, rootUst, writerResolver);
 
+            if (compress)
+            {
+                var result = LZ4MessagePackSerializer.ToLZ4Binary(new ArraySegment<byte>(buffer, 0, writeSize));
+                return result;
+            }
+
             return buffer;
         }
 
         public static RootUst Deserialize(BinaryFile serializedFile, bool isLineColumn,
-            HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction, bool compress,
-            ILogger logger, out int readSize)
+            HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction,
+            ILogger logger, out int readSize, byte[] data = null)
         {
             var textSpanFormatter = TextSpanFormatter.CreateReader(serializedFile);
             textSpanFormatter.IsLineColumn = isLineColumn;
@@ -80,21 +85,10 @@ namespace PT.PM.Common.MessagePack
                 rootUstFormatter = rootUstFormatter
             };
 
-            RootUst result;
+            byte[] data2 = data ?? MessagePackUtils.UnpackDataIfRequired(serializedFile.Data);
 
-            // TODO: add the length of serialized UST
-
-            if (compress)
-            {
-                result = LZ4MessagePackSerializer.Deserialize<RootUst>(serializedFile.Data, readerResolver);
-                readSize = serializedFile.Data.Length;
-            }
-            else
-            {
-                result = readerResolver.GetFormatterWithVerify<RootUst>()
-                    .Deserialize(serializedFile.Data, 0, readerResolver, out readSize);
-            }
-
+            RootUst result = readerResolver.GetFormatterWithVerify<RootUst>()
+                    .Deserialize(data2, 0, readerResolver, out readSize);
             result.FillAscendants();
 
             return result;

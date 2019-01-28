@@ -123,8 +123,11 @@ namespace PT.PM.Tests
             }
 
             var binaryFile = (BinaryFile)newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
-            RootUstMessagePackSerializer.Deserialize(binaryFile, !linearTextSpans, new HashSet<IFile>(), null, compressed, logger, out int readSize);
-            Assert.AreEqual(binaryFile.Data.Length, readSize);
+            RootUstMessagePackSerializer.Deserialize(binaryFile, !linearTextSpans, new HashSet<IFile>(), null, logger, out int readSize);
+            if (!compressed)
+            {
+                Assert.AreEqual(binaryFile.Data.Length, readSize);
+            }
 
             if (incorrectFilePath)
             {

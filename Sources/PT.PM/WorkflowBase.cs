@@ -255,7 +255,7 @@ namespace PT.PM
                         {
                             BinaryFile binaryFile = (BinaryFile) sourceFile;
                             result = RootUstMessagePackSerializer.Deserialize(
-                                binaryFile, LineColumnTextSpans, workflowResult.SourceFiles, ReadSourceFileAction, CompressedSerialization, Logger, out _);
+                                binaryFile, LineColumnTextSpans, workflowResult.SourceFiles, ReadSourceFileAction, Logger, out _);
                         }
 
                         if (result == null || !AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
