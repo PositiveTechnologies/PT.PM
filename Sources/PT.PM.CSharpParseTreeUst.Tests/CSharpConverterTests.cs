@@ -37,5 +37,13 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             string fileName = Path.Combine(TestUtility.TestsDataPath, "ArrayExamples.cs");
             TestUtility.CheckFile(fileName, Stage.Ust, out RootUst ust);
         }
+
+        [Test]
+        public void Check_Tuple_Initializations()
+        {
+            string fileName = Path.Combine(TestUtility.TestsDataPath, "ValueTuple.cs");
+            var matches = TestUtility.CheckFile(fileName, Stage.Match, out RootUst ust);
+            Assert.AreEqual(1, matches.Count());
+        }
     }
 }
