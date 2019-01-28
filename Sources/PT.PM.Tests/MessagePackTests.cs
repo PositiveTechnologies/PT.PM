@@ -40,8 +40,14 @@ namespace PT.PM.Tests
             CheckMsgPackSerialization("empty-try-catch.php", incorrectFilePath: true);
         }
 
+        [Test]
+        public void Serialize_MsgPack_Compressed()
+        {
+            CheckMsgPackSerialization("empty-try-catch.php", compressed: true);
+        }
+
         private static void CheckMsgPackSerialization(string inputFileName, bool linearTextSpans = false,
-            bool damaged = false, bool incorrectFilePath = false)
+            bool damaged = false, bool incorrectFilePath = false, bool compressed = false)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
             string ext = SerializationFormat.MsgPack.GetExtension();
@@ -59,6 +65,7 @@ namespace PT.PM.Tests
                 DumpDir = TestUtility.TestsOutputPath,
                 SerializationFormat = SerializationFormat.MsgPack,
                 LineColumnTextSpans = !linearTextSpans,
+                CompressedSerialization = compressed,
                 Stage = Stage.Ust,
                 Logger = logger
             };
@@ -102,6 +109,7 @@ namespace PT.PM.Tests
                 StartStage = Stage.Ust,
                 SerializationFormat = SerializationFormat.MsgPack,
                 LineColumnTextSpans = !linearTextSpans,
+                CompressedSerialization = compressed,
                 Logger = newLogger
             };
             newWorkflow.Process();
@@ -115,7 +123,7 @@ namespace PT.PM.Tests
             }
 
             var binaryFile = (BinaryFile)newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
-            RootUstMessagePackSerializer.Deserialize(binaryFile, !linearTextSpans, new HashSet<IFile>(), null, logger, out int readSize);
+            RootUstMessagePackSerializer.Deserialize(binaryFile, !linearTextSpans, new HashSet<IFile>(), null, compressed, logger, out int readSize);
             Assert.AreEqual(binaryFile.Data.Length, readSize);
 
             if (incorrectFilePath)

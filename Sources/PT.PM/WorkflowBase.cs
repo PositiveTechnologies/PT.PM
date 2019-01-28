@@ -116,6 +116,8 @@ namespace PT.PM
 
         public bool StrictJson { get; set; } = false;
 
+        public bool CompressedSerialization { get; set; }
+
         public string LogsDir { get; set; } = "";
 
         public string DumpDir { get; set; } = "";
@@ -253,7 +255,7 @@ namespace PT.PM
                         {
                             BinaryFile binaryFile = (BinaryFile) sourceFile;
                             result = RootUstMessagePackSerializer.Deserialize(
-                                binaryFile, LineColumnTextSpans, workflowResult.SourceFiles, ReadSourceFileAction, Logger, out _);
+                                binaryFile, LineColumnTextSpans, workflowResult.SourceFiles, ReadSourceFileAction, CompressedSerialization, Logger, out _);
                         }
 
                         if (result == null || !AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
@@ -343,7 +345,7 @@ namespace PT.PM
                 }
                 else
                 {
-                    byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, logger);
+                    byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, CompressedSerialization, logger);
                     FileExt.WriteAllBytes(dumpName, bytes);
                 }
             }
