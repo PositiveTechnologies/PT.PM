@@ -60,15 +60,15 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     continue;
                 }
 
-                CreateVirtualMemberRefs(ref variables, typeElement, i, textSpan);
+                variables = CreateVirtualMemberRefs(variables, typeElement, i, textSpan);
             }
             var declaration = new VariableDeclarationExpression(null, variables, textSpan);
             return new ExpressionStatement(declaration);
         }
 
-        private void CreateVirtualMemberRefs(ref List<AssignmentExpression> variables, TupleElementSyntax typeElement, int initializerNumber, TextSpan textSpan)
+        private List<AssignmentExpression> CreateVirtualMemberRefs(List<AssignmentExpression> variables, TupleElementSyntax typeElement, int initializerNumber, TextSpan textSpan)
         {
-            variables.ForEach(variable =>
+            foreach(var variable in variables)
             {
                 var tupleTypeElementMemRef = new MemberReferenceExpression
                 {
@@ -76,10 +76,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     Name = ConvertId(typeElement.Identifier)
                 };
 
-                var right = (TupleCreateExpression)variable?.Right;
+                var right = variable?.Right as TupleCreateExpression;
                 if (right == null)
                 {
-                    return;
+                    continue;
                 }
                 var oldName = ((AssignmentExpression)right.Initializers[initializerNumber]).Left
                     as MemberReferenceExpression;
@@ -90,12 +90,19 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     Right = newName,
                     TextSpan = textSpan
                 });
-            });
+            }
+            return variables;
         }
 
         private Ust HandleTupleStatement(VariableDeclaratorSyntax node)
         {
-            var tuple = (TupleCreateExpression)base.Visit(node.Initializer.Value);
+            var tuple = base.Visit(node.Initializer.Value) as TupleCreateExpression;
+
+            if (tuple == null)
+            {
+                return null;
+            }
+
             var idText = node.Identifier.ValueText;
             var idTextSpan = node.Identifier.GetTextSpan();
 

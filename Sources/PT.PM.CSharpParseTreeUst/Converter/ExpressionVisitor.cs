@@ -91,6 +91,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 };
 
                 var defaultName = new IdToken($"Item{i + 1}", assignment.TextSpan);
+                result.Initializers.Add(assignment);
 
                 if (arg.NameColon != null)
                 {
@@ -109,8 +110,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 {
                     assignment.Left = defaultName;
                 }
-
-                result.Initializers.Add(assignment);
             }
 
             return result;
