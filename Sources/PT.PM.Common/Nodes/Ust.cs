@@ -169,19 +169,7 @@ namespace PT.PM.Common.Nodes
                 return Key;
             }
 
-            if (TextSpans == null)
-            {
-                return 0;
-            }
-
-            int result = TextSpans[0].GetHashCode();
-
-            for (int i = 1; i < TextSpans.Length; i++)
-            {
-                result = Hash.Combine(result, TextSpans[i].GetHashCode());
-            }
-
-            return result;
+            return base.GetHashCode();
         }
 
         public string ToStringWithoutLineBreaks() => debuggerPrinter?.Print(ToString()) ?? "";
