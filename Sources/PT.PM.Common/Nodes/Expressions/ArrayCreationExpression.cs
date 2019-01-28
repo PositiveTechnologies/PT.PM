@@ -9,10 +9,10 @@ namespace PT.PM.Common.Nodes.Expressions
     public class ArrayCreationExpression : Expression
     {
         [Key(UstFieldOffset)]
-        public IdToken Type { get; set; }
+        public TypeToken Type { get; set; }
 
         [Key(UstFieldOffset + 1)]
-        public TypeToken KeywordNew { get; set; }
+        public IdToken KeywordNew { get; set; }
 
         [Key(UstFieldOffset + 2)]
         public List<Expression> Sizes { get; set; }
