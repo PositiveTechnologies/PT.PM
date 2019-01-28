@@ -42,7 +42,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         }
 
         /// <summary>
-        /// Performs deconstruction of the tuples, in the absence of a name, else create vitual memrefs
+        /// When a name is absent, deconstruct a given tuple, otherwise create virtual member references
         /// </summary>
         private Ust HandleTupleStatement(VariableDeclarationSyntax node)
         {
@@ -60,13 +60,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     continue;
                 }
 
-                CreateVirtualMemRefs(ref variables, typeElement, i, textSpan);
+                CreateVirtualMemberRefs(ref variables, typeElement, i, textSpan);
             }
             var declaration = new VariableDeclarationExpression(null, variables, textSpan);
             return new ExpressionStatement(declaration);
         }
 
-        private void CreateVirtualMemRefs(ref List<AssignmentExpression> variables, TupleElementSyntax typeElement, int initializerNumber, TextSpan textSpan)
+        private void CreateVirtualMemberRefs(ref List<AssignmentExpression> variables, TupleElementSyntax typeElement, int initializerNumber, TextSpan textSpan)
         {
             variables.ForEach(variable =>
             {

@@ -90,19 +90,27 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     TextSpan = arg.GetTextSpan()
                 };
 
-                assignment.Left = new IdToken($"Item{i + 1}", assignment.TextSpan);
-                result.Initializers.Add(assignment);
+                var defaultName = new IdToken($"Item{i + 1}", assignment.TextSpan);
 
                 if (arg.NameColon != null)
                 {
-                    var name = (Expression)VisitAndReturnNullIfError(arg.NameColon.Name);
+                    var name = (IdToken)VisitAndReturnNullIfError(arg.NameColon.Name);
+
+                    assignment.Left = name;
+
                     result.Initializers.Add(new AssignmentExpression
                     {
-                        Left = name,
-                        Right = new MemberReferenceExpression(null, new IdToken($"Item{i + 1}", name.TextSpan), name.TextSpan),
+                        Left = new IdToken(defaultName.Id, defaultName.TextSpan),
+                        Right = new MemberReferenceExpression(null, new IdToken(name.Id, name.TextSpan), name.TextSpan),
                         TextSpan = assignment.TextSpan
                     });
                 }
+                else
+                {
+                    assignment.Left = defaultName;
+                }
+
+                result.Initializers.Add(assignment);
             }
 
             return result;
@@ -381,7 +389,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var alias = (IdToken)VisitIdentifierName(node.Alias);
             var name = (Token)base.Visit(node.Name);
-
             var result = new TypeToken(new[] { alias.Id, name.TextValue }, node.GetTextSpan());
             return result;
         }
@@ -419,7 +426,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var target = (Expression)base.Visit(node.Expression);
             ArgsUst args = node.ArgumentList == null ? null : (ArgsUst)VisitBracketedArgumentList(node.ArgumentList);
-
             var result = new IndexerExpression(target, args, node.GetTextSpan());
             return result;
         }

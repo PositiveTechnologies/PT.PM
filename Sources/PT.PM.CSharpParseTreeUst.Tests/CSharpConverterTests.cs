@@ -43,7 +43,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         {
             string fileName = Path.Combine(TestUtility.TestsDataPath, "ValueTuple.cs");
             var matches = TestUtility.CheckFile(fileName, Stage.Match, out RootUst ust);
-            Assert.AreEqual(1, matches.Count());
+            Assert.AreEqual(2, matches.Count());
         }
     }
 }
