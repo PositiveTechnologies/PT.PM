@@ -98,7 +98,7 @@ namespace PT.PM.Common.SourceRepository
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = TextFile.Empty;
+                result = Format == SerializationFormat.MsgPack ? (IFile)BinaryFile.Empty : TextFile.Empty;
                 Logger.LogError(new ReadException(result, ex));
             }
 
