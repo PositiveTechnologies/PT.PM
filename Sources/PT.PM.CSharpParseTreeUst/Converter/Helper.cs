@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
@@ -40,6 +41,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return null;
         }
 
+        /// <summary>
+        /// Performs deconstruction of the tuples, in the absence of a name, else create vitual memrefs
+        /// </summary>
         private Ust HandleTupleStatement(VariableDeclarationSyntax node)
         {
             List<AssignmentExpression> variables =
@@ -56,32 +60,37 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     continue;
                 }
 
-                variables.ForEach(variable =>
-                {
-                    var tupleTypeElementMemRef = new MemberReferenceExpression
-                    {
-                        Target = new IdToken(((IdToken)variable.Left).Id, variable.Left.TextSpan),
-                        Name = ConvertId(typeElement.Identifier)
-                    };
-
-                    var right = (TupleCreateExpression)variable?.Right;
-                    if (right == null)
-                    {
-                        return;
-                    }
-                    var oldName = ((AssignmentExpression)right.Initializers[i]).Left
-                        as MemberReferenceExpression;
-                    var newName = CopyMemberReference(oldName);
-                    right.Initializers.Add(new AssignmentExpression
-                    {
-                        Left = tupleTypeElementMemRef,
-                        Right = newName,
-                        TextSpan = textSpan
-                    });
-                });
+                CreateVirtualMemRefs(ref variables, typeElement, i, textSpan);
             }
             var declaration = new VariableDeclarationExpression(null, variables, textSpan);
             return new ExpressionStatement(declaration);
+        }
+
+        private void CreateVirtualMemRefs(ref List<AssignmentExpression> variables, TupleElementSyntax typeElement, int initializerNumber, TextSpan textSpan)
+        {
+            variables.ForEach(variable =>
+            {
+                var tupleTypeElementMemRef = new MemberReferenceExpression
+                {
+                    Target = new IdToken(((IdToken)variable.Left).Id, variable.Left.TextSpan),
+                    Name = ConvertId(typeElement.Identifier)
+                };
+
+                var right = (TupleCreateExpression)variable?.Right;
+                if (right == null)
+                {
+                    return;
+                }
+                var oldName = ((AssignmentExpression)right.Initializers[initializerNumber]).Left
+                    as MemberReferenceExpression;
+                var newName = CopyMemberReference(oldName);
+                right.Initializers.Add(new AssignmentExpression
+                {
+                    Left = tupleTypeElementMemRef,
+                    Right = newName,
+                    TextSpan = textSpan
+                });
+            });
         }
 
         private Ust HandleTupleStatement(VariableDeclaratorSyntax node)
@@ -96,7 +105,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 assignment.Left = new MemberReferenceExpression(
                     new IdToken(idText, idTextSpan), assignment.Left, assignment.Left.TextSpan);
 
-                if(assignment.Right is MemberReferenceExpression memref  
+                if (assignment.Right is MemberReferenceExpression memref
                 && memref.Target == null) // Memref with empty target created in tuple expression visitor
                 {
                     memref.Target = new IdToken(idText, idTextSpan);

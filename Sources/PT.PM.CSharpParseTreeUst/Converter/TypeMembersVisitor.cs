@@ -166,6 +166,11 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
+            if (node.Initializer?.Value is TupleExpressionSyntax)
+            {
+                return HandleTupleStatement(node);
+            }
+
             var initializer = node.Initializer != null ? (Expression)base.Visit(node.Initializer.Value) : null;
 
             var result = new AssignmentExpression(
