@@ -1,5 +1,5 @@
 <!-- Directive for ASP.NET Web Pages https://msdn.microsoft.com/en-us/library/t8syafc7(v=vs.100).aspx -->
-<%@ Page Language="C#" AutoEventWireup="true" SourceFile="FormWithBaseMaster.aspx.cs" MasterPageFile="BaseMasterPage.master"%>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="FormWithBaseMaster.aspx.cs" MasterPageFile="BaseMasterPage.master"%>
 
 <!-- Server-Side Include Directive Syntax http://msdn.microsoft.com/en-us/library/3207d0e3(v=vs.100).aspx -->
 
@@ -12,7 +12,7 @@
 </head>
 <body>
     <!-- ASP.NET Expression Builder https://msdn.microsoft.com/en-us/library/d5bd1tad.aspx -->
-    <asp:SqlDataSource ID="SqlDataSource1" Runat="server" 
+    <asp:SqlDataSource ID="SqlDataSource1" Runat="server"
         SelectCommand="SELECT * FROM [Employees]"
         ConnectionString="<%$ ConnectionStrings:NorthwindConnectionString1 %>">
     </asp:SqlDataSource>
@@ -25,17 +25,17 @@
     </script>
     <form id="form1" runat="server">
     <div>
-      <!-- Code Render Blocks http://msdn.microsoft.com/en-us/library/k6xeyd4z(v=vs.100).aspx --> 
+      <!-- Code Render Blocks http://msdn.microsoft.com/en-us/library/k6xeyd4z(v=vs.100).aspx -->
       <% Response.Write("text"); %>
       <% for (int i=0; i<10; i++) { %>
            <font size="<%=i %>"> Hello World! </font>
       <% } %>
-      
+
       <!-- Html Encoding Code  http://haacked.com/archive/2009/09/25/html-encoding-code-nuggets.aspx/ -->
       <%: Html.TextBox("FirstName") %>
-      
+
       <p>Hello <%= name %>!</p>
-      
+
       <!-- Data-Binding Expression Syntax https://msdn.microsoft.com/en-us/library/bda9bbfx(v=vs.100).aspx -->
       <asp:label text='<%# StateList.SelectedItem.Text %>' runat="server"/>
     </div>

@@ -8,11 +8,11 @@ namespace PT.PM.Common
     public class FoldResult
     {
 #if DEBUG
-        public TextFile TextFile { get; set; }
+        public TextFile SourceFile { get; set; }
 #endif
-        
+
         public object Value { get; }
-        
+
         public List<TextSpan> TextSpans { get; }
 
         public FoldResult(object value, TextSpan textSpan)
@@ -30,7 +30,7 @@ namespace PT.PM.Common
         {
             return Value + " at " +
 #if DEBUG
-                string.Join("; ", TextSpans.Select(textSpan => TextFile?.GetLineColumnTextSpan(textSpan).ToString() ?? textSpan.ToString()));
+                string.Join("; ", TextSpans.Select(textSpan => SourceFile?.GetLineColumnTextSpan(textSpan).ToString() ?? textSpan.ToString()));
 #else
                 string.Join("; ", TextSpans);
 #endif
