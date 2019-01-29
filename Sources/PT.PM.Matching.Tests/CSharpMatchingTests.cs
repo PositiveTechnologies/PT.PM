@@ -33,7 +33,7 @@ namespace PT.PM.Matching.Tests
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(sourceCodeRep, Global.PatternsRepository) { Logger = logger };
             workflow.Process();
-            Assert.AreEqual(2, logger.Matches.Count);
+            Assert.AreEqual(3, logger.Matches.Count);
         }
 
         [Test]

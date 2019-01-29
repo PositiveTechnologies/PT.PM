@@ -86,29 +86,20 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 var arg = node.Arguments[i];
                 var assignment = new AssignmentExpression
                 {
+                    Left = new IdToken($"Item{i + 1}", arg.GetTextSpan()),
                     Right = (Expression)VisitAndReturnNullIfError(arg.Expression),
                     TextSpan = arg.GetTextSpan()
                 };
-
-                var defaultName = new IdToken($"Item{i + 1}", assignment.TextSpan);
                 result.Initializers.Add(assignment);
 
                 if (arg.NameColon != null)
                 {
-                    var name = (IdToken)VisitAndReturnNullIfError(arg.NameColon.Name);
-
-                    assignment.Left = name;
-
                     result.Initializers.Add(new AssignmentExpression
                     {
-                        Left = new IdToken(defaultName.Id, defaultName.TextSpan),
-                        Right = new MemberReferenceExpression(null, new IdToken(name.Id, name.TextSpan), name.TextSpan),
+                        Left = (IdToken)VisitAndReturnNullIfError(arg.NameColon.Name),
+                        Right = (Expression)VisitAndReturnNullIfError(arg.Expression),
                         TextSpan = assignment.TextSpan
                     });
-                }
-                else
-                {
-                    assignment.Left = defaultName;
                 }
             }
 
@@ -220,11 +211,11 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitAssignmentExpression(AssignmentExpressionSyntax node)
         {
             var textSpan = node.GetTextSpan();
-            if (node.Left is TupleExpressionSyntax tupleLeft 
+            if (node.Left is TupleExpressionSyntax tupleLeft
                 && node.Right is TupleExpressionSyntax tupleRight)
             {
                 var assignments = new List<AssignmentExpression>();
-                for(int i = 0; i < tupleLeft.Arguments.Count; i++)
+                for (int i = 0; i < tupleLeft.Arguments.Count; i++)
                 {
                     var leftNode = ((DeclarationExpressionSyntax)tupleLeft.Arguments[i].Expression)?.Designation;
                     assignments.Add(new AssignmentExpression

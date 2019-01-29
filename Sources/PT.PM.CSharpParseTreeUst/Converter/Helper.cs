@@ -60,16 +60,29 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     continue;
                 }
 
-                variables = CreateVirtualMemberRefs(variables, typeElement, i, textSpan);
+                var initValues = node.Variables.Select(v =>
+                {
+                    var tuple = v.Initializer?.Value as TupleExpressionSyntax;
+                    if (tuple == null)
+                    {
+                        return null;
+                    }
+                    return (Expression)base.Visit(tuple.Arguments.ElementAtOrDefault(i));
+                }).ToList();
+
+                variables = CreateVirtualMemberRefs(variables, typeElement, i, initValues, typeNode.Elements[i].GetTextSpan());
             }
             var declaration = new VariableDeclarationExpression(null, variables, textSpan);
             return new ExpressionStatement(declaration);
         }
 
-        private List<AssignmentExpression> CreateVirtualMemberRefs(List<AssignmentExpression> variables, TupleElementSyntax typeElement, int initializerNumber, TextSpan textSpan)
+        private List<AssignmentExpression> CreateVirtualMemberRefs(List<AssignmentExpression> variables,
+            TupleElementSyntax typeElement, int initializerNumber,
+            List<Expression> initValues, TextSpan textSpan)
         {
-            foreach(var variable in variables)
+            for (int i = 0; i < variables.Count; i++)
             {
+                var variable = variables[i];
                 var tupleTypeElementMemRef = new MemberReferenceExpression
                 {
                     Target = new IdToken(((IdToken)variable.Left).Id, variable.Left.TextSpan),
@@ -81,13 +94,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 {
                     continue;
                 }
-                var oldName = ((AssignmentExpression)right.Initializers[initializerNumber]).Left
-                    as MemberReferenceExpression;
-                var newName = CopyMemberReference(oldName);
                 right.Initializers.Add(new AssignmentExpression
                 {
                     Left = tupleTypeElementMemRef,
-                    Right = newName,
+                    Right = initValues[i],
                     TextSpan = textSpan
                 });
             }
@@ -111,12 +121,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 var assignment = (AssignmentExpression)init;
                 assignment.Left = new MemberReferenceExpression(
                     new IdToken(idText, idTextSpan), assignment.Left, assignment.Left.TextSpan);
-
-                if (assignment.Right is MemberReferenceExpression memref
-                && memref.Target == null) // Memref with empty target created in tuple expression visitor
-                {
-                    memref.Target = new IdToken(idText, idTextSpan);
-                }
             });
 
             return new AssignmentExpression(new IdToken(idText, idTextSpan), tuple, node.GetTextSpan());
