@@ -1,20 +1,20 @@
-﻿using System;
-using System.Linq;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Tokens;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.Common.Nodes.Statements;
-using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using System.Collections.Generic;
+using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Collections;
+using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Statements;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
-using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
+using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.Common.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
@@ -70,6 +70,39 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var argsNode = new ArgsUst(args, node.GetTextSpan());
 
             var result = new ObjectCreateExpression(typeToken, argsNode, node.GetTextSpan());
+            return result;
+        }
+
+        public override Ust VisitTupleExpression(TupleExpressionSyntax node)
+        {
+            var result = new TupleCreateExpression()
+            {
+                TextSpan = node.GetTextSpan(),
+                Initializers = new List<Expression>()
+            };
+
+            for (int i = 0; i < node.Arguments.Count; i++)
+            {
+                var arg = node.Arguments[i];
+                var assignment = new AssignmentExpression
+                {
+                    Left = new IdToken($"Item{i + 1}", arg.GetTextSpan()),
+                    Right = (Expression)VisitAndReturnNullIfError(arg.Expression),
+                    TextSpan = arg.GetTextSpan()
+                };
+                result.Initializers.Add(assignment);
+
+                if (arg.NameColon != null)
+                {
+                    result.Initializers.Add(new AssignmentExpression
+                    {
+                        Left = (IdToken)VisitAndReturnNullIfError(arg.NameColon.Name),
+                        Right = (Expression)VisitAndReturnNullIfError(arg.Expression),
+                        TextSpan = assignment.TextSpan
+                    });
+                }
+            }
+
             return result;
         }
 
@@ -177,10 +210,28 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitAssignmentExpression(AssignmentExpressionSyntax node)
         {
+            var textSpan = node.GetTextSpan();
+            if (node.Left is TupleExpressionSyntax tupleLeft
+                && node.Right is TupleExpressionSyntax tupleRight)
+            {
+                var assignments = new List<AssignmentExpression>();
+                for (int i = 0; i < tupleLeft.Arguments.Count; i++)
+                {
+                    var leftNode = ((DeclarationExpressionSyntax)tupleLeft.Arguments[i].Expression)?.Designation;
+                    assignments.Add(new AssignmentExpression
+                    {
+                        Left = (Expression)base.Visit(leftNode),
+                        Right = (Expression)base.Visit(tupleRight.Arguments[i]),
+                        TextSpan = textSpan
+                    });
+                }
+                return new VariableDeclarationExpression(null, assignments, textSpan);
+            }
+
             var left = (Expression)base.Visit(node.Left);
             var right = (Expression)base.Visit(node.Right);
 
-            return UstUtils.CreateAssignExpr(left, right, node.GetTextSpan(),
+            return UstUtils.CreateAssignExpr(left, right, textSpan,
                 node.OperatorToken.ValueText, node.OperatorToken.GetTextSpan());
         }
 
@@ -328,8 +379,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var alias = (IdToken)VisitIdentifierName(node.Alias);
             var name = (Token)base.Visit(node.Name);
-        
-            var result = new TypeToken(new [] { alias.Id, name.TextValue }, node.GetTextSpan());
+            var result = new TypeToken(new[] { alias.Id, name.TextValue }, node.GetTextSpan());
             return result;
         }
 
@@ -366,7 +416,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             var target = (Expression)base.Visit(node.Expression);
             ArgsUst args = node.ArgumentList == null ? null : (ArgsUst)VisitBracketedArgumentList(node.ArgumentList);
-
             var result = new IndexerExpression(target, args, node.GetTextSpan());
             return result;
         }
@@ -387,7 +436,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitIndexerMemberCref(IndexerMemberCrefSyntax node)
         {
-            
+
             throw new NotImplementedException();
         }
 
@@ -472,7 +521,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             var type = ConvertType(base.Visit(node.Type));
             ArgsUst args = node.ArgumentList == null ? null : (ArgsUst)VisitArgumentList(node.ArgumentList);
 
-            var initializers = node.Initializer == null ? null : 
+            var initializers = node.Initializer == null ? null :
                 node.Initializer.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e))
                 .ToList();
 

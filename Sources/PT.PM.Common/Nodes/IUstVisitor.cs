@@ -43,6 +43,7 @@ namespace PT.PM.Common.Nodes
         T Visit(MemberReferenceExpression memberReferenceExpression);
         T Visit(MultichildExpression multichildExpression);
         T Visit(ObjectCreateExpression objectCreateExpression);
+        T Visit(TupleCreateExpression tupleCreateExpression);
         T Visit(UnaryOperatorExpression unaryOperatorExpression);
         T Visit(VariableDeclarationExpression variableDeclarationExpression);
         T Visit(CommaExpression colonExpression);

@@ -214,6 +214,11 @@ namespace PT.PM.Matching
             return VisitChildren(patternUnaryOperatorLiteral);
         }
 
+        public T Visit(PatternTupleCreateExpression patternTupleCreateExpression)
+        {
+            return VisitChildren(patternTupleCreateExpression);
+        }
+
         protected virtual T VisitChildren(PatternUst patternBase)
         {
             try

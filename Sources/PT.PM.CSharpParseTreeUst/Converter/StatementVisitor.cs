@@ -23,6 +23,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
         {
+            if(node.Declaration.Type is TupleTypeSyntax)
+            {
+                return HandleTupleStatement(node.Declaration);
+            }
             var type = ConvertType(base.Visit(node.Declaration.Type));
             AssignmentExpression[] variables =
                 node.Declaration.Variables.Select(v => (AssignmentExpression)VisitAndReturnNullIfError(v))
