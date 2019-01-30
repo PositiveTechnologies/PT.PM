@@ -128,6 +128,10 @@ namespace PT.PM.Tests
             {
                 Assert.AreEqual(binaryFile.Data.Length, readSize);
             }
+            else
+            {
+                Assert.Less(binaryFile.Data.Length, readSize, "Compressed size should be less than original");
+            }
 
             if (incorrectFilePath)
             {
