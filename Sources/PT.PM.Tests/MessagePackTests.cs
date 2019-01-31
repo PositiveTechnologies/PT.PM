@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -73,7 +75,7 @@ namespace PT.PM.Tests
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
-            int errorOffset = 5;
+            int errorOffset = 6;
             byte errorValue = 123;
 
             var serializedFiles = new List<string>();
@@ -123,7 +125,7 @@ namespace PT.PM.Tests
             }
 
             var binaryFile = (BinaryFile)newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
-            RootUstMessagePackSerializer.Deserialize(binaryFile, !linearTextSpans, new HashSet<IFile>(), null, logger, out int readSize);
+            RootUstMessagePackSerializer.Deserialize(binaryFile, new HashSet<IFile>(), null, logger, out int readSize);
             if (!compressed)
             {
                 Assert.AreEqual(binaryFile.Data.Length, readSize);
@@ -131,6 +133,9 @@ namespace PT.PM.Tests
             else
             {
                 Assert.Less(binaryFile.Data.Length, readSize, "Compressed size should be less than original");
+                double compressionRatio = (double) readSize / binaryFile.Data.Length;
+                Debug.WriteLine($"Compression ratio: {compressionRatio}");
+                Console.WriteLine($"Compression ratio: {compressionRatio}");
             }
 
             if (incorrectFilePath)
