@@ -1,7 +1,9 @@
 ﻿using System.Text;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class TupleCreateExpression : ObjectCreateExpression
     {
         public override Ust[] GetChildren()

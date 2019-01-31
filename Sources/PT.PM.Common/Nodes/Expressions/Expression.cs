@@ -7,7 +7,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 namespace PT.PM.Common.Nodes.Expressions
 {
     [MessagePackObject]
-    
+
     [Union((int)NodeType.AnonymousMethodExpression, typeof(AnonymousMethodExpression))]
     [Union((int)NodeType.AnonymousObjectExpression, typeof(AnonymousObjectExpression))]
     [Union((int)NodeType.ArgumentExpression, typeof(ArgumentExpression))]
@@ -21,11 +21,12 @@ namespace PT.PM.Common.Nodes.Expressions
     [Union((int)NodeType.MemberReferenceExpression, typeof(MemberReferenceExpression))]
     [Union((int)NodeType.MultichildExpression, typeof(MultichildExpression))]
     [Union((int)NodeType.ObjectCreateExpression, typeof(ObjectCreateExpression))]
+    [Union((int)NodeType.TupleCreateExpression, typeof(TupleCreateExpression))]
     [Union((int)NodeType.UnaryOperatorExpression, typeof(UnaryOperatorExpression))]
     [Union((int)NodeType.VariableDeclarationExpression, typeof(VariableDeclarationExpression))]
     [Union((int)NodeType.WrapperExpression, typeof(WrapperExpression))]
     [Union((int)NodeType.YieldExpression, typeof(YieldExpression))]
-    
+
     [Union((int)NodeType.BaseReferenceToken, typeof(BaseReferenceToken))]
     [Union((int)NodeType.IdToken, typeof(IdToken))]
     [Union((int)NodeType.ThisReferenceToken, typeof(ThisReferenceToken))]
@@ -36,7 +37,7 @@ namespace PT.PM.Common.Nodes.Expressions
     [Union((int)NodeType.AsExpression, typeof(AsExpression))]
     [Union((int)NodeType.CheckedExpression, typeof(CheckedExpression))]
     [Union((int)NodeType.CommaExpression, typeof(CommaExpression))]
-    
+
     [Union((int)NodeType.BinaryOperatorLiteral, typeof(BinaryOperatorLiteral))]
     [Union((int)NodeType.BooleanLiteral, typeof(BooleanLiteral))]
     [Union((int)NodeType.CommentLiteral, typeof(CommentLiteral))]

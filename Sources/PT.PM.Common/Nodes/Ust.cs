@@ -40,6 +40,7 @@ namespace PT.PM.Common.Nodes
     [Union((int)NodeType.MemberReferenceExpression, typeof(MemberReferenceExpression))]
     [Union((int)NodeType.MultichildExpression, typeof(MultichildExpression))]
     [Union((int)NodeType.ObjectCreateExpression, typeof(ObjectCreateExpression))]
+    [Union((int)NodeType.TupleCreateExpression, typeof(TupleCreateExpression))]
     [Union((int)NodeType.UnaryOperatorExpression, typeof(UnaryOperatorExpression))]
     [Union((int)NodeType.VariableDeclarationExpression, typeof(VariableDeclarationExpression))]
     [Union((int)NodeType.WrapperExpression, typeof(WrapperExpression))]

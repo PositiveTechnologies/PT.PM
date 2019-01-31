@@ -23,6 +23,7 @@ namespace PT.PM.Common.Nodes
         MemberReferenceExpression,
         MultichildExpression,
         ObjectCreateExpression,
+        TupleCreateExpression,
         UnaryOperatorExpression,
         VariableDeclarationExpression,
         WrapperExpression,
