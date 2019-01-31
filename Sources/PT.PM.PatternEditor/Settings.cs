@@ -5,6 +5,7 @@ using PT.PM.Common.Utils;
 using PT.PM.JavaScriptParseTreeUst;
 using System;
 using System.IO;
+using PT.PM.Common;
 
 namespace PT.PM.PatternEditor
 {
@@ -37,13 +38,13 @@ namespace PT.PM.PatternEditor
 
         public bool LogExpanded { get; set; } = false;
 
-        public string SourceCodeFile { get; set; } = "";
+        public string SourceFile { get; set; } = "";
 
-        public string SourceCode { get; set; } = "";
+        public string Source { get; set; } = "";
 
         public Stage SelectedStage { get; set; } = Stage.Match;
 
-        public string SourceCodeLanguage { get; set; } = "";
+        public Language SourceLanguage { get; set; } = Language.Uncertain;
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 

@@ -1,16 +1,19 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Statements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Sql
 {
+    [MessagePackObject]
     public class SqlQuery : Expression
     {
+        [Key(UstFieldOffset)]
         public Expression QueryCommand { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public List<Expression> QueryElements { get; set; } = new List<Expression>();
 
         public SqlQuery(Expression queryKey, IEnumerable<Expression> queryElements,TextSpan textSpan)

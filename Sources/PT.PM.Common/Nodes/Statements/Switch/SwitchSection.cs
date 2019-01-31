@@ -1,13 +1,17 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Statements.Switch
 {
+    [MessagePackObject]
     public class SwitchSection : Ust
     {
+        [Key(UstFieldOffset)]
         public List<Expression> CaseLabels { get; set; } = new List<Expression>();
 
+        [Key(UstFieldOffset + 1)]
         public List<Statement> Statements { get; set; } = new List<Statement>();
 
         public SwitchSection(IEnumerable<Expression> caseLabels, IEnumerable<Statement> statements, TextSpan textSpan)

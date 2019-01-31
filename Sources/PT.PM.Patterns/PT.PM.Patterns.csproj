@@ -15,16 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PT.PM.CLangsParseTreeUst\PT.PM.CLangsParseTreeUst.csproj" />
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
-    <ProjectReference Include="..\PT.PM.CSharpParseTreeUst\PT.PM.CSharpParseTreeUst.csproj" />
-    <ProjectReference Include="..\PT.PM.JavaParseTreeUst\PT.PM.JavaParseTreeUst.csproj" />
-    <ProjectReference Include="..\PT.PM.JavaScriptParseTreeUst\PT.PM.JavaScriptParseTreeUst.csproj" />
     <ProjectReference Include="..\PT.PM.Matching\PT.PM.Matching.csproj" />
-    <ProjectReference Include="..\PT.PM.MySqlParseTreeUst\PT.PM.MySqlParseTreeUst.csproj" />
-    <ProjectReference Include="..\PT.PM.PhpParseTreeUst\PT.PM.PhpParseTreeUst.csproj" />
-    <ProjectReference Include="..\PT.PM.PlSqlParseTreeUst\PT.PM.PlSqlParseTreeUst.csproj" />
-    <ProjectReference Include="..\PT.PM.TSqlParseTreeUst\PT.PM.TSqlParseTreeUst.csproj" />
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
   </ItemGroup>
 

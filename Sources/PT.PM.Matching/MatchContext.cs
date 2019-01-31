@@ -14,7 +14,7 @@ namespace PT.PM.Matching
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public bool FindAllAlternatives { get; set; } = false;
+        public bool FindAllAlternatives { get; set; }
 
         public List<TextSpan> Locations { get; } = new List<TextSpan>();
 
@@ -25,7 +25,7 @@ namespace PT.PM.Matching
         public bool MatchedWithFolded { get; set; }
 
         public bool IgnoreLocations { get; set; }
-        
+
         public UstConstantFolder UstConstantFolder { get; }
 
         public static MatchContext CreateWithInputParamsAndVars(MatchContext context)
@@ -46,7 +46,7 @@ namespace PT.PM.Matching
         {
             PatternUst = patternUst;
             UstConstantFolder = ustConstantFolder;
-            this.parentStack = parentStack; 
+            this.parentStack = parentStack;
             if (vars != null)
             {
                 Vars = vars;
@@ -57,9 +57,9 @@ namespace PT.PM.Matching
 
         public MatchContext AddUstIfSuccess(Ust ust)
         {
-            if (Success && !IgnoreLocations && !ust.TextSpan.IsZero)
+            if (Success && !IgnoreLocations && ust.TextSpans != null)
             {
-                Locations.AddRange(ust.GetRealTextSpans());
+                Locations.AddRange(ust.TextSpans);
             }
             return this;
         }
@@ -67,9 +67,9 @@ namespace PT.PM.Matching
         public MatchContext AddMatch(Ust ust)
         {
             Success = true;
-            if (!IgnoreLocations && ust != null && !ust.TextSpan.IsZero)
+            if (!IgnoreLocations && ust != null && ust.TextSpans != null)
             {
-                Locations.AddRange(ust.GetRealTextSpans());
+                Locations.AddRange(ust.TextSpans);
             }
             return this;
         }

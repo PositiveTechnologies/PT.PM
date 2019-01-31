@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Exceptions
 {
@@ -7,7 +8,7 @@ namespace PT.PM.Common.Exceptions
     {
         public string ExceptionType => GetType().Name;
 
-        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
+        public IFile File { get; set; } = TextFile.Empty;
 
         public TextSpan TextSpan { get; set; }
 
@@ -36,15 +37,15 @@ namespace PT.PM.Common.Exceptions
             string fileName = fileNameType == FileNameType.None
                 ? ""
                 : fileNameType == FileNameType.Full
-                ? CodeFile.FullName
+                ? File.FullName
                 : fileNameType == FileNameType.Relative
-                ? CodeFile.RelativeName
-                : CodeFile.Name;
+                ? File.RelativeName
+                : File.Name;
 
             string fileNameString = !string.IsNullOrEmpty(fileName)
                 ? $@" in ""{fileName}"""
                 : "";
-            string patternString = !string.IsNullOrEmpty(CodeFile.PatternKey) ? $"Pattern {CodeFile.PatternKey} " : "";
+            string patternString = !string.IsNullOrEmpty(File.PatternKey) ? $"Pattern {File.PatternKey} " : "";
 
             string exceptionString = printStackTrace
                 ? InnerException?.FormatExceptionMessage() ?? Message

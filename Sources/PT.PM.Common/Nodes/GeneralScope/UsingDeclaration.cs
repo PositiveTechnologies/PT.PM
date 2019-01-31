@@ -1,9 +1,12 @@
-﻿using PT.PM.Common.Nodes.Tokens.Literals;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
+    [MessagePackObject]
     public class UsingDeclaration : Ust
     {
+        [Key(UstFieldOffset)]
         public StringLiteral Name { get; set; }
 
         public UsingDeclaration(StringLiteral name, TextSpan textSpan)

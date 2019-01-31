@@ -1,18 +1,23 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Expressions;
-using System;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class ForStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public List<Statement> Initializers { get; set; } = new List<Statement>();
 
+        [Key(UstFieldOffset + 1)]
         public Expression Condition { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public List<Expression> Iterators { get; set; } = new List<Expression>();
 
+        [Key(UstFieldOffset + 3)]
         public Statement Statement { get; set; }
 
         public ForStatement(IEnumerable<Statement> initializers, Expression condition,

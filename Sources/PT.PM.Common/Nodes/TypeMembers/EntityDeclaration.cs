@@ -1,13 +1,26 @@
 ﻿using System.Collections.Generic;
+using MessagePack;
+using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
+    [MessagePackObject]
+    [Union((int)NodeType.TypeDeclaration, typeof(TypeDeclaration))]
+    [Union((int)NodeType.ConstructorDeclaration, typeof(ConstructorDeclaration))]
+    [Union((int)NodeType.FieldDeclaration, typeof(FieldDeclaration))]
+    [Union((int)NodeType.MethodDeclaration, typeof(MethodDeclaration))]
+    [Union((int)NodeType.PropertyDeclaration, typeof(PropertyDeclaration))]
+    [Union((int)NodeType.StatementDeclaration, typeof(StatementDeclaration))]
     public abstract class EntityDeclaration : Ust
     {
+        internal const int EntityFieldOffset = UstFieldOffset + 2;
+        
+        [Key(UstFieldOffset)]
         public List<ModifierLiteral> Modifiers { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public IdToken Name { get; set; }
 
         protected EntityDeclaration(IdToken name, TextSpan textSpan)

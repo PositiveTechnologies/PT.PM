@@ -1,9 +1,12 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Expressions;
 
 namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class ExpressionStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public Expression Expression { get; set; }
 
         public ExpressionStatement()
@@ -11,10 +14,9 @@ namespace PT.PM.Common.Nodes.Statements
         }
 
         public ExpressionStatement(Expression expression, TextSpan textSpan = default)
-            : base(textSpan)
+            : base(textSpan.IsZero ? expression.TextSpan : textSpan)
         {
             Expression = expression;
-            TextSpan = textSpan.IsZero ? expression.TextSpan : textSpan;
         }
 
         public override Ust[] GetChildren() => new Ust[] { Expression };

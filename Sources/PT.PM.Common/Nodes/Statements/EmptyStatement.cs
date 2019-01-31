@@ -1,5 +1,8 @@
-﻿namespace PT.PM.Common.Nodes.Statements
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class EmptyStatement : Statement
     {
         public EmptyStatement(TextSpan textSpan)

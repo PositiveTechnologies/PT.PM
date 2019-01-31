@@ -3,13 +3,13 @@ using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using PT.PM.Common.Nodes;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Dsl
 {
@@ -22,7 +22,7 @@ namespace PT.PM.Dsl
 
         public bool PatternExpressionInsideStatement { get; set; } = true;
 
-        public CodeFile Data { get; set; }
+        public TextFile Data { get; set; }
 
         public PatternRoot Convert(DslParser.PatternContext pattern)
         {
@@ -32,7 +32,7 @@ namespace PT.PM.Dsl
                 var result = new PatternRoot
                 {
                     Node = VisitPattern(pattern),
-                    Languages = new HashSet<Language>(LanguageUtils.PatternLanguages.Values)
+                    Languages = new HashSet<Language>(LanguageUtils.PatternLanguages)
                 };
                 var ascendantsFiller = new PatternAscendantsFiller(result);
                 ascendantsFiller.FillAscendants();
@@ -154,7 +154,7 @@ namespace PT.PM.Dsl
 
         public PatternUst VisitPatternNotExpression(DslParser.PatternNotExpressionContext context)
         {
-            var expression = (PatternUst)VisitExpression(context.expression());
+            var expression = VisitExpression(context.expression());
             return new PatternNot(expression, context.GetTextSpan());
         }
 

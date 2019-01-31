@@ -1,28 +1,35 @@
-﻿using System;
+﻿using PT.PM.Common.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Files;
 
-namespace PT.PM.Common.CodeRepository
+namespace PT.PM.Common.SourceRepository
 {
-    public abstract class SourceCodeRepository : ILoggable
+    public abstract class SourceRepository : ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public string RootPath { get; protected set; } = "";
 
-        public HashSet<Language> Languages { get; set; } = new HashSet<Language>(LanguageUtils.Languages.Values);
+        public HashSet<Language> Languages { get; set; } = new HashSet<Language>(LanguageUtils.LanguageInfos.Keys);
 
-        public bool LoadJson { get; set; }
+        public SerializationFormat? Format { get; }
+
+        protected SourceRepository(SerializationFormat? format)
+        {
+            Format = format;
+        }
 
         public abstract IEnumerable<string> GetFileNames();
 
-        public abstract CodeFile ReadFile(string fileName);
+        public abstract IFile ReadFile(string fileName);
 
         public virtual bool IsFileIgnored(string fileName, bool withParser)
         {
             string fileExtension = System.IO.Path.GetExtension(fileName);
 
-            if (!LoadJson)
+            if (Format == null)
             {
                 foreach (Language language in Languages)
                 {
@@ -36,12 +43,12 @@ namespace PT.PM.Common.CodeRepository
                 return true;
             }
 
-            return !fileExtension.EndsWith("json", StringComparison.OrdinalIgnoreCase);
+            return !fileExtension.EndsWith(((SerializationFormat)Format).GetExtension(), StringComparison.OrdinalIgnoreCase);
         }
 
         private bool IsLanguageIgnored(Language language, string fileExtension, bool withParser)
         {
-            if (language.Extensions.Any(ext => ext == fileExtension))
+            if (language.GetExtensions().Any(ext => ext == fileExtension))
             {
                 return withParser && !language.IsParserExists();
             }

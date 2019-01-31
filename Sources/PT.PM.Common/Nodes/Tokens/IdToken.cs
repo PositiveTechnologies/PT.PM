@@ -1,11 +1,15 @@
 ﻿using System;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Tokens
 {
+    [MessagePackObject]
     public class IdToken : Token
     {
+        [Key(UstFieldOffset)]
         public virtual string Id { get; set; }
 
+        [IgnoreMember]
         public override string TextValue => Id;
 
         public IdToken(string id, TextSpan textSpan)

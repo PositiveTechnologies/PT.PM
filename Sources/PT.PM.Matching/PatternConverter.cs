@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
@@ -50,7 +51,7 @@ namespace PT.PM.Matching
             var result = new List<PatternRoot>(patternsDto.Count());
             foreach (PatternDto patternDto in patternsDto)
             {
-                CodeFile patternFile = new CodeFile(patternDto.Value)
+                var patternFile = new TextFile(patternDto.Value)
                 {
                     Name = patternDto.Name,
                     PatternKey = patternDto.Key
@@ -107,14 +108,14 @@ namespace PT.PM.Matching
                 {
                     if (serializer is JsonPatternSerializer jsonPatternSerializer)
                     {
-                        jsonPatternSerializer.CurrectCodeFile = pattern.CodeFile;
+                        jsonPatternSerializer.CurrectSourceFile = pattern.File;
                     }
                     string serialized = serializer.Serialize(pattern);
                     PatternDto patternDto = new PatternDto
                     {
                         DataFormat = pattern.DataFormat,
                         Key = pattern.Key,
-                        Languages = new HashSet<string>(pattern.Languages.Select(lang => lang.Key)),
+                        Languages = new HashSet<string>(pattern.Languages.Select(lang => lang.ToString())),
                         Value = serialized,
                         Description = pattern.DebugInfo,
                         FilenameWildcard = pattern.FilenameWildcard
@@ -123,7 +124,7 @@ namespace PT.PM.Matching
                 }
                 catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
-                    Logger.LogError(new ConversionException(pattern.CodeFile, ex, $"Error while \"{pattern.Key}\" pattern serialising"));
+                    Logger.LogError(new ConversionException(pattern.File, ex, $"Error while \"{pattern.Key}\" pattern serialising"));
                 }
             }
             return result;

@@ -4,9 +4,8 @@ using Avalonia.Threading;
 using AvaloniaEdit;
 using AvaloniaEdit.Highlighting;
 using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Utils;
-using PT.PM.CSharpParseTreeUst;
 using PT.PM.JavaScriptParseTreeUst;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
@@ -19,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PatternEditor
 {
@@ -26,20 +26,20 @@ namespace PT.PM.PatternEditor
     {
         private readonly Window window;
         private readonly ColumnDefinition patternsPanelColumn;
-        private readonly TextEditor sourceCodeTextBox;
-        private readonly ListBox sourceCodeErrorsListBox;
+        private readonly TextEditor sourceTextBox;
+        private readonly ListBox sourceErrorsListBox;
         private readonly ListBox matchResultListBox;
-        private string oldSelectedLanguage;
-        private string sourceCodeFileName;
+        private Language oldSelectedLanguage;
+        private string sourceFileName;
         private bool fileOpened;
-        private string oldSourceCode = "";
+        private string oldSource = "";
         private Stage oldEndStage;
         private JavaScriptType oldJavaScriptType;
         private readonly LanguageDetector languageDetector = new ParserLanguageDetector();
         private string tokensHeader;
         private string parseTreeHeader;
-        private string sourceCodeErrorsText = "Errors";
-        private bool sourceCodeErrorsIsVisible;
+        private string sourceErrorsText = "Errors";
+        private bool sourceErrorsIsVisible;
         private string tokens;
         private string parseTree;
         private string ustJson;
@@ -48,16 +48,16 @@ namespace PT.PM.PatternEditor
         private bool oldIsLinearTextSpans;
         private bool oldIsIncludeCode;
         private bool oldIsLeftRightDir;
-        private CodeFile sourceCode;
-        private int prevSourceCodeStart, prevSourceCodeLength;
+        private TextFile source;
+        private int prevSourceStart, prevSourceLength;
 
-        private Dictionary<string, string> highlightings = new Dictionary<string, string>
+        private readonly Dictionary<Language, string> highlightings = new Dictionary<Language, string>
         {
-            ["CSharp"] = "C#",
-            ["Java"] = "Java",
-            ["Php"] = "PHP",
-            ["JavaScript"] = "JavaScript",
-            ["Html"] = "HTML",
+            [Language.CSharp] = "C#",
+            [Language.Java] = "Java",
+            [Language.Php] = "PHP",
+            [Language.JavaScript] = "JavaScript",
+            [Language.Html] = "HTML",
         };
 
         public MainWindowViewModel(Window w)
@@ -78,21 +78,21 @@ namespace PT.PM.PatternEditor
             }
 
             patternsPanelColumn = window.Find<Grid>("MainGrid").ColumnDefinitions[0];
-            sourceCodeTextBox = window.Find<TextEditor>("SourceCode");
-            sourceCodeErrorsListBox = window.Find<ListBox>("SourceCodeErrors");
+            sourceTextBox = window.Find<TextEditor>("Source");
+            sourceErrorsListBox = window.Find<ListBox>("SourceErrors");
             matchResultListBox = window.Find<ListBox>("MatchingResult");
 
             patternsPanelColumn.Width = GridLength.Parse(Settings.PatternsPanelWidth.ToString());
-            sourceCodeErrorsListBox.DoubleTapped += (sender, e) =>
+            sourceErrorsListBox.DoubleTapped += (sender, e) =>
             {
-                GuiUtils.ProcessErrorOnDoubleClick(sourceCodeErrorsListBox, sourceCodeTextBox);
+                GuiUtils.ProcessErrorOnDoubleClick(sourceErrorsListBox, sourceTextBox);
             };
             matchResultListBox.DoubleTapped += MatchingResultListBox_DoubleTapped;
 
-            SourceCodeLogger = GuiLogger.CreateSourceCodeLogger(SourceCodeErrors, MatchingResults);
-            languageDetector.Logger = SourceCodeLogger;
+            SourceLogger = GuiLogger.CreateSourceLogger(SourceErrors, MatchingResults);
+            languageDetector.Logger = SourceLogger;
 
-            OpenSourceCodeFile = ReactiveCommand.Create(async () =>
+            OpenSourceFile = ReactiveCommand.Create(async () =>
             {
                 var dialog = new OpenFileDialog
                 {
@@ -103,30 +103,30 @@ namespace PT.PM.PatternEditor
                 {
                     OpenedFileName = fileNames[0];
                     fileOpened = true;
-                    sourceCodeTextBox.Text = FileExt.ReadAllText(sourceCodeFileName);
+                    sourceTextBox.Text = FileExt.ReadAllText(sourceFileName);
                 }
             });
 
-            SaveSourceCodeFile = ReactiveCommand.Create(() =>
+            SaveSourceFile = ReactiveCommand.Create(() =>
             {
-                if (!string.IsNullOrEmpty(sourceCodeFileName))
+                if (!string.IsNullOrEmpty(sourceFileName))
                 {
-                    FileExt.WriteAllText(sourceCodeFileName, sourceCodeTextBox.Text);
+                    FileExt.WriteAllText(sourceFileName, sourceTextBox.Text);
                 }
             });
 
             ReloadFile = ReactiveCommand.Create(() =>
             {
-                if (!string.IsNullOrEmpty(sourceCodeFileName))
+                if (!string.IsNullOrEmpty(sourceFileName))
                 {
-                    sourceCodeTextBox.Text = FileExt.ReadAllText(sourceCodeFileName);
+                    sourceTextBox.Text = FileExt.ReadAllText(sourceFileName);
                 }
             });
 
             Reset = ReactiveCommand.Create(() =>
             {
                 OpenedFileName = "";
-                sourceCodeTextBox.Text = "";
+                sourceTextBox.Text = "";
             });
 
             OpenDumpDirectory = ReactiveCommand.Create(() =>
@@ -141,38 +141,38 @@ namespace PT.PM.PatternEditor
                 }
             });
 
-            if (string.IsNullOrEmpty(Settings.SourceCodeFile) || !FileExt.Exists(Settings.SourceCodeFile))
+            if (string.IsNullOrEmpty(Settings.SourceFile) || !FileExt.Exists(Settings.SourceFile))
             {
                 fileOpened = false;
-                sourceCodeFileName = "";
-                sourceCodeTextBox.Text = Settings.SourceCode;
+                sourceFileName = "";
+                sourceTextBox.Text = Settings.Source;
             }
             else
             {
                 fileOpened = true;
-                sourceCodeFileName = Settings.SourceCodeFile;
-                sourceCodeTextBox.Text = FileExt.ReadAllText(Settings.SourceCodeFile);
+                sourceFileName = Settings.SourceFile;
+                sourceTextBox.Text = FileExt.ReadAllText(Settings.SourceFile);
             }
 
-            CheckSourceCode();
+            CheckSource();
 
             this.RaisePropertyChanged(nameof(SelectedLanguage));
             this.RaisePropertyChanged(nameof(OpenedFileName));
 
-            if (highlightings.TryGetValue(SelectedLanguage.Key, out string highlighting))
+            if (highlightings.TryGetValue(SelectedLanguage, out string highlighting))
             {
-                sourceCodeTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
+                sourceTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
             }
 
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
-                .Subscribe(_ => UpdateSourceCodeSelection());
+                .Subscribe(_ => UpdateSourceSelection());
 
             Observable.FromEventPattern<EventHandler, EventArgs>(
-                h => sourceCodeTextBox.TextChanged += h,
-                h => sourceCodeTextBox.TextChanged -= h)
+                h => sourceTextBox.TextChanged += h,
+                h => sourceTextBox.TextChanged -= h)
                 .Throttle(TimeSpan.FromMilliseconds(500))
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(str => CheckSourceCode());
+                .Subscribe(str => CheckSource());
 
             SetupWindowSubscriptions();
 
@@ -241,35 +241,36 @@ namespace PT.PM.PatternEditor
                 });
         }
 
-        private void UpdateSourceCodeSelection()
+        private void UpdateSourceSelection(bool force = false)
         {
-            int sourceCodeStart = sourceCodeTextBox.SelectionStart;
-            int sourceCodeLength = sourceCodeTextBox.SelectionLength;
-            if (sourceCodeStart != prevSourceCodeStart || sourceCodeLength != prevSourceCodeLength)
+            try
             {
-                prevSourceCodeStart = sourceCodeStart;
-                prevSourceCodeLength = sourceCodeLength;
-
-                if (sourceCode != null)
+                int sourceStart = sourceTextBox.SelectionStart;
+                int sourceLength = sourceTextBox.SelectionLength;
+                if (force || sourceStart != prevSourceStart || sourceLength != prevSourceLength)
                 {
-                    int start = sourceCodeTextBox.SelectionStart;
-                    int end = sourceCodeTextBox.SelectionStart + sourceCodeTextBox.SelectionLength;
+                    prevSourceStart = sourceStart;
+                    prevSourceLength = sourceLength;
+
+                    int start = sourceTextBox.SelectionStart;
+                    int end = sourceTextBox.SelectionStart + sourceTextBox.SelectionLength;
                     if (start > end)
                     {
                         int t = start;
                         start = end;
                         end = t;
                     }
+
                     var textSpan = TextSpan.FromBounds(start, end);
-                    var lineColumnTextSpan = sourceCode.GetLineColumnTextSpan(textSpan);
-                    SourceCodeTextBoxPosition = $"Range: {lineColumnTextSpan}; LineColumn: {textSpan}";
+                    var lineColumnTextSpan = source.GetLineColumnTextSpan(textSpan);
+                    SourceTextBoxPosition = $"Range: {textSpan}; LineColumn: {lineColumnTextSpan}";
                 }
-                else
-                {
-                    SourceCodeTextBoxPosition = $"";
-                }
-                this.RaisePropertyChanged(nameof(SourceCodeTextBoxPosition));
             }
+            catch
+            {
+                SourceTextBoxPosition = $"";
+            }
+            this.RaisePropertyChanged(nameof(SourceTextBoxPosition));
         }
 
         private void MatchingResultListBox_DoubleTapped(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -277,18 +278,18 @@ namespace PT.PM.PatternEditor
             if (matchResultListBox.SelectedItem is MatchResultViewModel matchResultViewModel)
             {
                 var matchResult = matchResultViewModel.MatchResult;
-                sourceCodeTextBox.Focus();
-                sourceCodeTextBox.SelectionStart = matchResult.TextSpan.Start;
-                sourceCodeTextBox.SelectionLength = matchResult.TextSpan.Length;
-                sourceCodeTextBox.CaretOffset = matchResult.TextSpan.End;
+                sourceTextBox.Focus();
+                sourceTextBox.SelectionStart = matchResult.TextSpan.Start;
+                sourceTextBox.SelectionLength = matchResult.TextSpan.Length;
+                sourceTextBox.CaretOffset = matchResult.TextSpan.End;
             }
         }
 
-        public GuiLogger SourceCodeLogger { get; }
+        public GuiLogger SourceLogger { get; }
 
         public Settings Settings => ServiceLocator.Settings;
 
-        public string SourceCodeTextBoxPosition { get; set; }
+        public string SourceTextBoxPosition { get; set; }
 
         public ObservableCollection<Stage> Stages { get; } = new ObservableCollection<Stage>(new[] { Stage.ParseTree, Stage.Ust, Stage.Match });
 
@@ -304,7 +305,7 @@ namespace PT.PM.PatternEditor
                     this.RaisePropertyChanged(nameof(IsMatchingStage));
                     this.RaisePropertyChanged(nameof(IsUstJsonVisible));
                     this.RaisePropertyChanged();
-                    CheckSourceCode();
+                    CheckSource();
                 }
             }
         }
@@ -314,30 +315,22 @@ namespace PT.PM.PatternEditor
 
         public Language SelectedLanguage
         {
-            get
-            {
-                HashSet<Language> languages = LanguageUtils.ParseLanguages(Settings.SourceCodeLanguage);
-                if (languages.Count > 0)
-                {
-                    return languages.First();
-                }
-                return CSharp.Language;
-            }
+            get => Settings.SourceLanguage;
             set
             {
-                if (Settings.SourceCodeLanguage != value.Key)
+                if (Settings.SourceLanguage != value)
                 {
-                    if (highlightings.TryGetValue(value.Key, out string highlighting))
+                    if (highlightings.TryGetValue(value, out string highlighting))
                     {
-                        sourceCodeTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
+                        sourceTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
                     }
 
-                    Settings.SourceCodeLanguage = value.Key;
+                    Settings.SourceLanguage = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
                     this.RaisePropertyChanged(nameof(IsJavaScriptTypeVisible));
-                    CheckSourceCode();
+                    CheckSource();
                 }
             }
         }
@@ -355,16 +348,16 @@ namespace PT.PM.PatternEditor
                     Settings.JavaScriptType = value;
                     Settings.Save();
                     this.RaisePropertyChanged(nameof(JavaScriptType));
-                    CheckSourceCode();
+                    CheckSource();
                 }
             }
         }
 
-        public bool IsJavaScriptTypeVisible => SelectedLanguage == JavaScript.Language;
+        public bool IsJavaScriptTypeVisible => SelectedLanguage == Language.JavaScript;
 
-        public ReactiveCommand OpenSourceCodeFile { get; }
+        public ReactiveCommand OpenSourceFile { get; }
 
-        public ReactiveCommand SaveSourceCodeFile { get; }
+        public ReactiveCommand SaveSourceFile { get; }
 
         public ReactiveCommand ReloadFile { get; }
 
@@ -372,36 +365,36 @@ namespace PT.PM.PatternEditor
 
         public ReactiveCommand OpenDumpDirectory { get; }
 
-        public string OpenedFullFileName => sourceCodeFileName;
+        public string OpenedFullFileName => sourceFileName;
 
         public string OpenedFileName
         {
-            get => Path.GetFileName(sourceCodeFileName);
+            get => Path.GetFileName(sourceFileName);
             set
             {
                 if (!string.IsNullOrEmpty(value))
                 {
                     SelectedLanguage = languageDetector.DetectIfRequired(value).Language;
                 }
-                Settings.SourceCodeFile = value;
+                Settings.SourceFile = value;
                 Settings.Save();
-                this.RaiseAndSetIfChanged(ref sourceCodeFileName, value);
+                this.RaiseAndSetIfChanged(ref sourceFileName, value);
             }
         }
 
-        public string SourceCodeErrorsText
+        public string SourceErrorsText
         {
-            get => sourceCodeErrorsText;
-            set => this.RaiseAndSetIfChanged(ref sourceCodeErrorsText, value);
+            get => sourceErrorsText;
+            set => this.RaiseAndSetIfChanged(ref sourceErrorsText, value);
         }
 
-        public bool SourceCodeErrorsIsVisible
+        public bool SourceErrorsIsVisible
         {
-            get => sourceCodeErrorsIsVisible;
-            set => this.RaiseAndSetIfChanged(ref sourceCodeErrorsIsVisible, value);
+            get => sourceErrorsIsVisible;
+            set => this.RaiseAndSetIfChanged(ref sourceErrorsIsVisible, value);
         }
 
-        public ObservableCollection<ErrorViewModel> SourceCodeErrors { get; } = new ObservableCollection<ErrorViewModel>();
+        public ObservableCollection<ErrorViewModel> SourceErrors { get; } = new ObservableCollection<ErrorViewModel>();
 
         public string TokensHeader
         {
@@ -433,7 +426,7 @@ namespace PT.PM.PatternEditor
             set => this.RaiseAndSetIfChanged(ref ustJson, value);
         }
 
-        public bool IsTokensVisible => SelectedLanguage?.HaveAntlrParser == true;
+        public bool IsTokensVisible => SelectedLanguage.HasAntlrParser();
 
         public bool IsUstJsonVisible => Stage >= Stage.Ust;
 
@@ -527,7 +520,7 @@ namespace PT.PM.PatternEditor
                     Settings.IsIncludeTextSpans = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
-                    CheckSourceCode();
+                    CheckSource();
                     ServiceLocator.PatternsViewModel.CheckPattern();
                 }
             }
@@ -543,7 +536,7 @@ namespace PT.PM.PatternEditor
                     Settings.IsLinearTextSpans = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
-                    CheckSourceCode();
+                    CheckSource();
                     ServiceLocator.PatternsViewModel.CheckPattern();
                 }
             }
@@ -559,7 +552,7 @@ namespace PT.PM.PatternEditor
                     Settings.IsIncludeCode = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
-                    CheckSourceCode();
+                    CheckSource();
                     ServiceLocator.PatternsViewModel.CheckPattern();
                 }
             }
@@ -575,15 +568,15 @@ namespace PT.PM.PatternEditor
                     Settings.IsLeftRightDir = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
-                    CheckSourceCode();
+                    CheckSource();
                 }
             }
         }
 
-        private void CheckSourceCode()
+        private void CheckSource()
         {
-            if (oldSourceCode != sourceCodeTextBox.Text ||
-                oldSelectedLanguage != Settings.SourceCodeLanguage ||
+            if (oldSource != sourceTextBox.Text ||
+                oldSelectedLanguage != Settings.SourceLanguage ||
                 oldEndStage != Settings.SelectedStage ||
                 oldJavaScriptType != Settings.JavaScriptType ||
                 oldIsIncludeTextSpans != Settings.IsIncludeTextSpans ||
@@ -591,15 +584,14 @@ namespace PT.PM.PatternEditor
                 oldIsIncludeCode != Settings.IsIncludeCode ||
                 oldIsLeftRightDir != Settings.IsLeftRightDir)
             {
-                Dispatcher.UIThread.InvokeAsync(SourceCodeErrors.Clear);
-                string sourceCode = sourceCodeTextBox.Text;
-                Settings.SourceCode = !string.IsNullOrEmpty(OpenedFileName) ? "" : sourceCode;
+                Dispatcher.UIThread.InvokeAsync(SourceErrors.Clear);
+                Settings.Source = !string.IsNullOrEmpty(OpenedFileName) ? "" : sourceTextBox.Text;
                 Settings.Save();
 
                 RunWorkflow();
 
-                oldSourceCode = sourceCodeTextBox.Text;
-                oldSelectedLanguage = Settings.SourceCodeLanguage;
+                oldSource = sourceTextBox.Text;
+                oldSelectedLanguage = Settings.SourceLanguage;
                 oldEndStage = Settings.SelectedStage;
                 oldJavaScriptType = Settings.JavaScriptType;
                 oldIsIncludeTextSpans = Settings.IsIncludeTextSpans;
@@ -611,9 +603,9 @@ namespace PT.PM.PatternEditor
 
         internal void RunWorkflow()
         {
-            SourceCodeLogger.Clear();
+            SourceLogger.Clear();
 
-            var sourceCodeRep = new MemoryCodeRepository(sourceCodeTextBox.Text, language: SelectedLanguage ?? CSharp.Language);
+            var sourceRep = new MemorySourceRepository(sourceTextBox.Text, language: SelectedLanguage);
             IPatternsRepository patternRepository;
             if (!string.IsNullOrEmpty(ServiceLocator.PatternsViewModel.Value))
             {
@@ -624,19 +616,19 @@ namespace PT.PM.PatternEditor
             {
                 patternRepository = new MemoryPatternsRepository();
             }
-            var workflow = new Workflow(sourceCodeRep, patternRepository, Stage)
+            var workflow = new Workflow(sourceRep, patternRepository, Stage)
             {
                 IndentedDump = true,
                 DumpWithTextSpans = IsIncludeTextSpans,
                 LineColumnTextSpans = !IsLinearTextSpans,
                 IncludeCodeInDump = IsIncludeCode,
-                Logger = SourceCodeLogger,
+                Logger = SourceLogger,
                 RenderFormat = GraphvizOutputFormat.Svg,
                 DumpDir = ServiceLocator.TempDirectory,
-                RenderStages = new HashSet<Stage>() { Stage.Ust },
+                RenderStages = new HashSet<Stage> { Stage.Ust },
                 RenderDirection = IsLeftRightDir ? GraphvizDirection.LeftRight : GraphvizDirection.TopBottom
             };
-            if (SelectedLanguage == JavaScript.Language)
+            if (SelectedLanguage == Language.JavaScript)
             {
                 workflow.JavaScriptType = JavaScriptType;
             }
@@ -644,7 +636,7 @@ namespace PT.PM.PatternEditor
             var dumpStages = new HashSet<Stage>();
             if (Stage >= Stage.ParseTree)
             {
-                if (SelectedLanguage != CSharp.Language)
+                if (SelectedLanguage != Language.CSharp)
                 {
                     // TODO: ignore C# parse tree dump due to the huge size
                     dumpStages.Add(Stage.ParseTree);
@@ -657,7 +649,8 @@ namespace PT.PM.PatternEditor
             workflow.DumpStages = dumpStages;
 
             WorkflowResult workflowResult = workflow.Process();
-            sourceCode = workflowResult.SourceCodeFiles.FirstOrDefault();
+            source = (TextFile)workflowResult.SourceFiles.FirstOrDefault();
+            UpdateSourceSelection(true);
 
             ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
 
@@ -666,8 +659,8 @@ namespace PT.PM.PatternEditor
             Tokens = FileExt.Exists(tokensFileName) ? FileExt.ReadAllText(tokensFileName) : "";
             ParseTree = FileExt.Exists(parseTreeFileName) ? FileExt.ReadAllText(parseTreeFileName) : "";
 
-            TokensHeader = "Tokens" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
-            ParseTreeHeader = "Parse Tree" + (SelectedLanguage?.HaveAntlrParser == true ? " (ANTLR)" : "");
+            TokensHeader = "Tokens" + (SelectedLanguage.HasAntlrParser() ? " (ANTLR)" : "");
+            ParseTreeHeader = "Parse Tree" + (SelectedLanguage.HasAntlrParser() ? " (ANTLR)" : "");
 
             if (Stage >= Stage.Ust)
             {
@@ -676,25 +669,25 @@ namespace PT.PM.PatternEditor
 
             MatchingResultText = "MATCHINGS" + (workflowResult.TotalMatchesCount > 0 ? $" ({workflowResult.TotalMatchesCount})" : "");
 
-            if (SourceCodeLogger.ErrorCount == 0)
+            if (SourceLogger.ErrorCount == 0)
             {
-                SourceCodeErrorsIsVisible = false;
-                SourceCodeErrorsText = "ERRORS";
+                SourceErrorsIsVisible = false;
+                SourceErrorsText = "ERRORS";
             }
             else
             {
-                SourceCodeErrorsIsVisible = true;
-                SourceCodeErrorsText = $"ERRORS ({SourceCodeLogger.ErrorCount})";
+                SourceErrorsIsVisible = true;
+                SourceErrorsText = $"ERRORS ({SourceLogger.ErrorCount})";
             }
         }
 
         private void DetectLanguageIfRequired()
         {
-            if (!fileOpened && (!string.IsNullOrEmpty(sourceCodeTextBox.Text) && string.IsNullOrEmpty(oldSourceCode)))
+            if (!fileOpened && (!string.IsNullOrEmpty(sourceTextBox.Text) && string.IsNullOrEmpty(oldSource)))
             {
                 Task.Factory.StartNew(() =>
                 {
-                    Language detectedLanguage = languageDetector.Detect(new CodeFile(sourceCodeTextBox.Text)).Language;
+                    Language detectedLanguage = languageDetector.Detect(new TextFile(sourceTextBox.Text)).Language;
                     Dispatcher.UIThread.InvokeAsync(() => SelectedLanguage = detectedLanguage);
                 });
                 Dispatcher.UIThread.InvokeAsync(() => OpenedFileName = "");

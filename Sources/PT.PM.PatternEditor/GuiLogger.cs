@@ -3,7 +3,6 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.PatternEditor.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using PT.PM.Matching;
 
@@ -25,7 +24,7 @@ namespace PT.PM.PatternEditor
 
         public string LogsDir { get; set; } = "";
 
-        public static GuiLogger CreateSourceCodeLogger(ObservableCollection<ErrorViewModel> errorsCollection,
+        public static GuiLogger CreateSourceLogger(ObservableCollection<ErrorViewModel> errorsCollection,
             ObservableCollection<MatchResultViewModel> matchResultCollection)
         {
             return new GuiLogger(errorsCollection, false, matchResultCollection);
@@ -66,7 +65,7 @@ namespace PT.PM.PatternEditor
 
             if (ex is PMException pmException)
             {
-                logToGui = !(IsPatternLogger ^ pmException.CodeFile.PatternKey != null);
+                logToGui = !(IsPatternLogger ^ pmException.File.PatternKey != null);
             }
 
             if (logToGui)

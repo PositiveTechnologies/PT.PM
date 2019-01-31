@@ -1,17 +1,19 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class StringLiteral : Literal
     {
-        public override string TextValue => Text;
-
+        [Key(UstFieldOffset)]
         public virtual string Text { get; set; } = "";
-
+        
+        [Key(UstFieldOffset + 1)]
         public int EscapeCharsLength { get; set; } = 1;
+        
+        [IgnoreMember]
+        public override string TextValue => Text;
 
         public StringLiteral(string text, TextSpan textSpan)
             : base(textSpan)

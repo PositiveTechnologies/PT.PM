@@ -1,17 +1,15 @@
-﻿using NUnit.Framework;
-using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.Dsl;
-using PT.PM.JavaParseTreeUst;
-using PT.PM.Matching.Patterns;
-using PT.PM.Matching.PatternsRepository;
-using PT.PM.PhpParseTreeUst;
-using PT.PM.TestUtils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
+using PT.PM.Common;
+using PT.PM.Common.SourceRepository;
+using PT.PM.Common.Files;
+using PT.PM.Dsl;
+using PT.PM.Matching.Patterns;
+using PT.PM.Matching.PatternsRepository;
+using PT.PM.TestUtils;
 
 namespace PT.PM.Matching.Tests
 {
@@ -20,14 +18,14 @@ namespace PT.PM.Matching.Tests
     {
         private PatternConverter patternsConverter;
         private MemoryPatternsRepository patternsRepository;
-        private SourceCodeRepository sourceCodeRep;
+        private SourceRepository sourceRep;
 
         [SetUp]
         public void Init()
         {
             patternsConverter = new PatternConverter();
             patternsRepository = new MemoryPatternsRepository();
-            sourceCodeRep = new FileCodeRepository(Path.Combine(TestUtility.TestsDataPath, "common-matching.php"));
+            sourceRep = new FileSourceRepository(Path.Combine(TestUtility.TestsDataPath, "common-matching.php"));
         }
 
         [TestCase("#()", new[] { 0 })]
@@ -40,11 +38,11 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternExpressionsInCalls(string patternData, params int[] matchMethodNumbers)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) {Logger = logger};
+            var workflow = new Workflow(sourceRep, patternsRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -59,7 +57,7 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_RefOutArg()
         {
-            var codeRepository = new MemoryCodeRepository("class P { void Main() { Func(ref a); } }", "test.cs");
+            var codeRepository = new MemorySourceRepository("class P { void Main() { Func(ref a); } }", "test.cs");
             var patternsRepository = new DslPatternRepository("Func(a)", "CSharp");
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(codeRepository, patternsRepository) {Logger = logger};
@@ -73,11 +71,11 @@ namespace PT.PM.Matching.Tests
         public void Match_PatternVarWithRegex(string patternData)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) {Logger = logger};
+            var workflow = new Workflow(sourceRep, patternsRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -90,11 +88,11 @@ namespace PT.PM.Matching.Tests
         public void Match_PasswordCheckInsideStatement(string patternData)
         {
             var processor = new DslProcessor();
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(patternData) { PatternKey = patternData });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(patternData) { PatternKey = patternData });
             patternNode.DebugInfo = patternData;
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -109,7 +107,7 @@ namespace PT.PM.Matching.Tests
             PatternRoot pattern = new PatternRoot
             {
                 DebugInfo = "Test PatternAny",
-                Languages = new HashSet<Language> { Php.Language },
+                Languages = new HashSet<Language> { Language.Php },
                 Node = new PatternAssignmentExpression
                 {
                     Left = new PatternAny("password"),
@@ -119,7 +117,7 @@ namespace PT.PM.Matching.Tests
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
             patternsRepository.Clear();
@@ -133,13 +131,13 @@ namespace PT.PM.Matching.Tests
             PatternRoot pattern = new PatternRoot
             {
                 DebugInfo = "Test PatternAny",
-                Languages = new HashSet<Language> { Php.Language },
+                Languages = new HashSet<Language> { Language.Php },
                 Node = new PatternAny("password")
             };
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot>() { pattern }));
 
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             patternsRepository.Clear();
 
@@ -153,7 +151,7 @@ namespace PT.PM.Matching.Tests
             var code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
             var pattern = "new XMLUtil().parse(<[~\".*\"]>)";
 
-            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Java.Language);
+            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Java);
             Assert.AreEqual(4, matchResults.Length);
         }
 
@@ -172,7 +170,7 @@ namespace PT.PM.Matching.Tests
                 "?>";
             var pattern = "Comment: <[ \"(?i)(password|pwd)\\s*(\\=|is|\\:)\" ]>";
 
-            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Php);
 
             LineColumnTextSpan textSpan0 = matchResults[0].LineColumnTextSpan;
             Assert.AreEqual(2, textSpan0.BeginLine);
@@ -198,10 +196,10 @@ namespace PT.PM.Matching.Tests
         {
             var processor = new DslProcessor();
             string pattern = "<[ \"\\d+\" ]>";
-            PatternRoot patternNode = processor.Deserialize(new CodeFile(pattern) { PatternKey = pattern });
+            PatternRoot patternNode = processor.Deserialize(new TextFile(pattern) { PatternKey = pattern });
             patternsRepository.Add(patternsConverter.ConvertBack(new List<PatternRoot> { patternNode }));
             var logger = new LoggerMessageCounter();
-            var workflow = new Workflow(sourceCodeRep, patternsRepository) { Logger = logger };
+            var workflow = new Workflow(sourceRep, patternsRepository) { Logger = logger };
             workflow.Process();
             List<MatchResultDto> matchResults = logger.Matches.ToDto().ToList();
             patternsRepository.Clear();
@@ -220,7 +218,7 @@ namespace PT.PM.Matching.Tests
         {
             Assert.Throws(typeof(ArgumentException), () => new PatternRoot
             {
-                Languages = new HashSet<Language> { Aspx.Language }
+                Languages = new HashSet<Language> { Language.Aspx }
             });
         }
 
@@ -235,7 +233,7 @@ namespace PT.PM.Matching.Tests
 
             var pattern = "<[password]> = <[\"\"]>";
 
-            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Php.Language);
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Php);
 
             Assert.AreEqual(2, matchResults.Length);
             Assert.AreEqual(1, matchResults.Count(matchResult => matchResult.Suppressed));

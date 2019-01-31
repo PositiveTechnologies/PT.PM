@@ -1,7 +1,11 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class WrapperExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public Ust Node { get; set; }
 
         public WrapperExpression(Ust node, TextSpan textSpan)

@@ -63,7 +63,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 }
                 catch (Exception ex) when (!(ex is ThreadAbortException))
                 {
-                    Logger.LogError(new ConversionException(root?.SourceCodeFile, message: ex.Message));
+                    Logger.LogError(new ConversionException(root?.SourceFile, message: ex.Message));
                     return null;
                 }
             }).ToArray();

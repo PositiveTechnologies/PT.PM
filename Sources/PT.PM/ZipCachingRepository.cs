@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace PT.PM
 {
-    public class ZipCachingRepository : DirectoryCodeRepository
+    public class ZipCachingRepository : DirectorySourceRepository
     {
         public bool Rewrite { get; set; } = false;
 
@@ -22,8 +22,8 @@ namespace PT.PM
 
         public string ExtractPath { get; set; } = Path.GetTempPath();
 
-        public ZipCachingRepository(string archivePath, params Language[] languages)
-            : base(archivePath, languages)
+        public ZipCachingRepository(string archivePath, SerializationFormat? format, params Language[] languages)
+            : base(archivePath, format, languages)
         {
             ArchiveName = archivePath;
             Name = Path.GetFileNameWithoutExtension(archivePath);
@@ -39,7 +39,7 @@ namespace PT.PM
         {
             RootPath = Path.Combine(ExtractPath, Name);
 
-            if (Rewrite || IsDirectoryNotExistsOrEmpty(RootPath))
+            if (Rewrite || IsDirectoryNotExistsOrEmpty())
             {
                 using (var zipFileNameMutex = new Mutex(false, ConvertToValidMutexName(ArchiveName)))
                 {
@@ -50,7 +50,7 @@ namespace PT.PM
 
                     try
                     {
-                        if (Rewrite || IsDirectoryNotExistsOrEmpty(RootPath))
+                        if (Rewrite || IsDirectoryNotExistsOrEmpty())
                         {
                             Logger.LogInfo($"{Name} extraction...");
 
@@ -131,7 +131,7 @@ namespace PT.PM
             return result.ToString();
         }
 
-        protected bool IsDirectoryNotExistsOrEmpty(string directoryName)
+        protected bool IsDirectoryNotExistsOrEmpty()
         {
             if (!DirectoryExt.Exists(RootPath))
             {

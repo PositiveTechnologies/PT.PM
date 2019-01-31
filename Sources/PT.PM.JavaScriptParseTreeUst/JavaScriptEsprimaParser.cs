@@ -5,8 +5,8 @@ using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -16,20 +16,22 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
-        public Language Language => JavaScript.Language;
+        public Language Language => Language.JavaScript;
 
         public int Offset { get; set; }
 
-        public CodeFile OriginFile { get; set; }
+        public TextFile OriginFile { get; set; }
 
-        public ParseTree Parse(CodeFile sourceCodeFile)
+        public static JavaScriptEsprimaParser Create() => new JavaScriptEsprimaParser();
+
+        public ParseTree Parse(TextFile sourceFile)
         {
-            if (sourceCodeFile.Code == null)
+            if (sourceFile.Data == null)
             {
                 return null;
             }
 
-            var errorHandler = new JavaScriptEsprimaErrorHandler(sourceCodeFile)
+            var errorHandler = new JavaScriptEsprimaErrorHandler(sourceFile)
             {
                 Logger = Logger,
                 Offset = Offset,
@@ -37,21 +39,21 @@ namespace PT.PM.JavaScriptParseTreeUst
             };
             try
             {
-                var parserOptions = new ParserOptions(sourceCodeFile.FullName)
+                var parserOptions = new ParserOptions(sourceFile.FullName)
                 {
                     Range = true,
                     Comment = true,
                     Tolerant = true,
                     ErrorHandler = errorHandler
                 };
-                var parser = new JavaScriptParser(sourceCodeFile.Code, parserOptions);
+                var parser = new JavaScriptParser(sourceFile.Data, parserOptions);
 
                 var stopwatch = Stopwatch.StartNew();
                 Program ast = parser.ParseProgram(JavaScriptType == JavaScriptType.Strict);
                 stopwatch.Stop();
                 TimeSpan parserTimeSpan = stopwatch.Elapsed;
 
-                var scanner = new Scanner(sourceCodeFile.Code, parserOptions);
+                var scanner = new Scanner(sourceFile.Data, parserOptions);
                 errorHandler.Scanner = scanner;
                 errorHandler.Logger = DummyLogger.Instance; // Ignore errors on tokenization because of the first stage
                 var comments = new List<Comment>();
@@ -68,7 +70,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     catch (Exception ex) when (!(ex is ThreadAbortException))
                     {
                         // TODO: handle the end of the stream without exception
-                        Logger.LogError(new ParsingException(sourceCodeFile, ex));
+                        Logger.LogError(new ParsingException(sourceFile, ex));
                         break;
                     }
                 }
@@ -82,7 +84,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     LexerTimeSpan = lexerTimeSpan,
                     ParserTimeSpan = parserTimeSpan
                 };
-                result.SourceCodeFile = sourceCodeFile;
+                result.SourceFile = sourceFile;
 
                 return result;
             }
@@ -92,7 +94,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     ? errorHandler.CreateException(parserException.Index, parserException.Message)
                     : ex is ParsingException parsingException
                     ? parsingException
-                    : new ParsingException(sourceCodeFile, ex);
+                    : new ParsingException(sourceFile, ex);
                 Logger.LogError(exception);
                 return null;
             }

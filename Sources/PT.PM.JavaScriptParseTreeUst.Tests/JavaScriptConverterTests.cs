@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using NUnit.Framework;
+using PT.PM.Common;
 using PT.PM.TestUtils;
-using System.IO;
 
 namespace PT.PM.JavaScriptParseTreeUst.Tests
 {
@@ -13,7 +14,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
             Assert.Inconclusive("Waiting for the new version of https://github.com/sebastienros/esprima-dotnet");
 
             TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "javascript", "examples"),
-                JavaScript.Language, Stage.Ust);
+                Language.JavaScript, Stage.Ust);
         }
     }
 }

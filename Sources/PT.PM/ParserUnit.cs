@@ -3,6 +3,7 @@ using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM
 {
@@ -48,16 +49,16 @@ namespace PT.PM
 
         public ParserUnit(Language language, Thread thread)
         {
-            Language = language ?? throw new NullReferenceException(nameof(language));
+            Language = language;
             parser = language.CreateParser();
             logger = new ParserUnitLogger();
             parser.Logger = logger;
             this.thread = thread;
         }
 
-        public void Parse(CodeFile codeFile)
+        public void Parse(TextFile sourceFile)
         {
-            ParseTree = parser.Parse(codeFile);
+            ParseTree = parser.Parse(sourceFile);
         }
 
         public override string ToString()

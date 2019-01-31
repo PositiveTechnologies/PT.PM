@@ -1,7 +1,6 @@
-﻿using NUnit.Framework;
-using PT.PM.Common;
+﻿using System.IO;
+using NUnit.Framework;
 using PT.PM.TestUtils;
-using System.IO;
 
 namespace PT.PM.CSharpParseTreeUst.Tests
 {

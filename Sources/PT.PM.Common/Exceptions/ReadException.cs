@@ -1,18 +1,14 @@
 ﻿using System;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Exceptions
 {
     public class ReadException : PMException
     {
-        public ReadException(CodeFile codeFile, Exception ex = null, string message = "")
+        public ReadException(IFile file, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            CodeFile = codeFile;
-        }
-
-        public override string ToString()
-        {
-            return $"File {CodeFile.RelativeName} not found or can not be read.";
+            File = file;
         }
     }
 }

@@ -10,16 +10,16 @@ using PT.PM.CSharpParseTreeUst.RoslynUstVisitor;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
     public class AspxConverter : DepthFirstAspxWithoutCloseTagVisitor<Ust>, IParseTreeToUstConverter
     {
         private Stack<bool> runAtServer = new Stack<bool>();
-        private CodeFile sourceCodeFile;
-        private int namespaceDepth;
+        private TextFile sourceFile;
 
-        public Language Language => Aspx.Language;
+        public Language Language => Language.Aspx;
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
@@ -27,11 +27,11 @@ namespace PT.PM.CSharpParseTreeUst
 
         public RootUst ParentRoot { get; set; }
 
+        public static AspxConverter Create() => new AspxConverter();
+
         public AspxConverter()
         {
             AnalyzedLanguages = Language.GetSelfAndSublanguages();
-
-            namespaceDepth = 0;
             runAtServer.Push(false);
         }
 
@@ -41,7 +41,7 @@ namespace PT.PM.CSharpParseTreeUst
             try
             {
                 RootUst result;
-                sourceCodeFile = langParseTree.SourceCodeFile;
+                sourceFile = langParseTree.SourceFile;
                 Ust visited = aspxParseTree.Root.Accept(this);
                 if (visited is RootUst rootUst)
                 {
@@ -49,7 +49,7 @@ namespace PT.PM.CSharpParseTreeUst
                 }
                 else
                 {
-                    result = new RootUst(sourceCodeFile, Language);
+                    result = new RootUst(sourceFile, Language);
                     result.Node = visited;
                 }
                 result.FillAscendants();
@@ -58,7 +58,7 @@ namespace PT.PM.CSharpParseTreeUst
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(aspxParseTree.SourceCodeFile, ex));
+                Logger.LogError(new ConversionException(aspxParseTree.SourceFile, ex));
                 return null;
             }
         }
@@ -86,7 +86,6 @@ namespace PT.PM.CSharpParseTreeUst
         public override Ust Visit(AspxNode.HtmlTag node)
         {
             runAtServer.Push(node.Attributes.IsRunAtServer);
-            namespaceDepth++;
 
             var members = new List<Ust>();
             foreach (var child in node.Children)
@@ -98,7 +97,6 @@ namespace PT.PM.CSharpParseTreeUst
                 }
             }
 
-            namespaceDepth--;
             runAtServer.Pop();
 
             if (members.Count == 1)
@@ -162,7 +160,7 @@ namespace PT.PM.CSharpParseTreeUst
         {
             SyntaxTree tree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
             var converter = new CSharpRoslynParseTreeConverter();
-            RootUst result = converter.Convert(new CSharpRoslynParseTree(tree) { SourceCodeFile = sourceCodeFile });
+            RootUst result = converter.Convert(new CSharpRoslynParseTree(tree) { SourceFile = sourceFile });
             if (result != null)
             {
                 result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(location.Start));
@@ -176,8 +174,8 @@ namespace PT.PM.CSharpParseTreeUst
             var converter = new CSharpRoslynParseTreeConverter();
             Ust result = converter.Visit(node);
             RootUst resultRoot =
-                result as RootUst ?? new RootUst(sourceCodeFile, CSharp.Language) { Node = result, TextSpan = result.TextSpan };
-            resultRoot.SourceCodeFile = sourceCodeFile;
+                result as RootUst ?? new RootUst(sourceFile, Language.CSharp, result.TextSpan) { Node = result };
+            resultRoot.SourceFile = sourceFile;
             result.ApplyActionToDescendantsAndSelf(ust => ust.TextSpan = ust.TextSpan.AddOffset(offset));
             return result;
         }

@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
-using PT.PM.PhpParseTreeUst;
 using System.Collections.Generic;
 
 namespace PT.PM.Patterns.PatternsRepository
@@ -16,7 +15,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 1 possible XSS",
-                Languages = new HashSet<Language>() { Html.Language },
+                Languages = new HashSet<Language> { Language.Html },
                 FilenameWildcard = "**/app/views/*.html",
                 Node = new PatternStringRegexLiteral("&{\\w+}")
             });
@@ -25,7 +24,7 @@ namespace PT.PM.Patterns.PatternsRepository
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Play 2 possible XSS",
-                Languages = new HashSet<Language>() { Html.Language },
+                Languages = new HashSet<Language> { Language.Html },
                 FilenameWildcard = "**/app/views/*.html",
                 Node = new PatternStringRegexLiteral("@Html\\(\\w+\\)")
             });

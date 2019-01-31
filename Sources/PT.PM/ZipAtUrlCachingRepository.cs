@@ -23,8 +23,8 @@ namespace PT.PM
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
-        public ZipAtUrlCachingRepository(string url, string name = null)
-            : base("")
+        public ZipAtUrlCachingRepository(string url, string name = null, SerializationFormat? format = null)
+            : base("", format)
         {
             Url = url;
             Name = ConvertToValidFileName(string.IsNullOrEmpty(name) ? TextUtils.HttpRegex.Replace(url, "") : name);
@@ -50,7 +50,7 @@ namespace PT.PM
             RootPath = Path.Combine(ExtractPath, Name);
             ArchiveName = RootPath + ".zip";
 
-            if (Rewrite || IsDirectoryNotExistsOrEmpty(RootPath))
+            if (Rewrite || IsDirectoryNotExistsOrEmpty())
             {
                 // Block another processes which try to use the same files.
                 using (var zipFileNameMutex = new Mutex(false, ConvertToValidMutexName(ArchiveName)))
@@ -62,7 +62,7 @@ namespace PT.PM
 
                     try
                     {
-                        if (Rewrite || IsDirectoryNotExistsOrEmpty(RootPath))
+                        if (Rewrite || IsDirectoryNotExistsOrEmpty())
                         {
                             if (DirectoryExt.Exists(RootPath))
                             {

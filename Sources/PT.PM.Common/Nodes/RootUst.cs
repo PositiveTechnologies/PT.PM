@@ -1,40 +1,56 @@
-﻿using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 using Newtonsoft.Json;
+using PT.PM.Common.Files;
+using PT.PM.Common.MessagePack;
 
 namespace PT.PM.Common.Nodes
 {
+    [MessagePackObject]
+    [MessagePackFormatter(typeof(RootUstFormatter))]
     public class RootUst : Ust
     {
         private Language[] sublanguges;
 
+        [Key(UstFieldOffset)]
         public Language Language { get; }
 
-        public CodeFile SourceCodeFile { get; set; }
+        [JsonProperty("SourceCodeFile")] // TODO: back compatibility with external serializers
+        [Key(UstFieldOffset + 1)]
+        public TextFile SourceFile { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
 
+        [Key(UstFieldOffset + 3)]
         public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
 
-        [JsonIgnore]
-        public Dictionary<Ust, List<TextSpan>> TextSpans { get; } = new Dictionary<Ust, List<TextSpan>>(UstRefComparer.Instance);
-        
+        [Key(UstFieldOffset + 4)]
+        public int LineOffset { get; set; }
+
+        [IgnoreMember]
         public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
 
+        [IgnoreMember]
         public Ust Node
         {
-            get => Nodes.FirstOrDefault();
+            get => Nodes.Length > 0 ? Nodes[0] : null;
             set => Nodes = new[] { value };
         }
 
-        public int LineOffset { get; set; }
-
-        public RootUst(CodeFile sourceCodeFile, Language language)
+        public RootUst(TextFile sourceFile, Language language)
+            : this(sourceFile, language, TextSpan.Zero)
         {
-            SourceCodeFile = sourceCodeFile ?? CodeFile.Empty;
+        }
+
+        public RootUst(TextFile sourceFile, Language language, TextSpan textSpan)
+            : base(textSpan)
+        {
+            SourceFile = sourceFile ?? TextFile.Empty;
             Language = language;
-            TextSpan = new TextSpan(0, SourceCodeFile.Code.Length);
+            TextSpans = new[] {textSpan.IsZero ? new TextSpan(0, SourceFile.Data.Length) : textSpan};
         }
 
         public override Ust[] GetChildren()
@@ -64,7 +80,7 @@ namespace PT.PM.Common.Nodes
 
         public override string ToString()
         {
-            return $"{SourceCodeFile.Name}: {base.ToString()}";
+            return $"{SourceFile.Name}: {base.ToString()}";
         }
     }
 }

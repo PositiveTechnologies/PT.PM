@@ -1,9 +1,12 @@
-﻿using PT.PM.Common.Nodes.Statements;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Statements;
 
 namespace PT.PM.Common.Nodes.Specific
 {
+    [MessagePackObject]
     public class UnsafeStatement : SpecificStatement
     {
+        [Key(UstFieldOffset)]
         public BlockStatement Body { get; set; }
 
         public UnsafeStatement(BlockStatement body, TextSpan textSpan)

@@ -22,7 +22,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 Formatting = IndentSize != -1 ? Formatting.Indented : Formatting.None,
                 Converters = new List<JsonConverter>
                 {
-                    new EsprimaJsonConverter(parseTree.SourceCodeFile)
+                    new EsprimaJsonConverter(parseTree.SourceFile)
                     {
                         IncludeTextSpans = IncludeTextSpans,
                         IsLineColumn = IsLineColumn
@@ -32,7 +32,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             };
 
             string result = JsonConvert.SerializeObject(esprimaParseTree.SyntaxTree, serializerSettings);
-            Dump(result, parseTree.SourceCodeFile, false);
+            Dump(result, parseTree.SourceFile, false);
         }
     }
 }

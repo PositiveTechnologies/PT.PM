@@ -1,11 +1,14 @@
 ﻿using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
+    [MessagePackObject]
     public class StatementDeclaration : EntityDeclaration
     {
+        [Key(EntityFieldOffset)]
         public Statement Statement { get; set; }
 
         public StatementDeclaration(Statement statement, TextSpan textSpan)

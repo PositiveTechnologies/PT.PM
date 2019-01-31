@@ -1,110 +1,117 @@
-﻿using PT.PM.Common.Reflection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace PT.PM.Common
 {
     public static class LanguageUtils
     {
-        private static readonly string[] LanguageSeparators = new string[] { " ", ",", ";", "|" };
+        private static readonly string[] LanguageSeparators = { " ", ",", ";", "|" };
 
-        private static Dictionary<Language, Type> parsers;
-        private static Dictionary<Language, Type> converters;
+        private static readonly Dictionary<Language, Func<ILanguageParser>> parserConstructors = new Dictionary<Language, Func<ILanguageParser>>();
+        private static readonly Dictionary<Language, Func<IParseTreeToUstConverter>> converterConstructors = new Dictionary<Language, Func<IParseTreeToUstConverter>>();
 
-        public readonly static Dictionary<string, Language> Languages;
-        public readonly static Dictionary<string, Language> PatternLanguages;
-        public readonly static Dictionary<string, Language> SqlLanguages;
-        public readonly static Dictionary<Language, HashSet<Language>> SuperLanguages;
-        public readonly static HashSet<Language> LanguagesWithParser;
+        public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>
+        {
+            [Language.CSharp] = new LanguageInfo(Language.CSharp, ".cs", false, "C#", hasAntlrParser: false),
+            [Language.Java] = new LanguageInfo(Language.Java, ".java", false, "Java"),
+            [Language.Php] = new LanguageInfo(Language.Php, new[] { ".php" }, true, "PHP", new [] { Language.JavaScript, Language.Html }),
+            [Language.PlSql] = new LanguageInfo(Language.PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw" }, true, "PL/SQL", isSql: true),
+            [Language.TSql] = new LanguageInfo(Language.TSql, ".sql", true, "T-SQL", isSql: true),
+            [Language.MySql] = new LanguageInfo(Language.MySql, ".sql", true, "MySql", isSql: true),
+            [Language.JavaScript] = new LanguageInfo(Language.JavaScript, ".js", false, "JavaScript", hasAntlrParser: false),
+            [Language.Aspx] = new LanguageInfo(Language.Aspx, new[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new[] { Language.CSharp }, false, false),
+            [Language.Html] = new LanguageInfo(Language.Html, ".html", true, "HTML", new[] { Language.JavaScript }),
+            [Language.C] = new LanguageInfo(Language.C, new[] { ".c", ".h" }, false, "C", hasAntlrParser: false),
+            [Language.CPlusPlus] = new LanguageInfo(Language.CPlusPlus, new[] { ".cpp", ".hpp", ".cc", ".cxx" }, false, "C++", new[] { Language.C }, hasAntlrParser: false),
+            [Language.ObjectiveC] = new LanguageInfo(Language.ObjectiveC, new[] { ".m", ".mm" }, false, "Objective-C", new[] { Language.C }, hasAntlrParser: false),
+            [Language.Swift] = new LanguageInfo(Language.Swift, new[] { ".swift" }, false, "Swift", hasAntlrParser: false),
+            [Language.Uncertain] = new LanguageInfo(Language.Uncertain, ".*", false, "Uncertain", hasAntlrParser: false)
+        };
+
+        public static readonly HashSet<Language> Languages = new HashSet<Language>();
+        public static readonly HashSet<Language> PatternLanguages = new HashSet<Language>();
+        public static readonly HashSet<Language> SqlLanguages = new HashSet<Language>();
+        public static readonly Dictionary<Language, HashSet<Language>> SuperLanguages = new Dictionary<Language, HashSet<Language>>();
+        public static readonly HashSet<Language> LanguagesWithParser = new HashSet<Language>();
 
         static LanguageUtils()
         {
-            parsers = new Dictionary<Language, Type>();
-            converters = new Dictionary<Language, Type>();
-
-            Languages = new Dictionary<string, Language>();
-            PatternLanguages = new Dictionary<string, Language>();
-            SqlLanguages = new Dictionary<string, Language>();
-            SuperLanguages = new Dictionary<Language, HashSet<Language>>();
-            LanguagesWithParser = new HashSet<Language>();
-
-            var subParsers = new Dictionary<Language, Type>();
-            var subConverters = new Dictionary<Language, Type>();
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var visitedAssemblies = new List<Assembly>();
-
-            foreach (Assembly assembly in assemblies)
+            foreach (var pair in LanguageInfos)
             {
-                LoadAndProcessReferencedAssembly(assembly);
+                Language language = pair.Key;
+                LanguageInfo languageInfo = pair.Value;
 
-                void LoadAndProcessReferencedAssembly(Assembly localAssembly)
+                Languages.Add(language);
+                if (languageInfo.IsPattern)
                 {
-                    ProcessAssembly(localAssembly, subParsers, subConverters, visitedAssemblies);
-                    if (!localAssembly.IsActual())
+                    PatternLanguages.Add(language);
+                }
+                if (languageInfo.IsSql)
+                {
+                    SqlLanguages.Add(language);
+                }
+
+                foreach (Language sublanguage in languageInfo.Sublanguages)
+                {
+                    if (!SuperLanguages.TryGetValue(sublanguage, out HashSet<Language> superLanguages))
                     {
-                        return;
+                        superLanguages = new HashSet<Language>();
+                        SuperLanguages.Add(sublanguage, superLanguages);
                     }
 
-                    foreach (AssemblyName assemblyName in localAssembly.GetReferencedAssemblies())
-                    {
-                        if (!assemblies.Any(a => a.FullName == assemblyName.FullName))
-                        {
-                            LoadAndProcessReferencedAssembly(Assembly.Load(assemblyName));
-                        }
-                    }
+                    superLanguages.Add(language);
                 }
-
-                ProcessAssembly(assembly, subParsers, subConverters, visitedAssemblies);
-            }
-
-            foreach (var subParser in subParsers)
-            {
-                if (!parsers.ContainsKey(subParser.Key))
-                {
-                    parsers.Add(subParser.Key, subParser.Value);
-                }
-            }
-
-            foreach (var subConverter in subConverters)
-            {
-                if (!converters.ContainsKey(subConverter.Key))
-                {
-                    converters.Add(subConverter.Key, subConverter.Value);
-                }
-            }
-
-            foreach (var parser in parsers)
-            {
-                LanguagesWithParser.Add(parser.Key);
             }
         }
 
+        public static bool IsSql(this Language language) => LanguageInfos[language].IsSql;
+
+        public static bool IsCaseInsensitive(this Language language) => LanguageInfos[language].IsCaseInsensitive;
+        
+        public static string[] GetExtensions(this Language language) => LanguageInfos[language].Extensions;
+
+        public static Language[] GetSublanguages(this Language language) => LanguageInfos[language].Sublanguages;
+
+        public static bool HasAntlrParser(this Language language) => LanguageInfos[language].HasAntlrParser;
+
         public static bool IsParserExists(this Language language) => LanguagesWithParser.Contains(language);
+
+        public static void RegisterParserConverter(Language language, Func<ILanguageParser> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
+        {
+            RegisterParser(language, parserConstructor);
+            RegisterConverter(language, converterConstructor);
+        }
+        
+        public static void RegisterParser(Language language, Func<ILanguageParser> parserConstructor)
+        {
+            parserConstructors[language] = parserConstructor;
+            LanguagesWithParser.Add(language);
+        }
+        
+        public static void RegisterConverter(Language language, Func<IParseTreeToUstConverter> converterConstructor)
+        {
+            converterConstructors[language] = converterConstructor;
+        }
 
         public static ILanguageParser CreateParser(this Language language)
         {
-            if (parsers.TryGetValue(language, out Type parserType))
+            if (parserConstructors.TryGetValue(language, out Func<ILanguageParser> parserConstructor))
             {
-                return (ILanguageParser)Activator.CreateInstance(parserType);
+                return parserConstructor();
             }
-            else
-            {
-                throw new NotImplementedException($"Language {language} parser is not supported");
-            }
+
+            throw new NotImplementedException($"Language {language} parser is not supported");
         }
 
         public static IParseTreeToUstConverter CreateConverter(this Language language)
         {
-            if (converters.TryGetValue(language, out Type converterType))
+            if (converterConstructors.TryGetValue(language, out Func<IParseTreeToUstConverter> converterConstructor))
             {
-                return (IParseTreeToUstConverter)Activator.CreateInstance(converterType);
+                return converterConstructor();
             }
-            else
-            {
-                throw new NotImplementedException($"Language {language} converter is not supported");
-            }
+
+            throw new NotImplementedException($"Language {language} converter is not supported");
         }
 
         public static HashSet<Language> ParseLanguages(this string languages, bool allByDefault = true,
@@ -112,7 +119,7 @@ namespace PT.PM.Common
         {
             if (languages == null)
             {
-                return new HashSet<Language>(!patternLanguages ? Languages.Values : PatternLanguages.Values);
+                return new HashSet<Language>(!patternLanguages ? (IEnumerable<Language>)LanguageInfos.Keys : PatternLanguages);
             }
 
             return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ParseLanguages(allByDefault, patternLanguages);
@@ -122,7 +129,7 @@ namespace PT.PM.Common
             bool patternLanguages = false)
         {
             string[] languageStringsArray = languageStrings?.ToArray() ?? ArrayUtils<string>.EmptyArray;
-            var languages = !patternLanguages ? Languages.Values : PatternLanguages.Values;
+            var languages = !patternLanguages ? Languages : PatternLanguages;
             HashSet<Language> negationLangs = new HashSet<Language>(languages);
 
             if (allByDefault && languageStringsArray.Length == 0)
@@ -145,10 +152,11 @@ namespace PT.PM.Common
 
                 foreach (Language language in languages)
                 {
+                    LanguageInfo languageInfo = LanguageInfos[language];
                     bool result = isSql
-                        ? language.IsSql
-                        : (language.Key.EqualsIgnoreCase(langStr) || language.Title.EqualsIgnoreCase(langStr) ||
-                           language.Extensions.Any(ext => (ext.StartsWith(".") ? ext.Substring(1) : ext).EqualsIgnoreCase(langStr)));
+                        ? languageInfo.IsSql
+                        : (language.ToString().EqualsIgnoreCase(langStr) || languageInfo.Title.EqualsIgnoreCase(langStr) ||
+                           languageInfo.Extensions.Any(ext => (ext.StartsWith(".") ? ext.Substring(1) : ext).EqualsIgnoreCase(langStr)));
                     if (negation)
                     {
                         containsNegation = true;
@@ -181,92 +189,9 @@ namespace PT.PM.Common
         public static HashSet<Language> GetSelfAndSublanguages(this Language language)
         {
             var result = new HashSet<Language> { language };
-            foreach (Language lang in language.Sublanguages)
+            foreach (Language lang in LanguageInfos[language].Sublanguages)
                 result.Add(lang);
             return result;
-        }
-
-        private static void ProcessAssembly(Assembly assembly,
-            Dictionary<Language, Type> subParsers, Dictionary<Language, Type> subConverters,
-            List<Assembly> visitedAssemblies)
-        {
-            if (!assembly.IsActual() || visitedAssemblies.Contains(assembly))
-            {
-                return;
-            }
-            visitedAssemblies.Add(assembly);
-
-            foreach (Type type in assembly.GetTypes().Where(type => type.IsClass))
-            {
-                if (type.IsAbstract)
-                {
-                    var languageFields = type.GetFields()
-                        .Where(prop => prop.Attributes.HasFlag(FieldAttributes.Static | FieldAttributes.InitOnly)
-                        && prop.FieldType == typeof(Language));
-                    foreach (FieldInfo languageField in languageFields)
-                    {
-                        ProcessLanguage((Language)languageField.GetValue(null));
-                    }
-                }
-                else
-                {
-                    var interfaces = type.GetInterfaces();
-                    if (interfaces.Contains(typeof(ILanguageParser)))
-                    {
-                        var parser = (ILanguageParser)Activator.CreateInstance(type);
-                        parsers.Add(parser.Language, parser.GetType());
-                        foreach (Language sublanguage in parser.Language.Sublanguages)
-                        {
-                            subParsers.Add(sublanguage, type);
-                        };
-                    }
-                    else if (interfaces.Contains(typeof(IParseTreeToUstConverter)))
-                    {
-                        var converter = (IParseTreeToUstConverter)Activator.CreateInstance(type);
-                        converters.Add(converter.Language, converter.GetType());
-                        foreach (Language sublanguage in converter.Language.Sublanguages)
-                        {
-                            subConverters.Add(sublanguage, type);
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void ProcessLanguage(Language language)
-        {
-            string languageKey = language.Key;
-
-            if (Languages.ContainsKey(languageKey))
-            {
-                return;
-            }
-
-            foreach (Language Sublanguage in language.Sublanguages)
-            {
-                ProcessLanguage(Sublanguage);
-            }
-
-            Languages.Add(languageKey, language);
-            if (language.IsPattern)
-            {
-                PatternLanguages.Add(languageKey, language);
-            }
-            if (language.IsSql)
-            {
-                SqlLanguages.Add(languageKey, language);
-            }
-
-            foreach (Language sublanguage in language.Sublanguages)
-            {
-                if (!SuperLanguages.TryGetValue(sublanguage, out HashSet<Language> superLanguages))
-                {
-                    superLanguages = new HashSet<Language>();
-                    SuperLanguages.Add(sublanguage, superLanguages);
-                }
-
-                superLanguages.Add(language);
-            }
         }
     }
 }

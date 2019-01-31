@@ -1,5 +1,8 @@
-﻿namespace PT.PM.Common.Nodes.Tokens
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Tokens
 {
+    [MessagePackObject]
     public class ThisReferenceToken : Token
     {
         public ThisReferenceToken(TextSpan textSpan)
@@ -11,6 +14,7 @@
         {
         }
 
+        [IgnoreMember]
         public override string TextValue => "this";
     }
 }

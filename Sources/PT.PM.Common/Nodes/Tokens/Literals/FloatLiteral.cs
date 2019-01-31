@@ -1,11 +1,15 @@
 ﻿using System.Globalization;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class FloatLiteral : Literal
     {
+        [Key(UstFieldOffset)]
         public double Value { get; set; }
 
+        [IgnoreMember]
         public override string TextValue => Value.ToString(CultureInfo.InvariantCulture);
 
         public FloatLiteral(double value)

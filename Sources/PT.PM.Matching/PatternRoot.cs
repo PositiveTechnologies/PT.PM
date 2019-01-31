@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
@@ -45,10 +46,10 @@ namespace PT.PM.Matching
             get => languages;
             set
             {
-                Language notPatternLang = value.FirstOrDefault(lang => !lang.IsPattern);
-                if (notPatternLang != null)
+                Language notPatternLang = value.FirstOrDefault(lang => !LanguageUtils.LanguageInfos[lang].IsPattern);
+                if (notPatternLang != Language.Uncertain)
                 {
-                    throw new ArgumentException($"Unable to create pattern for {notPatternLang.Title}");
+                    throw new ArgumentException($"Unable to create pattern for {LanguageUtils.LanguageInfos[notPatternLang].Title}");
                 }
                 languages = value;
             }
@@ -61,7 +62,7 @@ namespace PT.PM.Matching
 
         public PatternUst Node { get; set; } = new PatternAny();
 
-        public CodeFile CodeFile { get; set; } = CodeFile.Empty;
+        public TextFile File { get; set; } = TextFile.Empty;
 
         public PatternRoot()
         {
@@ -128,7 +129,7 @@ namespace PT.PM.Matching
                     context.Locations.Add(ust.TextSpan);
                 }
 
-                var match = new MatchResult(ust.CurrentCodeFile, context.PatternUst, context.Locations);
+                var match = new MatchResult(ust.CurrentSourceFile, context.PatternUst, context.Locations);
 
                 results.Add(match);
                 context.Logger.LogInfo(match);

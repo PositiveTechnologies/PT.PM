@@ -1,7 +1,11 @@
-﻿namespace PT.PM.Common.Nodes.Statements
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Statements
 {
+    [MessagePackObject]
     public class WrapperStatement : Statement
     {
+        [Key(UstFieldOffset)]
         public Ust Node { get; set; }
 
         public WrapperStatement(Ust node)

@@ -1,19 +1,24 @@
 ﻿using System.Collections.Generic;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
-using System;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
+    [MessagePackObject]
     public class MethodDeclaration : EntityDeclaration
     {
+        [Key(EntityFieldOffset)]
         public TypeToken ReturnType { get; set; }
 
+        [Key(EntityFieldOffset + 1)]
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
+        [Key(EntityFieldOffset + 2)]
         public BlockStatement Body { get; set; }
 
+        [IgnoreMember]
         public string Signature => UstUtils.GenerateSignature(Name.TextValue, Parameters);
 
         public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan)

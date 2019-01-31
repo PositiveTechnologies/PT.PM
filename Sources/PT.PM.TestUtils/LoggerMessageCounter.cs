@@ -40,7 +40,7 @@ namespace PT.PM.TestUtils
                 Errors.Add(message);
                 if (ex is ParsingException parsingException)
                 {
-                    errorFiles.Add(parsingException.CodeFile.RelativeName);
+                    errorFiles.Add(parsingException.File.RelativeName);
                 }
             }
             message = message + Environment.NewLine;

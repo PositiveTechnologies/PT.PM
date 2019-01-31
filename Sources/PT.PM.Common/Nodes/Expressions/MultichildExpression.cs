@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class MultichildExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public List<Expression> Expressions { get; set; }
 
         public MultichildExpression(IEnumerable<Expression> children, TextSpan textSpan)
@@ -17,20 +20,10 @@ namespace PT.PM.Common.Nodes.Expressions
         public MultichildExpression(IEnumerable<Expression> children)
         {
             Expressions = children as List<Expression> ?? children.ToList();
-            if (Expressions.Count > 0)
+            TextSpans = new[]
             {
-                TextSpan = Expressions.First().TextSpan.Union(Expressions.Last().TextSpan);
-            }
-            else
-            {
-                TextSpan = default;
-            }
-        }
-
-        public MultichildExpression(TextSpan textSpan, RootUst fileNode, params Expression[] children)
-            : base(textSpan)
-        {
-            Expressions = children.ToList();
+                Expressions.Count > 0 ? Expressions.First().TextSpan.Union(Expressions.Last().TextSpan) : TextSpan.Zero
+            };
         }
 
         public MultichildExpression()

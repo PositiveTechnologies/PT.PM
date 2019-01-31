@@ -3,15 +3,20 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.GeneralScope
 {
+    [MessagePackObject]
     public class TypeDeclaration : EntityDeclaration
     {
+        [Key(EntityFieldOffset)]
         public TypeTypeLiteral Type { get; set; }
 
+        [Key(EntityFieldOffset + 1)]
         public List<TypeToken> BaseTypes { get; set; } = new List<TypeToken>();
 
+        [Key(EntityFieldOffset + 2)]
         public List<Ust> TypeMembers { get; set; } = new List<Ust>();
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<Ust> typeMembers,

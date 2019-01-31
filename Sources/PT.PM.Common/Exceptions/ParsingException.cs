@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Exceptions
 {
@@ -15,10 +16,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public ParsingException(CodeFile codeFile, Exception ex = null, string message = "")
+        public ParsingException(IFile sourceFile, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            CodeFile = codeFile ?? CodeFile.Empty;
+            File = sourceFile ?? TextFile.Empty;
         }
     }
 }

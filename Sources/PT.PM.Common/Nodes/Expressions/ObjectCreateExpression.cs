@@ -1,14 +1,19 @@
 ﻿using PT.PM.Common.Nodes.Collections;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class ObjectCreateExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public Expression Type { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public ArgsUst Arguments { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public List<Expression> Initializers { get; set; }
 
         public ObjectCreateExpression(Expression target, ArgsUst args, TextSpan textSpan)

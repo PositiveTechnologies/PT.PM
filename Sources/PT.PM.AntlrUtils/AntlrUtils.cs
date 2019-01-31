@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Antlr4.Runtime.Misc;
+using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.Tokens;
@@ -72,7 +73,7 @@ namespace PT.PM.AntlrUtils
         }
 
         public static void LogConversionError(this ILogger logger, Exception ex,
-            ParserRuleContext context, CodeFile currentFileData)
+            ParserRuleContext context, TextFile currentFileData)
         {
             StackTrace stackTrace = new StackTrace(ex, true);
             int frameNumber = 0;

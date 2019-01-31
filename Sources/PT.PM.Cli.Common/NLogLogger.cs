@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Cli.Common
 {
@@ -104,7 +105,7 @@ namespace PT.PM.Cli.Common
                         break;
 
                     case MatchResult matchResult:
-                        ProcessMatchResult(matchResult.TextSpan, matchResult.SourceCodeFile,
+                        ProcessMatchResult(matchResult.TextSpan, matchResult.SourceFile,
                             matchResult.Pattern.Key, matchResult.Suppressed);
                         break;
 
@@ -158,7 +159,7 @@ namespace PT.PM.Cli.Common
         {
         }
 
-        protected virtual void ProcessMatchResult(TextSpan textSpan, CodeFile sourceFile, string patternKey, bool isSuppressed)
+        protected virtual void ProcessMatchResult(TextSpan textSpan, TextFile sourceFile, string patternKey, bool isSuppressed)
         {
             ExtractLogInfo(textSpan, sourceFile,
                 out LineColumnTextSpan lineColumnTextSpan, out string code);
@@ -166,10 +167,10 @@ namespace PT.PM.Cli.Common
             LogMatch(code, lineColumnTextSpan, patternKey, false, isSuppressed);
         }
 
-        protected void ExtractLogInfo(TextSpan textSpan, CodeFile sourceFile, out LineColumnTextSpan lineColumnTextSpan, out string code)
+        protected void ExtractLogInfo(TextSpan textSpan, TextFile sourceFile, out LineColumnTextSpan lineColumnTextSpan, out string code)
         {
             lineColumnTextSpan = sourceFile.GetLineColumnTextSpan(textSpan);
-            code = sourceFile.Code.Substring(textSpan);
+            code = sourceFile.Data.Substring(textSpan);
             code = CodePrinter.Print(code);
         }
 

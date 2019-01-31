@@ -39,7 +39,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             }
             catch (Exception ex)
             {
-                Logger?.LogError(new ConversionException(SourceCodeFile, ex));
+                Logger?.LogError(new ConversionException(SourceFile, ex));
                 return null;
             }
         }
@@ -199,7 +199,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             string message = declaration == null
                 ? $"{nameof(declaration)} can not be null"
                 : $"Unknow {nameof(Declaration)} type {declaration.GetType().Name}";
-            Logger.LogError(new ConversionException(SourceCodeFile, message: message));
+            Logger.LogError(new ConversionException(SourceFile, message: message));
             return null;
         }
     }

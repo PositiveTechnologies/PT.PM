@@ -1,9 +1,14 @@
-﻿namespace PT.PM.Common.Nodes.Tokens.Literals
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class TypeTypeLiteral : Token
     {
+        [Key(UstFieldOffset)]
         public TypeType TypeType { get; set; }
 
+        [IgnoreMember]
         public override string TextValue => TypeType.ToString();
 
         public TypeTypeLiteral(TypeType typeType, TextSpan textSpan)

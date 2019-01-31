@@ -1,24 +1,33 @@
 ﻿using PT.PM.Common.Nodes.Collections;
 using System;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class InvocationExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public Expression Target { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public ArgsUst Arguments { get; set; } = new ArgsUst();
-
-        public InvocationExpression()
-        {
-        }
 
         public InvocationExpression(Expression target, ArgsUst arguments, TextSpan textSpan)
             : base(textSpan)
         {
             Target = target;
             Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+        }
+
+        public InvocationExpression(TextSpan textSpan)
+            : base(textSpan)
+        {
+        }
+
+        public InvocationExpression()
+        {
         }
 
         public int GetIndexOfArg(Ust ustNode)

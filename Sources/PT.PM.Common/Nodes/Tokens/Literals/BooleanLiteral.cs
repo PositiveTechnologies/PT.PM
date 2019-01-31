@@ -1,7 +1,11 @@
-﻿namespace PT.PM.Common.Nodes.Tokens.Literals
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class BooleanLiteral : Literal
     {
+        [Key(UstFieldOffset)]
         public bool Value { get; set; }
 
         public BooleanLiteral(bool value)
@@ -15,11 +19,12 @@
             Value = value;
         }
 
+        [IgnoreMember]
+        public override string TextValue => Value.ToString();
+        
         public BooleanLiteral()
         {
         }
-
-        public override string TextValue => Value.ToString();
 
         public override int CompareTo(Ust other)
         {

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 
 namespace PT.PM.Common.Json
 {
@@ -44,51 +45,43 @@ namespace PT.PM.Common.Json
             jObject.Add(nameof(Ust.Kind), type.Name);
             PropertyInfo[] properties = type.GetReadWriteClassProperties();
 
-            if (type.Name == nameof(RootUst))
+            bool isRootUst = type == typeof(RootUst);
+            if (isRootUst)
             {
-                jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.Key);
+                jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.ToString());
             }
 
             foreach (PropertyInfo prop in properties)
             {
                 string propName = prop.Name;
-
-                bool include = prop.CanWrite;
+                bool include = propName != nameof(ILoggable.Logger);
                 if (include)
                 {
-                    include =
-                        propName != "Root" &&
-                        propName != "Parent" &&
-                        propName != nameof(ILoggable.Logger) &&
-                        propName != nameof(RootUst.TextSpans);
+                    if (ExcludeDefaults)
+                    {
+                        Type propType = prop.PropertyType;
+                        object propValue = prop.GetValue(value);
+                        if (propValue == null)
+                        {
+                            include = false;
+                        }
+                        else if (propType == typeof(string))
+                        {
+                            include = !string.IsNullOrEmpty(((string) propValue));
+                        }
+                        else if (propType.IsArray)
+                        {
+                            include = ((Array) propValue).Length > 0;
+                        }
+                        else
+                        {
+                            include = !propValue.Equals(GetDefaultValue(propType));
+                        }
+                    }
+
                     if (include)
                     {
-                        if (ExcludeDefaults)
-                        {
-                            Type propType = prop.PropertyType;
-                            object propValue = prop.GetValue(value);
-                            if (propValue == null)
-                            {
-                                include = false;
-                            }
-                            else if (propType == typeof(string))
-                            {
-                                include = !string.IsNullOrEmpty(((string) propValue));
-                            }
-                            else if (propType.IsArray)
-                            {
-                                include = ((Array) propValue).Length > 0;
-                            }
-                            else
-                            {
-                                include = !propValue.Equals(GetDefaultValue(propType));
-                            }
-                        }
-
-                        if (include)
-                        {
-                            include = propName != nameof(Ust.TextSpan) || IncludeTextSpans;
-                        }
+                        include = propName != nameof(Ust.TextSpan) || IncludeTextSpans;
                     }
                 }
 
@@ -104,19 +97,20 @@ namespace PT.PM.Common.Json
                 {
                     JToken jToken = null;
 
-                    if (value is Ust ust && propName == nameof(Ust.TextSpan) &&
-                        ust.Root != null && ust.Root.TextSpans.TryGetValue(ust, out List<TextSpan> textSpans))
+                    object propVal = prop.GetValue(value, null);
+                    if (propVal is IEnumerable<Language> languages)
                     {
-                        jToken = JToken.FromObject(textSpans, serializer);
+                        jToken = JToken.FromObject(string.Join(",", languages), serializer);
                     }
-                    else
+                    else if (propVal != null)
                     {
-                        object propVal = prop.GetValue(value, null);
-                        if (propVal is IEnumerable<Language> languages)
+                        if (propVal is TextSpan[] textSpans)
                         {
-                            jToken = JToken.FromObject(string.Join(",", languages.Select(l => l.Key)), serializer);
+                            jToken = textSpans.Length == 1
+                                ? JToken.FromObject(textSpans[0], serializer)
+                                : JArray.FromObject(textSpans, serializer);
                         }
-                        else if (propVal != null)
+                        else
                         {
                             jToken = JToken.FromObject(propVal, serializer);
                         }
@@ -124,10 +118,15 @@ namespace PT.PM.Common.Json
 
                     if (jToken != null)
                     {
+                        var jsonPropertyAttr = prop.GetCustomAttribute<JsonPropertyAttribute>();
+                        if (jsonPropertyAttr?.PropertyName != null)
+                        {
+                            propName = jsonPropertyAttr.PropertyName;
+                        }
+
                         jObject.Add(propName, jToken);
                     }
                 }
-
             }
 
             return jObject;

@@ -60,7 +60,7 @@ namespace PT.PM.Cli.Common
         public bool? NotIncludeTextSpansInDump { get; set; }
 
         [Option("line-column", HelpText = "Use line-column format for text spans in dump")]
-        public bool? LineColumnTextSpans { get; set; } 
+        public bool? LineColumnTextSpans { get; set; }
 
         [Option("dump-code", HelpText = "Dump content of source code file to dump")]
         public bool? IncludeCodeInDump { get; set; }
@@ -88,5 +88,11 @@ namespace PT.PM.Cli.Common
 
         [Option("render-direction", HelpText = "Graph render direction (TopBottom, LeftRight, etc.)")]
         public string RenderDirection { get; set; }
+
+        [Option("serialize-format", HelpText = "Serialize format (json, msgpack)")]
+        public string SerializationFormat { get; set; }
+
+        [Option("serialize-compress", HelpText = "Compress serialized models")]
+        public bool? CompressedSerialization { get; set; }
     }
 }

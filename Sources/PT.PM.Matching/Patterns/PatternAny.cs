@@ -43,7 +43,7 @@ namespace PT.PM.Matching.Patterns
 
             string treeString = UseUstString
                 ? ust.ToString()
-                : ust.CurrentCodeFile?.GetSubstring(ust.TextSpan) ?? "";
+                : ust.CurrentSourceFile?.GetSubstring(ust.TextSpan) ?? "";
 
             int escapeCharsLength = (ust as StringLiteral)?.EscapeCharsLength ?? 0;
             List<TextSpan> matches = Regex.MatchRegex(treeString, escapeCharsLength);

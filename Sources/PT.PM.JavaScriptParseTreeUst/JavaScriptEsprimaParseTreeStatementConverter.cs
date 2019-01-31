@@ -1,7 +1,6 @@
 ﻿using Esprima.Ast;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
 using System.Collections.Generic;
@@ -68,7 +67,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             }
             catch (Exception ex)
             {
-                Logger?.LogError(new ConversionException(SourceCodeFile, ex));
+                Logger?.LogError(new ConversionException(SourceFile, ex));
                 return null;
             }
         }
@@ -325,7 +324,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             string message = statement == null
                 ? $"{nameof(statement)} can not be null"
                 : $"Unknow {nameof(Statement)} type {statement.Type}";
-            Logger.LogError(new ConversionException(SourceCodeFile, message: message));
+            Logger.LogError(new ConversionException(SourceFile, message: message));
             return null;
         }
     }

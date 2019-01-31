@@ -1,13 +1,12 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Exceptions;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.PhpParseTreeUst;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM
 {
@@ -22,20 +21,20 @@ namespace PT.PM
 
         public TimeSpan CheckParseResultTimeSpan { get; set; } = TimeSpan.FromMilliseconds(100);
 
-        public override DetectionResult Detect(CodeFile codeFile, IEnumerable<Language> languages = null)
+        public override DetectionResult Detect(TextFile sourceFile, IEnumerable<Language> languages = null)
         {
             List<Language> langs = (languages ?? LanguageUtils.LanguagesWithParser).ToList();
 
             // Any PHP file contains start tag.
-            if (!codeFile.Code.Contains("<?"))
+            if (!sourceFile.Data.Contains("<?"))
             {
-                langs.Remove(langs.FirstOrDefault(l => l == Php.Language));
+                langs.Remove(langs.FirstOrDefault(l => l == Language.Php));
             }
             // Aspx and html code contains at least one tag.
-            if (!openTagRegex.IsMatch(codeFile.Code) || !closeTagRegex.IsMatch(codeFile.Code))
+            if (!openTagRegex.IsMatch(sourceFile.Data) || !closeTagRegex.IsMatch(sourceFile.Data))
             {
-                langs.Remove(langs.FirstOrDefault(l => l == Aspx.Language));
-                langs.Remove(langs.FirstOrDefault(l => l == Html.Language));
+                langs.Remove(langs.FirstOrDefault(l => l == Language.Aspx));
+                langs.Remove(langs.FirstOrDefault(l => l == Language.Html));
             }
             var parseUnits = new Queue<ParserUnit>(langs.Count);
 
@@ -53,7 +52,7 @@ namespace PT.PM
             {
                 Thread thread = new Thread((object obj) =>
                 {
-                    ((ParserUnit)obj).Parse(codeFile);
+                    ((ParserUnit)obj).Parse(sourceFile);
                 },
                 MaxStackSize);
                 thread.IsBackground = true;
@@ -80,7 +79,7 @@ namespace PT.PM
                 }
                 else
                 {
-                    if (parseUnit.ParseErrorCount == 0 && parseUnit.Language != Aspx.Language)
+                    if (parseUnit.ParseErrorCount == 0 && parseUnit.Language != Language.Aspx)
                     {
                         break;
                     }
@@ -120,7 +119,7 @@ namespace PT.PM
                         resultErrorsCount = errorCount;
                         result = parseUnit;
                     }
-                    else if (errorCount == resultErrorsCount && previousLanguage != null)
+                    else if (errorCount == resultErrorsCount && previousLanguage != Language.Uncertain)
                     {
                         result = new ParserUnit(previousLanguage, null);
                     }

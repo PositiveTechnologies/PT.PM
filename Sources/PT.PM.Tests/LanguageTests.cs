@@ -1,113 +1,99 @@
-﻿using NUnit.Framework;
-using PT.PM.CLangsParseTreeUst;
-using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
-using PT.PM.Common.Utils;
-using PT.PM.CSharpParseTreeUst;
-using PT.PM.JavaParseTreeUst;
-using PT.PM.JavaScriptParseTreeUst;
-using PT.PM.PhpParseTreeUst;
-using PT.PM.SqlParseTreeUst;
-using PT.PM.TestUtils;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
+using PT.PM.Common;
+using PT.PM.Common.SourceRepository;
+using PT.PM.Common.Files;
+using PT.PM.Common.Utils;
+using PT.PM.TestUtils;
 
 namespace PT.PM.Tests
 {
     [TestFixture]
     public class LanguageTests
     {
-        [Test]
-        public void CollectLanguages_Assemblies()
+        [SetUp]
+        public void Init()
         {
-            var languages = LanguageUtils.Languages.Values;
+            Utils.RegisterAllParsersAndCovnerters();
+        }
 
-            CollectionAssert.Contains(languages, C.Language);
-            CollectionAssert.Contains(languages, CPlusPlus.Language);
-            CollectionAssert.Contains(languages, ObjectiveC.Language);
+        [Test]
+        public void AllLanguageEnumsHaveCorrespondingInfos()
+        {
+            var enumValues = (Language[])Enum.GetValues(typeof(Language));
 
-            CollectionAssert.Contains(languages, Aspx.Language);
-            CollectionAssert.Contains(languages, CSharp.Language);
-
-            CollectionAssert.Contains(languages, Java.Language);
-
-            CollectionAssert.Contains(languages, JavaScript.Language);
-
-            CollectionAssert.Contains(languages, Html.Language);
-            CollectionAssert.Contains(languages, Php.Language);
-
-            CollectionAssert.Contains(languages, PlSql.Language);
-            CollectionAssert.Contains(languages, TSql.Language);
-            CollectionAssert.Contains(languages, MySql.Language);
-
-            CollectionAssert.Contains(languages, Uncertain.Language);
+            foreach (Language enumValue in enumValues)
+            {
+                Assert.IsTrue(LanguageUtils.LanguageInfos.ContainsKey(enumValue));
+            }
         }
 
         [Test]
         public void Parse_String_CorrectLanguages()
         {
-            var sqlLanguages = new Language[] { TSql.Language, PlSql.Language, MySql.Language };
+            var sqlLanguages = new Language[] { Language.TSql, Language.PlSql, Language.MySql };
             CollectionAssert.AreEquivalent(sqlLanguages, "TSQL plsql MySql".ParseLanguages());
 
             CollectionAssert.AreEquivalent(sqlLanguages, "Sql".ParseLanguages());
 
             HashSet<Language> notJavaLangs = "~Java".ParseLanguages();
-            CollectionAssert.IsSupersetOf(LanguageUtils.Languages.Values, notJavaLangs);
-            CollectionAssert.DoesNotContain(notJavaLangs, Java.Language);
+            CollectionAssert.IsSupersetOf(LanguageUtils.Languages, notJavaLangs);
+            CollectionAssert.DoesNotContain(notJavaLangs, Language.Java);
 
             HashSet<Language> notJavaSqlLangs = "!Java,!Sql".ParseLanguages();
-            CollectionAssert.IsSupersetOf(LanguageUtils.Languages.Values, notJavaSqlLangs);
-            CollectionAssert.DoesNotContain(notJavaSqlLangs, Java.Language);
-            CollectionAssert.DoesNotContain(notJavaSqlLangs, TSql.Language);
-            CollectionAssert.DoesNotContain(notJavaSqlLangs, PlSql.Language);
+            CollectionAssert.IsSupersetOf(LanguageUtils.Languages, notJavaSqlLangs);
+            CollectionAssert.DoesNotContain(notJavaSqlLangs, Language.Java);
+            CollectionAssert.DoesNotContain(notJavaSqlLangs, Language.TSql);
+            CollectionAssert.DoesNotContain(notJavaSqlLangs, Language.PlSql);
 
             HashSet<Language> cSharpLang = "c#".ParseLanguages();
-            Assert.AreEqual(CSharp.Language, cSharpLang.First());
+            Assert.AreEqual(Language.CSharp, cSharpLang.First());
             
             HashSet<Language> javaScriptLang = "js".ParseLanguages();
-            Assert.AreEqual(JavaScript.Language, javaScriptLang.First());
+            Assert.AreEqual(Language.JavaScript, javaScriptLang.First());
         }
 
-        [TestCase("CSharp", "Patterns.cs")]
-        [TestCase("Java", "Patterns.java")]
-        [TestCase("Php", "Patterns.php")]
-        [TestCase("PlSql", "plsql_patterns.sql")]
-        [TestCase("TSql", "tsql_patterns.sql")]
-        [TestCase("Aspx", "Patterns.aspx")]
-        [TestCase("JavaScript", "Patterns.js")]
-        public void DetectLanguage_SourceCode_CorrectLanguage(string expectedLanguage, string fileName)
+        [TestCase(Language.CSharp, "Patterns.cs")]
+        [TestCase(Language.Java, "Patterns.java")]
+        [TestCase(Language.Php, "Patterns.php")]
+        [TestCase(Language.PlSql, "plsql_patterns.sql")]
+        [TestCase(Language.TSql, "tsql_patterns.sql")]
+        [TestCase(Language.Aspx, "Patterns.aspx")]
+        [TestCase(Language.JavaScript, "Patterns.js")]
+        public void DetectLanguage_Source_CorrectLanguage(Language expectedLanguage, string fileName)
         {
-            var sourceCode =
-                new CodeFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
-            DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(sourceCode);
-            Assert.NotNull(detectedLanguage);
-            Assert.AreEqual(expectedLanguage, detectedLanguage.Language.Key);
+            var source =
+                new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
+            DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(source);
+            Assert.AreEqual(expectedLanguage, detectedLanguage.Language);
         }
 
         [Test]
         public void IgnoreFileDueToAnalyzedLanguages()
         {
-            var sourceCodeRepository = new MemoryCodeRepository("");
-            sourceCodeRepository.Languages = new HashSet<Language> { PlSql.Language, TSql.Language };
-            Assert.IsTrue(sourceCodeRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
+            var sourceRepository = new MemorySourceRepository("");
+            sourceRepository.Languages = new HashSet<Language> { Language.PlSql, Language.TSql };
+            Assert.IsTrue(sourceRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
         }
 
         [Test]
-        public void DetectLanguageIfRequired_SourceCode_CorrectLanguage()
+        public void DetectLanguageIfRequired_Source_CorrectLanguage()
         {
             var languageDetector = new ParserLanguageDetector();
             DetectionResult detectionResult;
 
-            var plSqlFile = new CodeFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
-            detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { PlSql.Language, TSql.Language });
+            var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
+            detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql });
 
             Assert.NotNull(detectionResult.ParseTree);
-            Assert.AreEqual(PlSql.Language, detectionResult.Language);
+            Assert.AreEqual(Language.PlSql, detectionResult.Language);
 
             // Force parse file with specified language.
-            detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { TSql.Language });
-            Assert.AreEqual(TSql.Language, detectionResult.Language);
+            detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.TSql });
+            Assert.AreEqual(Language.TSql, detectionResult.Language);
         }
     }
 }

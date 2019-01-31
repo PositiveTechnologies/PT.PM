@@ -1,5 +1,5 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.CodeRepository;
+using PT.PM.Common.SourceRepository;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.PatternsRepository;
@@ -8,39 +8,51 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
 
 namespace PT.PM.Cli.Common
 {
     public static class RepositoryFactory
     {
-        public static SourceCodeRepository CreateSourceCodeRepository(string path, string tempDir)
+        public static SourceRepository CreateSourceRepository(string path, string tempDir,
+            CliParameters parameters)
         {
-            SourceCodeRepository sourceCodeRepository;
+            Stage startStage = parameters.StartStage.ParseEnum(true, Stage.File);
+            SerializationFormat? format = null;
+            if (startStage > Stage.File)
+            {
+                format = SerializationFormat.Json;
+                if (Enum.TryParse(parameters.SerializationFormat, true, out SerializationFormat format2))
+                {
+                    format = format2;
+                }
+            }
+
+            SourceRepository sourceRepository;
             if (string.IsNullOrWhiteSpace(path))
             {
-                sourceCodeRepository = DummyCodeRepository.Instance;
+                sourceRepository = DummySourceRepository.Instance;
             }
             else if (DirectoryExt.Exists(path))
             {
-                sourceCodeRepository = new DirectoryCodeRepository(path);
+                sourceRepository = new DirectorySourceRepository(path, format);
             }
             else if (FileExt.Exists(path))
             {
                 string extension = Path.GetExtension(path);
                 if (extension.EqualsIgnoreCase(".zip"))
                 {
-                    var zipCachingRepository = new ZipCachingRepository(path);
+                    var zipCachingRepository = new ZipCachingRepository(path, format);
                     if (tempDir != null)
                     {
                         zipCachingRepository.ExtractPath = tempDir;
                     }
-                    sourceCodeRepository = zipCachingRepository;
+                    sourceRepository = zipCachingRepository;
                 }
                 else
                 {
-                    sourceCodeRepository = new FileCodeRepository(path);
-                    sourceCodeRepository.LoadJson = extension.EqualsIgnoreCase(".json");
+                    sourceRepository = new FileSourceRepository(path, format: CommonUtils.GetFormatByExtension(extension));
                 }
             }
             else
@@ -62,18 +74,19 @@ namespace PT.PM.Cli.Common
                     projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
                 }
 
-                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName);
+                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName, format);
                 if (tempDir != null)
                 {
                     zipAtUrlCachedCodeRepository.DownloadPath = tempDir;
                 }
-                sourceCodeRepository = zipAtUrlCachedCodeRepository;
+                sourceRepository = zipAtUrlCachedCodeRepository;
             }
 
-            return sourceCodeRepository;
+            return sourceRepository;
         }
 
-        public static IPatternsRepository CreatePatternsRepository(string patternsString, IEnumerable<string> patternIds,
+        public static IPatternsRepository CreatePatternsRepository(string patternsString,
+            IEnumerable<string> patternIds,
             ILogger logger)
         {
             IPatternsRepository patternsRepository;
@@ -92,10 +105,10 @@ namespace PT.PM.Cli.Common
             }
             else
             {
-                CodeFile patternsFile;
+                TextFile patternsFile;
                 if (patternsString.EndsWith(".pattern", StringComparison.OrdinalIgnoreCase))
                 {
-                    patternsFile = new CodeFile(FileExt.ReadAllText(patternsString))
+                    patternsFile = new TextFile(FileExt.ReadAllText(patternsString))
                     {
                         PatternKey = patternsString,
                         Name = patternsString
@@ -103,7 +116,7 @@ namespace PT.PM.Cli.Common
                 }
                 else
                 {
-                    patternsFile = new CodeFile(patternsString);
+                    patternsFile = new TextFile(patternsString);
                 }
 
                 var processor = new DslProcessor();
@@ -111,13 +124,15 @@ namespace PT.PM.Cli.Common
                 {
                     processor.Logger = logger;
                 }
+
                 PatternRoot patternRoot = processor.Deserialize(patternsFile);
                 var patternConverter = new PatternConverter();
                 if (logger != null)
                 {
                     patternConverter.Logger = logger;
                 }
-                List<PatternDto> dtos = patternConverter.ConvertBack(new[] { patternRoot });
+
+                List<PatternDto> dtos = patternConverter.ConvertBack(new[] {patternRoot});
 
                 var memoryPatternsRepository = new MemoryPatternsRepository();
                 memoryPatternsRepository.Add(dtos);
@@ -129,11 +144,8 @@ namespace PT.PM.Cli.Common
             {
                 patternsRepository.Logger = logger;
             }
-            
-            if (patternsRepository is MemoryPatternsRepository MemoryPatternsRepository)
-            {
-                patternsRepository.Identifiers = patternIds as List<string> ?? patternIds?.ToList();
-            }
+
+            patternsRepository.Identifiers = patternIds as List<string> ?? patternIds?.ToList();
 
             return patternsRepository;
         }

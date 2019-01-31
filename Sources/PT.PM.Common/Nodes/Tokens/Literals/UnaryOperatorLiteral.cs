@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class UnaryOperatorLiteral : Literal
     {
         public static Dictionary<string, UnaryOperator> PrefixTextUnaryOperator = new Dictionary<string, UnaryOperator>
@@ -27,9 +29,11 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ["--"] = UnaryOperator.PostDecrement,
         };
 
-        public override string TextValue => UnaryOperator.ToString();
-
+        [Key(UstFieldOffset)]
         public UnaryOperator UnaryOperator { get; set; }
+        
+        [IgnoreMember]
+        public override string TextValue => UnaryOperator.ToString();
 
         public UnaryOperatorLiteral(UnaryOperator op)
             : this(op, default)

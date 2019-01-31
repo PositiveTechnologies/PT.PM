@@ -5,7 +5,7 @@ namespace PT.PM.PhpParseTreeUst
 {
     public class PhpAntlrParseTree : AntlrParseTree
     {
-        public override Language SourceLanguage => Php.Language;
+        public override Language SourceLanguage => Language.Php;
 
         public PhpAntlrParseTree()
         {

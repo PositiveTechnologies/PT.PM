@@ -2,6 +2,7 @@
 using PT.PM.Common.Exceptions;
 using System;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM
 {
@@ -67,7 +68,7 @@ namespace PT.PM
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                throw new ReadException(new CodeFile("") { Name = zipPath }, message: errorMessage);
+                throw new ReadException(new TextFile("") { Name = zipPath }, message: errorMessage);
             }
         }
     }

@@ -1,9 +1,13 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class YieldExpression : Expression
     {
         // if null: yield return Argument
         // if not null: yield break
+        [Key(UstFieldOffset)]
         public Expression Argument { get; set; }
 
         public YieldExpression(Expression argument, TextSpan textSpan)

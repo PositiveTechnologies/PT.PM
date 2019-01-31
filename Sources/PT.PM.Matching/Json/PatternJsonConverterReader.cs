@@ -6,6 +6,7 @@ using PT.PM.Common.Reflection;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching.Json
 {
@@ -20,10 +21,10 @@ namespace PT.PM.Matching.Json
 
         public string DefaultFilenameWildcard { get; set; } = "";
 
-        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
+        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages);
 
-        public PatternJsonConverterReader(CodeFile jsonFile)
-            : base(jsonFile)
+        public PatternJsonConverterReader(TextFile serializedFile)
+            : base(serializedFile)
         {
         }
 
@@ -51,7 +52,7 @@ namespace PT.PM.Matching.Json
                     FilenameWildcard = (string)jObject[nameof(PatternRoot.FilenameWildcard)] ?? DefaultFilenameWildcard,
                     Languages = resultLanguages,
                     DataFormat = (string)jObject[nameof(PatternRoot.DataFormat)] ?? DefaultDataFormat,
-                    CodeFile = jObject[nameof(PatternRoot.CodeFile)]?.ToObject<CodeFile>(serializer) ?? CodeFile.Empty,
+                    File = jObject[nameof(PatternRoot.File)]?.ToObject<TextFile>(serializer) ?? TextFile.Empty,
                 };
 
                 target = root;

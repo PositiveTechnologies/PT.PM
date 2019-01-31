@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
@@ -48,7 +49,7 @@ namespace PT.PM.Matching
                 .Select(result => new MatchResultDto((MatchResult)result));
         }
 
-        public static bool IsSuppressed(CodeFile sourceFile, LineColumnTextSpan lineColumnTextSpan)
+        public static bool IsSuppressed(TextFile sourceFile, LineColumnTextSpan lineColumnTextSpan)
         {
             string prevLine = lineColumnTextSpan.BeginLine - 1 > 0
                             ? sourceFile.GetStringAtLine(lineColumnTextSpan.BeginLine - 1)

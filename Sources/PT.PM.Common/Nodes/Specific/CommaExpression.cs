@@ -1,11 +1,14 @@
 ﻿using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Specific
 {
+    [MessagePackObject]
     public class CommaExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public List<Expression> Expressions { get; set; } = new List<Expression>();
 
         public CommaExpression(IEnumerable<Expression> expressions, TextSpan textSpan)

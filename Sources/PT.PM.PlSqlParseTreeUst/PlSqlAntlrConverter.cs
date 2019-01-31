@@ -4,7 +4,6 @@ using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Sql;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
@@ -12,6 +11,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.PlSqlParseTreeUst;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Antlr4.Runtime;
 using static PT.PM.Common.Nodes.UstUtils;
@@ -20,7 +20,9 @@ namespace PT.PM.SqlParseTreeUst
 {
     public partial class PlSqlAntlrConverter : AntlrConverter, IPlSqlParserVisitor<Ust>
     {
-        public override Language Language => PlSql.Language;
+        public override Language Language => Language.PlSql;
+
+        public static PlSqlAntlrConverter Create() => new PlSqlAntlrConverter();
 
         /// <returns><see cref="ArgsUst"/></returns>
         public Ust VisitSwallow_to_semi([NotNull] PlSqlParser.Swallow_to_semiContext context)
@@ -65,10 +67,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitProcedure_call([NotNull] PlSqlParser.Procedure_callContext context)
         {
-            var function = new InvocationExpression
+            var function = new InvocationExpression(context.GetTextSpan())
             {
-                Target = (Expression)Visit(context.routine_name()),
-                TextSpan = context.GetTextSpan()
+                Target = (Expression)Visit(context.routine_name())
             };
 
             var argumentsContext = context.function_argument();
@@ -91,11 +92,10 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="AssignmentExpression"/></returns>
         public Ust VisitAlter_session_set_clause([NotNull] PlSqlParser.Alter_session_set_clauseContext context)
         {
-            var assignmentExpr = new AssignmentExpression
+            var assignmentExpr = new AssignmentExpression(context.GetTextSpan())
             {
                 Right = (Expression)Visit(context.parameter_name()),
-                Left = (Expression)Visit(context.parameter_value()),
-                TextSpan = context.GetTextSpan()
+                Left = (Expression)Visit(context.parameter_value())
             };
             return assignmentExpr;
         }
@@ -434,10 +434,9 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                result = new WhileStatement
+                result = new WhileStatement(textSpan)
                 {
-                    Embedded = block,
-                    TextSpan = textSpan
+                    Embedded = block
                 };
             }
             return result;
@@ -552,11 +551,10 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitExecute_immediate([NotNull] PlSqlParser.Execute_immediateContext context)
         {
             var args = (Expression)VisitChildren(context.expression());
-            var invocation = new InvocationExpression
+            var invocation = new InvocationExpression(context.GetTextSpan())
             {
                 Target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan()),
-                Arguments = new ArgsUst(args),
-                TextSpan = context.GetTextSpan()
+                Arguments = new ArgsUst(args)
             };
 
             if (context.using_clause() != null)
@@ -584,11 +582,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitOpen_statement([NotNull] PlSqlParser.Open_statementContext context)
         {
-            var invocation = new InvocationExpression
+            var invocation = new InvocationExpression(context.GetTextSpan())
             {
                 Target = new IdToken(context.OPEN().GetText(), context.OPEN().GetTextSpan()),
-                Arguments = new ArgsUst((Expression)Visit(context.cursor_name())),
-                TextSpan = context.GetTextSpan()
+                Arguments = new ArgsUst((Expression)Visit(context.cursor_name()))
             };
 
             if (context.expressions() != null)
@@ -604,11 +601,10 @@ namespace PT.PM.SqlParseTreeUst
         /// </summary>
         public Ust VisitOpen_for_statement([NotNull] PlSqlParser.Open_for_statementContext context)
         {
-            var invocation = new InvocationExpression
+            var invocation = new InvocationExpression(context.GetTextSpan())
             {
                 Target = new IdToken(context.OPEN().GetText(), context.OPEN().GetTextSpan()),
-                Arguments = new ArgsUst((Expression)Visit(context.variable_name())),
-                TextSpan = context.GetTextSpan()
+                Arguments = new ArgsUst((Expression)Visit(context.variable_name()))
             };
 
             if (context.select_statement() != null)
@@ -628,7 +624,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             var variables = context.variable_name();
             var argList = new List<Expression>(1 + variables.Length);
-            
+
             argList.Add((Expression)Visit(context.cursor_name()));
 
             for (int i = 0; i < variables.Length; i++)
@@ -636,11 +632,10 @@ namespace PT.PM.SqlParseTreeUst
                 argList.Add((Expression) Visit(variables[i]));
             }
 
-            return new InvocationExpression
+            return new InvocationExpression(context.GetTextSpan())
             {
                 Target = new IdToken(context.FETCH().GetText(), context.FETCH().GetTextSpan()),
-                Arguments = new ArgsUst(argList),
-                TextSpan = context.GetTextSpan()
+                Arguments = new ArgsUst(argList)
             };
         }
 
@@ -648,11 +643,10 @@ namespace PT.PM.SqlParseTreeUst
         {
             var cursorArg = (Expression) Visit(context.cursor_name());
 
-            var invocation = new InvocationExpression
+            var invocation = new InvocationExpression(context.GetTextSpan())
             {
                 Target = new IdToken(context.CLOSE().GetText(), context.CLOSE().GetTextSpan()),
-                Arguments = new ArgsUst(cursorArg),
-                TextSpan = context.GetTextSpan()
+                Arguments = new ArgsUst(cursorArg)
             };
 
             return invocation;
@@ -662,7 +656,7 @@ namespace PT.PM.SqlParseTreeUst
         {
             return ConvertToInOutArg(context);
         }
-        
+
         public Ust VisitVariable_name([NotNull] PlSqlParser.Variable_nameContext context)
         {
             return ConvertToInOutArg(context);
@@ -710,10 +704,9 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitQuery_block([NotNull] PlSqlParser.Query_blockContext context)
         {
-            var query = new InvocationExpression
+            var query = new InvocationExpression(context.GetTextSpan())
             {
-                Target = new IdToken(context.SELECT().GetText(), context.SELECT().GetTextSpan()),
-                TextSpan = context.GetTextSpan()
+                Target = new IdToken(context.SELECT().GetText(), context.SELECT().GetTextSpan())
             };
             var queryElements = new List<Expression>();
             for (int i = 1; i < context.ChildCount; i++)
@@ -1322,7 +1315,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 text = text.ToLowerInvariant().Replace("f", "").Replace("d", "");
-                result = new FloatLiteral(double.Parse(text), context.GetTextSpan());
+                result = new FloatLiteral(double.Parse(text, CultureInfo.InvariantCulture), context.GetTextSpan());
             }
             return result;
         }

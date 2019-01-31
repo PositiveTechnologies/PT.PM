@@ -19,6 +19,7 @@ using PT.PM.JavaScriptParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PhpParseTreeUst
 {
@@ -33,9 +34,11 @@ namespace PT.PM.PhpParseTreeUst
         protected int jsStartCodeInd = 0;
         protected int namespaceDepth;
 
-        public override Language Language => Php.Language;
+        public override Language Language => Language.Php;
 
         public JavaScriptType JavaScriptType { get; set; }
+
+        public static PhpAntlrParseTreeConverter Create() => new PhpAntlrParseTreeConverter();
 
         public PhpAntlrParseTreeConverter()
             : base()
@@ -48,7 +51,7 @@ namespace PT.PM.PhpParseTreeUst
             IEnumerable<Ust> phpBlocks = context.htmlElementOrPhpBlock()
                 .Select(block => Visit(block))
                 .Where(phpBlock => phpBlock != null);
-            root.Nodes = phpBlocks.SelectMany(block => block.SelectAnalyzedNodes(Php.Language, AnalyzedLanguages)).ToArray();
+            root.Nodes = phpBlocks.SelectMany(block => block.SelectAnalyzedNodes(Language.Php, AnalyzedLanguages)).ToArray();
 
             return root;
         }
@@ -78,7 +81,7 @@ namespace PT.PM.PhpParseTreeUst
             {
                 IToken token = Tokens[i];
 
-                if (AnalyzedLanguages.Contains(JavaScript.Language))
+                if (AnalyzedLanguages.Contains(Language.JavaScript))
                 {
                     if (token.Type == PhpLexer.HtmlScriptOpen)
                     {
@@ -93,8 +96,8 @@ namespace PT.PM.PhpParseTreeUst
                 text.Append(token.Text);
             }
 
-            var result = AnalyzedLanguages.Contains(Html.Language)
-                ? new RootUst(root.SourceCodeFile, Html.Language)
+            var result = AnalyzedLanguages.Contains(Language.Html)
+                ? new RootUst(root.SourceFile, Language.Html)
                 {
                     Node = new StringLiteral(text.ToString(), context.GetTextSpan())
                     {
@@ -132,10 +135,10 @@ namespace PT.PM.PhpParseTreeUst
 
             int offset = Tokens[jsStartCodeInd].StartIndex;
 
-            var sourceCodeFile = new CodeFile(jsCode.ToString())
+            var sourceFile = new TextFile(jsCode.ToString())
             {
-                Name = root.SourceCodeFile.Name,
-                RelativePath = root.SourceCodeFile.RelativePath,
+                Name = root.SourceFile.Name,
+                RelativePath = root.SourceFile.RelativePath,
             };
 
             var javaScriptParser = new JavaScriptEsprimaParser
@@ -143,10 +146,10 @@ namespace PT.PM.PhpParseTreeUst
                 Logger = Logger,
                 JavaScriptType = JavaScriptType,
                 Offset = offset,
-                OriginFile = root.SourceCodeFile
+                OriginFile = root.SourceFile
             };
 
-            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceCodeFile);
+            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceFile);
             if (parseTree == null)
             {
                 return null;
@@ -155,7 +158,7 @@ namespace PT.PM.PhpParseTreeUst
             var javaScriptConverter = new JavaScriptEsprimaParseTreeConverter
             {
                 Logger = Logger,
-                SourceCodeFile = root.SourceCodeFile,
+                SourceFile = root.SourceFile,
                 ParentRoot = root,
                 Offset = offset
             };
@@ -182,17 +185,10 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitScriptTextPart(PhpParser.ScriptTextPartContext context)
         {
             string javaScriptCode = string.Join("", context.ScriptText().Select(text => text.GetText()));
-            Ust result;
-            if (AnalyzedLanguages.Contains(JavaScript.Language))
-            {
-                // Process JavaScript at close script tag </script>
-                result = null;
-            }
-            else
-            {
-                result = new StringLiteral(javaScriptCode, context.GetTextSpan());
-            }
-            return result;
+            // Process JavaScript at close script tag </script>
+            return AnalyzedLanguages.Contains(Language.JavaScript)
+                ? null
+                : new StringLiteral(javaScriptCode, context.GetTextSpan());
         }
 
         public Ust VisitPhpBlock(PhpParser.PhpBlockContext context)

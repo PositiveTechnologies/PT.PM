@@ -1,4 +1,5 @@
 ﻿using System;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Exceptions
 {
@@ -8,10 +9,10 @@ namespace PT.PM.Common.Exceptions
         {
         }
 
-        public MatchingException(CodeFile codeFile, Exception ex = null, string message = "")
+        public MatchingException(IFile sourceFile, Exception ex = null, string message = "")
             : base(ex, message)
         {
-            CodeFile = codeFile ?? CodeFile.Empty;
+            File = sourceFile ?? TextFile.Empty;
         }
     }
 }

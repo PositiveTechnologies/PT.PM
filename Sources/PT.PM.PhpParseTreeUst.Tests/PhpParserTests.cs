@@ -1,10 +1,11 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.TestUtils;
-using NUnit.Framework;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using NUnit.Framework;
+using PT.PM.Common;
+using PT.PM.Common.Files;
+using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.TestUtils;
 
 namespace PT.PM.PhpParseTreeUst.Tests
 {
@@ -14,7 +15,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         public void Parse_PhpSyntax_WithoutErrors()
         {
             TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "php", "examples"),
-                Php.Language, Stage.ParseTree, searchPredicate: fileName => !fileName.Contains("Error"));
+                Language.Php, Stage.ParseTree, searchPredicate: fileName => !fileName.Contains("Error"));
         }
 
         [Test]
@@ -27,11 +28,11 @@ namespace PT.PM.PhpParseTreeUst.Tests
             {
                 var phpParser = new PhpAntlrParser();
                 string code = fileText.Replace("\r\n", lineEnd);
-                var sourceCodeFile = new CodeFile(code)
+                var sourceFile = new TextFile(code)
                 {
                     Name = "newLine.php",
                 };
-                var parseTree = (PhpAntlrParseTree)phpParser.Parse(sourceCodeFile);
+                var parseTree = (PhpAntlrParseTree)phpParser.Parse(sourceFile);
                 var converter = new PhpAntlrParseTreeConverter();
                 RootUst ust = converter.Convert(parseTree);
 

@@ -2,10 +2,11 @@
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common.Json
 {
-    public abstract class JsonBaseSerializer<T> : ILoggable
+    public abstract class JsonBaseSerializer<T>
     {
         private static readonly JsonConverter stringEnumConverter = new StringEnumConverter();
 
@@ -25,21 +26,21 @@ namespace PT.PM.Common.Json
 
         public string EmptyTextSpanFormat { get; set; } = null;
 
-        public CodeFile CurrectCodeFile { get; set; }
+        public TextFile CurrectSourceFile { get; set; }
 
-        public HashSet<CodeFile> CodeFiles { get; set; } = new HashSet<CodeFile>();
+        public HashSet<IFile> SourceFiles { get; set; } = new HashSet<IFile>();
 
-        public event EventHandler<(CodeFile, TimeSpan)> ReadCodeFileEvent;
+        public Action<(IFile, TimeSpan)> ReadSourceFileAction { get; set; }
 
-        public CodeFile JsonFile { get; protected set; } = CodeFile.Empty;
+        public TextFile SerializedFile { get; protected set; } = TextFile.Empty;
 
         public bool IgnoreExtraProcess { get; set; } = false;
 
-        public virtual T Deserialize(CodeFile jsonFile)
+        public virtual T Deserialize(TextFile serializedFile)
         {
-            JsonFile = jsonFile;
-            JsonSerializerSettings jsonSettings = PrepareSettings(false, jsonFile);
-            return JsonConvert.DeserializeObject<T>(jsonFile.Code, jsonSettings);
+            SerializedFile = serializedFile;
+            JsonSerializerSettings jsonSettings = PrepareSettings(false, serializedFile);
+            return JsonConvert.DeserializeObject<T>(serializedFile.Data, jsonSettings);
         }
 
         public virtual string Serialize(T node)
@@ -54,7 +55,7 @@ namespace PT.PM.Common.Json
             return JsonConvert.SerializeObject(nodes, jsonSettings);
         }
 
-        protected JsonSerializerSettings PrepareSettings(bool writer, CodeFile jsonFile)
+        protected JsonSerializerSettings PrepareSettings(bool writer, TextFile serializedFile)
         {
             JsonConverter jsonConverter;
 
@@ -70,7 +71,7 @@ namespace PT.PM.Common.Json
             }
             else
             {
-                UstJsonConverterReader jsonConverterReader = CreateConverterReader(jsonFile);
+                UstJsonConverterReader jsonConverterReader = CreateConverterReader(serializedFile);
                 jsonConverterReader.Logger = Logger;
                 jsonConverterReader.IgnoreExtraProcess = IgnoreExtraProcess;
 
@@ -81,25 +82,25 @@ namespace PT.PM.Common.Json
             {
                 EmptyTextSpanFormat = EmptyTextSpanFormat,
                 IsLineColumn = LineColumnTextSpans,
-                JsonFile = JsonFile,
+                SerializedFile = SerializedFile,
                 Logger = Logger,
-                CodeFiles = CodeFiles,
-                CurrentCodeFile = CurrectCodeFile
+                SourceFiles = SourceFiles,
+                CurrentSourceFile = CurrectSourceFile
             };
 
-            var codeFileJsonConverter = new CodeFileJsonConverter
+            var sourceFileJsonConverter = new SourceFileJsonConverter
             {
                 ExcludeDefaults = ExcludeDefaults,
                 IncludeCode = IncludeCode,
-                JsonFile = JsonFile,
+                SerializedFile = SerializedFile,
                 Logger = Logger
             };
 
-            codeFileJsonConverter.ReadCodeFileEvent += ReadCodeFileEvent;
+            sourceFileJsonConverter.ReadSourceFileAction = ReadSourceFileAction;
 
-            codeFileJsonConverter.SetCurrentCodeFileEvent += (object sender, CodeFile codeFile) =>
+            sourceFileJsonConverter.SetCurrentSourceFileAction = sourceFile =>
             {
-                textSpanJsonConverter.CurrentCodeFile = codeFile;
+                textSpanJsonConverter.CurrentSourceFile = sourceFile;
             };
 
             var jsonSettings = new JsonSerializerSettings
@@ -110,16 +111,15 @@ namespace PT.PM.Common.Json
                 {
                     stringEnumConverter,
                     jsonConverter,
-                    LanguageJsonConverter.Instance,
                     textSpanJsonConverter,
-                    codeFileJsonConverter
+                    sourceFileJsonConverter
                 }
             };
 
             return jsonSettings;
         }
 
-        protected abstract UstJsonConverterReader CreateConverterReader(CodeFile jsonFile);
+        protected abstract UstJsonConverterReader CreateConverterReader(TextFile serializedFile);
 
         protected abstract UstJsonConverterWriter CreateConverterWriter();
 

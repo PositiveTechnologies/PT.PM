@@ -1,11 +1,14 @@
 ﻿using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class AnonymousObjectExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public List<PropertyDeclaration> Properties { get; set; } = new List<PropertyDeclaration>();
 
         public AnonymousObjectExpression(IEnumerable<PropertyDeclaration> properties, TextSpan textSpan)

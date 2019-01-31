@@ -403,11 +403,6 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(fileNode);
         }
 
-        public virtual T Visit(NotImplementedUst notImplementedNode)
-        {
-            return VisitChildren(notImplementedNode);
-        }
-
         public virtual T Visit(Collection collection)
         {
             return VisitChildren(collection);
@@ -422,7 +417,7 @@ namespace PT.PM.Common.Nodes
         {
             if (ust == null)
             {
-                return default(T);
+                return default;
             }
             foreach (var children in ust.Children)
             {
@@ -435,7 +430,8 @@ namespace PT.PM.Common.Nodes
                     }
                 }
             }
-            return default(T);
+
+            return default;
         }
     }
 } 

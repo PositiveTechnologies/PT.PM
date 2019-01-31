@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.TestUtils;
-using System.IO;
 
 namespace PT.PM.PhpParseTreeUst.Tests
 {
@@ -12,7 +12,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         public void Convert_PhpFiles_WithoutErrors()
         {
             TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "php", "examples"),
-                Php.Language, Stage.Ust, searchPredicate: fileName => !fileName.Contains("Error"));
+                Language.Php, Stage.Ust, searchPredicate: fileName => !fileName.Contains("Error"));
         }
 
         [Test]

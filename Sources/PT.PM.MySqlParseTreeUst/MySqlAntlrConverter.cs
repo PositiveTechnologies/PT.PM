@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
@@ -21,7 +20,9 @@ namespace PT.PM.SqlParseTreeUst
 {
     public partial class MySqlAntlrConverter : AntlrConverter, IMySqlParserVisitor<Ust>
     {
-        public override Language Language => MySql.Language;
+        public override Language Language => Language.MySql;
+
+        public static MySqlAntlrConverter Create() => new MySqlAntlrConverter();
 
         public Ust VisitRoot([NotNull] MySqlParser.RootContext context)
         {
@@ -50,13 +51,12 @@ namespace PT.PM.SqlParseTreeUst
         {
             var funcMultichild = (MultichildExpression)VisitChildren(context);
             var funcExprs = ExtractMultiChild(funcMultichild);
-            var result = new InvocationExpression
+            var result = new InvocationExpression(context.GetTextSpan())
             {
                 Target = funcExprs.FirstOrDefault(),
                 Arguments = funcExprs.Count > 1
                     ? new ArgsUst(funcExprs.GetRange(1, funcExprs.Count - 1))
-                    : new ArgsUst(new List<Expression>()),
-                TextSpan = context.GetTextSpan()
+                    : new ArgsUst(new List<Expression>())
             };
             return result;
         }
@@ -388,11 +388,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitBinaryComparasionPredicate([NotNull] MySqlParser.BinaryComparasionPredicateContext context)
         {
-            var comparison = new BinaryOperatorExpression
+            var comparison = new BinaryOperatorExpression(context.GetTextSpan())
             {
                 Left = (Expression)Visit(context.left),
-                Right = (Expression)Visit(context.right),
-                TextSpan = context.GetTextSpan()
+                Right = (Expression)Visit(context.right)
             };
             var opText = context.comparisonOperator().GetText();
             BinaryOperator op;
@@ -439,10 +438,9 @@ namespace PT.PM.SqlParseTreeUst
                 statements.Add(visited.ToStatementIfRequired());
             }
 
-            return new BlockStatement
+            return new BlockStatement(context.GetTextSpan())
             {
-                Statements = statements,
-                TextSpan = context.GetTextSpan()
+                Statements = statements
             };
         }
 
@@ -821,11 +819,10 @@ namespace PT.PM.SqlParseTreeUst
         {
             var exprList = ExtractMultiChild((MultichildExpression)VisitChildren(context));
             var cursorVar = exprList[1];
-            exprList[1] = new ArgumentExpression
+            exprList[1] = new ArgumentExpression(cursorVar.TextSpan)
             {
                 Modifier = new InOutModifierLiteral(InOutModifier.InOut, cursorVar.TextSpan),
-                Argument = cursorVar,
-                TextSpan = cursorVar.TextSpan
+                Argument = cursorVar
             };
             return new SqlQuery(exprList[0], exprList.GetRange(1, exprList.Count - 1), context.GetTextSpan());
         }
@@ -988,11 +985,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitElifAlternative([NotNull] MySqlParser.ElifAlternativeContext context)
         {
-            return new IfElseStatement
+            return new IfElseStatement(context.GetTextSpan())
             {
                 Condition = (Expression)Visit(context.expression()),
-                TrueStatement = new BlockStatement(context.procedureSqlStatement().Select(x => Visit(x).ToStatementIfRequired())),
-                TextSpan = context.GetTextSpan()
+                TrueStatement = new BlockStatement(context.procedureSqlStatement().Select(x => Visit(x).ToStatementIfRequired()))
             };
         }
 
@@ -1013,11 +1009,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitExecuteStatement([NotNull] MySqlParser.ExecuteStatementContext context)
         {
-            return new InvocationExpression
+            return new InvocationExpression(context.GetTextSpan())
             {
                 Target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan()),
-                Arguments = new ArgsUst((Expression)Visit(context.uid())),
-                TextSpan = context.GetTextSpan()
+                Arguments = new ArgsUst((Expression)Visit(context.uid()))
             };
         }
 
@@ -1063,18 +1058,15 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitFetchCursor([NotNull] MySqlParser.FetchCursorContext context)
         {
-            var result = new InvocationExpression
+            var result = new InvocationExpression(context.GetTextSpan())
             {
-                Target = new IdToken(context.FETCH().GetText(), context.FETCH().GetTextSpan()),
-                TextSpan = context.GetTextSpan()
+                Target = new IdToken(context.FETCH().GetText(), context.FETCH().GetTextSpan())
             };
 
             var queryElements = new List<Expression>
             {
                 context.uid().ConvertToInOutArgument()
             };
-
-            int startIndex = context.children.IndexOf(context.uid()) + 1;
 
             for (int i = 2; i < context.ChildCount; i++)
             {
@@ -1179,11 +1171,10 @@ namespace PT.PM.SqlParseTreeUst
         {
             var id = (IdToken)Visit(context.uid());
             var type = (TypeToken)Visit(context.dataType());
-            return new ParameterDeclaration()
+            return new ParameterDeclaration(context.GetTextSpan())
             {
                 Name = id,
-                Type = type,
-                TextSpan = context.GetTextSpan()
+                Type = type
             };
         }
 
@@ -1213,11 +1204,10 @@ namespace PT.PM.SqlParseTreeUst
                 args.Add(Visit(children).ToExpressionIfRequired());
             }
 
-            return new InvocationExpression
+            return new InvocationExpression(context.GetTextSpan())
             {
                 Target = grantId,
-                Arguments = new ArgsUst(args),
-                TextSpan = context.GetTextSpan()
+                Arguments = new ArgsUst(args)
             };
         }
 
@@ -1323,11 +1313,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitIfStatement([NotNull] MySqlParser.IfStatementContext context)
         {
-            var ifStatement = new IfElseStatement
+            var ifStatement = new IfElseStatement(context.GetTextSpan())
             {
                 Condition = (Expression)Visit(context.expression()),
-                TrueStatement = new BlockStatement(context._thenStatements.Select(x => Visit(x).ToStatementIfRequired())),
-                TextSpan = context.GetTextSpan()
+                TrueStatement = new BlockStatement(context._thenStatements.Select(x => Visit(x).ToStatementIfRequired()))
             };
 
             var falseStatement = new BlockStatement(context.elifAlternative().Select(x => Visit(x).ToStatementIfRequired()));
@@ -1569,10 +1558,7 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitLoopStatement([NotNull] MySqlParser.LoopStatementContext context)
         {
-            var loopBlock = new BlockStatement()
-            {
-                TextSpan = context.GetTextSpan()
-            };
+            var loopBlock = new BlockStatement(context.GetTextSpan());
 
             var statementsContext = context.procedureSqlStatement();
             foreach (var statement in statementsContext)
@@ -1580,10 +1566,9 @@ namespace PT.PM.SqlParseTreeUst
                 loopBlock.Statements.Add((Statement)Visit(statement));
             }
 
-            return new WhileStatement
+            return new WhileStatement(context.GetTextSpan())
             {
-                Embedded = loopBlock,
-                TextSpan = context.GetTextSpan()
+                Embedded = loopBlock
             };
         }
 
@@ -1883,11 +1868,10 @@ namespace PT.PM.SqlParseTreeUst
         {
             var prepareArg = (Expression)ExtractLiteral(context.query ?? context.variable);
 
-            var prepareFunc = new InvocationExpression
+            var prepareFunc = new InvocationExpression( context.PREPARE().GetTextSpan().Union(prepareArg.TextSpan))
             {
                 Target = new IdToken(context.PREPARE().GetText(), context.PREPARE().GetTextSpan()),
-                Arguments = new ArgsUst(prepareArg),
-                TextSpan = context.PREPARE().GetTextSpan().Union(prepareArg.TextSpan)
+                Arguments = new ArgsUst(prepareArg)
             };
 
             return new AssignmentExpression(
@@ -2244,11 +2228,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSetNames([NotNull] MySqlParser.SetNamesContext context)
         {
-            return new AssignmentExpression()
+            return new AssignmentExpression(context.GetTextSpan())
             {
                 Left = new IdToken(context.NAMES().GetText(), context.NAMES().GetTextSpan()),
-                Right = new StringLiteral(context.charsetName().GetText(), context.charsetName().GetTextSpan()),
-                TextSpan = context.GetTextSpan()
+                Right = new StringLiteral(context.charsetName().GetText(), context.charsetName().GetTextSpan())
             };
         }
 
@@ -2259,11 +2242,10 @@ namespace PT.PM.SqlParseTreeUst
 
         public Ust VisitSetPasswordStatement([NotNull] MySqlParser.SetPasswordStatementContext context)
         {
-            return new AssignmentExpression()
+            return new AssignmentExpression(context.GetTextSpan())
             {
                 Left = new IdToken(context.PASSWORD().GetText(), context.PASSWORD().GetTextSpan()),
-                Right = (Expression)Visit(context.passwordFunctionClause()),
-                TextSpan = context.GetTextSpan()
+                Right = (Expression)Visit(context.passwordFunctionClause())
             };
         }
 
@@ -2290,18 +2272,16 @@ namespace PT.PM.SqlParseTreeUst
 
             for (int i = 0; i < variablesContext.Length; i++)
             {
-                assignments.Add(new AssignmentExpression
+                assignments.Add(new AssignmentExpression(context.GetTextSpan())
                 {
                     Left = (Expression)Visit(variablesContext[i]),
-                    Right = (Expression)Visit(expressionsContext[i]),
-                    TextSpan = context.GetTextSpan()
+                    Right = (Expression)Visit(expressionsContext[i])
                 });
             }
 
-            return new VariableDeclarationExpression
+            return new VariableDeclarationExpression(context.GetTextSpan())
             {
-                Variables = assignments,
-                TextSpan = context.GetTextSpan()
+                Variables = assignments
             };
         }
 

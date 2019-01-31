@@ -29,7 +29,7 @@ namespace PT.PM.AntlrUtils
             }
             resultString.Append("EOF");
 
-            Dump(resultString.ToString(), parseTree.SourceCodeFile, true);
+            Dump(resultString.ToString(), parseTree.SourceFile, true);
         }
 
         public override void DumpTree(ParseTree parseTree)
@@ -38,7 +38,7 @@ namespace PT.PM.AntlrUtils
             Parser parser = ((AntlrParser)parseTree.SourceLanguage.CreateParser()).Parser;
             DumpTree(((AntlrParseTree)parseTree).SyntaxTree, parser, result, 0);
 
-            Dump(result.ToString(), parseTree.SourceCodeFile, false);
+            Dump(result.ToString(), parseTree.SourceFile, false);
         }
 
         private void DumpTree(IParseTree parseTree, Parser parser, StringBuilder builder, int level)

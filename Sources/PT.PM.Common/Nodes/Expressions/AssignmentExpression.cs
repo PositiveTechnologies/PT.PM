@@ -1,13 +1,19 @@
-﻿using PT.PM.Common.Nodes.Tokens.Literals;
+﻿using System.Net.Mime;
+using MessagePack;
+using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class AssignmentExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public Expression Left { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Expression Right { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public BinaryOperatorLiteral Operator { get; set; }
 
         public AssignmentExpression(Expression left, Expression right, TextSpan textSpan)
@@ -18,6 +24,11 @@ namespace PT.PM.Common.Nodes.Expressions
         }
 
         public AssignmentExpression()
+        {
+        }
+
+        public AssignmentExpression(TextSpan textSpan)
+            : base(textSpan)
         {
         }
 

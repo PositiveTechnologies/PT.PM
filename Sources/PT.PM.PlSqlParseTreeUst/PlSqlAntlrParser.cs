@@ -7,9 +7,11 @@ namespace PT.PM.SqlParseTreeUst
 {
     public class PlSqlAntlrParser : AntlrParser
     {
-        public override Language Language => PlSql.Language;
+        public override Language Language => Language.PlSql;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.UPPER;
+
+        public static PlSqlAntlrParser Create() => new PlSqlAntlrParser();
 
         public PlSqlAntlrParser()
         {

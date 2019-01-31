@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Tokens
 {
+    [MessagePackObject]
     public class TypeToken : Token
     {
+        [Key(UstFieldOffset)]
         public string TypeText { get; set; }
 
+        [IgnoreMember]
         public override string TextValue => TypeText;
 
         public TypeToken(string type)

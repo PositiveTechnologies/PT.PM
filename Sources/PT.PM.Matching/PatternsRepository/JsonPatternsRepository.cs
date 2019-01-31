@@ -8,6 +8,7 @@ using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching.PatternsRepository
 {
@@ -23,7 +24,7 @@ namespace PT.PM.Matching.PatternsRepository
 
         public string DefaultFilenameWildcard { get; set; } = "";
 
-        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages.Values);
+        public HashSet<Language> DefaultLanguages { get; set; } = new HashSet<Language>(LanguageUtils.PatternLanguages);
 
         public JsonPatternsRepository(string patternsData)
         {
@@ -45,7 +46,7 @@ namespace PT.PM.Matching.PatternsRepository
             catch (Exception ex)
             {
                 Logger.LogError(new ParsingException(
-                   new CodeFile(patternsData) { PatternKey = DefaultKey }, ex, ex.FormatExceptionMessage()));
+                   new TextFile(patternsData) { PatternKey = DefaultKey }, ex, ex.FormatExceptionMessage()));
             }
 
             List<PatternDto> result;
@@ -79,7 +80,7 @@ namespace PT.PM.Matching.PatternsRepository
                     {
                         patternJsonSerializer = new JsonSerializer();
                         var converters = patternJsonSerializer.Converters;
-                        var patternJsonConverterReader = new PatternJsonConverterReader(new CodeFile(patternsData))
+                        var patternJsonConverterReader = new PatternJsonConverterReader(new TextFile(patternsData))
                         {
                             Logger = Logger,
                             DefaultDataFormat = DefaultDataFormat,
@@ -94,17 +95,16 @@ namespace PT.PM.Matching.PatternsRepository
                         };
                         converters.Add(textSpanJsonConverter);
 
-                        var codeFileJsonConverter = new CodeFileJsonConverter
+                        var sourceFileJsonConverter = new SourceFileJsonConverter
                         {
-                            Logger = Logger
+                            Logger = Logger,
+                            SetCurrentSourceFileAction = sourceFile =>
+                            {
+                                textSpanJsonConverter.CurrentSourceFile = sourceFile;
+                            }
                         };
 
-                        codeFileJsonConverter.SetCurrentCodeFileEvent += (sender, codeFile) =>
-                        {
-                            textSpanJsonConverter.CurrentCodeFile = codeFile;
-                        };
-
-                        converters.Add(codeFileJsonConverter);
+                        converters.Add(sourceFileJsonConverter);
                     }
 
                     PatternRoot patternRoot = token.ToObject<PatternRoot>(patternJsonSerializer);

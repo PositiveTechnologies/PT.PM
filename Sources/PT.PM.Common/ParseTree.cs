@@ -1,4 +1,5 @@
 ﻿using System;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common
 {
@@ -6,7 +7,7 @@ namespace PT.PM.Common
     {
         public abstract Language SourceLanguage { get; }
 
-        public CodeFile SourceCodeFile { get; set; }
+        public TextFile SourceFile { get; set; }
 
         public TimeSpan LexerTimeSpan { get; set; }
 

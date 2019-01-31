@@ -1,9 +1,9 @@
-﻿using PT.PM.Common;
-using PT.PM.TestUtils;
+﻿using System.IO;
+using System.Linq;
 using AspxParser;
 using NUnit.Framework;
-using System.IO;
-using System.Linq;
+using PT.PM.TestUtils;
+using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst.Tests
 {
@@ -21,7 +21,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
             var foundNode = result.RootNode.Descendants<AspxNode.AspxExpressionTag>()
                 .FirstOrDefault(node => node.Expression.Contains("Expression text"));
 
-            var sourceCode = new CodeFile(source.Text);
+            var sourceCode = new TextFile(source.Text);
             sourceCode.GetLineColumnFromLinear(foundNode.Location.Start, out int line, out int column);
             Assert.AreEqual(15, line);
             Assert.AreEqual(13, column);

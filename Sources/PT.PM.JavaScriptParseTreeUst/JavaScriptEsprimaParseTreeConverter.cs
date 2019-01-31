@@ -10,6 +10,7 @@ using UstSpecific = PT.PM.Common.Nodes.Specific;
 using PT.PM.Common.Nodes.TypeMembers;
 using Esprima;
 using System.Threading;
+using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.JavaScriptParseTreeUst
@@ -18,9 +19,9 @@ namespace PT.PM.JavaScriptParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language Language => JavaScript.Language;
+        public Language Language => Language.JavaScript;
 
-        public CodeFile SourceCodeFile { get; set; }
+        public TextFile SourceFile { get; set; }
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
@@ -28,18 +29,20 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public int Offset { get; set; }
 
+        public static JavaScriptEsprimaParseTreeConverter Create() => new JavaScriptEsprimaParseTreeConverter();
+
         public RootUst Convert(ParseTree langParseTree)
         {
             try
             {
                 var esprimaParseTree = (JavaScriptEsprimaParseTree)langParseTree;
-                if (SourceCodeFile == null)
+                if (SourceFile == null)
                 {
-                    SourceCodeFile = esprimaParseTree.SourceCodeFile;
+                    SourceFile = esprimaParseTree.SourceFile;
                 }
                 var program = VisitProgram(esprimaParseTree.SyntaxTree);
 
-                var rootUst = new RootUst(SourceCodeFile, JavaScript.Language)
+                var rootUst = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree))
                 {
                     Nodes = new Ust[] { program },
                 };
@@ -48,7 +51,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 foreach (Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new CommentLiteral(SourceCodeFile.GetSubstring(textSpan), textSpan)
+                    comments.Add(new CommentLiteral(SourceFile.GetSubstring(textSpan), textSpan)
                     {
                         Root = rootUst,
                     });
@@ -56,14 +59,13 @@ namespace PT.PM.JavaScriptParseTreeUst
 
                 rootUst.Comments = comments.ToArray();
                 rootUst.Root = ParentRoot;
-                rootUst.TextSpan = GetTextSpan(esprimaParseTree.SyntaxTree);
                 rootUst.FillAscendants();
 
                 return rootUst;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(SourceCodeFile, ex));
+                Logger.LogError(new ConversionException(SourceFile, ex));
                 return null;
             }
         }
@@ -85,7 +87,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             }
             catch (Exception ex)
             {
-                Logger?.LogError(new ConversionException(SourceCodeFile, ex));
+                Logger?.LogError(new ConversionException(SourceFile, ex));
                 return null;
             }
         }
@@ -157,7 +159,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             string message = node == null
                 ? $"{nameof(node)} can not be null"
                 : $"Unknow {nameof(INode)} type {node.Type}";
-            Logger.LogError(new ConversionException(SourceCodeFile, message: message));
+            Logger.LogError(new ConversionException(SourceFile, message: message));
             return null;
         }
 

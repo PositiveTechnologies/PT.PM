@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
@@ -8,15 +9,11 @@ namespace PT.PM.AntlrUtils
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public CodeFile CodeFile { get; set; }
+        public TextFile SourceFile { get; set; }
 
         public bool IsPattern { get; set; }
 
         public int LineOffset { get; set; }
-
-        public AntlrMemoryErrorListener()
-        {
-        }
 
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
@@ -33,7 +30,7 @@ namespace PT.PM.AntlrUtils
 
         private void ProcessError(int startIndex, int stopIndex, string msg)
         {
-            int lineLinearIndex = CodeFile.GetLineLinearIndex(LineOffset);
+            int lineLinearIndex = SourceFile.GetLineLinearIndex(LineOffset);
             startIndex = startIndex + lineLinearIndex;
             stopIndex = stopIndex + 1 + lineLinearIndex;
             if (stopIndex <= startIndex)
@@ -42,9 +39,9 @@ namespace PT.PM.AntlrUtils
             }
             TextSpan textSpan = TextSpan.FromBounds(startIndex, stopIndex);
 
-            string errorMessage = $"{msg} at {CodeFile.GetLineColumnTextSpan(textSpan)}";
+            string errorMessage = $"{msg} at {SourceFile.GetLineColumnTextSpan(textSpan)}";
 
-            Logger.LogError(new ParsingException(CodeFile, message: errorMessage)
+            Logger.LogError(new ParsingException(SourceFile, message: errorMessage)
             {
                 TextSpan = textSpan,
             });

@@ -2,13 +2,17 @@
 using PT.PM.Common.Nodes.Tokens;
 using System.Collections.Generic;
 using System.Linq;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
+    [MessagePackObject]
     public class FieldDeclaration : EntityDeclaration
     {
+        [Key(EntityFieldOffset)]
         public TypeToken Type { get; set; }
 
+        [Key(EntityFieldOffset + 1)]
         public List<AssignmentExpression> Variables { get; set; }
 
         public FieldDeclaration(TypeToken type, IEnumerable<AssignmentExpression> variables,

@@ -1,16 +1,18 @@
 ﻿using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.JavaScriptParseTreeUst;
 using System.IO;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PhpParseTreeUst
 {
     public class PhpAntlrParser : AntlrParser
     {
-        public override Language Language => Php.Language;
+        public override Language Language => Language.Php;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.lower;
+
+        public static PhpAntlrParser Create() => new PhpAntlrParser();
 
         public PhpAntlrParser()
         {
@@ -29,7 +31,7 @@ namespace PT.PM.PhpParseTreeUst
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
             new PhpAntlrParseTree((PhpParser.HtmlDocumentContext)syntaxTree);
 
-        protected override string PreprocessText(CodeFile file)
+        protected override string PreprocessText(TextFile file)
         {
             var result = base.PreprocessText(file);
 

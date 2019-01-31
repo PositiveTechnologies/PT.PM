@@ -1,4 +1,5 @@
 ﻿using PT.PM.Common;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
@@ -8,6 +9,6 @@ namespace PT.PM.Matching
 
         string Serialize(PatternRoot patternRoot);
 
-        PatternRoot Deserialize(CodeFile data);
+        PatternRoot Deserialize(TextFile data);
     }
 }

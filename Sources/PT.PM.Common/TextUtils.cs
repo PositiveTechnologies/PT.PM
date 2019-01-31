@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Files;
 
 namespace PT.PM.Common
 {
@@ -59,25 +60,25 @@ namespace PT.PM.Common
             return resultTextSpan;
         }
 
-        public static TextSpan ParseAnyTextSpan(string textSpanString, out bool isLineColumn, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
+        public static TextSpan ParseAnyTextSpan(string textSpanString, out bool isLineColumn, TextFile currentSourceFile, HashSet<IFile> sourceFiles)
         {
             TextSpan result;
 
             isLineColumn = textSpanString.Contains(",");
             if (!isLineColumn)
             {
-                result = ParseTextSpan(textSpanString, currentCodeFile, codeFiles);
+                result = ParseTextSpan(textSpanString, currentSourceFile, sourceFiles);
             }
             else
             {
-                LineColumnTextSpan lineColumnTextSpan = ParseLineColumnTextSpan(textSpanString, currentCodeFile, codeFiles);
-                result = lineColumnTextSpan.CodeFile.GetTextSpan(lineColumnTextSpan);
+                LineColumnTextSpan lineColumnTextSpan = ParseLineColumnTextSpan(textSpanString, currentSourceFile, sourceFiles);
+                result = lineColumnTextSpan.File.GetTextSpan(lineColumnTextSpan);
             }
 
             return result;
         }
 
-        public static TextSpan ParseTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
+        public static TextSpan ParseTextSpan(string text, TextFile currentSourceFile = null, HashSet<IFile> sourceFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -85,7 +86,7 @@ namespace PT.PM.Common
                 ? parts[1].Trim()
                 : null;
 
-            CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
+            TextFile sourceFile = (TextFile)GetSourceFile(fileName, currentSourceFile, sourceFiles);
 
             TextSpan result;
             try
@@ -118,7 +119,7 @@ namespace PT.PM.Common
                     end = start;
                 }
 
-                result = TextSpan.FromBounds(start, end, codeFile);
+                result = TextSpan.FromBounds(start, end, sourceFile);
             }
             catch (Exception ex) when (!(ex is FormatException))
             {
@@ -128,7 +129,7 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, CodeFile currentCodeFile = null, HashSet<CodeFile> codeFiles = null)
+        public static LineColumnTextSpan ParseLineColumnTextSpan(string text, TextFile currentSourceFile = null, HashSet<IFile> sourceFiles = null)
         {
             string[] parts = text.Split(semicolon, 2);
 
@@ -136,7 +137,7 @@ namespace PT.PM.Common
                 ? parts[1].Trim()
                 : null;
 
-            CodeFile codeFile = GetCodeFile(fileName, currentCodeFile, codeFiles);
+            TextFile sourceFile = (TextFile)GetSourceFile(fileName, currentSourceFile, sourceFiles);
 
             LineColumnTextSpan result;
             string firstPart = parts[0].Trim().Substring(1, parts[0].Length - 2);
@@ -181,7 +182,7 @@ namespace PT.PM.Common
                     endColumn = beginColumn;
                 }
 
-                result = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, codeFile);
+                result = new LineColumnTextSpan(beginLine, beginColumn, endLine, endColumn, sourceFile);
             }
             catch (Exception ex) when (!(ex is FormatException))
             {
@@ -191,31 +192,31 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static CodeFile GetCodeFile(string fileName, CodeFile currentCodeFile, HashSet<CodeFile> codeFiles)
+        public static IFile GetSourceFile(string fileName, IFile currentSourceFile, HashSet<IFile> sourceFiles)
         {
-            CodeFile result = null;
+            IFile result = null;
             if (fileName == null)
             {
-                result = currentCodeFile;
+                result = currentSourceFile;
             }
             else
             {
                 fileName = fileName.NormalizeDirSeparator();
 
-                if (codeFiles != null)
-                    lock (codeFiles)
+                if (sourceFiles != null)
+                    lock (sourceFiles)
                     {
-                        result = codeFiles.FirstOrDefault(codeFile =>
-                            codeFile.FullName == fileName || codeFile.RelativeName == fileName);
+                        result = sourceFiles.FirstOrDefault(sourceFile =>
+                            sourceFile.FullName == fileName || sourceFile.RelativeName == fileName);
                     }
 
                 if (result == null)
                 {
                     if (!FileExt.Exists(fileName))
                     {
-                        if (currentCodeFile != null)
+                        if (currentSourceFile != null)
                         {
-                            fileName = Path.Combine(currentCodeFile.RootPath, fileName);
+                            fileName = Path.Combine(currentSourceFile.RootPath, fileName);
                             if (!FileExt.Exists(fileName))
                             {
                                 throw new FileNotFoundException($"File {fileName} not found.", fileName);
@@ -224,16 +225,16 @@ namespace PT.PM.Common
                     }
 
                     var code = FileExt.ReadAllText(fileName);
-                    result = new CodeFile(code)
+                    result = new TextFile(code)
                     {
                         RootPath = Path.GetDirectoryName(fileName),
                         Name = Path.GetFileName(fileName)
                     };
 
-                    if (codeFiles != null)
-                        lock (codeFiles)
+                    if (sourceFiles != null)
+                        lock (sourceFiles)
                         {
-                            codeFiles.Add(result);
+                            sourceFiles.Add(result);
                         }
                 }
             }
@@ -241,12 +242,12 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static LineColumnTextSpan GetLineColumnTextSpan(this TextSpan textSpan, CodeFile currentFile)
+        public static LineColumnTextSpan GetLineColumnTextSpan(this TextSpan textSpan, TextFile currentFile)
         {
-            return textSpan.GetCodeFile(currentFile).GetLineColumnTextSpan(textSpan);
+            return textSpan.GetSourceFile(currentFile).GetLineColumnTextSpan(textSpan);
         }
 
-        public static CodeFile GetCodeFile(this TextSpan textSpan, CodeFile currentFile) => textSpan.CodeFile ?? currentFile;
+        public static TextFile GetSourceFile(this TextSpan textSpan, TextFile currentFile) => textSpan.File ?? currentFile;
 
         public static string Substring(this string str, TextSpan textSpan)
         {

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
+    [MessagePackObject]
     public class BinaryOperatorLiteral : Literal
     {
         public static Dictionary<string, BinaryOperator> TextBinaryOperator = new Dictionary<string, BinaryOperator>
@@ -50,9 +52,11 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ["instanceof"] = BinaryOperator.InstanceOf
         };
 
-        public override string TextValue => BinaryOperator.ToString();
-
+        [Key(UstFieldOffset)]
         public BinaryOperator BinaryOperator { get; set; }
+        
+        [IgnoreMember]
+        public override string TextValue => BinaryOperator.ToString();
 
         public BinaryOperatorLiteral(BinaryOperator op)
             : this(op, default)
@@ -60,11 +64,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         }
 
         public BinaryOperatorLiteral(string op, TextSpan textSpan)
+            : base(textSpan)
         {
-            BinaryOperator binaryOperator = BinaryOperator.None;
-            TextBinaryOperator.TryGetValue(op, out binaryOperator);
-            BinaryOperator = binaryOperator;
-            TextSpan = textSpan;
+            if (TextBinaryOperator.TryGetValue(op, out var binaryOperator))
+            {
+                BinaryOperator = binaryOperator;
+            }
         }
 
         public BinaryOperatorLiteral(BinaryOperator op, TextSpan textSpan)

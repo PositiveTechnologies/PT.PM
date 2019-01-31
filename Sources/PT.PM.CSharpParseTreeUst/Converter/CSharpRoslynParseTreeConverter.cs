@@ -23,11 +23,13 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language Language => CSharp.Language;
+        public Language Language => Language.CSharp;
 
         public HashSet<Language> AnalyzedLanguages { get; set; }
 
         public RootUst ParentRoot { get; set; }
+
+        public static CSharpRoslynParseTreeConverter Create() => new CSharpRoslynParseTreeConverter();
 
         public CSharpRoslynParseTreeConverter()
         {
@@ -55,10 +57,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 }
                 else
                 {
-                    result = new RootUst(langParseTree.SourceCodeFile, Language);
+                    result = new RootUst(langParseTree.SourceFile, Language);
                     result.Node = visited;
                 }
-                result.SourceCodeFile = langParseTree.SourceCodeFile;
+                result.SourceFile = langParseTree.SourceFile;
                 result.Comments = roslynParseTree.Comments.Select(c =>
                     new CommentLiteral(c.ToString(), c.GetTextSpan())
                     {
@@ -71,7 +73,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ConversionException(langParseTree.SourceCodeFile, ex));
+                Logger.LogError(new ConversionException(langParseTree.SourceFile, ex));
                 return null;
             }
         }
@@ -90,10 +92,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (root == null)
             {
-                root = new RootUst(null, CSharp.Language)
-                {
-                    TextSpan = node.GetTextSpan()
-                };
+                root = new RootUst(null, Language.CSharp, node.GetTextSpan());
             }
             root.Nodes = children.ToArray();
             return root;

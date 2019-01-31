@@ -5,20 +5,21 @@ using Newtonsoft.Json.Linq;
 using PT.PM.Common;
 using System;
 using System.Reflection;
+using PT.PM.Common.Files;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
     internal class EsprimaJsonConverter : JsonConverter<INode>
     {
-        public CodeFile CodeFile { get; }
+        public TextFile SourceFile { get; }
 
         public bool IncludeTextSpans { get; set; }
 
         public bool IsLineColumn { get; set; }
 
-        public EsprimaJsonConverter(CodeFile sourceCodeFile)
+        public EsprimaJsonConverter(TextFile sourceFile)
         {
-            CodeFile = sourceCodeFile ?? throw new ArgumentNullException(nameof(sourceCodeFile));
+            SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
         }
 
         public override INode ReadJson(JsonReader reader, Type objectType, INode existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -66,7 +67,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     var textSpan = TextSpan.FromBounds(range[0], range[1]);
 
                     resultToken = IsLineColumn
-                         ? CodeFile.GetLineColumnTextSpan(textSpan).ToString()
+                         ? SourceFile.GetLineColumnTextSpan(textSpan).ToString()
                          : textSpan.ToString();
                 }
                 else if (memberName == nameof(INode.Location) && memberType == typeof(Location))

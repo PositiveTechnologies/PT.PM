@@ -1,13 +1,16 @@
-﻿using System;
+﻿using MessagePack;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class UnaryOperatorExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public UnaryOperatorLiteral Operator { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Expression Expression { get; set; }
 
         public UnaryOperatorExpression(UnaryOperatorLiteral op, Expression ex, TextSpan textSpan)

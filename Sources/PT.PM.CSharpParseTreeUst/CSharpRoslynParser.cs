@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using PT.PM.Common.Exceptions;
 using System.Threading;
+using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
@@ -14,19 +15,21 @@ namespace PT.PM.CSharpParseTreeUst
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public Language Language => CSharp.Language;
+        public Language Language => Language.CSharp;
 
-        public ParseTree Parse(CodeFile sourceCodeFile)
+        public static CSharpRoslynParser Create() => new CSharpRoslynParser();
+
+        public ParseTree Parse(TextFile sourceFile)
         {
-            if (sourceCodeFile.Code == null)
+            if (sourceFile.Data == null)
             {
                 return null;
             }
 
             try
             {
-                var filePath = Path.Combine(sourceCodeFile.RelativePath, sourceCodeFile.Name);
-                SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceCodeFile.Code, null, filePath);
+                var filePath = Path.Combine(sourceFile.RelativePath, sourceFile.Name);
+                SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceFile.Data, null, filePath);
                 var result = new CSharpRoslynParseTree(syntaxTree);
                 SyntaxNode root = syntaxTree.GetRoot();
                 result.Comments = root.DescendantTrivia().Where(node =>
@@ -47,19 +50,19 @@ namespace PT.PM.CSharpParseTreeUst
                         diagnostic.Id != "CS1029")
                     {
                         var textSpan = diagnostic.Location.ToTextSpan();
-                        Logger.LogError(new ParsingException(sourceCodeFile, message: diagnostic.ToString())
+                        Logger.LogError(new ParsingException(sourceFile, message: diagnostic.ToString())
                         {
                             TextSpan = textSpan
                         });
                     }
                 }
 
-                result.SourceCodeFile = sourceCodeFile;
+                result.SourceFile = sourceFile;
                 return result;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ParsingException(sourceCodeFile, ex));
+                Logger.LogError(new ParsingException(sourceFile, ex));
                 return null;
             }
         }

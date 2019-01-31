@@ -1,9 +1,14 @@
-﻿namespace PT.PM.Common.Nodes.Expressions
+﻿using MessagePack;
+
+namespace PT.PM.Common.Nodes.Expressions
 {
+    [MessagePackObject]
     public class MemberReferenceExpression : Expression
     {
+        [Key(UstFieldOffset)]
         public Expression Target { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public Expression Name { get; set; }
 
         public MemberReferenceExpression()

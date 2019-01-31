@@ -1,17 +1,23 @@
-﻿using PT.PM.Common.Nodes.Expressions;
+﻿using MessagePack;
+using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
+    [MessagePackObject]
     public class ParameterDeclaration : Ust
     {
+        [Key(UstFieldOffset)]
         public InOutModifierLiteral Modifier { get; set; }
 
+        [Key(UstFieldOffset + 1)]
         public TypeToken Type { get; set; }
 
+        [Key(UstFieldOffset + 2)]
         public IdToken Name { get; set; }
 
+        [Key(UstFieldOffset + 3)]
         public Expression Initializer { get; set; }
 
         public ParameterDeclaration(InOutModifierLiteral modifier, TypeToken type,
@@ -21,6 +27,10 @@ namespace PT.PM.Common.Nodes.TypeMembers
             Modifier = modifier;
             Type = type;
             Name = name;
+        }
+
+        public ParameterDeclaration(TextSpan textSpan)
+        {
         }
 
         public ParameterDeclaration()

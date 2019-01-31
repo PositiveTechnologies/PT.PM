@@ -1,7 +1,4 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.Nodes;
-using PT.PM.Common.Utils;
-using PT.PM.Matching;
+﻿using PT.PM.Matching;
 
 namespace PT.PM.Cli.Common
 {
@@ -19,7 +16,7 @@ namespace PT.PM.Cli.Common
         {
             var workflow = (Workflow)base.InitWorkflow(parameters);
 
-            if (parameters.StartStage == null && workflow.SourceCodeRepository.LoadJson)
+            if (parameters.StartStage == null && workflow.SourceRepository.Format != null)
             {
                 workflow.StartStage = Stage.Ust;
             }
@@ -31,17 +28,6 @@ namespace PT.PM.Cli.Common
         {
             var workflowLoggerHelper = new WorkflowLoggerHelper(Logger, workflowResult);
             workflowLoggerHelper.LogStatistics();
-        }
-
-        protected override bool IsLoadJson(string startStageString)
-        {
-            Stage startStage = Stage.File;
-            if (startStageString != null)
-            {
-                startStage = startStageString.ParseEnum(ContinueWithInvalidArgs, startStage, Logger);
-            }
-
-            return startStage == Stage.Ust;
         }
     }
 }
