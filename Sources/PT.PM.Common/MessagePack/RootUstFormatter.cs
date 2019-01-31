@@ -40,9 +40,6 @@ namespace PT.PM.Common.MessagePack
             int newOffset = offset;
             CurrentRoot = value;
 
-            var languageFormatter = formatterResolver.GetFormatter<Language>();
-            newOffset += languageFormatter.Serialize(ref bytes, newOffset, value.Language, formatterResolver);
-
             var localSourceFiles = new List<TextFile> {CurrentRoot.SourceFile};
             value.ApplyActionToDescendantsAndSelf(ust =>
             {
@@ -55,11 +52,18 @@ namespace PT.PM.Common.MessagePack
                 }
             });
 
-            var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>();
-            if (textSpanFormatter is TextSpanFormatter formatter)
+            var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>() as TextSpanFormatter;
+
+            if (textSpanFormatter == null)
             {
-                formatter.LocalSourceFiles = localSourceFiles.ToArray();
+                throw new InvalidOperationException($"{nameof(TextSpan)} formatter should be {nameof(TextSpanFormatter)}");
             }
+
+            textSpanFormatter.LocalSourceFiles = localSourceFiles.ToArray();
+            newOffset += MessagePackBinary.WriteBoolean(ref bytes, offset, textSpanFormatter.IsLineColumn);
+
+            var languageFormatter = formatterResolver.GetFormatter<Language>();
+            newOffset += languageFormatter.Serialize(ref bytes, newOffset, value.Language, formatterResolver);
 
             var filesFormatter = formatterResolver.GetFormatter<TextFile[]>();
             newOffset += filesFormatter.Serialize(ref bytes, newOffset, localSourceFiles.ToArray(), formatterResolver);
@@ -84,13 +88,25 @@ namespace PT.PM.Common.MessagePack
             int newOffset = offset;
             try
             {
+                var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>() as TextSpanFormatter;
+
+                if (textSpanFormatter == null)
+                {
+                    throw new InvalidOperationException($"{nameof(TextSpan)} formatter should be {nameof(TextSpanFormatter)}");
+                }
+
+                textSpanFormatter.IsLineColumn = MessagePackBinary.ReadBoolean(bytes, newOffset, out int size);
+                newOffset += size;
+
                 var languageFormatter = formatterResolver.GetFormatter<Language>();
-                Language language = languageFormatter.Deserialize(bytes, newOffset, formatterResolver, out int size);
+                Language language = languageFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
                 newOffset += size;
 
                 var filesFormatter = formatterResolver.GetFormatter<TextFile[]>();
                 TextFile[] localSourceFiles = filesFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
                 newOffset += size;
+
+                textSpanFormatter.LocalSourceFiles = localSourceFiles;
 
                 lock (SourceFiles)
                 {
@@ -98,12 +114,6 @@ namespace PT.PM.Common.MessagePack
                     {
                         SourceFiles.Add(localSourceFile);
                     }
-                }
-
-                var textSpanFormatter = formatterResolver.GetFormatter<TextSpan>();
-                if (textSpanFormatter is TextSpanFormatter formatter)
-                {
-                    formatter.LocalSourceFiles = localSourceFiles;
                 }
 
                 var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();

@@ -65,12 +65,11 @@ namespace PT.PM.Common.MessagePack
             return buffer;
         }
 
-        public static RootUst Deserialize(BinaryFile serializedFile, bool isLineColumn,
+        public static RootUst Deserialize(BinaryFile serializedFile,
             HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction,
             ILogger logger, out int readSize, byte[] data = null)
         {
             var textSpanFormatter = TextSpanFormatter.CreateReader(serializedFile);
-            textSpanFormatter.IsLineColumn = isLineColumn;
             textSpanFormatter.Logger = logger;
 
             var sourceFileFormatter = FileFormatter.CreateReader(serializedFile, sourceFiles, readSourceFileAction);
