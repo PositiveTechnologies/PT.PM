@@ -14,6 +14,8 @@ namespace PT.PM.TestUtils
 
         private HashSet<string> errorFiles = new HashSet<string>();
 
+        private List<ProgressEventArgs> progressEventArgses = new List<ProgressEventArgs>();
+
         private List<IMatchResultBase> matches = new List<IMatchResultBase>();
 
         public int ErrorCount => Errors.Count;
@@ -28,9 +30,11 @@ namespace PT.PM.TestUtils
 
         public bool IsLogDebugs { get; set; } = true;
 
-        public string LogsDir { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public string LogsDir { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
 
         public IReadOnlyList<IMatchResultBase> Matches => matches;
+
+        public IReadOnlyList<ProgressEventArgs> ProgressEventArgses => progressEventArgses;
 
         public void LogError(Exception ex)
         {
@@ -53,6 +57,7 @@ namespace PT.PM.TestUtils
             string message;
             if (infoObj is ProgressEventArgs progressEventArgs)
             {
+                progressEventArgses.Add(progressEventArgs);
                 message = string.Format("Progress: {0}%; File: {1}{2}",
                     (int)(progressEventArgs.Progress * 100), progressEventArgs.CurrentFile,
                     Math.Abs(progressEventArgs.Progress - 1) < 1e-10 ? Environment.NewLine : "");
