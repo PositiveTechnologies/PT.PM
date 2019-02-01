@@ -14,7 +14,7 @@ namespace PT.PM.Common.Files
         public const int StartColumn = 1;
 
         public static TextFile Empty => new TextFile("");
-        
+
         [IgnoreMember]
         public override FileType Type => FileType.TextFile;
 
@@ -43,7 +43,8 @@ namespace PT.PM.Common.Files
         {
             if (position < 0 || position > Data.Length)
             {
-                throw new IndexOutOfRangeException($"linear position {position} out of range for file {FullName}");
+                // TODO: It will be uncommented when AI.Taint.CLangs supports UST identifiers instead of super huge text spans
+                //throw new IndexOutOfRangeException($"linear position {position} out of range for file {FullName}");
             }
 
             line = Array.BinarySearch(lineIndexes, position);
@@ -77,7 +78,8 @@ namespace PT.PM.Common.Files
 
             if (result < 0 || result > Data.Length)
             {
-                throw new ArgumentOutOfRangeException($"Line {line} and Column {column} out of range for file {FullName}");
+                // TODO: It will be uncommented when AI.Taint.CLangs supports UST identifiers instead of super huge text spans
+                //throw new ArgumentOutOfRangeException($"Line {line} and Column {column} out of range for file {FullName}");
             }
 
             return result;

@@ -27,7 +27,8 @@ namespace PT.PM.Common
             {
                 if (start + length > sourceFile.Data.Length)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(length), "TextSpan borders are out of range");
+                    // TODO: It will be uncommented when AI.Taint.CLangs supports UST identifiers instead of super huge text spans
+                    //throw new ArgumentOutOfRangeException(nameof(length), "TextSpan borders are out of range");
                 }
             }
 
