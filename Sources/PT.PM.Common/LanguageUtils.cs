@@ -16,9 +16,9 @@ namespace PT.PM.Common
             [Language.CSharp] = new LanguageInfo(Language.CSharp, ".cs", false, "C#", hasAntlrParser: false),
             [Language.Java] = new LanguageInfo(Language.Java, ".java", false, "Java"),
             [Language.Php] = new LanguageInfo(Language.Php, new[] { ".php" }, true, "PHP", new [] { Language.JavaScript, Language.Html }),
-            [Language.PlSql] = new LanguageInfo(Language.PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw" }, true, "PL/SQL", isSql: true),
-            [Language.TSql] = new LanguageInfo(Language.TSql, ".sql", true, "T-SQL", isSql: true),
-            [Language.MySql] = new LanguageInfo(Language.MySql, ".sql", true, "MySql", isSql: true),
+            [Language.PlSql] = new LanguageInfo(Language.PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw" }, true, "PL/SQL"),
+            [Language.TSql] = new LanguageInfo(Language.TSql, ".sql", true, "T-SQL"),
+            [Language.MySql] = new LanguageInfo(Language.MySql, ".sql", true, "MySql"),
             [Language.JavaScript] = new LanguageInfo(Language.JavaScript, ".js", false, "JavaScript", hasAntlrParser: false),
             [Language.Aspx] = new LanguageInfo(Language.Aspx, new[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new[] { Language.CSharp }, false, false),
             [Language.Html] = new LanguageInfo(Language.Html, ".html", true, "HTML", new[] { Language.JavaScript }),
@@ -32,6 +32,7 @@ namespace PT.PM.Common
         public static readonly HashSet<Language> Languages = new HashSet<Language>();
         public static readonly HashSet<Language> PatternLanguages = new HashSet<Language>();
         public static readonly HashSet<Language> SqlLanguages = new HashSet<Language>();
+        public static readonly HashSet<Language> CLangsLanguages = new HashSet<Language>();
         public static readonly Dictionary<Language, HashSet<Language>> SuperLanguages = new Dictionary<Language, HashSet<Language>>();
         public static readonly HashSet<Language> LanguagesWithParser = new HashSet<Language>();
 
@@ -42,14 +43,14 @@ namespace PT.PM.Common
                 Language language = pair.Key;
                 LanguageInfo languageInfo = pair.Value;
 
-                Languages.Add(language);
+                if (language != Language.Uncertain)
+                {
+                    Languages.Add(language);
+                }
+
                 if (languageInfo.IsPattern)
                 {
                     PatternLanguages.Add(language);
-                }
-                if (languageInfo.IsSql)
-                {
-                    SqlLanguages.Add(language);
                 }
 
                 foreach (Language sublanguage in languageInfo.Sublanguages)
@@ -63,15 +64,41 @@ namespace PT.PM.Common
                     superLanguages.Add(language);
                 }
             }
+
+            SqlLanguages.Add(Language.PlSql);
+            SqlLanguages.Add(Language.TSql);
+            SqlLanguages.Add(Language.MySql);
+
+            CLangsLanguages.Add(Language.C);
+            CLangsLanguages.Add(Language.CPlusPlus);
+            CLangsLanguages.Add(Language.ObjectiveC);
+            CLangsLanguages.Add(Language.Swift);
         }
 
-        public static bool IsSql(this Language language) => LanguageInfos[language].IsSql;
+        public static bool IsSql(this Language language) => SqlLanguages.Contains(language);
+
+        public static bool IsCLangs(this Language language) => CLangsLanguages.Contains(language);
 
         public static bool IsCaseInsensitive(this Language language) => LanguageInfos[language].IsCaseInsensitive;
-        
+
         public static string[] GetExtensions(this Language language) => LanguageInfos[language].Extensions;
 
         public static Language[] GetSublanguages(this Language language) => LanguageInfos[language].Sublanguages;
+
+        public static Language[] GetLanguagesByExtension(string extension)
+        {
+            var result = new List<Language>();
+
+            foreach (var languageInfo in LanguageInfos)
+            {
+                if (languageInfo.Value.Extensions.Contains(extension))
+                {
+                    result.Add(languageInfo.Key);
+                }
+            }
+
+            return result.ToArray();
+        }
 
         public static bool HasAntlrParser(this Language language) => LanguageInfos[language].HasAntlrParser;
 
@@ -82,13 +109,13 @@ namespace PT.PM.Common
             RegisterParser(language, parserConstructor);
             RegisterConverter(language, converterConstructor);
         }
-        
+
         public static void RegisterParser(Language language, Func<ILanguageParser> parserConstructor)
         {
             parserConstructors[language] = parserConstructor;
             LanguagesWithParser.Add(language);
         }
-        
+
         public static void RegisterConverter(Language language, Func<IParseTreeToUstConverter> converterConstructor)
         {
             converterConstructors[language] = converterConstructor;
@@ -154,7 +181,7 @@ namespace PT.PM.Common
                 {
                     LanguageInfo languageInfo = LanguageInfos[language];
                     bool result = isSql
-                        ? languageInfo.IsSql
+                        ? language.IsSql()
                         : (language.ToString().EqualsIgnoreCase(langStr) || languageInfo.Title.EqualsIgnoreCase(langStr) ||
                            languageInfo.Extensions.Any(ext => (ext.StartsWith(".") ? ext.Substring(1) : ext).EqualsIgnoreCase(langStr)));
                     if (negation)
