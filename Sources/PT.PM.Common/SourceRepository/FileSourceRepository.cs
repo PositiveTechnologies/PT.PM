@@ -29,7 +29,13 @@ namespace PT.PM.Common.SourceRepository
                 Languages = new HashSet<Language> { language.Value };
             }
 
-            RootPath = fileNamesArray.Length == 1 && !string.IsNullOrWhiteSpace(fileNamesArray[0]) ? Path.GetFullPath(fileNamesArray[0]) : "";
+            try
+            {
+                RootPath = fileNamesArray.Length == 1 ? Path.GetFullPath(fileNamesArray[0]) : "";
+            }
+            catch
+            {
+            }
         }
 
         public override IEnumerable<string> GetFileNames() => fullNames;

@@ -72,7 +72,17 @@ namespace PT.PM.Common.Utils
 
         public static void WriteAllBytes(string path, byte[] content) => File.WriteAllBytes(path.NormalizeDirPath(), content);
 
-        public static bool Exists(string path) => File.Exists(path.NormalizeFilePath());
+        public static bool Exists(string path)
+        {
+            try
+            {
+                return File.Exists(path.NormalizeFilePath());
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         public static void Delete(string path) => File.Delete(path.NormalizeFilePath());
 
@@ -153,7 +163,17 @@ namespace PT.PM.Common.Utils
 
         public static DirectoryInfo CreateDirectory(string path) => Directory.CreateDirectory(path.NormalizeDirPath());
 
-        public static bool Exists(string path) => Directory.Exists(path.NormalizeDirPath());
+        public static bool Exists(string path)
+        {
+            try
+            {
+                return Directory.Exists(path.NormalizeDirPath());
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         public static void Delete(string path) => Directory.Delete(path.NormalizeDirPath(true), true);
 
