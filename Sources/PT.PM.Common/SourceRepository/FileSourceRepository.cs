@@ -21,12 +21,15 @@ namespace PT.PM.Common.SourceRepository
         public FileSourceRepository(IEnumerable<string> fileNames, Language? language = null, SerializationFormat? format = null)
             : base(format)
         {
-            fullNames = fileNames;
+            var fileNamesArray = fileNames as string[] ?? fileNames.ToArray();
+            fullNames = fileNamesArray;
+
             if (language.HasValue)
             {
                 Languages = new HashSet<Language> { language.Value };
             }
-            RootPath = string.Join("; ", fileNames);
+
+            RootPath = fileNamesArray.Length == 1 && !string.IsNullOrWhiteSpace(fileNamesArray[0]) ? Path.GetFullPath(fileNamesArray[0]) : "";
         }
 
         public override IEnumerable<string> GetFileNames() => fullNames;
