@@ -18,7 +18,7 @@ namespace PT.PM.Cli.Common
         public static SourceRepository CreateSourceRepository(string path, string tempDir,
             CliParameters parameters)
         {
-            Stage startStage = parameters.StartStage.ParseEnum(true, Stage.File);
+            Stage startStage = parameters.StartStage?.ParseEnum(true, Stage.File) ?? Stage.File;
             SerializationFormat? format = null;
             if (startStage > Stage.File)
             {
