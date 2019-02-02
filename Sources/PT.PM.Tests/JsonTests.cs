@@ -77,14 +77,14 @@ namespace PT.PM.Tests
 
             // Serialization
             string[] files = File.Exists(path)
-                           ? new string[] { path }
+                           ? new [] { path }
                            : Directory.GetFiles(path);
             var codeRepository = new FileSourceRepository(files);
 
             var logger = new LoggerMessageCounter();
             var workflow = new Workflow(codeRepository)
             {
-                DumpStages = new HashSet<Stage>() { Stage.Ust },
+                DumpStages = new HashSet<Stage> { Stage.Ust },
                 DumpDir = TestUtility.TestsOutputPath,
                 IncludeCodeInDump = includeCode,
                 IndentedDump = indented,
@@ -144,7 +144,7 @@ namespace PT.PM.Tests
 
             // Deserialization
             var newLogger = new LoggerMessageCounter();
-            var newCodeRepository = new FileSourceRepository(jsonFiles, format: SerializationFormat.Json);
+            var newCodeRepository = new FileSourceRepository(jsonFiles);
 
             var newPatternsRepository = checkPatternSerialization
                 ? new JsonPatternsRepository(File.ReadAllText(Path.Combine(TestUtility.TestsOutputPath, "patterns.json")))
@@ -153,11 +153,7 @@ namespace PT.PM.Tests
                 : new DefaultPatternRepository();
             var newWorkflow = new Workflow(newCodeRepository, newPatternsRepository)
             {
-                StartStage = Stage.Ust,
-                IndentedDump = indented,
                 StrictJson = strict,
-                DumpWithTextSpans = includeTextSpans,
-                LineColumnTextSpans = !linearTextSpans,
                 Logger = newLogger
             };
             newWorkflow.Process();

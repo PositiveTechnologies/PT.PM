@@ -104,14 +104,10 @@ namespace PT.PM.Tests
 
             // Deserialization
             var newLogger = new LoggerMessageCounter();
-            var newCodeRepository = new FileSourceRepository(serializedFiles, format: SerializationFormat.MsgPack);
+            var newCodeRepository = new FileSourceRepository(serializedFiles);
 
             var newWorkflow = new Workflow(newCodeRepository, new DefaultPatternRepository())
             {
-                StartStage = Stage.Ust,
-                SerializationFormat = SerializationFormat.MsgPack,
-                LineColumnTextSpans = !linearTextSpans,
-                CompressedSerialization = compressed,
                 Logger = newLogger
             };
             newWorkflow.Process();
