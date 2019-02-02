@@ -68,9 +68,6 @@ namespace PT.PM.Cli.Common
         [Option("strict", HelpText = "Strict json deserialization if set true")]
         public bool? StrictJson { get; set; }
 
-        [Option("start-stage", HelpText = "Start stage to process (File or Ust)")]
-        public string StartStage { get; set; }
-
         [Option('d', "dump", HelpText = "Stages to be dumped (ParseTree, Ust)", Separator = ',')]
         public IEnumerable<string> DumpStages { get; set; }
 

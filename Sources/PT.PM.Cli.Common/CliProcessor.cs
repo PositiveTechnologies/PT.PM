@@ -11,19 +11,6 @@ namespace PT.PM.Cli.Common
             return new Workflow();
         }
 
-        protected override WorkflowBase<Stage, WorkflowResult, PatternRoot, Stage>
-            InitWorkflow(CliParameters parameters)
-        {
-            var workflow = (Workflow)base.InitWorkflow(parameters);
-
-            if (parameters.StartStage == null && workflow.SourceRepository.Format != null)
-            {
-                workflow.StartStage = Stage.Ust;
-            }
-
-            return workflow;
-        }
-
         protected override void LogStatistics(WorkflowResult workflowResult)
         {
             var workflowLoggerHelper = new WorkflowLoggerHelper(Logger, workflowResult);
