@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using static PT.PM.Common.Language;
 
 namespace PT.PM.Common
 {
@@ -13,26 +14,63 @@ namespace PT.PM.Common
 
         public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>
         {
-            [Language.CSharp] = new LanguageInfo(Language.CSharp, ".cs", false, "C#", hasAntlrParser: false),
-            [Language.Java] = new LanguageInfo(Language.Java, ".java", false, "Java"),
-            [Language.Php] = new LanguageInfo(Language.Php, new[] { ".php" }, true, "PHP", new [] { Language.JavaScript, Language.Html }),
-            [Language.PlSql] = new LanguageInfo(Language.PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw" }, true, "PL/SQL"),
-            [Language.TSql] = new LanguageInfo(Language.TSql, ".sql", true, "T-SQL"),
-            [Language.MySql] = new LanguageInfo(Language.MySql, ".sql", true, "MySql"),
-            [Language.JavaScript] = new LanguageInfo(Language.JavaScript, ".js", false, "JavaScript", hasAntlrParser: false),
-            [Language.Aspx] = new LanguageInfo(Language.Aspx, new[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new[] { Language.CSharp }, false, false),
-            [Language.Html] = new LanguageInfo(Language.Html, ".html", true, "HTML", new[] { Language.JavaScript }),
-            [Language.C] = new LanguageInfo(Language.C, new[] { ".c", ".h" }, false, "C", hasAntlrParser: false),
-            [Language.CPlusPlus] = new LanguageInfo(Language.CPlusPlus, new[] { ".cpp", ".hpp", ".cc", ".cxx" }, false, "C++", new[] { Language.C }, hasAntlrParser: false),
-            [Language.ObjectiveC] = new LanguageInfo(Language.ObjectiveC, new[] { ".m", ".mm" }, false, "Objective-C", new[] { Language.C }, hasAntlrParser: false),
-            [Language.Swift] = new LanguageInfo(Language.Swift, new[] { ".swift" }, false, "Swift", hasAntlrParser: false),
-            [Language.Uncertain] = new LanguageInfo(Language.Uncertain, ".*", false, "Uncertain", hasAntlrParser: false)
+            [CSharp] = new LanguageInfo(CSharp, ".cs", false, "C#", hasAntlrParser: false),
+            [Java] = new LanguageInfo(Java, ".java", false, "Java"),
+            [Php] = new LanguageInfo(Php, new[] { ".php" }, true, "PHP", new [] { JavaScript, Html }),
+            [PlSql] = new LanguageInfo(PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw" }, true, "PL/SQL"),
+            [TSql] = new LanguageInfo(TSql, ".sql", true, "T-SQL"),
+            [MySql] = new LanguageInfo(MySql, ".sql", true, "MySql"),
+            [JavaScript] = new LanguageInfo(JavaScript, ".js", false, "JavaScript", hasAntlrParser: false),
+            [Aspx] = new LanguageInfo(Aspx, new[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new[] { CSharp }, false, false),
+            [Html] = new LanguageInfo(Html, ".html", true, "HTML", new[] { JavaScript }),
+            [C] = new LanguageInfo(C, new[] { ".c", ".h" }, false, "C", hasAntlrParser: false),
+            [CPlusPlus] = new LanguageInfo(CPlusPlus, new[] { ".cpp", ".hpp", ".cc", ".cxx" }, false, "C++", new[] { C }, hasAntlrParser: false),
+            [ObjectiveC] = new LanguageInfo(ObjectiveC, new[] { ".m", ".mm" }, false, "Objective-C", new[] { C }, hasAntlrParser: false),
+            [Swift] = new LanguageInfo(Swift, new[] { ".swift" }, false, "Swift", hasAntlrParser: false),
+            [Uncertain] = new LanguageInfo(Uncertain, ".*", false, "Uncertain", hasAntlrParser: false),
+            [Language.Json] = new LanguageInfo(Language.Json, ".json", false, "Json UST | CPG", hasAntlrParser: false),
+            [Language.MessagePack] = new LanguageInfo(Language.MessagePack, ".msgpack", false, "MessagePack UST | CPG", hasAntlrParser: false),
         };
 
-        public static readonly HashSet<Language> Languages = new HashSet<Language>();
+        public static readonly HashSet<Language> Languages = new HashSet<Language>
+        {
+            CSharp,
+            Java,
+            Php,
+            PlSql,
+            TSql,
+            MySql,
+            JavaScript,
+            Aspx,
+            Html,
+            C,
+            CPlusPlus,
+            ObjectiveC,
+            Swift
+        };
+
+        public static readonly HashSet<Language> SqlLanguages = new HashSet<Language>
+        {
+            PlSql,
+            TSql,
+            MySql
+        };
+
+        public static readonly HashSet<Language> CLangsLanguages = new HashSet<Language>
+        {
+            C,
+            ObjectiveC,
+            CPlusPlus,
+            Swift
+        };
+
+        public static readonly HashSet<Language> SerializationLanguages = new HashSet<Language>
+        {
+            Language.Json,
+            Language.MessagePack
+        };
+
         public static readonly HashSet<Language> PatternLanguages = new HashSet<Language>();
-        public static readonly HashSet<Language> SqlLanguages = new HashSet<Language>();
-        public static readonly HashSet<Language> CLangsLanguages = new HashSet<Language>();
         public static readonly Dictionary<Language, HashSet<Language>> SuperLanguages = new Dictionary<Language, HashSet<Language>>();
         public static readonly HashSet<Language> LanguagesWithParser = new HashSet<Language>();
 
@@ -42,11 +80,6 @@ namespace PT.PM.Common
             {
                 Language language = pair.Key;
                 LanguageInfo languageInfo = pair.Value;
-
-                if (language != Language.Uncertain)
-                {
-                    Languages.Add(language);
-                }
 
                 if (languageInfo.IsPattern)
                 {
@@ -64,18 +97,11 @@ namespace PT.PM.Common
                     superLanguages.Add(language);
                 }
             }
-
-            SqlLanguages.Add(Language.PlSql);
-            SqlLanguages.Add(Language.TSql);
-            SqlLanguages.Add(Language.MySql);
-
-            CLangsLanguages.Add(Language.C);
-            CLangsLanguages.Add(Language.CPlusPlus);
-            CLangsLanguages.Add(Language.ObjectiveC);
-            CLangsLanguages.Add(Language.Swift);
         }
 
         public static bool IsSql(this Language language) => SqlLanguages.Contains(language);
+
+        public static bool IsSerialization(this Language language) => SerializationLanguages.Contains(language);
 
         public static bool IsCLangs(this Language language) => CLangsLanguages.Contains(language);
 
@@ -102,7 +128,7 @@ namespace PT.PM.Common
 
         public static bool HasAntlrParser(this Language language) => LanguageInfos[language].HasAntlrParser;
 
-        public static bool IsParserExists(this Language language) => LanguagesWithParser.Contains(language);
+        public static bool IsParserExists(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerialization();
 
         public static void RegisterParserConverter(Language language, Func<ILanguageParser> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
         {
