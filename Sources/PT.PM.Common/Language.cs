@@ -15,6 +15,8 @@ namespace PT.PM.Common
         ObjectiveC,
         C,
         CPlusPlus,
-        Swift
+        Swift,
+        Json,
+        MessagePack
     }
 }
