@@ -73,7 +73,7 @@ namespace PT.PM.TestUtils
 
             RootUst tempUst = null;
             workflow.UstConverted += (sender, rootUst) => tempUst = rootUst;
-            
+
             WorkflowResult workflowResult = null;
             if (maxStackSize == 0)
             {
@@ -116,7 +116,7 @@ namespace PT.PM.TestUtils
             string searchPattern = "*.*", Func<string, bool> searchPredicate = null)
         {
             var logger = new LoggerMessageCounter { LogToConsole = false };
-            var repository = new DirectorySourceRepository(projectPath, languages: language)
+            var repository = new DirectorySourceRepository(projectPath, language)
             {
                 SearchPattern = searchPattern,
                 SearchPredicate = searchPredicate

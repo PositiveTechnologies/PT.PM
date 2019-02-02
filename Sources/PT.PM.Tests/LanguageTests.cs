@@ -51,7 +51,7 @@ namespace PT.PM.Tests
 
             HashSet<Language> cSharpLang = "c#".ParseLanguages();
             Assert.AreEqual(Language.CSharp, cSharpLang.First());
-            
+
             HashSet<Language> javaScriptLang = "js".ParseLanguages();
             Assert.AreEqual(Language.JavaScript, javaScriptLang.First());
         }
@@ -76,7 +76,7 @@ namespace PT.PM.Tests
         {
             var sourceRepository = new MemorySourceRepository("");
             sourceRepository.Languages = new HashSet<Language> { Language.PlSql, Language.TSql };
-            Assert.IsTrue(sourceRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
+            Assert.IsTrue(sourceRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true, out _));
         }
 
         [Test]
