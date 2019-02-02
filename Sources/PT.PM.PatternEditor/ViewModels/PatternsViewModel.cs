@@ -66,7 +66,7 @@ namespace PT.PM.PatternEditor.Pattern
                         error = true;
                     }
                 }
-                
+
                 if (string.IsNullOrEmpty(Settings.PatternsFileName) || error)
                 {
                     Settings.PatternsFileName = Settings.DefaultPatternsFileName;
@@ -76,12 +76,12 @@ namespace PT.PM.PatternEditor.Pattern
                 }
             });
 
-            patternsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            patternsListBox.DoubleTapped += (sender, e) =>
             {
                 OpenPatternAction();
             };
 
-            patternErrorsListBox.DoubleTapped += (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            patternErrorsListBox.DoubleTapped += (sender, e) =>
             {
                 GuiUtils.ProcessErrorOnDoubleClick(patternErrorsListBox, patternTextBox);
             };
@@ -274,62 +274,62 @@ namespace PT.PM.PatternEditor.Pattern
 
         public bool IsCSharpLanguage
         {
-            get => SelectedPattern?.Languages.Contains("CSharp") ?? false;
-            set => ChangeLanguage("CSharp", value);
+            get => SelectedPattern?.ContainsLanguage(Language.CSharp) ?? false;
+            set => ChangeLanguage(Language.CSharp, value);
         }
 
         public bool IsJavaLanguage
         {
-            get => SelectedPattern?.Languages.Contains("Java") ?? false;
-            set => ChangeLanguage("Java", value);
+            get => SelectedPattern?.ContainsLanguage(Language.Java) ?? false;
+            set => ChangeLanguage(Language.Java, value);
         }
 
         public bool IsPhpLanguage
         {
-            get => SelectedPattern?.Languages.Contains("Php") ?? false;
-            set => ChangeLanguage("Php", value);
+            get => SelectedPattern?.ContainsLanguage(Language.Php) ?? false;
+            set => ChangeLanguage(Language.Php, value);
         }
 
         public bool IsPlSqlLanguage
         {
-            get => SelectedPattern?.Languages.Contains("PlSql") ?? false;
-            set => ChangeLanguage("PlSql", value);
+            get => SelectedPattern?.ContainsLanguage(Language.PlSql) ?? false;
+            set => ChangeLanguage(Language.PlSql, value);
         }
 
         public bool IsTSqlLanguage
         {
-            get => SelectedPattern?.Languages.Contains("TSql") ?? false;
-            set => ChangeLanguage("TSql", value);
+            get => SelectedPattern?.ContainsLanguage(Language.TSql) ?? false;
+            set => ChangeLanguage(Language.TSql, value);
         }
 
         public bool IsJavaScriptLanguage
         {
-            get => SelectedPattern?.Languages.Contains("JavaScript") ?? false;
-            set => ChangeLanguage("JavaScript", value);
+            get => SelectedPattern?.ContainsLanguage(Language.JavaScript) ?? false;
+            set => ChangeLanguage(Language.JavaScript, value);
         }
 
         public bool IsHtmlLanguage
         {
-            get => SelectedPattern?.Languages.Contains("Html") ?? false;
-            set => ChangeLanguage("Html", value);
+            get => SelectedPattern?.ContainsLanguage(Language.Html) ?? false;
+            set => ChangeLanguage(Language.Html, value);
         }
 
         public bool IsCLanguage
         {
-            get => SelectedPattern?.Languages.Contains("C") ?? false;
-            set => ChangeLanguage("C", value);
+            get => SelectedPattern?.ContainsLanguage(Language.C) ?? false;
+            set => ChangeLanguage(Language.C, value);
         }
 
         public bool IsCPlusPlusLanguage
         {
-            get => SelectedPattern?.Languages.Contains("CPlusPlus") ?? false;
-            set => ChangeLanguage("CPlusPlus", value);
+            get => SelectedPattern?.ContainsLanguage(Language.CPlusPlus) ?? false;
+            set => ChangeLanguage(Language.CPlusPlus, value);
         }
 
         public bool IsObjectiveCLanguage
         {
-            get => SelectedPattern?.Languages.Contains("ObjectiveC") ?? false;
-            set => ChangeLanguage("ObjectiveC", value);
+            get => SelectedPattern?.ContainsLanguage(Language.ObjectiveC) ?? false;
+            set => ChangeLanguage(Language.ObjectiveC, value);
         }
 
         public string Description
@@ -397,7 +397,7 @@ namespace PT.PM.PatternEditor.Pattern
 
         public string Log { get; set; }
 
-        private void ChangeLanguage(string language, bool set)
+        private void ChangeLanguage(Language language, bool set)
         {
             if (SelectedPattern != null)
             {
@@ -408,7 +408,7 @@ namespace PT.PM.PatternEditor.Pattern
                         CheckPattern();
                     }
                 }
-                else 
+                else
                 {
                     if (SelectedPattern.RemoveLanguage(language))
                     {
@@ -472,7 +472,7 @@ namespace PT.PM.PatternEditor.Pattern
                         jsonPatternSerializer.SourceFiles = new HashSet<IFile> { patternNode.File };
                         jsonPatternSerializer.CurrectSourceFile = patternNode.File;
                         PatternJson = jsonPatternSerializer.Serialize(patternNode);
-                        FileExt.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern-ust.json"), PatternJson);
+                        FileExt.WriteAllText(Path.Combine(ServiceLocator.TempDirectory, "pattern.ust.json"), PatternJson);
                     }
                 }
                 else

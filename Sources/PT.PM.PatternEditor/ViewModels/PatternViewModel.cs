@@ -2,6 +2,7 @@
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using PT.PM.Common;
 
 namespace PT.PM.PatternEditor
 {
@@ -86,23 +87,26 @@ namespace PT.PM.PatternEditor
 
         public HashSet<string> Languages => PatternDto.Languages;
 
+        public bool ContainsLanguage(Language language) => Languages.Contains(language.ToString());
 
-        public bool AddLanguage(string language)
+        public bool AddLanguage(Language language)
         {
-            if (!PatternDto.Languages.Contains(language))
+            string langStr = language.ToString();
+            if (!PatternDto.Languages.Contains(langStr))
             {
-                PatternDto.Languages.Add(language);
+                PatternDto.Languages.Add(langStr);
                 this.RaisePropertyChanged(nameof(Title));
                 return true;
             }
             return false;
         }
 
-        public bool RemoveLanguage(string language)
+        public bool RemoveLanguage(Language language)
         {
-            if (PatternDto.Languages.Contains(language) && PatternDto.Languages.Count > 1)
+            string langStr = language.ToString();
+            if (PatternDto.Languages.Contains(langStr) && PatternDto.Languages.Count > 1)
             {
-                PatternDto.Languages.Remove(language);
+                PatternDto.Languages.Remove(langStr);
                 this.RaisePropertyChanged(nameof(Title));
                 return true;
             }
