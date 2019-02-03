@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -130,7 +129,6 @@ namespace PT.PM.Tests
             {
                 Assert.Less(binaryFile.Data.Length, readSize, "Compressed size should be less than original");
                 double compressionRatio = (double) readSize / binaryFile.Data.Length;
-                Debug.WriteLine($"Compression ratio: {compressionRatio}");
                 Console.WriteLine($"Compression ratio: {compressionRatio}");
             }
 
