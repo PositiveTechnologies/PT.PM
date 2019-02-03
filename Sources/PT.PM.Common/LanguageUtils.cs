@@ -201,6 +201,14 @@ namespace PT.PM.Common
                     negation = true;
                     langStr = langStr.Substring(1);
                 }
+
+                if (langStr.EqualsIgnoreCase("all"))
+                {
+                    return negation
+                        ? new HashSet<Language>()
+                        : new HashSet<Language>(!patternLanguages ? Languages : PatternLanguages);
+                }
+
                 bool isSql = langStr.EqualsIgnoreCase("sql");
 
                 foreach (Language language in languages)

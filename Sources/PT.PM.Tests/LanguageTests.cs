@@ -54,6 +54,9 @@ namespace PT.PM.Tests
 
             HashSet<Language> javaScriptLang = "js".ParseLanguages();
             Assert.AreEqual(Language.JavaScript, javaScriptLang.First());
+
+            HashSet<Language> allLang = "all".ParseLanguages();
+            CollectionAssert.AreEquivalent(LanguageUtils.Languages, allLang);
         }
 
         [TestCase(Language.CSharp, "Patterns.cs")]
@@ -83,10 +86,9 @@ namespace PT.PM.Tests
         public void DetectLanguageIfRequired_Source_CorrectLanguage()
         {
             var languageDetector = new ParserLanguageDetector();
-            DetectionResult detectionResult;
 
             var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
-            detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql });
+            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql });
 
             Assert.NotNull(detectionResult.ParseTree);
             Assert.AreEqual(Language.PlSql, detectionResult.Language);
