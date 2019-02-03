@@ -8,11 +8,17 @@ namespace PT.PM.Matching
         string PatternKey { get; }
 
         bool Suppressed { get; }
+
+        TextFile SourceFile { get; }
     }
 
-    public abstract class MatchResultBase<TPattern>
+    public abstract class MatchResultBase<TPattern> : IMatchResultBase
     {
-        public TextFile SourceFile { get; set; }
+        public abstract string PatternKey { get; }
+
+        public abstract TextFile SourceFile { get; }
+
+        public bool Suppressed { get; protected set; }
 
         public TPattern Pattern { get; set; }
 
