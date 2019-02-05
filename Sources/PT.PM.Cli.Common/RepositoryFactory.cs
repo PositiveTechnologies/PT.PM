@@ -18,17 +18,6 @@ namespace PT.PM.Cli.Common
         public static SourceRepository CreateSourceRepository(string path, string tempDir,
             CliParameters parameters)
         {
-            Stage startStage = parameters.StartStage?.ParseEnum(true, Stage.File) ?? Stage.File;
-            SerializationFormat? format = null;
-            if (startStage > Stage.File)
-            {
-                format = SerializationFormat.Json;
-                if (Enum.TryParse(parameters.SerializationFormat, true, out SerializationFormat format2))
-                {
-                    format = format2;
-                }
-            }
-
             SourceRepository sourceRepository;
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -36,14 +25,14 @@ namespace PT.PM.Cli.Common
             }
             else if (DirectoryExt.Exists(path))
             {
-                sourceRepository = new DirectorySourceRepository(path, format);
+                sourceRepository = new DirectorySourceRepository(path);
             }
             else if (FileExt.Exists(path))
             {
                 string extension = Path.GetExtension(path);
                 if (extension.EqualsIgnoreCase(".zip"))
                 {
-                    var zipCachingRepository = new ZipCachingRepository(path, format);
+                    var zipCachingRepository = new ZipCachingRepository(path);
                     if (tempDir != null)
                     {
                         zipCachingRepository.ExtractPath = tempDir;
@@ -52,7 +41,7 @@ namespace PT.PM.Cli.Common
                 }
                 else
                 {
-                    sourceRepository = new FileSourceRepository(path, format: CommonUtils.GetFormatByExtension(extension));
+                    sourceRepository = new FileSourceRepository(path);
                 }
             }
             else
@@ -74,7 +63,7 @@ namespace PT.PM.Cli.Common
                     projectName = urlWithoutHttp.Split('/').ElementAtOrDefault(2);
                 }
 
-                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName, format);
+                var zipAtUrlCachedCodeRepository = new ZipAtUrlCachingRepository(url, projectName);
                 if (tempDir != null)
                 {
                     zipAtUrlCachedCodeRepository.DownloadPath = tempDir;

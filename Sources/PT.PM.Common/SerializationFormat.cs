@@ -2,7 +2,7 @@ namespace PT.PM.Common
 {
     public enum SerializationFormat
     {
-        Json,
-        MsgPack
+        Json = Language.Json,
+        MsgPack = Language.MessagePack
     }
 }

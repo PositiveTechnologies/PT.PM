@@ -45,9 +45,9 @@ namespace PT.PM.Tests
         [Test]
         public void Check_AspxFileWithCSharpLanguage_NotIgnored()
         {
-            var repository = new DirectorySourceRepository("", languages: Language.CSharp);
+            var repository = new DirectorySourceRepository("", Language.CSharp);
 
-            Assert.IsFalse(repository.IsFileIgnored("page.aspx", true));
+            CollectionAssert.IsNotEmpty(repository.GetLanguages("page.aspx", true));
         }
     }
 }

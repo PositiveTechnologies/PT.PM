@@ -13,13 +13,12 @@ namespace PT.PM.Common.SourceRepository
     {
         protected IEnumerable<string> fullNames;
 
-        public FileSourceRepository(string fileName, Language? language = null, SerializationFormat? format = null)
-            : this(new string[] { fileName }, language, format)
+        public FileSourceRepository(string fileName, Language? language = null)
+            : this(new [] { fileName }, language)
         {
         }
 
-        public FileSourceRepository(IEnumerable<string> fileNames, Language? language = null, SerializationFormat? format = null)
-            : base(format)
+        public FileSourceRepository(IEnumerable<string> fileNames, Language? language = null)
         {
             var fileNamesArray = fileNames as string[] ?? fileNames.ToArray();
             fullNames = fileNamesArray;
@@ -57,7 +56,7 @@ namespace PT.PM.Common.SourceRepository
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = Format == SerializationFormat.MsgPack ? (IFile)BinaryFile.Empty : TextFile.Empty;
+                result = TextFile.Empty;
                 Logger.LogError(new ReadException(result, ex));
             }
 
@@ -67,20 +66,21 @@ namespace PT.PM.Common.SourceRepository
             return result;
         }
 
-        public override bool IsFileIgnored(string fileName, bool withParser)
+        public override Language[] GetLanguages(string fileName, bool withParser)
         {
             if (Languages.Count == 1)
             {
-                return withParser && !Languages.First().IsParserExists();
+                Language language = Languages.First();
+                return withParser && !language.IsParserExistsOrSerialized() ? new Language[0] : new Language[] { language };
             }
 
-            return base.IsFileIgnored(fileName, withParser);
+            return base.GetLanguages(fileName, withParser);
         }
 
         protected virtual IFile Read(string fileName)
         {
             IFile result;
-            if (Format == SerializationFormat.MsgPack)
+            if (CommonUtils.GetFormatByFileName(fileName) == SerializationFormat.MsgPack)
             {
                 result = new BinaryFile(FileExt.ReadAllBytes(fileName));
             }

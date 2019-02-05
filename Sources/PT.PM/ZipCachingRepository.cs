@@ -22,8 +22,8 @@ namespace PT.PM
 
         public string ExtractPath { get; set; } = Path.GetTempPath();
 
-        public ZipCachingRepository(string archivePath, SerializationFormat? format, params Language[] languages)
-            : base(archivePath, format, languages)
+        public ZipCachingRepository(string archivePath, params Language[] languages)
+            : base(archivePath, languages)
         {
             ArchiveName = archivePath;
             Name = Path.GetFileNameWithoutExtension(archivePath);

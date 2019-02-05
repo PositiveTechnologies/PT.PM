@@ -13,10 +13,10 @@
       <Setter Property="FontSize" Value="13" />
     </Style>
   </Window.Styles>
-  
+
   <Grid Name="MainGrid" Margin="5" ColumnDefinitions="Auto,Auto,*" >
     <PatternEditor:PatternUserControl Margin="10" />
-    
+
     <GridSplitter Grid.Column="1" Background="#CFD8DC" />
 
     <Grid Grid.Column="2" Margin="10" RowDefinitions="35,*,Auto,Auto,Auto,Auto,Auto,35">
@@ -56,7 +56,7 @@
         </Grid>
       </Expander>
 
-      <Expander Grid.Row="4" Header="{Binding ParseTreeHeader}" IsExpanded="{Binding IsParseTreeExpanded, Mode=TwoWay}" >
+      <Expander Grid.Row="4" Header="{Binding ParseTreeHeader}" IsExpanded="{Binding IsParseTreeExpanded, Mode=TwoWay}" IsVisible="{Binding IsParseTreeVisible}">
         <Grid RowDefinitions="80">
           <TextBox Text="{Binding ParseTree}" AcceptsReturn="true" TextWrapping="Wrap" IsReadOnly="true" MinHeight="80"/>
         </Grid>

@@ -40,8 +40,6 @@ namespace PT.PM
 
         public TStage Stage { get; set; }
 
-        public TStage StartStage { get; set; }
-
         public SourceRepository SourceRepository { get; set; }
 
         public IPatternsRepository PatternsRepository { get; set; }
@@ -124,7 +122,7 @@ namespace PT.PM
 
         public string TempDir { get; set; } = "";
 
-        public SerializationFormat SerializationFormat { get; set; }
+        public SerializationFormat SerializationFormat { get; set; } = SerializationFormat.Json;
 
         public event EventHandler<RootUst> UstConverted;
 
@@ -135,13 +133,21 @@ namespace PT.PM
             Stage = stage;
         }
 
-        public RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken = default)
+        public RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult,
+            CancellationToken cancellationToken = default)
         {
-            if (SourceRepository.IsFileIgnored(fileName, true))
+            Language[] languages = SourceRepository.GetLanguages(fileName, true);
+
+            if (languages.Length == 0)
             {
-                Logger.LogInfo($"File {fileName} not read.");
+                Logger.LogInfo($"File {fileName} is ignored.");
                 return null;
             }
+
+            // TODO: implement more fast language detection if there are several languages (SQL dialects at first), see https://github.com/PositiveTechnologies/PT.PM/issues/158
+            Language language = languages[0];
+
+            bool isSerialization = language.IsSerialization();
 
             RootUst result = null;
             var stopwatch = Stopwatch.StartNew();
@@ -154,136 +160,149 @@ namespace PT.PM
 
             string shortFileName = sourceFile.Name;
 
-            if (Stage.IsGreaterOrEqual(PM.Stage.ParseTree))
+            if (!Stage.IsGreaterOrEqual(PM.Stage.ParseTree))
             {
-                ParseTree parseTree = null;
-                DetectionResult detectionResult = null;
+                return null;
+            }
 
-                if (StartStage.Is(PM.Stage.File))
+            ParseTree parseTree = null;
+            DetectionResult detectionResult = null;
+
+            if (!isSerialization)
+            {
+                TextFile sourceTextFile = (TextFile) sourceFile;
+
+                stopwatch.Restart();
+                LanguageDetector.MaxStackSize = MaxStackSize;
+                detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, workflowResult.BaseLanguages);
+
+                if (detectionResult == null)
                 {
-                    TextFile sourceTextFile = (TextFile) sourceFile;
-
-                    stopwatch.Restart();
-                    LanguageDetector.MaxStackSize = MaxStackSize;
-                    detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, workflowResult.BaseLanguages);
-
-                    if (detectionResult == null)
-                    {
-                        Logger.LogInfo($"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File not converted.");
-                        return null;
-                    }
-
-                    if (detectionResult.ParseTree == null)
-                    {
-                        var parser = detectionResult.Language.CreateParser();
-                        parser.Logger = Logger;
-                        if (parser is AntlrParser)
-                        {
-                            AntlrParser.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;
-                        }
-                        if (parser is JavaScriptEsprimaParser javaScriptParser)
-                        {
-                            javaScriptParser.JavaScriptType = JavaScriptType;
-                        }
-                        parseTree = parser.Parse(sourceTextFile);
-                    }
-                    else
-                    {
-                        foreach (string debug in detectionResult.Debugs)
-                        {
-                            Logger.LogDebug(debug);
-                        }
-                        foreach (object info in detectionResult.Infos)
-                        {
-                            Logger.LogInfo(info);
-                        }
-                        foreach (Exception error in detectionResult.Errors)
-                        {
-                            Logger.LogError(error);
-                        }
-                        parseTree = detectionResult.ParseTree;
-                    }
-
-                    stopwatch.Stop();
-                    Logger.LogInfo($"File {shortFileName} parsed {stopwatch.GetElapsedString()}.");
-
-                    if (parseTree == null)
-                    {
-                        return null;
-                    }
-
-                    workflowResult.AddLexerTime(parseTree.LexerTimeSpan);
-                    workflowResult.AddParserTicks(parseTree.ParserTimeSpan);
-
-                    DumpTokensAndParseTree(parseTree);
-
-                    cancellationToken.ThrowIfCancellationRequested();
+                    Logger.LogInfo(
+                        $"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File not converted.");
+                    return null;
                 }
 
-                if (Stage.IsGreaterOrEqual(PM.Stage.Ust))
+                if (detectionResult.ParseTree == null)
                 {
-                    stopwatch.Restart();
-
-                    if (!StartStage.Is(PM.Stage.Ust))
+                    var parser = detectionResult.Language.CreateParser();
+                    parser.Logger = Logger;
+                    if (parser is AntlrParser)
                     {
-                        IParseTreeToUstConverter converter = detectionResult.Language.CreateConverter();
-                        if (converter is PhpAntlrParseTreeConverter phpConverter)
-                        {
-                            phpConverter.JavaScriptType = JavaScriptType;
-                        }
-                        converter.Logger = Logger;
-                        converter.AnalyzedLanguages = AnalyzedLanguages;
-                        result = converter.Convert(parseTree);
-                    }
-                    else
-                    {
-                        void ReadSourceFileAction((IFile, TimeSpan) fileAndTime) => LogSourceFile(fileAndTime, workflowResult);
-
-                        if (SerializationFormat == SerializationFormat.Json)
-                        {
-                            var jsonUstSerializer = new UstJsonSerializer
-                            {
-                                SourceFiles = workflowResult.SourceFiles,
-                                ReadSourceFileAction = ReadSourceFileAction,
-                                Strict = StrictJson,
-                                LineColumnTextSpans = LineColumnTextSpans,
-                                Logger = Logger
-                            };
-                            result = (RootUst) jsonUstSerializer.Deserialize((TextFile)sourceFile);
-                        }
-                        else
-                        {
-                            BinaryFile binaryFile = (BinaryFile) sourceFile;
-                            result = RootUstMessagePackSerializer.Deserialize(
-                                binaryFile, workflowResult.SourceFiles, ReadSourceFileAction, Logger, out _);
-                        }
-
-                        if (result == null || !AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
-                        {
-                            Logger.LogInfo($"File {fileName} ignored.");
-                            return null;
-                        }
+                        AntlrParser.MemoryConsumptionBytes = (long) MemoryConsumptionMb * 1024 * 1024;
                     }
 
-                    stopwatch.Stop();
-                    Logger.LogInfo($"File {shortFileName} converted {stopwatch.GetElapsedString()}.");
-                    workflowResult.AddConvertTime(stopwatch.Elapsed);
-
-                    if (result == null)
+                    if (parser is JavaScriptEsprimaParser javaScriptParser)
                     {
-                        return null;
+                        javaScriptParser.JavaScriptType = JavaScriptType;
                     }
+
+                    parseTree = parser.Parse(sourceTextFile);
+                }
+                else
+                {
+                    foreach (string debug in detectionResult.Debugs)
+                    {
+                        Logger.LogDebug(debug);
+                    }
+
+                    foreach (object info in detectionResult.Infos)
+                    {
+                        Logger.LogInfo(info);
+                    }
+
+                    foreach (Exception error in detectionResult.Errors)
+                    {
+                        Logger.LogError(error);
+                    }
+
+                    parseTree = detectionResult.ParseTree;
+                }
+
+                stopwatch.Stop();
+                Logger.LogInfo($"File {shortFileName} parsed {stopwatch.GetElapsedString()}.");
+
+                if (parseTree == null)
+                {
+                    return null;
+                }
+
+                workflowResult.AddLexerTime(parseTree.LexerTimeSpan);
+                workflowResult.AddParserTicks(parseTree.ParserTimeSpan);
+
+                DumpTokensAndParseTree(parseTree);
+
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            if (Stage.IsGreaterOrEqual(PM.Stage.Ust))
+            {
+                stopwatch.Restart();
+
+                if (!isSerialization)
+                {
+                    IParseTreeToUstConverter converter = detectionResult.Language.CreateConverter();
+                    if (converter is PhpAntlrParseTreeConverter phpConverter)
+                    {
+                        phpConverter.JavaScriptType = JavaScriptType;
+                    }
+
+                    converter.Logger = Logger;
+                    converter.AnalyzedLanguages = AnalyzedLanguages;
+                    result = converter.Convert(parseTree);
 
                     lock (lockObj)
                     {
                         result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
                     }
-
-                    DumpUst(result);
-                    UstConverted?.Invoke(this, result);
-
-                    cancellationToken.ThrowIfCancellationRequested();
                 }
+                else
+                {
+                    void ReadSourceFileAction((IFile, TimeSpan) fileAndTime) =>
+                        LogSourceFile(fileAndTime, workflowResult);
+
+                    if (language == Language.Json)
+                    {
+                        var jsonUstSerializer = new UstJsonSerializer
+                        {
+                            SourceFiles = workflowResult.SourceFiles,
+                            ReadSourceFileAction = ReadSourceFileAction,
+                            Strict = StrictJson,
+                            Logger = Logger
+                        };
+                        result = (RootUst) jsonUstSerializer.Deserialize((TextFile) sourceFile);
+                    }
+                    else if (language == Language.MessagePack)
+                    {
+                        BinaryFile binaryFile = (BinaryFile) sourceFile;
+                        result = RootUstMessagePackSerializer.Deserialize(
+                            binaryFile, workflowResult.SourceFiles, ReadSourceFileAction, Logger, out _);
+                    }
+                    else
+                    {
+                        Logger.LogError(new ReadException(sourceFile, message: $"Unknown serialization format {language}"));
+                    }
+
+                    if (result == null || !AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
+                    {
+                        Logger.LogInfo($"File {fileName} ignored.");
+                        return null;
+                    }
+                }
+
+                stopwatch.Stop();
+                Logger.LogInfo($"File {shortFileName} converted {stopwatch.GetElapsedString()}.");
+                workflowResult.AddConvertTime(stopwatch.Elapsed);
+
+                if (result == null)
+                {
+                    return null;
+                }
+
+                DumpUst(result);
+                UstConverted?.Invoke(this, result);
+
+                cancellationToken.ThrowIfCancellationRequested();
             }
 
             return result;

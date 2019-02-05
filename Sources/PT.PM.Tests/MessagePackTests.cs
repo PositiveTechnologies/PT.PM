@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -104,14 +103,10 @@ namespace PT.PM.Tests
 
             // Deserialization
             var newLogger = new LoggerMessageCounter();
-            var newCodeRepository = new FileSourceRepository(serializedFiles, format: SerializationFormat.MsgPack);
+            var newCodeRepository = new FileSourceRepository(serializedFiles);
 
             var newWorkflow = new Workflow(newCodeRepository, new DefaultPatternRepository())
             {
-                StartStage = Stage.Ust,
-                SerializationFormat = SerializationFormat.MsgPack,
-                LineColumnTextSpans = !linearTextSpans,
-                CompressedSerialization = compressed,
                 Logger = newLogger
             };
             newWorkflow.Process();
@@ -134,7 +129,6 @@ namespace PT.PM.Tests
             {
                 Assert.Less(binaryFile.Data.Length, readSize, "Compressed size should be less than original");
                 double compressionRatio = (double) readSize / binaryFile.Data.Length;
-                Debug.WriteLine($"Compression ratio: {compressionRatio}");
                 Console.WriteLine($"Compression ratio: {compressionRatio}");
             }
 

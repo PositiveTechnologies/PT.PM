@@ -196,10 +196,6 @@ namespace PT.PM.Cli.Common
             {
                 workflow.IsDumpJsonOutput = parameters.IsDumpJsonOutput.Value;
             }
-            if (parameters.StartStage != null)
-            {
-                workflow.StartStage = parameters.StartStage.ParseEnum(ContinueWithInvalidArgs, workflow.StartStage, Logger);
-            }
             if (parameters.DumpStages?.Count() > 0)
             {
                 workflow.DumpStages = new HashSet<TStage>(parameters.DumpStages.ParseEnums<TStage>(ContinueWithInvalidArgs, Logger));

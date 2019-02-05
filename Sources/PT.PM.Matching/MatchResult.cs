@@ -6,17 +6,13 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
-    public class MatchResult : MatchResultBase<PatternRoot>, IMatchResultBase
+    public class MatchResult : MatchResultBase<PatternRoot>
     {
-        public string PatternKey => Pattern.Key;
+        public override string PatternKey => Pattern.Key;
+
+        public override TextFile SourceFile { get; }
 
         public TextSpan TextSpan => TextSpans.FirstOrDefault();
-
-        public bool Suppressed { get; }
-
-        public MatchResult()
-        {
-        }
 
         public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
@@ -27,14 +23,13 @@ namespace PT.PM.Matching
             TextSpan lastTextSpan = textSpans.LastOrDefault();
             if (lastTextSpan != default)
             {
-                Suppressed = PatternUtils.IsSuppressed(SourceFile,
-                    lastTextSpan.GetLineColumnTextSpan(SourceFile));
+                Suppressed = PatternUtils.IsSuppressed(SourceFile, lastTextSpan.GetLineColumnTextSpan(SourceFile));
             }
         }
 
         public override string ToString()
         {
-            return $"Pattern {Pattern} mathched at {(string.Join(", ", TextSpans.Select(textSpan => SourceFile.GetLineColumnTextSpan(textSpan))))}";
+            return $"Pattern {Pattern} match at {(string.Join(", ", TextSpans.Select(textSpan => SourceFile.GetLineColumnTextSpan(textSpan))))}";
         }
     }
 }

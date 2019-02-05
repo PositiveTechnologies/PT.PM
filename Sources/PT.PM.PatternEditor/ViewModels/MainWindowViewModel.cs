@@ -57,7 +57,7 @@ namespace PT.PM.PatternEditor
             [Language.Java] = "Java",
             [Language.Php] = "PHP",
             [Language.JavaScript] = "JavaScript",
-            [Language.Html] = "HTML",
+            [Language.Html] = "HTML"
         };
 
         public MainWindowViewModel(Window w)
@@ -68,10 +68,12 @@ namespace PT.PM.PatternEditor
             {
                 window.Width = Settings.Width;
             }
+
             if (Settings.Height > 0)
             {
                 window.Height = Settings.Height;
             }
+
             if (Settings.Left != -1 && Settings.Top != -1)
             {
                 window.Position = new Point(Settings.Left, Settings.Top);
@@ -159,17 +161,17 @@ namespace PT.PM.PatternEditor
             this.RaisePropertyChanged(nameof(SelectedLanguage));
             this.RaisePropertyChanged(nameof(OpenedFileName));
 
-            if (highlightings.TryGetValue(SelectedLanguage, out string highlighting))
-            {
-                sourceTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
-            }
+            highlightings.TryGetValue(SelectedLanguage, out string highlighting);
+            sourceTextBox.SyntaxHighlighting = highlighting != null
+                ? HighlightingManager.Instance.GetDefinition(highlighting)
+                : null;
 
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Subscribe(_ => UpdateSourceSelection());
 
             Observable.FromEventPattern<EventHandler, EventArgs>(
-                h => sourceTextBox.TextChanged += h,
-                h => sourceTextBox.TextChanged -= h)
+                    h => sourceTextBox.TextChanged += h,
+                    h => sourceTextBox.TextChanged -= h)
                 .Throttle(TimeSpan.FromMilliseconds(500))
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(str => CheckSource());
@@ -199,6 +201,7 @@ namespace PT.PM.PatternEditor
                     {
                         Settings.Width = width;
                     }
+
                     Settings.WindowState = window.WindowState;
                     Settings.Save();
                 });
@@ -212,12 +215,13 @@ namespace PT.PM.PatternEditor
                     {
                         Settings.Height = height;
                     }
+
                     Settings.WindowState = window.WindowState;
                     Settings.Save();
                 });
 
             Observable.FromEventPattern<PointEventArgs>(
-                ev => window.PositionChanged += ev, ev => window.PositionChanged -= ev)
+                    ev => window.PositionChanged += ev, ev => window.PositionChanged -= ev)
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(ev =>
@@ -227,11 +231,12 @@ namespace PT.PM.PatternEditor
                         Settings.Left = window.Position.X;
                         Settings.Top = window.Position.Y;
                     }
+
                     Settings.Save();
                 });
 
             Observable.FromEventPattern(
-                ev => window.Closed += ev, ev => window.Closed -= ev)
+                    ev => window.Closed += ev, ev => window.Closed -= ev)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(ev =>
                 {
@@ -270,6 +275,7 @@ namespace PT.PM.PatternEditor
             {
                 SourceTextBoxPosition = $"";
             }
+
             this.RaisePropertyChanged(nameof(SourceTextBoxPosition));
         }
 
@@ -291,7 +297,8 @@ namespace PT.PM.PatternEditor
 
         public string SourceTextBoxPosition { get; set; }
 
-        public ObservableCollection<Stage> Stages { get; } = new ObservableCollection<Stage>(new[] { Stage.ParseTree, Stage.Ust, Stage.Match });
+        public ObservableCollection<Stage> Stages { get; } =
+            new ObservableCollection<Stage>(new[] {Stage.ParseTree, Stage.Ust, Stage.Match});
 
         public Stage Stage
         {
@@ -303,6 +310,7 @@ namespace PT.PM.PatternEditor
                     Settings.SelectedStage = value;
                     Settings.Save();
                     this.RaisePropertyChanged(nameof(IsMatchingStage));
+                    this.RaisePropertyChanged(nameof(IsParseTreeVisible));
                     this.RaisePropertyChanged(nameof(IsUstJsonVisible));
                     this.RaisePropertyChanged();
                     CheckSource();
@@ -310,8 +318,16 @@ namespace PT.PM.PatternEditor
             }
         }
 
-        public ObservableCollection<Language> Languages { get; }
-            = new ObservableCollection<Language>(LanguageUtils.LanguagesWithParser);
+        public ObservableCollection<Language> Languages
+        {
+            get
+            {
+                var result = new List<Language>(LanguageUtils.LanguagesWithParser.Count + 1);
+                result.AddRange(LanguageUtils.LanguagesWithParser);
+                result.Add(Language.Json);
+                return new ObservableCollection<Language>(result);
+            }
+        }
 
         public Language SelectedLanguage
         {
@@ -320,16 +336,18 @@ namespace PT.PM.PatternEditor
             {
                 if (Settings.SourceLanguage != value)
                 {
-                    if (highlightings.TryGetValue(value, out string highlighting))
-                    {
-                        sourceTextBox.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition(highlighting);
-                    }
+                    highlightings.TryGetValue(value, out string highlighting);
+                    sourceTextBox.SyntaxHighlighting = highlighting != null
+                        ? HighlightingManager.Instance.GetDefinition(highlighting)
+                        : null;
 
                     Settings.SourceLanguage = value;
                     Settings.Save();
                     this.RaisePropertyChanged();
                     this.RaisePropertyChanged(nameof(IsTokensVisible));
                     this.RaisePropertyChanged(nameof(IsJavaScriptTypeVisible));
+                    this.RaisePropertyChanged(nameof(IsParseTreeVisible));
+                    this.RaisePropertyChanged(nameof(IsUstJsonVisible));
                     CheckSource();
                 }
             }
@@ -428,7 +446,9 @@ namespace PT.PM.PatternEditor
 
         public bool IsTokensVisible => SelectedLanguage.HasAntlrParser();
 
-        public bool IsUstJsonVisible => Stage >= Stage.Ust;
+        public bool IsParseTreeVisible => Stage >= Stage.ParseTree && SelectedLanguage != Language.Json;
+
+        public bool IsUstJsonVisible => Stage >= Stage.Ust && SelectedLanguage != Language.Json;
 
         public string MatchingResultText
         {
@@ -605,7 +625,20 @@ namespace PT.PM.PatternEditor
         {
             SourceLogger.Clear();
 
-            var sourceRep = new MemorySourceRepository(sourceTextBox.Text, language: SelectedLanguage);
+            string origFileName = "source";
+            Language? selectedLanguage;
+            if (SelectedLanguage == Language.Json)
+            {
+                origFileName += "." + ParseTreeDumper.UstSuffix;
+                selectedLanguage = null;
+            }
+            else
+            {
+                origFileName += SelectedLanguage.GetExtensions()[0];
+                selectedLanguage = SelectedLanguage;
+            }
+
+            var sourceRep = new MemorySourceRepository(sourceTextBox.Text, origFileName, selectedLanguage);
             IPatternsRepository patternRepository;
             if (!string.IsNullOrEmpty(ServiceLocator.PatternsViewModel.Value))
             {
@@ -633,20 +666,25 @@ namespace PT.PM.PatternEditor
                 workflow.JavaScriptType = JavaScriptType;
             }
 
-            var dumpStages = new HashSet<Stage>();
-            if (Stage >= Stage.ParseTree)
+            if (SelectedLanguage != Language.Json)
             {
-                if (SelectedLanguage != Language.CSharp)
+                var dumpStages = new HashSet<Stage>();
+                if (Stage >= Stage.ParseTree)
                 {
-                    // TODO: ignore C# parse tree dump due to the huge size
-                    dumpStages.Add(Stage.ParseTree);
+                    if (SelectedLanguage != Language.CSharp)
+                    {
+                        // TODO: ignore C# parse tree dump due to the huge size
+                        dumpStages.Add(Stage.ParseTree);
+                    }
+
+                    if (Stage >= Stage.Ust)
+                    {
+                        dumpStages.Add(Stage.Ust);
+                    }
                 }
-                if (Stage >= Stage.Ust)
-                {
-                    dumpStages.Add(Stage.Ust);
-                }
+
+                workflow.DumpStages = dumpStages;
             }
-            workflow.DumpStages = dumpStages;
 
             WorkflowResult workflowResult = workflow.Process();
             source = (TextFile)workflowResult.SourceFiles.FirstOrDefault();
@@ -662,12 +700,19 @@ namespace PT.PM.PatternEditor
             TokensHeader = "Tokens" + (SelectedLanguage.HasAntlrParser() ? " (ANTLR)" : "");
             ParseTreeHeader = "Parse Tree" + (SelectedLanguage.HasAntlrParser() ? " (ANTLR)" : "");
 
-            if (Stage >= Stage.Ust)
+            if (Stage >= Stage.Ust && SelectedLanguage != Language.Json)
             {
-                UstJson = FileExt.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", ParseTreeDumper.UstSuffix));
+                try
+                {
+                    UstJson = FileExt.ReadAllText(Path.Combine(ServiceLocator.TempDirectory, "", $"{origFileName}.{ParseTreeDumper.UstSuffix}"));
+                }
+                catch
+                {
+                    UstJson = "";
+                }
             }
 
-            MatchingResultText = "MATCHINGS" + (workflowResult.TotalMatchesCount > 0 ? $" ({workflowResult.TotalMatchesCount})" : "");
+            MatchingResultText = "MATCHES" + (workflowResult.TotalMatchesCount > 0 ? $" ({workflowResult.TotalMatchesCount})" : "");
 
             if (SourceLogger.ErrorCount == 0)
             {
@@ -692,7 +737,7 @@ namespace PT.PM.PatternEditor
                 });
                 Dispatcher.UIThread.InvokeAsync(() => OpenedFileName = "");
             }
-            
+
             fileOpened = false;
         }
     }

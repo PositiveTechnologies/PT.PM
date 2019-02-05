@@ -2,6 +2,7 @@
 using PT.PM.Common.Nodes.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace PT.PM.Common.Utils
@@ -134,14 +135,15 @@ namespace PT.PM.Common.Utils
                     logger?.LogError(new ArgumentException($"Incorrect int value {obj}"));
                     return defaultValue;
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
         }
 
         public static string GetExtension(this SerializationFormat format) => Extensions[format];
+
+        public static SerializationFormat? GetFormatByFileName(string fileName) =>
+            GetFormatByExtension(Path.GetExtension(fileName));
 
         public static SerializationFormat? GetFormatByExtension(string ext)
         {
@@ -152,7 +154,7 @@ namespace PT.PM.Common.Utils
 
             foreach (var pair in Extensions)
             {
-                if (pair.Value == ext)
+                if (pair.Value.EqualsIgnoreCase(ext))
                 {
                     return pair.Key;
                 }

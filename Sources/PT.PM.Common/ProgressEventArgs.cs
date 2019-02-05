@@ -1,4 +1,5 @@
 ﻿using System;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common
 {
@@ -22,7 +23,7 @@ namespace PT.PM.Common
 
         public override string ToString()
         {
-            string value = Progress > 1 ? $"{(int)Progress} items" : $"{Progress*100:0.00}%";
+            string value = Progress - 1 > CommonUtils.Epsilon ? $"{(int)Progress} items" : $"{Progress:P}";
             string messageStr = string.IsNullOrEmpty(Message) ? "" : $"; {Message}";
             string fileStr = string.IsNullOrEmpty(CurrentFile) ? "" : $"; File: {CurrentFile}";
             return $"Progress: {value} at {Date.ToLongTimeString()}{messageStr}{fileStr}";

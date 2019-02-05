@@ -23,8 +23,8 @@ namespace PT.PM
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
-        public ZipAtUrlCachingRepository(string url, string name = null, SerializationFormat? format = null)
-            : base("", format)
+        public ZipAtUrlCachingRepository(string url, string name = null)
+            : base("")
         {
             Url = url;
             Name = ConvertToValidFileName(string.IsNullOrEmpty(name) ? TextUtils.HttpRegex.Replace(url, "") : name);

@@ -19,13 +19,12 @@ namespace PT.PM.Common.SourceRepository
 
         public IEnumerable<string> IgnoredFiles { get; set; } = Enumerable.Empty<string>();
 
-        public DirectorySourceRepository(string directoryPath, SerializationFormat? format = null, params Language[] languages)
-            : this(directoryPath, languages, format)
+        public DirectorySourceRepository(string directoryPath, params Language[] languages)
+            : this(directoryPath, (IEnumerable<Language>)languages)
         {
         }
 
-        public DirectorySourceRepository(string directoryPath, IEnumerable<Language> languages, SerializationFormat? format = null)
-            : base(format)
+        public DirectorySourceRepository(string directoryPath, IEnumerable<Language> languages = null)
         {
             RootPath = directoryPath;
             if (RootPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
@@ -45,10 +44,7 @@ namespace PT.PM.Common.SourceRepository
                 return Enumerable.Empty<string>();
             }
 
-            string searchPattern = Format == null
-                ? SearchPattern
-                : "*." + ((SerializationFormat)Format).GetExtension();
-            IEnumerable<string> result = DirectoryExt.EnumerateFiles(RootPath, searchPattern, SearchOption);
+            IEnumerable<string> result = DirectoryExt.EnumerateFiles(RootPath, SearchPattern, SearchOption);
 
             if (SearchPredicate != null)
             {
@@ -92,13 +88,13 @@ namespace PT.PM.Common.SourceRepository
             IFile result;
             try
             {
-                result = Format == SerializationFormat.MsgPack
+                result = CommonUtils.GetFormatByFileName(name) == SerializationFormat.MsgPack
                     ? (IFile)new BinaryFile(FileExt.ReadAllBytes(fileName))
                     : new TextFile(FileExt.ReadAllText(fileName));
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                result = Format == SerializationFormat.MsgPack ? (IFile)BinaryFile.Empty : TextFile.Empty;
+                result = TextFile.Empty;
                 Logger.LogError(new ReadException(result, ex));
             }
 
@@ -109,15 +105,15 @@ namespace PT.PM.Common.SourceRepository
             return result;
         }
 
-        public override bool IsFileIgnored(string fileName, bool withParser)
+        public override Language[] GetLanguages(string fileName, bool withParser)
         {
             bool result = IgnoredFiles.Any(fileName.EndsWith);
             if (result)
             {
-                return true;
+                return new Language[0];
             }
 
-            return base.IsFileIgnored(fileName, withParser);
+            return base.GetLanguages(fileName, withParser);
         }
     }
 }
