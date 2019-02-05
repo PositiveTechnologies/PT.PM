@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MessagePack;
+using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes.Expressions
 {
@@ -9,9 +10,9 @@ namespace PT.PM.Common.Nodes.Expressions
     public class AnonymousMethodExpression : Expression, IUstWithParent
     {
         [Key(UstFieldOffset)]
-        public List<ParameterDeclaration> Parameters { get; } = new List<ParameterDeclaration>();
+        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public Ust Parent { get; set; }
     
         [Key(UstFieldOffset + 1)]
@@ -21,9 +22,6 @@ namespace PT.PM.Common.Nodes.Expressions
         public string Id => Parent is AssignmentExpression assignment 
             ? assignment.Left.ToString()
             : LineColumnTextSpan.ToString();
-
-        [IgnoreMember]
-        public string Signature => UstUtils.GenerateSignature(Id, Parameters);
 
         public override Expression[] GetArgs() => new Expression[0];
 
