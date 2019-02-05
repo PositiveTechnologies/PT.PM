@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.TestUtils;
@@ -9,15 +8,13 @@ namespace PT.PM.SqlParseTreeUst.Tests
     [TestFixture]
     public class SqlParserTests
     {
-        [TestCase("mysql")]
-        [TestCase("plsql")]
-        [TestCase("tsql")]
-        public void Parse_SqlFiles_WithoutErrors(string dialect)
+        [TestCase(Language.PlSql)]
+        [TestCase(Language.TSql)]
+        [TestCase(Language.MySql)]
+        public void Parse_SqlFiles_WithoutErrors(Language language)
         {
-            Language detectedDialect = LanguageUtils.ParseLanguages(dialect).ToList()[0];
-
-            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, dialect, "examples"),
-                detectedDialect, Stage.ParseTree);
+            TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, language.ToString().ToLowerInvariant(), "examples"),
+                language, Stage.ParseTree);
         }
     }
 }
