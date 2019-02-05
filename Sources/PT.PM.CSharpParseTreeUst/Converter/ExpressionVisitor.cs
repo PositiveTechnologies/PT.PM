@@ -483,7 +483,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 else
                     bodyStatement = new ExpressionStatement((Expression)visited, node.Body.GetTextSpan());
             }
-            var body = new BlockStatement(new[] { bodyStatement }, node.Body.GetTextSpan());
+            var body = bodyStatement is BlockStatement block
+                ? block
+                : new BlockStatement(new[] { bodyStatement }, node.Body.GetTextSpan());
 
             var result = new AnonymousMethodExpression(parameters, body, node.GetTextSpan());
             return result;
