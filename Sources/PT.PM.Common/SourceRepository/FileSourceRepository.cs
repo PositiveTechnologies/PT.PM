@@ -66,15 +66,15 @@ namespace PT.PM.Common.SourceRepository
             return result;
         }
 
-        public override bool IsFileIgnored(string fileName, bool withParser, out Language language)
+        public override Language[] GetLanguages(string fileName, bool withParser)
         {
             if (Languages.Count == 1)
             {
-                language = Languages.First();
-                return withParser && !language.IsParserExists();
+                Language language = Languages.First();
+                return withParser && !language.IsParserExists() ? new Language[0] : new Language[] { language };
             }
 
-            return base.IsFileIgnored(fileName, withParser, out language);
+            return base.GetLanguages(fileName, withParser);
         }
 
         protected virtual IFile Read(string fileName)

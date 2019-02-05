@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
 
@@ -21,15 +21,14 @@ namespace PT.PM.Common.SourceRepository
             Data = new Dictionary<string, object> { [fileName] = bytes };
         }
 
-        public override bool IsFileIgnored(string fileName, bool withParser, out Language language)
+        public override Language[] GetLanguages(string fileName, bool withParser)
         {
             if (string.IsNullOrEmpty(fileName))
             {
-                language = Language.Uncertain;
-                return false;
+                return Languages.ToArray();
             }
 
-            return base.IsFileIgnored(fileName, withParser, out language);
+            return base.GetLanguages(fileName, withParser);
         }
 
         public override IEnumerable<string> GetFileNames() => Data.Keys;

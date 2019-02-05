@@ -74,14 +74,13 @@ namespace PT.PM.TestUtils
             RootUst tempUst = null;
             workflow.UstConverted += (sender, rootUst) => tempUst = rootUst;
 
-            WorkflowResult workflowResult = null;
             if (maxStackSize == 0)
             {
                 workflow.Process();
             }
             else
             {
-                var thread = new Thread(() => workflowResult = workflow.Process(), maxStackSize);
+                var thread = new Thread(() => workflow.Process(), maxStackSize);
                 thread.Start();
                 thread.Join();
             }
@@ -134,7 +133,6 @@ namespace PT.PM.TestUtils
         /// <summary>
         /// Returns path to the current source code file.
         /// </summary>
-        /// <param name="thisFilePath"></param>
         private static void GetRepositoryDirectory([CallerFilePath]string thisFilePath = null)
         {
             RepositoryDirectory = Path.GetFullPath(Path.Combine(thisFilePath, "..", "..", ".."));

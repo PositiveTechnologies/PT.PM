@@ -136,11 +136,16 @@ namespace PT.PM
         public RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult,
             CancellationToken cancellationToken = default)
         {
-            if (SourceRepository.IsFileIgnored(fileName, true, out Language language))
+            Language[] languages = SourceRepository.GetLanguages(fileName, true);
+
+            if (languages.Length == 0)
             {
-                Logger.LogInfo($"File {fileName} not read.");
+                Logger.LogInfo($"File {fileName} is ignored.");
                 return null;
             }
+
+            // TODO: implement more fast language detection if there are several languages (SQL dialects at first), see https://github.com/PositiveTechnologies/PT.PM/issues/158
+            Language language = languages[0];
 
             bool isSerialization = language.IsSerialization();
 

@@ -79,7 +79,8 @@ namespace PT.PM.Tests
         {
             var sourceRepository = new MemorySourceRepository("");
             sourceRepository.Languages = new HashSet<Language> { Language.PlSql, Language.TSql };
-            Assert.IsTrue(sourceRepository.IsFileIgnored(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true, out _));
+
+            CollectionAssert.IsEmpty(sourceRepository.GetLanguages(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
         }
 
         [Test]

@@ -105,16 +105,15 @@ namespace PT.PM.Common.SourceRepository
             return result;
         }
 
-        public override bool IsFileIgnored(string fileName, bool withParser, out Language language)
+        public override Language[] GetLanguages(string fileName, bool withParser)
         {
             bool result = IgnoredFiles.Any(fileName.EndsWith);
             if (result)
             {
-                language = Language.Uncertain;
-                return true;
+                return new Language[0];
             }
 
-            return base.IsFileIgnored(fileName, withParser, out language);
+            return base.GetLanguages(fileName, withParser);
         }
     }
 }

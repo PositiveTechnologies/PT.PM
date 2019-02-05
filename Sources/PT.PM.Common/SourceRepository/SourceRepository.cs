@@ -1,9 +1,7 @@
-﻿using PT.PM.Common.Utils;
-using System;
+﻿using PT.PM.Common.Files;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PT.PM.Common.Files;
 
 namespace PT.PM.Common.SourceRepository
 {
@@ -19,22 +17,22 @@ namespace PT.PM.Common.SourceRepository
 
         public abstract IFile ReadFile(string fileName);
 
-        public virtual bool IsFileIgnored(string fileName, bool withParser, out Language language)
+        public virtual Language[] GetLanguages(string fileName, bool withParser)
         {
             string fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 
-            foreach (Language l in Languages)
+            var result = new List<Language>();
+
+            foreach (Language language in Languages)
             {
-                bool ignored = IsLanguageIgnored(l, fileName, fileExtension, withParser);
+                bool ignored = IsLanguageIgnored(language, fileName, fileExtension, withParser);
                 if (!ignored)
                 {
-                    language = l;
-                    return false;
+                    result.Add(language);
                 }
             }
 
-            language = Language.Uncertain;
-            return true;
+            return result.ToArray();
         }
 
         private bool IsLanguageIgnored(Language language, string fileName, string fileExtension, bool withParser)

@@ -10,7 +10,7 @@ namespace PT.PM.Common.SourceRepository
 
         public override IEnumerable<string> GetFileNames() => ArrayUtils<string>.EmptyArray;
 
-        public override bool IsFileIgnored(string fileName, bool withParser, out Language language) => throw new InvalidOperationException();
+        public override Language[] GetLanguages(string fileName, bool withParser) => throw new InvalidOperationException();
 
         public override IFile ReadFile(string fileName) => throw new InvalidOperationException();
     }
