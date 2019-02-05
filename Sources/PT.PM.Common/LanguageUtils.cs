@@ -128,7 +128,7 @@ namespace PT.PM.Common
 
         public static bool HasAntlrParser(this Language language) => LanguageInfos[language].HasAntlrParser;
 
-        public static bool IsParserExists(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerialization();
+        public static bool IsParserExistsOrSerialized(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerialization();
 
         public static void RegisterParserConverter(Language language, Func<ILanguageParser> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
         {

@@ -71,7 +71,7 @@ namespace PT.PM.Common.SourceRepository
             if (Languages.Count == 1)
             {
                 Language language = Languages.First();
-                return withParser && !language.IsParserExists() ? new Language[0] : new Language[] { language };
+                return withParser && !language.IsParserExistsOrSerialized() ? new Language[0] : new Language[] { language };
             }
 
             return base.GetLanguages(fileName, withParser);

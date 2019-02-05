@@ -45,7 +45,7 @@ namespace PT.PM.Common.SourceRepository
                     return secondExt != ".ust" && secondExt != ".cpg";
                 }
 
-                return withParser && !language.IsParserExists();
+                return withParser && !language.IsParserExistsOrSerialized();
             }
 
             if (LanguageUtils.SuperLanguages.TryGetValue(language, out HashSet<Language> superLanguages))
