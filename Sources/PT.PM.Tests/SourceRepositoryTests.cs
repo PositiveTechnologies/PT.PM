@@ -13,13 +13,13 @@ namespace PT.PM.Tests
     public class SourceRepositoryTests
     {
         [Test]
-        public void FileCodeRepository_TestPath_CorrectPathsAndNames()
+        public void FileSourceRepository_TestPath_CorrectPathsAndNames()
         {
             string fullName = Path.Combine(TestUtility.TestsDataPath, "Test Project", "1.cs");
-            var fileCodeRepository = new FileSourceRepository(fullName);
-            IEnumerable<string> fileNames = fileCodeRepository.GetFileNames();
+            var fileSourceRepository = new FileSourceRepository(fullName);
+            IEnumerable<string> fileNames = fileSourceRepository.GetFileNames();
 
-            var source = (TextFile)fileCodeRepository.ReadFile(fileNames.Single());
+            var source = (TextFile)fileSourceRepository.ReadFile(fileNames.Single());
 
             Assert.AreEqual("1.cs", source.Name);
             Assert.AreEqual("", source.RelativePath);
@@ -48,6 +48,28 @@ namespace PT.PM.Tests
             var repository = new DirectorySourceRepository("", Language.CSharp);
 
             CollectionAssert.IsNotEmpty(repository.GetLanguages("page.aspx", true));
+        }
+
+        [Test]
+        public void Check_CorrectLongestCommonPaths()
+        {
+            string path = FileSourceRepository.GetLongestCommonPath(new string[0]);
+            Assert.AreEqual(@"", path);
+
+            path = FileSourceRepository.GetLongestCommonPath(new[] { "" });
+            Assert.AreEqual(@"", path);
+
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1" });
+            Assert.AreEqual(@"C:\dir\dir1", path);
+
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1", @"C:\dir\dir1\file2" });
+            Assert.AreEqual(@"C:\dir\dir1", path);
+
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\abc", @"C:\dir\dir1\bcd" });
+            Assert.AreEqual(@"C:\dir\dir1", path);
+
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1", @"D:\dir\dir1\file2" });
+            Assert.AreEqual(@"", path);
         }
     }
 }

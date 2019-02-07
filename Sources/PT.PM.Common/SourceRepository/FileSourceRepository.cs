@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using PT.PM.Common.Files;
 
@@ -12,6 +13,40 @@ namespace PT.PM.Common.SourceRepository
     public class FileSourceRepository : SourceRepository
     {
         protected IEnumerable<string> fullNames;
+
+        public static string GetLongestCommonPath(IList<string> fileNames)
+        {
+            if (fileNames.Count == 0)
+            {
+                return "";
+            }
+
+            string firstString = fileNames[0];
+            int index = firstString.Length;
+
+            for (int i = 1; i < fileNames.Count; i++)
+            {
+                index = Math.Min(index, fileNames[i].Length);
+                for (int j = 0; j < index; j++)
+                    if (fileNames[i][j] != firstString[j])
+                    {
+                        index = j;
+                        break;
+                    }
+            }
+
+            if (index == firstString.Length || firstString[index] != Path.DirectorySeparatorChar)
+            {
+                int lastSeparator = firstString.LastIndexOf(Path.DirectorySeparatorChar,
+                    index == firstString.Length ? index - 1 : index);
+                if (lastSeparator != -1)
+                {
+                    index = lastSeparator;
+                }
+            }
+
+            return index < firstString.Length ? firstString.Remove(index) : firstString;
+        }
 
         public FileSourceRepository(string fileName, Language? language = null)
             : this(new [] { fileName }, language)
@@ -25,16 +60,10 @@ namespace PT.PM.Common.SourceRepository
 
             if (language.HasValue)
             {
-                Languages = new HashSet<Language> { language.Value };
+                Languages = new HashSet<Language> {language.Value};
             }
 
-            try
-            {
-                RootPath = fileNamesArray.Length == 1 ? Path.GetFullPath(fileNamesArray[0]) : "";
-            }
-            catch
-            {
-            }
+            RootPath = GetLongestCommonPath(fileNamesArray);
         }
 
         public override IEnumerable<string> GetFileNames() => fullNames;
