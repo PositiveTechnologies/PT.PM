@@ -92,8 +92,6 @@ namespace PT.PM
 
         public HashSet<Language> AnalyzedLanguages => SourceRepository?.Languages ?? new HashSet<Language>();
 
-        public HashSet<Language> BaseLanguages { get; set; } = new HashSet<Language>(LanguageUtils.Languages);
-
         public HashSet<TRenderStage> RenderStages { get; set; } = new HashSet<TRenderStage>();
 
         public HashSet<TStage> DumpStages { get; set; } = new HashSet<TStage>();

@@ -46,10 +46,9 @@ namespace PT.PM
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
-            BaseLanguages = GetBaseLanguages(AnalyzedLanguages);
             var result = workflowResult ??
                 new WorkflowResult(AnalyzedLanguages.ToList(), ThreadCount, Stage);
-            result.BaseLanguages = BaseLanguages.ToArray();
+            result.BaseLanguages = GetBaseLanguages(AnalyzedLanguages).ToArray();
             result.RenderStages = RenderStages;
             result.IsFoldConstants = IsFoldConstants;
 
