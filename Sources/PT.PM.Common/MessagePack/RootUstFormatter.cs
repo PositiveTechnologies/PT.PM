@@ -65,14 +65,11 @@ namespace PT.PM.Common.MessagePack
             var languageFormatter = formatterResolver.GetFormatter<Language>();
             newOffset += languageFormatter.Serialize(ref bytes, newOffset, value.Language, formatterResolver);
 
-            var filesFormatter = formatterResolver.GetFormatter<TextFile[]>();
-            newOffset += filesFormatter.Serialize(ref bytes, newOffset, localSourceFiles.ToArray(), formatterResolver);
+            newOffset += WriteArray(ref bytes, formatterResolver, newOffset, localSourceFiles);
 
-            var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
-            newOffset += ustsFormatter.Serialize(ref bytes, newOffset, value.Nodes, formatterResolver);
+            newOffset += WriteArray(ref bytes, formatterResolver, newOffset, value.Nodes);
 
-            var commentsFormatter = formatterResolver.GetFormatter<CommentLiteral[]>();
-            newOffset += commentsFormatter.Serialize(ref bytes, newOffset, value.Comments, formatterResolver);
+            newOffset += WriteArray(ref bytes, formatterResolver, newOffset, value.Comments);
 
             newOffset += MessagePackBinary.WriteInt32(ref bytes, newOffset, value.LineOffset);
 
@@ -102,8 +99,7 @@ namespace PT.PM.Common.MessagePack
                 Language language = languageFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
                 newOffset += size;
 
-                var filesFormatter = formatterResolver.GetFormatter<TextFile[]>();
-                TextFile[] localSourceFiles = filesFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                TextFile[] localSourceFiles = ReadArray<TextFile>(bytes, formatterResolver, newOffset, out size);
                 newOffset += size;
 
                 textSpanFormatter.LocalSourceFiles = localSourceFiles;
@@ -116,13 +112,10 @@ namespace PT.PM.Common.MessagePack
                     }
                 }
 
-                var ustsFormatter = formatterResolver.GetFormatter<Ust[]>();
-                Ust[] nodes = ustsFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                var nodes = ReadArray<Ust>(bytes, formatterResolver, newOffset, out size);
                 newOffset += size;
 
-                var commentsFormatter = formatterResolver.GetFormatter<CommentLiteral[]>();
-                CommentLiteral[] comments =
-                    commentsFormatter.Deserialize(bytes, newOffset, formatterResolver, out size);
+                var comments = ReadArray<CommentLiteral>(bytes, formatterResolver, newOffset, out size);
                 newOffset += size;
 
                 int lineOffset = MessagePackBinary.ReadInt32(bytes, newOffset, out size);
@@ -151,6 +144,37 @@ namespace PT.PM.Common.MessagePack
             {
                 throw new ReadException(SerializedFile, ex, $"Error during reading {nameof(RootUst)} at {newOffset} offset; Message: {ex.Message}");
             }
+        }
+
+        private static int WriteArray<T>(ref byte[] bytes, IFormatterResolver formatterResolver, int offset,
+            IList<T> collection)
+        {
+            int newOffset = offset;
+            newOffset += MessagePackBinary.WriteArrayHeader(ref bytes, newOffset, collection.Count);
+            var formatter = formatterResolver.GetFormatter<T>();
+            foreach (T item in collection)
+            {
+                newOffset += formatter.Serialize(ref bytes, newOffset, item, formatterResolver);
+            }
+
+            return newOffset - offset;
+        }
+
+        private static T[] ReadArray<T>(byte[] bytes, IFormatterResolver formatterResolver, int offset, out int size)
+        {
+            int newOffset = offset;
+            int arrayLength = MessagePackBinary.ReadArrayHeader(bytes, newOffset, out int size2);
+            newOffset += size2;
+            var formatter = formatterResolver.GetFormatter<T>();
+            var array = new T[arrayLength];
+            for (int i = 0; i < arrayLength; i++)
+            {
+                array[i] = formatter.Deserialize(bytes, newOffset, formatterResolver, out size2);
+                newOffset += size2;
+            }
+
+            size = newOffset - offset;
+            return array;
         }
     }
 }
