@@ -29,7 +29,9 @@ namespace PT.PM.Matching
 
         public override string ToString()
         {
-            return $"Pattern {Pattern} match at {(string.Join(", ", TextSpans.Select(textSpan => SourceFile.GetLineColumnTextSpan(textSpan))))}";
+            TextSpan lastTextSpan = TextSpans.Last();
+            string patternMatch = SourceFile.GetSubstring(lastTextSpan) + " " + SourceFile.GetLineColumnTextSpan(lastTextSpan);
+            return $"{SourceFile}: pattern {Pattern} match: {patternMatch}";
         }
     }
 }
