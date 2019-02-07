@@ -53,7 +53,7 @@ namespace PT.PM.Common.SourceRepository
         {
         }
 
-        public FileSourceRepository(IEnumerable<string> fileNames, Language? language = null)
+        public FileSourceRepository(IEnumerable<string> fileNames, Language? language = null, string rootPath = null)
         {
             var fileNamesArray = fileNames as string[] ?? fileNames.ToArray();
             fullNames = fileNamesArray;
@@ -63,7 +63,7 @@ namespace PT.PM.Common.SourceRepository
                 Languages = new HashSet<Language> {language.Value};
             }
 
-            RootPath = GetLongestCommonPath(fileNamesArray);
+            RootPath = rootPath ?? GetLongestCommonPath(fileNamesArray);
         }
 
         public override IEnumerable<string> GetFileNames() => fullNames;
