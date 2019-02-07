@@ -107,6 +107,8 @@ namespace PT.PM.Common
 
         public static bool IsCaseInsensitive(this Language language) => LanguageInfos[language].IsCaseInsensitive;
 
+        public static string GetTitle(this Language language) => LanguageInfos[language].Title;
+
         public static string[] GetExtensions(this Language language) => LanguageInfos[language].Extensions;
 
         public static Language[] GetSublanguages(this Language language) => LanguageInfos[language].Sublanguages;
