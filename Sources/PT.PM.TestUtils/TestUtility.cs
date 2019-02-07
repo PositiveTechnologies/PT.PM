@@ -64,7 +64,7 @@ namespace PT.PM.TestUtils
                 codeRepository.Languages = new HashSet<Language> { language.Value };
             }
 
-            var log = logger ?? new LoggerMessageCounter();
+            var log = logger ?? new TestLogger();
             var workflow = new Workflow(codeRepository, stage: endStage)
             {
                 IsIgnoreFilenameWildcards = isIgnoreFilenameWildcards,
@@ -89,7 +89,7 @@ namespace PT.PM.TestUtils
             string errorString = string.Empty;
             IReadOnlyList<IMatchResultBase> matchResults;
 
-            if (log is LoggerMessageCounter loggerMessageCounter)
+            if (log is TestLogger loggerMessageCounter)
             {
                 errorString = loggerMessageCounter.ErrorsString;
                 matchResults = loggerMessageCounter.Matches;
@@ -114,7 +114,7 @@ namespace PT.PM.TestUtils
         public static void CheckProject(string projectPath, Language language, Stage endStage,
             string searchPattern = "*.*", Func<string, bool> searchPredicate = null)
         {
-            var logger = new LoggerMessageCounter { LogToConsole = false };
+            var logger = new TestLogger { LogToConsole = false };
             var repository = new DirectorySourceRepository(projectPath, language)
             {
                 SearchPattern = searchPattern,

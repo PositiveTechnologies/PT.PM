@@ -74,7 +74,7 @@ namespace PT.PM.Tests
                     }
                 }
             };
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var normalizer = new PatternNormalizer { Logger = logger };
             PatternUst result = normalizer.Visit(input);
 
@@ -113,7 +113,7 @@ namespace PT.PM.Tests
                 new PatternStringLiteral("Hello World!")
             );
 
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var processor = new DslProcessor();
             var normalizer = new PatternNormalizer() { Logger = logger };
 

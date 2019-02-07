@@ -9,7 +9,7 @@ namespace PT.PM.Cli.Tests
 
         public TestsCliProcessor()
         {
-            Logger = new LoggerMessageCounter();
+            Logger = new TestLogger();
         }
     }
 }

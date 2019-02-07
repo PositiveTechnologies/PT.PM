@@ -18,10 +18,10 @@ namespace PT.PM.PhpParseTreeUst.Tests
         [Test]
         public void Convert_PhpPatternsWithErrors_MatchedResultsEqual()
         {
-            var patternsLogger = new LoggerMessageCounter();
+            var patternsLogger = new TestLogger();
             TestUtility.CheckFile("Patterns.php", Stage.Match, patternsLogger);
 
-            var patternWithErrorsLogger = new LoggerMessageCounter();
+            var patternWithErrorsLogger = new TestLogger();
             TestUtility.CheckFile("PatternsWithParseErrors.php", Stage.Match, patternWithErrorsLogger, true);
 
             Assert.AreEqual(patternsLogger.InfoMessageCount, patternWithErrorsLogger.InfoMessageCount);

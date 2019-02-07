@@ -29,10 +29,10 @@ namespace PT.PM.JavaParseTreeUst.Tests
         [Test]
         public void Convert_JavaPatternsWithErrors_MatchedResultsEqual()
         {
-            var patternsLogger = new LoggerMessageCounter();
+            var patternsLogger = new TestLogger();
             TestUtility.CheckFile("Patterns.java", Stage.Match, patternsLogger);
 
-            var patternWithErrorsLogger = new LoggerMessageCounter();
+            var patternWithErrorsLogger = new TestLogger();
             TestUtility.CheckFile("PatternsWithParseErrors.java", Stage.Match, patternWithErrorsLogger, true);
 
             Assert.AreEqual(-1, patternWithErrorsLogger.InfoMessageCount - patternsLogger.InfoMessageCount);

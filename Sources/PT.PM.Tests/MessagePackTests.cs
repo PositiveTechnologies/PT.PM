@@ -59,7 +59,7 @@ namespace PT.PM.Tests
                 : Directory.GetFiles(path);
             var codeRepository = new FileSourceRepository(files);
 
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var workflow = new Workflow(codeRepository)
             {
                 DumpStages = new HashSet<Stage> {Stage.Ust},
@@ -102,7 +102,7 @@ namespace PT.PM.Tests
             }
 
             // Deserialization
-            var newLogger = new LoggerMessageCounter();
+            var newLogger = new TestLogger();
             var newCodeRepository = new FileSourceRepository(serializedFiles);
 
             var newWorkflow = new Workflow(newCodeRepository, new DefaultPatternRepository())

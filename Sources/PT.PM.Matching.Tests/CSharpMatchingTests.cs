@@ -14,7 +14,7 @@ namespace PT.PM.Matching.Tests
         public void Match_TestPatternsCSharp_MatchedAllDefault()
         {
             var sourceRep = CreateTestFileSourceRepository("Patterns.cs");
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, Global.PatternsRepository) {Logger = logger};
             workflow.Process();
             var matchResults = logger.Matches.ToDto();
@@ -30,7 +30,7 @@ namespace PT.PM.Matching.Tests
         public void Match_Tuple_HardcodedPassword()
         {
             var sourceRep = CreateTestFileSourceRepository("ValueTuple.cs");
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, Global.PatternsRepository) { Logger = logger };
             workflow.Process();
             Assert.AreEqual(3, logger.Matches.Count);
@@ -40,7 +40,7 @@ namespace PT.PM.Matching.Tests
         public void Match_TestPatternsAspx_MatchedExpected()
         {
             var sourceRep = CreateTestFileSourceRepository("Patterns.aspx");
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, Global.PatternsRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
@@ -55,7 +55,7 @@ namespace PT.PM.Matching.Tests
         {
             var hardcodedPassRepository = new DslPatternRepository("<[(?i)password]> = <[\"\\w*\"]>", "CSharp");
             var sourceRep = CreateTestFileSourceRepository("HardcodedPassword.aspx");
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, hardcodedPassRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();

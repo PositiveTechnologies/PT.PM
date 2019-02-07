@@ -24,7 +24,7 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_ValidAndInvalidArgs_CorrectlyNormalized()
         {
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var normalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
             string[] outArgs;
 
@@ -40,7 +40,7 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_ArgsWithTypes_CorrectlyNormalized()
         {
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
             string[] outArgs;
 
@@ -66,7 +66,7 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_DuplicateParams_CorrectlyNormalized()
         {
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
             string[] outArgs;
 
@@ -90,7 +90,7 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_BoolValues_CorrectlyNormalized()
         {
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
             string[] outArgs;
 
@@ -119,7 +119,7 @@ namespace PT.PM.Cli.Tests
             var cliProcessor = new TestsCliProcessor();
             cliProcessor.Process($"--stage {Stage.Pattern} --patterns \"{patterns}\"");
 
-            var errors = (cliProcessor.Logger as LoggerMessageCounter).Errors;
+            var errors = (cliProcessor.Logger as TestLogger).Errors;
             string patternKey = patterns.Replace("\"\"", "\"");
             Assert.AreEqual($"Pattern {patternKey} ParsingException: token recognition error at: '>' at {new LineColumnTextSpan(1, 19, 1, 20)}.", errors[0]);
             Assert.AreEqual($"Pattern {patternKey} ParsingException: no viable alternative at input '(?' at {new LineColumnTextSpan(1, 2, 1, 3)}.", errors[1]);

@@ -16,7 +16,7 @@ namespace PT.PM.Matching.Tests
             var path = Path.Combine(TestUtility.TestsDataPath, "Patterns.php");
             var sourceRep = new FileSourceRepository(path);
 
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, Global.PatternsRepository) {Logger = logger};
             workflow.Process();
             IEnumerable<MatchResultDto> matchResults = logger.Matches

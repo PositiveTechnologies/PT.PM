@@ -17,7 +17,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         [Test]
         public void Parse_SyntaxErrorFileCSharp_CatchErrors()
         {
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             TestUtility.CheckFile("ParseError.cs", Stage.ParseTree, logger, true);
 
             Assert.AreEqual(7, logger.ErrorCount);

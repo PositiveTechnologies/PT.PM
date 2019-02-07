@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace PT.PM.TestUtils
 {
-    public class LoggerMessageCounter : ILogger
+    public class TestLogger : ILogger
     {
         private List<string> infoMessages = new List<string>();
         private List<string> debugMessages = new List<string>();

@@ -146,7 +146,7 @@ namespace PT.PM.Tests
 
         private void Check(string patternsString)
         {
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var patternsRepository = RepositoryFactory.CreatePatternsRepository(patternsString, null, logger);
 
             var workflow = new Workflow(codeRepository)

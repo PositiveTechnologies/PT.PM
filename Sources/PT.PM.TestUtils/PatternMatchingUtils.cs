@@ -25,7 +25,7 @@ namespace PT.PM.TestUtils
                 Languages = new HashSet<Language>(analyzedLanguages)
             };
             var patternsRep = new MemoryPatternsRepository();
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, patternsRep) {Logger = logger};
 
             var processor = new DslProcessor();

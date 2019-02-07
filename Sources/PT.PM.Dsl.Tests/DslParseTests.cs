@@ -47,7 +47,7 @@ namespace PT.PM.Dsl.Tests
         public void Process_Dsl_EqualsToHardcoded(string fileName)
         {
             string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var processor = new DslProcessor { Logger = logger, PatternExpressionInsideStatement = false };
             PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = fileName });
             if (fileName == "DebugInfo.pattern")
@@ -73,7 +73,7 @@ namespace PT.PM.Dsl.Tests
         public void Parse_Dsl_WithoutErrors(string fileName)
         {
             string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var processor = new DslProcessor { Logger = logger };
             PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = fileName });
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
@@ -82,7 +82,7 @@ namespace PT.PM.Dsl.Tests
         [Test]
         public void ProcessDsl_SampleWithSyntaxError_HandleErrors()
         {
-            var logger = new LoggerMessageCounter();
+            var logger = new TestLogger();
             var data = "(?i)password(?-i)]> = <[\"\\w*\" || null]>";
             var processor = new DslProcessor() { Logger = logger };
             PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = "ErrorneousPattern" });
