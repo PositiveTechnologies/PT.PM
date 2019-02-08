@@ -17,7 +17,7 @@ namespace PT.PM.Tests
         [SetUp]
         public void Init()
         {
-            Utils.RegisterAllParsersAndCovnerters();
+            Utils.RegisterAllParsersAndConverters();
         }
 
         [Test]

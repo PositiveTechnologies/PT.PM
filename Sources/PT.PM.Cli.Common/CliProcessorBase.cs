@@ -435,7 +435,7 @@ namespace PT.PM.Cli.Common
 
             if (!(errors.First() is VersionRequestedError))
             {
-                var paramsParseResult = new Parser().ParseArguments<TParameters>(new string[] { "--help" });
+                var paramsParseResult = new Parser().ParseArguments<TParameters>(new [] { "--help" });
                 string paramsInfo = HelpText.AutoBuild(paramsParseResult, 100);
                 SplitOnLinesAndLog(paramsInfo);
             }

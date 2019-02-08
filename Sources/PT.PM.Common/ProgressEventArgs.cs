@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using PT.PM.Common.Utils;
 
 namespace PT.PM.Common
@@ -23,7 +24,9 @@ namespace PT.PM.Common
 
         public override string ToString()
         {
-            string value = Progress - 1 > CommonUtils.Epsilon ? $"{(int)Progress} items" : $"{Progress:P}";
+            string value = Progress - 1 > CommonUtils.Epsilon
+                ? $"{(int)Progress} items"
+                : (Progress * 100).ToString("00.00", CultureInfo.InvariantCulture) + "%";
             string messageStr = string.IsNullOrEmpty(Message) ? "" : $"; {Message}";
             string fileStr = string.IsNullOrEmpty(CurrentFile) ? "" : $"; File: {CurrentFile}";
             return $"Progress: {value} at {Date.ToLongTimeString()}{messageStr}{fileStr}";

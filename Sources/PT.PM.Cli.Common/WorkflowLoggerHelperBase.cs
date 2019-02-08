@@ -1,5 +1,6 @@
 ﻿using PT.PM.Common;
 using System;
+using System.Globalization;
 
 namespace PT.PM.Cli.Common
 {
@@ -120,7 +121,7 @@ namespace PT.PM.Cli.Common
 
         protected string CalculateAndFormatPercent(long part, long whole)
         {
-            return (whole == 0 ? 0 : (double) part / whole * 100.0).ToString("00.00");
+            return (whole == 0 ? 0 : (double) part / whole * 100.0).ToString("00.00", CultureInfo.InvariantCulture);
         }
     }
 }

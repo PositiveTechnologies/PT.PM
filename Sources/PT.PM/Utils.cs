@@ -22,12 +22,12 @@ namespace PT.PM
         public const int DefaultMaxStackSize = 4 * 1024 * 1024;
         public const string TimeSpanFormat = "mm\\:ss\\.ff";
 
-        public static void RegisterAllParsersAndCovnerters()
+        public static void RegisterAllParsersAndConverters()
         {
             LanguageUtils.RegisterParserConverter(Language.CSharp, CSharpRoslynParser.Create, CSharpRoslynParseTreeConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.Java, JavaAntlrParser.Create, JavaAntlrParseTreeConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.Php, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
-            
+
             LanguageUtils.RegisterParserConverter(Language.PlSql, PlSqlAntlrParser.Create, PlSqlAntlrConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.TSql, TSqlAntlrParser.Create, TSqlAntlrConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.MySql, MySqlAntlrParser.Create, MySqlAntlrConverter.Create);
@@ -76,16 +76,16 @@ namespace PT.PM
             return dumper;
         }
 
-        public static string Format(this TimeSpan timeSpan) => timeSpan.ToString(TimeSpanFormat);
+        public static string Format(this TimeSpan timeSpan) => timeSpan.ToString(TimeSpanFormat, CultureInfo.InvariantCulture);
 
         public static string GetVersionString()
         {
             Assembly assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
 
-            AssemblyName assemblyName = assembly?.GetName();
+            AssemblyName assemblyName = assembly.GetName();
             DateTime buildTime = default;
 
-            string streamName = assembly?.GetManifestResourceNames().FirstOrDefault(name => name.Contains("BuildTimeStamp")) ?? null;
+            string streamName = assembly.GetManifestResourceNames().FirstOrDefault(name => name.Contains("BuildTimeStamp"));
             Stream stream = !string.IsNullOrEmpty(streamName)
                 ? assembly.GetManifestResourceStream(streamName)
                 : null;
@@ -98,7 +98,7 @@ namespace PT.PM
                 }
             }
 
-            if (buildTime == default && assembly != null)
+            if (buildTime == default)
             {
                 buildTime = File.GetLastWriteTime(assembly.Location.NormalizeFilePath());
             }
