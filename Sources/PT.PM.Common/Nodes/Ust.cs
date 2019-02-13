@@ -108,7 +108,7 @@ namespace PT.PM.Common.Nodes
     [Union((int)NodeType.ParameterDeclaration, typeof(ParameterDeclaration))]
     [Union((int)NodeType.PropertyDeclaration, typeof(PropertyDeclaration))]
     [Union((int)NodeType.StatementDeclaration, typeof(StatementDeclaration))]
-    public abstract class Ust : IComparable<Ust>, IEquatable<Ust>, IUst
+    public abstract class Ust : IComparable<Ust>, IEquatable<Ust>
     {
         internal const int UstFieldOffset = 2;
 
@@ -145,22 +145,22 @@ namespace PT.PM.Common.Nodes
             }
         }
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public string Kind => GetType().Name;
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public int KindId => GetType().Name.GetHashCode();
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public LineColumnTextSpan LineColumnTextSpan => CurrentSourceFile?.GetLineColumnTextSpan(TextSpan);
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public TextFile CurrentSourceFile => this is RootUst rootUst ? rootUst.SourceFile : Root?.SourceFile;
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public RootUst RootOrThis => this is RootUst rootUst ? rootUst : Root;
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public Ust[] Children => GetChildren();
 
         public int GetKey()
