@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using MessagePack;
-using MessagePack.Formatters;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using PT.PM.Common.Utils;
@@ -11,7 +9,7 @@ using static MessagePack.MessagePackBinary;
 
 namespace PT.PM.Common.MessagePack
 {
-    public class FileFormatter : IMessagePackFormatter<IFile>, IMessagePackFormatter<TextFile>, ILoggable
+    public class FileSerializer : ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -21,14 +19,14 @@ namespace PT.PM.Common.MessagePack
 
         public Action<(IFile, TimeSpan)> ReadSourceFileAction { get; private set; }
 
-        public static FileFormatter CreateWriter()
+        public static FileSerializer CreateWriter()
         {
-            return new FileFormatter();
+            return new FileSerializer();
         }
 
-        public static FileFormatter CreateReader(BinaryFile serializedFile, HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction)
+        public static FileSerializer CreateReader(BinaryFile serializedFile, HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction)
         {
-            return new FileFormatter
+            return new FileSerializer
             {
                 SerializedFile = serializedFile ?? throw new ArgumentNullException(nameof(serializedFile)),
                 SourceFiles = sourceFiles ?? throw new ArgumentNullException(nameof(sourceFiles)),
@@ -36,16 +34,11 @@ namespace PT.PM.Common.MessagePack
             };
         }
 
-        private FileFormatter()
+        private FileSerializer()
         {
         }
 
-        public int Serialize(ref byte[] bytes, int offset, TextFile value, IFormatterResolver formatterResolver)
-        {
-            return Serialize(ref bytes, offset, (IFile)value, formatterResolver);
-        }
-
-        public int Serialize(ref byte[] bytes, int offset, IFile value, IFormatterResolver formatterResolver)
+        public int Serialize(ref byte[] bytes, int offset, IFile value)
         {
             if (value is null)
             {
@@ -74,12 +67,7 @@ namespace PT.PM.Common.MessagePack
             return newOffset - offset;
         }
 
-        TextFile IMessagePackFormatter<TextFile>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
-        {
-            return (TextFile)((IMessagePackFormatter<IFile>)this).Deserialize(bytes, offset, formatterResolver, out readSize);
-        }
-
-        IFile IMessagePackFormatter<IFile>.Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
+        public IFile Deserialize(byte[] bytes, int offset, out int readSize)
         {
             int newOffset = offset;
             try

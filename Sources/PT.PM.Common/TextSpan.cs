@@ -1,12 +1,10 @@
 ﻿using System;
 using MessagePack;
 using PT.PM.Common.Files;
-using PT.PM.Common.MessagePack;
 
 namespace PT.PM.Common
 {
     [MessagePackObject]
-    [MessagePackFormatter(typeof(TextSpanFormatter))]
     public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
         public static readonly TextSpan Zero = default;

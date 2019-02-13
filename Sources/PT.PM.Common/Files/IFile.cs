@@ -1,12 +1,10 @@
 ﻿using MessagePack;
 using System;
-using PT.PM.Common.MessagePack;
 
 namespace PT.PM.Common.Files
 {
     [Union((int)FileType.TextFile, typeof(TextFile))]
     [Union((int)FileType.BinaryFile, typeof(BinaryFile))]
-    [MessagePackFormatter(typeof(FileFormatter))]
     public interface IFile : IComparable
     {
         [IgnoreMember]
