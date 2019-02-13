@@ -5,6 +5,7 @@ using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Files;
+using PT.PM.Common.Utils;
 using PT.PM.TestUtils;
 
 namespace PT.PM.Tests
@@ -59,16 +60,16 @@ namespace PT.PM.Tests
             path = FileSourceRepository.GetLongestCommonPath(new[] { "" });
             Assert.AreEqual(@"", path);
 
-            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1" });
-            Assert.AreEqual(@"C:\dir\dir1", path);
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1".NormalizeDirSeparator() });
+            Assert.AreEqual(@"C:\dir\dir1".NormalizeDirSeparator(), path);
 
-            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1", @"C:\dir\dir1\file2" });
-            Assert.AreEqual(@"C:\dir\dir1", path);
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1".NormalizeDirSeparator(), @"C:\dir\dir1\file2".NormalizeDirSeparator() });
+            Assert.AreEqual(@"C:\dir\dir1".NormalizeDirSeparator(), path);
 
-            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\abc", @"C:\dir\dir1\bcd" });
-            Assert.AreEqual(@"C:\dir\dir1", path);
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\abc".NormalizeDirSeparator(), @"C:\dir\dir1\bcd".NormalizeDirSeparator() });
+            Assert.AreEqual(@"C:\dir\dir1".NormalizeDirSeparator(), path);
 
-            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1", @"D:\dir\dir1\file2" });
+            path = FileSourceRepository.GetLongestCommonPath(new[] { @"C:\dir\dir1\file1".NormalizeDirSeparator(), @"D:\dir\dir1\file2".NormalizeDirSeparator() });
             Assert.AreEqual(@"", path);
         }
     }
