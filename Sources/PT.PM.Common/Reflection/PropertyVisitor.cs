@@ -21,9 +21,9 @@ namespace PT.PM.Common.Reflection
             }
 
             Type type = node.GetType();
-            PropertyInfo[] properties = ReflectionCache.GetReadWriteClassProperties(type);
+            PropertyInfo[] properties = type.GetSerializableProperties(out _);
 
-            TOutput result = Clone ? (TOutput)Activator.CreateInstance(type) : default(TOutput);
+            TOutput result = Clone ? (TOutput)Activator.CreateInstance(type) : default;
             foreach (PropertyInfo prop in properties)
             {
                 Type propType = prop.PropertyType;
@@ -31,7 +31,8 @@ namespace PT.PM.Common.Reflection
                 {
                     continue;
                 }
-                else if (propType.IsValueType || propType == typeof(string) || propType == typeof(Regex))
+
+                if (propType.IsValueType || propType == typeof(string) || propType == typeof(Regex))
                 {
                     if (Clone)
                     {

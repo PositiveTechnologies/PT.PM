@@ -1,6 +1,6 @@
 namespace PT.PM.Common.Nodes
 {
-    public enum NodeType
+    public enum NodeType : byte
     {
         RootUst = 0,
 
