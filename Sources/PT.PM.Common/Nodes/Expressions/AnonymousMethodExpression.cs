@@ -14,12 +14,12 @@ namespace PT.PM.Common.Nodes.Expressions
 
         [IgnoreMember, JsonIgnore]
         public Ust Parent { get; set; }
-    
+
         [Key(UstFieldOffset + 1)]
         public Ust Body { get; set; }
 
-        [IgnoreMember]
-        public string Id => Parent is AssignmentExpression assignment 
+        [IgnoreMember, JsonIgnore]
+        public string Id => Parent is AssignmentExpression assignment
             ? assignment.Left.ToString()
             : LineColumnTextSpan.ToString();
 

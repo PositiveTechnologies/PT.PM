@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
@@ -8,6 +9,9 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternArrayCreationExpression : PatternUst, IPatternExpression
     {
+        [JsonIgnore]
+        public Type UstType => typeof(ArrayCreationExpression);
+
         public PatternUst Type { get; set; }
 
         public bool StackAllocated { get; set; } = false;
@@ -88,7 +92,5 @@ namespace PT.PM.Matching.Patterns
 
             return result.ToArray();
         }
-
-        public Type UstType => typeof(ArrayCreationExpression);
     }
 }

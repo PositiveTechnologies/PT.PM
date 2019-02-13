@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
@@ -8,6 +9,9 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternObjectCreateExpression : PatternUst, IPatternExpression
     {
+        [JsonIgnore]
+        public Type UstType => typeof(ObjectCreateExpression);
+
         public PatternUst Type { get; set; }
 
         public PatternArgs Arguments { get; set; }
@@ -32,7 +36,7 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
+
             MatchContext newContext = Type.MatchUst(objectCreateExpression.Type, context);
             if (!newContext.Success)
             {
@@ -43,7 +47,7 @@ namespace PT.PM.Matching.Patterns
 
             return newContext.AddUstIfSuccess(objectCreateExpression);
         }
-        
+
         public PatternUst[] GetArgs()
         {
             var result = new List<PatternUst>();
@@ -59,7 +63,5 @@ namespace PT.PM.Matching.Patterns
 
             return result.ToArray();
         }
-
-        public Type UstType => typeof(ObjectCreateExpression);
     }
 }

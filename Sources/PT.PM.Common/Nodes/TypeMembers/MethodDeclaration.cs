@@ -3,6 +3,7 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using System.Linq;
 using MessagePack;
+using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes.TypeMembers
 {
@@ -18,7 +19,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         [Key(EntityFieldOffset + 2)]
         public BlockStatement Body { get; set; }
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public string Signature => UstUtils.GenerateSignature(Name.TextValue, Parameters);
 
         public MethodDeclaration(IdToken name, IEnumerable<ParameterDeclaration> parameters, BlockStatement body, TextSpan textSpan)

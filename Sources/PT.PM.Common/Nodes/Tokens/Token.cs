@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using Newtonsoft.Json;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
@@ -23,7 +24,7 @@ namespace PT.PM.Common.Nodes.Tokens
     [Union((int)NodeType.UnaryOperatorLiteral, typeof(UnaryOperatorLiteral))]
     public abstract class Token : Expression
     {
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public abstract string TextValue { get; }
 
         protected Token(TextSpan textSpan)

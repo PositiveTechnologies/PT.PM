@@ -1,6 +1,7 @@
 ﻿using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
 using System;
+using Newtonsoft.Json;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -8,6 +9,7 @@ namespace PT.PM.Matching.Patterns
     {
         private PatternUst[] args = new PatternUst[0];
 
+        [JsonIgnore]
         public Type UstType => typeof(TupleCreateExpression);
 
         public PatternUst[] GetArgs() => args;

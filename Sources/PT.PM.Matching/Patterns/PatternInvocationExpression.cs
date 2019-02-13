@@ -2,14 +2,16 @@
 using PT.PM.Common;
 using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
     public class PatternInvocationExpression : PatternUst, IPatternExpression
     {
+        [JsonIgnore]
         public Type UstType => typeof(InvocationExpression);
-        
+
         public PatternUst Target { get; set; }
 
         public PatternUst Arguments { get; set; }

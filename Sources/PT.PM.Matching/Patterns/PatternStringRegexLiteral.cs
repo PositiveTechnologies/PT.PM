@@ -3,11 +3,13 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace PT.PM.Matching.Patterns
 {
     public class PatternStringRegexLiteral : PatternUst, IRegexPattern, ITerminalPattern
     {
+        [JsonIgnore]
         public string Default => ".*";
 
         public string RegexString
@@ -29,6 +31,7 @@ namespace PT.PM.Matching.Patterns
             RegexString = regexString;
         }
 
+        [JsonIgnore]
         public override bool Any => Regex.ToString() == Default;
 
         public override string ToString() => $@"<""{(Any ? "" : Regex.ToString())}"">";
