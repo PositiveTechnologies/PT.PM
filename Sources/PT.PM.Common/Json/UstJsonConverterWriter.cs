@@ -43,12 +43,11 @@ namespace PT.PM.Common.Json
             var jObject = new JObject();
             Type type = value.GetType();
             jObject.Add(nameof(Ust.Kind), type.Name);
-            PropertyInfo[] properties = type.GetReadWriteClassProperties();
+            PropertyInfo[] properties = type.GetSerializableProperties(out _);
 
-            bool isRootUst = type == typeof(RootUst);
-            if (isRootUst)
+            if (type == typeof(RootUst))
             {
-                jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.ToString());
+                jObject.Add("SourceCodeFile", JToken.FromObject(((RootUst)value).SourceFile, serializer));
             }
 
             foreach (PropertyInfo prop in properties)
@@ -67,7 +66,7 @@ namespace PT.PM.Common.Json
                         }
                         else if (propType == typeof(string))
                         {
-                            include = !string.IsNullOrEmpty(((string) propValue));
+                            include = !string.IsNullOrEmpty((string) propValue);
                         }
                         else if (propType.IsArray)
                         {

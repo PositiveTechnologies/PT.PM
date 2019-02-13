@@ -54,9 +54,10 @@ namespace PT.PM.Common.Json
 
             if (type == typeof(RootUst))
             {
+                TextFile sourceFile = jObject["SourceCodeFile"]?.ToObject<TextFile>(serializer);
                 string languageString = (string)jObject[nameof(RootUst.Language)] ?? "";
                 Enum.TryParse(languageString, out Language language);
-                rootUst = new RootUst(null, language);
+                rootUst = new RootUst(sourceFile, language);
                 ProcessRootUst(rootUst);
 
                 ust = rootUst;
