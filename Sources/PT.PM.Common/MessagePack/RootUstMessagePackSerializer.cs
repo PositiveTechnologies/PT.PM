@@ -20,6 +20,9 @@ namespace PT.PM.Common.MessagePack
         private TextSpanSerializer textSpanSerializer;
         private FileSerializer fileSerializer;
 
+        private readonly Stack<RootUst> rootAncestors = new Stack<RootUst>();
+        private readonly Stack<Ust> ancestors = new Stack<Ust>();
+
         public RootUst CurrentRoot { get; internal set; }
 
         public static byte[] Serialize(RootUst rootUst, bool isLineColumn, bool compress, ILogger logger)
@@ -86,7 +89,6 @@ namespace PT.PM.Common.MessagePack
             byte[] data2 = data ?? MessagePackUtils.UnpackDataIfRequired(serializedFile.Data);
 
             RootUst result = rootUstSerializer.DeserializeRootUst(data2, sourceFiles, 0, out readSize);
-            result.FillAscendants(); // TODO: add ascendants fill to deserialize methods
 
             return result;
         }
@@ -264,6 +266,24 @@ namespace PT.PM.Common.MessagePack
                     throw new ReadException(serializedFile, ex, $"Invalid ust type {nodeType} at {offset} offset");
                 }
 
+                if (rootAncestors.Count > 0)
+                {
+                    ust.Root = rootAncestors.Peek();
+                }
+
+                if (ancestors.Count > 0)
+                {
+                    ust.Parent = ancestors.Peek();
+                }
+
+                var rootUst = ust as RootUst;
+
+                if (rootUst != null)
+                {
+                    rootAncestors.Push(rootUst);
+                }
+                ancestors.Push(ust);
+
                 PropertyInfo[] serializableProperties = ust.GetType().GetSerializableProperties(out _);
                 foreach (PropertyInfo property in serializableProperties)
                 {
@@ -271,6 +291,12 @@ namespace PT.PM.Common.MessagePack
                     newOffset += size;
                     property.SetValue(ust, obj);
                 }
+
+                if (rootUst != null)
+                {
+                    rootAncestors.Pop();
+                }
+                ancestors.Pop();
 
                 readSize = newOffset - offset;
 
@@ -342,12 +368,11 @@ namespace PT.PM.Common.MessagePack
                     newOffset += size;
 
                     Type itemType;
-                    IList result;
+                    IList result = (IList) Activator.CreateInstance(type, arrayLength);
 
                     if (type.IsArray)
                     {
                         itemType = type.GetElementType();
-                        result = (IList) Activator.CreateInstance(type, arrayLength);
 
                         for (int i = 0; i < arrayLength; i++)
                         {
@@ -358,7 +383,6 @@ namespace PT.PM.Common.MessagePack
                     else
                     {
                         itemType = type.GetGenericArguments()[0];
-                        result = (IList) Activator.CreateInstance(type, arrayLength);
 
                         for (int i = 0; i < arrayLength; i++)
                         {
