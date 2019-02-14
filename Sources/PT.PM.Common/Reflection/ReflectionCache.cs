@@ -23,17 +23,17 @@ namespace PT.PM.Common.Reflection
             typeSerializableProperties = new Dictionary<Type, (byte NodeType, PropertyInfo[] Properties)>();
 
             Assembly ustAssembly = typeof(Ust).Assembly;
-            var nodeTypes = (NodeType[]) Enum.GetValues(typeof(NodeType));
-            ustTypes = new Type[nodeTypes.Length];
+            var types = (UstType[]) Enum.GetValues(typeof(UstType));
+            ustTypes = new Type[types.Length];
             var assemblyTypes = ustAssembly.GetTypes().Where(type => type.IsSubclassOf(typeof(Ust))).ToList();
 
-            foreach (NodeType nodeType in nodeTypes)
+            foreach (UstType type in types)
             {
-                string nodeTypeStr = nodeType.ToString();
+                string typeStr = type.ToString();
                 Type ustType = null;
                 foreach (Type assemblyType in assemblyTypes)
                 {
-                    if (assemblyType.Name.Equals(nodeTypeStr))
+                    if (assemblyType.Name.Equals(typeStr))
                     {
                         ustType = assemblyType;
                     }
@@ -41,10 +41,10 @@ namespace PT.PM.Common.Reflection
 
                 if (ustType == null)
                 {
-                    throw new InvalidDataContractException($"NodeType {nodeType} does not have corresponding Ust");
+                    throw new InvalidDataContractException($"NodeType {type} does not have corresponding Ust");
                 }
 
-                ustTypes[(int) nodeType] = ustType;
+                ustTypes[(int) type] = ustType;
             }
 
             RegisterTypes(typeof(Ust), true);
@@ -127,13 +127,13 @@ namespace PT.PM.Common.Reflection
 
                         lock (typeSerializableProperties)
                         {
-                            if (Enum.TryParse(type.Name, out NodeType nodeType))
+                            if (Enum.TryParse(type.Name, out UstType ustType))
                             {
-                                typeSerializableProperties.Add(type, ((byte)nodeType, serializableProperties));
+                                typeSerializableProperties.Add(type, ((byte)ustType, serializableProperties));
                             }
                             else
                             {
-                                throw new InvalidDataContractException($"Type {type.Name} does not have corresponding {nameof(NodeType)}");
+                                throw new InvalidDataContractException($"Type {type.Name} does not have corresponding {nameof(UstType)}");
                             }
                         }
                     }

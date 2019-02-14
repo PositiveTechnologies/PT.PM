@@ -42,10 +42,10 @@ namespace PT.PM.Tests
                 var unionAttrTypes = new List<Type>();
                 foreach (UnionAttribute unionAttr in unionAttrs)
                 {
-                    Assert.AreEqual(unionAttr.SubType.Name,  ((NodeType)unionAttr.Key).ToString(), $"NodeType name does not match to attribute type name");
+                    Assert.AreEqual(unionAttr.SubType.Name,  ((UstType)unionAttr.Key).ToString(), $"UstType name does not match to attribute type name");
                     unionAttrTypes.Add(unionAttr.SubType);
                 }
-                
+
                 CollectionAssert.AreEquivalent(subclassTypes, unionAttrTypes,
                     $"Collections of union attribute types and subclass types are not matched for base class {abstractType.Name}");
             }
