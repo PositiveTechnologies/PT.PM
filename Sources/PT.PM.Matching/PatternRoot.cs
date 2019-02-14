@@ -115,12 +115,10 @@ namespace PT.PM.Matching
 
             if (ust != null && !(patternUst is PatternAny) && !context.MatchedWithFolded)
             {
-                context.PushParent(ust);
                 foreach (Ust child in ust.Children)
                 {
                     TraverseChildren(patternUst, child, context, results);
                 }
-                context.PopParent();
             }
 
             context.MatchedWithFolded = false;

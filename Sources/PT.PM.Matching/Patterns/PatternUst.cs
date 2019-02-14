@@ -48,10 +48,7 @@ namespace PT.PM.Matching.Patterns
 
         public MatchContext MatchUst(Ust ust, MatchContext context)
         {
-            context.PushParent(ust);
-            context = Match(ust, context);
-            context.PopParent();
-            return context;
+            return Match(ust, context);
         }
 
         protected abstract MatchContext Match(Ust ust, MatchContext context);

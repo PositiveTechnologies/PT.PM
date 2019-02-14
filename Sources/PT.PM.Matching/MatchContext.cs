@@ -107,13 +107,6 @@ namespace PT.PM.Matching
             parentStack?.Add(parent);
         }
 
-        public void PopParent()
-        {
-            parentStack?.RemoveAt(parentStack.Count - 1);
-        }
-
-        public Ust LastParent => parentStack?.Count > 1 ? parentStack[parentStack.Count - 2] : null;
-
         public override string ToString()
         {
             string vars = string.Join(", ", Vars.Select(v => $"{v.Key}: {v.Value}"));

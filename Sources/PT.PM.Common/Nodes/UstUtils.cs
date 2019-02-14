@@ -168,6 +168,7 @@ namespace PT.PM.Common.Nodes
                     if (child != null)
                     {
                         child.Root = root;
+                        child.Parent = localUst;
                         if (child is RootUst rootUstChild)
                         {
                             FillAscendants(rootUstChild);
@@ -179,41 +180,6 @@ namespace PT.PM.Common.Nodes
                     }
                 }
             }
-        }
-
-        public static Dictionary<Ust, UstWithParent> GetUstWithParents(this Ust ust)
-        {
-            if (ust == null)
-            {
-                return null;
-            }
-
-            var result = new Dictionary<Ust, UstWithParent>(UstRefComparer.Instance);
-
-            GetUstWithParents(ust, null);
-
-            void GetUstWithParents(Ust localUst, UstWithParent parent)
-            {
-                if (localUst == null)
-                {
-                    return;
-                }
-
-                if (localUst is IUstWithParent iUstWithParent)
-                {
-                    iUstWithParent.Parent = parent.Ust;
-                }
-
-                var ustWithParent = new UstWithParent(localUst, parent);
-                result.Add(localUst, ustWithParent);
-
-                foreach (Ust child in localUst.Children)
-                {
-                    GetUstWithParents(child, ustWithParent);
-                }
-            }
-
-            return result;
         }
 
         public static TextSpan GetTextSpan(this IEnumerable<Ust> usts)

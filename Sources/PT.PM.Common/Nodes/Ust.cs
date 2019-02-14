@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using MessagePack;
 using PT.PM.Common.Files;
+
 namespace PT.PM.Common.Nodes
 {
     [DebuggerDisplay("{" + nameof(ToStringWithoutLineBreaks) + "()}")]
@@ -19,7 +20,10 @@ namespace PT.PM.Common.Nodes
         };
 
         [IgnoreMember, JsonIgnore]
-        public RootUst Root { get; set; }
+        public RootUst Root { get; set; } // TODO: WeakReference
+
+        [IgnoreMember, JsonIgnore]
+        public Ust Parent { get; set; } // TODO: WeakReference
 
         [Key(0), JsonProperty("TextSpan"), JsonIgnore] // TODO: back compatibility with external serializers
         public TextSpan[] TextSpans { get; set; } // TODO: make it `protected set`
