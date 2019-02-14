@@ -6,22 +6,6 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 namespace PT.PM.Common.Nodes.Tokens
 {
     [MessagePackObject]
-    
-    [Union((int)NodeType.IdToken, typeof(IdToken))]
-    [Union((int)NodeType.ThisReferenceToken, typeof(ThisReferenceToken))]
-    [Union((int)NodeType.TypeToken, typeof(TypeToken))]
-    
-    [Union((int)NodeType.BinaryOperatorLiteral, typeof(BinaryOperatorLiteral))]
-    [Union((int)NodeType.BooleanLiteral, typeof(BooleanLiteral))]
-    [Union((int)NodeType.CommentLiteral, typeof(CommentLiteral))]
-    [Union((int)NodeType.FloatLiteral, typeof(FloatLiteral))]
-    [Union((int)NodeType.InOutModifierLiteral, typeof(InOutModifierLiteral))]
-    [Union((int)NodeType.IntLiteral, typeof(IntLiteral))]
-    [Union((int)NodeType.ModifierLiteral, typeof(ModifierLiteral))]
-    [Union((int)NodeType.NullLiteral, typeof(NullLiteral))]
-    [Union((int)NodeType.StringLiteral, typeof(StringLiteral))]
-    [Union((int)NodeType.TypeTypeLiteral, typeof(TypeTypeLiteral))]
-    [Union((int)NodeType.UnaryOperatorLiteral, typeof(UnaryOperatorLiteral))]
     public abstract class Token : Expression
     {
         [IgnoreMember, JsonIgnore]
