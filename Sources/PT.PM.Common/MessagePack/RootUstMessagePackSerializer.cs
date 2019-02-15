@@ -187,12 +187,6 @@ namespace PT.PM.Common.MessagePack
             {
                 return SerializeUst(ref bytes, offset, (Ust) value);
             }
-
-            if (type.IsEnum)
-            {
-                return MessagePackBinary.WriteInt32(ref bytes, offset, (int) value);
-            }
-
             if (type == typeof(string))
             {
                 return MessagePackBinary.WriteString(ref bytes, offset, (string) value);
@@ -218,6 +212,16 @@ namespace PT.PM.Common.MessagePack
                 return textSpanSerializer.Serialize(ref bytes, offset, (TextSpan) value);
             }
 
+            if (type == typeof(double))
+            {
+                return MessagePackBinary.WriteDouble(ref bytes, offset, (double) value);
+            }
+
+            if (type.IsEnum)
+            {
+                return MessagePackBinary.WriteInt32(ref bytes, offset, (int) value);
+            }
+
             Type[] typeInterfaces = type.GetInterfaces();
 
             if (typeInterfaces.Contains(typeof(IFile)))
@@ -236,6 +240,46 @@ namespace PT.PM.Common.MessagePack
                 }
 
                 return newOffset - offset;
+            }
+
+            if (type == typeof(char))
+            {
+                return MessagePackBinary.WriteChar(ref bytes, offset, (char) value);
+            }
+
+            if (type == typeof(byte))
+            {
+                return MessagePackBinary.WriteByte(ref bytes, offset, (byte) value);
+            }
+
+            if (type == typeof(sbyte))
+            {
+                return MessagePackBinary.WriteSByte(ref bytes, offset, (sbyte) value);
+            }
+
+            if (type == typeof(short))
+            {
+                return MessagePackBinary.WriteInt16(ref bytes, offset, (short) value);
+            }
+
+            if (type == typeof(ushort))
+            {
+                return MessagePackBinary.WriteUInt16(ref bytes, offset, (ushort) value);
+            }
+
+            if (type == typeof(ulong))
+            {
+                return MessagePackBinary.WriteUInt64(ref bytes, offset, (ulong) value);
+            }
+
+            if (type == typeof(float))
+            {
+                return MessagePackBinary.WriteSingle(ref bytes, offset, (float) value);
+            }
+
+            if (type == typeof(DateTime))
+            {
+                return MessagePackBinary.WriteDateTime(ref bytes, offset, (DateTime) value);
             }
 
             throw new NotImplementedException($"Serialization of {type.Name} is not supported");
@@ -348,6 +392,11 @@ namespace PT.PM.Common.MessagePack
                     return MessagePackBinary.ReadBoolean(bytes, offset, out readSize);
                 }
 
+                if (type == typeof(double))
+                {
+                    return MessagePackBinary.ReadDouble(bytes, offset, out readSize);
+                }
+
                 if (type.IsEnum)
                 {
                     return MessagePackBinary.ReadInt32(bytes, offset, out readSize);
@@ -393,6 +442,46 @@ namespace PT.PM.Common.MessagePack
 
                     readSize = newOffset - offset;
                     return result;
+                }
+
+                if (type == typeof(char))
+                {
+                    return MessagePackBinary.ReadChar(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(byte))
+                {
+                    return MessagePackBinary.ReadByte(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(sbyte))
+                {
+                    return MessagePackBinary.ReadSByte(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(short))
+                {
+                    return MessagePackBinary.ReadInt16(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(ushort))
+                {
+                    return MessagePackBinary.ReadUInt16(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(ulong))
+                {
+                    return MessagePackBinary.ReadUInt64(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(float))
+                {
+                    return MessagePackBinary.ReadSingle(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(DateTime))
+                {
+                    return MessagePackBinary.ReadDateTime(bytes, offset, out readSize);
                 }
 
                 throw new NotImplementedException($"Deserialization of {type.Name} is not supported");
