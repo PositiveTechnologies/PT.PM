@@ -146,7 +146,7 @@ namespace PT.PM
             // TODO: implement more fast language detection if there are several languages (SQL dialects at first), see https://github.com/PositiveTechnologies/PT.PM/issues/158
             Language language = languages[0];
 
-            bool isSerialization = language.IsSerialization();
+            bool isSerialization = language.IsSerializing();
 
             RootUst result = null;
             var stopwatch = Stopwatch.StartNew();
