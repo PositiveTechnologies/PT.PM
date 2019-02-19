@@ -6,7 +6,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Antlr4.Runtime;
+using PT.PM.AntlrUtils;
 using PT.PM.Common.Files;
+using PT.PM.LanguageDetectors;
 
 namespace PT.PM
 {
@@ -46,6 +49,19 @@ namespace PT.PM
             if (langs.Count == 1)
             {
                 return new DetectionResult(langs[0]);
+            }
+
+            if (sourceFile.Name.EndsWith(".sql")
+                || sourceFile.Name.EndsWith(".ddl")
+                || langs.Any(l => l.IsSql()))
+            {
+                var inputStream = new AntlrCaseInsensitiveInputStream(sourceFile.Data, CaseInsensitiveType.None);
+                var sqlLexer = new SqlDialectsLexer(inputStream);
+                var dialect = DetectSqlDialectDialect(sqlLexer);
+                if (dialect != Language.Uncertain)
+                {
+                    return new DetectionResult(dialect);
+                }
             }
 
             foreach (Language language in langs)
@@ -135,6 +151,33 @@ namespace PT.PM
             }
 
             return null;
+        }
+        
+        private Language DetectSqlDialectDialect(SqlDialectsLexer lexer)
+        {
+            if (lexer == null)
+            {
+                throw new ArgumentNullException(nameof(lexer));
+            }
+            
+            var tokens = lexer.GetAllTokens();
+
+            foreach (var token in tokens)
+            {
+                switch (token.Type)
+                {
+                    case SqlDialectsLexer.T_SQL:
+                        return Language.TSql;
+                    case SqlDialectsLexer.MY_SQL:
+                        return Language.MySql;
+                    case SqlDialectsLexer.PL_SQL:
+                        return Language.PlSql;
+                    default:
+                        continue;
+                }
+            }
+
+            return Language.Uncertain;
         }
     }
 }
