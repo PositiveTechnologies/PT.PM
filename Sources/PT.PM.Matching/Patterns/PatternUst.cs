@@ -27,7 +27,8 @@ namespace PT.PM.Matching.Patterns
         public PatternUst Parent { get; set; }
 
         [JsonIgnore]
-        public LineColumnTextSpan LineColumnTextSpan => Root?.File.GetLineColumnTextSpan(TextSpan);
+        public LineColumnTextSpan LineColumnTextSpan =>
+            Root?.File.GetLineColumnTextSpan(TextSpan) ?? LineColumnTextSpan.Zero;
 
         public TextSpan TextSpan { get; set; }
 

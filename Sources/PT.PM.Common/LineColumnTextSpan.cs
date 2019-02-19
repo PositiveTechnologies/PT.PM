@@ -3,23 +3,19 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.Common
 {
-    public class LineColumnTextSpan : IEquatable<LineColumnTextSpan>
+    public struct LineColumnTextSpan : IEquatable<LineColumnTextSpan>
     {
-        public static LineColumnTextSpan Zero => new LineColumnTextSpan(0, 0, 0, 0, null);
+        public static LineColumnTextSpan Zero => new LineColumnTextSpan(0, 0, 0, 0);
 
-        public int BeginLine { get; set; }
+        public int BeginLine { get; }
 
-        public int BeginColumn { get; set; }
+        public int BeginColumn { get; }
 
-        public int EndLine { get; set; }
+        public int EndLine { get; }
 
-        public int EndColumn { get; set; }
+        public int EndColumn { get; }
 
-        public TextFile File { get; set; }
-
-        public LineColumnTextSpan()
-        {
-        }
+        public TextFile File { get; }
 
         public LineColumnTextSpan(int line, int column, TextFile sourceFile = null)
             : this(line, column, line, column, sourceFile)
@@ -33,11 +29,6 @@ namespace PT.PM.Common
             EndLine = endLine;
             EndColumn = endColumn;
             File = sourceFile;
-        }
-
-        public LineColumnTextSpan AddLineOffset(int lineOffset)
-        {
-            return new LineColumnTextSpan(BeginLine + lineOffset, BeginColumn, EndLine + lineOffset, EndColumn);
         }
 
         public override string ToString() => ToString(true);

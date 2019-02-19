@@ -56,7 +56,7 @@ namespace PT.PM.Common.Nodes
         public int KindId => GetType().Name.GetHashCode();
 
         [IgnoreMember, JsonIgnore]
-        public LineColumnTextSpan LineColumnTextSpan => CurrentSourceFile?.GetLineColumnTextSpan(TextSpan);
+        public LineColumnTextSpan LineColumnTextSpan => CurrentSourceFile?.GetLineColumnTextSpan(TextSpan) ?? LineColumnTextSpan.Zero;
 
         [IgnoreMember, JsonIgnore]
         public TextFile CurrentSourceFile => this is RootUst rootUst ? rootUst.SourceFile : Root?.SourceFile;
