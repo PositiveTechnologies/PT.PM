@@ -47,6 +47,7 @@ namespace PT.PM.Common.Json
 
             if (type == typeof(RootUst))
             {
+                // Back compatibility with external serializers
                 jObject.Add("SourceCodeFile", JToken.FromObject(((RootUst)value).SourceFile, serializer));
             }
 

@@ -11,13 +11,10 @@ namespace PT.PM.Common.Nodes
     [MessagePackObject]
     public class RootUst : Ust
     {
-        private Language[] sublanguges;
+        private Language[] sublanguages;
 
         [Key(UstFieldOffset)]
         public Language Language { get; set; }
-
-        [JsonProperty("SourceCodeFile"), JsonIgnore, IgnoreMember] // TODO: back compatibility with external serializers
-        public TextFile SourceFile { get; set; }
 
         [Key(UstFieldOffset + 1)]
         public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
@@ -28,10 +25,13 @@ namespace PT.PM.Common.Nodes
         [Key(UstFieldOffset + 3)]
         public int LineOffset { get; set; }
 
-        [IgnoreMember, JsonIgnore]
-        public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
+        [JsonProperty("SourceCodeFile"), JsonIgnore, IgnoreMember] // Workaround for correct deserialization of external jsons
+        public TextFile SourceFile { get; set; }
 
-        [IgnoreMember, JsonIgnore]
+        [JsonIgnore, IgnoreMember]
+        public Language[] Sublanguages => sublanguages ?? (sublanguages = GetSublangauges());
+
+        [JsonIgnore, IgnoreMember]
         public Ust Node
         {
             get => Nodes.Length > 0 ? Nodes[0] : null;
@@ -65,7 +65,7 @@ namespace PT.PM.Common.Nodes
 
         public void UpdateSublanguages()
         {
-            sublanguges = GetSublangauges();
+            sublanguages = GetSublangauges();
         }
 
         private Language[] GetSublangauges()

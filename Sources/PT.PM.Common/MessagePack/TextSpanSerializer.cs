@@ -75,7 +75,7 @@ namespace PT.PM.Common.MessagePack
             if (fileIndex == -1)
             {
                 Logger.LogError(new ReadException(SerializedFile, message:
-                    $"{nameof(TextSpan.File)} of {nameof(TextSpan)} {value} is not correctly mapped"));
+                    $"{nameof(TextSpan.File)} of {nameof(TextSpan)} {value} is mapped incorrectly"));
             }
 
             newOffset += WriteInt32(ref bytes, newOffset, fileIndex);

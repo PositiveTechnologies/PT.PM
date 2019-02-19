@@ -36,6 +36,7 @@ namespace PT.PM.Common.Reflection
                     if (assemblyType.Name.Equals(typeStr))
                     {
                         ustType = assemblyType;
+                        break;
                     }
                 }
 

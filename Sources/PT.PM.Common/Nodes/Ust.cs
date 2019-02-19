@@ -20,12 +20,12 @@ namespace PT.PM.Common.Nodes
         };
 
         [IgnoreMember, JsonIgnore]
-        public RootUst Root { get; set; } // TODO: WeakReference
+        public RootUst Root { get; set; }
 
         [IgnoreMember, JsonIgnore]
-        public Ust Parent { get; set; } // TODO: WeakReference
+        public Ust Parent { get; set; }
 
-        [Key(0), JsonProperty("TextSpan"), JsonIgnore] // TODO: back compatibility with external serializers
+        [Key(0), JsonProperty("TextSpan"), JsonIgnore] // Workaround for correct deserialization of external jsons
         public TextSpan[] TextSpans { get; set; } // TODO: make it `protected set`
 
         [Key(1)]
