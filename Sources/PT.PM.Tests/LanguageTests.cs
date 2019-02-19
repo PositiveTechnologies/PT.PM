@@ -64,6 +64,7 @@ namespace PT.PM.Tests
         [TestCase(Language.Php, "Patterns.php")]
         [TestCase(Language.PlSql, "plsql_patterns.sql")]
         [TestCase(Language.TSql, "tsql_patterns.sql")]
+        [TestCase(Language.MySql, "mysql_patterns.sql")]
         [TestCase(Language.Aspx, "Patterns.aspx")]
         [TestCase(Language.JavaScript, "Patterns.js")]
         public void DetectLanguage_Source_CorrectLanguage(Language expectedLanguage, string fileName)
@@ -91,7 +92,6 @@ namespace PT.PM.Tests
             var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
             var detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql });
 
-            Assert.NotNull(detectionResult.ParseTree);
             Assert.AreEqual(Language.PlSql, detectionResult.Language);
 
             // Force parse file with specified language.
