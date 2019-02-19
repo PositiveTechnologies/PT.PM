@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Json
 {
@@ -75,7 +76,7 @@ namespace PT.PM.Common.Json
                         }
                         else
                         {
-                            include = !propValue.Equals(GetDefaultValue(propType));
+                            include = !propValue.Equals(propType.GetDefaultValue());
                         }
                     }
 
@@ -151,16 +152,6 @@ namespace PT.PM.Common.Json
             writeTo.Add(propertyName, serializedObject);
 
             return true;
-        }
-
-        private object GetDefaultValue(Type type)
-        {
-            if (type.IsValueType)
-            {
-                return Activator.CreateInstance(type);
-            }
-
-            return null;
         }
     }
 }
