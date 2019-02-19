@@ -8,6 +8,7 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Reflection;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.MessagePack
 {
@@ -334,9 +335,17 @@ namespace PT.PM.Common.MessagePack
                 PropertyInfo[] serializableProperties = ust.GetType().GetSerializableProperties(out _);
                 foreach (PropertyInfo property in serializableProperties)
                 {
-                    object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size);
+                    if (MessagePackBinary.IsNil(bytes, newOffset))
+                    {
+                        // Optimization: do not fill the property if null is read
+                        MessagePackBinary.ReadNil(bytes, newOffset, out size);
+                    }
+                    else
+                    {
+                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size);
+                        property.SetValue(ust, obj);
+                    }
                     newOffset += size;
-                    property.SetValue(ust, obj);
                 }
 
                 if (rootUst != null)
@@ -362,7 +371,7 @@ namespace PT.PM.Common.MessagePack
                 if (MessagePackBinary.IsNil(bytes, offset))
                 {
                     MessagePackBinary.ReadNil(bytes, offset, out readSize);
-                    return null;
+                    return type.GetDefaultValue();
                 }
 
                 if (type == typeof(Ust) || type.IsSubclassOf(typeof(Ust)))
