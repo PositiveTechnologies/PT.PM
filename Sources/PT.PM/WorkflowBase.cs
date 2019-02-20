@@ -302,6 +302,10 @@ namespace PT.PM
                     {
                         result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
                     }
+
+                    stopwatch.Stop();
+                    Logger.LogInfo($"File {shortFileName} converted {stopwatch.GetElapsedString()}.");
+                    workflowResult.AddConvertTime(stopwatch.Elapsed);
                 }
                 else
                 {
@@ -330,16 +334,16 @@ namespace PT.PM
                         Logger.LogError(new ReadException(sourceFile, message: $"Unknown serialization format {language}"));
                     }
 
+                    stopwatch.Stop();
+                    Logger.LogInfo($"File {shortFileName} deserialized {stopwatch.GetElapsedString()}.");
+                    workflowResult.AddDeserializeTime(stopwatch.Elapsed);
+
                     if (result == null || !workflowResult.BaseLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                     {
                         Logger.LogInfo($"File {fileName} ignored.");
                         return null;
                     }
                 }
-
-                stopwatch.Stop();
-                Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
-                workflowResult.AddConvertTime(stopwatch.Elapsed);
 
                 if (result == null)
                 {

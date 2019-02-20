@@ -10,6 +10,8 @@ namespace PT.PM.Cli.Common
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
+        private const string DeserializationStageName = "Deserialize";
+
         public ILogger Logger { get; set; }
 
         public TWorkflowResult WorkflowResult { get; }
@@ -63,6 +65,7 @@ namespace PT.PM.Cli.Common
                                 if (stageInt >= (int) Stage.Ust)
                                 {
                                     LogStageTime(nameof(Stage.Ust));
+                                    LogStageTime(DeserializationStageName);
                                     LogAdvancedStageInfo();
                                 }
                             }
@@ -96,6 +99,9 @@ namespace PT.PM.Cli.Common
                     break;
                 case nameof(Stage.ParseTree):
                     ticks = WorkflowResult.TotalLexerParserTicks;
+                    break;
+                case DeserializationStageName:
+                    ticks = WorkflowResult.TotalDeserializeTicks;
                     break;
                 case nameof(Stage.Ust):
                     ticks = WorkflowResult.TotalConvertTicks;
