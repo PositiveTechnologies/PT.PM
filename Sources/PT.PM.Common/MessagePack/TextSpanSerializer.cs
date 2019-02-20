@@ -137,8 +137,11 @@ namespace PT.PM.Common.MessagePack
 
                         try
                         {
-                            start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
-                            length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                            if (!sourceFile.IsEmpty)
+                            {
+                                start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
+                                length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                            }
                         }
                         catch (Exception ex)
                         {
