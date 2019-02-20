@@ -90,13 +90,18 @@ namespace PT.PM.Tests
             var languageDetector = new ParserLanguageDetector();
 
             var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
-            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql });
+            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql, Language.MySql });
 
             Assert.AreEqual(Language.PlSql, detectionResult.Language);
 
             // Force parse file with specified language.
             detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.TSql });
             Assert.AreEqual(Language.TSql, detectionResult.Language);
+            
+            var mySqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "mysql_patterns.sql")));
+            detectionResult = languageDetector.DetectIfRequired(mySqlFile, new HashSet<Language> { Language.PlSql, Language.TSql, Language.MySql });
+
+            Assert.AreEqual(Language.MySql, detectionResult.Language);
         }
     }
 }
