@@ -5,17 +5,17 @@ channels {ERRORCHANNEL}
 SINGLE_LINE_COMMENT: '--' ~('\r' | '\n')* NEWLINE_EOF   -> channel(HIDDEN);
 MULTI_LINE_COMMENT:  '/*' .*? '*/'                      -> channel(HIDDEN);
 SPACE: [ \t\r\n]+                                       -> channel(HIDDEN);
-SEICOLON: ';';
+SEMICOLON: ';';
 
 MY_SQL : DELIMITER | NAMES | UNDOFILE | ENGINE | INITIAL_SIZE 
-       | REVERCE_QUOTE_ID | RETURNS;
+       | REVERSE_QUOTE_ID | RETURNS;
 
 fragment DELIMITER: 'DELIMITER';
 fragment NAMES: 'NAMES';
 fragment UNDOFILE: 'UNDOFILE';
 fragment ENGINE: 'ENGINE';
 fragment INITIAL_SIZE: 'INITIAL_SIZE';
-fragment REVERCE_QUOTE_ID: '`' ~'`'+ '`';
+fragment REVERSE_QUOTE_ID: '`' ~'`'+ '`';
 fragment RETURNS: 'RETURNS';
 
 PL_SQL    
