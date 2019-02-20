@@ -8,6 +8,11 @@ namespace PT.PM.Common
     {
         public static void ApplyActionToDescendantsAndSelf(this Ust ust, Action<Ust> action)
         {
+            // The root might be null itself
+            if (ust == null)
+            {
+                return;
+            }
             action(ust);
 
             foreach (Ust child in ust.Children)
