@@ -22,7 +22,7 @@ namespace PT.PM.Common.MessagePack
         private FileSerializer fileSerializer;
 
         // One file can contain several RootUst nodes. For example, the file with PHP inside JavaScript inside PHP
-        // Deserialization is being occurred in depth-first manner, that's why it's possible to fill roots and parents
+        // Deserialization is being performed in top-down manner, that's why it's possible to fill roots and parents
         // right during deserialization.
         private readonly Stack<RootUst> rootAncestors = new Stack<RootUst>();
         private readonly Stack<Ust> ancestors = new Stack<Ust>();

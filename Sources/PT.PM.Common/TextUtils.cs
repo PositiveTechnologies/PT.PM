@@ -73,7 +73,7 @@ namespace PT.PM.Common
             return result;
         }
 
-                public static TextSpan ParseTextSpan(string text, TextFile currentSourceFile = null, HashSet<IFile> sourceFiles = null)
+        public static TextSpan ParseTextSpan(string text, TextFile currentSourceFile = null, HashSet<IFile> sourceFiles = null)
         {
             ReadOnlySpan<char> textSpan = text.AsSpan();
             int semicolonIndex = textSpan.IndexOf(';');
@@ -103,13 +103,13 @@ namespace PT.PM.Common
                 int start, end;
                 if (index != -1)
                 {
-                    string value = range.Slice(0, index).ToString(); // TODO: It will be replaced on Span when netstandard2.1 comes
+                    string value = range.Slice(0, index).ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
                     if (!int.TryParse(value, out start))
                     {
                         throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
                     }
 
-                    value = range.Slice(index + 2).ToString();  // TODO: It will be replaced on Span when netstandard2.1 comes
+                    value = range.Slice(index + 2).ToString();  // TODO: It will be replaced with Span when netstandard2.1 comes out
                     if (!int.TryParse(value, out end))
                     {
                         throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
@@ -117,7 +117,7 @@ namespace PT.PM.Common
                 }
                 else
                 {
-                    string value = range.ToString(); // TODO: It will be replaced on Span when netstandard2.1 comes
+                    string value = range.ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
                     if (!int.TryParse(range.ToString(), out start))
                     {
                         throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
@@ -175,7 +175,7 @@ namespace PT.PM.Common
                         ParseLineColumn(begin, out beginLine, out beginColumn);
                         endLine = beginLine;
                         string endStr = end.ToString();
-                        if (!int.TryParse(endStr, out endColumn)) // TODO: It will be replaced on Span when netstandard2.1 comes
+                        if (!int.TryParse(endStr, out endColumn)) // TODO: It will be replaced with Span when netstandard2.1 comes out
                         {
                             throw new FormatException($"Invalid or too big column value {endStr} while {nameof(LineColumnTextSpan)} parsing.");
                         }
@@ -185,7 +185,7 @@ namespace PT.PM.Common
                         ParseLineColumn(end, out endLine, out endColumn);
                         beginColumn = endColumn;
                         string beginStr = begin.ToString();
-                        if (!int.TryParse(beginStr, out beginLine)) // TODO: It will be replaced on Span when netstandard2.1 comes
+                        if (!int.TryParse(beginStr, out beginLine)) // TODO: It will be replaced with Span when netstandard2.1 comes out
                         {
                             throw new FormatException($"Invalid or too big line value {beginStr} while {nameof(LineColumnTextSpan)} parsing.");
                         }
@@ -338,7 +338,7 @@ namespace PT.PM.Common
 
         public static string ToStringWithLead(this object obj, char lead)
         {
-            string result = obj?.ToString() ?? null;
+            string result = obj?.ToString();
             return string.IsNullOrEmpty(result) ? "" : lead + result;
         }
 
@@ -370,13 +370,13 @@ namespace PT.PM.Common
                 throw new FormatException($"Begin position for line-column format should have line,column format instead of {text.ToString()}.");
             }
 
-            string value = text.Slice(0, commaIndex).ToString(); // TODO: It will be replaced on Span when netstandard2.1 comes
+            string value = text.Slice(0, commaIndex).ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
             if (!int.TryParse(value, out line))
             {
                 throw new FormatException($"Invalid or too big line value {value} while {nameof(LineColumnTextSpan)} parsing.");
             }
 
-            value = text.Slice(commaIndex + 1).ToString(); // TODO: It will be replaced on Span when netstandard2.1 comes
+            value = text.Slice(commaIndex + 1).ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
             if (!int.TryParse(value, out column))
             {
                 throw new FormatException($"Invalid or too big column value {value} while {nameof(LineColumnTextSpan)} parsing.");
