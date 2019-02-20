@@ -92,7 +92,7 @@ namespace PT.PM.Common.MessagePack
 
             byte[] data2 = data ?? MessagePackUtils.UnpackDataIfRequired(serializedFile.Data);
 
-            RootUst result = rootUstSerializer.DeserializeRootUst(data2, sourceFiles, 0, out readSize);
+            RootUst result = rootUstSerializer.DeserializeRootUst(data2, sourceFiles, 0, out readSize, logger);
 
             return result;
         }
@@ -132,14 +132,14 @@ namespace PT.PM.Common.MessagePack
             return writeSize;
         }
 
-        private RootUst DeserializeRootUst(byte[] bytes, HashSet<IFile> sourceFiles, int offset, out int readSize)
+        private RootUst DeserializeRootUst(byte[] bytes, HashSet<IFile> sourceFiles, int offset, out int readSize, ILogger logger)
         {
             int newOffset = offset;
 
             textSpanSerializer.IsLineColumn = MessagePackBinary.ReadBoolean(bytes, newOffset, out int size);
             newOffset += size;
 
-            var localSourceFiles = (TextFile[])DeserializeObject(bytes, newOffset, typeof(TextFile[]), out size);
+            var localSourceFiles = (TextFile[])DeserializeObject(bytes, newOffset, typeof(TextFile[]), out size, logger);
             newOffset += size;
             textSpanSerializer.LocalSourceFiles = localSourceFiles;
 
@@ -151,7 +151,7 @@ namespace PT.PM.Common.MessagePack
                 }
             }
 
-            RootUst rootUst = (RootUst)DeserializeUst(bytes, newOffset, out size);
+            RootUst rootUst = (RootUst)DeserializeUst(bytes, newOffset, out size, logger);
             rootUst.SourceFile = localSourceFiles[0];
             newOffset += size;
 
@@ -289,7 +289,7 @@ namespace PT.PM.Common.MessagePack
             throw new NotImplementedException($"Serialization of {type.Name} is not supported");
         }
 
-        private Ust DeserializeUst(byte[] bytes, int offset, out int readSize)
+        private Ust DeserializeUst(byte[] bytes, int offset, out int readSize, ILogger logger)
         {
             try
             {
@@ -342,8 +342,15 @@ namespace PT.PM.Common.MessagePack
                     }
                     else
                     {
-                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size);
-                        property.SetValue(ust, obj);
+                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size, logger);
+                        try
+                        {
+                            property.SetValue(ust, obj);
+                        }
+                        catch (Exception ex)
+                        {
+                             logger?.LogError(new ReadException(serializedFile, ex, $"Deserialization error at offset {newOffset}: {ex.Message}"));
+                        }
                     }
                     newOffset += size;
                 }
@@ -364,7 +371,7 @@ namespace PT.PM.Common.MessagePack
             }
         }
 
-        private object DeserializeObject(byte[] bytes, int offset, Type type, out int readSize)
+        private object DeserializeObject(byte[] bytes, int offset, Type type, out int readSize, ILogger logger)
         {
             try
             {
@@ -376,7 +383,7 @@ namespace PT.PM.Common.MessagePack
 
                 if (type == typeof(Ust) || type.IsSubclassOf(typeof(Ust)))
                 {
-                    return DeserializeUst(bytes, offset, out readSize);
+                    return DeserializeUst(bytes, offset, out readSize, logger);
                 }
 
                 if (type == typeof(TextSpan))
@@ -437,7 +444,7 @@ namespace PT.PM.Common.MessagePack
 
                         for (int i = 0; i < arrayLength; i++)
                         {
-                            result[i] = DeserializeObject(bytes, newOffset, itemType, out size);
+                            result[i] = DeserializeObject(bytes, newOffset, itemType, out size, logger);
                             newOffset += size;
                         }
                     }
@@ -447,7 +454,7 @@ namespace PT.PM.Common.MessagePack
 
                         for (int i = 0; i < arrayLength; i++)
                         {
-                            result.Add(DeserializeObject(bytes, newOffset, itemType, out size));
+                            result.Add(DeserializeObject(bytes, newOffset, itemType, out size, logger));
                             newOffset += size;
                         }
                     }
