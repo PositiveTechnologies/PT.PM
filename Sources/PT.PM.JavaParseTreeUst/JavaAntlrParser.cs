@@ -12,25 +12,19 @@ namespace PT.PM.JavaParseTreeUst
 
         public JavaAntlrParser()
         {
+            Lexer = new JavaAntlrLexer();
         }
-
-        protected override Lexer InitLexer(ICharStream inputStream) =>
-            new JavaLexer(inputStream);
 
         protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) =>
             new JavaParser(inputStream);
 
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser) =>
-            ((JavaParser)parser).compilationUnit();
+            ((JavaParser) parser).compilationUnit();
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
-            new JavaAntlrParseTree((JavaParser.CompilationUnitContext)syntaxTree);
-
-        protected override IVocabulary Vocabulary => JavaLexer.DefaultVocabulary;
+            new JavaAntlrParseTree((JavaParser.CompilationUnitContext) syntaxTree);
 
         protected override int CommentsChannel => JavaLexer.Hidden;
-
-        protected override string LexerSerializedATN => JavaLexer._serializedATN;
 
         protected override string ParserSerializedATN => JavaParser._serializedATN;
     }

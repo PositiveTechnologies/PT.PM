@@ -51,13 +51,11 @@ namespace PT.PM
                 return new DetectionResult(langs[0]);
             }
 
-            if (sourceFile.Name.EndsWith(".sql")
-                || sourceFile.Name.EndsWith(".ddl")
-                || langs.Any(l => l.IsSql()))
+            if (langs.Any(l => l.IsSql()))
             {
                 var inputStream = new AntlrCaseInsensitiveInputStream(sourceFile.Data, CaseInsensitiveType.None);
-                var sqlLexer = new SqlDialectsLexer(inputStream);
-                var dialect = DetectSqlDialectDialect(sqlLexer);
+                var sqlLexer = new SqlDialectsAntlrLexer();
+                var dialect = DetectSqlDialect((SqlDialectsLexer)sqlLexer.InitLexer(inputStream));
                 if (dialect != Language.Uncertain)
                 {
                     return new DetectionResult(dialect);
@@ -153,7 +151,7 @@ namespace PT.PM
             return null;
         }
         
-        private Language DetectSqlDialectDialect(SqlDialectsLexer lexer)
+        private Language DetectSqlDialect(SqlDialectsLexer lexer)
         {
             if (lexer == null)
             {

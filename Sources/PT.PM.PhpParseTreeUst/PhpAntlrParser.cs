@@ -10,26 +10,21 @@ namespace PT.PM.PhpParseTreeUst
     {
         public override Language Language => Language.Php;
 
-        public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.lower;
-
         public static PhpAntlrParser Create() => new PhpAntlrParser();
 
         public PhpAntlrParser()
         {
+            Lexer = new PhpAntlrLexer();
         }
 
         protected override int CommentsChannel => PhpLexer.PhpComments;
 
-        protected override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
-
-        protected override Lexer InitLexer(ICharStream inputStream) => new PhpLexer(inputStream);
-
         protected override Parser InitParser(ITokenStream inputStream) => new PhpParser(inputStream);
 
-        protected override ParserRuleContext Parse(Parser parser) => ((PhpParser)parser).htmlDocument();
+        protected override ParserRuleContext Parse(Parser parser) => ((PhpParser) parser).htmlDocument();
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
-            new PhpAntlrParseTree((PhpParser.HtmlDocumentContext)syntaxTree);
+            new PhpAntlrParseTree((PhpParser.HtmlDocumentContext) syntaxTree);
 
         protected override string PreprocessText(TextFile file)
         {
@@ -43,6 +38,7 @@ namespace PT.PM.PhpParseTreeUst
                 result = result.Remove(vtIndex);
                 trimmed = true;
             }
+
             // TODO: Fix Hardcode!
             int lastPhpInd = result.LastIndexOf("?>");
             if (lastPhpInd != -1)
@@ -62,8 +58,6 @@ namespace PT.PM.PhpParseTreeUst
 
             return result;
         }
-
-        protected override string LexerSerializedATN => PhpLexer._serializedATN;
 
         protected override string ParserSerializedATN => PhpParser._serializedATN;
     }
