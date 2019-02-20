@@ -14,7 +14,7 @@ namespace PT.PM.AntlrUtils
         {
             var antlrParseTree = parseTree as AntlrParseTree;
 
-            IVocabulary vocabulary = ((AntlrParser)parseTree.SourceLanguage.CreateParser()).Lexer.Vocabulary;
+            IVocabulary vocabulary = ((AntlrParser)parseTree.SourceLanguage.CreateParser()).Lexer.Lexer.Vocabulary;
             var resultString = new StringBuilder();
             foreach (IToken token in antlrParseTree.Tokens)
             {

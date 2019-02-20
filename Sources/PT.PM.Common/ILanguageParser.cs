@@ -4,8 +4,6 @@ namespace PT.PM.Common
 {
     public interface ILanguageParser : ILoggable
     {
-        Language Language { get; }
-
         ParseTree Parse(TextFile sourceFile);
     }
 }

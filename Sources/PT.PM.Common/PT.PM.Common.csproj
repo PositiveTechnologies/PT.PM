@@ -16,6 +16,7 @@
 
     <ItemGroup>
         <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.5" />
         <PackageReference Include="MessagePack" Version="1.7.3.4" />
         <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
         <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />

@@ -12,38 +12,19 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrParser : ILanguageParser
+    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser
     {
         private static long processedFilesCount;
         private static long processedBytesCount;
         private static long checkNumber;
         private static volatile bool excessMemory;
-
-        private static Dictionary<Language, ATN> lexerAtns = new Dictionary<Language, ATN>();
-
-        private static Dictionary<Language, ATN> parserAtns = new Dictionary<Language, ATN>();
-
-        public static ILogger StaticLogger { get; set; } = DummyLogger.Instance;
-
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public Lexer Lexer { get; private set; }
-
         public Parser Parser { get; private set; }
+        
+        public AntlrLexer Lexer { get; protected set; }
 
-        public abstract Language Language { get; }
-
-        public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
-
-        public bool UseFastParseStrategyAtFirst { get; set; } = true;
-
-        public static long MemoryConsumptionBytes { get; set; } = 3 * 1024 * 1024 * 1024L;
-
-        public static long ClearCacheFilesBytes { get; set; } = 5 * 1024 * 1024L;
-
-        public static int ClearCacheFilesCount { get; set; } = 50;
-
-        protected abstract Lexer InitLexer(ICharStream inputStream);
+        protected abstract string ParserSerializedATN { get; }
+        
+        protected abstract int CommentsChannel { get; }
 
         protected abstract Parser InitParser(ITokenStream inputStream);
 
@@ -51,19 +32,10 @@ namespace PT.PM.AntlrUtils
 
         protected abstract AntlrParseTree Create(ParserRuleContext syntaxTree);
 
-        protected abstract IVocabulary Vocabulary { get; }
-
-        protected abstract int CommentsChannel { get; }
-
-        protected abstract string LexerSerializedATN { get; }
-
-        protected abstract string ParserSerializedATN { get; }
-
         public int LineOffset { get; set; }
 
         public AntlrParser()
         {
-            Lexer = InitLexer(null);
             Parser = InitParser(null);
         }
 
@@ -82,29 +54,12 @@ namespace PT.PM.AntlrUtils
             errorListener.LineOffset = LineOffset;
             try
             {
-                var preprocessedText = PreprocessText(sourceFile);
-                AntlrInputStream inputStream;
-                if (Language.IsCaseInsensitive())
-                {
-                    inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
-                }
-                else
-                {
-                    inputStream = new AntlrInputStream(preprocessedText);
-                }
-                inputStream.name = filePath;
-
-                Lexer lexer = InitLexer(inputStream);
-                lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(true));
-                lexer.RemoveErrorListeners();
-                lexer.AddErrorListener(errorListener);
-                var commentTokens = new List<IToken>();
-
                 var stopwatch = Stopwatch.StartNew();
-                IList<IToken> tokens = lexer.GetAllTokens();
-                stopwatch.Stop();
-                TimeSpan lexerTimeSpan = stopwatch.Elapsed;
-
+                var tokens = Lexer?.GetTokens(sourceFile, errorListener);
+                var lexerTimeSpan = stopwatch.Elapsed;
+                
+                var commentTokens = new List<IToken>();
+                
                 foreach (IToken token in tokens)
                 {
                     if (token.Channel == CommentsChannel)
@@ -176,7 +131,7 @@ namespace PT.PM.AntlrUtils
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
             Parser parser = initParserFunc != null ? initParserFunc(codeTokenStream) : InitParser(codeTokenStream);
-            parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(false));
+            parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(false, ParserSerializedATN));
             parser.RemoveErrorListeners();
             Parser = parser;
             ParserRuleContext syntaxTree = null;
@@ -209,61 +164,6 @@ namespace PT.PM.AntlrUtils
             }
 
             return syntaxTree;
-        }
-
-        /// <summary>
-        /// Converts \r to \r\n.
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        protected virtual string PreprocessText(TextFile file)
-        {
-            var text = file.Data;
-            var result = new StringBuilder(text.Length);
-            int i = 0;
-            while (i < text.Length)
-            {
-                if (text[i] == '\r')
-                {
-                    if (i + 1 >= text.Length)
-                    {
-                        result.Append('\n');
-                    }
-                    else if (text[i + 1] != '\n')
-                    {
-                        result.Append('\n');
-                    }
-                    else
-                    {
-                        result.Append(text[i]);
-                    }
-                }
-                else
-                {
-                    result.Append(text[i]);
-                }
-                i++;
-            }
-            return result.ToString();
-        }
-
-        private ATN GetOrCreateAtn(bool lexer)
-        {
-            ATN atn;
-            Dictionary<Language, ATN> atns = lexer ? lexerAtns : parserAtns;
-
-            lock (atns)
-            {
-                if (!atns.TryGetValue(Language, out atn))
-                {
-                    string stringAtn = lexer ? LexerSerializedATN : ParserSerializedATN;
-                    atn = new ATNDeserializer().Deserialize(stringAtn.ToCharArray());
-                    atns.Add(Language, atn);
-                    Logger.LogDebug($"New ATN initialized for {Language} {(lexer ? "lexer" : "parser")}.");
-                }
-            }
-
-            return atn;
         }
     }
 }
