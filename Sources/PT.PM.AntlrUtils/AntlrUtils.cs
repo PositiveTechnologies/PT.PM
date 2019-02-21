@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Expressions;
@@ -29,6 +30,16 @@ namespace PT.PM.AntlrUtils
             }
 
             return result.ToString();
+        }
+
+        public static AntlrLexer CreateAntlrLexer(this Language language)
+        {
+            var parser = language.CreateParser();
+            if (parser is AntlrParser antlrParser)
+            {
+                return antlrParser.Lexer;
+            }
+            throw new NotImplementedException($"{nameof(AntlrLexer)} for language {language} is not supported");
         }
 
         public static TextSpan GetTextSpan(this ParserRuleContext ruleContext)
@@ -106,6 +117,25 @@ namespace PT.PM.AntlrUtils
 
             logger.LogError(new ConversionException(currentFileData, message: exceptionText) { TextSpan = textSpan });
         }
+        
+        public static ATN GetOrCreateAtn(this AntlrBaseHandler handler, string atnText)
+        {
+            bool lexer = handler is AntlrLexer;
+            ATN atn;
+            var atns = lexer ? AntlrLexer.Atns : AntlrParser.Atns;
+            lock (atns)
+            {
+                if (!atns.TryGetValue(handler.Language, out atn))
+                {
+                    atn = new ATNDeserializer().Deserialize(atnText.ToCharArray());
+                    atns.Add(handler.Language, atn);
+                    handler.Logger.LogDebug($"New ATN initialized for {handler.Language} {(lexer ? "lexer" : "parser")}.");
+                }
+            }
+
+            return atn;
+        }
+        
 
         public static ArgumentExpression ConvertToInOutArgument(this ParserRuleContext context)
         {

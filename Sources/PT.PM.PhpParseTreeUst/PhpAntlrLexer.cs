@@ -1,6 +1,8 @@
+using System.IO;
 using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
+using PT.PM.Common.Files;
 
 namespace PT.PM.PhpParseTreeUst
 {
@@ -15,5 +17,38 @@ namespace PT.PM.PhpParseTreeUst
         protected override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
 
         public override Lexer InitLexer(ICharStream inputStream) => new PhpLexer(inputStream);
+        
+        protected override string PreprocessText(TextFile file)
+        {
+            var result = base.PreprocessText(file);
+
+            bool trimmed = false;
+            var vtIndex = result.IndexOf('\v');
+            if (vtIndex != -1 && vtIndex > 0 && result[vtIndex - 1] == '\n' &&
+                vtIndex + 1 < result.Length && char.IsDigit(result[vtIndex + 1]))
+            {
+                result = result.Remove(vtIndex);
+                trimmed = true;
+            }
+
+            // TODO: Fix Hardcode!
+            int lastPhpInd = result.LastIndexOf("?>");
+            if (lastPhpInd != -1)
+            {
+                if (lastPhpInd + "?>".Length + 12 <= result.Length &&
+                    result.Substring(lastPhpInd + "?>".Length, 12) == "\r\nChangelog:")
+                {
+                    result = result.Remove(lastPhpInd + "?>".Length);
+                    trimmed = true;
+                }
+            }
+
+            if (trimmed)
+            {
+                Logger.LogDebug($"File {Path.Combine(file.RelativePath, file.Name)} trimmed.");
+            }
+
+            return result;
+        }
     }
 }
