@@ -187,7 +187,7 @@ namespace PT.PM
                     parser.Logger = Logger;
                     if (parser is AntlrParser)
                     {
-                        AntlrParser.MemoryConsumptionBytes = (long) MemoryConsumptionMb * 1024 * 1024;
+                        AntlrBaseHandler.MemoryConsumptionBytes = (long) MemoryConsumptionMb * 1024 * 1024;
                     }
 
                     if (parser is JavaScriptEsprimaParser javaScriptParser)
