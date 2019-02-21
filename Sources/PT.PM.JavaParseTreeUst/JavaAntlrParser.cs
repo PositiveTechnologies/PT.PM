@@ -12,11 +12,13 @@ namespace PT.PM.JavaParseTreeUst
 
         public JavaAntlrParser()
         {
-            Lexer = new JavaAntlrLexer();
         }
 
         protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) =>
             new JavaParser(inputStream);
+
+        public override AntlrLexer InitAntlrLexer()
+        => new JavaAntlrLexer();
 
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser) =>
             ((JavaParser) parser).compilationUnit();

@@ -13,7 +13,6 @@ namespace PT.PM.SqlParseTreeUst
 
         public PlSqlAntlrParser()
         {
-            Lexer = new PlSqlAntlrLexer();
         }
 
         protected override int CommentsChannel => PlSqlLexer.Hidden;
@@ -24,6 +23,9 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) => new PlSqlParser(inputStream);
+        
+        public override AntlrLexer InitAntlrLexer()
+            => new PlSqlAntlrLexer();
 
         protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser) => ((PlSqlParser) parser).sql_script();
 

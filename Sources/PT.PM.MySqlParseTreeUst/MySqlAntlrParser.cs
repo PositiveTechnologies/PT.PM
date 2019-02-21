@@ -13,7 +13,6 @@ namespace PT.PM.SqlParseTreeUst
 
         public MySqlAntlrParser()
         {
-            Lexer = new MySqlAntlrLexer();
         }
 
         protected override int CommentsChannel => MySqlLexer.Hidden;
@@ -25,6 +24,9 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override Parser InitParser(ITokenStream inputStream) =>
             new MySqlParser(inputStream);
+        
+        public override AntlrLexer InitAntlrLexer()
+            => new MySqlAntlrLexer();
 
         protected override ParserRuleContext Parse(Parser parser) =>
             ((MySqlParser) parser).root();

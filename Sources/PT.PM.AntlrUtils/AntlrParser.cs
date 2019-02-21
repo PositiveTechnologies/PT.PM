@@ -14,19 +14,23 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser
     {
+        public static Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
+
         private static long processedFilesCount;
         private static long processedBytesCount;
         private static long checkNumber;
         private static volatile bool excessMemory;
         public Parser Parser { get; private set; }
-        
-        public AntlrLexer Lexer { get; protected set; }
+
+        public AntlrLexer Lexer { get; set; }
 
         protected abstract string ParserSerializedATN { get; }
-        
+
         protected abstract int CommentsChannel { get; }
 
         protected abstract Parser InitParser(ITokenStream inputStream);
+
+        public abstract AntlrLexer InitAntlrLexer();
 
         protected abstract ParserRuleContext Parse(Parser parser);
 
@@ -37,6 +41,7 @@ namespace PT.PM.AntlrUtils
         public AntlrParser()
         {
             Parser = InitParser(null);
+            Lexer = InitAntlrLexer();
         }
 
         public ParseTree Parse(TextFile sourceFile)
@@ -47,7 +52,6 @@ namespace PT.PM.AntlrUtils
             }
 
             AntlrParseTree result = null;
-            var filePath = sourceFile.RelativeName;
             var errorListener = new AntlrMemoryErrorListener();
             errorListener.SourceFile = sourceFile;
             errorListener.Logger = Logger;
@@ -57,9 +61,9 @@ namespace PT.PM.AntlrUtils
                 var stopwatch = Stopwatch.StartNew();
                 var tokens = Lexer?.GetTokens(sourceFile, errorListener);
                 var lexerTimeSpan = stopwatch.Elapsed;
-                
+
                 var commentTokens = new List<IToken>();
-                
+
                 foreach (IToken token in tokens)
                 {
                     if (token.Channel == CommentsChannel)
@@ -105,16 +109,19 @@ namespace PT.PM.AntlrUtils
                         exceededProcessedBytes ||
                         localProcessedFilesCount % ClearCacheFilesCount == 0)
                     {
+                        lock (Atns)
+                        {
+                            Atns.Remove(Language);
+                        }
+
+                        var lexerAtns = AntlrLexer.Atns;
                         lock (lexerAtns)
                         {
                             lexerAtns.Remove(Language);
                         }
-                        lock (parserAtns)
-                        {
-                            parserAtns.Remove(Language);
-                        }
 
-                        Logger.LogInfo($"Memory cleared due to big memory consumption during {sourceFile.RelativeName} parsing.");
+                        Logger.LogInfo(
+                            $"Memory cleared due to big memory consumption during {sourceFile.RelativeName} parsing.");
                     }
                 }
                 else
@@ -131,7 +138,7 @@ namespace PT.PM.AntlrUtils
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
             Parser parser = initParserFunc != null ? initParserFunc(codeTokenStream) : InitParser(codeTokenStream);
-            parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(false, ParserSerializedATN));
+            parser.Interpreter = new ParserATNSimulator(parser, this.GetOrCreateAtn(ParserSerializedATN));
             parser.RemoveErrorListeners();
             Parser = parser;
             ParserRuleContext syntaxTree = null;
