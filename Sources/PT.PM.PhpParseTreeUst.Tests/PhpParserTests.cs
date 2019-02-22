@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes;
@@ -32,7 +33,9 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 {
                     Name = "newLine.php",
                 };
-                var parseTree = (PhpAntlrParseTree)phpParser.Parse(sourceFile);
+                var tokens = Language.Php.CreateAntlrLexer().GetTokens(sourceFile);
+                phpParser.SourceFile = sourceFile;
+                var parseTree = (PhpAntlrParseTree)phpParser.Parse(tokens);
                 var converter = new PhpAntlrParseTreeConverter();
                 RootUst ust = converter.Convert(parseTree);
 

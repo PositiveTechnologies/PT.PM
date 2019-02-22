@@ -18,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Antlr4.Runtime;
 using PT.PM.Common.Files;
 using PT.PM.Common.MessagePack;
 
@@ -185,17 +186,27 @@ namespace PT.PM
                 {
                     var parser = detectionResult.Language.CreateParser();
                     parser.Logger = Logger;
-                    if (parser is AntlrParser)
-                    {
-                        AntlrBaseHandler.MemoryConsumptionBytes = (long) MemoryConsumptionMb * 1024 * 1024;
-                    }
 
                     if (parser is JavaScriptEsprimaParser javaScriptParser)
                     {
                         javaScriptParser.JavaScriptType = JavaScriptType;
                     }
 
-                    parseTree = parser.Parse(sourceTextFile);
+                    if (parser is AntlrParser antlrParser)
+                    {
+                        AntlrBaseHandler.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;                        
+                        var lexer = antlrParser.InitAntlrLexer();
+                        lexer.Logger = Logger;
+                        var tokens = lexer.GetTokens(sourceTextFile);
+                        
+                        antlrParser.SourceFile = sourceTextFile;
+                        antlrParser.ErrorListener = lexer.ErrorListener;
+                        parseTree = antlrParser.Parse(tokens);
+                    }
+                    else
+                    {
+                        parseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceTextFile);
+                    }
                 }
                 else
                 {

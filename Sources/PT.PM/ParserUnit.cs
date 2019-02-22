@@ -3,6 +3,8 @@ using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Antlr4.Runtime;
+using PT.PM.AntlrUtils;
 using PT.PM.Common.Files;
 
 namespace PT.PM
@@ -13,7 +15,7 @@ namespace PT.PM
 
         private ParserUnitLogger logger;
 
-        private ILanguageParser parser;
+        private IBaseLanguageParser parser;
 
         public Language Language { get; }
 
@@ -58,7 +60,17 @@ namespace PT.PM
 
         public void Parse(TextFile sourceFile)
         {
-            ParseTree = parser.Parse(sourceFile);
+            if (parser is AntlrParser antlrParser)
+            {
+                antlrParser.SourceFile = sourceFile;
+                var lexer = antlrParser.InitAntlrLexer();
+                antlrParser.ErrorListener = lexer.ErrorListener;
+                ParseTree = antlrParser.Parse(lexer?.GetTokens(sourceFile));
+            }
+            else
+            {
+                ParseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceFile);
+            }
         }
 
         public override string ToString()

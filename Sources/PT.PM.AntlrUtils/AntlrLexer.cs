@@ -30,8 +30,16 @@ namespace PT.PM.AntlrUtils
             Lexer = InitLexer(null);
         }
 
-        public IList<IToken> GetTokens(TextFile sourceFile, IAntlrErrorListener<int> errorListener)
+        public IList<IToken> GetTokens(TextFile sourceFile)
         {
+            if (ErrorListener == null)
+            {
+                ErrorListener = new AntlrMemoryErrorListener();
+                ErrorListener.Logger = Logger;
+                ErrorListener.LineOffset = LineOffset;
+            }
+            
+            ErrorListener.SourceFile = sourceFile;
             var preprocessedText = PreprocessText(sourceFile);
             AntlrInputStream inputStream;
             if (Language.IsCaseInsensitive())
@@ -48,7 +56,7 @@ namespace PT.PM.AntlrUtils
             Lexer lexer = InitLexer(inputStream);
             lexer.Interpreter = new LexerATNSimulator(lexer, this.GetOrCreateAtn(LexerSerializedATN));
             lexer.RemoveErrorListeners();
-            lexer.AddErrorListener(errorListener);
+            lexer.AddErrorListener(ErrorListener);
             var tokens = lexer.GetAllTokens();
 
             return tokens;

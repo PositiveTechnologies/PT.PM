@@ -8,6 +8,7 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrBaseHandler
     {
+        public AntlrMemoryErrorListener ErrorListener { get; set; }
         public static ILogger StaticLogger { get; set; } = DummyLogger.Instance;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
