@@ -7,7 +7,7 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
-    public class AspxParser : ILanguageParser
+    public class AspxParser : ILanguageParser<TextFile>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 

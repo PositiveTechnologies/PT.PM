@@ -9,7 +9,7 @@ namespace PT.PM.Common
     {
         private static readonly string[] LanguageSeparators = { " ", ",", ";", "|" };
 
-        private static readonly Dictionary<Language, Func<ILanguageParser>> parserConstructors = new Dictionary<Language, Func<ILanguageParser>>();
+        private static readonly Dictionary<Language, Func<IBaseLanguageParser>> parserConstructors = new Dictionary<Language, Func<IBaseLanguageParser>>();
         private static readonly Dictionary<Language, Func<IParseTreeToUstConverter>> converterConstructors = new Dictionary<Language, Func<IParseTreeToUstConverter>>();
 
         public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>
@@ -132,13 +132,13 @@ namespace PT.PM.Common
 
         public static bool IsParserExistsOrSerialized(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerialization();
 
-        public static void RegisterParserConverter(Language language, Func<ILanguageParser> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
+        public static void RegisterParserConverter(Language language, Func<IBaseLanguageParser> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
         {
             RegisterParser(language, parserConstructor);
             RegisterConverter(language, converterConstructor);
         }
 
-        public static void RegisterParser(Language language, Func<ILanguageParser> parserConstructor)
+        public static void RegisterParser(Language language, Func<IBaseLanguageParser> parserConstructor)
         {
             parserConstructors[language] = parserConstructor;
             LanguagesWithParser.Add(language);
@@ -149,9 +149,9 @@ namespace PT.PM.Common
             converterConstructors[language] = converterConstructor;
         }
 
-        public static ILanguageParser CreateParser(this Language language)
+        public static IBaseLanguageParser CreateParser(this Language language)
         {
-            if (parserConstructors.TryGetValue(language, out Func<ILanguageParser> parserConstructor))
+            if (parserConstructors.TryGetValue(language, out Func<IBaseLanguageParser> parserConstructor))
             {
                 return parserConstructor();
             }

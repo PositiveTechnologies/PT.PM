@@ -10,7 +10,7 @@ using Collections = System.Collections.Generic;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
-    public class JavaScriptEsprimaParser : ILanguageParser
+    public class JavaScriptEsprimaParser : ILanguageParser<TextFile>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 

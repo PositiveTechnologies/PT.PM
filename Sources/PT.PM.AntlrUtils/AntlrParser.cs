@@ -6,13 +6,14 @@ using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser
+    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser<IList<IToken>>
     {
         public static Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
 
@@ -27,6 +28,8 @@ namespace PT.PM.AntlrUtils
         protected abstract string ParserSerializedATN { get; }
 
         protected abstract int CommentsChannel { get; }
+        
+        public TextFile SourceFile { get; set; }
 
         protected abstract Parser InitParser(ITokenStream inputStream);
 
@@ -44,22 +47,31 @@ namespace PT.PM.AntlrUtils
             Lexer = InitAntlrLexer();
         }
 
-        public ParseTree Parse(TextFile sourceFile)
+        public ParseTree Parse(IList<IToken> tokens)
         {
-            if (sourceFile.Data == null)
+            if (!tokens.Any())
             {
                 return null;
             }
-
+            
+            if (SourceFile == null)
+            {
+                throw new ArgumentNullException(nameof(SourceFile));   
+            }
+            
+            if (ErrorListener == null)
+            {
+                ErrorListener = new AntlrMemoryErrorListener();
+                ErrorListener.Logger = Logger;
+                ErrorListener.LineOffset = LineOffset;
+            }
+            
+            ErrorListener.SourceFile = SourceFile;
+            
             AntlrParseTree result = null;
-            var errorListener = new AntlrMemoryErrorListener();
-            errorListener.SourceFile = sourceFile;
-            errorListener.Logger = Logger;
-            errorListener.LineOffset = LineOffset;
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var tokens = Lexer?.GetTokens(sourceFile, errorListener);
                 var lexerTimeSpan = stopwatch.Elapsed;
 
                 var commentTokens = new List<IToken>();
@@ -75,7 +87,7 @@ namespace PT.PM.AntlrUtils
                 stopwatch.Restart();
                 var codeTokenSource = new ListTokenSource(tokens);
                 var codeTokenStream = new CommonTokenStream(codeTokenSource);
-                ParserRuleContext syntaxTree = ParseTokens(sourceFile, errorListener, codeTokenStream);
+                ParserRuleContext syntaxTree = ParseTokens(SourceFile, ErrorListener, codeTokenStream);
                 stopwatch.Stop();
                 TimeSpan parserTimeSpan = stopwatch.Elapsed;
 
@@ -85,16 +97,16 @@ namespace PT.PM.AntlrUtils
 
                 result.Tokens = tokens;
                 result.Comments = commentTokens;
-                result.SourceFile = sourceFile;
+                result.SourceFile = SourceFile;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ParsingException(sourceFile, ex));
+                Logger.LogError(new ParsingException(SourceFile, ex));
             }
             finally
             {
                 long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
-                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceFile.Data.Length);
+                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, SourceFile.Data.Length);
 
                 long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
                 bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
@@ -121,7 +133,7 @@ namespace PT.PM.AntlrUtils
                         }
 
                         Logger.LogInfo(
-                            $"Memory cleared due to big memory consumption during {sourceFile.RelativeName} parsing.");
+                            $"Memory cleared due to big memory consumption during {SourceFile.RelativeName} parsing.");
                     }
                 }
                 else

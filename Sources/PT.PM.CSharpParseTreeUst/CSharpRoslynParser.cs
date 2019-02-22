@@ -11,7 +11,7 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
-    public class CSharpRoslynParser : ILanguageParser
+    public class CSharpRoslynParser : ILanguageParser<TextFile>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
