@@ -27,6 +27,12 @@ namespace PT.PM.Common.Files
             InitLineIndexes();
         }
 
+        public TextFile(string code, string name)
+            : this(code)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+        }
+
         public override string ToString() => !string.IsNullOrEmpty(RelativeName)
             ? RelativeName
             : Data;
