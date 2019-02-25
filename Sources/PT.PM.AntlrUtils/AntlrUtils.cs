@@ -34,10 +34,9 @@ namespace PT.PM.AntlrUtils
 
         public static AntlrLexer CreateAntlrLexer(this Language language)
         {
-            var parser = language.CreateParser();
-            if (parser is AntlrParser antlrParser)
+            if (language.CreateLexer() is AntlrLexer antlrLexer)
             {
-                return antlrParser.Lexer;
+                return antlrLexer;
             }
             throw new NotImplementedException($"{nameof(AntlrLexer)} for language {language} is not supported");
         }

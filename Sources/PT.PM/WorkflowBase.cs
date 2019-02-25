@@ -36,7 +36,7 @@ namespace PT.PM
 
         static WorkflowBase()
         {
-            Utils.RegisterAllParsersAndConverters();
+            Utils.RegisterAllLexersParsersAndConverters();
         }
 
         public TStage Stage { get; set; }

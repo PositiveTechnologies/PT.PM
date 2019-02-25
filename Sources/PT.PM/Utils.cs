@@ -22,19 +22,23 @@ namespace PT.PM
         public const int DefaultMaxStackSize = 4 * 1024 * 1024;
         public const string TimeSpanFormat = "mm\\:ss\\.ff";
 
-        public static void RegisterAllParsersAndConverters()
+        public static void RegisterAllLexersParsersAndConverters()
         {
             LanguageUtils.RegisterParserConverter(Language.CSharp, CSharpRoslynParser.Create, CSharpRoslynParseTreeConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.Java, JavaAntlrParser.Create, JavaAntlrParseTreeConverter.Create);
+            LanguageUtils.RegisterLexer(Language.Java, JavaAntlrLexer.Create);
             LanguageUtils.RegisterParserConverter(Language.Php, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
+            LanguageUtils.RegisterLexer(Language.Php, PhpAntlrLexer.Create);
 
             LanguageUtils.RegisterParserConverter(Language.PlSql, PlSqlAntlrParser.Create, PlSqlAntlrConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.TSql, TSqlAntlrParser.Create, TSqlAntlrConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.MySql, MySqlAntlrParser.Create, MySqlAntlrConverter.Create);
+            LanguageUtils.RegisterLexer(Language.PlSql, PlSqlAntlrLexer.Create);
+            LanguageUtils.RegisterLexer(Language.TSql, TSqlAntlrLexer.Create);
+            LanguageUtils.RegisterLexer(Language.MySql, MySqlAntlrLexer.Create);
 
             LanguageUtils.RegisterParserConverter(Language.JavaScript, JavaScriptEsprimaParser.Create, JavaScriptEsprimaParseTreeConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.Aspx, CSharpParseTreeUst.AspxParser.Create, AspxConverter.Create);
-            LanguageUtils.RegisterParserConverter(Language.MySql, MySqlAntlrParser.Create, MySqlAntlrConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.Html, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
         }
 

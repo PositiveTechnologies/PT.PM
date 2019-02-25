@@ -9,7 +9,8 @@ namespace PT.PM.Common
     {
         private static readonly string[] LanguageSeparators = { " ", ",", ";", "|" };
 
-        private static readonly Dictionary<Language, Func<IBaseLanguageParser>> parserConstructors = new Dictionary<Language, Func<IBaseLanguageParser>>();
+        private static readonly Dictionary<Language, Func<ILanguageLexer>> lexerConstructors = new Dictionary<Language, Func<ILanguageLexer>>();
+        private static readonly Dictionary<Language, Func<ILanguageParserBase>> parserConstructors = new Dictionary<Language, Func<ILanguageParserBase>>();
         private static readonly Dictionary<Language, Func<IParseTreeToUstConverter>> converterConstructors = new Dictionary<Language, Func<IParseTreeToUstConverter>>();
 
         public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>
@@ -73,6 +74,7 @@ namespace PT.PM.Common
         public static readonly HashSet<Language> PatternLanguages = new HashSet<Language>();
         public static readonly Dictionary<Language, HashSet<Language>> SuperLanguages = new Dictionary<Language, HashSet<Language>>();
         public static readonly HashSet<Language> LanguagesWithParser = new HashSet<Language>();
+        public static readonly HashSet<Language> LanguagesWithLexer = new HashSet<Language>();
 
         static LanguageUtils()
         {
@@ -132,13 +134,13 @@ namespace PT.PM.Common
 
         public static bool IsParserExistsOrSerialized(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerialization();
 
-        public static void RegisterParserConverter(Language language, Func<IBaseLanguageParser> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
+        public static void RegisterParserConverter(Language language, Func<ILanguageParserBase> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
         {
             RegisterParser(language, parserConstructor);
             RegisterConverter(language, converterConstructor);
         }
 
-        public static void RegisterParser(Language language, Func<IBaseLanguageParser> parserConstructor)
+        public static void RegisterParser(Language language, Func<ILanguageParserBase> parserConstructor)
         {
             parserConstructors[language] = parserConstructor;
             LanguagesWithParser.Add(language);
@@ -149,9 +151,15 @@ namespace PT.PM.Common
             converterConstructors[language] = converterConstructor;
         }
 
-        public static IBaseLanguageParser CreateParser(this Language language)
+        public static void RegisterLexer(Language language, Func<ILanguageLexer> lexerConstructor)
         {
-            if (parserConstructors.TryGetValue(language, out Func<IBaseLanguageParser> parserConstructor))
+            lexerConstructors[language] = lexerConstructor;
+            LanguagesWithLexer.Add(language);
+        }
+
+        public static ILanguageParserBase CreateParser(this Language language)
+        {
+            if (parserConstructors.TryGetValue(language, out Func<ILanguageParserBase> parserConstructor))
             {
                 return parserConstructor();
             }
@@ -167,6 +175,16 @@ namespace PT.PM.Common
             }
 
             throw new NotImplementedException($"Language {language} converter is not supported");
+        }
+
+        public static ILanguageLexer CreateLexer(this Language language)
+        {
+            if (lexerConstructors.TryGetValue(language, out Func<ILanguageLexer> converterConstructor))
+            {
+                return converterConstructor();
+            }
+
+            throw new NotImplementedException($"Language {language} lexer is not supported");
         }
 
         public static HashSet<Language> ParseLanguages(this string languages, bool allByDefault = true,
