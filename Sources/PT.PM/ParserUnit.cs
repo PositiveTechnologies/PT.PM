@@ -15,7 +15,7 @@ namespace PT.PM
 
         private ParserUnitLogger logger;
 
-        private IBaseLanguageParser parser;
+        private ILanguageParserBase parser;
 
         public Language Language { get; }
 
