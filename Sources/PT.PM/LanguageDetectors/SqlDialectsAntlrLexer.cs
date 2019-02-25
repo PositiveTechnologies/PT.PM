@@ -8,6 +8,8 @@ namespace PT.PM
 {
     public class SqlDialectsAntlrLexer : AntlrLexer
     {
+        public static SqlDialectsAntlrLexer Create() => new SqlDialectsAntlrLexer();
+        
         private Language detectedLanguage = Language.PlSql;
         public override Language Language => detectedLanguage;
 
