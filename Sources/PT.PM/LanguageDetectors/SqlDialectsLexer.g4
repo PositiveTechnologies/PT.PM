@@ -2,25 +2,28 @@ lexer grammar SqlDialectsLexer;
 
 channels {ERRORCHANNEL}
 
-SINGLE_LINE_COMMENT: '--' ~('\r' | '\n')* NEWLINE_EOF   -> channel(HIDDEN);
-MULTI_LINE_COMMENT:  '/*' .*? '*/'                      -> channel(HIDDEN);
-SPACE: [ \t\r\n]+                                       -> channel(HIDDEN);
+SINGLE_LINE_COMMENT: ('--' | '//' | '#' ) ~('\r' | '\n')* NEWLINE_EOF   -> channel(HIDDEN);
+MULTI_LINE_COMMENT:  '/*' .*? '*/'                               -> channel(HIDDEN);
+STRING:              ('N'? '\'' (~'\'' | '\'\'')* '\'') 
+                    | ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"');
+AFTER_DOT_IGNORED: '.' .*? (SPACE | STRING)                      -> channel(HIDDEN);
+SPACE: [ \t\r\n]+                                                -> channel(HIDDEN);
 SEMICOLON: ';';
+
 
 fragment NEWLINE_EOF    : NEWLINE | EOF;
 fragment NEWLINE        : '\r'? '\n';
 
 MY_SQL
-    : 'DELIMITER'
+    : (('DELIMITER'
     | 'NAMES'
     | 'UNDOFILE'
     | 'ENGINE'
-    | 'INITIAL_SIZE'
-    | '`' ~'`'+ '`'
-    | 'RETURNS';
+    | 'INITIAL_SIZE') SPACE)
+    | '`' ~'`'+ '`';
 
 PL_SQL    
-    : 'AUTOEXTEND'
+    : (('AUTOEXTEND'
     | 'REFRESH'
     | 'STORE'
     | 'VALIDATE'
@@ -30,18 +33,16 @@ PL_SQL
     | 'INITRANS' 
     | 'LOB'
     | 'WHENEVER'
-    | '<>'
     | 'HASHKEYS' 
     | 'STRUCTURE' 
     | 'BIGFILE' 
     | 'BUILD' 
     | 'NESTED' 
-    | 'NEW'
-    | 'INTEGER';
+    | 'NEW') SPACE);
 
 
 T_SQL
-    : 'TOP'
+    : (('TOP'
     | 'SERVICE'
     | 'PRINT'
     | 'LOGIN'
@@ -60,7 +61,6 @@ T_SQL
     | 'ROUTE'
     | 'MESSAGE'
     | 'CONTRACT'
-    | 'GO'
-    | '[' ~']'+ ']';
+    | 'GO') SPACE);
 
 ERROR_RECONGNIGION:   . -> channel(ERRORCHANNEL);
