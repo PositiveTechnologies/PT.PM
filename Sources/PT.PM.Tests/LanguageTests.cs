@@ -17,7 +17,7 @@ namespace PT.PM.Tests
         [SetUp]
         public void Init()
         {
-            Utils.RegisterAllParsersAndConverters();
+            Utils.RegisterAllLexersParsersAndConverters();
         }
 
         [Test]
@@ -71,6 +71,7 @@ namespace PT.PM.Tests
         {
             var source =
                 new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
+            source.Name = fileName;
             DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(source);
             Assert.AreEqual(expectedLanguage, detectedLanguage.Language);
         }
@@ -88,20 +89,42 @@ namespace PT.PM.Tests
         public void DetectLanguageIfRequired_Source_CorrectLanguage()
         {
             var languageDetector = new ParserLanguageDetector();
-
-            var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
-            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql, Language.MySql });
+            var sqlLanguages = new HashSet<Language>{ Language.PlSql, Language.TSql, Language.MySql };
+            var plSqlFileName = "plsql_patterns.sql";
+            var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, plSqlFileName)));
+            plSqlFile.Name = plSqlFileName;
+            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, sqlLanguages);
 
             Assert.AreEqual(Language.PlSql, detectionResult.Language);
 
             // Force parse file with specified language.
             detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.TSql });
             Assert.AreEqual(Language.TSql, detectionResult.Language);
-            
-            var mySqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "mysql_patterns.sql")));
-            detectionResult = languageDetector.DetectIfRequired(mySqlFile, new HashSet<Language> { Language.PlSql, Language.TSql, Language.MySql });
+
+            var mySqlFileName = "mysql_patterns.sql";
+            var mySqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, mySqlFileName)));
+            mySqlFile.Name = mySqlFileName;
+            detectionResult = languageDetector.DetectIfRequired(mySqlFile, sqlLanguages);
 
             Assert.AreEqual(Language.MySql, detectionResult.Language);
+        }
+
+        [TestCase(Language.MySql)]
+        [TestCase(Language.TSql)]
+        [TestCase(Language.PlSql)]
+        public void DetectSqlDialects(Language language)
+        {
+            var testFolder = Path.Combine(TestUtility.GrammarsDirectory, language.ToString().ToLowerInvariant(),
+                "examples");
+            var languageDetector = new ParserLanguageDetector();
+            var directoryCodeRepository = new DirectorySourceRepository(testFolder);
+            var fileNames = directoryCodeRepository.GetFileNames();
+            foreach (var fileName in fileNames)
+            {
+                var file = new TextFile(File.ReadAllText(fileName), fileName);
+                var detectionResult = languageDetector.DetectIfRequired(file);
+                Assert.AreEqual(language, detectionResult.Language);
+            }
         }
     }
 }
