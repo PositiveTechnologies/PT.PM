@@ -3,13 +3,14 @@ lexer grammar SqlDialectsLexer;
 channels {ERRORCHANNEL}
 
 SINGLE_LINE_COMMENT: ('--' | '//' | '#' ) ~('\r' | '\n')* NEWLINE_EOF   -> channel(HIDDEN);
-MULTI_LINE_COMMENT:  '/*' .*? '*/'                               -> channel(HIDDEN);
-STRING:              ('N'? '\'' (~'\'' | '\'\'')* '\'') 
-                    | ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"');
-AFTER_DOT_IGNORED: '.' .*? (SPACE | STRING)                      -> channel(HIDDEN);
-SPACE: [ \t\r\n]+                                                -> channel(HIDDEN);
+MULTI_LINE_COMMENT:  '/*' .*? '*/'                               -> channel(HIDDEN);                 
 SEMICOLON: ';';
-
+AFTER_DOT_IGNORED: '.' .*? (SPACE_FRAGMENT | STRING)                      -> channel(HIDDEN);
+SPACE: SPACE_FRAGMENT                                               -> channel(HIDDEN);
+fragment SPACE_FRAGMENT : [ \t\r\n]+;
+STRING
+      :('N'? '\'' (~'\'' | '\'\'')* '\'') 
+      | ('"' ( '\\'. | '""' | ~('"'| '\\') )* '"');   
 
 fragment NEWLINE_EOF    : NEWLINE | EOF;
 fragment NEWLINE        : '\r'? '\n';
@@ -19,7 +20,7 @@ MY_SQL
     | 'NAMES'
     | 'UNDOFILE'
     | 'ENGINE'
-    | 'INITIAL_SIZE') SPACE)
+    | 'INITIAL_SIZE') SPACE_FRAGMENT)
     | '`' ~'`'+ '`';
 
 PL_SQL    
@@ -38,7 +39,7 @@ PL_SQL
     | 'BIGFILE' 
     | 'BUILD' 
     | 'NESTED' 
-    | 'NEW') SPACE);
+    | 'NEW') SPACE_FRAGMENT);
 
 
 T_SQL
@@ -61,6 +62,7 @@ T_SQL
     | 'ROUTE'
     | 'MESSAGE'
     | 'CONTRACT'
-    | 'GO') SPACE);
+    | 'GO') SPACE_FRAGMENT);
 
+ID: [A-Z]+;
 ERROR_RECONGNIGION:   . -> channel(ERRORCHANNEL);
