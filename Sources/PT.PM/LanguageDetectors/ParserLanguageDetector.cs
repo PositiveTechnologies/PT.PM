@@ -53,7 +53,7 @@ namespace PT.PM
 
             if (langs.Any(l => l.IsSql()))
             {
-                var inputStream = new AntlrCaseInsensitiveInputStream(sourceFile.Data, CaseInsensitiveType.None);
+                var inputStream = new AntlrCaseInsensitiveInputStream(sourceFile.Data, CaseInsensitiveType.UPPER);
                 var sqlLexer = new SqlDialectsAntlrLexer();
                 var dialect = DetectSqlDialect((SqlDialectsLexer)sqlLexer.InitLexer(inputStream));
                 if (dialect != Language.Uncertain)
