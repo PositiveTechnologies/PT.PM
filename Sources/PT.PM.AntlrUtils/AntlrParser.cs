@@ -13,14 +13,10 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser<IList<IToken>>
+    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser<IEnumerable<IToken>>
     {
         public static Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
-
-        private static long processedFilesCount;
-        private static long processedBytesCount;
-        private static long checkNumber;
-        private static volatile bool excessMemory;
+        
         public Parser Parser { get; private set; }
 
         public AntlrLexer Lexer { get; set; }
@@ -28,8 +24,6 @@ namespace PT.PM.AntlrUtils
         protected abstract string ParserSerializedATN { get; }
 
         protected abstract int CommentsChannel { get; }
-        
-        public TextFile SourceFile { get; set; }
 
         protected abstract Parser InitParser(ITokenStream inputStream);
 
@@ -47,9 +41,10 @@ namespace PT.PM.AntlrUtils
             Lexer = InitAntlrLexer();
         }
 
-        public ParseTree Parse(IList<IToken> tokens)
+        public ParseTree Parse(IEnumerable<IToken> tokens)
         {
-            if (!tokens.Any())
+            var tokensList = tokens.ToList();
+            if (!tokensList.Any())
             {
                 return null;
             }
@@ -76,7 +71,7 @@ namespace PT.PM.AntlrUtils
 
                 var commentTokens = new List<IToken>();
 
-                foreach (IToken token in tokens)
+                foreach (IToken token in tokensList)
                 {
                     if (token.Channel == CommentsChannel)
                     {
@@ -85,7 +80,7 @@ namespace PT.PM.AntlrUtils
                 }
 
                 stopwatch.Restart();
-                var codeTokenSource = new ListTokenSource(tokens);
+                var codeTokenSource = new ListTokenSource(tokensList);
                 var codeTokenStream = new CommonTokenStream(codeTokenSource);
                 ParserRuleContext syntaxTree = ParseTokens(SourceFile, ErrorListener, codeTokenStream);
                 stopwatch.Stop();
@@ -95,7 +90,7 @@ namespace PT.PM.AntlrUtils
                 result.LexerTimeSpan = lexerTimeSpan;
                 result.ParserTimeSpan = parserTimeSpan;
 
-                result.Tokens = tokens;
+                result.Tokens = tokensList;
                 result.Comments = commentTokens;
                 result.SourceFile = SourceFile;
             }
@@ -105,41 +100,7 @@ namespace PT.PM.AntlrUtils
             }
             finally
             {
-                long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
-                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, SourceFile.Data.Length);
-
-                long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
-                bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
-                checkNumber = divideResult;
-
-                if (Process.GetCurrentProcess().PrivateMemorySize64 > MemoryConsumptionBytes)
-                {
-                    bool prevExcessMemory = excessMemory;
-                    excessMemory = true;
-
-                    if (!prevExcessMemory ||
-                        exceededProcessedBytes ||
-                        localProcessedFilesCount % ClearCacheFilesCount == 0)
-                    {
-                        lock (Atns)
-                        {
-                            Atns.Remove(Language);
-                        }
-
-                        var lexerAtns = AntlrLexer.Atns;
-                        lock (lexerAtns)
-                        {
-                            lexerAtns.Remove(Language);
-                        }
-
-                        Logger.LogInfo(
-                            $"Memory cleared due to big memory consumption during {SourceFile.RelativeName} parsing.");
-                    }
-                }
-                else
-                {
-                    excessMemory = false;
-                }
+                HandleMemoryConsumption(Atns);
             }
 
             return result;
