@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrLexer : AntlrBaseHandler
+    public abstract class AntlrLexer : AntlrBaseHandler, ILanguageLexer
     {
         public static Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
 
@@ -30,18 +31,21 @@ namespace PT.PM.AntlrUtils
             Lexer = InitLexer(null);
         }
 
-        public IList<IToken> GetTokens(TextFile sourceFile)
+        public IEnumerable<IToken> GetTokens(TextFile sourceFile)
         {
+            SourceFile = sourceFile;
             if (ErrorListener == null)
             {
                 ErrorListener = new AntlrMemoryErrorListener();
                 ErrorListener.Logger = Logger;
                 ErrorListener.LineOffset = LineOffset;
             }
+            var tokens = Enumerable.Empty<IToken>();
             
             ErrorListener.SourceFile = sourceFile;
             var preprocessedText = PreprocessText(sourceFile);
             AntlrInputStream inputStream;
+            
             if (Language.IsCaseInsensitive())
             {
                 inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
@@ -50,14 +54,24 @@ namespace PT.PM.AntlrUtils
             {
                 inputStream = new AntlrInputStream(preprocessedText);
             }
-
             inputStream.name = sourceFile.RelativeName;
-
-            Lexer lexer = InitLexer(inputStream);
-            lexer.Interpreter = new LexerATNSimulator(lexer, this.GetOrCreateAtn(LexerSerializedATN));
-            lexer.RemoveErrorListeners();
-            lexer.AddErrorListener(ErrorListener);
-            var tokens = lexer.GetAllTokens();
+            
+            try
+            {
+                Lexer lexer = InitLexer(inputStream);
+                lexer.Interpreter = new LexerATNSimulator(lexer, this.GetOrCreateAtn(LexerSerializedATN));
+                lexer.RemoveErrorListeners();
+                lexer.AddErrorListener(ErrorListener);
+                tokens = lexer.GetAllTokens();
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(new LexingException(SourceFile, ex));
+            }
+            finally
+            {
+                HandleMemoryConsumption(Atns);
+            }
 
             return tokens;
         }
