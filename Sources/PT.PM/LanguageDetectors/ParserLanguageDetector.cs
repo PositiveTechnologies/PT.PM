@@ -51,7 +51,7 @@ namespace PT.PM
                 return new DetectionResult(langs[0]);
             }
 
-            if (langs.Any(l => l.IsSql()))
+            if (sourceFile.Name.EndsWith(".sql") || sourceFile.Name.EndsWith(".ddl"))
             {
                 var inputStream = new AntlrCaseInsensitiveInputStream(sourceFile.Data, CaseInsensitiveType.UPPER);
                 var sqlLexer = new SqlDialectsAntlrLexer();
@@ -102,7 +102,7 @@ namespace PT.PM
 
             int resultLastErrorOffset = 0;
             ParserUnit result = null;
-            int resultErrorsCount = int.MaxValue;
+            int resultErrorsCount = 0;
 
             foreach (ParserUnit parseUnit in parseUnits)
             {
@@ -128,14 +128,14 @@ namespace PT.PM
                 else if (currentLastErrorOffset == resultLastErrorOffset)
                 {
                     int errorCount = parseErrors.Count;
-                    if (errorCount < resultErrorsCount)
+                    if (errorCount == resultErrorsCount && previousLanguage != Language.Uncertain)
+                    {
+                        result = new ParserUnit(previousLanguage, null);
+                    }
+                    else if (errorCount < resultErrorsCount)
                     {
                         resultErrorsCount = errorCount;
                         result = parseUnit;
-                    }
-                    else if (errorCount == resultErrorsCount && previousLanguage != Language.Uncertain)
-                    {
-                        result = new ParserUnit(previousLanguage, null);
                     }
                 }
             }
@@ -157,6 +157,10 @@ namespace PT.PM
             {
                 throw new ArgumentNullException(nameof(lexer));
             }
+
+            var tSqlTokensCount = 0;
+            var mySqlTokensCount = 0;
+            var plSqlTokensCount = 0;
             
             var tokens = lexer.GetAllTokens();
 
@@ -165,17 +169,23 @@ namespace PT.PM
                 switch (token.Type)
                 {
                     case SqlDialectsLexer.T_SQL:
-                        return Language.TSql;
+                        tSqlTokensCount++;
+                        break;
                     case SqlDialectsLexer.MY_SQL:
-                        return Language.MySql;
+                        mySqlTokensCount++;
+                        break;
                     case SqlDialectsLexer.PL_SQL:
-                        return Language.PlSql;
-                    default:
-                        continue;
+                        plSqlTokensCount++;
+                        break;
                 }
             }
 
-            return Language.Uncertain;
+            var tokensCountArray = new []
+            {
+                (Language.MySql, mySqlTokensCount), (Language.PlSql, plSqlTokensCount), (Language.TSql, tSqlTokensCount)
+            }.Where(x => x.Item2 != 0).OrderByDescending(x => x.Item2).ToArray();
+
+            return tokensCountArray.FirstOrDefault().Item1;
         }
     }
 }
