@@ -11,10 +11,6 @@ namespace PT.PM.SqlParseTreeUst
 
         public static PlSqlAntlrParser Create() => new PlSqlAntlrParser();
 
-        public PlSqlAntlrParser()
-        {
-        }
-
         protected override int CommentsChannel => PlSqlLexer.Hidden;
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
@@ -22,13 +18,9 @@ namespace PT.PM.SqlParseTreeUst
             return new PlSqlAntlrParseTree((PlSqlParser.Sql_scriptContext) syntaxTree);
         }
 
-        protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) => new PlSqlParser(inputStream);
-        
-        public override AntlrLexer InitAntlrLexer()
-            => new PlSqlAntlrLexer();
+        protected override Parser InitParser(ITokenStream inputStream) => new PlSqlParser(inputStream);
 
-        protected override ParserRuleContext Parse(Antlr4.Runtime.Parser parser) => ((PlSqlParser) parser).sql_script();
-
+        protected override ParserRuleContext Parse(Parser parser) => ((PlSqlParser) parser).sql_script();
 
         protected override string ParserSerializedATN => PlSqlParser._serializedATN;
     }

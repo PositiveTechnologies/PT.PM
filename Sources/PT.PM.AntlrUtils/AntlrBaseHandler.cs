@@ -14,15 +14,17 @@ namespace PT.PM.AntlrUtils
         private long processedBytesCount;
         private long checkNumber;
         private volatile bool excessMemory;
-        
+
         public AntlrMemoryErrorListener ErrorListener { get; set; }
+
         public static ILogger StaticLogger { get; set; } = DummyLogger.Instance;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
-        
+
         public TextFile SourceFile { get; set; }
 
         public abstract Language Language { get; }
+
         public bool UseFastParseStrategyAtFirst { get; set; } = true;
 
         public static long MemoryConsumptionBytes { get; set; } = 3 * 1024 * 1024 * 1024L;

@@ -1,8 +1,6 @@
 ﻿using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using System.IO;
-using PT.PM.Common.Files;
 
 namespace PT.PM.PhpParseTreeUst
 {
@@ -12,16 +10,9 @@ namespace PT.PM.PhpParseTreeUst
 
         public static PhpAntlrParser Create() => new PhpAntlrParser();
 
-        public PhpAntlrParser()
-        {
-        }
-
         protected override int CommentsChannel => PhpLexer.PhpComments;
 
         protected override Parser InitParser(ITokenStream inputStream) => new PhpParser(inputStream);
-        
-        public override AntlrLexer InitAntlrLexer()
-            => new PhpAntlrLexer();
 
         protected override ParserRuleContext Parse(Parser parser) => ((PhpParser) parser).htmlDocument();
 

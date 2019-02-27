@@ -11,10 +11,6 @@ namespace PT.PM.SqlParseTreeUst
 
         public static MySqlAntlrParser Create() => new MySqlAntlrParser();
 
-        public MySqlAntlrParser()
-        {
-        }
-
         protected override int CommentsChannel => MySqlLexer.Hidden;
 
         protected override string ParserSerializedATN => MySqlParser._serializedATN;
@@ -24,9 +20,6 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override Parser InitParser(ITokenStream inputStream) =>
             new MySqlParser(inputStream);
-        
-        public override AntlrLexer InitAntlrLexer()
-            => new MySqlAntlrLexer();
 
         protected override ParserRuleContext Parse(Parser parser) =>
             ((MySqlParser) parser).root();

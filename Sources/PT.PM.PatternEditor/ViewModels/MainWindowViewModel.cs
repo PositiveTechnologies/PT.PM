@@ -392,7 +392,7 @@ namespace PT.PM.PatternEditor
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    SelectedLanguage = languageDetector.DetectIfRequired(value).Language;
+                    SelectedLanguage = languageDetector.DetectIfRequired(value, out TimeSpan _).Language;
                 }
                 Settings.SourceFile = value;
                 Settings.Save();

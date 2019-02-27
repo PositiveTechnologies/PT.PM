@@ -2,6 +2,7 @@
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using PT.PM.Common.Files;
 
@@ -15,7 +16,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public static AspxParser Create() => new AspxParser();
 
-        public ParseTree Parse(TextFile sourceFile)
+        public ParseTree Parse(TextFile sourceFile, out TimeSpan parserTimeSpan)
         {
             if (sourceFile.Data == null)
             {
@@ -24,6 +25,7 @@ namespace PT.PM.CSharpParseTreeUst
 
             try
             {
+                var stopwatch = Stopwatch.StartNew();
                 var parser = new global::AspxParser.AspxParser(sourceFile.RelativePath);
                 var source = new AspxSource(sourceFile.FullName, sourceFile.Data);
                 AspxParseResult aspxTree = parser.Parse(source);
@@ -36,6 +38,9 @@ namespace PT.PM.CSharpParseTreeUst
                 }
                 var result = new AspxParseTree(aspxTree.RootNode);
                 result.SourceFile = sourceFile;
+                stopwatch.Stop();
+
+                parserTimeSpan = stopwatch.Elapsed;
 
                 return result;
             }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.AntlrUtils;
@@ -23,7 +24,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
         public void Parse_NewLine_CorrectLineColumn()
         {
             string fileText = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "newLine -r-n.php"));
-            var lineEnds = new string[] { "\r", "\n", "\r\n" };
+            var lineEnds = new [] { "\r", "\n", "\r\n" };
 
             foreach (var lineEnd in lineEnds)
             {
@@ -33,9 +34,9 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 {
                     Name = "newLine.php",
                 };
-                var tokens = Language.Php.CreateAntlrLexer().GetTokens(sourceFile);
+                var tokens = Language.Php.CreateAntlrLexer().GetTokens(sourceFile, out TimeSpan _);
                 phpParser.SourceFile = sourceFile;
-                var parseTree = (PhpAntlrParseTree)phpParser.Parse(tokens);
+                var parseTree = (PhpAntlrParseTree)phpParser.Parse(tokens, out TimeSpan _);
                 var converter = new PhpAntlrParseTreeConverter();
                 RootUst ust = converter.Convert(parseTree);
 

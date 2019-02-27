@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
@@ -26,12 +27,7 @@ namespace PT.PM.AntlrUtils
 
         public abstract Lexer InitLexer(ICharStream inputStream);
 
-        public AntlrLexer()
-        {
-            Lexer = InitLexer(null);
-        }
-
-        public IEnumerable<IToken> GetTokens(TextFile sourceFile)
+        public IList<IToken> GetTokens(TextFile sourceFile, out TimeSpan lexerTimeSpan)
         {
             SourceFile = sourceFile;
             if (ErrorListener == null)
@@ -40,12 +36,11 @@ namespace PT.PM.AntlrUtils
                 ErrorListener.Logger = Logger;
                 ErrorListener.LineOffset = LineOffset;
             }
-            var tokens = Enumerable.Empty<IToken>();
-            
+
             ErrorListener.SourceFile = sourceFile;
             var preprocessedText = PreprocessText(sourceFile);
             AntlrInputStream inputStream;
-            
+
             if (Language.IsCaseInsensitive())
             {
                 inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
@@ -55,18 +50,23 @@ namespace PT.PM.AntlrUtils
                 inputStream = new AntlrInputStream(preprocessedText);
             }
             inputStream.name = sourceFile.RelativeName;
-            
+
+            IList<IToken> tokens;
             try
             {
+                var stopwatch = Stopwatch.StartNew();
                 Lexer lexer = InitLexer(inputStream);
                 lexer.Interpreter = new LexerATNSimulator(lexer, this.GetOrCreateAtn(LexerSerializedATN));
                 lexer.RemoveErrorListeners();
                 lexer.AddErrorListener(ErrorListener);
                 tokens = lexer.GetAllTokens();
+                stopwatch.Stop();
+                lexerTimeSpan = stopwatch.Elapsed;
             }
             catch(Exception ex)
             {
                 Logger.LogError(new LexingException(SourceFile, ex));
+                tokens = new List<IToken>();
             }
             finally
             {

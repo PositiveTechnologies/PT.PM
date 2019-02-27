@@ -6,28 +6,21 @@ using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser<IEnumerable<IToken>>
+    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser<IList<IToken>>
     {
-        public static Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
-        
-        public Parser Parser { get; private set; }
+        public static readonly Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
 
-        public AntlrLexer Lexer { get; set; }
+        public Parser Parser { get; private set; }
 
         protected abstract string ParserSerializedATN { get; }
 
         protected abstract int CommentsChannel { get; }
 
         protected abstract Parser InitParser(ITokenStream inputStream);
-
-        public abstract AntlrLexer InitAntlrLexer();
 
         protected abstract ParserRuleContext Parse(Parser parser);
 
@@ -38,40 +31,30 @@ namespace PT.PM.AntlrUtils
         public AntlrParser()
         {
             Parser = InitParser(null);
-            Lexer = InitAntlrLexer();
         }
 
-        public ParseTree Parse(IEnumerable<IToken> tokens)
+        public ParseTree Parse(IList<IToken> tokens, out TimeSpan parserTimeSpan)
         {
-            var tokensList = tokens.ToList();
-            if (!tokensList.Any())
-            {
-                return null;
-            }
-            
             if (SourceFile == null)
             {
-                throw new ArgumentNullException(nameof(SourceFile));   
+                throw new ArgumentNullException(nameof(SourceFile));
             }
-            
+
             if (ErrorListener == null)
             {
                 ErrorListener = new AntlrMemoryErrorListener();
                 ErrorListener.Logger = Logger;
                 ErrorListener.LineOffset = LineOffset;
             }
-            
+
             ErrorListener.SourceFile = SourceFile;
-            
+
             AntlrParseTree result = null;
             try
             {
-                var stopwatch = Stopwatch.StartNew();
-                var lexerTimeSpan = stopwatch.Elapsed;
-
                 var commentTokens = new List<IToken>();
 
-                foreach (IToken token in tokensList)
+                foreach (IToken token in tokens)
                 {
                     if (token.Channel == CommentsChannel)
                     {
@@ -79,18 +62,16 @@ namespace PT.PM.AntlrUtils
                     }
                 }
 
-                stopwatch.Restart();
-                var codeTokenSource = new ListTokenSource(tokensList);
+                var stopwatch = Stopwatch.StartNew();
+                var codeTokenSource = new ListTokenSource(tokens);
                 var codeTokenStream = new CommonTokenStream(codeTokenSource);
-                ParserRuleContext syntaxTree = ParseTokens(SourceFile, ErrorListener, codeTokenStream);
+                ParserRuleContext syntaxTree = ParseTokens(ErrorListener, codeTokenStream);
                 stopwatch.Stop();
-                TimeSpan parserTimeSpan = stopwatch.Elapsed;
+                parserTimeSpan = stopwatch.Elapsed;
 
                 result = Create(syntaxTree);
-                result.LexerTimeSpan = lexerTimeSpan;
-                result.ParserTimeSpan = parserTimeSpan;
 
-                result.Tokens = tokensList;
+                result.Tokens = tokens;
                 result.Comments = commentTokens;
                 result.SourceFile = SourceFile;
             }
@@ -106,7 +87,7 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-        protected ParserRuleContext ParseTokens(TextFile sourceFile,
+        private ParserRuleContext ParseTokens(
             AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
