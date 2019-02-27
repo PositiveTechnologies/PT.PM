@@ -93,18 +93,18 @@ namespace PT.PM.Tests
             var plSqlFileName = "plsql_patterns.sql";
             var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, plSqlFileName)));
             plSqlFile.Name = plSqlFileName;
-            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, sqlLanguages);
+            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, out TimeSpan _, sqlLanguages);
 
             Assert.AreEqual(Language.PlSql, detectionResult.Language);
 
             // Force parse file with specified language.
-            detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.TSql });
+            detectionResult = languageDetector.DetectIfRequired(plSqlFile, out TimeSpan _, new HashSet<Language> { Language.TSql });
             Assert.AreEqual(Language.TSql, detectionResult.Language);
 
             var mySqlFileName = "mysql_patterns.sql";
             var mySqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, mySqlFileName)));
             mySqlFile.Name = mySqlFileName;
-            detectionResult = languageDetector.DetectIfRequired(mySqlFile, sqlLanguages);
+            detectionResult = languageDetector.DetectIfRequired(mySqlFile, out TimeSpan _, sqlLanguages);
 
             Assert.AreEqual(Language.MySql, detectionResult.Language);
         }
@@ -116,15 +116,30 @@ namespace PT.PM.Tests
         {
             var testFolder = Path.Combine(TestUtility.GrammarsDirectory, language.ToString().ToLowerInvariant(),
                 "examples");
-            var languageDetector = new ParserLanguageDetector();
             var directoryCodeRepository = new DirectorySourceRepository(testFolder);
             var fileNames = directoryCodeRepository.GetFileNames();
+
+            int totalFilesCount = 0;
+            int ambiguousFilesCount = 0;
+
             foreach (var fileName in fileNames)
             {
-                var file = new TextFile(File.ReadAllText(fileName), fileName);
-                var detectionResult = languageDetector.DetectIfRequired(file);
-                Assert.AreEqual(language, detectionResult.Language);
+                string data = File.ReadAllText(fileName);
+                List<Language> sqls = LanguageDetector.DetectSqlDialect(data);
+
+                if (sqls.Count > 1)
+                {
+                    Console.WriteLine($"{fileName} has been recognized as {string.Join(", ", sqls)}");
+                    ambiguousFilesCount++;
+                }
+
+                totalFilesCount++;
+
+                CollectionAssert.Contains(sqls, language, $"File {fileName} has not been detected as {language}");
             }
+
+            Console.WriteLine($"Ambiguous files count: {ambiguousFilesCount}");
+            Console.WriteLine($"Total files count: {totalFilesCount}");
         }
     }
 }
