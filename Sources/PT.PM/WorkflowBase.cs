@@ -171,15 +171,20 @@ namespace PT.PM
             {
                 TextFile sourceTextFile = (TextFile) sourceFile;
 
-                stopwatch.Restart();
                 LanguageDetector.MaxStackSize = MaxStackSize;
-                detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, workflowResult.BaseLanguages);
+                detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, out TimeSpan detectionTimeSpan, workflowResult.BaseLanguages);
 
                 if (detectionResult == null)
                 {
                     Logger.LogInfo(
                         $"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File not converted.");
                     return null;
+                }
+
+                if (detectionTimeSpan > TimeSpan.Zero)
+                {
+                    workflowResult.AddDetectTime(detectionTimeSpan);
+                    Logger.LogInfo($"File {shortFileName} detected as {detectionResult.Language} (Elapsed: {detectionTimeSpan.Format()}).");
                 }
 
                 if (detectionResult.ParseTree == null)
@@ -192,21 +197,32 @@ namespace PT.PM
                         javaScriptParser.JavaScriptType = JavaScriptType;
                     }
 
+                    TimeSpan lexerTimeSpan = TimeSpan.Zero;
+                    TimeSpan parserTimeSpan = TimeSpan.Zero;
+
                     if (parser is AntlrParser antlrParser)
                     {
-                        AntlrBaseHandler.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;                        
-                        var lexer = antlrParser.InitAntlrLexer();
-                        lexer.Logger = Logger;
-                        var tokens = lexer.GetTokens(sourceTextFile);
-                        
+                        AntlrBaseHandler.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;
+
+                        var antlrLexer = (AntlrLexer)antlrParser.Language.CreateLexer();
+                        antlrLexer.Logger = Logger;
+                        var tokens = antlrLexer.GetTokens(sourceTextFile, out lexerTimeSpan);
+
+                        Logger.LogInfo($"File {shortFileName} tokenized {lexerTimeSpan.GetElapsedString()}.");
+
                         antlrParser.SourceFile = sourceTextFile;
-                        antlrParser.ErrorListener = lexer.ErrorListener;
-                        parseTree = antlrParser.Parse(tokens);
+                        antlrParser.ErrorListener = antlrLexer.ErrorListener;
+                        parseTree = antlrParser.Parse(tokens, out parserTimeSpan);
                     }
                     else
                     {
-                        parseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceTextFile);
+                        parseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceTextFile, out parserTimeSpan);
                     }
+
+                    Logger.LogInfo($"File {shortFileName} parsed {parserTimeSpan.GetElapsedString()}.");
+
+                    workflowResult.AddLexerTime(lexerTimeSpan);
+                    workflowResult.AddParserTime(parserTimeSpan);
                 }
                 else
                 {
@@ -226,18 +242,14 @@ namespace PT.PM
                     }
 
                     parseTree = detectionResult.ParseTree;
-                }
 
-                stopwatch.Stop();
-                Logger.LogInfo($"File {shortFileName} parsed {stopwatch.GetElapsedString()}.");
+                    Logger.LogInfo($"File {shortFileName} parsed");
+                }
 
                 if (parseTree == null)
                 {
                     return null;
                 }
-
-                workflowResult.AddLexerTime(parseTree.LexerTimeSpan);
-                workflowResult.AddParserTicks(parseTree.ParserTimeSpan);
 
                 DumpTokensAndParseTree(parseTree);
 
