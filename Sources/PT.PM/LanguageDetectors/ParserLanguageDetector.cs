@@ -15,8 +15,8 @@ namespace PT.PM
 {
     public class ParserLanguageDetector : LanguageDetector
     {
-        private readonly static Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
-        private readonly static Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
+        private static readonly Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
+        private static readonly Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
 
         private Language previousLanguage;
 
@@ -51,20 +51,9 @@ namespace PT.PM
                 return new DetectionResult(langs[0]);
             }
 
-            if (sourceFile.Name.EndsWith(".sql") || sourceFile.Name.EndsWith(".ddl"))
-            {
-                var inputStream = new AntlrCaseInsensitiveInputStream(sourceFile.Data, CaseInsensitiveType.UPPER);
-                var sqlLexer = new SqlDialectsAntlrLexer();
-                var dialect = DetectSqlDialect((SqlDialectsLexer)sqlLexer.InitLexer(inputStream));
-                if (dialect != Language.Uncertain)
-                {
-                    return new DetectionResult(dialect);
-                }
-            }
-
             foreach (Language language in langs)
             {
-                Thread thread = new Thread((object obj) =>
+                Thread thread = new Thread(obj =>
                 {
                     ((ParserUnit)obj).Parse(sourceFile);
                 },
@@ -149,43 +138,6 @@ namespace PT.PM
             }
 
             return null;
-        }
-        
-        private Language DetectSqlDialect(SqlDialectsLexer lexer)
-        {
-            if (lexer == null)
-            {
-                throw new ArgumentNullException(nameof(lexer));
-            }
-
-            var tSqlTokensCount = 0;
-            var mySqlTokensCount = 0;
-            var plSqlTokensCount = 0;
-            
-            var tokens = lexer.GetAllTokens();
-
-            foreach (var token in tokens)
-            {
-                switch (token.Type)
-                {
-                    case SqlDialectsLexer.T_SQL:
-                        tSqlTokensCount++;
-                        break;
-                    case SqlDialectsLexer.MY_SQL:
-                        mySqlTokensCount++;
-                        break;
-                    case SqlDialectsLexer.PL_SQL:
-                        plSqlTokensCount++;
-                        break;
-                }
-            }
-
-            var tokensCountArray = new []
-            {
-                (Language.MySql, mySqlTokensCount), (Language.PlSql, plSqlTokensCount), (Language.TSql, tSqlTokensCount)
-            }.Where(x => x.Item2 != 0).OrderByDescending(x => x.Item2).ToArray();
-
-            return tokensCountArray.FirstOrDefault().Item1;
         }
     }
 }
