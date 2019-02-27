@@ -159,7 +159,7 @@ namespace PT.PM
 
             string shortFileName = sourceFile.Name;
 
-            if (!Stage.IsGreaterOrEqual(PM.Stage.ParseTree))
+            if (Stage.Is(PM.Stage.File))
             {
                 return null;
             }
@@ -187,6 +187,11 @@ namespace PT.PM
                     Logger.LogInfo($"File {shortFileName} detected as {detectionResult.Language} (Elapsed: {detectionTimeSpan.Format()}).");
                 }
 
+                if (Stage.Is(PM.Stage.Language))
+                {
+                    return null;
+                }
+
                 if (detectionResult.ParseTree == null)
                 {
                     var parser = detectionResult.Language.CreateParser();
@@ -209,6 +214,12 @@ namespace PT.PM
                         var tokens = antlrLexer.GetTokens(sourceTextFile, out lexerTimeSpan);
 
                         Logger.LogInfo($"File {shortFileName} tokenized {lexerTimeSpan.GetElapsedString()}.");
+                        workflowResult.AddLexerTime(lexerTimeSpan);
+
+                        if (Stage.Is(PM.Stage.Tokens))
+                        {
+                            return null;
+                        }
 
                         antlrParser.SourceFile = sourceTextFile;
                         antlrParser.ErrorListener = antlrLexer.ErrorListener;
@@ -221,7 +232,6 @@ namespace PT.PM
 
                     Logger.LogInfo($"File {shortFileName} parsed {parserTimeSpan.GetElapsedString()}.");
 
-                    workflowResult.AddLexerTime(lexerTimeSpan);
                     workflowResult.AddParserTime(parserTimeSpan);
                 }
                 else

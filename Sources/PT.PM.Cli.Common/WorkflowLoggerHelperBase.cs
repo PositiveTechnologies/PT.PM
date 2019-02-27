@@ -10,11 +10,9 @@ namespace PT.PM.Cli.Common
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
-        public const string DetectStage = "Detect";
-
         public ILogger Logger { get; set; }
 
-        public TWorkflowResult WorkflowResult { get; set; }
+        public TWorkflowResult WorkflowResult { get; }
 
         public WorkflowLoggerHelperBase(ILogger logger, TWorkflowResult workflowResult)
         {
@@ -48,26 +46,31 @@ namespace PT.PM.Cli.Common
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
-                if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.File)
+                int stageInt = Convert.ToInt32(WorkflowResult.Stage);
+
+                if (stageInt >= (int) Stage.File)
                 {
                     LogStageTime(nameof(Stage.File));
-                    if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.ParseTree)
+                    if (stageInt >= (int) Stage.Language)
                     {
-                        LogStageTime(DetectStage);
-                        LogStageTime(nameof(Stage.ParseTree));
-                        if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.Ust)
+                        LogStageTime(nameof(Stage.Language));
+                        if (stageInt >= (int) Stage.Tokens)
                         {
-                            LogStageTime(nameof(Stage.Ust));
-                            LogAdvancedStageInfo();
+                            LogStageTime(nameof(Stage.Tokens));
+                            if (stageInt >= (int) Stage.ParseTree)
+                            {
+                                LogStageTime(nameof(Stage.ParseTree));
+                                if (stageInt >= (int) Stage.Ust)
+                                {
+                                    LogStageTime(nameof(Stage.Ust));
+                                    LogAdvancedStageInfo();
+                                }
+                            }
                         }
                     }
                 }
 
-                if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.Match ||
-                    Convert.ToInt32(WorkflowResult.Stage) == (int) Stage.Pattern)
-                {
-                    LogStageTime(nameof(Stage.Pattern));
-                }
+                LogStageTime(nameof(Stage.Pattern));
             }
         }
 
@@ -85,8 +88,11 @@ namespace PT.PM.Cli.Common
                 case nameof(Stage.File):
                     ticks = WorkflowResult.TotalReadTicks;
                     break;
-                case DetectStage:
+                case nameof(Stage.Language):
                     ticks = WorkflowResult.TotalDetectTicks;
+                    break;
+                case nameof(Stage.Tokens):
+                    ticks = WorkflowResult.TotalLexerTicks;
                     break;
                 case nameof(Stage.ParseTree):
                     ticks = WorkflowResult.TotalLexerParserTicks;
@@ -108,18 +114,7 @@ namespace PT.PM.Cli.Common
             if (ticks > 0)
             {
                 string percent = CalculateAndFormatPercent(ticks, WorkflowResult.TotalTimeTicks);
-
-                string extraInfo = "";
-                if (stage == nameof(Stage.ParseTree))
-                {
-                    string lexerPercent = CalculateAndFormatPercent(WorkflowResult.TotalLexerTicks,
-                        WorkflowResult.TotalLexerParserTicks);
-                    string parserPercent = CalculateAndFormatPercent(WorkflowResult.TotalParserTicks,
-                        WorkflowResult.TotalLexerParserTicks);
-                    extraInfo = $" (Lexer: {lexerPercent}% + Parser: {parserPercent}%)";
-                }
-
-                Logger.LogInfo($"{stage + " time ratio:",LoggerUtils.Align} {percent}%{extraInfo}");
+                Logger.LogInfo($"{stage + " time ratio:",LoggerUtils.Align} {percent}%");
             }
         }
 
