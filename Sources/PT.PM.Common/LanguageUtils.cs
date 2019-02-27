@@ -7,7 +7,7 @@ namespace PT.PM.Common
 {
     public static class LanguageUtils
     {
-        private static readonly string[] LanguageSeparators = { " ", ",", ";", "|" };
+        private static readonly string[] languageSeparators = { " ", ",", ";", "|" };
 
         private static readonly Dictionary<Language, Func<ILanguageLexer>> lexerConstructors = new Dictionary<Language, Func<ILanguageLexer>>();
         private static readonly Dictionary<Language, Func<ILanguageParserBase>> parserConstructors = new Dictionary<Language, Func<ILanguageParserBase>>();
@@ -18,9 +18,9 @@ namespace PT.PM.Common
             [CSharp] = new LanguageInfo(CSharp, ".cs", false, "C#", hasAntlrParser: false),
             [Java] = new LanguageInfo(Java, ".java", false, "Java"),
             [Php] = new LanguageInfo(Php, new[] { ".php" }, true, "PHP", new [] { JavaScript, Html }),
-            [PlSql] = new LanguageInfo(PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw" }, true, "PL/SQL"),
+            [PlSql] = new LanguageInfo(PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw", ".ddl" }, true, "PL/SQL"),
             [TSql] = new LanguageInfo(TSql, ".sql", true, "T-SQL"),
-            [MySql] = new LanguageInfo(MySql, ".sql", true, "MySql"),
+            [MySql] = new LanguageInfo(MySql, new [] { ".sql", ".ddl" }, true, "MySql"),
             [JavaScript] = new LanguageInfo(JavaScript, ".js", false, "JavaScript", hasAntlrParser: false),
             [Aspx] = new LanguageInfo(Aspx, new[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new[] { CSharp }, false, false),
             [Html] = new LanguageInfo(Html, ".html", true, "HTML", new[] { JavaScript }),
@@ -109,6 +109,8 @@ namespace PT.PM.Common
 
         public static bool IsCaseInsensitive(this Language language) => LanguageInfos[language].IsCaseInsensitive;
 
+        public static bool IsAntlr(this Language language) => LanguageInfos[language].HasAntlrParser;
+
         public static string GetTitle(this Language language) => LanguageInfos[language].Title;
 
         public static string[] GetExtensions(this Language language) => LanguageInfos[language].Extensions;
@@ -133,6 +135,14 @@ namespace PT.PM.Common
         public static bool HasAntlrParser(this Language language) => LanguageInfos[language].HasAntlrParser;
 
         public static bool IsParserExistsOrSerialized(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerialization();
+
+        public static void RegisterLexerParserConverter(Language language, Func<ILanguageLexer> lexerConstructor,
+            Func<ILanguageParserBase> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
+        {
+            RegisterLexer(language, lexerConstructor);
+            RegisterParser(language, parserConstructor);
+            RegisterConverter(language, converterConstructor);
+        }
 
         public static void RegisterParserConverter(Language language, Func<ILanguageParserBase> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
         {
@@ -195,7 +205,7 @@ namespace PT.PM.Common
                 return new HashSet<Language>(!patternLanguages ? (IEnumerable<Language>)LanguageInfos.Keys : PatternLanguages);
             }
 
-            return languages.Split(LanguageSeparators, StringSplitOptions.RemoveEmptyEntries).ParseLanguages(allByDefault, patternLanguages);
+            return languages.Split(languageSeparators, StringSplitOptions.RemoveEmptyEntries).ParseLanguages(allByDefault, patternLanguages);
         }
 
         public static HashSet<Language> ParseLanguages(this IEnumerable<string> languageStrings, bool allByDefault = true,
