@@ -10,6 +10,8 @@ namespace PT.PM.Cli.Common
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
+        public const string DetectStage = "Detect";
+
         public ILogger Logger { get; set; }
 
         public TWorkflowResult WorkflowResult { get; set; }
@@ -17,7 +19,7 @@ namespace PT.PM.Cli.Common
         public WorkflowLoggerHelperBase(ILogger logger, TWorkflowResult workflowResult)
         {
             Logger = logger;
-            WorkflowResult = workflowResult;
+            WorkflowResult = workflowResult ?? throw new ArgumentNullException(nameof(workflowResult));
         }
 
         public void LogStatistics()
@@ -51,6 +53,7 @@ namespace PT.PM.Cli.Common
                     LogStageTime(nameof(Stage.File));
                     if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.ParseTree)
                     {
+                        LogStageTime(DetectStage);
                         LogStageTime(nameof(Stage.ParseTree));
                         if (Convert.ToInt32(WorkflowResult.Stage) >= (int) Stage.Ust)
                         {
@@ -81,6 +84,9 @@ namespace PT.PM.Cli.Common
             {
                 case nameof(Stage.File):
                     ticks = WorkflowResult.TotalReadTicks;
+                    break;
+                case DetectStage:
+                    ticks = WorkflowResult.TotalDetectTicks;
                     break;
                 case nameof(Stage.ParseTree):
                     ticks = WorkflowResult.TotalLexerParserTicks;
