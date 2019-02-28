@@ -18,6 +18,7 @@ namespace PT.PM.Common
             [CSharp] = new LanguageInfo(CSharp, ".cs", false, "C#", hasAntlrParser: false),
             [Java] = new LanguageInfo(Java, ".java", false, "Java"),
             [Php] = new LanguageInfo(Php, new[] { ".php" }, true, "PHP", new [] { JavaScript, Html }),
+            [Sql] = new LanguageInfo(Sql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw", ".ddl" }, true, "SQL"),
             [PlSql] = new LanguageInfo(PlSql, new[] { ".sql", ".pks", ".pkb", ".tps", ".vw", ".ddl" }, true, "PL/SQL"),
             [TSql] = new LanguageInfo(TSql, ".sql", true, "T-SQL"),
             [MySql] = new LanguageInfo(MySql, new [] { ".sql", ".ddl" }, true, "MySql"),
