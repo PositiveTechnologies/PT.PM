@@ -11,16 +11,16 @@ namespace PT.PM.TestUtils
 {
     public static class PatternMatchingUtils
     {
-        public static MatchResultDto[] GetMatches(string code, string pattern, Language analyseLanguage)
+        public static MatchResultDto[] GetMatches(TextFile source, string pattern, Language analysedLanguage)
         {
-            return GetMatches(code, pattern, new[] { analyseLanguage });
+            return GetMatches(source, pattern, new[] { analysedLanguage });
         }
 
-        public static MatchResultDto[] GetMatches(string code, string pattern,
+        public static MatchResultDto[] GetMatches(TextFile source, string pattern,
             IEnumerable<Language> analyzedLanguages,
             IEnumerable<Language> patternLanguages = null)
         {
-            var sourceRep = new MemorySourceRepository(code)
+            var sourceRep = new MemorySourceRepository(source.Data, source.FullName)
             {
                 Languages = new HashSet<Language>(analyzedLanguages)
             };

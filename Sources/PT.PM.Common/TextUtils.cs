@@ -11,10 +11,7 @@ namespace PT.PM.Common
 {
     public static class TextUtils
     {
-        private static char[] semicolon = new char[] { ';' };
-
-        private const int StartLine = 1;
-        private const int StartColumn = 1;
+        private static char[] semicolon = { ';' };
 
         public static readonly Regex HttpRegex = new Regex("^https?://", RegexOptions.Compiled);
 

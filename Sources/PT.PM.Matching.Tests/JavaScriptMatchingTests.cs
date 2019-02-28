@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
+using PT.PM.Common.Files;
 using PT.PM.Common.SourceRepository;
 using PT.PM.TestUtils;
 
@@ -17,9 +18,9 @@ namespace PT.PM.Matching.Tests
         {
             var jsCodeAndPatterns = new []
             {
-                new Tuple<string, string>("document.body.innerHTML=\"<svg/onload=alert(1)>\"", "#.innerHTML=<[\"\"]>"),
-                new Tuple<string, string>("document.write(\"\\u003csvg/onload\\u003dalert(1)\\u003e\")", "document.write(<[\"\"]>)"),
-                new Tuple<string, string>("$('<svg/onload=alert(1)>')", "$(<[\"\"]>)")
+                new Tuple<TextFile, string>(new TextFile("document.body.innerHTML=\"<svg/onload=alert(1)>\"", "patterns.js"), "#.innerHTML=<[\"\"]>"),
+                new Tuple<TextFile, string>(new TextFile("document.write(\"\\u003csvg/onload\\u003dalert(1)\\u003e\")", "patterns.js"), "document.write(<[\"\"]>)"),
+                new Tuple<TextFile, string>(new TextFile("$('<svg/onload=alert(1)>')", "patterns.js"), "$(<[\"\"]>)")
             };
             foreach (var tuple in jsCodeAndPatterns)
             {
@@ -31,30 +32,30 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_JavaScriptAndPhpPatternInsidePhp_MatchedExpected()
         {
-            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
-            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, "#.innerHTML=<[\"\"]>", Language.JavaScript);
+            TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(source, "#.innerHTML=<[\"\"]>", Language.JavaScript);
             Assert.AreEqual(1, matchResults.Length);
         }
 
         [Test]
         public void Match_JavaScriptAndPhpPatternInsidePhp_MatchCorrectPatternDependsOnLanguage()
         {
-            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
+            TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "JavaScriptTestPatternsInsidePhp.php"));
             MatchResultDto[] matchResults;
 
-            matchResults = PatternMatchingUtils.GetMatches(code, "#.innerHTML=<[\"\"]>",
+            matchResults = PatternMatchingUtils.GetMatches(source, "#.innerHTML=<[\"\"]>",
                 new[] { Language.JavaScript }, new[] { Language.JavaScript });
             Assert.AreEqual(1, matchResults.Length);
 
-            matchResults = PatternMatchingUtils.GetMatches(code, "<[password]> = null",
+            matchResults = PatternMatchingUtils.GetMatches(source, "<[password]> = null",
                 new[] { Language.Php }, new[] { Language.Php });
             Assert.AreEqual(1, matchResults.Length);
 
-            matchResults = PatternMatchingUtils.GetMatches(code, "#.innerHTML=<[\"\"]>",
+            matchResults = PatternMatchingUtils.GetMatches(source, "#.innerHTML=<[\"\"]>",
                 new[] { Language.Php }, new[] { Language.JavaScript });
             Assert.AreEqual(0, matchResults.Length);
 
-            matchResults = PatternMatchingUtils.GetMatches(code, "<[password]> = null",
+            matchResults = PatternMatchingUtils.GetMatches(source, "<[password]> = null",
                 new[] { Language.JavaScript }, new[] { Language.Php });
             Assert.AreEqual(0, matchResults.Length);
         }
@@ -82,8 +83,8 @@ namespace PT.PM.Matching.Tests
         public void Match_PhpInJsInPhp_CorrectMatching()
         {
             string fileName = Path.Combine(TestUtility.GrammarsDirectory, "php", "examples", "php-js-php.php");
-            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
-            var matchResults = PatternMatchingUtils.GetMatches(code, "<[GLOBALS|frame_content]>",
+            TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, fileName));
+            var matchResults = PatternMatchingUtils.GetMatches(source, "<[GLOBALS|frame_content]>",
                 new[] { Language.Php, Language.JavaScript },
                 new[] { Language.Php, Language.JavaScript });
 
