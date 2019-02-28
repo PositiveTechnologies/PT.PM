@@ -3,6 +3,7 @@ using Antlr4.Runtime.Tree;
 using PT.PM.Common;
 using System.Collections.Generic;
 using System.Text;
+using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
@@ -10,13 +11,12 @@ namespace PT.PM.AntlrUtils
     {
         public override string ParseTreeSuffix => "parseTree.lisp";
 
-        public override void DumpTokens(ParseTree parseTree)
+        public void DumpTokens(IList<IToken> tokens, Language language, TextFile sourceFile)
         {
-            var antlrParseTree = parseTree as AntlrParseTree;
+            IVocabulary vocabulary = language.CreateAntlrLexer().Vocabulary;
 
-            IVocabulary vocabulary = parseTree.SourceLanguage.CreateAntlrLexer().Vocabulary;
             var resultString = new StringBuilder();
-            foreach (IToken token in antlrParseTree.Tokens)
+            foreach (IToken token in tokens)
             {
                 if (!OnlyCommonTokens || token.Channel == 0)
                 {
@@ -29,7 +29,7 @@ namespace PT.PM.AntlrUtils
             }
             resultString.Append("EOF");
 
-            Dump(resultString.ToString(), parseTree.SourceFile, true);
+            Dump(resultString.ToString(), sourceFile, true);
         }
 
         public override void DumpTree(ParseTree parseTree)

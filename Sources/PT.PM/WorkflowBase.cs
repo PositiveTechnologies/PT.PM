@@ -197,11 +197,6 @@ namespace PT.PM
                     var parser = detectionResult.Language.CreateParser();
                     parser.Logger = Logger;
 
-                    if (parser is JavaScriptEsprimaParser javaScriptParser)
-                    {
-                        javaScriptParser.JavaScriptType = JavaScriptType;
-                    }
-
                     TimeSpan lexerTimeSpan = TimeSpan.Zero;
                     TimeSpan parserTimeSpan = TimeSpan.Zero;
 
@@ -216,6 +211,8 @@ namespace PT.PM
                         Logger.LogInfo($"File {shortFileName} tokenized {lexerTimeSpan.GetElapsedString()}.");
                         workflowResult.AddLexerTime(lexerTimeSpan);
 
+                        DumpTokens(tokens, detectionResult.Language, sourceTextFile);
+
                         if (Stage.Is(PM.Stage.Tokens))
                         {
                             return null;
@@ -227,6 +224,11 @@ namespace PT.PM
                     }
                     else
                     {
+                        if (parser is JavaScriptEsprimaParser javaScriptParser)
+                        {
+                            javaScriptParser.JavaScriptType = JavaScriptType;
+                        }
+
                         parseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceTextFile, out parserTimeSpan);
                     }
 
@@ -261,7 +263,7 @@ namespace PT.PM
                     return null;
                 }
 
-                DumpTokensAndParseTree(parseTree);
+                DumpParseTree(parseTree);
 
                 cancellationToken.ThrowIfCancellationRequested();
             }
@@ -357,7 +359,19 @@ namespace PT.PM
             workflowResult.AddResultEntity(file);
         }
 
-        private void DumpTokensAndParseTree(ParseTree parseTree)
+        private void DumpTokens(IList<IToken> tokens, Language language, TextFile sourceFile)
+        {
+            if (DumpStages.Any(stage => stage.Is(PM.Stage.Tokens)) && language.IsAntlr())
+            {
+                var dumper = new AntlrDumper();
+                dumper.IncludeTextSpans = DumpWithTextSpans;
+                dumper.IsLineColumn = LineColumnTextSpans;
+                dumper.DumpDir = DumpDir;
+                dumper.DumpTokens(tokens, language, sourceFile);
+            }
+        }
+
+        private void DumpParseTree(ParseTree parseTree)
         {
             if (DumpStages.Any(stage => stage.Is(PM.Stage.ParseTree)))
             {
@@ -365,7 +379,6 @@ namespace PT.PM
                 dumper.IncludeTextSpans = DumpWithTextSpans;
                 dumper.IsLineColumn = LineColumnTextSpans;
                 dumper.DumpDir = DumpDir;
-                dumper.DumpTokens(parseTree);
                 dumper.DumpTree(parseTree);
             }
         }
