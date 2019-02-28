@@ -14,7 +14,7 @@ namespace PT.PM.AntlrUtils
     {
         public static readonly Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
 
-        public Parser Parser { get; private set; }
+        public abstract string[] RuleNames { get; }
 
         protected abstract string ParserSerializedATN { get; }
 
@@ -27,11 +27,6 @@ namespace PT.PM.AntlrUtils
         protected abstract AntlrParseTree Create(ParserRuleContext syntaxTree);
 
         public int LineOffset { get; set; }
-
-        public AntlrParser()
-        {
-            Parser = InitParser(null);
-        }
 
         public ParseTree Parse(IList<IToken> tokens, out TimeSpan parserTimeSpan)
         {
@@ -81,7 +76,7 @@ namespace PT.PM.AntlrUtils
             }
             finally
             {
-                HandleMemoryConsumption(Atns);
+                HandleMemoryConsumption();
             }
 
             return result;
@@ -92,10 +87,9 @@ namespace PT.PM.AntlrUtils
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
             Parser parser = initParserFunc != null ? initParserFunc(codeTokenStream) : InitParser(codeTokenStream);
-            parser.Interpreter = new ParserATNSimulator(parser, this.GetOrCreateAtn(ParserSerializedATN));
+            parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(ParserSerializedATN));
             parser.RemoveErrorListeners();
-            Parser = parser;
-            ParserRuleContext syntaxTree = null;
+            ParserRuleContext syntaxTree;
 
             if (UseFastParseStrategyAtFirst)
             {

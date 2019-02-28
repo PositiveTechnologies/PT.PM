@@ -7,8 +7,8 @@ namespace PT.PM.JavaParseTreeUst
     public class JavaAntlrLexer : AntlrLexer
     {
         public static JavaAntlrLexer Create() => new JavaAntlrLexer();
-        
-        protected override IVocabulary Vocabulary => JavaLexer.DefaultVocabulary;
+
+        public override IVocabulary Vocabulary => JavaLexer.DefaultVocabulary;
 
         public override Language Language => Language.Java;
 

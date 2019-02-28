@@ -9,6 +9,8 @@ namespace PT.PM.SqlParseTreeUst
     {
         public override Language Language => Language.PlSql;
 
+        public override string[] RuleNames => PlSqlParser.ruleNames;
+
         public static PlSqlAntlrParser Create() => new PlSqlAntlrParser();
 
         protected override int CommentsChannel => PlSqlLexer.Hidden;

@@ -57,7 +57,7 @@ namespace PT.PM
 
                         if (finalLanguages.Any(lang => lang.IsSql()))
                         {
-                            List<Language> sqls = SqlDialectDetector.Detect(sourceFile.Data);
+                            List<Language> sqls = SqlDialectDetector.Detect(sourceFile);
 
                             if (sqls.Count == 1)
                             {

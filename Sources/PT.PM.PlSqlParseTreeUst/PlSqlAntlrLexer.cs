@@ -7,14 +7,14 @@ namespace PT.PM.SqlParseTreeUst
 {
     public class PlSqlAntlrLexer : AntlrLexer
     {
-        
+
         public static PlSqlAntlrLexer Create() => new PlSqlAntlrLexer();
-        
+
         public override Language Language => Language.PlSql;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.UPPER;
 
-        protected override IVocabulary Vocabulary => PlSqlLexer.DefaultVocabulary;
+        public override IVocabulary Vocabulary => PlSqlLexer.DefaultVocabulary;
 
         public override Lexer InitLexer(ICharStream inputStream) => new PlSqlLexer(inputStream);
 

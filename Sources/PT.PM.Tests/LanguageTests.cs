@@ -124,8 +124,8 @@ namespace PT.PM.Tests
 
             foreach (var fileName in fileNames)
             {
-                string data = File.ReadAllText(fileName);
-                List<Language> sqls = SqlDialectDetector.Detect(data);
+                TextFile textFile = new TextFile(File.ReadAllText(fileName), fileName);
+                List<Language> sqls = SqlDialectDetector.Detect(textFile);
 
                 if (sqls.Count > 1)
                 {

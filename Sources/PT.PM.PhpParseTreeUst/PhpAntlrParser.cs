@@ -8,6 +8,8 @@ namespace PT.PM.PhpParseTreeUst
     {
         public override Language Language => Language.Php;
 
+        public override string[] RuleNames => PhpParser.ruleNames;
+
         public static PhpAntlrParser Create() => new PhpAntlrParser();
 
         protected override int CommentsChannel => PhpLexer.PhpComments;

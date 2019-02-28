@@ -8,12 +8,12 @@ namespace PT.PM.SqlParseTreeUst
     public class MySqlAntlrLexer : AntlrLexer
     {
         public static MySqlAntlrLexer Create() => new MySqlAntlrLexer();
-        
+
         public override Language Language => Language.MySql;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.UPPER;
 
-        protected override IVocabulary Vocabulary => MySqlLexer.DefaultVocabulary;
+        public override IVocabulary Vocabulary => MySqlLexer.DefaultVocabulary;
 
         public override Lexer InitLexer(ICharStream inputStream) => new MySqlLexer(inputStream);
 

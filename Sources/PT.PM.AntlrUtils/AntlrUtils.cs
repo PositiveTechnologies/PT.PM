@@ -116,25 +116,7 @@ namespace PT.PM.AntlrUtils
 
             logger.LogError(new ConversionException(currentFileData, message: exceptionText) { TextSpan = textSpan });
         }
-        
-        public static ATN GetOrCreateAtn(this AntlrBaseHandler handler, string atnText)
-        {
-            bool lexer = handler is AntlrLexer;
-            ATN atn;
-            var atns = lexer ? AntlrLexer.Atns : AntlrParser.Atns;
-            lock (atns)
-            {
-                if (!atns.TryGetValue(handler.Language, out atn))
-                {
-                    atn = new ATNDeserializer().Deserialize(atnText.ToCharArray());
-                    atns.Add(handler.Language, atn);
-                    handler.Logger.LogDebug($"New ATN initialized for {handler.Language} {(lexer ? "lexer" : "parser")}.");
-                }
-            }
 
-            return atn;
-        }
-        
 
         public static ArgumentExpression ConvertToInOutArgument(this ParserRuleContext context)
         {

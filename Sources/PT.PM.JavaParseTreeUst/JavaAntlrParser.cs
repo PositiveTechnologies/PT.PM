@@ -8,6 +8,8 @@ namespace PT.PM.JavaParseTreeUst
     {
         public override Language Language => Language.Java;
 
+        public override string[] RuleNames => JavaParser.ruleNames;
+
         public static JavaAntlrParser Create() => new JavaAntlrParser();
 
         protected override Antlr4.Runtime.Parser InitParser(ITokenStream inputStream) =>
@@ -20,7 +22,6 @@ namespace PT.PM.JavaParseTreeUst
             new JavaAntlrParseTree((JavaParser.CompilationUnitContext) syntaxTree);
 
         protected override int CommentsChannel => JavaLexer.Hidden;
-
         protected override string ParserSerializedATN => JavaParser._serializedATN;
     }
 }

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using Antlr4.Runtime.Atn;
 using PT.PM.Common;
@@ -33,7 +31,7 @@ namespace PT.PM.AntlrUtils
 
         public static int ClearCacheFilesCount { get; set; } = 50;
 
-        protected void HandleMemoryConsumption(Dictionary<Language, ATN> atns)
+        protected void HandleMemoryConsumption()
         {
             long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
             long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, SourceFile.Data.Length);
@@ -51,6 +49,7 @@ namespace PT.PM.AntlrUtils
                     exceededProcessedBytes ||
                     localProcessedFilesCount % ClearCacheFilesCount == 0)
                 {
+                    var atns = this is AntlrLexer ? AntlrLexer.Atns : AntlrParser.Atns;
                     lock (atns)
                     {
                         atns.Remove(Language);
@@ -64,6 +63,24 @@ namespace PT.PM.AntlrUtils
             {
                 excessMemory = false;
             }
+        }
+
+        protected ATN GetOrCreateAtn(string atnText)
+        {
+            bool lexer = this is AntlrLexer;
+            ATN atn;
+            var atns = lexer ? AntlrLexer.Atns : AntlrParser.Atns;
+            lock (atns)
+            {
+                if (!atns.TryGetValue(Language, out atn))
+                {
+                    atn = new ATNDeserializer().Deserialize(atnText.ToCharArray());
+                    atns.Add(Language, atn);
+                    Logger.LogDebug($"New ATN initialized for {Language} {(lexer ? "lexer" : "parser")}.");
+                }
+            }
+
+            return atn;
         }
     }
 }

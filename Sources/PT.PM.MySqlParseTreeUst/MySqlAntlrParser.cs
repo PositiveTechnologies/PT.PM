@@ -9,6 +9,8 @@ namespace PT.PM.SqlParseTreeUst
     {
         public override Language Language => Language.MySql;
 
+        public override string[] RuleNames => MySqlParser.ruleNames;
+
         public static MySqlAntlrParser Create() => new MySqlAntlrParser();
 
         protected override int CommentsChannel => MySqlLexer.Hidden;

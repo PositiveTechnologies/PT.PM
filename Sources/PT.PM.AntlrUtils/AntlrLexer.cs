@@ -15,13 +15,11 @@ namespace PT.PM.AntlrUtils
     {
         public static Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
 
-        public Lexer Lexer { get; protected set; }
-
         public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
 
         protected abstract string LexerSerializedATN { get; }
 
-        protected abstract IVocabulary Vocabulary { get; }
+        public abstract IVocabulary Vocabulary { get; }
 
         public int LineOffset { get; set; }
 
@@ -56,21 +54,21 @@ namespace PT.PM.AntlrUtils
             {
                 var stopwatch = Stopwatch.StartNew();
                 Lexer lexer = InitLexer(inputStream);
-                lexer.Interpreter = new LexerATNSimulator(lexer, this.GetOrCreateAtn(LexerSerializedATN));
+                lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(LexerSerializedATN));
                 lexer.RemoveErrorListeners();
                 lexer.AddErrorListener(ErrorListener);
                 tokens = lexer.GetAllTokens();
                 stopwatch.Stop();
                 lexerTimeSpan = stopwatch.Elapsed;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(new LexingException(SourceFile, ex));
                 tokens = new List<IToken>();
             }
             finally
             {
-                HandleMemoryConsumption(Atns);
+                HandleMemoryConsumption();
             }
 
             return tokens;

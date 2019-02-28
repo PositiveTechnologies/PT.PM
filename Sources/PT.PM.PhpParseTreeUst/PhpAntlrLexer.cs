@@ -9,17 +9,17 @@ namespace PT.PM.PhpParseTreeUst
     public class PhpAntlrLexer : AntlrLexer
     {
         public static PhpAntlrLexer Create() => new PhpAntlrLexer();
-        
+
         public override Language Language => Language.Php;
 
         public override CaseInsensitiveType CaseInsensitiveType => CaseInsensitiveType.lower;
 
         protected override string LexerSerializedATN => PhpLexer._serializedATN;
 
-        protected override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
+        public override IVocabulary Vocabulary => PhpLexer.DefaultVocabulary;
 
         public override Lexer InitLexer(ICharStream inputStream) => new PhpLexer(inputStream);
-        
+
         protected override string PreprocessText(TextFile file)
         {
             var result = base.PreprocessText(file);
