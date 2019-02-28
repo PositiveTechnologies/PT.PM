@@ -1,19 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
-using PT.PM.AntlrUtils;
 using PT.PM.Common;
+using PT.PM.Common.Files;
 using PT.PM.LanguageDetectors;
 
 namespace PT.PM
 {
-    public class SqlDialectDetector
+    public static class SqlDialectDetector
     {
-        public static List<Language> Detect(string data)
+        public static List<Language> Detect(TextFile textFile)
         {
-            var inputStream = new AntlrCaseInsensitiveInputStream(data, CaseInsensitiveType.UPPER);
-            var sqlLexer = new SqlDialectsLexer(inputStream);
-            IList<IToken> tokens = sqlLexer.GetAllTokens();
+            var sqlLexer = new SqlDialectsAntlrLexer();
+            IList<IToken> tokens = sqlLexer.GetTokens(textFile, out TimeSpan _);
 
             var sqlDialectTokensCount = new Dictionary<Language, int>
             {
