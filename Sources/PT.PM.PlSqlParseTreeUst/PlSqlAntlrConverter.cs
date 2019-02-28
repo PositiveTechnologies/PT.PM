@@ -1289,7 +1289,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitConstant([NotNull] PlSqlParser.ConstantContext context)
         {
             Token result;
-            if (context.NULL() != null)
+            if (context.NULL_() != null)
             {
                 result = new NullLiteral(context.GetTextSpan());
             }
