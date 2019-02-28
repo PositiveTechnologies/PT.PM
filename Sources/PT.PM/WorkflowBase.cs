@@ -139,7 +139,7 @@ namespace PT.PM
 
             if (languages.Length == 0)
             {
-                Logger.LogInfo($"File {fileName} is ignored.");
+                Logger.LogInfo($"File {fileName} ignored.");
                 return null;
             }
 
@@ -177,7 +177,7 @@ namespace PT.PM
                 if (detectionResult == null)
                 {
                     Logger.LogInfo(
-                        $"Input languages set is empty, {shortFileName} language can not been detected, or file is too big (timeout break). File not converted.");
+                        $"File {shortFileName}: unable to detect a language.");
                     return null;
                 }
 
@@ -185,6 +185,12 @@ namespace PT.PM
                 {
                     workflowResult.AddDetectTime(detectionTimeSpan);
                     Logger.LogInfo($"File {shortFileName} detected as {detectionResult.Language} (Elapsed: {detectionTimeSpan.Format()}).");
+                }
+
+                if (!workflowResult.BaseLanguages.Contains(detectionResult.Language))
+                {
+                    Logger.LogInfo($"File {fileName} ignored.");
+                    return null;
                 }
 
                 if (Stage.Is(PM.Stage.Language))
@@ -316,7 +322,7 @@ namespace PT.PM
                         Logger.LogError(new ReadException(sourceFile, message: $"Unknown serialization format {language}"));
                     }
 
-                    if (result == null || !AnalyzedLanguages.Any(lang => result.Sublanguages.Contains(lang)))
+                    if (result == null || !workflowResult.BaseLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                     {
                         Logger.LogInfo($"File {fileName} ignored.");
                         return null;
