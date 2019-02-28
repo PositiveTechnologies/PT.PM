@@ -85,30 +85,6 @@ namespace PT.PM.Tests
             CollectionAssert.IsEmpty(sourceRepository.GetLanguages(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
         }
 
-        [Test]
-        public void DetectLanguageIfRequired_Source_CorrectLanguage()
-        {
-            var languageDetector = new LanguageDetector();
-            var sqlLanguages = new HashSet<Language>{ Language.PlSql, Language.TSql, Language.MySql };
-            var plSqlFileName = "plsql_patterns.sql";
-            var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, plSqlFileName)));
-            plSqlFile.Name = plSqlFileName;
-            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, out TimeSpan _, sqlLanguages);
-
-            Assert.AreEqual(Language.PlSql, detectionResult.Language);
-
-            // Force parse file with specified language.
-            detectionResult = languageDetector.DetectIfRequired(plSqlFile, out TimeSpan _, new HashSet<Language> { Language.TSql });
-            Assert.AreEqual(Language.TSql, detectionResult.Language);
-
-            var mySqlFileName = "mysql_patterns.sql";
-            var mySqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, mySqlFileName)));
-            mySqlFile.Name = mySqlFileName;
-            detectionResult = languageDetector.DetectIfRequired(mySqlFile, out TimeSpan _, sqlLanguages);
-
-            Assert.AreEqual(Language.MySql, detectionResult.Language);
-        }
-
         [TestCase(Language.MySql)]
         [TestCase(Language.TSql)]
         [TestCase(Language.PlSql)]
