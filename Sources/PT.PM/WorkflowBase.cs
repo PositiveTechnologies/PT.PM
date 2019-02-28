@@ -177,7 +177,7 @@ namespace PT.PM
                 if (detectionResult == null)
                 {
                     Logger.LogInfo(
-                        $"Input languages set is empty, {shortFileName} language can not been detected, or file too big (timeout break). File not converted.");
+                        $"Input languages set is empty, {shortFileName} language can not been detected, or file is too big (timeout break). File not converted.");
                     return null;
                 }
 

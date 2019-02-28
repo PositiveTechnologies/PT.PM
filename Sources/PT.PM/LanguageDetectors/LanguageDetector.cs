@@ -59,6 +59,8 @@ namespace PT.PM
                         {
                             List<Language> sqls = SqlDialectDetector.Detect(sourceFile);
 
+                            Logger.LogInfo($"File: {sourceFile}; Sql detection: {string.Join(", ", sqls)}");
+
                             if (sqls.Count == 1)
                             {
                                 stopwatch.Stop();
@@ -76,8 +78,6 @@ namespace PT.PM
 
                         stopwatch.Stop();
                         detectionTimeSpan = stopwatch.Elapsed;
-
-                        LogDetection(result, finalLanguages, sourceFile);
                     }
                 }
             }
@@ -89,25 +89,9 @@ namespace PT.PM
                 previousLanguage = result.Language;
                 stopwatch.Stop();
                 detectionTimeSpan = stopwatch.Elapsed;
-
-                LogDetection(result, languages ?? LanguageUtils.Languages, sourceFile);
             }
 
             return result;
-        }
-
-        private void LogDetection(DetectionResult detectionResult, IEnumerable<Language> languages, TextFile sourceFile)
-        {
-            string languagesString = string.Join(", ", languages.Select(lang => LanguageUtils.LanguageInfos[lang].Title));
-
-            if (detectionResult != null)
-            {
-                Logger.LogInfo($"Language {detectionResult.Language} (from {languagesString}) detected for file \"{sourceFile}\". ");
-            }
-            else
-            {
-                Logger.LogInfo($"Language is not detected from ({languagesString}) for file \"{sourceFile}\". ");
-            }
         }
 
         private static string[] GetExtensions(string fileName)

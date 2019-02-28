@@ -6,10 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Antlr4.Runtime;
-using PT.PM.AntlrUtils;
 using PT.PM.Common.Files;
-using PT.PM.LanguageDetectors;
 
 namespace PT.PM
 {
@@ -52,19 +49,33 @@ namespace PT.PM
                 return new DetectionResult(langs[0]);
             }
 
-            foreach (Language language in langs)
+            if (previousLanguage != Language.Uncertain)
             {
-                Thread thread = new Thread(obj =>
-                {
-                    ((ParserUnit)obj).Parse(sourceFile);
-                },
-                MaxStackSize);
-                thread.IsBackground = true;
+                var parseUnit = new ParserUnit(previousLanguage, null);
+                parseUnit.Parse(sourceFile);
 
-                ParserUnit parseUnit = new ParserUnit(language, thread);
-                thread.Start(parseUnit);
+                if (parseUnit.ParseErrorCount == 0)
+                {
+                    return new DetectionResult(parseUnit.Language, parseUnit.ParseTree,
+                        parseUnit.Errors, parseUnit.Infos, parseUnit.Debugs);
+                }
 
                 parseUnits.Enqueue(parseUnit);
+            }
+
+            foreach (Language language in langs)
+            {
+                if (language != previousLanguage)
+                {
+                    Thread thread = new Thread(obj => { ((ParserUnit) obj).Parse(sourceFile); },
+                        MaxStackSize);
+                    thread.IsBackground = true;
+
+                    ParserUnit parseUnit = new ParserUnit(language, thread);
+                    thread.Start(parseUnit);
+
+                    parseUnits.Enqueue(parseUnit);
+                }
             }
 
             int checkParseResultMs = (int)CheckParseResultTimeSpan.TotalMilliseconds;
