@@ -35,7 +35,7 @@ namespace PT.PM.PatternEditor
         private string oldSource = "";
         private Stage oldEndStage;
         private JavaScriptType oldJavaScriptType;
-        private readonly LanguageDetector languageDetector = new ParserLanguageDetector();
+        private readonly LanguageDetector languageDetector = new LanguageDetector();
         private string tokensHeader;
         private string parseTreeHeader;
         private string sourceErrorsText = "Errors";
@@ -732,7 +732,7 @@ namespace PT.PM.PatternEditor
             {
                 Task.Factory.StartNew(() =>
                 {
-                    Language detectedLanguage = languageDetector.Detect(new TextFile(sourceTextBox.Text)).Language;
+                    Language detectedLanguage = languageDetector.DetectIfRequired(new TextFile(sourceTextBox.Text), out TimeSpan _).Language;
                     Dispatcher.UIThread.InvokeAsync(() => SelectedLanguage = detectedLanguage);
                 });
                 Dispatcher.UIThread.InvokeAsync(() => OpenedFileName = "");

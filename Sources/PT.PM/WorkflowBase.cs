@@ -47,7 +47,7 @@ namespace PT.PM
 
         public IPatternConverter<TPattern> PatternConverter { get; set; }
 
-        public LanguageDetector LanguageDetector { get; } = new ParserLanguageDetector();
+        public LanguageDetector LanguageDetector { get; } = new LanguageDetector();
 
         public bool IsDumpJsonOutput { get; set; }
 

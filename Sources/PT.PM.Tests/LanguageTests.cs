@@ -72,7 +72,7 @@ namespace PT.PM.Tests
             var source =
                 new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
             source.Name = fileName;
-            DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(source);
+            DetectionResult detectedLanguage = ParserLanguageDetector.Detect(source);
             Assert.AreEqual(expectedLanguage, detectedLanguage.Language);
         }
 
@@ -88,7 +88,7 @@ namespace PT.PM.Tests
         [Test]
         public void DetectLanguageIfRequired_Source_CorrectLanguage()
         {
-            var languageDetector = new ParserLanguageDetector();
+            var languageDetector = new LanguageDetector();
             var sqlLanguages = new HashSet<Language>{ Language.PlSql, Language.TSql, Language.MySql };
             var plSqlFileName = "plsql_patterns.sql";
             var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, plSqlFileName)));
@@ -125,7 +125,7 @@ namespace PT.PM.Tests
             foreach (var fileName in fileNames)
             {
                 string data = File.ReadAllText(fileName);
-                List<Language> sqls = LanguageDetector.DetectSqlDialect(data);
+                List<Language> sqls = SqlDialectDetector.Detect(data);
 
                 if (sqls.Count > 1)
                 {

@@ -13,18 +13,19 @@ using PT.PM.LanguageDetectors;
 
 namespace PT.PM
 {
-    public class ParserLanguageDetector : LanguageDetector
+    public class ParserLanguageDetector
     {
         private static readonly Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
         private static readonly Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
 
-        private Language previousLanguage;
+        public static TimeSpan LanguageParseTimeout { get; set; } = TimeSpan.FromSeconds(10);
 
-        public TimeSpan LanguageParseTimeout { get; set; } = TimeSpan.FromSeconds(10);
+        public static TimeSpan CheckParseResultTimeSpan { get; set; } = TimeSpan.FromMilliseconds(100);
 
-        public TimeSpan CheckParseResultTimeSpan { get; set; } = TimeSpan.FromMilliseconds(100);
+        public static int MaxStackSize { get; set; }
 
-        public override DetectionResult Detect(TextFile sourceFile, IEnumerable<Language> languages = null)
+        public static DetectionResult Detect(TextFile sourceFile, Language previousLanguage = Language.Uncertain,
+            IEnumerable<Language> languages = null)
         {
             List<Language> langs = (languages ?? LanguageUtils.LanguagesWithParser).ToList();
 
@@ -131,8 +132,6 @@ namespace PT.PM
 
             if (result != null)
             {
-                previousLanguage = result.Language;
-
                 return new DetectionResult(result.Language, result.ParseTree,
                     result.Errors, result.Infos, result.Debugs);
             }

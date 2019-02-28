@@ -12,11 +12,13 @@ using PT.PM.LanguageDetectors;
 
 namespace PT.PM
 {
-    public abstract class LanguageDetector
+    public class LanguageDetector : ILoggable
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public int MaxStackSize { get; set; }
+
+        private Language previousLanguage = Language.Uncertain;
 
         public DetectionResult DetectIfRequired(string sourceFileName, out TimeSpan detectionTimeSpan)
         {
@@ -55,7 +57,7 @@ namespace PT.PM
 
                         if (finalLanguages.Any(lang => lang.IsSql()))
                         {
-                            List<Language> sqls = DetectSqlDialect(sourceFile.Data);
+                            List<Language> sqls = SqlDialectDetector.Detect(sourceFile.Data);
 
                             if (sqls.Count == 1)
                             {
@@ -68,7 +70,9 @@ namespace PT.PM
                             finalLanguages.AddRange(sqls);
                         }
 
-                        result = Detect(sourceFile, finalLanguages);
+                        ParserLanguageDetector.MaxStackSize = MaxStackSize;
+                        result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, finalLanguages);
+                        previousLanguage = result.Language;
 
                         stopwatch.Stop();
                         detectionTimeSpan = stopwatch.Elapsed;
@@ -80,7 +84,9 @@ namespace PT.PM
             else
             {
                 var stopwatch = Stopwatch.StartNew();
-                result = Detect(sourceFile, languages);
+                ParserLanguageDetector.MaxStackSize = MaxStackSize;
+                result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, languages);
+                previousLanguage = result.Language;
                 stopwatch.Stop();
                 detectionTimeSpan = stopwatch.Elapsed;
 
@@ -89,8 +95,6 @@ namespace PT.PM
 
             return result;
         }
-
-        public abstract DetectionResult Detect(TextFile sourceFile, IEnumerable<Language> languages = null);
 
         private void LogDetection(DetectionResult detectionResult, IEnumerable<Language> languages, TextFile sourceFile)
         {
@@ -104,73 +108,6 @@ namespace PT.PM
             {
                 Logger.LogInfo($"Language is not detected from ({languagesString}) for file \"{sourceFile}\". ");
             }
-        }
-
-        public static List<Language> DetectSqlDialect(string data)
-        {
-            var inputStream = new AntlrCaseInsensitiveInputStream(data, CaseInsensitiveType.UPPER);
-            var sqlLexer = new SqlDialectsLexer(inputStream);
-            IList<IToken> tokens = sqlLexer.GetAllTokens();
-
-            var sqlDialectTokensCount = new Dictionary<Language, int>
-            {
-                [Language.TSql] = 0,
-                [Language.MySql] = 0,
-                [Language.PlSql] = 0
-            };
-
-            foreach (IToken token in tokens)
-            {
-                switch (token.Channel)
-                {
-                    case SqlDialectsLexer.T_SQL:
-                        sqlDialectTokensCount[Language.TSql]++;
-                        break;
-
-                    case SqlDialectsLexer.MY_SQL:
-                        sqlDialectTokensCount[Language.MySql]++;
-                        break;
-
-                    case SqlDialectsLexer.PL_SQL:
-                        sqlDialectTokensCount[Language.PlSql]++;
-                        break;
-
-                    case SqlDialectsLexer.MY_PL_SQL:
-                        sqlDialectTokensCount[Language.MySql]++;
-                        sqlDialectTokensCount[Language.PlSql]++;
-                        break;
-
-                    case SqlDialectsLexer.PL_T_SQL:
-                        sqlDialectTokensCount[Language.PlSql]++;
-                        sqlDialectTokensCount[Language.TSql]++;
-                        break;
-                }
-            }
-
-            int maxTokensCount = -1;
-
-            var result = new List<Language>(3);
-
-            var pairs = sqlDialectTokensCount.OrderByDescending(pair => pair.Value);
-
-            foreach (KeyValuePair<Language,int> pair in pairs)
-            {
-                if (maxTokensCount == -1)
-                {
-                    maxTokensCount = pair.Value;
-                }
-
-                if (pair.Value == maxTokensCount)
-                {
-                    result.Add(pair.Key);
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return result;
         }
 
         private static string[] GetExtensions(string fileName)
