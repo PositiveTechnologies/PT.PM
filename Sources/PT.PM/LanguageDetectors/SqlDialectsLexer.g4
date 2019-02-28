@@ -78,6 +78,7 @@ STDDEV              : 'STDDEV'              -> channel(MY_PL_SQL);
 SYSDATE             : 'SYSDATE'             -> channel(MY_PL_SQL);
 SUBSTR              : 'SUBSTR'              -> channel(MY_PL_SQL);
 INCLUDE             : 'INCLUDE'             -> channel(MY_PL_SQL);
+COMMENT             : 'COMMENT'             -> channel(MY_PL_SQL);
 
 // PlSql & TSql
 
@@ -129,7 +130,8 @@ GUARANTEE           : 'GUARANTEE'           -> channel(PL_SQL);
 NOGUARANTEE         : 'NOGUARANTEE'         -> channel(PL_SQL);
 MINUS               : 'MINUS'               -> channel(PL_SQL);
 VARCHAR2            : 'VARCHAR2'            -> channel(PL_SQL);
-CMD                 : '@' {IsNewlineAtPos(-2)}? ~('\r' | '\n')*                  -> channel(PL_SQL);
+NOCOPY              : 'NOCOPY'              -> channel(PL_SQL);
+CMD                 : '@' {IsNewlineAtPos(-2)}? ~(' ' | '\r' | '\n')*                  -> channel(PL_SQL);
 REMARK_COMMENT      : 'REM' {IsNewlineAtPos(-4)}? 'ARK'? (' ' ~('\r' | '\n')*)?  -> channel(PL_SQL);
 PROMPT_MESSAGE      : 'PRO' {IsNewlineAtPos(-4)}? 'MPT'? (' ' ~('\r' | '\n')*)?  -> channel(PL_SQL);
 
@@ -164,6 +166,7 @@ PERMISSION_SET      : 'PERMISSION_SET'      -> channel(T_SQL);
 KEY_STORE_PROVIDER_NAME : 'KEY_STORE_PROVIDER_NAME' -> channel(T_SQL);
 KEY_PATH            : 'KEY_PATH'            -> channel(T_SQL);
 BRACKET_ID          : '[' (ID_FRAGMENT | [ \t])+ ']'                  -> channel(T_SQL);
+
 
 L_PAREN             : '(';
 R_PAREN             : ')';
