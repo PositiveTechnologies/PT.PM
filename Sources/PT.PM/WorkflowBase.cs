@@ -172,7 +172,7 @@ namespace PT.PM
                 TextFile sourceTextFile = (TextFile) sourceFile;
 
                 LanguageDetector.MaxStackSize = MaxStackSize;
-                detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, out TimeSpan detectionTimeSpan, workflowResult.BaseLanguages);
+                detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, out TimeSpan detectionTimeSpan);
 
                 if (detectionResult == null)
                 {

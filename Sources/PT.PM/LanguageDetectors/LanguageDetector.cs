@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Antlr4.Runtime;
-using PT.PM.AntlrUtils;
 using PT.PM.Common.Files;
-using PT.PM.LanguageDetectors;
 
 namespace PT.PM
 {
@@ -29,25 +26,20 @@ namespace PT.PM
             return DetectIfRequired(sourceFile, out detectionTimeSpan);
         }
 
-        public DetectionResult DetectIfRequired(TextFile sourceFile, out TimeSpan detectionTimeSpan, ICollection<Language> languages = null)
+        public DetectionResult DetectIfRequired(TextFile sourceFile, out TimeSpan detectionTimeSpan)
         {
             DetectionResult result = null;
 
-            if ((languages?.Count ?? 0) == 1)
+            if (!string.IsNullOrEmpty(sourceFile.Name))
             {
-                result = new DetectionResult(languages.First());
-            }
-            else if (!string.IsNullOrEmpty(sourceFile.Name))
-            {
-                string[] extensions = GetExtensions(sourceFile.Name);
-                List<Language> finalLanguages = GetLanguagesIntersection(extensions, languages);
-                if (finalLanguages.Count == 1 || finalLanguages.Any(final => final == Language.CSharp))
+                List<Language> languages = GetLanguages(sourceFile.Name);
+                if (languages.Count == 1 || languages.Any(language => language == Language.CSharp))
                 {
-                    result = new DetectionResult(finalLanguages[0]);
+                    result = new DetectionResult(languages[0]);
                 }
-                else if (finalLanguages.Count > 1)
+                else if (languages.Count > 1)
                 {
-                    if (finalLanguages.Count == 2 && finalLanguages.Contains(Language.Html) && finalLanguages.Contains(Language.Php))
+                    if (languages.Count == 2 && languages.Contains(Language.Html) && languages.Contains(Language.Php))
                     {
                         result = new DetectionResult(Language.Php);
                     }
@@ -55,7 +47,7 @@ namespace PT.PM
                     {
                         var stopwatch = Stopwatch.StartNew();
 
-                        if (finalLanguages.Any(lang => lang.IsSql()))
+                        if (languages.Any(lang => lang.IsSql()))
                         {
                             List<Language> sqls = SqlDialectDetector.Detect(sourceFile);
 
@@ -68,12 +60,12 @@ namespace PT.PM
                                 return new DetectionResult(sqls[0]);
                             }
 
-                            finalLanguages.RemoveAll(lang => lang.IsSql());
-                            finalLanguages.AddRange(sqls);
+                            languages.RemoveAll(lang => lang.IsSql());
+                            languages.AddRange(sqls);
                         }
 
                         ParserLanguageDetector.MaxStackSize = MaxStackSize;
-                        result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, finalLanguages);
+                        result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, languages);
                         previousLanguage = result.Language;
 
                         stopwatch.Stop();
@@ -85,7 +77,7 @@ namespace PT.PM
             {
                 var stopwatch = Stopwatch.StartNew();
                 ParserLanguageDetector.MaxStackSize = MaxStackSize;
-                result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, languages);
+                result = ParserLanguageDetector.Detect(sourceFile, previousLanguage);
                 previousLanguage = result.Language;
                 stopwatch.Stop();
                 detectionTimeSpan = stopwatch.Elapsed;
@@ -94,40 +86,20 @@ namespace PT.PM
             return result;
         }
 
-        private static string[] GetExtensions(string fileName)
+        private static List<Language> GetLanguages(string fileName)
         {
-            var result = new List<string>();
-            string extension = Path.GetExtension(fileName);
-            while (extension != "")
-            {
-                result.Add(extension);
-                fileName = Path.GetFileNameWithoutExtension(fileName);
-                extension = Path.GetExtension(fileName);
-            }
-            return result.ToArray();
-        }
+            var result = new List<Language>(LanguageUtils.Languages.Count);
 
-        private static List<Language> GetLanguagesIntersection(string[] extensions, IEnumerable<Language> languages)
-        {
-            var result = new List<Language>();
-            if (extensions.Length == 0)
+            string extension = Path.GetExtension(fileName).ToLowerInvariant();
+
+            foreach (Language language in LanguageUtils.Languages)
             {
-                return languages.ToList();
-            }
-            foreach (var extension in extensions)
-            {
-                var normalizedExtension = extension.ToLowerInvariant();
-                foreach (Language language in LanguageUtils.Languages)
+                if (language.GetExtensions().Contains(extension))
                 {
-                    var extensionIsFine = string.IsNullOrEmpty(normalizedExtension) ||
-                        language.GetExtensions().Contains(normalizedExtension);
-                    var languageIsFine = languages == null || languages.Contains(language);
-                    if (extensionIsFine && languageIsFine)
-                    {
-                        result.Add(language);
-                    }
+                    result.Add(language);
                 }
             }
+
             return result;
         }
     }
