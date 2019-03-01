@@ -20,7 +20,7 @@ namespace PT.PM
     public static class Utils
     {
         public const int DefaultMaxStackSize = 4 * 1024 * 1024;
-        public const string TimeSpanFormat = "mm\\:ss\\.ff";
+        public const string TimeSpanFormat = "mm\\:ss\\.fff";
 
         public static void RegisterAllLexersParsersAndConverters()
         {
