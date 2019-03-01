@@ -30,57 +30,45 @@ namespace PT.PM
         {
             DetectionResult result = null;
 
-            if (!string.IsNullOrEmpty(sourceFile.Name))
+            List<Language> languages = GetLanguages(sourceFile.Name);
+            if (languages.Count == 1 || languages.Any(language => language == Language.CSharp))
             {
-                List<Language> languages = GetLanguages(sourceFile.Name);
-                if (languages.Count == 1 || languages.Any(language => language == Language.CSharp))
+                result = new DetectionResult(languages[0]);
+            }
+            else if (languages.Count > 1)
+            {
+                if (languages.Count == 2 && languages.Contains(Language.Html) && languages.Contains(Language.Php))
                 {
-                    result = new DetectionResult(languages[0]);
+                    result = new DetectionResult(Language.Php);
                 }
-                else if (languages.Count > 1)
+                else
                 {
-                    if (languages.Count == 2 && languages.Contains(Language.Html) && languages.Contains(Language.Php))
-                    {
-                        result = new DetectionResult(Language.Php);
-                    }
-                    else
-                    {
-                        var stopwatch = Stopwatch.StartNew();
+                    var stopwatch = Stopwatch.StartNew();
 
-                        if (languages.Any(lang => lang.IsSql()))
+                    if (languages.Any(lang => lang.IsSql()))
+                    {
+                        List<Language> sqls = SqlDialectDetector.Detect(sourceFile);
+
+                        Logger.LogInfo($"File: {sourceFile}; Sql detection: {string.Join(", ", sqls)}");
+
+                        if (sqls.Count == 1)
                         {
-                            List<Language> sqls = SqlDialectDetector.Detect(sourceFile);
-
-                            Logger.LogInfo($"File: {sourceFile}; Sql detection: {string.Join(", ", sqls)}");
-
-                            if (sqls.Count == 1)
-                            {
-                                stopwatch.Stop();
-                                detectionTimeSpan = stopwatch.Elapsed;
-                                return new DetectionResult(sqls[0]);
-                            }
-
-                            languages.RemoveAll(lang => lang.IsSql());
-                            languages.AddRange(sqls);
+                            stopwatch.Stop();
+                            detectionTimeSpan = stopwatch.Elapsed;
+                            return new DetectionResult(sqls[0]);
                         }
 
-                        ParserLanguageDetector.MaxStackSize = MaxStackSize;
-                        result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, languages);
-                        previousLanguage = result.Language;
-
-                        stopwatch.Stop();
-                        detectionTimeSpan = stopwatch.Elapsed;
+                        languages.RemoveAll(lang => lang.IsSql());
+                        languages.AddRange(sqls);
                     }
+
+                    ParserLanguageDetector.MaxStackSize = MaxStackSize;
+                    result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, languages);
+                    previousLanguage = result.Language;
+
+                    stopwatch.Stop();
+                    detectionTimeSpan = stopwatch.Elapsed;
                 }
-            }
-            else
-            {
-                var stopwatch = Stopwatch.StartNew();
-                ParserLanguageDetector.MaxStackSize = MaxStackSize;
-                result = ParserLanguageDetector.Detect(sourceFile, previousLanguage);
-                previousLanguage = result.Language;
-                stopwatch.Stop();
-                detectionTimeSpan = stopwatch.Elapsed;
             }
 
             return result;
@@ -88,6 +76,11 @@ namespace PT.PM
 
         private static List<Language> GetLanguages(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return LanguageUtils.LanguagesWithParser.ToList();
+            }
+
             var result = new List<Language>(LanguageUtils.Languages.Count);
 
             string extension = Path.GetExtension(fileName).ToLowerInvariant();
