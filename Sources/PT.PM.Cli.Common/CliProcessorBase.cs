@@ -23,6 +23,8 @@ namespace PT.PM.Cli.Common
     {
         public ILogger Logger { get; protected set; } = new NLogLogger();
 
+        public TParameters Parameters { get; protected set; }
+
         public virtual bool ContinueWithInvalidArgs => false;
 
         public virtual bool StopIfDebuggerAttached => true;
@@ -38,40 +40,48 @@ namespace PT.PM.Cli.Common
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
-            var paramsNormalizer = new CliParametersNormalizer<TParameters>
-            {
-                Logger = Logger
-            };
-            bool success = paramsNormalizer.Normalize(args, out string[] outArgs);
-
-            var parser = new Parser(config =>
-            {
-                config.IgnoreUnknownArguments = ContinueWithInvalidArgs;
-                config.CaseInsensitiveEnumValues = true;
-            });
-
-            ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(outArgs);
-
             TWorkflowResult result = null;
 
-            if (success || ContinueWithInvalidArgs)
+            if (Parameters != null)
             {
-                parserResult.WithParsed(
-                    parameters =>
-                    {
-                        result = ProcessJsonConfig(outArgs, parameters);
-                    })
-                    .WithNotParsed(errors =>
-                    {
-                        if (ContinueWithInvalidArgs)
+                result = ProcessJsonConfig(args);
+            }
+            else
+            {
+                var paramsNormalizer = new CliParametersNormalizer<TParameters>();
+                bool success = paramsNormalizer.Normalize(args, out string[] outArgs);
+
+                var parser = new Parser(config =>
+                {
+                    config.IgnoreUnknownArguments = ContinueWithInvalidArgs;
+                    config.CaseInsensitiveEnumValues = true;
+                });
+
+                ParserResult<TParameters> parserResult = parser.ParseArguments<TParameters>(outArgs);
+
+                if (success || ContinueWithInvalidArgs)
+                {
+                    parserResult.WithParsed(
+                        parameters =>
                         {
-                            result = ProcessJsonConfig(outArgs, null, errors);
-                        }
-                        else
+                            Parameters = parameters;
+                            FillLoggerSettings(parameters);
+                            Logger.LogErrors(paramsNormalizer.Errors);
+                            result = ProcessJsonConfig(outArgs);
+                        })
+                        .WithNotParsed(errors =>
                         {
-                            LogInfoAndErrors(outArgs, errors);
-                        }
-                    });
+                            Logger.LogErrors(paramsNormalizer.Errors);
+                            if (ContinueWithInvalidArgs)
+                            {
+                                result = ProcessJsonConfig(outArgs, errors);
+                            }
+                            else
+                            {
+                                LogInfoAndErrors(outArgs, errors);
+                            }
+                        });
+                }
             }
 
 #if DEBUG
@@ -244,18 +254,11 @@ namespace PT.PM.Cli.Common
 
         protected abstract void LogStatistics(TWorkflowResult workflowResult);
 
-        private TWorkflowResult ProcessJsonConfig(string[] args, TParameters parameters, IEnumerable<Error> errors = null)
+        private TWorkflowResult ProcessJsonConfig(string[] args, IEnumerable<Error> errors = null)
         {
             try
             {
-                if (parameters != null)
-                {
-                    FillLoggerSettings(parameters);
-                }
-                else
-                {
-                    parameters = new TParameters();
-                }
+                var parameters = Parameters ?? new TParameters();
 
                 bool error = false;
                 string configFile = FileExt.Exists("config.json") ? "config.json" : parameters.ConfigFile;
@@ -435,7 +438,7 @@ namespace PT.PM.Cli.Common
 
             if (!(errors.First() is VersionRequestedError))
             {
-                var paramsParseResult = new Parser().ParseArguments<TParameters>(new [] { "--help" });
+                var paramsParseResult = new Parser().ParseArguments<TParameters>(new[] { "--help" });
                 string paramsInfo = HelpText.AutoBuild(paramsParseResult, 100);
                 SplitOnLinesAndLog(paramsInfo);
             }
@@ -443,7 +446,7 @@ namespace PT.PM.Cli.Common
 
         private void SplitOnLinesAndLog(string str)
         {
-            string[] lines = str.Split(new [] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] lines = str.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             foreach (string line in lines)
             {
                 Logger.LogInfo(line);

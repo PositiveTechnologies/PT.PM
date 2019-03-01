@@ -24,8 +24,7 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_ValidAndInvalidArgs_CorrectlyNormalized()
         {
-            var logger = new TestLogger();
-            var normalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            var normalizer = new CliParametersNormalizer<CliTestsParameters>();
             string[] outArgs;
 
             Assert.IsFalse(normalizer.Normalize(new[] { "-upp", "val1", "val2", "-u", "-s", "str" }, out outArgs));
@@ -40,48 +39,46 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_ArgsWithTypes_CorrectlyNormalized()
         {
-            var logger = new TestLogger();
-            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>();
             string[] outArgs;
 
             string[] inputArgs = "--int x --uint x --byte x --sbyte x --short x --ushort x --long x --ulong x --float x --double x --decimal x --bool x --enum x".SplitArguments();
             Assert.IsFalse(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(13, logger.ErrorCount);
+            Assert.AreEqual(13, paramsNormalizer.Errors.Count);
             CollectionAssert.AreEqual(new List<string>(), outArgs);
 
             paramsNormalizer.CheckTypes = false;
-            logger.Errors.Clear();
+            paramsNormalizer.Errors.Clear();
             Assert.IsTrue(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(0, logger.ErrorCount);
+            Assert.AreEqual(0, paramsNormalizer.Errors.Count);
             Assert.AreEqual(inputArgs.Length - 1, outArgs.Length);
 
             paramsNormalizer.CheckTypes = true;
-            logger.Errors.Clear();
+            paramsNormalizer.Errors.Clear();
             inputArgs = "--int -1 --uint 2 --byte 3 --sbyte -4 --short -5 --ushort 6 --long -7 --ulong 8 --float 9.0 --double 10.0 --decimal 11.0 --bool true --enum file".SplitArguments();
             Assert.IsTrue(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(0, logger.ErrorCount);
+            Assert.AreEqual(0, paramsNormalizer.Errors.Count);
             Assert.AreEqual(inputArgs.Length - 1, outArgs.Length);
         }
 
         [Test]
         public void CheckCli_DuplicateParams_CorrectlyNormalized()
         {
-            var logger = new TestLogger();
-            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>();
             string[] outArgs;
 
             string[] inputArgs = "--int -1 --int 1".SplitArguments();
 
             paramsNormalizer.CheckDuplicates = false;
-            logger.Errors.Clear();
+            paramsNormalizer.Errors.Clear();
             Assert.IsTrue(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(0, logger.ErrorCount);
+            Assert.AreEqual(0, paramsNormalizer.Errors.Count);
             Assert.AreEqual(4, outArgs.Length);
 
             paramsNormalizer.CheckDuplicates = true;
-            logger.Errors.Clear();
+            paramsNormalizer.Errors.Clear();
             Assert.IsFalse(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(1, logger.ErrorCount);
+            Assert.AreEqual(1, paramsNormalizer.Errors.Count);
             Assert.AreEqual(2, outArgs.Length);
             Assert.AreEqual("--int", outArgs[0]);
             Assert.AreEqual("1", outArgs[1]);
@@ -90,8 +87,7 @@ namespace PT.PM.Cli.Tests
         [Test]
         public void CheckCli_BoolValues_CorrectlyNormalized()
         {
-            var logger = new TestLogger();
-            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>() { Logger = logger };
+            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>();
             string[] outArgs;
 
             Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool1", "--bool2" }, out outArgs));
