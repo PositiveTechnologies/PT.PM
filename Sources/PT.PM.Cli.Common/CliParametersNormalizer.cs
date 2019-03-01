@@ -16,7 +16,7 @@ namespace PT.PM.Cli.Common
 
         public bool CheckDuplicates { get; set; } = true;
 
-        public List<Exception> NormalizationErrors { get; set; } = new List<Exception>();
+        public List<Exception> Errors { get; set; } = new List<Exception>();
 
         static CliParametersNormalizer()
         {
@@ -44,7 +44,7 @@ namespace PT.PM.Cli.Common
                 if (!args[argInd].StartsWith("-"))
                 {
                     error = true;
-                    NormalizationErrors.Add(new ArgumentException($"Incorrect argument", args[argInd]));
+                    Errors.Add(new ArgumentException($"Incorrect argument", args[argInd]));
 
                     argInd++;
                     continue;
@@ -111,7 +111,7 @@ namespace PT.PM.Cli.Common
                 else
                 {
                     error = true;
-                    NormalizationErrors.Add(new ArgumentException($"Unknown argument", args[argInd]));
+                    Errors.Add(new ArgumentException($"Unknown argument", args[argInd]));
 
                     argInd++;
                 }
@@ -199,7 +199,7 @@ namespace PT.PM.Cli.Common
                     if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg2 => outArg2.Item1 == outArg)) !=
                         default)
                     {
-                        NormalizationErrors.Add(new ArgumentException("Duplicate argument", outArg));
+                        Errors.Add(new ArgumentException("Duplicate argument", outArg));
                         outArgs.Remove(duplicate);
                         return false;
                     }
@@ -207,7 +207,7 @@ namespace PT.PM.Cli.Common
                     return true;
                 }
 
-                NormalizationErrors.Add(new FormatException($"Incorrect value `{outValue}` of argument `{outArg}`"));
+                Errors.Add(new FormatException($"Incorrect value `{outValue}` of argument `{outArg}`"));
                 return false;
             }
 
@@ -236,7 +236,7 @@ namespace PT.PM.Cli.Common
                 return CheckDuplicatesAndAdd(outArgs, outArg, outValue);
             }
 
-            NormalizationErrors.Add(new FormatException($"Incorrect value `{outValue}` of argument {outArg}"));
+            Errors.Add(new FormatException($"Incorrect value `{outValue}` of argument {outArg}"));
             return false;
         }
 
@@ -247,7 +247,7 @@ namespace PT.PM.Cli.Common
 
             if (CheckDuplicates && (duplicate = outArgs.FirstOrDefault(outArg => outArg.Item1 == arg)) != default)
             {
-                NormalizationErrors.Add(new ArgumentException("Duplicate argument", arg));
+                Errors.Add(new ArgumentException("Duplicate argument", arg));
                 outArgs.Remove(duplicate);
                 result = false;
             }

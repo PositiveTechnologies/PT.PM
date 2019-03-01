@@ -66,12 +66,12 @@ namespace PT.PM.Cli.Common
                         {
                             Parameters = parameters;
                             FillLoggerSettings(parameters);
-                            Logger.LogErrors(paramsNormalizer.NormalizationErrors);
+                            Logger.LogErrors(paramsNormalizer.Errors);
                             result = ProcessJsonConfig(outArgs);
                         })
                         .WithNotParsed(errors =>
                         {
-                            Logger.LogErrors(paramsNormalizer.NormalizationErrors);
+                            Logger.LogErrors(paramsNormalizer.Errors);
                             if (ContinueWithInvalidArgs)
                             {
                                 result = ProcessJsonConfig(outArgs, errors);
