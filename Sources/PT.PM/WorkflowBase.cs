@@ -157,8 +157,6 @@ namespace PT.PM
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            string shortFileName = sourceFile.Name;
-
             if (Stage.Is(PM.Stage.File))
             {
                 return null;
@@ -177,19 +175,19 @@ namespace PT.PM
                 if (detectionResult == null)
                 {
                     Logger.LogInfo(
-                        $"File {shortFileName}: unable to detect a language.");
+                        $"File {sourceFile}: unable to detect a language.");
                     return null;
                 }
 
                 if (detectionTimeSpan > TimeSpan.Zero)
                 {
                     workflowResult.AddDetectTime(detectionTimeSpan);
-                    Logger.LogInfo($"File {shortFileName} detected as {detectionResult.Language} (Elapsed: {detectionTimeSpan.Format()}).");
+                    Logger.LogInfo($"File {sourceFile} detected as {detectionResult.Language} (Elapsed: {detectionTimeSpan.Format()}).");
                 }
 
                 if (!workflowResult.BaseLanguages.Contains(detectionResult.Language))
                 {
-                    Logger.LogInfo($"File {fileName} ignored.");
+                    Logger.LogInfo($"File {sourceFile} ignored.");
                     return null;
                 }
 
@@ -214,7 +212,7 @@ namespace PT.PM
                         antlrLexer.Logger = Logger;
                         var tokens = antlrLexer.GetTokens(sourceTextFile, out lexerTimeSpan);
 
-                        Logger.LogInfo($"File {shortFileName} tokenized {lexerTimeSpan.GetElapsedString()}.");
+                        Logger.LogInfo($"File {sourceFile} tokenized {lexerTimeSpan.GetElapsedString()}.");
                         workflowResult.AddLexerTime(lexerTimeSpan);
 
                         DumpTokens(tokens, detectionResult.Language, sourceTextFile);
@@ -230,6 +228,11 @@ namespace PT.PM
                     }
                     else
                     {
+                        if (Stage.Is(PM.Stage.Tokens))
+                        {
+                            return null;
+                        }
+
                         if (parser is JavaScriptEsprimaParser javaScriptParser)
                         {
                             javaScriptParser.JavaScriptType = JavaScriptType;
@@ -238,12 +241,17 @@ namespace PT.PM
                         parseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceTextFile, out parserTimeSpan);
                     }
 
-                    Logger.LogInfo($"File {shortFileName} parsed {parserTimeSpan.GetElapsedString()}.");
+                    Logger.LogInfo($"File {sourceFile} parsed {parserTimeSpan.GetElapsedString()}.");
 
                     workflowResult.AddParserTime(parserTimeSpan);
                 }
                 else
                 {
+                    if (Stage.Is(PM.Stage.Tokens))
+                    {
+                        return null;
+                    }
+
                     foreach (string debug in detectionResult.Debugs)
                     {
                         Logger.LogDebug(debug);
@@ -261,7 +269,7 @@ namespace PT.PM
 
                     parseTree = detectionResult.ParseTree;
 
-                    Logger.LogInfo($"File {shortFileName} parsed");
+                    Logger.LogInfo($"File {sourceFile} parsed");
                 }
 
                 if (parseTree == null)
@@ -330,7 +338,7 @@ namespace PT.PM
                 }
 
                 stopwatch.Stop();
-                Logger.LogInfo($"File {shortFileName} converted {stopwatch.GetElapsedString()}.");
+                Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
                 workflowResult.AddConvertTime(stopwatch.Elapsed);
 
                 if (result == null)
