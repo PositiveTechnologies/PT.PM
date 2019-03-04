@@ -76,17 +76,20 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             try
             {
-                if (node is Statement statement)
-                    return VisitStatement(statement);
+                switch (node)
+                {
+                    case Statement statement:
+                        return VisitStatement(statement);
 
-                if (node is Expression expression)
-                    return VisitExpression(expression);
+                    case Expression expression:
+                        return VisitExpression(expression);
 
-                if (node is ArrayPattern arrayPattern)
-                    return VisitArrayPattern(arrayPattern);
+                    case ArrayPattern arrayPattern:
+                        return VisitArrayPattern(arrayPattern);
 
-                if (node is ObjectPattern objectPattern)
-                    return VisitObjectPattern(objectPattern);
+                    case ObjectPattern objectPattern:
+                        return VisitObjectPattern(objectPattern);
+                }
 
                 return VisitUnknownNode(node);
             }

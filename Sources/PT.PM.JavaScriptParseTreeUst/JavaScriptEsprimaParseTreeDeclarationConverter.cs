@@ -51,7 +51,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 ? VisitIdentifier(classDeclaration.Id)
                 : null;
 
-            var baseTypes = new System.Collections.Generic.List<TypeToken>();
+            var baseTypes = new Collections.List<TypeToken>();
             if (classDeclaration.SuperClass != null)
             {
                 if (VisitExpression(classDeclaration.SuperClass) is TypeToken superClassTypeToken)

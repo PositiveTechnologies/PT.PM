@@ -22,7 +22,7 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
 
             TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "javascript", "examples"),
                 Language.JavaScript, Stage.Ust, searchPredicate: fileName =>
-                    ignoredFiles.All(ignoredFile => !fileName.Contains(ignoredFile)));
+                    ignoredFiles.All(ignoredFile => !fileName.EndsWith(ignoredFile)));
         }
     }
 }
