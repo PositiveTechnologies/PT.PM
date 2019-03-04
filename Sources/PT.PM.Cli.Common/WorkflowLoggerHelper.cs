@@ -9,13 +9,5 @@ namespace PT.PM.Cli.Common
             : base(logger, workflowResult)
         {
         }
-
-        protected override void LogAdvancedStageInfo()
-        {
-            if (WorkflowResult.Stage >= Stage.Match)
-            {
-                LogStageTime(nameof(Stage.Match));
-            }
-        }
     }
 }

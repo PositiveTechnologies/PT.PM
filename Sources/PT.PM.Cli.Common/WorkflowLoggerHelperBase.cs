@@ -48,32 +48,15 @@ namespace PT.PM.Cli.Common
             long totalTimeTicks = WorkflowResult.TotalTimeTicks;
             if (totalTimeTicks > 0)
             {
-                int stageInt = Convert.ToInt32(WorkflowResult.Stage);
-
-                if (stageInt >= (int) Stage.File)
-                {
-                    LogStageTime(nameof(Stage.File));
-                    if (stageInt >= (int) Stage.Language)
-                    {
-                        LogStageTime(nameof(Stage.Language));
-                        if (stageInt >= (int) Stage.Tokens)
-                        {
-                            LogStageTime(nameof(Stage.Tokens));
-                            if (stageInt >= (int) Stage.ParseTree)
-                            {
-                                LogStageTime(nameof(Stage.ParseTree));
-                                if (stageInt >= (int) Stage.Ust)
-                                {
-                                    LogStageTime(nameof(Stage.Ust));
-                                    LogStageTime(DeserializationStageName);
-                                    LogAdvancedStageInfo();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                LogStageTime(nameof(Stage.Pattern));
+                LogStageTime(nameof(Stage.File), totalTimeTicks);
+                LogStageTime(nameof(Stage.Language), totalTimeTicks);
+                LogStageTime(nameof(Stage.Tokens), totalTimeTicks);
+                LogStageTime(nameof(Stage.ParseTree), totalTimeTicks);
+                LogStageTime(nameof(Stage.Ust), totalTimeTicks);
+                LogStageTime(DeserializationStageName, totalTimeTicks);
+                LogAdvancedStageInfo();
+                LogStageTime(nameof(Stage.Match), totalTimeTicks);
+                LogStageTime(nameof(Stage.Pattern), totalTimeTicks);
             }
         }
 
@@ -81,9 +64,11 @@ namespace PT.PM.Cli.Common
         {
         }
 
-        protected abstract void LogAdvancedStageInfo();
+        protected virtual void LogAdvancedStageInfo()
+        {
+        }
 
-        protected void LogStageTime(string stage)
+        protected void LogStageTime(string stage, long totalTicksCount)
         {
             long ticks;
             switch (stage)
@@ -98,13 +83,13 @@ namespace PT.PM.Cli.Common
                     ticks = WorkflowResult.TotalLexerTicks;
                     break;
                 case nameof(Stage.ParseTree):
-                    ticks = WorkflowResult.TotalLexerParserTicks;
-                    break;
-                case DeserializationStageName:
-                    ticks = WorkflowResult.TotalDeserializeTicks;
+                    ticks = WorkflowResult.TotalParserTicks;
                     break;
                 case nameof(Stage.Ust):
                     ticks = WorkflowResult.TotalConvertTicks;
+                    break;
+                case DeserializationStageName:
+                    ticks = WorkflowResult.TotalDeserializeTicks;
                     break;
                 case nameof(Stage.Match):
                     ticks = WorkflowResult.TotalMatchTicks;
@@ -119,7 +104,7 @@ namespace PT.PM.Cli.Common
 
             if (ticks > 0)
             {
-                string percent = CalculateAndFormatPercent(ticks, WorkflowResult.TotalTimeTicks);
+                string percent = CalculateAndFormatPercent(ticks, totalTicksCount);
                 Logger.LogInfo($"{stage + " time ratio:",LoggerUtils.Align} {percent}%");
             }
         }

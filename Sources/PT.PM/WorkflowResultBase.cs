@@ -64,7 +64,6 @@ namespace PT.PM
 
         public long TotalReadTicks => totalReadTicks;
         public long TotalDetectTicks => totalDetectTicks;
-        public long TotalLexerParserTicks => totalLexerTicks + totalParserTicks;
         public long TotalConvertTicks => totalConvertTicks;
         public long TotalMatchTicks => totalMatchTicks;
         public long TotalPatternsTicks => totalPatternsTicks;
