@@ -27,7 +27,7 @@
       <Listener>false</Listener>
       <CustomToolNamespace>PT.PM.PlSqlParseTreeUst</CustomToolNamespace>
     </Antlr4>
-    <PackageReference Include="Antlr4" Version="4.6.5" />
+    <PackageReference Include="Antlr4" Version="4.6.6" />
 
     <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
   </ItemGroup>
