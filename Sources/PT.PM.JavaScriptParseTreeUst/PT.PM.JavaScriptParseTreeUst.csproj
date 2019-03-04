@@ -17,6 +17,6 @@
   <ItemGroup>
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
     <ProjectReference Include="..\PT.PM.Common\PT.PM.Common.csproj" />
-    <PackageReference Include="Esprima" Version="1.0.0-beta-1051" />
+    <PackageReference Include="Esprima" Version="1.0.0-beta-1178" />
   </ItemGroup>
 </Project>

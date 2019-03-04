@@ -30,24 +30,6 @@ namespace PT.PM.JavaScriptParseTreeUst
             SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
         }
 
-        public void ThrowError(int index, int line, int column, string message)
-        {
-            if (LastErrorIndex == index)
-            {
-                index++;
-                if (Scanner != null)
-                {
-                    Scanner.Index = index;
-                }
-            }
-            else
-            {
-                Logger.LogError(CreateException(index, message));
-            }
-
-            LastErrorIndex = index;
-        }
-
         public void Tolerate(ParserException error)
         {
             if (Tolerant)
@@ -60,9 +42,32 @@ namespace PT.PM.JavaScriptParseTreeUst
             }
         }
 
+        public ParserException CreateError(int index, int line, int column, string message)
+        {
+            ParserException result = null;
+
+            if (LastErrorIndex == index)
+            {
+                index++;
+                if (Scanner != null)
+                {
+                    Scanner.Index = index;
+                }
+            }
+            else
+            {
+                var exception = CreateException(index, message);
+                Logger.LogError(exception);
+                result = new ParserException(exception.ToString());
+            }
+
+            LastErrorIndex = index;
+
+            return result;
+        }
+
         public void RecordError(ParserException error)
         {
-            Logger.LogError(CreateException(error.Index, error.Message));
         }
 
         public void TolerateError(int index, int line, int column, string message)
@@ -82,7 +87,15 @@ namespace PT.PM.JavaScriptParseTreeUst
         public ParsingException CreateException(int index, string message)
         {
             var sourceFile = OriginFile ?? SourceFile;
-            TextSpan textSpan = new TextSpan(index + Offset, 0);
+            TextSpan textSpan;
+            try
+            {
+                textSpan = new TextSpan(index + Offset, 0);
+            }
+            catch
+            {
+                textSpan = TextSpan.Zero;
+            }
             message = sourceFile.GetLineColumnTextSpan(textSpan) + "; " + Regex.Replace(message, @"Line \d+': ", "");
             return new ParsingException(sourceFile, message: message)
             {

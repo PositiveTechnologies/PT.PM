@@ -3,10 +3,10 @@ using Esprima.Ast;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using PT.PM.Common.Files;
+using Collections = System.Collections.Generic;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -56,10 +56,10 @@ namespace PT.PM.JavaScriptParseTreeUst
                 var scanner = new Scanner(sourceFile.Data, parserOptions);
                 errorHandler.Scanner = scanner;
                 errorHandler.Logger = DummyLogger.Instance; // Ignore errors on tokenization because of the first stage
-                var comments = new List<Comment>();
+                var comments = new Collections.List<Comment>();
 
                 stopwatch.Restart();
-                Token token = null;
+                Token token;
                 do
                 {
                     comments.AddRange(scanner.ScanComments());

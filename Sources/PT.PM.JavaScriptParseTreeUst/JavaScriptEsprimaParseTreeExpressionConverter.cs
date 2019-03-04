@@ -4,11 +4,11 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
-using System.Collections.Generic;
 using UstExprs = PT.PM.Common.Nodes.Expressions;
 using UstLiterals = PT.PM.Common.Nodes.Tokens.Literals;
 using UstTokens = PT.PM.Common.Nodes.Tokens;
 using UstSpecific = PT.PM.Common.Nodes.Specific;
+using Collections = System.Collections.Generic;
 using PT.PM.Common;
 using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes;
@@ -94,7 +94,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstExprs.ArrayCreationExpression VisitArrayExpression(ArrayExpression arrayExpression)
         {
-            var inits = new List<UstExprs.Expression>(arrayExpression.Elements.Count);
+            var inits = new Collections.List<UstExprs.Expression>(arrayExpression.Elements.Count);
 
             foreach (ArrayExpressionElement element in arrayExpression.Elements)
             {
@@ -222,7 +222,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         private UstExprs.AnonymousMethodExpression VisitFunctionExpression(IFunction function)
         {
             var parameters = VisitParameters(function.Params);
-            var body = VisitBlockStatement(function.Body);
+            var body = ConvertToBlockStatementIfRequired(function.Body);
             return new UstExprs.AnonymousMethodExpression(parameters, body, GetTextSpan((Node)function));
         }
 
@@ -288,7 +288,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstSpecific.CommaExpression VisitSequenceExpression(SequenceExpression sequenceExpression)
         {
-            var exprs = new List<UstExprs.Expression>(sequenceExpression.Expressions.Count);
+            var exprs = new Collections.List<UstExprs.Expression>(sequenceExpression.Expressions.Count);
 
             foreach (Expression expr in sequenceExpression.Expressions)
             {
@@ -357,7 +357,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstExprs.Expression VisitTemplateLiteral(TemplateLiteral templateLiteral)
         {
-            var elems = new List<INode>(templateLiteral.Expressions.Count + templateLiteral.Quasis.Count);
+            var elems = new Collections.List<INode>(templateLiteral.Expressions.Count + templateLiteral.Quasis.Count);
 
             elems.AddRange(templateLiteral.Expressions);
             elems.AddRange(templateLiteral.Quasis);
@@ -408,10 +408,13 @@ namespace PT.PM.JavaScriptParseTreeUst
                 ? VisitIdentifier(classExpression.Id)
                 : null;
 
-            var baseTypes = new List<UstTokens.TypeToken>();
+            var baseTypes = new Collections.List<UstTokens.TypeToken>();
             if (classExpression.SuperClass != null)
             {
-                baseTypes.Add(VisitPropertyKey(classExpression.SuperClass));
+                if (VisitExpression(classExpression.SuperClass) is UstTokens.TypeToken superClassTypeToken)
+                {
+                    baseTypes.Add(superClassTypeToken);
+                }
             }
 
             var properties = VisitClassBody(classExpression.Body);
@@ -439,9 +442,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new UstExprs.MemberReferenceExpression(meta, property, GetTextSpan(metaProperty));
         }
 
-        private ArgsUst VisitArguments(List<ArgumentListElement> arguments)
+        private ArgsUst VisitArguments(Esprima.Ast.List<ArgumentListElement> arguments)
         {
-            var args = new List<UstExprs.Expression>(arguments.Count);
+            var args = new Collections.List<UstExprs.Expression>(arguments.Count);
 
             foreach (ArgumentListElement arg in arguments)
             {
@@ -465,9 +468,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new ArgsUst(args);
         }
 
-        private List<ParameterDeclaration> VisitParameters(List<INode> parameters)
+        private Collections.List<ParameterDeclaration> VisitParameters(Esprima.Ast.List<INode> parameters)
         {
-            var result = new List<ParameterDeclaration>(parameters.Count);
+            var result = new Collections.List<ParameterDeclaration>(parameters.Count);
 
             foreach (INode param in parameters)
             {

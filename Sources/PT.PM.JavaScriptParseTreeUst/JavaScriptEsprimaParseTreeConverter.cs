@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using UstTokens = PT.PM.Common.Nodes.Tokens;
 using UstExprs = PT.PM.Common.Nodes.Expressions;
 using UstSpecific = PT.PM.Common.Nodes.Specific;
+using UstStmts = PT.PM.Common.Nodes.Statements;
+using Collections = System.Collections.Generic;
 using PT.PM.Common.Nodes.TypeMembers;
 using Esprima;
 using System.Threading;
@@ -47,7 +49,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     Nodes = new Ust[] { program },
                 };
 
-                var comments = new List<CommentLiteral>(esprimaParseTree.Comments.Count);
+                var comments = new Collections.List<CommentLiteral>(esprimaParseTree.Comments.Count);
                 foreach (Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
@@ -74,16 +76,22 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             try
             {
-                if (node is Statement statement)
-                    return VisitStatement(statement);
-                else if (node is Expression expression)
-                    return VisitExpression(expression);
-                else if (node is ArrayPattern arrayPattern)
-                    return VisitArrayPattern(arrayPattern);
-                else if (node is ObjectPattern objectPattern)
-                    return VisitObjectPattern(objectPattern);
-                else
-                    return VisitUnknownNode(node);
+                switch (node)
+                {
+                    case Statement statement:
+                        return VisitStatement(statement);
+
+                    case Expression expression:
+                        return VisitExpression(expression);
+
+                    case ArrayPattern arrayPattern:
+                        return VisitArrayPattern(arrayPattern);
+
+                    case ObjectPattern objectPattern:
+                        return VisitObjectPattern(objectPattern);
+                }
+
+                return VisitUnknownNode(node);
             }
             catch (Exception ex)
             {
@@ -94,9 +102,9 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstSpecific.ArrayPatternExpression VisitArrayPattern(ArrayPattern arrayPattern)
         {
-            var elements = new List<ParameterDeclaration>(arrayPattern.Elements.Count);
+            var elements = new Collections.List<ParameterDeclaration>(arrayPattern.Elements.Count);
 
-            foreach (ArrayPatternElement elem in arrayPattern.Elements)
+            foreach (IArrayPatternElement elem in arrayPattern.Elements)
             {
                 ParameterDeclaration paramDecl = VisitArrayPatternElement(elem);
                 elements.Add(paramDecl);
@@ -105,7 +113,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new UstSpecific.ArrayPatternExpression(elements, GetTextSpan(arrayPattern));
         }
 
-        private ParameterDeclaration VisitArrayPatternElement(ArrayPatternElement arrayPatternElement)
+        private ParameterDeclaration VisitArrayPatternElement(IArrayPatternElement arrayPatternElement)
         {
             ParameterDeclaration paramDecl;
 
@@ -147,6 +155,15 @@ namespace PT.PM.JavaScriptParseTreeUst
             return paramDecl;
         }
 
+        private UstStmts.BlockStatement ConvertToBlockStatementIfRequired(INode functionBody)
+        {
+            var body = Visit(functionBody).ToStatementIfRequired();
+            var blockStatement = body is UstStmts.BlockStatement localBlockStatement
+                ? localBlockStatement
+                : new UstStmts.BlockStatement(new[] {body});
+            return blockStatement;
+        }
+
         private UstExprs.AnonymousObjectExpression VisitObjectPattern(ObjectPattern objectPattern)
         {
             // TODO: maybe add new UST type ObjectPattern?
@@ -165,7 +182,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private TextSpan GetTextSpan(INode node)
         {
-            return TextSpan.FromBounds(node.Range[0] + Offset, node.Range[1] + Offset);
+            return TextSpan.FromBounds(node.Range.Start + Offset, node.Range.End + Offset);
         }
 
         private TextSpan GetTextSpan(Comment token)
