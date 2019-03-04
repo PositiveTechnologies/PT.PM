@@ -10,8 +10,8 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public int Compare(INode x, INode y)
         {
-            ref Position xStart = ref x.Location.Start;
-            ref Position yStart = ref y.Location.Start;
+            Position xStart = x.Location.Start;
+            Position yStart = y.Location.Start;
 
             int lineComparison = xStart.Line.CompareTo(yStart.Line);
 

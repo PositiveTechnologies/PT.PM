@@ -3,11 +3,11 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
-using System.Collections.Generic;
 using UstExprs = PT.PM.Common.Nodes.Expressions;
 using UstSpecific = PT.PM.Common.Nodes.Specific;
 using UstStmts = PT.PM.Common.Nodes.Statements;
 using UstTokens = PT.PM.Common.Nodes.Tokens;
+using Collections = System.Collections.Generic;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -74,7 +74,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstStmts.BlockStatement VisitBlockStatement(BlockStatement blockStatement)
         {
-            List<UstStmts.Statement> statements = VisitStatements(blockStatement.Body);
+            Collections.List<UstStmts.Statement> statements = VisitStatements(blockStatement.Body);
             return new UstStmts.BlockStatement(statements, GetTextSpan(blockStatement));
         }
 
@@ -113,7 +113,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstStmts.ForStatement VisitForStatement(ForStatement forStatement)
         {
-            var initList = new List<UstStmts.Statement>(1);
+            var initList = new Collections.List<UstStmts.Statement>(1);
             if (forStatement.Init != null)
             {
                 initList.Add(Visit(forStatement.Init).ToStatementIfRequired());
@@ -123,7 +123,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 ? VisitExpression(forStatement.Test)
                 : null;
 
-            var iteratorList = new List<UstExprs.Expression>(1);
+            var iteratorList = new Collections.List<UstExprs.Expression>(1);
             if (forStatement.Update != null)
             {
                 iteratorList.Add(VisitExpression(forStatement.Update));
@@ -179,8 +179,8 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             var name = functionDeclaration.Id != null ? VisitIdentifier(functionDeclaration.Id) : null;
             var paramDecls = VisitParameters(functionDeclaration.Params);
-            var body = VisitBlockStatement(functionDeclaration.Body);
-            return new UstStmts.WrapperStatement(new MethodDeclaration(name, paramDecls, body, GetTextSpan(functionDeclaration)));
+            var blockStatement = ConvertToBlockStatementIfRequired(functionDeclaration.Body);
+            return new UstStmts.WrapperStatement(new MethodDeclaration(name, paramDecls, blockStatement, GetTextSpan(functionDeclaration)));
         }
 
         private UstStmts.IfElseStatement VisitIfStatement(IfStatement ifStatement)
@@ -211,11 +211,11 @@ namespace PT.PM.JavaScriptParseTreeUst
         private UstStmts.Switch.SwitchStatement VisitSwitchStatement(SwitchStatement switchStatement)
         {
             var expression = VisitExpression(switchStatement.Discriminant);
-            var switchSections = new List<UstStmts.Switch.SwitchSection>(switchStatement.Cases.Count);
+            var switchSections = new Collections.List<UstStmts.Switch.SwitchSection>(switchStatement.Cases.Count);
 
             foreach (SwitchCase @case in switchStatement.Cases)
             {
-                var caseLabels = new List<UstExprs.Expression>();
+                var caseLabels = new Collections.List<UstExprs.Expression>();
                 if (@case.Test != null)
                 {
                     // Default label if null
@@ -242,7 +242,7 @@ namespace PT.PM.JavaScriptParseTreeUst
         {
             var block = (UstStmts.BlockStatement)VisitStatement(tryStatement.Block);
 
-            var catchClauses = new List<UstStmts.TryCatchFinally.CatchClause>();
+            var catchClauses = new Collections.List<UstStmts.TryCatchFinally.CatchClause>();
             if (tryStatement.Handler != null)
             {
                 var body = VisitBlockStatement(tryStatement.Handler.Body);
@@ -259,7 +259,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstStmts.ExpressionStatement VisitVariableDeclaration(VariableDeclaration variableDeclaration)
         {
-            var variables = new List<UstExprs.AssignmentExpression>(variableDeclaration.Declarations.Count);
+            var variables = new Collections.List<UstExprs.AssignmentExpression>(variableDeclaration.Declarations.Count);
 
             foreach (VariableDeclarator decl in variableDeclaration.Declarations)
             {
@@ -292,9 +292,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new UstStmts.BlockStatement(statements, GetTextSpan(program));
         }
 
-        private List<UstStmts.Statement> VisitStatements(List<StatementListItem> listItems)
+        private Collections.List<UstStmts.Statement> VisitStatements(Esprima.Ast.List<StatementListItem> listItems)
         {
-            var statements = new List<UstStmts.Statement>(listItems.Count);
+            var statements = new Collections.List<UstStmts.Statement>(listItems.Count);
 
             foreach (StatementListItem listItem in listItems)
             {

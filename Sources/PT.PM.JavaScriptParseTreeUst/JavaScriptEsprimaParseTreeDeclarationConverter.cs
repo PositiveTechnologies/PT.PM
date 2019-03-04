@@ -5,9 +5,10 @@ using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
 using System;
-using System.Collections.Generic;
 using UstLiterals = PT.PM.Common.Nodes.Tokens.Literals;
 using UstTokens = PT.PM.Common.Nodes.Tokens;
+using UstExprs = PT.PM.Common.Nodes.Expressions;
+using Collections = System.Collections.Generic;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -50,10 +51,13 @@ namespace PT.PM.JavaScriptParseTreeUst
                 ? VisitIdentifier(classDeclaration.Id)
                 : null;
 
-            var baseTypes = new List<TypeToken>();
+            var baseTypes = new System.Collections.Generic.List<TypeToken>();
             if (classDeclaration.SuperClass != null)
             {
-                baseTypes.Add(VisitPropertyKey(classDeclaration.SuperClass));
+                if (VisitExpression(classDeclaration.SuperClass) is TypeToken superClassTypeToken)
+                {
+                    baseTypes.Add(superClassTypeToken);
+                }
             }
 
             var properties = VisitClassBody(classDeclaration.Body);
@@ -62,23 +66,6 @@ namespace PT.PM.JavaScriptParseTreeUst
             {
                 BaseTypes = baseTypes
             };
-        }
-
-        private TypeToken VisitPropertyKey(PropertyKey superClass)
-        {
-            var textSpan = GetTextSpan(superClass);
-            if (superClass is Literal literal)
-            {
-                return new TypeToken(literal.Raw, textSpan);
-            }
-            else if (superClass is Identifier identifier)
-            {
-                return new TypeToken(identifier.Name, textSpan);
-            }
-            else
-            {
-                return new TypeToken("", textSpan);
-            }
         }
 
         private Ust VisitPropertyValue(PropertyValue value)
@@ -134,9 +121,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new UsingDeclaration(name, GetTextSpan(importDeclaration));
         }
 
-        private List<PropertyDeclaration> VisitClassBody(ClassBody classBody)
+        private Collections.List<PropertyDeclaration> VisitClassBody(ClassBody classBody)
         {
-            var properties = new List<PropertyDeclaration>(classBody.Body.Count);
+            var properties = new Collections.List<PropertyDeclaration>(classBody.Body.Count);
 
             foreach (ClassProperty classProperty in classBody.Body)
             {
@@ -146,9 +133,9 @@ namespace PT.PM.JavaScriptParseTreeUst
             return properties;
         }
 
-        private List<PropertyDeclaration> VisitProperties(List<Property> properties)
+        private Collections.List<PropertyDeclaration> VisitProperties(List<Property> properties)
         {
-            var props = new List<PropertyDeclaration>(properties.Count);
+            var props = new Collections.List<PropertyDeclaration>(properties.Count);
 
             foreach (Property prop in properties)
             {
@@ -203,4 +190,4 @@ namespace PT.PM.JavaScriptParseTreeUst
             return null;
         }
     }
-} 
+}

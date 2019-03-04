@@ -1,8 +1,8 @@
-﻿using Esprima;
-using Esprima.Ast;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using System;
-using System.Collections.Generic;
+using Esprima;
+using Esprima.Ast;
+using Collections = System.Collections.Generic;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -12,13 +12,13 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public Program SyntaxTree { get; }
 
-        public List<Comment> Comments { get; }
+        public Collections.List<Comment> Comments { get; }
 
         public JavaScriptEsprimaParseTree()
         {
         }
 
-        public JavaScriptEsprimaParseTree(Program syntaxTree, List<Comment> comments)
+        public JavaScriptEsprimaParseTree(Program syntaxTree, Collections.List<Comment> comments)
         {
             SyntaxTree = syntaxTree ?? throw new ArgumentNullException(nameof(syntaxTree));
             Comments = comments ?? throw new ArgumentNullException(nameof(comments));
