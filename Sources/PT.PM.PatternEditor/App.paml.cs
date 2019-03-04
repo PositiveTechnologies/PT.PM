@@ -12,7 +12,7 @@ namespace PT.PM.PatternEditor
     {
         public override void Initialize()
         {
-            Utils.RegisterAllParsersAndConverters();
+            Utils.RegisterAllLexersParsersAndConverters();
             AvaloniaXamlLoader.Load(this);
             base.Initialize();
         }

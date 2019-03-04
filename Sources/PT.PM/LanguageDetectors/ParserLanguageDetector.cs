@@ -10,18 +10,19 @@ using PT.PM.Common.Files;
 
 namespace PT.PM
 {
-    public class ParserLanguageDetector : LanguageDetector
+    public class ParserLanguageDetector
     {
-        private readonly static Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
-        private readonly static Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
+        private static readonly Regex openTagRegex = new Regex("<\\w+>", RegexOptions.Compiled);
+        private static readonly Regex closeTagRegex = new Regex("<\\/\\w+>", RegexOptions.Compiled);
 
-        private Language previousLanguage;
+        public static TimeSpan LanguageParseTimeout { get; set; } = TimeSpan.FromSeconds(10);
 
-        public TimeSpan LanguageParseTimeout { get; set; } = TimeSpan.FromSeconds(10);
+        public static TimeSpan CheckParseResultTimeSpan { get; set; } = TimeSpan.FromMilliseconds(100);
 
-        public TimeSpan CheckParseResultTimeSpan { get; set; } = TimeSpan.FromMilliseconds(100);
+        public static int MaxStackSize { get; set; }
 
-        public override DetectionResult Detect(TextFile sourceFile, IEnumerable<Language> languages = null)
+        public static DetectionResult Detect(TextFile sourceFile, Language previousLanguage = Language.Uncertain,
+            IEnumerable<Language> languages = null)
         {
             List<Language> langs = (languages ?? LanguageUtils.LanguagesWithParser).ToList();
 
@@ -48,19 +49,33 @@ namespace PT.PM
                 return new DetectionResult(langs[0]);
             }
 
-            foreach (Language language in langs)
+            if (previousLanguage != Language.Uncertain)
             {
-                Thread thread = new Thread((object obj) =>
-                {
-                    ((ParserUnit)obj).Parse(sourceFile);
-                },
-                MaxStackSize);
-                thread.IsBackground = true;
+                var parseUnit = new ParserUnit(previousLanguage, null);
+                parseUnit.Parse(sourceFile);
 
-                ParserUnit parseUnit = new ParserUnit(language, thread);
-                thread.Start(parseUnit);
+                if (parseUnit.ParseErrorCount == 0)
+                {
+                    return new DetectionResult(parseUnit.Language, parseUnit.ParseTree,
+                        parseUnit.Errors, parseUnit.Infos, parseUnit.Debugs);
+                }
 
                 parseUnits.Enqueue(parseUnit);
+            }
+
+            foreach (Language language in langs)
+            {
+                if (language != previousLanguage)
+                {
+                    Thread thread = new Thread(obj => { ((ParserUnit) obj).Parse(sourceFile); },
+                        MaxStackSize);
+                    thread.IsBackground = true;
+
+                    ParserUnit parseUnit = new ParserUnit(language, thread);
+                    thread.Start(parseUnit);
+
+                    parseUnits.Enqueue(parseUnit);
+                }
             }
 
             int checkParseResultMs = (int)CheckParseResultTimeSpan.TotalMilliseconds;
@@ -88,7 +103,7 @@ namespace PT.PM
 
             int resultLastErrorOffset = 0;
             ParserUnit result = null;
-            int resultErrorsCount = int.MaxValue;
+            int resultErrorsCount = 0;
 
             foreach (ParserUnit parseUnit in parseUnits)
             {
@@ -114,22 +129,20 @@ namespace PT.PM
                 else if (currentLastErrorOffset == resultLastErrorOffset)
                 {
                     int errorCount = parseErrors.Count;
-                    if (errorCount < resultErrorsCount)
+                    if (errorCount == resultErrorsCount && previousLanguage != Language.Uncertain)
+                    {
+                        result = new ParserUnit(previousLanguage, null);
+                    }
+                    else if (errorCount < resultErrorsCount)
                     {
                         resultErrorsCount = errorCount;
                         result = parseUnit;
-                    }
-                    else if (errorCount == resultErrorsCount && previousLanguage != Language.Uncertain)
-                    {
-                        result = new ParserUnit(previousLanguage, null);
                     }
                 }
             }
 
             if (result != null)
             {
-                previousLanguage = result.Language;
-
                 return new DetectionResult(result.Language, result.ParseTree,
                     result.Errors, result.Infos, result.Debugs);
             }

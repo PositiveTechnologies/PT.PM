@@ -20,22 +20,21 @@ namespace PT.PM
     public static class Utils
     {
         public const int DefaultMaxStackSize = 4 * 1024 * 1024;
-        public const string TimeSpanFormat = "mm\\:ss\\.ff";
+        public const string TimeSpanFormat = "mm\\:ss\\.fff";
 
-        public static void RegisterAllParsersAndConverters()
+        public static void RegisterAllLexersParsersAndConverters()
         {
             LanguageUtils.RegisterParserConverter(Language.CSharp, CSharpRoslynParser.Create, CSharpRoslynParseTreeConverter.Create);
-            LanguageUtils.RegisterParserConverter(Language.Java, JavaAntlrParser.Create, JavaAntlrParseTreeConverter.Create);
-            LanguageUtils.RegisterParserConverter(Language.Php, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
-
-            LanguageUtils.RegisterParserConverter(Language.PlSql, PlSqlAntlrParser.Create, PlSqlAntlrConverter.Create);
-            LanguageUtils.RegisterParserConverter(Language.TSql, TSqlAntlrParser.Create, TSqlAntlrConverter.Create);
-            LanguageUtils.RegisterParserConverter(Language.MySql, MySqlAntlrParser.Create, MySqlAntlrConverter.Create);
-
             LanguageUtils.RegisterParserConverter(Language.JavaScript, JavaScriptEsprimaParser.Create, JavaScriptEsprimaParseTreeConverter.Create);
             LanguageUtils.RegisterParserConverter(Language.Aspx, CSharpParseTreeUst.AspxParser.Create, AspxConverter.Create);
-            LanguageUtils.RegisterParserConverter(Language.MySql, MySqlAntlrParser.Create, MySqlAntlrConverter.Create);
-            LanguageUtils.RegisterParserConverter(Language.Html, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
+
+            LanguageUtils.RegisterLexerParserConverter(Language.Java, JavaAntlrLexer.Create, JavaAntlrParser.Create, JavaAntlrParseTreeConverter.Create);
+            LanguageUtils.RegisterLexerParserConverter(Language.Php, PhpAntlrLexer.Create, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
+            LanguageUtils.RegisterLexerParserConverter(Language.Html, PhpAntlrLexer.Create, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
+
+            LanguageUtils.RegisterLexerParserConverter(Language.PlSql, PlSqlAntlrLexer.Create, PlSqlAntlrParser.Create, PlSqlAntlrConverter.Create);
+            LanguageUtils.RegisterLexerParserConverter(Language.TSql, TSqlAntlrLexer.Create, TSqlAntlrParser.Create, TSqlAntlrConverter.Create);
+            LanguageUtils.RegisterLexerParserConverter(Language.MySql, MySqlAntlrLexer.Create, MySqlAntlrParser.Create, MySqlAntlrConverter.Create);
         }
 
         public static bool Is<TStage>(this TStage stage, Stage pmStage)
@@ -106,6 +105,8 @@ namespace PT.PM
             return $"{assemblyName?.Version} ({buildTime.ToString(CultureInfo.InvariantCulture)})";
         }
 
-        public static string GetElapsedString(this Stopwatch stopwatch) => $"(Elapsed: {stopwatch.Elapsed.Format()})";
+        public static string GetElapsedString(this Stopwatch stopwatch) => GetElapsedString(stopwatch.Elapsed);
+
+        public static string GetElapsedString(this TimeSpan timeSpan) => $"(Elapsed: {timeSpan.Format()})";
     }
 }

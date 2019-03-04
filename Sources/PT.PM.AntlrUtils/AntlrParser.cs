@@ -6,44 +6,19 @@ using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
-using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
-    public abstract class AntlrParser : ILanguageParser
+    public abstract class AntlrParser : AntlrBaseHandler, ILanguageParser<IList<IToken>>
     {
-        private static long processedFilesCount;
-        private static long processedBytesCount;
-        private static long checkNumber;
-        private static volatile bool excessMemory;
+        public static readonly Dictionary<Language, ATN> Atns = new Dictionary<Language, ATN>();
 
-        private static Dictionary<Language, ATN> lexerAtns = new Dictionary<Language, ATN>();
+        public abstract string[] RuleNames { get; }
 
-        private static Dictionary<Language, ATN> parserAtns = new Dictionary<Language, ATN>();
+        protected abstract string ParserSerializedATN { get; }
 
-        public static ILogger StaticLogger { get; set; } = DummyLogger.Instance;
-
-        public ILogger Logger { get; set; } = DummyLogger.Instance;
-
-        public Lexer Lexer { get; private set; }
-
-        public Parser Parser { get; private set; }
-
-        public abstract Language Language { get; }
-
-        public virtual CaseInsensitiveType CaseInsensitiveType { get; } = CaseInsensitiveType.None;
-
-        public bool UseFastParseStrategyAtFirst { get; set; } = true;
-
-        public static long MemoryConsumptionBytes { get; set; } = 3 * 1024 * 1024 * 1024L;
-
-        public static long ClearCacheFilesBytes { get; set; } = 5 * 1024 * 1024L;
-
-        public static int ClearCacheFilesCount { get; set; } = 50;
-
-        protected abstract Lexer InitLexer(ICharStream inputStream);
+        protected abstract int CommentsChannel { get; }
 
         protected abstract Parser InitParser(ITokenStream inputStream);
 
@@ -51,59 +26,28 @@ namespace PT.PM.AntlrUtils
 
         protected abstract AntlrParseTree Create(ParserRuleContext syntaxTree);
 
-        protected abstract IVocabulary Vocabulary { get; }
-
-        protected abstract int CommentsChannel { get; }
-
-        protected abstract string LexerSerializedATN { get; }
-
-        protected abstract string ParserSerializedATN { get; }
-
         public int LineOffset { get; set; }
 
-        public AntlrParser()
+        public ParseTree Parse(IList<IToken> tokens, out TimeSpan parserTimeSpan)
         {
-            Lexer = InitLexer(null);
-            Parser = InitParser(null);
-        }
-
-        public ParseTree Parse(TextFile sourceFile)
-        {
-            if (sourceFile.Data == null)
+            if (SourceFile == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(SourceFile));
             }
 
+            if (ErrorListener == null)
+            {
+                ErrorListener = new AntlrMemoryErrorListener();
+                ErrorListener.Logger = Logger;
+                ErrorListener.LineOffset = LineOffset;
+            }
+
+            ErrorListener.SourceFile = SourceFile;
+
             AntlrParseTree result = null;
-            var filePath = sourceFile.RelativeName;
-            var errorListener = new AntlrMemoryErrorListener();
-            errorListener.SourceFile = sourceFile;
-            errorListener.Logger = Logger;
-            errorListener.LineOffset = LineOffset;
             try
             {
-                var preprocessedText = PreprocessText(sourceFile);
-                AntlrInputStream inputStream;
-                if (Language.IsCaseInsensitive())
-                {
-                    inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
-                }
-                else
-                {
-                    inputStream = new AntlrInputStream(preprocessedText);
-                }
-                inputStream.name = filePath;
-
-                Lexer lexer = InitLexer(inputStream);
-                lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(true));
-                lexer.RemoveErrorListeners();
-                lexer.AddErrorListener(errorListener);
                 var commentTokens = new List<IToken>();
-
-                var stopwatch = Stopwatch.StartNew();
-                IList<IToken> tokens = lexer.GetAllTokens();
-                stopwatch.Stop();
-                TimeSpan lexerTimeSpan = stopwatch.Elapsed;
 
                 foreach (IToken token in tokens)
                 {
@@ -113,73 +57,39 @@ namespace PT.PM.AntlrUtils
                     }
                 }
 
-                stopwatch.Restart();
+                var stopwatch = Stopwatch.StartNew();
                 var codeTokenSource = new ListTokenSource(tokens);
                 var codeTokenStream = new CommonTokenStream(codeTokenSource);
-                ParserRuleContext syntaxTree = ParseTokens(sourceFile, errorListener, codeTokenStream);
+                ParserRuleContext syntaxTree = ParseTokens(ErrorListener, codeTokenStream);
                 stopwatch.Stop();
-                TimeSpan parserTimeSpan = stopwatch.Elapsed;
+                parserTimeSpan = stopwatch.Elapsed;
 
                 result = Create(syntaxTree);
-                result.LexerTimeSpan = lexerTimeSpan;
-                result.ParserTimeSpan = parserTimeSpan;
 
                 result.Tokens = tokens;
                 result.Comments = commentTokens;
-                result.SourceFile = sourceFile;
+                result.SourceFile = SourceFile;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
-                Logger.LogError(new ParsingException(sourceFile, ex));
+                Logger.LogError(new ParsingException(SourceFile, ex));
             }
             finally
             {
-                long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
-                long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, sourceFile.Data.Length);
-
-                long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
-                bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
-                checkNumber = divideResult;
-
-                if (Process.GetCurrentProcess().PrivateMemorySize64 > MemoryConsumptionBytes)
-                {
-                    bool prevExcessMemory = excessMemory;
-                    excessMemory = true;
-
-                    if (!prevExcessMemory ||
-                        exceededProcessedBytes ||
-                        localProcessedFilesCount % ClearCacheFilesCount == 0)
-                    {
-                        lock (lexerAtns)
-                        {
-                            lexerAtns.Remove(Language);
-                        }
-                        lock (parserAtns)
-                        {
-                            parserAtns.Remove(Language);
-                        }
-
-                        Logger.LogInfo($"Memory cleared due to big memory consumption during {sourceFile.RelativeName} parsing.");
-                    }
-                }
-                else
-                {
-                    excessMemory = false;
-                }
+                HandleMemoryConsumption();
             }
 
             return result;
         }
 
-        protected ParserRuleContext ParseTokens(TextFile sourceFile,
+        private ParserRuleContext ParseTokens(
             AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
             Parser parser = initParserFunc != null ? initParserFunc(codeTokenStream) : InitParser(codeTokenStream);
-            parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(false));
+            parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(ParserSerializedATN));
             parser.RemoveErrorListeners();
-            Parser = parser;
-            ParserRuleContext syntaxTree = null;
+            ParserRuleContext syntaxTree;
 
             if (UseFastParseStrategyAtFirst)
             {
@@ -209,61 +119,6 @@ namespace PT.PM.AntlrUtils
             }
 
             return syntaxTree;
-        }
-
-        /// <summary>
-        /// Converts \r to \r\n.
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        protected virtual string PreprocessText(TextFile file)
-        {
-            var text = file.Data;
-            var result = new StringBuilder(text.Length);
-            int i = 0;
-            while (i < text.Length)
-            {
-                if (text[i] == '\r')
-                {
-                    if (i + 1 >= text.Length)
-                    {
-                        result.Append('\n');
-                    }
-                    else if (text[i + 1] != '\n')
-                    {
-                        result.Append('\n');
-                    }
-                    else
-                    {
-                        result.Append(text[i]);
-                    }
-                }
-                else
-                {
-                    result.Append(text[i]);
-                }
-                i++;
-            }
-            return result.ToString();
-        }
-
-        private ATN GetOrCreateAtn(bool lexer)
-        {
-            ATN atn;
-            Dictionary<Language, ATN> atns = lexer ? lexerAtns : parserAtns;
-
-            lock (atns)
-            {
-                if (!atns.TryGetValue(Language, out atn))
-                {
-                    string stringAtn = lexer ? LexerSerializedATN : ParserSerializedATN;
-                    atn = new ATNDeserializer().Deserialize(stringAtn.ToCharArray());
-                    atns.Add(Language, atn);
-                    Logger.LogDebug($"New ATN initialized for {Language} {(lexer ? "lexer" : "parser")}.");
-                }
-            }
-
-            return atn;
         }
     }
 }

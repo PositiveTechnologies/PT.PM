@@ -33,4 +33,12 @@
     <ProjectReference Include="..\PT.PM.TSqlParseTreeUst\PT.PM.TSqlParseTreeUst.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Antlr4" Version="4.6.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="LanguageDetectors\SqlDialectsLexer" />
+  </ItemGroup>
+
 </Project>

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Expressions;
@@ -29,6 +30,15 @@ namespace PT.PM.AntlrUtils
             }
 
             return result.ToString();
+        }
+
+        public static AntlrLexer CreateAntlrLexer(this Language language)
+        {
+            if (language.CreateLexer() is AntlrLexer antlrLexer)
+            {
+                return antlrLexer;
+            }
+            throw new NotImplementedException($"{nameof(AntlrLexer)} for language {language} is not supported");
         }
 
         public static TextSpan GetTextSpan(this ParserRuleContext ruleContext)
@@ -106,6 +116,7 @@ namespace PT.PM.AntlrUtils
 
             logger.LogError(new ConversionException(currentFileData, message: exceptionText) { TextSpan = textSpan });
         }
+
 
         public static ArgumentExpression ConvertToInOutArgument(this ParserRuleContext context)
         {

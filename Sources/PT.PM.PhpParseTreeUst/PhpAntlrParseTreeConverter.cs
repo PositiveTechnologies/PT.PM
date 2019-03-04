@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime;
+﻿using System;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
@@ -149,7 +150,7 @@ namespace PT.PM.PhpParseTreeUst
                 OriginFile = root.SourceFile
             };
 
-            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceFile);
+            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceFile, out TimeSpan _);
             if (parseTree == null)
             {
                 return null;

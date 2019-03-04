@@ -126,6 +126,11 @@ namespace PT.PM.SqlParseTreeUst
             return VisitChildren(context);
         }
 
+        public Ust VisitAlterByRenameColumn(MySqlParser.AlterByRenameColumnContext context)
+        {
+            return VisitChildren(context);
+        }
+
         public Ust VisitAlterByConvertCharset([NotNull] MySqlParser.AlterByConvertCharsetContext context)
         {
             return VisitChildren(context);
@@ -157,6 +162,11 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitAlterByDropForeignKey([NotNull] MySqlParser.AlterByDropForeignKeyContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitAlterByAddCheckTableConstraint(MySqlParser.AlterByAddCheckTableConstraintContext context)
         {
             return VisitChildren(context);
         }
@@ -1960,6 +1970,11 @@ namespace PT.PM.SqlParseTreeUst
         }
 
         public Ust VisitReferenceColumnConstraint([NotNull] MySqlParser.ReferenceColumnConstraintContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitGeneratedColumnConstraint(MySqlParser.GeneratedColumnConstraintContext context)
         {
             return VisitChildren(context);
         }

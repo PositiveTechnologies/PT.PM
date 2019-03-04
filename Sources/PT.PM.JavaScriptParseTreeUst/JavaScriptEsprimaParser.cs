@@ -10,7 +10,7 @@ using Collections = System.Collections.Generic;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
-    public class JavaScriptEsprimaParser : ILanguageParser
+    public class JavaScriptEsprimaParser : ILanguageParser<TextFile>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -24,7 +24,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public static JavaScriptEsprimaParser Create() => new JavaScriptEsprimaParser();
 
-        public ParseTree Parse(TextFile sourceFile)
+        public ParseTree Parse(TextFile sourceFile, out TimeSpan parserTimeSpan)
         {
             if (sourceFile.Data == null)
             {
@@ -51,7 +51,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 var stopwatch = Stopwatch.StartNew();
                 Program ast = parser.ParseProgram(JavaScriptType == JavaScriptType.Strict);
                 stopwatch.Stop();
-                TimeSpan parserTimeSpan = stopwatch.Elapsed;
+                parserTimeSpan = stopwatch.Elapsed;
 
                 var scanner = new Scanner(sourceFile.Data, parserOptions);
                 errorHandler.Scanner = scanner;
@@ -76,14 +76,10 @@ namespace PT.PM.JavaScriptParseTreeUst
                 }
                 while (token.Type != TokenType.EOF);
                 stopwatch.Stop();
-                TimeSpan lexerTimeSpan = stopwatch.Elapsed;
+                TimeSpan lexerTimeSpan = stopwatch.Elapsed; // TODO: store lexer time
 
                 // TODO: comments handling without scanner, https://github.com/sebastienros/esprima-dotnet/issues/39
-                var result = new JavaScriptEsprimaParseTree(ast, comments)
-                {
-                    LexerTimeSpan = lexerTimeSpan,
-                    ParserTimeSpan = parserTimeSpan
-                };
+                var result = new JavaScriptEsprimaParseTree(ast, comments);
                 result.SourceFile = sourceFile;
 
                 return result;

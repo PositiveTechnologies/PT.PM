@@ -48,7 +48,7 @@ namespace PT.PM
 
             var result = workflowResult ??
                 new WorkflowResult(AnalyzedLanguages.ToList(), ThreadCount, Stage);
-            result.BaseLanguages = GetBaseLanguages(AnalyzedLanguages).ToArray();
+            result.BaseLanguages = GetBaseLanguages(AnalyzedLanguages).ToList();
             result.RenderStages = RenderStages;
             result.IsFoldConstants = IsFoldConstants;
 

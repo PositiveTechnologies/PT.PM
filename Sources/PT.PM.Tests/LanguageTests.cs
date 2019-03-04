@@ -17,7 +17,7 @@ namespace PT.PM.Tests
         [SetUp]
         public void Init()
         {
-            Utils.RegisterAllParsersAndConverters();
+            Utils.RegisterAllLexersParsersAndConverters();
         }
 
         [Test]
@@ -64,13 +64,15 @@ namespace PT.PM.Tests
         [TestCase(Language.Php, "Patterns.php")]
         [TestCase(Language.PlSql, "plsql_patterns.sql")]
         [TestCase(Language.TSql, "tsql_patterns.sql")]
+        [TestCase(Language.MySql, "mysql_patterns.sql")]
         [TestCase(Language.Aspx, "Patterns.aspx")]
         [TestCase(Language.JavaScript, "Patterns.js")]
         public void DetectLanguage_Source_CorrectLanguage(Language expectedLanguage, string fileName)
         {
             var source =
                 new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName.NormalizeDirSeparator())));
-            DetectionResult detectedLanguage = new ParserLanguageDetector().Detect(source);
+            source.Name = fileName;
+            DetectionResult detectedLanguage = ParserLanguageDetector.Detect(source);
             Assert.AreEqual(expectedLanguage, detectedLanguage.Language);
         }
 
@@ -83,20 +85,37 @@ namespace PT.PM.Tests
             CollectionAssert.IsEmpty(sourceRepository.GetLanguages(Path.Combine(TestUtility.TestsDataPath, "Patterns.php"), true));
         }
 
-        [Test]
-        public void DetectLanguageIfRequired_Source_CorrectLanguage()
+        [TestCase(Language.MySql)]
+        [TestCase(Language.TSql)]
+        [TestCase(Language.PlSql)]
+        public void DetectSqlDialects(Language language)
         {
-            var languageDetector = new ParserLanguageDetector();
+            var testFolder = Path.Combine(TestUtility.GrammarsDirectory, language.ToString().ToLowerInvariant(),
+                "examples");
+            var directoryCodeRepository = new DirectorySourceRepository(testFolder);
+            var fileNames = directoryCodeRepository.GetFileNames();
 
-            var plSqlFile = new TextFile(File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "plsql_patterns.sql")));
-            var detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.PlSql, Language.TSql });
+            int totalFilesCount = 0;
+            int ambiguousFilesCount = 0;
 
-            Assert.NotNull(detectionResult.ParseTree);
-            Assert.AreEqual(Language.PlSql, detectionResult.Language);
+            foreach (var fileName in fileNames)
+            {
+                TextFile textFile = new TextFile(File.ReadAllText(fileName), fileName);
+                List<Language> sqls = SqlDialectDetector.Detect(textFile);
 
-            // Force parse file with specified language.
-            detectionResult = languageDetector.DetectIfRequired(plSqlFile, new HashSet<Language> { Language.TSql });
-            Assert.AreEqual(Language.TSql, detectionResult.Language);
+                if (sqls.Count > 1)
+                {
+                    Console.WriteLine($"{fileName} has been recognized as {string.Join(", ", sqls)}");
+                    ambiguousFilesCount++;
+                }
+
+                totalFilesCount++;
+
+                CollectionAssert.Contains(sqls, language, $"File {fileName} has not been detected as {language}");
+            }
+
+            Console.WriteLine($"Ambiguous files count: {ambiguousFilesCount}");
+            Console.WriteLine($"Total files count: {totalFilesCount}");
         }
     }
 }

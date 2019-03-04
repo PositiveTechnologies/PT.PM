@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using PT.PM.Common;
@@ -11,7 +12,7 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.CSharpParseTreeUst
 {
-    public class CSharpRoslynParser : ILanguageParser
+    public class CSharpRoslynParser : ILanguageParser<TextFile>
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -19,7 +20,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public static CSharpRoslynParser Create() => new CSharpRoslynParser();
 
-        public ParseTree Parse(TextFile sourceFile)
+        public ParseTree Parse(TextFile sourceFile, out TimeSpan parserTimeSpan)
         {
             if (sourceFile.Data == null)
             {
@@ -28,6 +29,7 @@ namespace PT.PM.CSharpParseTreeUst
 
             try
             {
+                var stopwatch = Stopwatch.StartNew();
                 var filePath = Path.Combine(sourceFile.RelativePath, sourceFile.Name);
                 SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceFile.Data, null, filePath);
                 var result = new CSharpRoslynParseTree(syntaxTree);
@@ -56,6 +58,8 @@ namespace PT.PM.CSharpParseTreeUst
                         });
                     }
                 }
+                stopwatch.Stop();
+                parserTimeSpan = stopwatch.Elapsed;
 
                 result.SourceFile = sourceFile;
                 return result;

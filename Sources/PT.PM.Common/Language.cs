@@ -17,6 +17,7 @@ namespace PT.PM.Common
         CPlusPlus,
         Swift,
         Json,
-        MessagePack
+        MessagePack,
+        Sql
     }
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
+using PT.PM.Common.Files;
 using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
@@ -16,20 +17,20 @@ namespace PT.PM.Tests
         [Test]
         public void Simplify_PhpCodeWithConstants_ConstantsFolded()
         {
-            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "simplify-sample.php"));
+            TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "simplify-sample.php"));
 
-            var matches = PatternMatchingUtils.GetMatches(code, "<[\"Hello World!\"]>", Language.Php);
+            var matches = PatternMatchingUtils.GetMatches(source, "<[\"Hello World!\"]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(2, 7, 2, 29), matches[0].LineColumnTextSpan); // TODO: should be (2, 8, 2, 30)
-            
-            matches = PatternMatchingUtils.GetMatches(code, "<[86400]>", Language.Php);
+
+            matches = PatternMatchingUtils.GetMatches(source, "<[86400]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(3, 6, 3, 18), matches[0].LineColumnTextSpan);
-            
-            matches = PatternMatchingUtils.GetMatches(code, "<[42]>", Language.Php);
+
+            matches = PatternMatchingUtils.GetMatches(source, "<[42]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(4, 6, 4, 15), matches[0].LineColumnTextSpan);
-            
-            matches = PatternMatchingUtils.GetMatches(code, "<[-3]>", Language.Php);
+
+            matches = PatternMatchingUtils.GetMatches(source, "<[-3]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(5, 6, 5, 8), matches[0].LineColumnTextSpan);
-            
+
             //matches = PatternMatchingUtils.GetMatches(code, "<[-3.1]>", Language.Php); // TODO: fix float literal patterns
             //Assert.AreEqual(new LineColumnTextSpan(6, 6, 6, 10), matches.Length);
         }
@@ -37,9 +38,9 @@ namespace PT.PM.Tests
         [Test]
         public void Simplify_JavaCodeWithConstantCharArray_ArrayFolded()
         {
-            string code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "FoldArrayOfChars.java"));
+            TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "FoldArrayOfChars.java"));
 
-            var matches = PatternMatchingUtils.GetMatches(code, "<[\"none\"]>", Language.Java);
+            var matches = PatternMatchingUtils.GetMatches(source, "<[\"none\"]>", Language.Java);
             Assert.AreEqual(new LineColumnTextSpan(3, 21, 3, 44), matches[0].LineColumnTextSpan); // TODO: should be (3, 20, 3, 42)
         }
 

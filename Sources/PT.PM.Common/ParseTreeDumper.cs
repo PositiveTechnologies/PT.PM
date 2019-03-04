@@ -28,8 +28,6 @@ namespace PT.PM.Common
 
         public bool OnlyCommonTokens { get; set; } = false;
 
-        public abstract void DumpTokens(ParseTree parseTree);
-
         public abstract void DumpTree(ParseTree parseTree);
 
         protected void Dump(string data, TextFile sourceFile, bool tokens)

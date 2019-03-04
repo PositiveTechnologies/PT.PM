@@ -13,6 +13,7 @@ namespace PT.PM
         where TRenderStage : Enum
     {
         private long totalReadTicks;
+        private long totalDetectTicks;
         private long totalLexerTicks;
         private long totalParserTicks;
         private long totalConvertTicks;
@@ -40,9 +41,9 @@ namespace PT.PM
 
         public string RootPath { get; set; }
 
-        public IReadOnlyList<Language> AnalyzedLanguages { get; }
+        public List<Language> AnalyzedLanguages { get; }
 
-        public IReadOnlyList<Language> BaseLanguages { get; set; }
+        public List<Language> BaseLanguages { get; set; }
 
         public HashSet<TRenderStage> RenderStages { get; set; } = new HashSet<TRenderStage>();
 
@@ -61,6 +62,7 @@ namespace PT.PM
         public List<TPattern> Patterns { get; set; } = new List<TPattern>();
 
         public long TotalReadTicks => totalReadTicks;
+        public long TotalDetectTicks => totalDetectTicks;
         public long TotalLexerParserTicks => totalLexerTicks + totalParserTicks;
         public long TotalConvertTicks => totalConvertTicks;
         public long TotalMatchTicks => totalMatchTicks;
@@ -116,6 +118,11 @@ namespace PT.PM
             AddTime(ref totalReadTicks, readTime);
         }
 
+        public void AddDetectTime(TimeSpan detectTime)
+        {
+            AddTime(ref totalDetectTicks, detectTime);
+        }
+
         public void AddConvertTime(TimeSpan convertTime)
         {
             AddTime(ref totalConvertTicks, convertTime);
@@ -167,13 +174,14 @@ namespace PT.PM
             AddTime(ref totalLexerTicks, lexerTime);
         }
 
-        public void AddParserTicks(TimeSpan parserTime)
+        public void AddParserTime(TimeSpan parserTime)
         {
             AddTime(ref totalParserTicks, parserTime);
         }
 
         public virtual long TotalTimeTicks =>
-            totalReadTicks + totalLexerTicks + totalParserTicks + totalConvertTicks + totalMatchTicks + totalPatternsTicks;
+            totalReadTicks + totalDetectTicks + totalLexerTicks + totalParserTicks + totalConvertTicks +
+            totalMatchTicks + totalPatternsTicks;
 
         protected void AddEntity<T>(ICollection<T> collection, T entity)
         {

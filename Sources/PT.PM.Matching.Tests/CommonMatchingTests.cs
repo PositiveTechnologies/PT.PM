@@ -148,17 +148,17 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_PatternWithNegation_CorrectCount()
         {
-            var code = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
+            TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "XxeSample.java"));
             var pattern = "new XMLUtil().parse(<[~\".*\"]>)";
 
-            var matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Java);
+            var matchResults = PatternMatchingUtils.GetMatches(source, pattern, Language.Java);
             Assert.AreEqual(4, matchResults.Length);
         }
 
         [Test]
         public void Match_Comments_CorrectMatchingPosition()
         {
-            var code =
+            TextFile source = new TextFile(
                 "<?php\n" +
                 "#password=secret\n" +
                 "/*password=secret*/\n" +
@@ -167,10 +167,11 @@ namespace PT.PM.Matching.Tests
                 "    password\n" +
                 "              =secret\n" +
                 "*/" +
-                "?>";
+                "?>",
+                "code.php");
             var pattern = "Comment: <[ \"(?i)(password|pwd)\\s*(\\=|is|\\:)\" ]>";
 
-            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Php);
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(source, pattern, Language.Php);
 
             LineColumnTextSpan textSpan0 = matchResults[0].LineColumnTextSpan;
             Assert.AreEqual(2, textSpan0.BeginLine);
@@ -225,15 +226,16 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_Suppress_CorrectCount()
         {
-            var code =
+            var source = new TextFile(
                 "<?php $password = \"hardcoded\";\n" +
                 "\n" +
                 "// ptai: suppress\n" +
-                "$password = \"hardcoded\"";
+                "$password = \"hardcoded\"",
+                "text.php");
 
             var pattern = "<[password]> = <[\"\"]>";
 
-            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(code, pattern, Language.Php);
+            MatchResultDto[] matchResults = PatternMatchingUtils.GetMatches(source, pattern, Language.Php);
 
             Assert.AreEqual(2, matchResults.Length);
             Assert.AreEqual(1, matchResults.Count(matchResult => matchResult.Suppressed));

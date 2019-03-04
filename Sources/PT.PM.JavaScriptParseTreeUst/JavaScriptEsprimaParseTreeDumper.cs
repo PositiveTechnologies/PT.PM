@@ -7,10 +7,6 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public class JavaScriptEsprimaParseTreeDumper : ParseTreeDumper
     {
-        public override void DumpTokens(ParseTree parseTree)
-        {
-        } 
-
         public override void DumpTree(ParseTree parseTree)
         {
             var esprimaParseTree = (JavaScriptEsprimaParseTree)parseTree;

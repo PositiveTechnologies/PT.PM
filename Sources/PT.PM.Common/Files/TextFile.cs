@@ -21,10 +21,21 @@ namespace PT.PM.Common.Files
         [IgnoreMember]
         public override bool IsEmpty => Data.Length == 0;
 
+        public static TextFile Read(string fileName)
+        {
+            return new TextFile(System.IO.File.ReadAllText(fileName), fileName);
+        }
+
         public TextFile(string code)
             : base(code)
         {
             InitLineIndexes();
+        }
+
+        public TextFile(string code, string name)
+            : this(code)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         public override string ToString() => !string.IsNullOrEmpty(RelativeName)

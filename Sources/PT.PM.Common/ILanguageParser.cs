@@ -1,11 +1,9 @@
-﻿using PT.PM.Common.Files;
+﻿using System;
 
 namespace PT.PM.Common
 {
-    public interface ILanguageParser : ILoggable
+    public interface ILanguageParser<T> : ILanguageParserBase
     {
-        Language Language { get; }
-
-        ParseTree Parse(TextFile sourceFile);
+        ParseTree Parse(T parseUnit, out TimeSpan parserTimeSpan);
     }
 }

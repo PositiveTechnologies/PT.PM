@@ -8,9 +8,5 @@ namespace PT.PM.Common
         public abstract Language SourceLanguage { get; }
 
         public TextFile SourceFile { get; set; }
-
-        public TimeSpan LexerTimeSpan { get; set; }
-
-        public TimeSpan ParserTimeSpan { get; set; }
     }
 }

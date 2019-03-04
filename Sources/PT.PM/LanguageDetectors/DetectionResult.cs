@@ -33,5 +33,10 @@ namespace PT.PM
             Infos = infos;
             Debugs = debugs;
         }
+
+        public override string ToString()
+        {
+            return Language.ToString();
+        }
     }
 }

@@ -3,6 +3,7 @@ using Antlr4.Runtime.Tree;
 using PT.PM.Common;
 using System.Collections.Generic;
 using System.Text;
+using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
@@ -10,13 +11,12 @@ namespace PT.PM.AntlrUtils
     {
         public override string ParseTreeSuffix => "parseTree.lisp";
 
-        public override void DumpTokens(ParseTree parseTree)
+        public void DumpTokens(IList<IToken> tokens, Language language, TextFile sourceFile)
         {
-            var antlrParseTree = parseTree as AntlrParseTree;
+            IVocabulary vocabulary = language.CreateAntlrLexer().Vocabulary;
 
-            IVocabulary vocabulary = ((AntlrParser)parseTree.SourceLanguage.CreateParser()).Lexer.Vocabulary;
             var resultString = new StringBuilder();
-            foreach (IToken token in antlrParseTree.Tokens)
+            foreach (IToken token in tokens)
             {
                 if (!OnlyCommonTokens || token.Channel == 0)
                 {
@@ -29,30 +29,30 @@ namespace PT.PM.AntlrUtils
             }
             resultString.Append("EOF");
 
-            Dump(resultString.ToString(), parseTree.SourceFile, true);
+            Dump(resultString.ToString(), sourceFile, true);
         }
 
         public override void DumpTree(ParseTree parseTree)
         {
             var result = new StringBuilder();
-            Parser parser = ((AntlrParser)parseTree.SourceLanguage.CreateParser()).Parser;
-            DumpTree(((AntlrParseTree)parseTree).SyntaxTree, parser, result, 0);
+            string[] ruleNames = ((AntlrParser)parseTree.SourceLanguage.CreateParser()).RuleNames;
+            DumpTree(((AntlrParseTree)parseTree).SyntaxTree, ruleNames, result, 0);
 
             Dump(result.ToString(), parseTree.SourceFile, false);
         }
 
-        private void DumpTree(IParseTree parseTree, Parser parser, StringBuilder builder, int level)
+        private void DumpTree(IParseTree parseTree, string[] ruleNames, StringBuilder builder, int level)
         {
             int currentLevelStringLength = level * IndentSize;
             builder.PadLeft(currentLevelStringLength);
             if (parseTree is RuleContext ruleContext)
             {
-                builder.Append(parser.RuleNames[ruleContext.RuleIndex]);
+                builder.Append(ruleNames[ruleContext.RuleIndex]);
                 builder.AppendLine(" (");
 
                 for (int i = 0; i < ruleContext.ChildCount; i++)
                 {
-                    DumpTree(ruleContext.GetChild(i), parser, builder, level + 1);
+                    DumpTree(ruleContext.GetChild(i), ruleNames, builder, level + 1);
                     builder.AppendLine();
                 }
 
@@ -81,7 +81,7 @@ namespace PT.PM.AntlrUtils
             string channelValue = string.Empty;
             if (showChannel)
             {
-                channelValue = "c: " + token.Channel.ToString(); // TODO: channel name instead of identifier.
+                channelValue = "c: " + token.Channel; // TODO: channel name instead of identifier.
             }
 
             string result = symbolicName;
@@ -92,7 +92,7 @@ namespace PT.PM.AntlrUtils
                     strings.Add(tokenValue);
                 if (!string.IsNullOrEmpty(channelValue))
                     strings.Add(channelValue);
-                result = $"{result} ({(string.Join(", ", strings))})";
+                result = $"{result} ({string.Join(", ", strings)})";
             }
 
             return result;

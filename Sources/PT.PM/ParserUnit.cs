@@ -3,23 +3,22 @@ using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using PT.PM.AntlrUtils;
 using PT.PM.Common.Files;
 
 namespace PT.PM
 {
     public class ParserUnit
     {
-        private Thread thread;
+        private readonly Thread thread;
 
-        private ParserUnitLogger logger;
-
-        private ILanguageParser parser;
+        private readonly ParserUnitLogger logger;
 
         public Language Language { get; }
 
         public ParseTree ParseTree { get; private set; }
 
-        public int ParseErrorCount => parser.Logger.ErrorCount;
+        public int ParseErrorCount => logger.ErrorCount;
 
         public List<Exception> Errors => logger.Errors;
 
@@ -50,15 +49,29 @@ namespace PT.PM
         public ParserUnit(Language language, Thread thread)
         {
             Language = language;
-            parser = language.CreateParser();
             logger = new ParserUnitLogger();
-            parser.Logger = logger;
             this.thread = thread;
         }
 
         public void Parse(TextFile sourceFile)
         {
-            ParseTree = parser.Parse(sourceFile);
+            ILanguageParserBase parser = Language.CreateParser();
+            parser.Logger = logger;
+
+            if (parser is AntlrParser antlrParser)
+            {
+                var lexer = (AntlrLexer)Language.CreateLexer();
+                lexer.Logger = logger;
+                var tokens = lexer.GetTokens(sourceFile, out TimeSpan _);
+
+                antlrParser.SourceFile = sourceFile;
+
+                ParseTree = antlrParser.Parse(tokens, out TimeSpan _);
+            }
+            else
+            {
+                ParseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceFile, out TimeSpan _);
+            }
         }
 
         public override string ToString()
