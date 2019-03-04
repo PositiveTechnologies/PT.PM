@@ -304,7 +304,7 @@ namespace PT.PM
                     }
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {shortFileName} converted {stopwatch.GetElapsedString()}.");
+                    Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
                     workflowResult.AddConvertTime(stopwatch.Elapsed);
                 }
                 else
@@ -335,7 +335,7 @@ namespace PT.PM
                     }
 
                     stopwatch.Stop();
-                    Logger.LogInfo($"File {shortFileName} deserialized {stopwatch.GetElapsedString()}.");
+                    Logger.LogInfo($"File {sourceFile} deserialized {stopwatch.GetElapsedString()}.");
                     workflowResult.AddDeserializeTime(stopwatch.Elapsed);
 
                     if (result == null || !workflowResult.BaseLanguages.Any(lang => result.Sublanguages.Contains(lang)))
