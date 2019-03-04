@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.TestUtils;
@@ -11,10 +12,17 @@ namespace PT.PM.JavaScriptParseTreeUst.Tests
         [Test]
         public void Convert_JavaScriptSyntaxFiles_WithoutErrors()
         {
-            Assert.Inconclusive("Waiting for the new version of https://github.com/sebastienros/esprima-dotnet");
+            var ignoredFiles = new []
+            {
+                "EnhancedRegularExpression.js",
+                "MapSetAndWeakMapWeakSet.js",
+                "Modules.js",
+                "Outdated.js"
+            };
 
             TestUtility.CheckProject(Path.Combine(TestUtility.GrammarsDirectory, "javascript", "examples"),
-                Language.JavaScript, Stage.Ust);
+                Language.JavaScript, Stage.Ust, searchPredicate: fileName =>
+                    ignoredFiles.All(ignoredFile => !fileName.Contains(ignoredFile)));
         }
     }
 }
