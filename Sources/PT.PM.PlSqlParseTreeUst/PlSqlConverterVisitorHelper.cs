@@ -5,6 +5,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
+using System.Numerics;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -27,7 +28,18 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (text.All(c => char.IsDigit(c)))
             {
-                result = new IntLiteral(long.Parse(text), textSpan);
+                if (int.TryParse(text, out int intValue))
+                {
+                    result = new IntLiteral(intValue, textSpan);
+                }
+                else if (long.TryParse(text, out long longValue))
+                {
+                    result = new LongLiteral(longValue, textSpan);
+                }
+                else
+                {
+                    result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
+                }
             }
             else if (double.TryParse(text, out doubleResult))
             {

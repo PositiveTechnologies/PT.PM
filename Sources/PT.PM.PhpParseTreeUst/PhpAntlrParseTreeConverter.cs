@@ -19,6 +19,7 @@ using PT.PM.Common.Utils;
 using PT.PM.JavaScriptParseTreeUst;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using PT.PM.Common.Files;
 
@@ -1548,31 +1549,41 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitNumericConstant([NotNull] PhpParser.NumericConstantContext context)
         {
             string text = context.GetText();
-            Token result;
+            var textSpan = context.GetTextSpan();
+            Token result = null;
             try
             {
-                long resultValue = 0;
                 if (context.Octal() != null)
                 {
-                    resultValue = System.Convert.ToInt64(text, 8);
+                    result = new LongLiteral(System.Convert.ToInt64(text, 8));
                 }
                 else if (context.Decimal() != null)
                 {
-                    resultValue = long.Parse(text);
+                    if (int.TryParse(text, out int intValue))
+                    {
+                        result = new IntLiteral(intValue, textSpan);
+                    }
+                    else if (long.TryParse(text, out long longValue))
+                    {
+                        result = new LongLiteral(longValue, textSpan);
+                    }
+                    else
+                    {
+                        result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
+                    }
                 }
                 else if (context.Hex() != null)
                 {
-                    resultValue = System.Convert.ToInt64(text, 16);
+                    result = new LongLiteral(System.Convert.ToInt64(text, 16));
                 }
                 else if (context.Binary() != null)
                 {
-                    resultValue = System.Convert.ToInt64(text.Substring(2), 2);
+                    result = new LongLiteral(System.Convert.ToInt64(text.Substring(2), 2));
                 }
-                result = new IntLiteral(resultValue, context.GetTextSpan());
             }
             catch
             {
-                result = new FloatLiteral(double.PositiveInfinity, context.GetTextSpan());
+                result = new FloatLiteral(double.PositiveInfinity, textSpan);
             }
             return result;
         }

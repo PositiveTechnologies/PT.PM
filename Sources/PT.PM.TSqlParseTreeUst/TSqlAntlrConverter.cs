@@ -17,6 +17,7 @@ using PT.PM.TSqlParseTreeUst;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -1071,7 +1072,21 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                right = new IntLiteral(long.Parse(context.DECIMAL().GetText()), context.DECIMAL().Symbol.GetTextSpan());
+                string rightText = context.DECIMAL().GetText();
+                var rightTextSpan = context.DECIMAL().Symbol.GetTextSpan();
+                
+                if (int.TryParse(rightText, out int intValue))
+                {
+                    right = new IntLiteral(intValue, rightTextSpan);
+                }
+                else if (long.TryParse(rightText, out long longValue))
+                {
+                    right = new LongLiteral(longValue, rightTextSpan);
+                }
+                else
+                {
+                    right = new BigIntLiteral(BigInteger.Parse(rightText), rightTextSpan);
+                }
             }
 
             var result = new AssignmentExpression(left, right, context.GetTextSpan());
@@ -2112,7 +2127,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (context.BINARY() != null)
             {
-                result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
+                result = new LongLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
             }
             else if (context.dollar != null)
             {
@@ -2120,7 +2135,18 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (context.DECIMAL() != null)
             {
-                result = new IntLiteral(long.Parse(text, CultureInfo.InvariantCulture), textSpan);
+                if (int.TryParse(text, out int intValue))
+                {
+                    result = new IntLiteral(intValue, textSpan);
+                }
+                else if (long.TryParse(text, out long longValue))
+                {
+                    result = new LongLiteral(longValue, textSpan);
+                }
+                else
+                {
+                    result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
+                }
             }
             else
             {

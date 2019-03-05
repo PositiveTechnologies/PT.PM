@@ -590,15 +590,17 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 case "Boolean":
                     return new BooleanLiteral((bool)token.Value, node.GetTextSpan());
                 case "Int32":
-                case "UInt32":
                 case "Int16":
                 case "UInt16":
                 case "Byte":
                 case "SByte":
+                    return new IntLiteral(System.Convert.ToInt32(token.Value), node.GetTextSpan());
+                case "UInt32":
+                    return new IntLiteral((int)System.Convert.ToUInt32(token.Value), node.GetTextSpan());
                 case "Int64":
-                    return new IntLiteral(System.Convert.ToInt64(token.Value), node.GetTextSpan());
+                    return new LongLiteral(System.Convert.ToInt64(token.Value), node.GetTextSpan());
                 case "UInt64":
-                    return new IntLiteral((long)System.Convert.ToUInt64(token.Value), node.GetTextSpan());
+                    return new LongLiteral((long)System.Convert.ToUInt64(token.Value), node.GetTextSpan());
                 case "Double":
                 case "Single":
                 case "Decimal":
