@@ -130,9 +130,9 @@ namespace PT.PM.Matching
             return VisitChildren(patternIndexerExpression);
         }
 
-        public virtual T Visit(PatternIntLiteral patternIntLiteral)
+        public virtual T Visit(PatternIntLiteral patternNumericLiteral)
         {
-            return VisitChildren(patternIntLiteral);
+            return VisitChildren(patternNumericLiteral);
         }
 
         public virtual T Visit(PatternIntRangeLiteral patternIntRangeLiteral)
