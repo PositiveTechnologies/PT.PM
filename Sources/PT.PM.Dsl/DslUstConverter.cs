@@ -3,13 +3,13 @@ using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
+using PT.PM.Common.Files;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using PT.PM.Common.Files;
 
 namespace PT.PM.Dsl
 {
@@ -427,7 +427,7 @@ namespace PT.PM.Dsl
             }
             else if (context.Int() != null)
             {
-                result = new PatternIntLiteral(long.Parse(context.Int().GetText()), textSpan);
+                result = new PatternIntLiteral(int.Parse(context.Int().GetText()), textSpan);
             }
             else if (context.Hex() != null)
             {
@@ -522,19 +522,15 @@ namespace PT.PM.Dsl
 
         public PatternUst VisitPatternInt([NotNull] DslParser.PatternIntContext context)
         {
-            long resultValue;
-            if (context.PatternOct() != null)
+            if (context.PatternInt() != null)
             {
-                resultValue = System.Convert.ToInt64(context.PatternOct().GetText(), 8);
+                return new PatternIntLiteral(int.Parse(context.PatternInt().GetText()), context.GetTextSpan());
             }
-            else if (context.PatternInt() != null)
-            {
-                resultValue = long.Parse(context.PatternInt().GetText());
-            }
-            else
-            {
-                resultValue = System.Convert.ToInt64(context.PatternHex().GetText(), 16);
-            }
+
+            long resultValue = context.PatternOct() != null
+                ? System.Convert.ToInt64(context.PatternOct().GetText(), 8)
+                : System.Convert.ToInt64(context.PatternHex().GetText(), 16);
+
             return new PatternIntLiteral(resultValue, context.GetTextSpan());
         }
 
@@ -558,9 +554,18 @@ namespace PT.PM.Dsl
             }
             else
             {
-                result = new PatternIntRangeLiteral(
-                    context.i1 != null ? ((PatternIntLiteral)VisitPatternIntExpression(context.i1)).Value : long.MinValue,
-                    context.i2 != null ? ((PatternIntLiteral)VisitPatternIntExpression(context.i2)).Value : long.MaxValue);
+                long minValue = long.MinValue;
+                long maxValue = long.MaxValue;
+                if (context.i1 != null)
+                {
+                    minValue = ((PatternIntLiteral)VisitPatternIntExpression(context.i1)).Value;
+
+                }
+                if (context.i2 != null)
+                {
+                    maxValue = ((PatternIntLiteral)VisitPatternIntExpression(context.i2)).Value;
+                }
+                result = new PatternIntRangeLiteral(minValue, maxValue);
             }
             result.TextSpan = context.GetTextSpan();
             return result;
@@ -571,8 +576,8 @@ namespace PT.PM.Dsl
             PatternIntLiteral result;
             if (context.op != null)
             {
-                long leftValue = ((PatternIntLiteral)VisitPatternIntExpression(context.left)).Value;
-                long rightValue = ((PatternIntLiteral)VisitPatternIntExpression(context.right)).Value;
+                var leftValue = ((PatternIntLiteral)VisitPatternIntExpression(context.left)).Value;
+                var rightValue = ((PatternIntLiteral)VisitPatternIntExpression(context.right)).Value;
                 long resultValue = 0;
                 switch (context.op.Text)
                 {
