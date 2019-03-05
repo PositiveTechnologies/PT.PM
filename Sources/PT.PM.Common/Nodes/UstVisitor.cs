@@ -178,6 +178,16 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(intLiteral);
         }
 
+        public virtual T Visit(BigIntLiteral bigIntLiteral)
+        {
+            return VisitChildren(bigIntLiteral);
+        }
+
+        public virtual T Visit(LongLiteral longLiteral)
+        {
+            return VisitChildren(longLiteral);
+        }
+
         public virtual T Visit(ModifierLiteral modifierLiteral)
         {
             return VisitChildren(modifierLiteral);
