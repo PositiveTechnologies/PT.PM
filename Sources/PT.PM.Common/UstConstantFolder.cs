@@ -5,6 +5,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 
@@ -144,8 +145,15 @@ namespace PT.PM.Common
                     return result;
                 }
             }
-            else if (leftValue is long leftInt && rightValue is long rightInt)
+            else if ((leftValue is long || leftValue is int)
+                || (rightValue is long || rightValue is int))
             {
+                long leftInt = leftValue is long
+                    ? (long)leftValue
+                    : (int)leftValue;
+                long rightInt = rightValue is long
+                    ? (long)rightValue
+                    : (int)rightValue;
                 long resultInt = 0;
                 bool folded = true;
                 try
@@ -234,14 +242,26 @@ namespace PT.PM.Common
 
             if (unaryOperatorExpression.Operator.UnaryOperator == UnaryOperator.Minus)
             {
-                if (foldResult.Value is long longValue)
+                object valueToProcess = null;
+                switch (foldResult.Value)
                 {
-                    return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -longValue);
+                    case double doubleVal:
+                        valueToProcess = -doubleVal;
+                        break;
+                    case int intVal:
+                        valueToProcess = -intVal;
+                        break;
+                    case long longVal:
+                        valueToProcess = -longVal;
+                        break;
+                    case BigInteger bigIntVal:
+                        valueToProcess = -bigIntVal;
+                        break;
                 }
 
-                if (foldResult.Value is double doubleValue)
+                if(valueToProcess != null)
                 {
-                    return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -doubleValue);
+                    return ProcessUnaryExpression(unaryOperatorExpression, foldResult, valueToProcess);
                 }
             }
 
@@ -258,6 +278,16 @@ namespace PT.PM.Common
             if (token is IntLiteral intLiteral)
             {
                 return new FoldResult(intLiteral.Value, intLiteral.TextSpan);
+            }
+
+            if (token is BigIntLiteral bigIntLiteral)
+            {
+                return new FoldResult(bigIntLiteral.Value, bigIntLiteral.TextSpan);
+            }
+
+            if (token is LongLiteral longLiteral)
+            {
+                return new FoldResult(longLiteral.Value, longLiteral.TextSpan);
             }
 
             if (token is FloatLiteral floatLiteral)

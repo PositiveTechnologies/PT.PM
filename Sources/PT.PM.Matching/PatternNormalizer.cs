@@ -97,19 +97,19 @@ namespace PT.PM.Matching
             return new PatternIdRegexToken(regexString, patternIdRegexToken.TextSpan);
         }
 
-        public override PatternUst Visit(PatternIntRangeLiteral patternIntLiteral)
+        public override PatternUst Visit(PatternIntRangeLiteral patternIntRangeLiteral)
         {
-            if (patternIntLiteral.MinValue == patternIntLiteral.MaxValue)
+            if (patternIntRangeLiteral.MinValue == patternIntRangeLiteral.MaxValue)
             {
                 return new PatternIntLiteral(
-                    patternIntLiteral.MinValue,
-                    patternIntLiteral.TextSpan);
+                    patternIntRangeLiteral.MinValue,
+                    patternIntRangeLiteral.TextSpan);
             }
 
             return new PatternIntRangeLiteral(
-                patternIntLiteral.MinValue,
-                patternIntLiteral.MaxValue,
-                patternIntLiteral.TextSpan);
+                patternIntRangeLiteral.MinValue,
+                patternIntRangeLiteral.MaxValue,
+                patternIntRangeLiteral.TextSpan);
         }
 
         public override PatternUst Visit(PatternAnd patternAnd)
