@@ -1,3 +1,4 @@
+var yaml = require("js-yaml");
 var express = require("express");
 var app = express();
 
@@ -21,6 +22,11 @@ app.get("/timeout", function(req, res) {
 app.get("/function", function(req, res) {
 	new Function(req.query);
 	new Function("x", "y", req.query.func);
+});
+
+app.get("/yaml", function(req, res) {
+	require("js-yaml").load(req.body);
+	yaml.load(req.param.yaml);
 });
 
 app.listen(3000);

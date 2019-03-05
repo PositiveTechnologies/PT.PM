@@ -172,6 +172,30 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "ServerSideInjectionYaml",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternInvocationExpression
+                {
+                    Target = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternOr
+                        (
+                            new PatternInvocationExpression
+                            {
+                                Target = new PatternIdToken("require"),
+                                Arguments = new PatternArgs(new PatternStringRegexLiteral("^js-yaml$"))
+                            },
+                            new PatternIdToken("yaml")
+                        ),
+                        Name = new PatternIdToken("load")
+                    },
+                    Arguments = new PatternArgs(nodeEP, new PatternMultipleExpressions()) // load(string[, options])
+                }
+            });
+
             return patterns;
         }
     }
