@@ -18,19 +18,31 @@ namespace PT.PM.Matching.Patterns
             Value = value;
         }
 
-        public override string ToString() => Value.ToString();
+        public override string ToString() => $"{Value}";
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
             if (ust is IntLiteral intLiteral)
             {
-                return Value == intLiteral.Value ? context.AddMatch(intLiteral) : context.Fail();
+                return Value == intLiteral.Value
+                ? context.AddMatch(ust)
+                : context.Fail(); ;
+            }
+            if (ust is LongLiteral longLiteral)
+            {
+                return Value == longLiteral.Value
+                ? context.AddMatch(ust)
+                : context.Fail(); ;
             }
 
             if (context.UstConstantFolder != null &&
                 context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldingResult))
             {
                 context.MatchedWithFolded = true;
+                if (foldingResult.Value is int intValue)
+                {
+                    return Value == intValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                }
                 if (foldingResult.Value is long longValue)
                 {
                     return Value == longValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
