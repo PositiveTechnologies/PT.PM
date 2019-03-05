@@ -271,6 +271,11 @@ namespace PT.PM.Common.MessagePack
                 return MessagePackBinary.WriteUInt16(ref bytes, offset, (ushort) value);
             }
 
+            if (type == typeof(uint))
+            {
+                return MessagePackBinary.WriteUInt32(ref bytes, offset, (uint) value);
+            }
+
             if (type == typeof(ulong))
             {
                 return MessagePackBinary.WriteUInt64(ref bytes, offset, (ulong) value);
@@ -486,6 +491,11 @@ namespace PT.PM.Common.MessagePack
                 if (type == typeof(ushort))
                 {
                     return MessagePackBinary.ReadUInt16(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(uint))
+                {
+                    return MessagePackBinary.ReadUInt32(bytes, offset, out readSize);
                 }
 
                 if (type == typeof(ulong))
