@@ -82,12 +82,12 @@ namespace PT.PM.Matching
 
         public virtual T Visit(PatternBinaryOperatorLiteral patternBinaryOperatorLiteral)
         {
-            return default;
+            return VisitChildren(patternBinaryOperatorLiteral);
         }
 
         public virtual T Visit(PatternBooleanLiteral patternBooleanLiteral)
         {
-            return default;
+            return VisitChildren(patternBooleanLiteral);
         }
 
         public virtual T Visit(PatternClassDeclaration patternClassDeclaration)
@@ -132,7 +132,7 @@ namespace PT.PM.Matching
 
         public virtual T Visit(PatternIntLiteral patternIntLiteral)
         {
-            return default;
+            return VisitChildren(patternIntLiteral);
         }
 
         public virtual T Visit(PatternIntRangeLiteral patternIntRangeLiteral)
@@ -142,7 +142,7 @@ namespace PT.PM.Matching
 
         public virtual T Visit(PatternBigIntLiteral patternBigIntLiteral)
         {
-            return default;
+            return VisitChildren(patternBigIntLiteral);
         }
         
         public virtual T Visit(PatternInvocationExpression patternInvocationExpression)
@@ -197,7 +197,7 @@ namespace PT.PM.Matching
 
         public virtual T Visit(PatternStringLiteral patternStringLiteral)
         {
-            return default;
+            return VisitChildren(patternStringLiteral);
         }
 
         public virtual T Visit(PatternStringRegexLiteral patternStringRegexLiteral)

@@ -155,7 +155,7 @@ namespace PT.PM.Common.Nodes
 
         public virtual T Visit(BooleanLiteral booleanLiteral)
         {
-            return default;
+            return VisitChildren(booleanLiteral);
         }
 
         public virtual T Visit(CommentLiteral commentLiteral)
@@ -165,7 +165,7 @@ namespace PT.PM.Common.Nodes
 
         public virtual T Visit(FloatLiteral floatLiteral)
         {
-            return default;
+            return VisitChildren(floatLiteral);
         }
 
         public virtual T Visit(IdToken idToken)
@@ -175,17 +175,17 @@ namespace PT.PM.Common.Nodes
 
         public virtual T Visit(IntLiteral intLiteral)
         {
-            return default;
+            return VisitChildren(intLiteral);
         }
 
         public virtual T Visit(BigIntLiteral bigIntLiteral)
         {
-            return default;
+            return VisitChildren(bigIntLiteral);
         }
 
         public virtual T Visit(LongLiteral longLiteral)
         {
-            return default;
+            return VisitChildren(longLiteral);
         }
 
         public virtual T Visit(ModifierLiteral modifierLiteral)
@@ -205,7 +205,7 @@ namespace PT.PM.Common.Nodes
 
         public virtual T Visit(StringLiteral stringLiteral)
         {
-            return default;
+            return VisitChildren(stringLiteral);
         }
 
         public virtual T Visit(ThisReferenceToken thisReferenceLiteral)
