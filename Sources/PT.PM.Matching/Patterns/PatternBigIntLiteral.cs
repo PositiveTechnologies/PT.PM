@@ -1,7 +1,7 @@
-using System.Numerics;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Numerics;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -23,7 +23,6 @@ namespace PT.PM.Matching.Patterns
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
-            
             switch (ust)
             {
                 case BigIntLiteral bigIntLiteral:
@@ -56,7 +55,7 @@ namespace PT.PM.Matching.Patterns
                 {
                     return Value == bigIntValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
                 }
-                
+
             }
 
             return context.Fail();

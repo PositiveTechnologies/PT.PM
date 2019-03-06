@@ -1,6 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using System.Numerics;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -22,17 +23,20 @@ namespace PT.PM.Matching.Patterns
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
-            if (ust is IntLiteral intLiteral)
+            switch (ust)
             {
-                return Value == intLiteral.Value
-                ? context.AddMatch(ust)
-                : context.Fail();
-            }
-            if (ust is LongLiteral longLiteral)
-            {
-                return Value == longLiteral.Value
-                ? context.AddMatch(ust)
-                : context.Fail();
+                case IntLiteral intLiteral:
+                    return Value == intLiteral.Value
+                    ? context.AddMatch(ust)
+                    : context.Fail();
+                case LongLiteral longLiteral:
+                    return Value == longLiteral.Value
+                    ? context.AddMatch(ust)
+                    : context.Fail();
+                case BigIntLiteral bigIntLiteral:
+                    return Value == bigIntLiteral.Value
+                    ? context.AddMatch(ust)
+                    : context.Fail();
             }
 
             if (context.UstConstantFolder != null &&
@@ -46,6 +50,10 @@ namespace PT.PM.Matching.Patterns
                 if (foldingResult.Value is long longValue)
                 {
                     return Value == longValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                }
+                if (foldingResult.Value is BigInteger bigIntValue)
+                {
+                    return Value == bigIntValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
                 }
             }
 
