@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common.Files;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Utils;
 using System;
@@ -386,23 +385,63 @@ namespace PT.PM.Common
             }
         }
 
-        public static Literal CreateNumericLiteral(string value, TextSpan textSpan)
+        public static Literal CreateNumericLiteral(string value, TextSpan textSpan, int fromBase = 10)
         {
-            Literal result;
-            if (int.TryParse(value, out int intValue))
+            switch (fromBase)
             {
-                result = new IntLiteral(intValue, textSpan);
+                case 2:
+                    try
+                    {
+                        return new LongLiteral(Convert.ToInt64(value, 2), textSpan);
+                    }
+                    catch
+                    {
+                        BigInteger bigIntValue = 0;
+                        foreach (var c in value)
+                        {
+                            bigIntValue <<= 1;
+                            bigIntValue += c == '1' ? 1 : 0;
+                        }
+                        return new BigIntLiteral(bigIntValue, textSpan);
+                    }
+                case 8:
+                    try
+                    {
+                        return new LongLiteral(Convert.ToInt64(value, 8), textSpan);
+                    }
+                    catch
+                    {
+                        return new BigIntLiteral(value.Aggregate(new BigInteger(),
+                            (bigInt, c) => bigInt * 8 + c - '0'));
+                    }
+                case 10:
+                    if (int.TryParse(value, out int intValue))
+                    {
+                        return new IntLiteral(intValue, textSpan);
+                    }
+                    else if (long.TryParse(value, out long longValue))
+                    {
+                        return new LongLiteral(longValue, textSpan);
+                    }
+                    else
+                    {
+                        return new BigIntLiteral(BigInteger.Parse(value), textSpan);
+                    }
+                case 16:
+                    value = value.StartsWith("0X", StringComparison.OrdinalIgnoreCase)
+                        ? value.Substring(2)
+                        : value;
+                    try
+                    {
+                        return new LongLiteral(Convert.ToInt64(value, 16), textSpan);
+                    }
+                    catch
+                    {
+                        return new BigIntLiteral(BigInteger.Parse(value, System.Globalization.NumberStyles.HexNumber));
+                    }
+                default:
+                    throw new NotSupportedException($"{fromBase} base сonversion is not supported");
             }
-            else if (long.TryParse(value, out long longValue))
-            {
-                result = new LongLiteral(longValue, textSpan);
-            }
-            else
-            {
-                result = new BigIntLiteral(BigInteger.Parse(value), textSpan);
-            }
-
-            return result;
         }
     }
 }

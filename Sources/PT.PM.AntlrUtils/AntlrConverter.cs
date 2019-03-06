@@ -314,22 +314,11 @@ namespace PT.PM.AntlrUtils
                 }
                 else if (text.All(char.IsDigit))
                 {
-                    if (int.TryParse(text, out int intValue))
-                    {
-                        result = new IntLiteral(intValue, textSpan);
-                    }
-                    else if (long.TryParse(text, out long longValue))
-                    {
-                        result = new LongLiteral(longValue, textSpan);
-                    }
-                    else
-                    {
-                        result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
-                    }
+                    result = TextUtils.CreateNumericLiteral(text, textSpan);
                 }
                 else if (text.StartsWith("0X", StringComparison.OrdinalIgnoreCase))
                 {
-                    result = new LongLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
+                    result = TextUtils.CreateNumericLiteral(text, textSpan, 16);
                 }
                 else if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out double floatValue))
                 {

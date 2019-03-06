@@ -2,3 +2,5 @@
     echo 2147483646; //int
     echo 9223372036854775806; //long
     echo 9223372036854775807123456; //big int
+    echo 0x8CFFFFFFFFFFFFFFFFFFFFFFF;
+?>

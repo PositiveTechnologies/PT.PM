@@ -1559,26 +1559,15 @@ namespace PT.PM.PhpParseTreeUst
                 }
                 else if (context.Decimal() != null)
                 {
-                    if (int.TryParse(text, out int intValue))
-                    {
-                        result = new IntLiteral(intValue, textSpan);
-                    }
-                    else if (long.TryParse(text, out long longValue))
-                    {
-                        result = new LongLiteral(longValue, textSpan);
-                    }
-                    else
-                    {
-                        result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
-                    }
+                    result = TextUtils.CreateNumericLiteral(text, textSpan);
                 }
                 else if (context.Hex() != null)
                 {
-                    result = new LongLiteral(System.Convert.ToInt64(text, 16));
+                    result = TextUtils.CreateNumericLiteral(text, textSpan, 16);
                 }
                 else if (context.Binary() != null)
                 {
-                    result = new LongLiteral(System.Convert.ToInt64(text.Substring(2), 2));
+                    result = TextUtils.CreateNumericLiteral(text.Substring(2), textSpan, 2);
                 }
             }
             catch
