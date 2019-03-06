@@ -77,7 +77,7 @@ namespace PT.PM.Common
                 (bool) arrayCreationExpression.Initializers?.All(i => i is StringLiteral))
             {
                 var value = new StringBuilder();
-                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1)
+                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1);
 
                 textSpans.Add(arrayCreationExpression.Type.TextSpan);
 

@@ -6,8 +6,6 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 namespace PT.PM.Common.Nodes.Tokens
 {
     [MessagePackObject]
-    [Union((int)NodeType.BigIntLiteral, typeof(BigIntLiteral))]
-    [Union((int)NodeType.LongLiteral, typeof(LongLiteral))]
     public abstract class Token : Expression
     {
         [IgnoreMember, JsonIgnore]

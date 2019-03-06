@@ -10,8 +10,6 @@ namespace PT.PM.Common.Nodes
     [DebuggerDisplay("{" + nameof(ToStringWithoutLineBreaks) + "()}")]
     [MessagePackObject]
     public abstract class Ust : IComparable<Ust>, IEquatable<Ust>
-    [Union((int)NodeType.BigIntLiteral, typeof(BigIntLiteral))]
-    [Union((int)NodeType.LongLiteral, typeof(LongLiteral))]
     {
         internal const int UstFieldOffset = 2;
 
