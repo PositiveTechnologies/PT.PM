@@ -26,13 +26,13 @@ namespace PT.PM.Matching.Patterns
             {
                 return Value == intLiteral.Value
                 ? context.AddMatch(ust)
-                : context.Fail(); ;
+                : context.Fail();
             }
             if (ust is LongLiteral longLiteral)
             {
                 return Value == longLiteral.Value
                 ? context.AddMatch(ust)
-                : context.Fail(); ;
+                : context.Fail();
             }
 
             if (context.UstConstantFolder != null &&
