@@ -11,8 +11,6 @@ namespace PT.PM.Common
 {
     public static class TextUtils
     {
-        private static char[] semicolon = { ';' };
-
         public static readonly Regex HttpRegex = new Regex("^https?://", RegexOptions.Compiled);
 
         public static bool EqualsIgnoreCase(this string str1, string str2)
@@ -36,22 +34,22 @@ namespace PT.PM.Common
             return i;
         }
 
-        public static TextSpan Union(this IEnumerable<TextSpan> textSpans)
+        public static TextSpan Union(this IList<TextSpan> textSpans)
         {
-            if (textSpans == null || textSpans.Count() == 0)
+            if (textSpans == null || textSpans.Count == 0)
             {
                 return TextSpan.Zero;
             }
 
-            var resultTextSpan = textSpans.First();
-            if (textSpans.Count() == 1)
+            var resultTextSpan = textSpans[0];
+            if (textSpans.Count == 1)
             {
                 return resultTextSpan;
             }
 
-            foreach (TextSpan textSpan in textSpans.Skip(1))
+            for (int i = 1; i < textSpans.Count; i++)
             {
-                resultTextSpan = resultTextSpan.Union(textSpan);
+                resultTextSpan = resultTextSpan.Union(textSpans[i]);
             }
 
             return resultTextSpan;
@@ -77,30 +75,41 @@ namespace PT.PM.Common
 
         public static TextSpan ParseTextSpan(string text, TextFile currentSourceFile = null, HashSet<IFile> sourceFiles = null)
         {
-            string[] parts = text.Split(semicolon, 2);
+            ReadOnlySpan<char> textSpan = text.AsSpan();
+            int semicolonIndex = textSpan.IndexOf(';');
 
-            string fileName = parts.Length == 2
-                ? parts[1].Trim()
-                : null;
+            ReadOnlySpan<char> location;
+            ReadOnlySpan<char> fileName;
+
+            if (semicolonIndex >= 0)
+            {
+                location = textSpan.Slice(0, semicolonIndex).Trim();
+                fileName = textSpan.Slice(semicolonIndex + 1).Trim();
+            }
+            else
+            {
+                location = textSpan.Trim();
+                fileName = ReadOnlySpan<char>.Empty;
+            }
 
             TextFile sourceFile = (TextFile)GetSourceFile(fileName, currentSourceFile, sourceFiles);
 
             TextSpan result;
             try
             {
-                string range = parts[0].Trim().Substring(1, parts[0].Length - 2);
-                int index = range.IndexOf("..");
+                ReadOnlySpan<char> range = location.Slice(1, location.Length - 2);
+                int index = range.IndexOf("..".AsSpan());
 
                 int start, end;
                 if (index != -1)
                 {
-                    string value = range.Remove(index);
+                    string value = range.Slice(0, index).ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
                     if (!int.TryParse(value, out start))
                     {
                         throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
                     }
 
-                    value = range.Substring(index + 2);
+                    value = range.Slice(index + 2).ToString();  // TODO: It will be replaced with Span when netstandard2.1 comes out
                     if (!int.TryParse(value, out end))
                     {
                         throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
@@ -108,9 +117,10 @@ namespace PT.PM.Common
                 }
                 else
                 {
-                    if (!int.TryParse(range, out start))
+                    string value = range.ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
+                    if (!int.TryParse(range.ToString(), out start))
                     {
-                        throw new FormatException($"Invalid or too big value {range} while {nameof(TextSpan)} parsing.");
+                        throw new FormatException($"Invalid or too big value {value} while {nameof(TextSpan)} parsing.");
                     }
 
                     end = start;
@@ -128,42 +138,56 @@ namespace PT.PM.Common
 
         public static LineColumnTextSpan ParseLineColumnTextSpan(string text, TextFile currentSourceFile = null, HashSet<IFile> sourceFiles = null)
         {
-            string[] parts = text.Split(semicolon, 2);
+            ReadOnlySpan<char> textSpan = text.AsSpan();
+            int semicolonIndex = textSpan.IndexOf(';');
 
-            string fileName = parts.Length == 2
-                ? parts[1].Trim()
-                : null;
+            ReadOnlySpan<char> location;
+            ReadOnlySpan<char> fileName;
+
+            if (semicolonIndex >= 0)
+            {
+                location = textSpan.Slice(0, semicolonIndex).Trim();
+                fileName = textSpan.Slice(semicolonIndex + 1).Trim();
+            }
+            else
+            {
+                location = textSpan.Trim();
+                fileName = ReadOnlySpan<char>.Empty;
+            }
 
             TextFile sourceFile = (TextFile)GetSourceFile(fileName, currentSourceFile, sourceFiles);
 
             LineColumnTextSpan result;
-            string firstPart = parts[0].Trim().Substring(1, parts[0].Length - 2);
+            ReadOnlySpan<char> firstPart = location.Slice(1, location.Length - 2);
 
             try
             {
                 int beginLine, beginColumn, endLine, endColumn;
 
-                var index = firstPart.IndexOf("..");
+                var index = firstPart.IndexOf("..".AsSpan());
                 if (index != -1)
                 {
-                    string begin = firstPart.Remove(index);
-                    string end = firstPart.Substring(index + 2);
+                    ReadOnlySpan<char> begin = firstPart.Slice(0, index);
+                    ReadOnlySpan<char> end = firstPart.Slice(index + 2);
+
                     if (end.IndexOf(',') == -1)
                     {
                         ParseLineColumn(begin, out beginLine, out beginColumn);
                         endLine = beginLine;
-                        if (!int.TryParse(end, out endColumn))
+                        string endStr = end.ToString();
+                        if (!int.TryParse(endStr, out endColumn)) // TODO: It will be replaced with Span when netstandard2.1 comes out
                         {
-                            throw new FormatException($"Invalid or too big column value {end} while {nameof(LineColumnTextSpan)} parsing.");
+                            throw new FormatException($"Invalid or too big column value {endStr} while {nameof(LineColumnTextSpan)} parsing.");
                         }
                     }
                     else if (begin.IndexOf(',') == -1)
                     {
                         ParseLineColumn(end, out endLine, out endColumn);
                         beginColumn = endColumn;
-                        if (!int.TryParse(begin, out beginLine))
+                        string beginStr = begin.ToString();
+                        if (!int.TryParse(beginStr, out beginLine)) // TODO: It will be replaced with Span when netstandard2.1 comes out
                         {
-                            throw new FormatException($"Invalid or too big line value {begin} while {nameof(LineColumnTextSpan)} parsing.");
+                            throw new FormatException($"Invalid or too big line value {beginStr} while {nameof(LineColumnTextSpan)} parsing.");
                         }
                     }
                     else
@@ -189,43 +213,43 @@ namespace PT.PM.Common
             return result;
         }
 
-        public static IFile GetSourceFile(string fileName, IFile currentSourceFile, HashSet<IFile> sourceFiles)
+        public static IFile GetSourceFile(ReadOnlySpan<char> fileName, IFile currentSourceFile, HashSet<IFile> sourceFiles)
         {
             IFile result = null;
-            if (fileName == null)
+            if (fileName.IsEmpty)
             {
                 result = currentSourceFile;
             }
             else
             {
-                fileName = fileName.NormalizeDirSeparator();
+                string fileNameString = fileName.ToString().NormalizeDirSeparator();
 
                 if (sourceFiles != null)
                     lock (sourceFiles)
                     {
                         result = sourceFiles.FirstOrDefault(sourceFile =>
-                            sourceFile.FullName == fileName || sourceFile.RelativeName == fileName);
+                            sourceFile.FullName == fileNameString || sourceFile.RelativeName == fileNameString);
                     }
 
                 if (result == null)
                 {
-                    if (!FileExt.Exists(fileName))
+                    if (!FileExt.Exists(fileNameString))
                     {
                         if (currentSourceFile != null)
                         {
-                            fileName = Path.Combine(currentSourceFile.RootPath, fileName);
-                            if (!FileExt.Exists(fileName))
+                            fileNameString = Path.Combine(currentSourceFile.RootPath, fileNameString);
+                            if (!FileExt.Exists(fileNameString))
                             {
-                                throw new FileNotFoundException($"File {fileName} not found.", fileName);
+                                throw new FileNotFoundException($"File {fileNameString} not found.", fileNameString);
                             }
                         }
                     }
 
-                    var code = FileExt.ReadAllText(fileName);
+                    var code = FileExt.ReadAllText(fileNameString);
                     result = new TextFile(code)
                     {
-                        RootPath = Path.GetDirectoryName(fileName),
-                        Name = Path.GetFileName(fileName)
+                        RootPath = Path.GetDirectoryName(fileNameString),
+                        Name = Path.GetFileName(fileNameString)
                     };
 
                     if (sourceFiles != null)
@@ -254,22 +278,6 @@ namespace PT.PM.Common
         public static void PadLeft(this StringBuilder builder, int totalWidth)
         {
             builder.Append(' ', totalWidth);
-        }
-
-        public static string RemoveWhitespaces(this string str)
-        {
-            if (string.IsNullOrEmpty(str))
-            {
-                return "";
-            }
-
-            var result = new StringBuilder(str.Length);
-            foreach (char c in str)
-            {
-                if (!char.IsWhiteSpace(c))
-                    result.Append(c);
-            }
-            return result.ToString();
         }
 
         public static string Escape(this string str)
@@ -330,7 +338,7 @@ namespace PT.PM.Common
 
         public static string ToStringWithLead(this object obj, char lead)
         {
-            string result = obj?.ToString() ?? null;
+            string result = obj?.ToString();
             return string.IsNullOrEmpty(result) ? "" : lead + result;
         }
 
@@ -354,21 +362,21 @@ namespace PT.PM.Common
             }
         }
 
-        private static void ParseLineColumn(string text, out int line, out int column)
+        private static void ParseLineColumn(ReadOnlySpan<char> text, out int line, out int column)
         {
             int commaIndex = text.IndexOf(',');
             if (commaIndex == -1)
             {
-                throw new FormatException($"Begin position for line-column format should have line,column format instead of {text}.");
+                throw new FormatException($"Begin position for line-column format should have line,column format instead of {text.ToString()}.");
             }
 
-            string value = text.Remove(commaIndex);
+            string value = text.Slice(0, commaIndex).ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
             if (!int.TryParse(value, out line))
             {
                 throw new FormatException($"Invalid or too big line value {value} while {nameof(LineColumnTextSpan)} parsing.");
             }
 
-            value = text.Substring(commaIndex + 1);
+            value = text.Slice(commaIndex + 1).ToString(); // TODO: It will be replaced with Span when netstandard2.1 comes out
             if (!int.TryParse(value, out column))
             {
                 throw new FormatException($"Invalid or too big column value {value} while {nameof(LineColumnTextSpan)} parsing.");

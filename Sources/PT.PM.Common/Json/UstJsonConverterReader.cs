@@ -54,9 +54,10 @@ namespace PT.PM.Common.Json
 
             if (type == typeof(RootUst))
             {
+                TextFile sourceFile = jObject["SourceCodeFile"]?.ToObject<TextFile>(serializer); // Back compatibility with external serializers
                 string languageString = (string)jObject[nameof(RootUst.Language)] ?? "";
                 Enum.TryParse(languageString, out Language language);
-                rootUst = new RootUst(null, language);
+                rootUst = new RootUst(sourceFile, language);
                 ProcessRootUst(rootUst);
 
                 ust = rootUst;
@@ -70,9 +71,9 @@ namespace PT.PM.Common.Json
             {
                 ust.Root = rootAncestors.Peek();
             }
-            if (ancestors.Count > 0 && ust is IUstWithParent ustWithParent)
+            if (ancestors.Count > 0)
             {
-                ustWithParent.Parent = ancestors.Peek();
+                ust.Parent = ancestors.Peek();
             }
 
             if (rootUst != null)

@@ -3,12 +3,14 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
     public class PatternCommentRegex : PatternUst, IRegexPattern, ITerminalPattern
     {
+        [JsonIgnore]
         public string Default => @".*";
 
         public string RegexString
@@ -30,6 +32,7 @@ namespace PT.PM.Matching.Patterns
             RegexString = patternRegex;
         }
 
+        [JsonIgnore]
         public override bool Any => Regex.ToString() == Default;
 
         public override string ToString() => $"</*{(Any ? "" : Regex.ToString())}*/>";
@@ -41,7 +44,7 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
+
             IEnumerable<TextSpan> matches = Regex
                 .MatchRegex(commentLiteral.Comment)
                 .Select(location => location.AddOffset(commentLiteral.TextSpan.Start));

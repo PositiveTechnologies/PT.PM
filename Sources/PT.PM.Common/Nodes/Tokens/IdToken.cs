@@ -1,5 +1,6 @@
 ﻿using System;
 using MessagePack;
+using Newtonsoft.Json;
 
 namespace PT.PM.Common.Nodes.Tokens
 {
@@ -9,7 +10,7 @@ namespace PT.PM.Common.Nodes.Tokens
         [Key(UstFieldOffset)]
         public virtual string Id { get; set; }
 
-        [IgnoreMember]
+        [IgnoreMember, JsonIgnore]
         public override string TextValue => Id;
 
         public IdToken(string id, TextSpan textSpan)

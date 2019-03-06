@@ -7,19 +7,16 @@ using Newtonsoft.Json;
 namespace PT.PM.Common.Nodes.Expressions
 {
     [MessagePackObject]
-    public class AnonymousMethodExpression : Expression, IUstWithParent
+    public class AnonymousMethodExpression : Expression
     {
         [Key(UstFieldOffset)]
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
 
-        [IgnoreMember, JsonIgnore]
-        public Ust Parent { get; set; }
-    
         [Key(UstFieldOffset + 1)]
         public Ust Body { get; set; }
 
-        [IgnoreMember]
-        public string Id => Parent is AssignmentExpression assignment 
+        [IgnoreMember, JsonIgnore]
+        public string Id => Parent is AssignmentExpression assignment
             ? assignment.Left.ToString()
             : LineColumnTextSpan.ToString();
 

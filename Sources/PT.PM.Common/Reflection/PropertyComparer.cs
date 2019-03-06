@@ -17,7 +17,7 @@ namespace PT.PM.Common.Reflection
             {
                 return node == null ? 0 : 1;
             }
-            
+
             if (node == null)
             {
                 return -1;
@@ -58,8 +58,8 @@ namespace PT.PM.Common.Reflection
             }
             else if (type1.IsSubclassOf(typeof(T)) || type1 == typeof(T))
             {
-                PropertyInfo[] properties1 = type1.GetReadWriteClassProperties();
-                PropertyInfo[] properties2 = type2.GetReadWriteClassProperties();
+                PropertyInfo[] properties1 = type1.GetSerializableProperties(out _);
+                PropertyInfo[] properties2 = type2.GetSerializableProperties(out _);
 
                 if (properties1.Length != properties2.Length)
                 {

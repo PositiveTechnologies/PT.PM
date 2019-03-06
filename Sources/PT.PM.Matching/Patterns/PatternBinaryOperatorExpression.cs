@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Expressions;
@@ -7,6 +8,9 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternBinaryOperatorExpression : PatternUst, IPatternExpression
     {
+        [JsonIgnore]
+        public Type UstType => typeof(BinaryOperatorExpression);
+
         public PatternUst Left { get; set; }
 
         public PatternBinaryOperatorLiteral Operator { get; set; }
@@ -35,7 +39,7 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
+
             MatchContext newContext = Left.MatchUst(binaryOperatorExpression.Left, context);
             if (!newContext.Success)
             {
@@ -57,7 +61,5 @@ namespace PT.PM.Matching.Patterns
         {
             return new [] {Left, Right};
         }
-
-        public Type UstType => typeof(BinaryOperatorExpression);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
@@ -8,6 +9,7 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternAny : PatternUst, IRegexPattern, ITerminalPattern
     {
+        [JsonIgnore]
         public string Default => ".*";
 
         public string RegexString
@@ -20,6 +22,7 @@ namespace PT.PM.Matching.Patterns
 
         public Regex Regex { get; private set; }
 
+        [JsonIgnore]
         public override bool Any => Regex == null || RegexString.Equals(Default);
 
         public bool UseUstString { get; set; }

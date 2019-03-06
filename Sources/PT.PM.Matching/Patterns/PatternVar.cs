@@ -45,9 +45,9 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
+
             MatchContext newContext = context;
-            if (context.LastParent is AssignmentExpression parentAssignment &&
+            if (ust.Parent is AssignmentExpression parentAssignment &&
                 ReferenceEquals(idToken, parentAssignment.Left))
             {
                 if (Value != null)

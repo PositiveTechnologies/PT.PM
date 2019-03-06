@@ -1,53 +1,174 @@
 ﻿using PT.PM.Common.Nodes;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using MessagePack;
 using Newtonsoft.Json;
 
 namespace PT.PM.Common.Reflection
 {
     public static class ReflectionCache
     {
-        private static ConcurrentDictionary<Type, PropertyInfo[]> ustNodeProperties
-            = new ConcurrentDictionary<Type, PropertyInfo[]>();
+        private static readonly HashSet<Type> registeredTypes;
+        private static readonly Dictionary<string, Type> kindClassType;
+        private static readonly Dictionary<Type, (byte Type, PropertyInfo[] Properties)> typeSerializableProperties;
+        private static readonly Type[] ustTypes;
 
-        private static Lazy<Dictionary<string, Type>> UstKindClassType =
-            new Lazy<Dictionary<string, Type>>(() =>
+        static ReflectionCache()
+        {
+            registeredTypes = new HashSet<Type>();
+            kindClassType = new Dictionary<string, Type>();
+            typeSerializableProperties = new Dictionary<Type, (byte NodeType, PropertyInfo[] Properties)>();
+
+            Assembly ustAssembly = typeof(Ust).Assembly;
+            var types = (UstType[]) Enum.GetValues(typeof(UstType));
+            ustTypes = new Type[types.Length];
+            var assemblyTypes = ustAssembly.GetTypes().Where(type => type.IsSubclassOf(typeof(Ust))).ToList();
+
+            foreach (UstType type in types)
             {
-                var result = new Dictionary<string, Type>();
-                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                string typeStr = type.ToString();
+                Type ustType = null;
+                foreach (Type assemblyType in assemblyTypes)
                 {
-                    if (assembly.IsActual())
+                    if (assemblyType.Name.Equals(typeStr))
                     {
-                        foreach (Type type in assembly.GetTypes()
-                            .Where(myType => myType.IsClass && !myType.IsAbstract &&
-                            myType.GetInterfaces().Contains(typeof(IUst))))
+                        ustType = assemblyType;
+                        break;
+                    }
+                }
+
+                if (ustType == null)
+                {
+                    throw new InvalidDataContractException($"NodeType {type} does not have corresponding Ust");
+                }
+
+                ustTypes[(int) type] = ustType;
+            }
+
+            RegisterTypes(typeof(Ust), true);
+        }
+
+        public static void RegisterTypes(Type baseType, bool messagePack)
+        {
+            lock (registeredTypes)
+            {
+                if (registeredTypes.Contains(baseType))
+                {
+                    return;
+                }
+
+                registeredTypes.Add(baseType);
+            }
+
+            foreach (Type type in baseType.Assembly.GetTypes())
+            {
+                if (type.IsSubclassOf(baseType) && !type.IsAbstract)
+                {
+                    lock (kindClassType)
+                    {
+                        kindClassType.Add(type.Name.ToLowerInvariant(), type);
+                    }
+
+                    var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                    // TODO: cover with MessagePack attributes PatternUst types?
+                    if (messagePack)
+                    {
+                        var serializableProperties = new PropertyInfo[properties.Length];
+                        int actualLength = 0;
+
+                        foreach (PropertyInfo property in properties)
                         {
-                            result.Add(type.Name.ToLowerInvariant(), type);
+                            if (property.CanRead && property.CanWrite &&
+                               (property.GetCustomAttribute<JsonIgnoreAttribute>() == null ||
+                                property.Name == nameof(Ust.TextSpans)))
+                            {
+                                KeyAttribute keyAttribute = property.GetCustomAttribute<KeyAttribute>();
+                                if (keyAttribute == null)
+                                {
+                                    throw new InvalidDataContractException(
+                                        $"Property {type.Name}.{property.Name} should be serialized both by Json and MessagePack");
+                                }
+
+                                serializableProperties[keyAttribute.IntKey.Value] = property;
+                                actualLength++;
+                            }
+                        }
+
+                        for (int i = 0; i < serializableProperties.Length; i++)
+                        {
+                            var keyAttribute = serializableProperties[i]?.GetCustomAttribute<KeyAttribute>();
+                            if (i < actualLength)
+                            {
+                                if (keyAttribute == null)
+                                {
+                                    throw new ArgumentOutOfRangeException(
+                                        $"Keys of {type.Name} should be thightly packed. {i} offset is not used");
+                                }
+                            }
+                            else
+                            {
+                                if (keyAttribute != null)
+                                {
+                                    throw new ArgumentOutOfRangeException(
+                                        $"Keys of {type.Name} should be thightly packed.");
+                                }
+                            }
+                        }
+
+                        if (actualLength < serializableProperties.Length)
+                        {
+                            var newArray = new PropertyInfo[actualLength];
+                            Array.Copy(serializableProperties, newArray, actualLength);
+                            serializableProperties = newArray;
+                        }
+
+                        lock (typeSerializableProperties)
+                        {
+                            if (Enum.TryParse(type.Name, out UstType ustType))
+                            {
+                                typeSerializableProperties.Add(type, ((byte)ustType, serializableProperties));
+                            }
+                            else
+                            {
+                                throw new InvalidDataContractException($"Type {type.Name} does not have corresponding {nameof(UstType)}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var serializableProperties = new List<PropertyInfo>(properties.Length);
+
+                        foreach (PropertyInfo property in properties)
+                        {
+                            if (property.GetCustomAttribute<JsonIgnoreAttribute>() == null)
+                            {
+                                serializableProperties.Add(property);
+                            }
+                        }
+
+                        lock (typeSerializableProperties)
+                        {
+                            typeSerializableProperties.Add(type, (0, serializableProperties.ToArray()));
                         }
                     }
                 }
-                return result;
-            });
-
-        public static bool TryGetClassType(string kind, out Type type)
-        {
-            return UstKindClassType.Value.TryGetValue(kind.ToLowerInvariant(), out type);
-        }
-
-        public static PropertyInfo[] GetReadWriteClassProperties(this Type objectType)
-        {
-            if (!ustNodeProperties.TryGetValue(objectType, out PropertyInfo[] result))
-            {
-                result = objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(prop => prop.CanWrite && prop.CanRead &&
-                                   (prop.GetCustomAttribute<JsonIgnoreAttribute>() == null || prop.Name == nameof(Ust.TextSpans)))
-                    .ToArray();
-                ustNodeProperties.TryAdd(objectType, result);
             }
-            return result;
         }
+
+        public static bool TryGetClassType(string kind, out Type type) =>
+            kindClassType.TryGetValue(kind.ToLowerInvariant(), out type);
+
+        internal static PropertyInfo[] GetSerializableProperties(this Type ustType, out byte type)
+        {
+            var typeProperties = typeSerializableProperties[ustType];
+            type = typeProperties.Type;
+            return typeProperties.Properties;
+        }
+
+        internal static Ust CreateUst(byte nodeType) => (Ust)Activator.CreateInstance(ustTypes[nodeType]);
     }
 }

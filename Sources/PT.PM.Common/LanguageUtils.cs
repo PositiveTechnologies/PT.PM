@@ -66,7 +66,7 @@ namespace PT.PM.Common
             Swift
         };
 
-        public static readonly HashSet<Language> SerializationLanguages = new HashSet<Language>
+        public static readonly HashSet<Language> SerializingLanguages = new HashSet<Language>
         {
             Language.Json,
             Language.MessagePack
@@ -104,7 +104,7 @@ namespace PT.PM.Common
 
         public static bool IsSql(this Language language) => SqlLanguages.Contains(language);
 
-        public static bool IsSerialization(this Language language) => SerializationLanguages.Contains(language);
+        public static bool IsSerializing(this Language language) => SerializingLanguages.Contains(language);
 
         public static bool IsCLangs(this Language language) => CLangsLanguages.Contains(language);
 
@@ -135,7 +135,7 @@ namespace PT.PM.Common
 
         public static bool HasAntlrParser(this Language language) => LanguageInfos[language].HasAntlrParser;
 
-        public static bool IsParserExistsOrSerialized(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerialization();
+        public static bool IsParserExistsOrSerializing(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerializing();
 
         public static void RegisterLexerParserConverter(Language language, Func<ILanguageLexer> lexerConstructor,
             Func<ILanguageParserBase> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)

@@ -12,20 +12,20 @@ namespace PT.PM.Common
 {
     public class UstConstantFolder : ILoggable
     {
-        private static readonly HashSet<Type> FoldingTypes = new HashSet<Type>
+        private static readonly HashSet<Type> foldingTypes = new HashSet<Type>
         {
             typeof(ArrayCreationExpression),
             typeof(BinaryOperatorExpression),
             typeof(UnaryOperatorExpression)
         };
-        
+
         private readonly Dictionary<TextSpan, FoldResult> foldedResults = new Dictionary<TextSpan, FoldResult>();
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public bool TryGetOrFold(Ust ust, out FoldResult result)
         {
-            if (ust == null || !FoldingTypes.Contains(ust.GetType()))
+            if (ust == null || !foldingTypes.Contains(ust.GetType()))
             {
                 result = null;
                 return false;
@@ -52,7 +52,7 @@ namespace PT.PM.Common
             {
                 return result;
             }
-            
+
             switch (ust)
             {
                 case ArrayCreationExpression arrayCreationExpression:
@@ -73,25 +73,27 @@ namespace PT.PM.Common
         {
             if (arrayCreationExpression.Type?.TypeText == "char" &&
                 arrayCreationExpression.Initializers.Count > 0 &&
-               (arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ?? false))
+                (bool) arrayCreationExpression.Initializers?.All(i => i is StringLiteral))
             {
                 var value = new StringBuilder();
-                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1);
-                
-                textSpans.Add(arrayCreationExpression.Type.TextSpan);
-                
-                foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
+                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1)
                 {
+                    arrayCreationExpression.Type.TextSpan
+                };
+
+                foreach (Expression expression in arrayCreationExpression.Initializers)
+                {
+                    var stringLiteral = (StringLiteral) expression;
                     value.Append(stringLiteral.Text);
                     textSpans.Add(stringLiteral.TextSpan);
                 }
-                
+
                 return new FoldResult(value.ToString(), textSpans);
             }
 
             return null;
         }
-        
+
         private FoldResult TryFoldBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
         {
             FoldResult leftFold = TryGetOrFold(binaryOperatorExpression.Left);
@@ -100,14 +102,14 @@ namespace PT.PM.Common
                 NormalizeAndAdd(binaryOperatorExpression.Left, ref leftFold);
                 return null;
             }
-            
+
             FoldResult rightFold = TryGetOrFold(binaryOperatorExpression.Right);
             if (rightFold == null)
             {
                 NormalizeAndAdd(binaryOperatorExpression.Right, ref rightFold);
                 return null;
             }
-            
+
             object leftValue = leftFold.Value;
             object rightValue = rightFold.Value;
             BinaryOperatorLiteral op = binaryOperatorExpression.Operator;
@@ -130,7 +132,7 @@ namespace PT.PM.Common
                         leftStringBuilder = (StringBuilder) leftValue;
                     }
                     leftStringBuilder.Append(rightString);
-                    
+
                     FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, leftStringBuilder);
 
                     if (Logger.IsLogDebugs)
@@ -138,7 +140,7 @@ namespace PT.PM.Common
                         Logger.LogDebug(
                             $"Strings {binaryOperatorExpression} concatenated to \"{leftStringBuilder}\" at {binaryOperatorExpression.TextSpan}");
                     }
-                    
+
                     return result;
                 }
             }
@@ -198,7 +200,7 @@ namespace PT.PM.Common
                         if (folded)
                         {
                             FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, resultInt);
-                            
+
                             if (Logger.IsLogDebugs)
                             {
                                 Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {resultInt} at {binaryOperatorExpression.TextSpan}");
@@ -252,7 +254,7 @@ namespace PT.PM.Common
             {
                 return new FoldResult(stringLiteral.Text, stringLiteral.TextSpan);
             }
-            
+
             if (token is IntLiteral intLiteral)
             {
                 return new FoldResult(intLiteral.Value, intLiteral.TextSpan);
@@ -270,7 +272,7 @@ namespace PT.PM.Common
 
             return null;
         }
-        
+
         private FoldResult ProcessBinaryExpression(BinaryOperatorExpression binaryOperatorExpression,
             FoldResult leftFold, FoldResult rightFold, object foldedBinaryValue)
         {
@@ -283,13 +285,13 @@ namespace PT.PM.Common
 
             return new FoldResult(foldedBinaryValue, leftFold.TextSpans);
         }
-        
+
         private FoldResult ProcessUnaryExpression(UnaryOperatorExpression unaryOperatorExpression, FoldResult foldResult,
             object resultValue)
         {
             var textSpans = foldResult.TextSpans;
             textSpans.Add(unaryOperatorExpression.Operator.TextSpan);
-            
+
             return new FoldResult(resultValue, textSpans);
         }
 

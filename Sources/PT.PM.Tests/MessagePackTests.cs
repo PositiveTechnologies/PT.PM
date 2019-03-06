@@ -127,21 +127,21 @@ namespace PT.PM.Tests
             }
             else
             {
-                Assert.Less(binaryFile.Data.Length, readSize, "Compressed size should be less than original");
                 double compressionRatio = (double) readSize / binaryFile.Data.Length;
                 Console.WriteLine($"Compression ratio: {compressionRatio}");
             }
+
+            Assert.GreaterOrEqual(newLogger.Matches.Count, 1);
 
             if (incorrectFilePath)
             {
                 string firstError = newLogger.Errors[0];
                 Assert.IsTrue(firstError.Contains("ReadException"));
-                Assert.IsTrue(firstError.Contains("C:{"));
+                Assert.IsTrue(firstError.Contains("Error during opening the file"));
                 return;
             }
 
             Assert.AreEqual(0, newLogger.ErrorCount, newLogger.ErrorsString);
-            Assert.GreaterOrEqual(newLogger.Matches.Count, 1);
 
             var match = (MatchResult) newLogger.Matches[0];
             using (var sourceFilesEnumerator = result.SourceFiles.GetEnumerator())

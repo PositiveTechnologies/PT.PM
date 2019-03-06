@@ -34,8 +34,8 @@ namespace PT.PM.Matching.Patterns
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
             var blockStatement = ust as BlockStatement;
-            Ust parent = context.LastParent;
-            
+            Ust parent = ust?.Parent;
+
             if (blockStatement == null || parent == null)
             {
                 return context.Fail();

@@ -1,6 +1,7 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
@@ -10,6 +11,7 @@ namespace PT.PM.Matching.Patterns
         private Regex regex;
         private Regex caseInsensitiveRegex;
 
+        [JsonIgnore]
         public string Default => @"\w+";
 
         public string RegexString
@@ -40,6 +42,7 @@ namespace PT.PM.Matching.Patterns
             RegexString = regexId;
         }
 
+        [JsonIgnore]
         public override bool Any => regex.ToString() == Default;
 
         public override string ToString()
@@ -58,7 +61,7 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
+
             Regex regex = ust.Root.Language.IsCaseInsensitive()
                 ? caseInsensitiveRegex
                 : this.regex;

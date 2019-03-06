@@ -1,13 +1,11 @@
 using System;
-using MessagePack;
-using MessagePack.Formatters;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using static MessagePack.MessagePackBinary;
 
 namespace PT.PM.Common.MessagePack
 {
-    public class TextSpanFormatter : IMessagePackFormatter<TextSpan>, ILoggable
+    public class TextSpanSerializer : ILoggable
     {
         private TextFile[] localSourceFiles;
 
@@ -36,24 +34,24 @@ namespace PT.PM.Common.MessagePack
 
         public BinaryFile SerializedFile { get; private set; }
 
-        public static TextSpanFormatter CreateWriter()
+        public static TextSpanSerializer CreateWriter()
         {
-            return new TextSpanFormatter();
+            return new TextSpanSerializer();
         }
 
-        public static TextSpanFormatter CreateReader(BinaryFile serializedFile)
+        public static TextSpanSerializer CreateReader(BinaryFile serializedFile)
         {
-            return new TextSpanFormatter
+            return new TextSpanSerializer
             {
                 SerializedFile = serializedFile ?? throw new ArgumentNullException(nameof(serializedFile))
             };
         }
 
-        private TextSpanFormatter()
+        private TextSpanSerializer()
         {
         }
 
-        public int Serialize(ref byte[] bytes, int offset, TextSpan value, IFormatterResolver formatterResolver)
+        public int Serialize(ref byte[] bytes, int offset, TextSpan value)
         {
             int newOffset = offset;
             if (!IsLineColumn)
@@ -77,7 +75,7 @@ namespace PT.PM.Common.MessagePack
             if (fileIndex == -1)
             {
                 Logger.LogError(new ReadException(SerializedFile, message:
-                    $"{nameof(TextSpan.File)} of {nameof(TextSpan)} {value} is not correctly mapped in {nameof(RootUstFormatter)}"));
+                    $"{nameof(TextSpan.File)} of {nameof(TextSpan)} {value} is mapped incorrectly"));
             }
 
             newOffset += WriteInt32(ref bytes, newOffset, fileIndex);
@@ -85,7 +83,7 @@ namespace PT.PM.Common.MessagePack
             return newOffset - offset;
         }
 
-        public TextSpan Deserialize(byte[] bytes, int offset, IFormatterResolver formatterResolver, out int readSize)
+        public TextSpan Deserialize(byte[] bytes, int offset, out int readSize)
         {
             int newOffset = offset;
             try
@@ -139,8 +137,11 @@ namespace PT.PM.Common.MessagePack
 
                         try
                         {
-                            start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
-                            length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                            if (!sourceFile.IsEmpty)
+                            {
+                                start = sourceFile.GetLinearFromLineColumn(beginLine, beginColumn);
+                                length = sourceFile.GetLinearFromLineColumn(endLine, endColumn) - start;
+                            }
                         }
                         catch (Exception ex)
                         {

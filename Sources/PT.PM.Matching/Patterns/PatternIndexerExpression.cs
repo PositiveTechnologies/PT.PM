@@ -2,14 +2,16 @@
 using PT.PM.Common;
 using PT.PM.Common.Nodes.Expressions;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching.Patterns
 {
     public class PatternIndexerExpression : PatternUst, IPatternExpression
     {
+        [JsonIgnore]
         public Type UstType => typeof(IndexerExpression);
-        
+
         public PatternUst Target { get; set; }
 
         public PatternArgs Arguments { get; set; }
@@ -42,7 +44,7 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
+
             MatchContext newContext = Target.MatchUst(indexerExpression.Target, context);
             if (!newContext.Success)
             {

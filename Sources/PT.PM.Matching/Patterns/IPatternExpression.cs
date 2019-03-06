@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -6,6 +7,7 @@ namespace PT.PM.Matching.Patterns
     {
         PatternUst[] GetArgs();
 
+        [JsonIgnore]
         Type UstType { get; }
     }
 }

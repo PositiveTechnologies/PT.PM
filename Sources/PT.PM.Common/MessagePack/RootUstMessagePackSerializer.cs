@@ -1,22 +1,33 @@
-﻿using MessagePack.Formatters;
-using MessagePack;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using MessagePack.LZ4;
-using MessagePack.Resolvers;
+using System.Linq;
+using System.Reflection;
+using MessagePack;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Reflection;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.MessagePack
 {
-    public class RootUstMessagePackSerializer : IFormatterResolver
+    public class RootUstMessagePackSerializer
     {
         [ThreadStatic]
         private static byte[] buffer;
 
-        private TextSpanFormatter textSpanFormatter;
-        private FileFormatter fileFormatter;
-        private RootUstFormatter rootUstFormatter;
+        private BinaryFile serializedFile;
+        private TextSpanSerializer textSpanSerializer;
+        private FileSerializer fileSerializer;
+
+        // One file can contain several RootUst nodes. For example, the file with PHP inside JavaScript inside PHP
+        // Deserialization is being performed in top-down manner, that's why it's possible to fill roots and parents
+        // right during deserialization.
+        private readonly Stack<RootUst> rootAncestors = new Stack<RootUst>();
+        private readonly Stack<Ust> ancestors = new Stack<Ust>();
+
+        public RootUst CurrentRoot { get; internal set; }
 
         public static byte[] Serialize(RootUst rootUst, bool isLineColumn, bool compress, ILogger logger)
         {
@@ -33,20 +44,17 @@ namespace PT.PM.Common.MessagePack
         public static byte[] Serialize(RootUst rootUst, bool isLineColumn, bool compress, ILogger logger,
             out int writeSize)
         {
-            var textSpanFormatter = TextSpanFormatter.CreateWriter();
-            textSpanFormatter.IsLineColumn = isLineColumn;
-            textSpanFormatter.Logger = logger;
+            var textSpanSerializer = TextSpanSerializer.CreateWriter();
+            textSpanSerializer.IsLineColumn = isLineColumn;
+            textSpanSerializer.Logger = logger;
 
-            var sourceFileFormatter = FileFormatter.CreateWriter();
-            sourceFileFormatter.Logger = logger;
+            var sourceFileSerializer = FileSerializer.CreateWriter();
+            sourceFileSerializer.Logger = logger;
 
-            var rootUstFormatter = RootUstFormatter.CreateWriter();
-
-            var writerResolver = new RootUstMessagePackSerializer
+            var rootUstSerializer = new RootUstMessagePackSerializer
             {
-                textSpanFormatter = textSpanFormatter,
-                fileFormatter = sourceFileFormatter,
-                rootUstFormatter = rootUstFormatter
+                textSpanSerializer = textSpanSerializer,
+                fileSerializer = sourceFileSerializer
             };
 
             if (buffer == null)
@@ -54,7 +62,7 @@ namespace PT.PM.Common.MessagePack
                 buffer = new byte[ushort.MaxValue + 1];
             }
 
-            writeSize = rootUstFormatter.Serialize(ref buffer, 0, rootUst, writerResolver);
+            writeSize = rootUstSerializer.SerializeRootUst(ref buffer, 0, rootUst);
 
             if (compress)
             {
@@ -69,52 +77,448 @@ namespace PT.PM.Common.MessagePack
             HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction,
             ILogger logger, out int readSize, byte[] data = null)
         {
-            var textSpanFormatter = TextSpanFormatter.CreateReader(serializedFile);
-            textSpanFormatter.Logger = logger;
+            var textSpanSerializer = TextSpanSerializer.CreateReader(serializedFile);
+            textSpanSerializer.Logger = logger;
 
-            var sourceFileFormatter = FileFormatter.CreateReader(serializedFile, sourceFiles, readSourceFileAction);
-            sourceFileFormatter.Logger = logger;
+            var sourceFileSerializer = FileSerializer.CreateReader(serializedFile, sourceFiles, readSourceFileAction);
+            sourceFileSerializer.Logger = logger;
 
-            var rootUstFormatter = RootUstFormatter.CreateReader(serializedFile, sourceFiles);
-
-            var readerResolver =  new RootUstMessagePackSerializer
+            var rootUstSerializer =  new RootUstMessagePackSerializer
             {
-                textSpanFormatter = textSpanFormatter,
-                fileFormatter = sourceFileFormatter,
-                rootUstFormatter = rootUstFormatter
+                serializedFile = serializedFile,
+                textSpanSerializer = textSpanSerializer,
+                fileSerializer = sourceFileSerializer
             };
 
             byte[] data2 = data ?? MessagePackUtils.UnpackDataIfRequired(serializedFile.Data);
 
-            RootUst result = readerResolver.GetFormatterWithVerify<RootUst>()
-                    .Deserialize(data2, 0, readerResolver, out readSize);
-            result.FillAscendants();
+            RootUst result = rootUstSerializer.DeserializeRootUst(data2, sourceFiles, 0, out readSize, logger);
 
             return result;
         }
 
-        public IMessagePackFormatter<T> GetFormatter<T>()
+        private int SerializeRootUst(ref byte[] bytes, int offset, RootUst rootUst)
         {
-            Type type = typeof(T);
+            int newOffset = offset;
+
+            CurrentRoot = rootUst;
+
+            var localSourceFiles = new List<TextFile> {CurrentRoot.SourceFile};
+            rootUst.ApplyActionToDescendantsAndSelf(ust =>
+            {
+                foreach (TextSpan textSpan in ust.TextSpans)
+                {
+                    if (textSpan.File != null && !localSourceFiles.Contains(textSpan.File))
+                    {
+                        localSourceFiles.Add(textSpan.File);
+                    }
+                }
+            });
+
+            textSpanSerializer.LocalSourceFiles = localSourceFiles.ToArray();
+
+            //int sizeOffset = newOffset;
+            //newOffset += 5;
+
+            newOffset += MessagePackBinary.WriteBoolean(ref bytes, newOffset, textSpanSerializer.IsLineColumn);
+
+            newOffset += SerializeObject(ref bytes, newOffset, typeof(List<TextFile>), localSourceFiles);
+
+            newOffset += SerializeUst(ref bytes, newOffset, rootUst);
+
+            int writeSize = newOffset - offset;
+            //MessagePackBinary.WriteInt32ForceInt32Block(ref bytes, sizeOffset, writeSize - 5); TODO implement later
+
+            return writeSize;
+        }
+
+        private RootUst DeserializeRootUst(byte[] bytes, HashSet<IFile> sourceFiles, int offset, out int readSize, ILogger logger)
+        {
+            int newOffset = offset;
+
+            textSpanSerializer.IsLineColumn = MessagePackBinary.ReadBoolean(bytes, newOffset, out int size);
+            newOffset += size;
+
+            var localSourceFiles = (TextFile[])DeserializeObject(bytes, newOffset, typeof(TextFile[]), out size, logger);
+            newOffset += size;
+            textSpanSerializer.LocalSourceFiles = localSourceFiles;
+
+            lock (sourceFiles)
+            {
+                foreach (TextFile localSourceFile in localSourceFiles)
+                {
+                    sourceFiles.Add(localSourceFile);
+                }
+            }
+
+            RootUst rootUst = (RootUst)DeserializeUst(bytes, newOffset, out size, logger);
+            rootUst.SourceFile = localSourceFiles[0];
+            newOffset += size;
+
+            readSize = newOffset - offset;
+
+            return rootUst;
+        }
+
+        private int SerializeUst(ref byte[] bytes, int offset, Ust value)
+        {
+            if (value is null)
+            {
+                return MessagePackBinary.WriteNil(ref bytes, offset);
+            }
+
+            PropertyInfo[] serializableProperties = value.GetType().GetSerializableProperties(out byte type);
+
+            int newOffset = offset;
+            newOffset += MessagePackBinary.WriteByte(ref bytes, newOffset, type);
+
+            foreach (PropertyInfo property in serializableProperties)
+            {
+                newOffset += SerializeObject(ref bytes, newOffset, property.PropertyType, property.GetValue(value));
+            }
+
+            return newOffset - offset;
+        }
+
+        private int SerializeObject(ref byte[] bytes, int offset, Type type, object value)
+        {
+            if (value is null)
+            {
+                return MessagePackBinary.WriteNil(ref bytes, offset);
+            }
+
+            if (type == typeof(Ust) || type.IsSubclassOf(typeof(Ust)))
+            {
+                return SerializeUst(ref bytes, offset, (Ust) value);
+            }
+            if (type == typeof(string))
+            {
+                return MessagePackBinary.WriteString(ref bytes, offset, (string) value);
+            }
+
+            if (type == typeof(int))
+            {
+                return MessagePackBinary.WriteInt32(ref bytes, offset, (int) value);
+            }
+
+            if (type == typeof(long))
+            {
+                return MessagePackBinary.WriteInt64(ref bytes, offset, (long) value);
+            }
+
+            if (type == typeof(bool))
+            {
+                return MessagePackBinary.WriteBoolean(ref bytes, offset, (bool) value);
+            }
 
             if (type == typeof(TextSpan))
             {
-                return (IMessagePackFormatter<T>) textSpanFormatter;
+                return textSpanSerializer.Serialize(ref bytes, offset, (TextSpan) value);
             }
 
-            if (type == typeof(TextFile))
+            if (type == typeof(double))
             {
-                return (IMessagePackFormatter<T>) fileFormatter;
+                return MessagePackBinary.WriteDouble(ref bytes, offset, (double) value);
             }
 
-            if (type == typeof(RootUst))
+            if (type.IsEnum)
             {
-                return (IMessagePackFormatter<T>) rootUstFormatter;
+                return MessagePackBinary.WriteInt32(ref bytes, offset, (int) value);
             }
 
-            return StandardResolver.Instance.GetFormatter<T>();
+            Type[] typeInterfaces = type.GetInterfaces();
+
+            if (typeInterfaces.Contains(typeof(IFile)))
+            {
+                return fileSerializer.Serialize(ref bytes, offset, (IFile) value);
+            }
+
+            if (typeInterfaces.Contains(typeof(IList)))
+            {
+                int newOffset = offset;
+                IList collection = (IList) value;
+                newOffset += MessagePackBinary.WriteArrayHeader(ref bytes, newOffset, collection.Count);
+                foreach (object item in collection)
+                {
+                    newOffset += SerializeObject(ref bytes, newOffset, item?.GetType(), item);
+                }
+
+                return newOffset - offset;
+            }
+
+            if (type == typeof(char))
+            {
+                return MessagePackBinary.WriteChar(ref bytes, offset, (char) value);
+            }
+
+            if (type == typeof(byte))
+            {
+                return MessagePackBinary.WriteByte(ref bytes, offset, (byte) value);
+            }
+
+            if (type == typeof(sbyte))
+            {
+                return MessagePackBinary.WriteSByte(ref bytes, offset, (sbyte) value);
+            }
+
+            if (type == typeof(short))
+            {
+                return MessagePackBinary.WriteInt16(ref bytes, offset, (short) value);
+            }
+
+            if (type == typeof(ushort))
+            {
+                return MessagePackBinary.WriteUInt16(ref bytes, offset, (ushort) value);
+            }
+
+            if (type == typeof(uint))
+            {
+                return MessagePackBinary.WriteUInt32(ref bytes, offset, (uint) value);
+            }
+
+            if (type == typeof(ulong))
+            {
+                return MessagePackBinary.WriteUInt64(ref bytes, offset, (ulong) value);
+            }
+
+            if (type == typeof(float))
+            {
+                return MessagePackBinary.WriteSingle(ref bytes, offset, (float) value);
+            }
+
+            if (type == typeof(DateTime))
+            {
+                return MessagePackBinary.WriteDateTime(ref bytes, offset, (DateTime) value);
+            }
+
+            throw new NotImplementedException($"Serialization of {type.Name} is not supported");
         }
 
-        private RootUstMessagePackSerializer() {}
+        private Ust DeserializeUst(byte[] bytes, int offset, out int readSize, ILogger logger)
+        {
+            try
+            {
+                if (MessagePackBinary.IsNil(bytes, offset))
+                {
+                    MessagePackBinary.ReadNil(bytes, offset, out readSize);
+                    return null;
+                }
+
+                int newOffset = offset;
+
+                byte nodeType = MessagePackBinary.ReadByte(bytes, newOffset, out int size);
+                newOffset += size;
+
+                Ust ust;
+                try
+                {
+                    ust = ReflectionCache.CreateUst(nodeType);
+                }
+                catch (Exception ex)
+                {
+                    throw new ReadException(serializedFile, ex, $"Invalid ust type {nodeType} at {offset} offset");
+                }
+
+                if (rootAncestors.Count > 0)
+                {
+                    ust.Root = rootAncestors.Peek();
+                }
+
+                if (ancestors.Count > 0)
+                {
+                    ust.Parent = ancestors.Peek();
+                }
+
+                var rootUst = ust as RootUst;
+
+                if (rootUst != null)
+                {
+                    rootAncestors.Push(rootUst);
+                }
+                ancestors.Push(ust);
+
+                PropertyInfo[] serializableProperties = ust.GetType().GetSerializableProperties(out _);
+                foreach (PropertyInfo property in serializableProperties)
+                {
+                    if (MessagePackBinary.IsNil(bytes, newOffset))
+                    {
+                        // Optimization: do not fill the property if null is read
+                        MessagePackBinary.ReadNil(bytes, newOffset, out size);
+                    }
+                    else
+                    {
+                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size, logger);
+                        try
+                        {
+                            property.SetValue(ust, obj);
+                        }
+                        catch (Exception ex)
+                        {
+                             logger?.LogError(new ReadException(serializedFile, ex, $"Deserialization error at offset {newOffset}: {ex.Message}"));
+                        }
+                    }
+                    newOffset += size;
+                }
+
+                if (rootUst != null)
+                {
+                    rootAncestors.Pop();
+                }
+                ancestors.Pop();
+
+                readSize = newOffset - offset;
+
+                return ust;
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new ReadException(serializedFile, ex, $"Error during reading Ust at {offset} offset; Message: {ex.Message}");
+            }
+        }
+
+        private object DeserializeObject(byte[] bytes, int offset, Type type, out int readSize, ILogger logger)
+        {
+            try
+            {
+                if (MessagePackBinary.IsNil(bytes, offset))
+                {
+                    MessagePackBinary.ReadNil(bytes, offset, out readSize);
+                    return type.GetDefaultValue();
+                }
+
+                if (type == typeof(Ust) || type.IsSubclassOf(typeof(Ust)))
+                {
+                    return DeserializeUst(bytes, offset, out readSize, logger);
+                }
+
+                if (type == typeof(TextSpan))
+                {
+                    return textSpanSerializer.Deserialize(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(string))
+                {
+                    return MessagePackBinary.ReadString(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(int))
+                {
+                    return MessagePackBinary.ReadInt32(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(long))
+                {
+                    return MessagePackBinary.ReadInt64(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(bool))
+                {
+                    return MessagePackBinary.ReadBoolean(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(double))
+                {
+                    return MessagePackBinary.ReadDouble(bytes, offset, out readSize);
+                }
+
+                if (type.IsEnum)
+                {
+                    return MessagePackBinary.ReadInt32(bytes, offset, out readSize);
+                }
+
+                Type[] typeInterfaces = type.GetInterfaces();
+
+                if (typeInterfaces.Contains(typeof(IFile)))
+                {
+                    return fileSerializer.Deserialize(bytes, offset, out readSize);
+                }
+
+                if (type.GetInterfaces().Contains(typeof(IList)))
+                {
+                    int newOffset = offset;
+
+                    int arrayLength = MessagePackBinary.ReadArrayHeader(bytes, newOffset, out int size);
+                    newOffset += size;
+
+                    Type itemType;
+                    IList result = (IList) Activator.CreateInstance(type, arrayLength);
+
+                    if (type.IsArray)
+                    {
+                        itemType = type.GetElementType();
+
+                        for (int i = 0; i < arrayLength; i++)
+                        {
+                            result[i] = DeserializeObject(bytes, newOffset, itemType, out size, logger);
+                            newOffset += size;
+                        }
+                    }
+                    else
+                    {
+                        itemType = type.GetGenericArguments()[0];
+
+                        for (int i = 0; i < arrayLength; i++)
+                        {
+                            result.Add(DeserializeObject(bytes, newOffset, itemType, out size, logger));
+                            newOffset += size;
+                        }
+                    }
+
+                    readSize = newOffset - offset;
+                    return result;
+                }
+
+                if (type == typeof(char))
+                {
+                    return MessagePackBinary.ReadChar(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(byte))
+                {
+                    return MessagePackBinary.ReadByte(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(sbyte))
+                {
+                    return MessagePackBinary.ReadSByte(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(short))
+                {
+                    return MessagePackBinary.ReadInt16(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(ushort))
+                {
+                    return MessagePackBinary.ReadUInt16(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(uint))
+                {
+                    return MessagePackBinary.ReadUInt32(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(ulong))
+                {
+                    return MessagePackBinary.ReadUInt64(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(float))
+                {
+                    return MessagePackBinary.ReadSingle(bytes, offset, out readSize);
+                }
+
+                if (type == typeof(DateTime))
+                {
+                    return MessagePackBinary.ReadDateTime(bytes, offset, out readSize);
+                }
+
+                throw new NotImplementedException($"Deserialization of {type.Name} is not supported");
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new ReadException(serializedFile, ex, $"Error during reading {type.Name} at {offset} offset; Message: {ex.Message}");
+            }
+        }
     }
 }

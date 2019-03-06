@@ -7,15 +7,17 @@ using Newtonsoft.Json;
 
 namespace PT.PM.Matching.Patterns
 {
-    public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>, IUst
+    public abstract class PatternUst : IComparable<PatternUst>, IEquatable<PatternUst>
     {
         private static readonly PropertyComparer<PatternUst> propertyComparer = new PropertyComparer<PatternUst>
         {
             IgnoredProperties = new HashSet<string> { nameof(Parent), nameof(Root), nameof(TextSpan) }
         };
 
+        [JsonIgnore]
         public string Kind => GetType().Name;
 
+        [JsonIgnore]
         public virtual bool Any => true;
 
         [JsonIgnore]
@@ -24,7 +26,9 @@ namespace PT.PM.Matching.Patterns
         [JsonIgnore]
         public PatternUst Parent { get; set; }
 
-        public LineColumnTextSpan LineColumnTextSpan => Root?.File.GetLineColumnTextSpan(TextSpan);
+        [JsonIgnore]
+        public LineColumnTextSpan LineColumnTextSpan =>
+            Root?.File.GetLineColumnTextSpan(TextSpan) ?? LineColumnTextSpan.Zero;
 
         public TextSpan TextSpan { get; set; }
 
@@ -32,7 +36,7 @@ namespace PT.PM.Matching.Patterns
         {
             TextSpan = textSpan;
         }
-        
+
         public bool Equals(PatternUst other)
         {
             return CompareTo(other) == 0;
@@ -45,10 +49,7 @@ namespace PT.PM.Matching.Patterns
 
         public MatchContext MatchUst(Ust ust, MatchContext context)
         {
-            context.PushParent(ust);
-            context = Match(ust, context);
-            context.PopParent();
-            return context;
+            return Match(ust, context);
         }
 
         protected abstract MatchContext Match(Ust ust, MatchContext context);

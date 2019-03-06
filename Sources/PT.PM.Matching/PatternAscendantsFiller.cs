@@ -19,21 +19,21 @@ namespace PT.PM.Matching
             Visit(patternRoot.Node);
         }
 
-        public override PatternUst Visit(PatternUst patternBase)
+        public override PatternUst Visit(PatternUst patternUst)
         {
-            if (patternBase == null)
+            if (patternUst == null)
             {
                 return null;
             }
 
-            patternBase.Parent = parents.Count > 0 ? parents.Peek() : null;
-            patternBase.Root = patternRoot;
-            parents.Push(patternBase);
+            patternUst.Parent = parents.Count > 0 ? parents.Peek() : null;
+            patternUst.Root = patternRoot;
+            parents.Push(patternUst);
 
-            VisitChildren(patternBase);
+            VisitChildren(patternUst);
 
             parents.Pop();
-            return patternBase;
+            return patternUst;
         }
     }
 }

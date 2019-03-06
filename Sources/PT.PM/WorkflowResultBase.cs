@@ -17,6 +17,7 @@ namespace PT.PM
         private long totalLexerTicks;
         private long totalParserTicks;
         private long totalConvertTicks;
+        private long totalDeserializeTicks;
         private long totalMatchTicks;
 
         private long totalPatternsTicks;
@@ -63,12 +64,12 @@ namespace PT.PM
 
         public long TotalReadTicks => totalReadTicks;
         public long TotalDetectTicks => totalDetectTicks;
-        public long TotalLexerParserTicks => totalLexerTicks + totalParserTicks;
         public long TotalConvertTicks => totalConvertTicks;
         public long TotalMatchTicks => totalMatchTicks;
         public long TotalPatternsTicks => totalPatternsTicks;
         public long TotalLexerTicks => totalLexerTicks;
         public long TotalParserTicks => totalParserTicks;
+        public long TotalDeserializeTicks => totalDeserializeTicks;
 
         public int TotalSuppressedCount => totalSuppressedCount;
         public int TotalMatchesCount => totalMatchesCount;
@@ -128,6 +129,11 @@ namespace PT.PM
             AddTime(ref totalConvertTicks, convertTime);
         }
 
+        public void AddDeserializeTime(TimeSpan deserializeTime)
+        {
+            AddTime(ref totalDeserializeTicks, deserializeTime);
+        }
+
         public void AddMatchTime(TimeSpan matchTime)
         {
             AddTime(ref totalMatchTicks, matchTime);
@@ -180,7 +186,7 @@ namespace PT.PM
         }
 
         public virtual long TotalTimeTicks =>
-            totalReadTicks + totalDetectTicks + totalLexerTicks + totalParserTicks + totalConvertTicks +
+            totalReadTicks + totalDetectTicks + totalLexerTicks + totalParserTicks + totalConvertTicks + totalDeserializeTicks +
             totalMatchTicks + totalPatternsTicks;
 
         protected void AddEntity<T>(ICollection<T> collection, T entity)

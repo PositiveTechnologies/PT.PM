@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Json
 {
@@ -43,12 +44,12 @@ namespace PT.PM.Common.Json
             var jObject = new JObject();
             Type type = value.GetType();
             jObject.Add(nameof(Ust.Kind), type.Name);
-            PropertyInfo[] properties = type.GetReadWriteClassProperties();
+            PropertyInfo[] properties = type.GetSerializableProperties(out _);
 
-            bool isRootUst = type == typeof(RootUst);
-            if (isRootUst)
+            if (type == typeof(RootUst))
             {
-                jObject.Add(nameof(RootUst.Language), ((RootUst)value).Language.ToString());
+                // Back compatibility with external serializers
+                jObject.Add("SourceCodeFile", JToken.FromObject(((RootUst)value).SourceFile, serializer));
             }
 
             foreach (PropertyInfo prop in properties)
@@ -67,7 +68,7 @@ namespace PT.PM.Common.Json
                         }
                         else if (propType == typeof(string))
                         {
-                            include = !string.IsNullOrEmpty(((string) propValue));
+                            include = !string.IsNullOrEmpty((string) propValue);
                         }
                         else if (propType.IsArray)
                         {
@@ -75,7 +76,7 @@ namespace PT.PM.Common.Json
                         }
                         else
                         {
-                            include = !propValue.Equals(GetDefaultValue(propType));
+                            include = !propValue.Equals(propType.GetDefaultValue());
                         }
                     }
 
@@ -151,16 +152,6 @@ namespace PT.PM.Common.Json
             writeTo.Add(propertyName, serializedObject);
 
             return true;
-        }
-
-        private object GetDefaultValue(Type type)
-        {
-            if (type.IsValueType)
-            {
-                return Activator.CreateInstance(type);
-            }
-
-            return null;
         }
     }
 }

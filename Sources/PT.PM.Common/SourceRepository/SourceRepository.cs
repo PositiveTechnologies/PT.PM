@@ -39,13 +39,13 @@ namespace PT.PM.Common.SourceRepository
         {
             if (language.GetExtensions().Any(ext => ext == fileExtension))
             {
-                if (language.IsSerialization())
+                if (language.IsSerializing())
                 {
                     string secondExt = Path.GetExtension(Path.GetFileNameWithoutExtension(fileName)).ToLowerInvariant();
                     return secondExt != ".ust" && secondExt != ".cpg";
                 }
 
-                return withParser && !language.IsParserExistsOrSerialized();
+                return withParser && !language.IsParserExistsOrSerializing();
             }
 
             if (LanguageUtils.SuperLanguages.TryGetValue(language, out HashSet<Language> superLanguages))

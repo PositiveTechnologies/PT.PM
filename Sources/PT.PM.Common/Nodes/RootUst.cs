@@ -9,31 +9,29 @@ using PT.PM.Common.MessagePack;
 namespace PT.PM.Common.Nodes
 {
     [MessagePackObject]
-    [MessagePackFormatter(typeof(RootUstFormatter))]
     public class RootUst : Ust
     {
-        private Language[] sublanguges;
+        private Language[] sublanguages;
 
         [Key(UstFieldOffset)]
-        public Language Language { get; }
+        public Language Language { get; set; }
 
-        [JsonProperty("SourceCodeFile")] // TODO: back compatibility with external serializers
         [Key(UstFieldOffset + 1)]
-        public TextFile SourceFile { get; set; }
-
-        [Key(UstFieldOffset + 2)]
         public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
 
-        [Key(UstFieldOffset + 3)]
+        [Key(UstFieldOffset + 2)]
         public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
 
-        [Key(UstFieldOffset + 4)]
+        [Key(UstFieldOffset + 3)]
         public int LineOffset { get; set; }
 
-        [IgnoreMember]
-        public Language[] Sublanguages => sublanguges ?? (sublanguges = GetSublangauges());
+        [JsonProperty("SourceCodeFile"), JsonIgnore, IgnoreMember] // Workaround for correct deserialization of external jsons
+        public TextFile SourceFile { get; set; }
 
-        [IgnoreMember]
+        [JsonIgnore, IgnoreMember]
+        public Language[] Sublanguages => sublanguages ?? (sublanguages = GetSublangauges());
+
+        [JsonIgnore, IgnoreMember]
         public Ust Node
         {
             get => Nodes.Length > 0 ? Nodes[0] : null;
@@ -53,6 +51,10 @@ namespace PT.PM.Common.Nodes
             TextSpans = new[] {textSpan.IsZero ? new TextSpan(0, SourceFile.Data.Length) : textSpan};
         }
 
+        public RootUst()
+        {
+        }
+
         public override Ust[] GetChildren()
         {
             var result = new List<Ust>();
@@ -63,7 +65,7 @@ namespace PT.PM.Common.Nodes
 
         public void UpdateSublanguages()
         {
-            sublanguges = GetSublangauges();
+            sublanguages = GetSublangauges();
         }
 
         private Language[] GetSublangauges()

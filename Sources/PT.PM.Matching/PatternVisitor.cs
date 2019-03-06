@@ -5,6 +5,7 @@ using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Matching
@@ -12,21 +13,31 @@ namespace PT.PM.Matching
     [DebuggerStepThrough]
     public class PatternVisitor<T> : IPatternVisitor<T>, ILoggable
     {
+        static PatternVisitor()
+        {
+            ReflectionCache.RegisterTypes(typeof(PatternUst), false);
+        }
+
         private static PropertyVisitor<PatternUst, T> propertyEnumerator = new PropertyVisitor<PatternUst, T>
         {
-            IgnoredProperties = new HashSet<string>() { nameof(PatternUst.Parent), nameof(PatternUst.Root) }
+            IgnoredProperties = new HashSet<string> { nameof(PatternUst.Parent), nameof(PatternUst.Root) }
         };
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public virtual T Visit(PatternUst patternBase)
+        public virtual T Visit(PatternUst patternUst)
         {
-            if (patternBase == null)
+            if (patternUst == null)
             {
                 return default;
             }
 
-            return Visit((dynamic)patternBase);
+            return Visit((dynamic)patternUst);
+        }
+
+        public virtual T Visit(PatternRoot patternRoot)
+        {
+            return VisitChildren(patternRoot);
         }
 
         public virtual T Visit(PatternAnd patternAnd)

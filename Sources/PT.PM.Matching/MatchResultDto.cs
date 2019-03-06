@@ -25,6 +25,7 @@ namespace PT.PM.Matching
             TextSpan = matchResult.TextSpans.Where(textSpan =>
                 textSpan.Start >= 0 &&
                 textSpan.End <= textSpan.GetSourceFile(sourceFile).Data.Length)
+                .ToList()
                 .Union();
             LineColumnTextSpan = sourceFile.GetLineColumnTextSpan(TextSpan);
 

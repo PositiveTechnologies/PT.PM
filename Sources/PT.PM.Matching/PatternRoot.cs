@@ -11,7 +11,7 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
-    public class PatternRoot : ILoggable
+    public class PatternRoot : PatternUst, ILoggable
     {
         private HashSet<Language> languages = new HashSet<Language>();
         private Regex pathWildcardRegex;
@@ -86,11 +86,11 @@ namespace PT.PM.Matching
             if (ust is RootUst rootUst)
             {
                 if (Node is PatternCommentRegex ||
-                   (Node is PatternOr patternOr && patternOr.Patterns.Any(v => v is PatternCommentRegex)))
+                    Node is PatternOr patternOr && patternOr.Patterns.Any(v => v is PatternCommentRegex))
                 {
-                    foreach (CommentLiteral commentNode in rootUst.Comments)
+                    foreach (CommentLiteral commentLiteral in rootUst.Comments)
                     {
-                        MatchAndAddResult(Node, commentNode, context, results);
+                        MatchAndAddResult(Node, commentLiteral, context, results);
                     }
                 }
                 else
@@ -102,18 +102,23 @@ namespace PT.PM.Matching
             return results;
         }
 
+        protected override MatchContext Match(Ust ust, MatchContext context)
+        {
+            var results = new List<MatchResult>();
+            MatchAndAddResult(this, ust, context, results);
+            return context;
+        }
+
         private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
         {
             MatchAndAddResult(patternUst, ust, context, results);
 
             if (ust != null && !(patternUst is PatternAny) && !context.MatchedWithFolded)
             {
-                context.PushParent(ust);
                 foreach (Ust child in ust.Children)
                 {
                     TraverseChildren(patternUst, child, context, results);
                 }
-                context.PopParent();
             }
 
             context.MatchedWithFolded = false;

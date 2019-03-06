@@ -146,7 +146,7 @@ namespace PT.PM
             // TODO: implement more fast language detection if there are several languages (SQL dialects at first), see https://github.com/PositiveTechnologies/PT.PM/issues/158
             Language language = languages[0];
 
-            bool isSerialization = language.IsSerialization();
+            bool isSerialization = language.IsSerializing();
 
             RootUst result = null;
             var stopwatch = Stopwatch.StartNew();
@@ -302,6 +302,10 @@ namespace PT.PM
                     {
                         result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
                     }
+
+                    stopwatch.Stop();
+                    Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
+                    workflowResult.AddConvertTime(stopwatch.Elapsed);
                 }
                 else
                 {
@@ -330,16 +334,16 @@ namespace PT.PM
                         Logger.LogError(new ReadException(sourceFile, message: $"Unknown serialization format {language}"));
                     }
 
+                    stopwatch.Stop();
+                    Logger.LogInfo($"File {sourceFile} deserialized {stopwatch.GetElapsedString()}.");
+                    workflowResult.AddDeserializeTime(stopwatch.Elapsed);
+
                     if (result == null || !workflowResult.BaseLanguages.Any(lang => result.Sublanguages.Contains(lang)))
                     {
                         Logger.LogInfo($"File {fileName} ignored.");
                         return null;
                     }
                 }
-
-                stopwatch.Stop();
-                Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
-                workflowResult.AddConvertTime(stopwatch.Elapsed);
 
                 if (result == null)
                 {
