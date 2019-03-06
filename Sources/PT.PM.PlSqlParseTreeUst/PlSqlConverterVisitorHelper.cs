@@ -26,20 +26,9 @@ namespace PT.PM.SqlParseTreeUst
             {
                 result = new StringLiteral(text.Substring(2, text.Length - 3), textSpan);
             }
-            else if (text.All(c => char.IsDigit(c)))
+            else if (text.All(char.IsDigit))
             {
-                if (int.TryParse(text, out int intValue))
-                {
-                    result = new IntLiteral(intValue, textSpan);
-                }
-                else if (long.TryParse(text, out long longValue))
-                {
-                    result = new LongLiteral(longValue, textSpan);
-                }
-                else
-                {
-                    result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
-                }
+                result = TextUtils.CreateNumericLiteral(text, textSpan);
             }
             else if (double.TryParse(text, out doubleResult))
             {

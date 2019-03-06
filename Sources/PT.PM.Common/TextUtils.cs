@@ -1,11 +1,14 @@
-﻿using PT.PM.Common.Utils;
+﻿using PT.PM.Common.Files;
+using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
+using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
-using PT.PM.Common.Files;
 
 namespace PT.PM.Common
 {
@@ -381,6 +384,25 @@ namespace PT.PM.Common
             {
                 throw new FormatException($"Invalid or too big column value {value} while {nameof(LineColumnTextSpan)} parsing.");
             }
+        }
+
+        public static Literal CreateNumericLiteral(string value, TextSpan textSpan)
+        {
+            Literal result;
+            if (int.TryParse(value, out int intValue))
+            {
+                result = new IntLiteral(intValue, textSpan);
+            }
+            else if (long.TryParse(value, out long longValue))
+            {
+                result = new LongLiteral(longValue, textSpan);
+            }
+            else
+            {
+                result = new BigIntLiteral(BigInteger.Parse(value), textSpan);
+            }
+
+            return result;
         }
     }
 }

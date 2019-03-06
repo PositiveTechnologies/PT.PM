@@ -1074,19 +1074,7 @@ namespace PT.PM.SqlParseTreeUst
             {
                 string rightText = context.DECIMAL().GetText();
                 var rightTextSpan = context.DECIMAL().Symbol.GetTextSpan();
-                
-                if (int.TryParse(rightText, out int intValue))
-                {
-                    right = new IntLiteral(intValue, rightTextSpan);
-                }
-                else if (long.TryParse(rightText, out long longValue))
-                {
-                    right = new LongLiteral(longValue, rightTextSpan);
-                }
-                else
-                {
-                    right = new BigIntLiteral(BigInteger.Parse(rightText), rightTextSpan);
-                }
+                right = TextUtils.CreateNumericLiteral(rightText, rightTextSpan);
             }
 
             var result = new AssignmentExpression(left, right, context.GetTextSpan());

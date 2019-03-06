@@ -74,7 +74,7 @@ namespace PT.PM.Matching
                 exprs.Add(Visit(pattern));
             }
             exprs.Sort();
-            
+
             return new PatternOr(exprs, patternOr.TextSpan);
         }
 
@@ -106,10 +106,7 @@ namespace PT.PM.Matching
                     patternIntRangeLiteral.TextSpan);
             }
 
-            return new PatternIntRangeLiteral(
-                patternIntRangeLiteral.MinValue,
-                patternIntRangeLiteral.MaxValue,
-                patternIntRangeLiteral.TextSpan);
+            return patternIntRangeLiteral;
         }
 
         public override PatternUst Visit(PatternAnd patternAnd)
