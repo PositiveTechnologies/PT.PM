@@ -144,28 +144,13 @@ namespace PT.PM.Common
             }
             else
             {
-                object foldResult = null;
-                bool folded = true;
-                if (TryFoldBigIntBinaryOperatorExpression(leftValue, rightValue, op, out BigInteger bigInt))
+                if (TryFoldIntBinaryOperatorExpression(leftValue, rightValue, op, out BigInteger bigInt))
                 {
-                    foldResult = bigInt;
-                }
-                else if (TryFoldLongBinaryOperatorExpression(leftValue, rightValue, op, out long longVal))
-                {
-                    foldResult = longVal;
-                }
-                else
-                {
-                    folded = false;
-                }
-
-                if (folded)
-                {
-                    FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, foldResult);
+                    FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, bigInt);
 
                     if (Logger.IsLogDebugs)
                     {
-                        Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {foldResult} at {binaryOperatorExpression.TextSpan}");
+                        Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {bigInt} at {binaryOperatorExpression.TextSpan}");
                     }
 
                     return result;
@@ -175,76 +160,26 @@ namespace PT.PM.Common
             return null;
         }
 
-        private bool TryFoldBigIntBinaryOperatorExpression(object left, object right,
+        private bool TryFoldIntBinaryOperatorExpression(object left, object right,
             BinaryOperatorLiteral op, out BigInteger result)
         {
-            bool folded = false;
-            if (left is BigInteger leftInt && right is BigInteger rightInt)
-            {
-                switch (op.BinaryOperator)
-                {
-                    case BinaryOperator.Plus:
-                        result = leftInt + rightInt;
-                        break;
-                    case BinaryOperator.Minus:
-                        result = leftInt - rightInt;
-                        break;
-                    case BinaryOperator.Multiply:
-                        result = leftInt * rightInt;
-                        break;
-                    case BinaryOperator.Divide:
-                        if (rightInt == 0)
-                        {
-                            folded = false;
-                        }
-                        else
-                        {
-                            result = leftInt / rightInt;
-                        }
-                        break;
-                    case BinaryOperator.Mod:
-                        if (rightInt == 0)
-                        {
-                            folded = false;
-                        }
-                        else
-                        {
-                            result = leftInt % rightInt;
-                        }
-                        break;
-                    case BinaryOperator.BitwiseAnd:
-                        result = leftInt & rightInt;
-                        break;
-                    case BinaryOperator.BitwiseOr:
-                        result = leftInt | rightInt;
-                        break;
-                    case BinaryOperator.BitwiseXor:
-                        result = leftInt ^ rightInt;
-                        break;
-                    default:
-                        folded = false;
-                        break;
-                }
-            }
-            return folded;
-        }
-
-        private bool TryFoldLongBinaryOperatorExpression(object left, object right,
-            BinaryOperatorLiteral op, out long result)
-        {
-            result = 0;
-            if (!((left is long || left is int)
-                && (right is long || right is int)))
+            bool folded = true;
+            if (!((left is long || left is int || left is BigInteger)
+                && (right is long || right is int || right is BigInteger)))
             {
                 return false;
             }
-            bool folded = true;
-            long leftInt = left is long
-                    ? (long)left
-                    : (int)left;
-            long rightInt = right is long
+            BigInteger leftInt = left is int
+                ? (int)left
+                : left is long
+                ? (long)left
+                : (BigInteger)left;
+            BigInteger rightInt = right is int
+                ? (int)right
+                : right is long
                 ? (long)right
-                : (int)right;
+                : (BigInteger)right;
+
             switch (op.BinaryOperator)
             {
                 case BinaryOperator.Plus:
