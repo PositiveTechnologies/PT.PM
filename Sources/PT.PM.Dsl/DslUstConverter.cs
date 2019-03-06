@@ -9,6 +9,7 @@ using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 
 namespace PT.PM.Dsl
@@ -427,7 +428,15 @@ namespace PT.PM.Dsl
             }
             else if (context.Int() != null)
             {
-                result = new PatternIntLiteral(int.Parse(context.Int().GetText()), textSpan);
+                string text = context.Int().GetText();
+                if (long.TryParse(text, out long longValue))
+                {
+                    result = new PatternIntLiteral(longValue, textSpan);
+                }
+                else
+                {
+                    result = new PatternBigIntLiteral(longValue, textSpan);
+                }
             }
             else if (context.Hex() != null)
             {
@@ -524,7 +533,15 @@ namespace PT.PM.Dsl
         {
             if (context.PatternInt() != null)
             {
-                return new PatternIntLiteral(int.Parse(context.PatternInt().GetText()), context.GetTextSpan());
+                var text = context.PatternInt().GetText();
+                if(long.TryParse(text, out long longValue))
+                {
+                    return new PatternIntLiteral(longValue, context.GetTextSpan());
+                }
+                else
+                {
+                    return new PatternBigIntLiteral(BigInteger.Parse(text), context.GetTextSpan());
+                }
             }
 
             long resultValue = context.PatternOct() != null
@@ -550,7 +567,7 @@ namespace PT.PM.Dsl
             PatternUst result;
             if (context.i != null)
             {
-                result = (PatternIntLiteral)VisitPatternIntExpression(context.i);
+                result = VisitPatternIntExpression(context.i);
             }
             else
             {
@@ -600,7 +617,7 @@ namespace PT.PM.Dsl
             }
             else
             {
-                result = (PatternIntLiteral)VisitPatternInt(context.patternInt());
+                return VisitPatternInt(context.patternInt());
             }
             return result;
         }
