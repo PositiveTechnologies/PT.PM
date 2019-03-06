@@ -302,6 +302,58 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "DirectoryTraversalCreateReadStream",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternAssignmentExpression
+                {
+                    Left = new PatternAny(),
+                    Right = new PatternInvocationExpression
+                    {
+                        Target = new PatternMemberReferenceExpression
+                        {
+                            Target = new PatternOr
+                            (
+                                new PatternInvocationExpression
+                                {
+                                    Target = new PatternIdToken("require"),
+                                    Arguments = new PatternArgs(new PatternStringLiteral("fs"))
+                                },
+                                new PatternIdToken("fs")
+                            ),
+                            Name = new PatternIdToken("createReadStream")
+                        },
+                        Arguments = new PatternArgs(nodeEP, new PatternMultipleExpressions()) // createReadStream(path[, options])
+                    }
+                }
+            });
+
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "DirectoryTraversalReadFile",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternInvocationExpression
+                {
+                    Target = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternOr
+                        (
+                            new PatternInvocationExpression
+                            {
+                                Target = new PatternIdToken("require"),
+                                Arguments = new PatternArgs(new PatternStringLiteral("fs"))
+                            },
+                            new PatternIdToken("fs")
+                        ),
+                        Name = new PatternIdToken("readFile")
+                    },
+                    Arguments = new PatternArgs(nodeEP, new PatternMultipleExpressions()) // readFile(path[, options], callback)
+                }
+            });
+
             return patterns;
         }
     }
