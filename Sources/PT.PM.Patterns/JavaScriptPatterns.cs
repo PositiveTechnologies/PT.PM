@@ -196,6 +196,112 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "NoTLSReject",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternAssignmentExpression
+                {
+                    Left = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternMemberReferenceExpression
+                        {
+                            Target = new PatternIdToken("process"),
+                            Name = new PatternIdToken("env")
+                        },
+                        Name = new PatternIdToken("NODE_TLS_REJECT_UNAUTHORIZED")
+                    },
+                    Right = new PatternStringRegexLiteral("^0$")
+                }
+            });
+
+            // FIXME: doesn't work this way
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "NoSSLVerification",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternVarOrFieldDeclaration
+                {
+                    LocalVariable = false,
+                    Type = new PatternAny(),
+                    Assignment = new PatternAssignmentExpression
+                    {
+                        Left = new PatternIdToken("SSL_VERIFYPEER"),
+                        Right = new PatternIntLiteral(0)
+                    }
+                }
+            });
+
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "WeakHashCrypto",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternInvocationExpression
+                {
+                    Target = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternOr
+                        (
+                            new PatternInvocationExpression
+                            {
+                                Target = new PatternIdToken("require"),
+                                Arguments = new PatternArgs(new PatternStringLiteral("crypto"))
+                            },
+                            new PatternIdToken("crypto")
+                        ),
+                        Name = new PatternIdToken("createHash")
+                    },
+                    Arguments = new PatternArgs(new PatternStringRegexLiteral("^(md5|sha1)$"))
+                }
+            });
+
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "WeakHashCryptoJS",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternInvocationExpression
+                {
+                    Target = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternOr
+                        (
+                            new PatternMemberReferenceExpression
+                            {
+                                Target = new PatternMemberReferenceExpression
+                                {
+                                    Target = new PatternIdToken("CryptoJS"),
+                                    Name = new PatternIdToken("algo")
+                                },
+                                Name = new PatternIdToken("HMAC")
+                            },
+                            new PatternIdToken("HMAC")
+                        ),
+                        Name = new PatternIdToken("create")
+                    },
+                    Arguments = new PatternArgs
+                    (
+                        new PatternOr
+                        (
+                            new PatternMemberReferenceExpression
+                            {
+                                Target = new PatternMemberReferenceExpression
+                                {
+                                    Target = new PatternIdToken("CryptoJS"),
+                                    Name = new PatternIdToken("algo")
+                                },
+                                Name = new PatternIdToken("MD5")
+                            },
+                            new PatternIdToken("MD5")
+                        ),
+                        new PatternAny()
+                    )
+                }
+            });
+
             return patterns;
         }
     }
