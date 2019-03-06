@@ -18,21 +18,9 @@ namespace PT.PM.Tests
         public void Number_Recognition_Check()
         {
             TestUtility.CheckFile(testFileName, Stage.Ust, out RootUst ust);
-
-            Assert.IsTrue(ust.AnyDescendantOrSelf(descendant =>
-            {
-                return descendant is IntLiteral;
-            }));
-
-            Assert.IsTrue(ust.AnyDescendantOrSelf(descendant =>
-            {
-                return descendant is LongLiteral;
-            }));
-
-            Assert.IsTrue(ust.AnyDescendantOrSelf(descendant =>
-            {
-                return descendant is BigIntLiteral;
-            }));
+            Assert.IsTrue(ust.AnyDescendantOrSelf(d => d is IntLiteral));
+            Assert.IsTrue(ust.AnyDescendantOrSelf(d => d is LongLiteral));
+            Assert.IsTrue(ust.AnyDescendantOrSelf(d => d is BigIntLiteral));
         }
 
         [Test]

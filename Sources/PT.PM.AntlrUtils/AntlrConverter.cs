@@ -205,26 +205,22 @@ namespace PT.PM.AntlrUtils
             Match match = RegexHexLiteral.Match(text);
             if (match.Success)
             {
-                match.Groups[1].Value.TryConvertToInt64(16, out long value);
-                return new LongLiteral(value, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 16);
             }
             match = RegexOctalLiteral.Match(text);
             if (match.Success)
             {
-                match.Groups[1].Value.TryConvertToInt64(8, out long value);
-                return new LongLiteral(value, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 8);
             }
             match = RegexBinaryLiteral.Match(text);
             if (match.Success)
             {
-                match.Groups[1].Value.TryConvertToInt64(2, out long value);
-                return new LongLiteral(value, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 2);
             }
             match = RegexDecimalLiteral.Match(text);
             if (match.Success)
             {
-                string matchedText = match.Groups[1].Value;
-                return TextUtils.CreateNumericLiteral(matchedText, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan);
             }
             return null;
         }
@@ -314,11 +310,11 @@ namespace PT.PM.AntlrUtils
                 }
                 else if (text.All(char.IsDigit))
                 {
-                    result = TextUtils.CreateNumericLiteral(text, textSpan);
+                    result = TextUtils.TryCreateNumericLiteral(text, textSpan);
                 }
                 else if (text.StartsWith("0X", StringComparison.OrdinalIgnoreCase))
                 {
-                    result = TextUtils.CreateNumericLiteral(text, textSpan, 16);
+                    result = TextUtils.TryCreateNumericLiteral(text, textSpan, 16);
                 }
                 else if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out double floatValue))
                 {

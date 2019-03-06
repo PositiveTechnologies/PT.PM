@@ -28,7 +28,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (text.All(char.IsDigit))
             {
-                result = TextUtils.CreateNumericLiteral(text, textSpan);
+                result = TextUtils.TryCreateNumericLiteral(text, textSpan);
             }
             else if (double.TryParse(text, out doubleResult))
             {

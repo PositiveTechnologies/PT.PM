@@ -4,7 +4,7 @@ using MessagePack;
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     [MessagePackObject]
-    public class BigIntLiteral : Literal, INumericLiteral
+    public class BigIntLiteral : Literal, INumericLiteral<BigInteger>
     {
         [Key(UstFieldOffset)] 
         public BigInteger Value { get; set; }

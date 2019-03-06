@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading;
 
 namespace PT.PM.Common
 {
@@ -74,7 +73,7 @@ namespace PT.PM.Common
         {
             if (arrayCreationExpression.Type?.TypeText == "char" &&
                 arrayCreationExpression.Initializers.Count > 0 &&
-                (bool) arrayCreationExpression.Initializers?.All(i => i is StringLiteral))
+                (bool)arrayCreationExpression.Initializers?.All(i => i is StringLiteral))
             {
                 var value = new StringBuilder();
                 var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1);
@@ -143,89 +142,154 @@ namespace PT.PM.Common
                     return result;
                 }
             }
-            else if ((leftValue is long || leftValue is int)
-                && (rightValue is long || rightValue is int))
+            else
             {
-                long leftInt = leftValue is long
-                    ? (long)leftValue
-                    : (int)leftValue;
-                long rightInt = rightValue is long
-                    ? (long)rightValue
-                    : (int)rightValue;
-                long resultInt = 0;
+                object foldResult = null;
                 bool folded = true;
-                try
+                if (TryFoldBigIntBinaryOperatorExpression(leftValue, rightValue, op, out BigInteger bigInt))
                 {
-                    checked
-                    {
-                        switch (op.BinaryOperator)
-                        {
-                            case BinaryOperator.Plus:
-                                resultInt = leftInt + rightInt;
-                                break;
-                            case BinaryOperator.Minus:
-                                resultInt = leftInt - rightInt;
-                                break;
-                            case BinaryOperator.Multiply:
-                                resultInt = leftInt * rightInt;
-                                break;
-                            case BinaryOperator.Divide:
-                                if (rightInt == 0)
-                                {
-                                    folded = false;
-                                }
-                                else
-                                {
-                                    resultInt = leftInt / rightInt;
-                                }
-                                break;
-                            case BinaryOperator.Mod:
-                                if (rightInt == 0)
-                                {
-                                    folded = false;
-                                }
-                                else
-                                {
-                                    resultInt = leftInt % rightInt;
-                                }
-                                break;
-                            case BinaryOperator.BitwiseAnd:
-                                resultInt = leftInt & rightInt;
-                                break;
-                            case BinaryOperator.BitwiseOr:
-                                resultInt = leftInt | rightInt;
-                                break;
-                            case BinaryOperator.BitwiseXor:
-                                resultInt = leftInt ^ rightInt;
-                                break;
-                            default:
-                                folded = false;
-                                break;
-                        }
-
-                        if (folded)
-                        {
-                            FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, resultInt);
-
-                            if (Logger.IsLogDebugs)
-                            {
-                                Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {resultInt} at {binaryOperatorExpression.TextSpan}");
-                            }
-
-                            return result;
-                        }
-                    }
+                    foldResult = bigInt;
                 }
-                catch (Exception ex) when (!(ex is ThreadAbortException))
+                else if (TryFoldLongBinaryOperatorExpression(leftValue, rightValue, op, out long longVal))
                 {
+                    foldResult = longVal;
+                }
+                else
+                {
+                    folded = false;
+                }
+
+                if (folded)
+                {
+                    FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, foldResult);
+
                     if (Logger.IsLogDebugs)
                     {
-                        Logger.LogDebug($"Error while constant folding: {ex}");
+                        Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {foldResult} at {binaryOperatorExpression.TextSpan}");
                     }
+
+                    return result;
                 }
             }
 
             return null;
+        }
+
+        private bool TryFoldBigIntBinaryOperatorExpression(object left, object right,
+            BinaryOperatorLiteral op, out BigInteger result)
+        {
+            bool folded = false;
+            if (left is BigInteger leftInt && right is BigInteger rightInt)
+            {
+                switch (op.BinaryOperator)
+                {
+                    case BinaryOperator.Plus:
+                        result = leftInt + rightInt;
+                        break;
+                    case BinaryOperator.Minus:
+                        result = leftInt - rightInt;
+                        break;
+                    case BinaryOperator.Multiply:
+                        result = leftInt * rightInt;
+                        break;
+                    case BinaryOperator.Divide:
+                        if (rightInt == 0)
+                        {
+                            folded = false;
+                        }
+                        else
+                        {
+                            result = leftInt / rightInt;
+                        }
+                        break;
+                    case BinaryOperator.Mod:
+                        if (rightInt == 0)
+                        {
+                            folded = false;
+                        }
+                        else
+                        {
+                            result = leftInt % rightInt;
+                        }
+                        break;
+                    case BinaryOperator.BitwiseAnd:
+                        result = leftInt & rightInt;
+                        break;
+                    case BinaryOperator.BitwiseOr:
+                        result = leftInt | rightInt;
+                        break;
+                    case BinaryOperator.BitwiseXor:
+                        result = leftInt ^ rightInt;
+                        break;
+                    default:
+                        folded = false;
+                        break;
+                }
+            }
+            return folded;
+        }
+
+        private bool TryFoldLongBinaryOperatorExpression(object left, object right,
+            BinaryOperatorLiteral op, out long result)
+        {
+            result = 0;
+            if (!((left is long || left is int)
+                && (right is long || right is int)))
+            {
+                return false;
+            }
+            bool folded = true;
+            long leftInt = left is long
+                    ? (long)left
+                    : (int)left;
+            long rightInt = right is long
+                ? (long)right
+                : (int)right;
+            switch (op.BinaryOperator)
+            {
+                case BinaryOperator.Plus:
+                    result = leftInt + rightInt;
+                    break;
+                case BinaryOperator.Minus:
+                    result = leftInt - rightInt;
+                    break;
+                case BinaryOperator.Multiply:
+                    result = leftInt * rightInt;
+                    break;
+                case BinaryOperator.Divide:
+                    if (rightInt == 0)
+                    {
+                        folded = false;
+                    }
+                    else
+                    {
+                        result = leftInt / rightInt;
+                    }
+                    break;
+                case BinaryOperator.Mod:
+                    if (rightInt == 0)
+                    {
+                        folded = false;
+                    }
+                    else
+                    {
+                        result = leftInt % rightInt;
+                    }
+                    break;
+                case BinaryOperator.BitwiseAnd:
+                    result = leftInt & rightInt;
+                    break;
+                case BinaryOperator.BitwiseOr:
+                    result = leftInt | rightInt;
+                    break;
+                case BinaryOperator.BitwiseXor:
+                    result = leftInt ^ rightInt;
+                    break;
+                default:
+                    folded = false;
+                    break;
+            }
+            return folded;
         }
 
         private FoldResult TryFoldUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression)
@@ -240,26 +304,16 @@ namespace PT.PM.Common
 
             if (unaryOperatorExpression.Operator.UnaryOperator == UnaryOperator.Minus)
             {
-                object valueToProcess = null;
                 switch (foldResult.Value)
                 {
                     case double doubleVal:
-                        valueToProcess = -doubleVal;
-                        break;
+                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -doubleVal);
                     case int intVal:
-                        valueToProcess = -intVal;
-                        break;
+                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -intVal);
                     case long longVal:
-                        valueToProcess = -longVal;
-                        break;
+                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -longVal);
                     case BigInteger bigIntVal:
-                        valueToProcess = -bigIntVal;
-                        break;
-                }
-
-                if (valueToProcess != null)
-                {
-                    return ProcessUnaryExpression(unaryOperatorExpression, foldResult, valueToProcess);
+                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -bigIntVal);
                 }
             }
 

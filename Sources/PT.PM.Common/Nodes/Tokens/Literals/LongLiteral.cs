@@ -3,7 +3,7 @@ using MessagePack;
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     [MessagePackObject]
-    public class LongLiteral : Literal, INumericLiteral
+    public class LongLiteral : Literal, INumericLiteral<long>
     {
         [Key(UstFieldOffset)] 
         public long Value { get; set; }

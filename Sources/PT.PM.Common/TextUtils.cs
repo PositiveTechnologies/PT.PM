@@ -385,34 +385,60 @@ namespace PT.PM.Common
             }
         }
 
-        public static Literal CreateNumericLiteral(string value, TextSpan textSpan, int fromBase = 10)
+        public static Literal TryCreateNumericLiteral(string value, TextSpan textSpan, int fromBase = 10)
+        {
+            try
+            {
+                return CreateNumericLiteral(value, textSpan, fromBase);
+            }
+            catch
+            {
+                return new IntLiteral(0, textSpan);
+            }
+        }
+
+        private static Literal CreateNumericLiteral(string value, TextSpan textSpan, int fromBase = 10)
         {
             switch (fromBase)
             {
                 case 2:
                     try
                     {
-                        return new LongLiteral(Convert.ToInt64(value, 2), textSpan);
+                        return new IntLiteral(Convert.ToInt32(value, 2), textSpan);
                     }
                     catch
                     {
-                        BigInteger bigIntValue = 0;
-                        foreach (var c in value)
+                        try
                         {
-                            bigIntValue <<= 1;
-                            bigIntValue += c == '1' ? 1 : 0;
+                            return new LongLiteral(Convert.ToInt64(value, 2), textSpan);
                         }
-                        return new BigIntLiteral(bigIntValue, textSpan);
+                        catch
+                        {
+                            BigInteger bigIntValue = 0;
+                            foreach (var c in value)
+                            {
+                                bigIntValue <<= 1;
+                                bigIntValue += c == '1' ? 1 : 0;
+                            }
+                            return new BigIntLiteral(bigIntValue, textSpan);
+                        }
                     }
                 case 8:
                     try
                     {
-                        return new LongLiteral(Convert.ToInt64(value, 8), textSpan);
+                        return new IntLiteral(Convert.ToInt32(value, 8), textSpan);
                     }
                     catch
                     {
-                        return new BigIntLiteral(value.Aggregate(new BigInteger(),
-                            (bigInt, c) => bigInt * 8 + c - '0'));
+                        try
+                        {
+                            return new LongLiteral(Convert.ToInt64(value, 8), textSpan);
+                        }
+                        catch
+                        {
+                            return new BigIntLiteral(value.Aggregate(new BigInteger(),
+                                (bigInt, c) => bigInt * 8 + c - '0'));
+                        }
                     }
                 case 10:
                     if (int.TryParse(value, out int intValue))
@@ -433,11 +459,18 @@ namespace PT.PM.Common
                         : value;
                     try
                     {
-                        return new LongLiteral(Convert.ToInt64(value, 16), textSpan);
+                        return new IntLiteral(Convert.ToInt32(value, 16), textSpan);
                     }
                     catch
                     {
-                        return new BigIntLiteral(BigInteger.Parse(value, System.Globalization.NumberStyles.HexNumber));
+                        try
+                        {
+                            return new LongLiteral(Convert.ToInt64(value, 16), textSpan);
+                        }
+                        catch
+                        {
+                            return new BigIntLiteral(BigInteger.Parse(value, System.Globalization.NumberStyles.HexNumber));
+                        }
                     }
                 default:
                     throw new NotSupportedException($"{fromBase} base сonversion is not supported");

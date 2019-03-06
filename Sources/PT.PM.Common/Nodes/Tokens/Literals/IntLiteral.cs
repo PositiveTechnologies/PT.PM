@@ -3,7 +3,7 @@
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     [MessagePackObject]
-    public class IntLiteral : Literal, INumericLiteral
+    public class IntLiteral : Literal, INumericLiteral<int>
     {
         [Key(UstFieldOffset)]
         public int Value { get; set; }
