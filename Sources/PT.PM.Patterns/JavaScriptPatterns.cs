@@ -354,6 +354,55 @@ namespace PT.PM.Patterns.PatternsRepository
                 }
             });
 
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "OpenRedirect",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternInvocationExpression
+                {
+                    Target = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternIdToken("res"),
+                        Name = new PatternIdToken("redirect")
+                    },
+                    Arguments = new PatternArgs(new PatternMultipleExpressions(), nodeEP) // redirect([status, ]url)
+                }
+            });
+
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "ReflectedCrossSiteScripting",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternInvocationExpression
+                {
+                    Target = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternIdToken("res"),
+                        Name = new PatternIdRegexToken("^(send|write)$")
+                    },
+                    Arguments = new PatternArgs(nodeEP)
+                }
+            });
+
+            // Limited form
+            patterns.Add(new PatternRoot
+            {
+                Key = patternIdGenerator.NextId(),
+                DebugInfo = "HeaderInjection",
+                Languages = new HashSet<Language> { Language.JavaScript },
+                Node = new PatternInvocationExpression
+                {
+                    Target = new PatternMemberReferenceExpression
+                    {
+                        Target = new PatternIdToken("res"),
+                        Name = new PatternIdToken("set")
+                    },
+                    Arguments = new PatternArgs(new PatternAny(), nodeEP)
+                }
+            });
+
             return patterns;
         }
     }
