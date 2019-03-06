@@ -224,18 +224,7 @@ namespace PT.PM.AntlrUtils
             if (match.Success)
             {
                 string matchedText = match.Groups[1].Value;
-                if (int.TryParse(matchedText, out int intValue))
-                {
-                    return new IntLiteral(intValue, textSpan);
-                }
-                else if (long.TryParse(matchedText, out long longValue))
-                {
-                    return new LongLiteral(longValue, textSpan);
-                }
-                else
-                {
-                    return new BigIntLiteral(BigInteger.Parse(matchedText), textSpan);
-                }
+                return TextUtils.CreateNumericLiteral(matchedText, textSpan);
             }
             return null;
         }

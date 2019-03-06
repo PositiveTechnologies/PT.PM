@@ -78,13 +78,11 @@ namespace PT.PM.Common
             {
                 var value = new StringBuilder();
                 var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1)
-                {
-                    arrayCreationExpression.Type.TextSpan
-                };
 
-                foreach (Expression expression in arrayCreationExpression.Initializers)
+                textSpans.Add(arrayCreationExpression.Type.TextSpan);
+
+                foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
                 {
-                    var stringLiteral = (StringLiteral) expression;
                     value.Append(stringLiteral.Text);
                     textSpans.Add(stringLiteral.TextSpan);
                 }
@@ -130,7 +128,7 @@ namespace PT.PM.Common
                     }
                     else
                     {
-                        leftStringBuilder = (StringBuilder) leftValue;
+                        leftStringBuilder = (StringBuilder)leftValue;
                     }
                     leftStringBuilder.Append(rightString);
 
@@ -146,7 +144,7 @@ namespace PT.PM.Common
                 }
             }
             else if ((leftValue is long || leftValue is int)
-                || (rightValue is long || rightValue is int))
+                && (rightValue is long || rightValue is int))
             {
                 long leftInt = leftValue is long
                     ? (long)leftValue
@@ -259,7 +257,7 @@ namespace PT.PM.Common
                         break;
                 }
 
-                if(valueToProcess != null)
+                if (valueToProcess != null)
                 {
                     return ProcessUnaryExpression(unaryOperatorExpression, foldResult, valueToProcess);
                 }
