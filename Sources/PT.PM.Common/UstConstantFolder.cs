@@ -169,56 +169,54 @@ namespace PT.PM.Common
             {
                 return false;
             }
-            BigInteger leftInt = left is int
-                ? (int)left
-                : left is long
-                ? (long)left
+
+            BigInteger leftBigInt = left is int leftInt ? (BigInteger)leftInt
+                : left is long leftLong ? (BigInteger)leftLong
                 : (BigInteger)left;
-            BigInteger rightInt = right is int
-                ? (int)right
-                : right is long
-                ? (long)right
+
+            BigInteger rightBigInt = right is int rightInt ? (BigInteger)rightInt
+                : right is long rightLong ? (BigInteger)rightLong
                 : (BigInteger)right;
 
             switch (op.BinaryOperator)
             {
                 case BinaryOperator.Plus:
-                    result = leftInt + rightInt;
+                    result = leftBigInt + rightBigInt;
                     break;
                 case BinaryOperator.Minus:
-                    result = leftInt - rightInt;
+                    result = leftBigInt - rightBigInt;
                     break;
                 case BinaryOperator.Multiply:
-                    result = leftInt * rightInt;
+                    result = leftBigInt * rightBigInt;
                     break;
                 case BinaryOperator.Divide:
-                    if (rightInt == 0)
+                    if (rightBigInt == 0)
                     {
                         folded = false;
                     }
                     else
                     {
-                        result = leftInt / rightInt;
+                        result = leftBigInt / rightBigInt;
                     }
                     break;
                 case BinaryOperator.Mod:
-                    if (rightInt == 0)
+                    if (rightBigInt == 0)
                     {
                         folded = false;
                     }
                     else
                     {
-                        result = leftInt % rightInt;
+                        result = leftBigInt % rightBigInt;
                     }
                     break;
                 case BinaryOperator.BitwiseAnd:
-                    result = leftInt & rightInt;
+                    result = leftBigInt & rightBigInt;
                     break;
                 case BinaryOperator.BitwiseOr:
-                    result = leftInt | rightInt;
+                    result = leftBigInt | rightBigInt;
                     break;
                 case BinaryOperator.BitwiseXor:
-                    result = leftInt ^ rightInt;
+                    result = leftBigInt ^ rightBigInt;
                     break;
                 default:
                     folded = false;
@@ -239,16 +237,26 @@ namespace PT.PM.Common
 
             if (unaryOperatorExpression.Operator.UnaryOperator == UnaryOperator.Minus)
             {
+                object negativeValue = null;
                 switch (foldResult.Value)
                 {
                     case double doubleVal:
-                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -doubleVal);
+                        negativeValue = -doubleVal;
+                        break;
                     case int intVal:
-                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -intVal);
+                        negativeValue = -intVal;
+                        break;
                     case long longVal:
-                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -longVal);
+                        negativeValue = -longVal;
+                        break;
                     case BigInteger bigIntVal:
-                        return ProcessUnaryExpression(unaryOperatorExpression, foldResult, -bigIntVal);
+                        negativeValue = -bigIntVal;
+                        break;
+                }
+
+                if (negativeValue != null)
+                {
+                    return ProcessUnaryExpression(unaryOperatorExpression, foldResult, negativeValue);
                 }
             }
 
