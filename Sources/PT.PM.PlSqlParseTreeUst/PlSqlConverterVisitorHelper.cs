@@ -5,6 +5,7 @@ using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
+using System.Numerics;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -25,9 +26,9 @@ namespace PT.PM.SqlParseTreeUst
             {
                 result = new StringLiteral(text.Substring(2, text.Length - 3), textSpan);
             }
-            else if (text.All(c => char.IsDigit(c)))
+            else if (text.All(char.IsDigit))
             {
-                result = new IntLiteral(long.Parse(text), textSpan);
+                result = TextUtils.TryCreateNumericLiteral(text, textSpan);
             }
             else if (double.TryParse(text, out doubleResult))
             {

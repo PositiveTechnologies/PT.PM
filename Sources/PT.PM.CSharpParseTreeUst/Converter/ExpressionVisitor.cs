@@ -14,6 +14,7 @@ using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 
 namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
@@ -590,15 +591,16 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 case "Boolean":
                     return new BooleanLiteral((bool)token.Value, node.GetTextSpan());
                 case "Int32":
-                case "UInt32":
                 case "Int16":
                 case "UInt16":
                 case "Byte":
                 case "SByte":
+                    return new IntLiteral(System.Convert.ToInt32(token.Value), node.GetTextSpan());
+                case "UInt32":
                 case "Int64":
-                    return new IntLiteral(System.Convert.ToInt64(token.Value), node.GetTextSpan());
+                    return new LongLiteral(System.Convert.ToInt64(token.Value), node.GetTextSpan());
                 case "UInt64":
-                    return new IntLiteral((long)System.Convert.ToUInt64(token.Value), node.GetTextSpan());
+                    return new BigIntLiteral(new BigInteger((ulong)token.Value), node.GetTextSpan());
                 case "Double":
                 case "Single":
                 case "Decimal":

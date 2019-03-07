@@ -79,6 +79,8 @@ namespace PT.PM.Common.Nodes
         FloatLiteral,
         InOutModifierLiteral,
         IntLiteral,
+        LongLiteral,
+        BigIntLiteral,
         ModifierLiteral,
         NullLiteral,
         StringLiteral,

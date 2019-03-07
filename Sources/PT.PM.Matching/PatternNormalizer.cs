@@ -74,7 +74,7 @@ namespace PT.PM.Matching
                 exprs.Add(Visit(pattern));
             }
             exprs.Sort();
-            
+
             return new PatternOr(exprs, patternOr.TextSpan);
         }
 
@@ -97,19 +97,16 @@ namespace PT.PM.Matching
             return new PatternIdRegexToken(regexString, patternIdRegexToken.TextSpan);
         }
 
-        public override PatternUst Visit(PatternIntRangeLiteral patternIntLiteral)
+        public override PatternUst Visit(PatternIntRangeLiteral patternIntRangeLiteral)
         {
-            if (patternIntLiteral.MinValue == patternIntLiteral.MaxValue)
+            if (patternIntRangeLiteral.MinValue == patternIntRangeLiteral.MaxValue)
             {
                 return new PatternIntLiteral(
-                    patternIntLiteral.MinValue,
-                    patternIntLiteral.TextSpan);
+                    patternIntRangeLiteral.MinValue,
+                    patternIntRangeLiteral.TextSpan);
             }
 
-            return new PatternIntRangeLiteral(
-                patternIntLiteral.MinValue,
-                patternIntLiteral.MaxValue,
-                patternIntLiteral.TextSpan);
+            return patternIntRangeLiteral;
         }
 
         public override PatternUst Visit(PatternAnd patternAnd)

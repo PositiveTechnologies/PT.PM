@@ -68,6 +68,8 @@ namespace PT.PM.Common.Nodes
         T Visit(FloatLiteral floatLiteral);
         T Visit(IdToken idToken);
         T Visit(IntLiteral intLiteral);
+        T Visit(BigIntLiteral bigIntLiteral);
+        T Visit(LongLiteral longLiteral);
         T Visit(ModifierLiteral modifierLiteral);
         T Visit(NullLiteral nullLiteral);
         T Visit(InOutModifierLiteral parameterModifierLiteral);

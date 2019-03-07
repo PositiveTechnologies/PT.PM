@@ -1,19 +1,19 @@
-﻿using PT.PM.Common;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Numerics;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternIntLiteral : PatternUst, ITerminalPattern
+    public class PatternBigIntLiteral : PatternUst, ITerminalPattern
     {
-        public long Value { get; set; }
+        public BigInteger Value { get; set; }
 
-        public PatternIntLiteral()
+        public PatternBigIntLiteral()
         {
         }
 
-        public PatternIntLiteral(long value, TextSpan textSpan = default)
+        public PatternBigIntLiteral(BigInteger value, TextSpan textSpan = default)
             : base(textSpan)
         {
             Value = value;
@@ -25,18 +25,18 @@ namespace PT.PM.Matching.Patterns
         {
             switch (ust)
             {
-                case IntLiteral intLiteral:
-                    return Value == intLiteral.Value
-                    ? context.AddMatch(ust)
-                    : context.Fail();
-                case LongLiteral longLiteral:
-                    return Value == longLiteral.Value
-                    ? context.AddMatch(ust)
-                    : context.Fail();
                 case BigIntLiteral bigIntLiteral:
                     return Value == bigIntLiteral.Value
-                    ? context.AddMatch(ust)
-                    : context.Fail();
+                        ? context.AddMatch(ust)
+                        : context.Fail();
+                case IntLiteral intLiteral:
+                    return Value == intLiteral.Value
+                        ? context.AddMatch(ust)
+                        : context.Fail();
+                case LongLiteral longLiteral:
+                    return Value == longLiteral.Value
+                        ? context.AddMatch(ust)
+                        : context.Fail();
             }
 
             if (context.UstConstantFolder != null &&
@@ -55,6 +55,7 @@ namespace PT.PM.Matching.Patterns
                 {
                     return Value == bigIntValue ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
                 }
+
             }
 
             return context.Fail();

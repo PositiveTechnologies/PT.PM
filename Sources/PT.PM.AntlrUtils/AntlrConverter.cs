@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using PT.PM.Common.Utils;
 
@@ -204,26 +205,22 @@ namespace PT.PM.AntlrUtils
             Match match = RegexHexLiteral.Match(text);
             if (match.Success)
             {
-                match.Groups[1].Value.TryConvertToInt64(16, out long value);
-                return new IntLiteral(value, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 16);
             }
             match = RegexOctalLiteral.Match(text);
             if (match.Success)
             {
-                match.Groups[1].Value.TryConvertToInt64(8, out long value);
-                return new IntLiteral(value, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 8);
             }
             match = RegexBinaryLiteral.Match(text);
             if (match.Success)
             {
-                match.Groups[1].Value.TryConvertToInt64(2, out long value);
-                return new IntLiteral(value, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 2);
             }
             match = RegexDecimalLiteral.Match(text);
             if (match.Success)
             {
-                match.Groups[1].Value.TryConvertToInt64(10, out long value);
-                return new IntLiteral(value, textSpan);
+                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan);
             }
             return null;
         }
@@ -311,13 +308,13 @@ namespace PT.PM.AntlrUtils
                     text = text.Substring(1, text.Length - 2);
                     result = new StringLiteral(text, textSpan);
                 }
-                else if (text.All(c => char.IsDigit(c)))
+                else if (text.All(char.IsDigit))
                 {
-                    result = new IntLiteral(long.Parse(text), textSpan);
+                    result = TextUtils.TryCreateNumericLiteral(text, textSpan);
                 }
                 else if (text.StartsWith("0X", StringComparison.OrdinalIgnoreCase))
                 {
-                    result = new IntLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
+                    result = TextUtils.TryCreateNumericLiteral(text, textSpan, 16);
                 }
                 else if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out double floatValue))
                 {

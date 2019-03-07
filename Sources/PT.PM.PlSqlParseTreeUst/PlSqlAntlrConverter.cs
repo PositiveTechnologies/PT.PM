@@ -13,6 +13,7 @@ using PT.PM.PlSqlParseTreeUst;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Antlr4.Runtime;
 using static PT.PM.Common.Nodes.UstUtils;
 
@@ -1308,9 +1309,21 @@ namespace PT.PM.SqlParseTreeUst
         {
             Token result;
             string text = context.GetText();
+            var textSpan = context.GetTextSpan();
             if (context.UNSIGNED_INTEGER() != null)
             {
-                result = new IntLiteral(long.Parse(text), context.GetTextSpan());
+                if (int.TryParse(text, out int intValue))
+                {
+                    result = new IntLiteral(intValue, textSpan);
+                }
+                else if (long.TryParse(text, out long longValue))
+                {
+                    result = new LongLiteral(longValue, textSpan);
+                }
+                else
+                {
+                    result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
+                }
             }
             else
             {

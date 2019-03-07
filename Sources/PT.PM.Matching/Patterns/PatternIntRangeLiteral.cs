@@ -7,9 +7,9 @@ namespace PT.PM.Matching.Patterns
 {
     public class PatternIntRangeLiteral : PatternUst, ITerminalPattern
     {
-        public long MinValue { get; set; } = long.MinValue;
+        public long MinValue { get; set; }
 
-        public long MaxValue { get; set; } = long.MaxValue;
+        public long MaxValue { get; set; }
 
         public PatternIntRangeLiteral()
             : this(long.MinValue, long.MaxValue)
@@ -44,7 +44,7 @@ namespace PT.PM.Matching.Patterns
                 range = range.Substring(2, range.Length - 4);
             }
 
-            int index = range.IndexOf("..");
+            int index = range.IndexOf("..", StringComparison.Ordinal);
 
             if (index != -1)
             {
@@ -116,6 +116,18 @@ namespace PT.PM.Matching.Patterns
             {
                 return MinValue <= intLiteral.Value && MaxValue > intLiteral.Value
                     ? context.AddMatch(intLiteral)
+                    : context.Fail();
+            }
+            if (ust is LongLiteral longLiteral)
+            {
+                return MinValue <= longLiteral.Value && MaxValue > longLiteral.Value
+                    ? context.AddMatch(longLiteral)
+                    : context.Fail();
+            }
+            if (ust is BigIntLiteral bigIntLiteral)
+            {
+                return MinValue <= bigIntLiteral.Value && MaxValue > bigIntLiteral.Value
+                    ? context.AddMatch(bigIntLiteral)
                     : context.Fail();
             }
 

@@ -140,6 +140,11 @@ namespace PT.PM.Matching
             return VisitChildren(patternIntRangeLiteral);
         }
 
+        public virtual T Visit(PatternBigIntLiteral patternBigIntLiteral)
+        {
+            return VisitChildren(patternBigIntLiteral);
+        }
+        
         public virtual T Visit(PatternInvocationExpression patternInvocationExpression)
         {
             return VisitChildren(patternInvocationExpression);

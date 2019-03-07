@@ -3,20 +3,20 @@
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     [MessagePackObject]
-    public class IntLiteral : Literal
+    public class IntLiteral : Literal, INumericLiteral<int>
     {
         [Key(UstFieldOffset)]
-        public long Value { get; set; }
+        public int Value { get; set; }
 
         [IgnoreMember]
         public override string TextValue => Value.ToString();
 
-        public IntLiteral(long value)
+        public IntLiteral(int value)
             : this(value, default)
         {
         }
 
-        public IntLiteral(long value, TextSpan textSpan)
+        public IntLiteral(int value, TextSpan textSpan)
             : base(textSpan)
         {
             Value = value;
@@ -29,12 +29,9 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
-            if (baseCompareResult != 0)
-            {
-                return baseCompareResult;
-            }
-
-            return Value.CompareTo(((IntLiteral)other).Value);
+            return baseCompareResult != 0 
+                ? baseCompareResult 
+                : Value.CompareTo(((IntLiteral)other).Value);
         }
     }
 }

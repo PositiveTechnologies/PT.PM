@@ -26,6 +26,7 @@ namespace PT.PM.Matching
         T Visit(PatternIndexerExpression patternIndexerExpression);
         T Visit(PatternIntLiteral patternIntLiteral);
         T Visit(PatternIntRangeLiteral patternIntRangeLiteral);
+        T Visit(PatternBigIntLiteral patternBigIntLiteral);
         T Visit(PatternInvocationExpression patternInvocationExpression);
         T Visit(PatternMemberReferenceExpression patternMemberReferenceExpression);
         T Visit(PatternMethodDeclaration patternMethodDeclaration);
