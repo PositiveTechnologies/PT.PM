@@ -7,4 +7,4 @@ using System.Reflection;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: CLSCompliant(false)]
-[assembly: AssemblyVersion("1.6.8.0")]
+[assembly: AssemblyVersion("1.6.9.0")]
