@@ -18,6 +18,11 @@ namespace PT.PM.Python3ParseTreeUst
             throw new System.NotImplementedException();
         }
 
+        protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public static Python3AntlrParser Create() => new Python3AntlrParser();
     }
 }
