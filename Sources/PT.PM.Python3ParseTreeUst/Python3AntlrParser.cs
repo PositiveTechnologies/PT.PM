@@ -10,19 +10,16 @@ namespace PT.PM.Python3ParseTreeUst
         public override string[] RuleNames => Python3Parser.ruleNames;
         protected override string ParserSerializedATN => Python3Parser._serializedATN;
         protected override int CommentsChannel => Python3Lexer.Hidden;
-        protected override Parser InitParser(ITokenStream inputStream)
-        => new Python3Parser(inputStream);
 
-        protected override ParserRuleContext Parse(Parser parser)
-        {
-            throw new System.NotImplementedException();
-        }
+        protected override Parser InitParser(ITokenStream inputStream)
+            => new Python3Parser(inputStream);
 
         protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
-        {
-            throw new System.NotImplementedException();
-        }
+            => new Python3AntlrParseTree((Python3Parser.RootContext) syntaxTree);
 
         public static Python3AntlrParser Create() => new Python3AntlrParser();
+
+        protected override ParserRuleContext Parse(Parser parser)
+            => ((Python3Parser) parser).root();
     }
 }
