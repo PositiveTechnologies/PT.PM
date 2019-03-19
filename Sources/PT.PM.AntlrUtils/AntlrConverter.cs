@@ -175,7 +175,7 @@ namespace PT.PM.AntlrUtils
             if ((nodeText.StartsWith("'") && nodeText.EndsWith("'")) ||
                 (nodeText.StartsWith("\"") && nodeText.EndsWith("\"")))
             {
-                result = new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan);
+                return new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan);
             }
             else if (nodeText.Contains("."))
             {
