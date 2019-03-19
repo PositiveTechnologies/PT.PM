@@ -34,7 +34,7 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
 
         public override string ToString()
         {
-            return $"catch ({Type.ToStringWithTrailSpace()}{(VarName.ToStringNullable())})\n{{{Body}}}";
+            return $"catch ({Type.ToStringWithTrailSpace()}{(VarName.ToStringNullable())})\n{Body}";
         }
     }
 }
