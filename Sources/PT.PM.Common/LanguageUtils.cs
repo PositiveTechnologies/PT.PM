@@ -29,6 +29,8 @@ namespace PT.PM.Common
             [CPlusPlus] = new LanguageInfo(CPlusPlus, new[] { ".cpp", ".hpp", ".cc", ".cxx" }, false, "C++", new[] { C }, hasAntlrParser: false),
             [ObjectiveC] = new LanguageInfo(ObjectiveC, new[] { ".m", ".mm" }, false, "Objective-C", new[] { C }, hasAntlrParser: false),
             [Swift] = new LanguageInfo(Swift, new[] { ".swift" }, false, "Swift", hasAntlrParser: false),
+            [Python3] = new LanguageInfo(Python3, new[] { ".py", ".py3", ".pyw"}, false, "Python3", hasAntlrParser: true),
+            [Python2] = new LanguageInfo(Python2, new[] { ".py", ".pyw" }, false, "Python2", hasAntlrParser: true),
             [Uncertain] = new LanguageInfo(Uncertain, ".*", false, "Uncertain", hasAntlrParser: false),
             [Language.Json] = new LanguageInfo(Language.Json, ".json", false, "Json UST | CPG", hasAntlrParser: false),
             [Language.MessagePack] = new LanguageInfo(Language.MessagePack, ".msgpack", false, "MessagePack UST | CPG", hasAntlrParser: false),
@@ -48,7 +50,8 @@ namespace PT.PM.Common
             C,
             CPlusPlus,
             ObjectiveC,
-            Swift
+            Swift,
+            Python3
         };
 
         public static readonly HashSet<Language> SqlLanguages = new HashSet<Language>

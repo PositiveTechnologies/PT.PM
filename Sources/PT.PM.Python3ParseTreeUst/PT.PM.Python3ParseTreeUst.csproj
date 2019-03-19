@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <LangVersion>7.3</LangVersion>
     </PropertyGroup>
     
     <ItemGroup>
@@ -13,6 +15,10 @@
             <Listener>false</Listener>
             <CustomToolNamespace>PT.PM.Python3ParseTreeUst</CustomToolNamespace>
         </Antlr4>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Include="..\antlr-grammars-v4\python3-cs\SuperClasses\BaseLexer.cs" Link="BaseLexer.cs" />
     </ItemGroup>
 
     <ItemGroup>
