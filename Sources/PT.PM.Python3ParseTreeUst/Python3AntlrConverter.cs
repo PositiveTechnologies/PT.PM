@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace PT.PM.Python3ParseTreeUst
 {
-    public class Python3AntlrConverter : AntlrConverter, IPython3ParserVisitor<Ust>
+    public partial class Python3AntlrConverter : AntlrConverter, IPython3ParserVisitor<Ust>
     {
         public override Language Language => Language.Python3;
 
@@ -273,7 +273,7 @@ namespace PT.PM.Python3ParseTreeUst
             var leftContexts = context.testlist_star_expr().children.Where(x => x.GetText() != ",");
             var assignments = new List<AssignmentExpression>(leftContexts.Count());
             var textSpan = context.GetTextSpan();
-            foreach(var leftContext in leftContexts)
+            foreach (var leftContext in leftContexts)
             {
                 assignments.Add(
                     new AssignmentExpression
@@ -282,7 +282,7 @@ namespace PT.PM.Python3ParseTreeUst
                         TextSpan = textSpan
                     });
             }
-            if(context.yield_expr() != null)
+            if (context.yield_expr() != null)
             {
                 var right = Visit(context.yield_expr()).ToExpressionIfRequired();
                 result.Variables.AddRange(assignments.Select(x =>
@@ -294,7 +294,7 @@ namespace PT.PM.Python3ParseTreeUst
             else
             {
                 var rightContexts = context.testlist().children.Where(x => x.GetText() != ",");
-                if(rightContexts.Count() == assignments.Count)
+                if (rightContexts.Count() == assignments.Count)
                 {
                     result.Variables.AddRange(assignments.Select((assign, index) =>
                     {
@@ -313,12 +313,12 @@ namespace PT.PM.Python3ParseTreeUst
 
         public Ust VisitAugassign(Python3Parser.AugassignContext context)
         {
-            if(context.ChildCount == 1)
+            if (context.ChildCount == 1)
             {
                 return Visit(context.GetChild(0));
             }
             ParserRuleContext rightContext = null;
-            if(context.yield_expr() != null)
+            if (context.yield_expr() != null)
             {
                 rightContext = context.yield_expr();
             }
@@ -783,7 +783,7 @@ namespace PT.PM.Python3ParseTreeUst
                 Name = new IdToken(context.NAME().GetText(), context.NAME().GetTextSpan()),
                 TextSpan = context.GetTextSpan()
             };
-            if(context.arglist() != null)
+            if (context.arglist() != null)
             {
                 result.BaseTypes.AddRange(context.arglist().argument().Select(x =>
                     new TypeToken(x.GetText(), x.GetTextSpan())
@@ -793,7 +793,7 @@ namespace PT.PM.Python3ParseTreeUst
             var typeBodyContext = context.suite();
             if (typeBodyContext != null)
             {
-                if(typeBodyContext.simple_stmt() != null)
+                if (typeBodyContext.simple_stmt() != null)
                 {
                     result.TypeMembers.Add(
                         Visit(typeBodyContext.simple_stmt())
@@ -855,44 +855,6 @@ namespace PT.PM.Python3ParseTreeUst
         public Ust VisitYield_arg(Python3Parser.Yield_argContext context)
         {
             return VisitChildren(context);
-        }
-
-        private Expression CreateInvocationExpression(Expression target, ArgsUst args, TextSpan textSpan)
-            => new InvocationExpression(target, args, textSpan);
-
-        private Expression CreateIndexerExpression(Expression target, ArgsUst args, TextSpan textSpan)
-            => new IndexerExpression(target, args, textSpan);
-
-        private Collection CreateParametersCollection(ParserRuleContext context)
-        {
-            var result = new Collection();
-            foreach (var child in context.children.Where(x => x.GetText() != ","))
-            {
-                var visited = Visit(child);
-                if (visited is Collection visitedCollection)
-                {
-                    result.Collection.AddRange(visitedCollection.Collection);
-                }
-                else
-                {
-                    result.Collection.Add(visited);
-                }
-            }
-            return result;
-        }
-        private Ust CreateLambdaMethod(ParserRuleContext bodyContext, Python3Parser.VarargslistContext argsListContext, TextSpan textSpan)
-        {
-            var result = new AnonymousMethodExpression
-            {
-                Body = Visit(bodyContext),
-                TextSpan = textSpan
-            };
-            if (argsListContext != null)
-            {
-                result.Parameters = ((Collection)Visit(argsListContext))
-                .Collection.Cast<ParameterDeclaration>().ToList();
-            }
-            return result;
         }
     }
 }
