@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using PT.PM.Cli.Common;
 using PT.PM.Common;
+using PT.PM.Common.Files;
 using PT.PM.TestUtils;
 
 namespace PT.PM.Cli.Tests
@@ -146,6 +148,68 @@ namespace PT.PM.Cli.Tests
                     Directory.Delete(logPath, true);
                 }
             }
+        }
+
+        [Test]
+        public void CheckCli_LogLevels_CorrectLogMessages()
+        {
+            string logPath = Path.Combine(Path.GetTempPath(), "PT.PM");
+            string fileName = Path.Combine(TestUtility.TestsDataPath, "PatternsWithParseErrors.php");
+            try
+            {
+                if (Directory.Exists(logPath))
+                {
+                    Directory.Delete(logPath, true);
+                }
+
+                ProcessWithLogLevel(fileName, logPath, LogLevel.Off);
+
+                DirectoryAssert.DoesNotExist(logPath);
+
+                ProcessWithLogLevel(fileName, logPath, LogLevel.Info, true);
+
+                DirectoryAssert.DoesNotExist(logPath);
+
+                ProcessWithLogLevel(fileName, logPath, LogLevel.Error);
+
+                string[] outputLogLines = File.ReadAllLines(Path.Combine(logPath, "output.log"));
+
+                foreach (var line in outputLogLines)
+                {
+                    StringAssert.StartsWith("ERROR", line, "All lines should be errors");
+                }
+
+                ProcessWithLogLevel(fileName, logPath, LogLevel.Info);
+                outputLogLines = File.ReadAllLines(Path.Combine(logPath, "output.log"));
+
+                StringAssert.StartsWith("Time elapsed", outputLogLines[outputLogLines.Length - 1]);
+
+                ProcessWithLogLevel(fileName, logPath, LogLevel.Debug);
+                outputLogLines = File.ReadAllLines(Path.Combine(logPath, "output.log"));
+                Assert.IsTrue(outputLogLines.Any(line => line.StartsWith("DEBUG")), "DEBUG messages should be existed");
+            }
+            finally
+            {
+                if (Directory.Exists(logPath))
+                {
+                    Directory.Delete(logPath, true);
+                }
+            }
+        }
+
+        private static void ProcessWithLogLevel(string fileName, string logPath, LogLevel logLevel, bool disableLogToFile = false)
+        {
+            string arguments =
+                $"{TestUtility.PtPmExePath} -f {fileName} --logs-dir \"{logPath}\" --log-level {logLevel}";
+            if (disableLogToFile)
+            {
+                arguments += " --no-log-to-file";
+            }
+            var processor = new Processor("dotnet")
+            {
+                Arguments = arguments
+            };
+            processor.Start();
         }
 
         [Test]

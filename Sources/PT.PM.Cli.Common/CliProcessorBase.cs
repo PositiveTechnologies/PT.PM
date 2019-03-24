@@ -324,7 +324,10 @@ namespace PT.PM.Cli.Common
                 Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
             }
 
-            Logger.LogLevel = parameters.LogLevel.ParseEnum(true, Logger.LogLevel);
+            if (parameters.LogLevel != null)
+            {
+                Logger.LogLevel = parameters.LogLevel.ParseEnum(true, Logger.LogLevel);
+            }
 
             if (parameters.NoLogToFile.HasValue && Logger is NLogLogger nLogLogger)
             {
