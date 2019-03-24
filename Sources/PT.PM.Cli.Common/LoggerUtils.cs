@@ -27,12 +27,12 @@ namespace PT.PM.Cli.Common
 
         public static void LogErrors(this ILogger logger, IEnumerable<Exception> errors)
         {
-            if(errors == null)
+            if (errors == null)
             {
                 return;
             }
 
-            foreach(var error in errors)
+            foreach (Exception error in errors)
             {
                 logger.LogError(error);
             }

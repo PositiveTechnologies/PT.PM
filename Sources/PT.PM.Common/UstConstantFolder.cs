@@ -133,7 +133,7 @@ namespace PT.PM.Common
 
                     FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, leftStringBuilder);
 
-                    if (Logger.IsLogDebugs)
+                    if (Logger.LogLevel >= LogLevel.Debug)
                     {
                         Logger.LogDebug(
                             $"Strings {binaryOperatorExpression} concatenated to \"{leftStringBuilder}\" at {binaryOperatorExpression.TextSpan}");
@@ -148,7 +148,7 @@ namespace PT.PM.Common
                 {
                     FoldResult result = ProcessBinaryExpression(binaryOperatorExpression, leftFold, rightFold, bigInt);
 
-                    if (Logger.IsLogDebugs)
+                    if (Logger.LogLevel >= LogLevel.Debug)
                     {
                         Logger.LogDebug($"Arithmetic expression {binaryOperatorExpression} folded to {bigInt} at {binaryOperatorExpression.TextSpan}");
                     }

@@ -6,7 +6,7 @@ namespace PT.PM.Common
     {
         int ErrorCount { get; }
 
-        bool IsLogDebugs { get; set; }
+        LogLevel LogLevel { get; set; }
 
         string LogsDir { get; set; }
 

@@ -8,7 +8,11 @@ namespace PT.PM.Common
 
         public int ErrorCount => 0;
 
-        public bool IsLogDebugs { get; set; }
+        public LogLevel LogLevel
+        {
+            get => LogLevel.Off;
+            set => throw new InvalidOperationException($"{nameof(LogLevel)} property is read-only for {nameof(DummyLogger)}");
+        }
 
         public string LogsDir { get; set; } = "";
 

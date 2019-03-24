@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using PT.PM.Common.Files;
+using LogLevel = PT.PM.Common.LogLevel;
 
 namespace PT.PM.Cli.Common
 {
@@ -18,6 +19,8 @@ namespace PT.PM.Cli.Common
         private string logPath;
 
         public int ErrorCount => errorCount;
+
+        public LogLevel LogLevel { get; set; } = LogLevel.Info;
 
         public Logger FileLogger { get; } = LogManager.GetLogger("file");
 
@@ -65,28 +68,23 @@ namespace PT.PM.Cli.Common
             }
         }
 
-        public bool IsLogDebugs { get; set; } = false;
-
         public bool IsLogToFile { get; set; } = true;
-
-        public bool IsLogToConsole { get; set; } = true;
 
         public virtual void LogError(Exception ex)
         {
-            var exString = ErrorPrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Full));
-            ErrorsLogger.Error(exString);
+            Interlocked.Increment(ref errorCount);
 
-            if (IsLogToFile)
+            if (LogLevel >= LogLevel.Error)
             {
-                FileLogger.Error(exString);
-            }
+                if (IsLogToFile)
+                {
+                    var exString = ErrorPrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Full));
+                    ErrorsLogger.Error(exString);
+                    FileLogger.Error(exString);
+                }
 
-            if (IsLogToConsole)
-            {
                 ConsoleLogger.Error(MessagePrinter.Print(ex.GetPrettyErrorMessage(FileNameType.Relative)));
             }
-
-            Interlocked.Increment(ref errorCount);
         }
 
         public virtual void LogInfo(object infoObj)
@@ -122,20 +120,20 @@ namespace PT.PM.Cli.Common
 
         public virtual void LogInfo(string message)
         {
-            if (IsLogToFile)
+            if (LogLevel >= LogLevel.Info)
             {
-                FileLogger.Info(message);
-            }
+                if (IsLogToFile)
+                {
+                    FileLogger.Info(message);
+                }
 
-            if (IsLogToConsole)
-            {
                 ConsoleLogger.Info(PrepareForConsole(message));
             }
         }
 
         public virtual void LogDebug(string message)
         {
-            if (IsLogDebugs)
+            if (LogLevel >= LogLevel.Debug)
             {
                 string truncatedMessage = MessagePrinter.Print(message);
 
@@ -144,10 +142,7 @@ namespace PT.PM.Cli.Common
                     FileLogger.Debug(truncatedMessage);
                 }
 
-                if (IsLogToConsole)
-                {
-                    ConsoleLogger.Debug(PrepareForConsole(truncatedMessage));
-                }
+                ConsoleLogger.Debug(PrepareForConsole(truncatedMessage));
             }
         }
 
@@ -193,7 +188,11 @@ namespace PT.PM.Cli.Common
             message.AppendLine($"Pattern   : {patternKey}");
             string text = message.ToString();
 
-            MatchLogger.Info(text);
+            if (LogLevel >= LogLevel.Info && IsLogToFile)
+            {
+                MatchLogger.Info(text);
+            }
+
             LogInfo(text);
         }
     }

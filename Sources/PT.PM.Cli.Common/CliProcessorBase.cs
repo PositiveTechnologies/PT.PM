@@ -162,21 +162,17 @@ namespace PT.PM.Cli.Common
                 workflow.LogsDir = NormalizeLogsDir(parameters.LogsDir);
                 workflow.DumpDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            if (parameters.Silent != null && nLogLogger != null)
+            if (parameters.LogLevel != null)
             {
-                if (parameters.Silent.Value)
-                {
-                    Logger.LogInfo("Silent mode.");
-                }
-                nLogLogger.IsLogToConsole = !parameters.Silent.Value;
+                Logger.LogLevel = parameters.LogLevel.ParseEnum(ContinueWithInvalidArgs, LogLevel.Info, Logger);
             }
-            if (parameters.NoLog != null && nLogLogger != null)
+            if (parameters.NoLogToFile.HasValue && nLogLogger != null)
             {
-                if (parameters.NoLog.Value)
+                nLogLogger.IsLogToFile = !parameters.NoLogToFile.Value;
+                if (parameters.NoLogToFile.Value)
                 {
                     Logger.LogInfo("File log disabled.");
                 }
-                nLogLogger.IsLogToFile = false;
             }
             if (parameters.TempDir != null)
             {
@@ -327,7 +323,13 @@ namespace PT.PM.Cli.Common
             {
                 Logger.LogsDir = NormalizeLogsDir(parameters.LogsDir);
             }
-            Logger.IsLogDebugs = parameters.IsLogDebugs ?? false;
+
+            Logger.LogLevel = parameters.LogLevel.ParseEnum(true, Logger.LogLevel);
+
+            if (parameters.NoLogToFile.HasValue && Logger is NLogLogger nLogLogger)
+            {
+                nLogLogger.IsLogToFile = !parameters.NoLogToFile.Value;
+            }
         }
 
         protected virtual TWorkflowResult RunWorkflow(TParameters parameters)

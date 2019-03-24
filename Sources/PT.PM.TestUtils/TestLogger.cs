@@ -20,6 +20,8 @@ namespace PT.PM.TestUtils
 
         public int ErrorCount => Errors.Count;
 
+        public LogLevel LogLevel { get; set; }
+
         public int InfoMessageCount => infoMessages.Count;
 
         public List<string> Errors { get; } = new List<string>();
@@ -27,8 +29,6 @@ namespace PT.PM.TestUtils
         public bool LogToConsole { get; set; }
 
         public string ErrorsString => string.Join(", " + Environment.NewLine, Errors);
-
-        public bool IsLogDebugs { get; set; } = true;
 
         public string LogsDir { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
 
@@ -94,7 +94,7 @@ namespace PT.PM.TestUtils
 
         public void LogDebug(string message)
         {
-            if (!IsLogDebugs)
+            if (LogLevel < LogLevel.Debug)
             {
                 return;
             }
