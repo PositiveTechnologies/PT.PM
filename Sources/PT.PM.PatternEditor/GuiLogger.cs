@@ -12,6 +12,8 @@ namespace PT.PM.PatternEditor
     {
         public int ErrorCount { get; private set; }
 
+        public LogLevel LogLevel { get; set; }
+
         internal event EventHandler<string> LogEvent;
 
         internal readonly ObservableCollection<ErrorViewModel> ErrorsCollection;
@@ -19,8 +21,6 @@ namespace PT.PM.PatternEditor
         internal readonly ObservableCollection<MatchResultViewModel> MatchResultsCollection;
 
         internal bool IsPatternLogger { get; }
-
-        public bool IsLogDebugs { get; set; }
 
         public string LogsDir { get; set; } = "";
 
@@ -53,7 +53,7 @@ namespace PT.PM.PatternEditor
 
         public void LogDebug(string message)
         {
-            if (IsLogDebugs)
+            if (LogLevel >= LogLevel.Debug)
             {
                 LogEvent?.Invoke(this, message);
             }
@@ -81,7 +81,7 @@ namespace PT.PM.PatternEditor
             }
             LogEvent?.Invoke(this, "Error: " + message);
         }
-        
+
         public void LogInfo(object infoObj)
         {
             if (infoObj is MatchResult matchResult && MatchResultsCollection != null)
