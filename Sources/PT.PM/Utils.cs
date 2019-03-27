@@ -14,7 +14,7 @@ using PT.PM.JavaParseTreeUst;
 using PT.PM.JavaParseTreeUst.Converter;
 using PT.PM.PhpParseTreeUst;
 using PT.PM.SqlParseTreeUst;
-using PT.PM.Python3ParseTreeUst;
+using PT.PM.PythonParseTreeUst;
 
 namespace PT.PM
 {
@@ -32,7 +32,7 @@ namespace PT.PM
             LanguageUtils.RegisterLexerParserConverter(Language.Java, JavaAntlrLexer.Create, JavaAntlrParser.Create, JavaAntlrParseTreeConverter.Create);
             LanguageUtils.RegisterLexerParserConverter(Language.Php, PhpAntlrLexer.Create, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
             LanguageUtils.RegisterLexerParserConverter(Language.Html, PhpAntlrLexer.Create, PhpAntlrParser.Create, PhpAntlrParseTreeConverter.Create);
-            LanguageUtils.RegisterLexerParserConverter(Language.Python3, Python3AntlrLexer.Create, Python3AntlrParser.Create, Python3AntlrConverter.Create);
+            LanguageUtils.RegisterLexerParserConverter(Language.Python, PythonAntlrLexer.Create, PythonAntlrParser.Create, PythonAntlrConverter.Create);
 
             LanguageUtils.RegisterLexerParserConverter(Language.PlSql, PlSqlAntlrLexer.Create, PlSqlAntlrParser.Create, PlSqlAntlrConverter.Create);
             LanguageUtils.RegisterLexerParserConverter(Language.TSql, TSqlAntlrLexer.Create, TSqlAntlrParser.Create, TSqlAntlrConverter.Create);
