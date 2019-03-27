@@ -1,4 +1,5 @@
-﻿using PT.PM.Common.Nodes.Tokens;
+﻿using PT.PM.Common;
+using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;
@@ -9,12 +10,14 @@ namespace PT.PM.Patterns.PatternsRepository
     {
         public IEnumerable<PatternRoot> CreatePythonPatterns()
         {
+            var pythonLang = new HashSet<Language>() { Language.Python };
             var patterns = new List<PatternRoot>
             {
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),
                     DebugInfo = "HMAC weak hash",
+                    Languages = pythonLang,
                     Node = new PatternAssignmentExpression
                     {
                         Left = new PatternAny(),
@@ -46,6 +49,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Key = patternIdGenerator.NextId(),
                     DebugInfo = "Hardcoded initialization vector",
+                    Languages = pythonLang,
                     Node = new PatternInvocationExpression
                     {
                         Target = new PatternMemberReferenceExpression
@@ -56,7 +60,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Arguments = new PatternArgs(new PatternAny(),
                         new PatternMultipleExpressions(),
                         new PatternAssignmentExpression(
-                            new PatternIdRegexToken("^(iv)"),
+                            new PatternIdRegexToken("(?i)iv"),
                             new PatternStringRegexLiteral(
                                 ".+")))
                     }
@@ -65,6 +69,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Key = patternIdGenerator.NextId(),
                     DebugInfo = "Logging to STD output",
+                    Languages = pythonLang,
                     Node = new PatternInvocationExpression
                     {
                         Target = new PatternMemberReferenceExpression
@@ -82,6 +87,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Key = patternIdGenerator.NextId(),
                     DebugInfo = "XSS protection off",
+                    Languages = pythonLang,
                     Node = new PatternAssignmentExpression
                     {
                         Left = new PatternIdToken("SECURE_BROWSER_XSS_FILTER"),
@@ -92,6 +98,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Key = patternIdGenerator.NextId(),
                     DebugInfo = "Insecure connection protocol",
+                    Languages = pythonLang,
                     Node = new PatternInvocationExpression
                     {
                         Target = new PatternMemberReferenceExpression
@@ -111,18 +118,19 @@ namespace PT.PM.Patterns.PatternsRepository
                 {
                     Key = patternIdGenerator.NextId(),
                     DebugInfo = "Insecure cipher key export",
-                    Node = new PatternMemberReferenceExpression
+                    Languages = pythonLang,
+                    Node = new PatternInvocationExpression
                     {
-                        Target = new PatternIdRegexToken(),
-                        Name = new PatternInvocationExpression
+                        Target = new PatternMemberReferenceExpression
                         {
-                            Target = new PatternIdToken("exportKey"),
-                            Arguments = new PatternArgs(new PatternMultipleExpressions(),
-                            new PatternAssignmentExpression(
-                                new PatternIdToken("format"),
-                                new PatternStringLiteral("PEM")),
-                            new PatternMultipleExpressions())
-                        }
+                            Target = new PatternAny(),
+                            Name =  new PatternIdToken("exportKey")
+                        },
+                        Arguments = new PatternArgs(new PatternMultipleExpressions(),
+                                new PatternAssignmentExpression(
+                                    new PatternIdToken("format"),
+                                    new PatternStringLiteral("PEM")),
+                                new PatternMultipleExpressions())
                     }
                 }
             };
