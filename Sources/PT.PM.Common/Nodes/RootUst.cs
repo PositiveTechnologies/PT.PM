@@ -14,15 +14,18 @@ namespace PT.PM.Common.Nodes
         private Language[] sublanguages;
 
         [Key(UstFieldOffset)]
-        public Language Language { get; set; }
+        public int FileKey { get; set; }
 
         [Key(UstFieldOffset + 1)]
-        public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
+        public Language Language { get; set; }
 
         [Key(UstFieldOffset + 2)]
-        public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
+        public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
 
         [Key(UstFieldOffset + 3)]
+        public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
+
+        [Key(UstFieldOffset + 4)]
         public int LineOffset { get; set; }
 
         [JsonProperty("SourceCodeFile"), JsonIgnore, IgnoreMember] // Workaround for correct deserialization of external jsons
