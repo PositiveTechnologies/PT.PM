@@ -65,9 +65,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Cli.Common", "PT.PM.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.Net.Tests", "PT.PM.Net.Tests\PT.PM.Net.Tests.csproj", "{B80D68EE-897B-44FA-A319-81607B366E8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.MySqlParseTreeUst", "PT.PM.MySqlParseTreeUst\PT.PM.MySqlParseTreeUst.csproj", "{90E5E327-7246-410D-9430-46DD65909A24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.MySqlParseTreeUst", "PT.PM.MySqlParseTreeUst\PT.PM.MySqlParseTreeUst.csproj", "{90E5E327-7246-410D-9430-46DD65909A24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.Python3ParseTreeUst", "PT.PM.Python3ParseTreeUst\PT.PM.Python3ParseTreeUst.csproj", "{607607C2-9880-42D4-B600-B12F50016647}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PT.PM.PythonParseTreeUst", "PT.PM.PythonParseTreeUst\PT.PM.PythonParseTreeUst.csproj", "{607607C2-9880-42D4-B600-B12F50016647}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PT.PM.PythonParseTreeUst.Tests", "PT.PM.PythonParseTreeUst.Tests\PT.PM.PythonParseTreeUst.Tests.csproj", "{EE8E6991-8E67-4A88-94D8-4066F70ABE74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -191,6 +193,10 @@ Global
 		{607607C2-9880-42D4-B600-B12F50016647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{607607C2-9880-42D4-B600-B12F50016647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{607607C2-9880-42D4-B600-B12F50016647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE8E6991-8E67-4A88-94D8-4066F70ABE74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE8E6991-8E67-4A88-94D8-4066F70ABE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE8E6991-8E67-4A88-94D8-4066F70ABE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE8E6991-8E67-4A88-94D8-4066F70ABE74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
