@@ -29,8 +29,7 @@ namespace PT.PM
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
-        private static readonly object lockObj = new object();
-        private int currentId;
+        private int currentFileId;
 
         protected ILogger logger = DummyLogger.Instance;
 
@@ -298,10 +297,10 @@ namespace PT.PM
                     converter.AnalyzedLanguages = AnalyzedLanguages;
                     result = converter.Convert(parseTree);
 
-                    lock (lockObj)
-                    {
-                        result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
-                    }
+                    result.FileKey = Interlocked.Increment(ref currentFileId);
+
+                    int currentId = 0;
+                    result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
