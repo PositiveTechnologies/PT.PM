@@ -8,10 +8,11 @@ using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Linq;
+using PythonParseTree;
 
-namespace PT.PM.Python3ParseTreeUst
+namespace PT.PM.PythonParseTreeUst
 {
-    public partial class Python3AntlrConverter
+    public partial class PythonAntlrConverter
     {
         public override Ust VisitTerminal(ITerminalNode node)
         {
@@ -20,7 +21,8 @@ namespace PT.PM.Python3ParseTreeUst
             {
                 return new BooleanLiteral(text == "True", node.GetTextSpan());
             }
-            else if (text == "None")
+            
+            if (text == "None")
             {
                 return new NullLiteral(node.GetTextSpan());
             }
@@ -51,7 +53,7 @@ namespace PT.PM.Python3ParseTreeUst
             return result;
         }
 
-        private Ust CreateLambdaMethod(ParserRuleContext bodyContext, Python3Parser.VarargslistContext argsListContext, TextSpan textSpan)
+        private Ust CreateLambdaMethod(ParserRuleContext bodyContext, PythonParser.VarargslistContext argsListContext, TextSpan textSpan)
         {
             var result = new AnonymousMethodExpression
             {
