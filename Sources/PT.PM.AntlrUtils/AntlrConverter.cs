@@ -263,9 +263,9 @@ namespace PT.PM.AntlrUtils
             return CreateBinaryOperatorExpression(left, operatorTerminal.GetText(), operatorTerminal.GetTextSpan(),  right);
         }
 
-        private Expression CreateBinaryOperatorExpression(ParserRuleContext left, string operatorText, TextSpan operatorTextSpan, ParserRuleContext right)
+        protected Expression CreateBinaryOperatorExpression(ParserRuleContext left, string operatorText, TextSpan operatorTextSpan, ParserRuleContext right)
         {
-            BinaryOperator binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[operatorText];
+            BinaryOperator binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[operatorText.ToLowerInvariant()];
 
             var expression0 = (Expression)Visit(left);
             var expression1 = (Expression)Visit(right);
@@ -295,7 +295,8 @@ namespace PT.PM.AntlrUtils
                 {
                     result = new IdToken(text.Substring(1), textSpan);
                 }
-                else if (text.StartsWith("\"") || text.StartsWith("["))
+                else if ((text.StartsWith("\"") || text.StartsWith("["))
+                    && text.Length > 1)
                 {
                     result = new IdToken(text.Substring(1, text.Length - 2), textSpan);
                 }

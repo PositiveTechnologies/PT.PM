@@ -35,14 +35,8 @@ namespace PT.PM.Common.Nodes
                 return null;
             }
 
-            Expression result = ust as Expression;
-
-            if (result == null)
-            {
-                result = new WrapperExpression(ust);
-            }
-
-            return result;
+            return ust as Expression 
+                   ?? new WrapperExpression(ust);
         }
 
         public static Expression GetArgWithoutModifier(Expression arg)
