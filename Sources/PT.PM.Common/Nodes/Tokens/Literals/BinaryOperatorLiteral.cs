@@ -52,7 +52,9 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ["instanceof"] = BinaryOperator.InstanceOf,
 
             //Python
-            ["IS"] = BinaryOperator.Is
+            ["is"] = BinaryOperator.Is,
+            ["~"] = BinaryOperator.Invert,
+            ["//"] = BinaryOperator.Divide
         };
 
         [Key(UstFieldOffset)]

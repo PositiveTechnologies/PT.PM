@@ -44,6 +44,7 @@
         InstanceOf,       // instanceof
 
         //Python
-        Is                // IS
+        Is,               // IS
+        Invert,           // ~
     }
 }
