@@ -7,18 +7,18 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <Antlr4 Include="..\antlr-grammars-v4\python-cs\PythonParser.g4" Link="PythonParser.g4">
+        <Antlr4 Include="..\antlr-grammars-v4\python\PythonParser.g4" Link="PythonParser.g4">
             <Listener>false</Listener>
             <CustomToolNamespace>PythonParseTree</CustomToolNamespace>
         </Antlr4>
-        <Antlr4 Include="..\antlr-grammars-v4\python-cs\PythonLexer.g4" Link="PythonLexer.g4">
+        <Antlr4 Include="..\antlr-grammars-v4\python\PythonLexer.g4" Link="PythonLexer.g4">
             <Listener>false</Listener>
             <CustomToolNamespace>PythonParseTree</CustomToolNamespace>
         </Antlr4>
     </ItemGroup>
     
     <ItemGroup>
-      <Compile Include="..\antlr-grammars-v4\python-cs\SuperClasses\BaseLexer.cs" Link="BaseLexer.cs" />
+      <Compile Include="..\antlr-grammars-v4\python\CSharp\BaseLexer.cs" Link="BaseLexer.cs" />
     </ItemGroup>
 
     <ItemGroup>
