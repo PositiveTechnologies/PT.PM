@@ -282,7 +282,7 @@ namespace PT.PM.PythonParseTreeUst
             {
                 return Visit(context.GetChild(0));
             }
-            var typeContext = context.test()[0];
+            var typeContext = context.test();
             var result = new VariableDeclarationExpression
             {
                 Type = new TypeToken(typeContext.GetText(), typeContext.GetTextSpan()),
@@ -810,6 +810,7 @@ namespace PT.PM.PythonParseTreeUst
             return VisitChildren(context);
         }
 
+        //TODO: handle dictionary initializers
         public Ust VisitDictorsetmaker(PythonParser.DictorsetmakerContext context)
         {
             return VisitChildren(context);
