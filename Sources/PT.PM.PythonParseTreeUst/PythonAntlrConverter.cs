@@ -719,7 +719,9 @@ namespace PT.PM.PythonParseTreeUst
         {
             if (context.op != null)
             {
-                return CreateBinaryOperatorExpression(context.expr()[0], context.op, context.expr()[0]);
+                return context.ChildCount == 3
+                    ? CreateBinaryOperatorExpression(context.expr(0), context.op, context.expr(1))
+                    : CreateUnaryOperatorExpression(context.expr(0), context.op);
             }
             return VisitChildren(context);
         }

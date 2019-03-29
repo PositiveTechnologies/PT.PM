@@ -278,6 +278,20 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
+        protected Expression CreateUnaryOperatorExpression(ParserRuleContext operand, IToken operatorTerminal, bool prefix = true)
+        {
+            UnaryOperator op = prefix
+                ? UnaryOperatorLiteral.PrefixTextUnaryOperator[operatorTerminal.Text]
+                : UnaryOperatorLiteral.PostfixTextUnaryOperator[operatorTerminal.Text];
+            var result = new UnaryOperatorExpression
+            {
+                Operator = new UnaryOperatorLiteral(op, operatorTerminal.GetTextSpan()),
+                Expression = Visit(operand).ToExpressionIfRequired()
+            };
+            result.TextSpan = result.Expression.TextSpan.Union(result.Operator.TextSpan);
+            return result;
+        }
+
 
         protected Token ExtractLiteral(IToken token)
         {
