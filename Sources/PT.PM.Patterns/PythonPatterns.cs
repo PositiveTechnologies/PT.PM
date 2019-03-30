@@ -10,7 +10,7 @@ namespace PT.PM.Patterns.PatternsRepository
     {
         public IEnumerable<PatternRoot> CreatePythonPatterns()
         {
-            var pythonLang = new HashSet<Language>() { Language.Python };
+            var pythonLang = new HashSet<Language> { Language.Python };
             var patterns = new List<PatternRoot>
             {
                 new PatternRoot
@@ -31,6 +31,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         }
                     }
                 },
+
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),
@@ -45,6 +46,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Right = new PatternStringRegexLiteral(".+")
                     }
                 },
+
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),
@@ -61,10 +63,10 @@ namespace PT.PM.Patterns.PatternsRepository
                         new PatternMultipleExpressions(),
                         new PatternAssignmentExpression(
                             new PatternIdRegexToken("(?i)iv"),
-                            new PatternStringRegexLiteral(
-                                ".+")))
+                            new PatternStringRegexLiteral()))
                     }
                 },
+
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),
@@ -83,6 +85,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Arguments = new PatternArgs(new PatternMultipleExpressions())
                     }
                 },
+
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),
@@ -94,6 +97,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         Right = new PatternBooleanLiteral(false)
                     }
                 },
+
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),
@@ -114,6 +118,7 @@ namespace PT.PM.Patterns.PatternsRepository
                         )
                     }
                 },
+
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),

@@ -8,8 +8,11 @@ namespace PT.PM.PythonParseTreeUst
     public class PythonAntlrParser : AntlrParser
     {
         public override Language Language => Language.Python;
+
         public override string[] RuleNames => PythonParser.ruleNames;
+
         protected override string ParserSerializedATN => PythonParser._serializedATN;
+
         protected override int CommentsChannel => PythonLexer.Hidden;
 
         protected override Parser InitParser(ITokenStream inputStream)
