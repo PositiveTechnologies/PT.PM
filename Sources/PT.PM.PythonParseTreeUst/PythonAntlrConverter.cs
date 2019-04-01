@@ -14,7 +14,6 @@ using PT.PM.Common.Nodes.TypeMembers;
 using PythonParseTree;
 using System.Collections.Generic;
 using System.Linq;
-using Antlr4.Runtime.Tree;
 
 namespace PT.PM.PythonParseTreeUst
 {
@@ -305,14 +304,17 @@ namespace PT.PM.PythonParseTreeUst
             }
             else
             {
-                var rightContexts = context.testlist().children.Where(x => x.GetText() != ",");
-                if (rightContexts.Count() == assignments.Count)
+                if (context.testlist() != null)
                 {
-                    result.Variables.AddRange(assignments.Select((assign, index) =>
+                    var rightContexts = context.testlist().children.Where(x => x.GetText() != ",");
+                    if (rightContexts.Count() == assignments.Count)
                     {
-                        assign.Right = Visit(rightContexts.ElementAt(index)).ToExpressionIfRequired();
-                        return assign;
-                    }));
+                        result.Variables.AddRange(assignments.Select((assign, index) =>
+                        {
+                            assign.Right = Visit(rightContexts.ElementAt(index)).ToExpressionIfRequired();
+                            return assign;
+                        }));
+                    }
                 }
             }
             return result;
@@ -761,6 +763,17 @@ namespace PT.PM.PythonParseTreeUst
         {
             if (context.ChildCount == 3)
             {
+                if (context.GetChild(0).GetText() == "(")
+                {
+                    var visited = Visit(context.GetChild(1));
+                    return new ArrayCreationExpression
+                    {
+                        Initializers = visited is MultichildExpression multichild
+                            ? UstUtils.ExtractMultiChild(multichild)
+                            : new List<Expression> { visited.ToExpressionIfRequired() }
+                    };
+                }
+
                 return Visit(context.GetChild(1));
             }
             return VisitChildren(context);
