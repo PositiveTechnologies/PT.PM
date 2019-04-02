@@ -846,6 +846,7 @@ namespace PT.PM.PythonParseTreeUst
             var result = new TypeDeclaration
             {
                 Name = new IdToken(context.name().GetText(), context.name().GetTextSpan()),
+                Type = new TypeTypeLiteral { TypeType = TypeType.Class },
                 TextSpan = context.GetTextSpan()
             };
             if (context.arglist() != null)
@@ -866,10 +867,22 @@ namespace PT.PM.PythonParseTreeUst
                 }
                 else
                 {
-                    result.TypeMembers.AddRange(typeBodyContext.stmt().Select(Visit));
+                    var typeMembers = typeBodyContext.stmt().Select(Visit);
+                    typeMembers = typeMembers.Select(ConvertToTypeMember);
+                    result.TypeMembers.AddRange(typeMembers);
                 }
             }
             return result;
+        }
+
+        private EntityDeclaration ConvertToTypeMember(Ust node)
+        {
+            if(node is ExpressionStatement exprStmt 
+                && exprStmt.Expression is VariableDeclarationExpression variableDeclaration)
+            {
+                return new FieldDeclaration(variableDeclaration.Type, variableDeclaration.Variables, variableDeclaration.TextSpan);
+            }
+            return (EntityDeclaration)node;
         }
 
         public Ust VisitArglist(PythonParser.ArglistContext context)
