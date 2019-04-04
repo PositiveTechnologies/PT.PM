@@ -35,6 +35,7 @@ namespace PT.PM.Common.Nodes
         UsingDeclaration,
 
         // Specific
+        Attribute,
         ArrayPatternExpression,
         AsExpression,
         CheckedExpression,
