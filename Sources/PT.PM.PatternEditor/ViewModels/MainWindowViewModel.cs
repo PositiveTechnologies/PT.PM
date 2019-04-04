@@ -267,7 +267,7 @@ namespace PT.PM.PatternEditor
                     }
 
                     var textSpan = TextSpan.FromBounds(start, end);
-                    var lineColumnTextSpan = source.GetLineColumnTextSpan(textSpan);
+                    var lineColumnTextSpan = source?.GetLineColumnTextSpan(textSpan);
                     SourceTextBoxPosition = $"Range: {textSpan}; LineColumn: {lineColumnTextSpan}";
                 }
             }
