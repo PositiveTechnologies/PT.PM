@@ -8,7 +8,7 @@ using MessagePack;
 namespace PT.PM.Common.Nodes.GeneralScope
 {
     [MessagePackObject]
-    public class TypeDeclaration : EntityDeclaration
+    public class TypeDeclaration : EntityDeclaration, IAttributable
     {
         [Key(EntityFieldOffset)]
         public TypeTypeLiteral Type { get; set; }
@@ -18,6 +18,9 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         [Key(EntityFieldOffset + 2)]
         public List<Ust> TypeMembers { get; set; } = new List<Ust>();
+
+        [Key(EntityFieldOffset + 3)]
+        public List<Attribute> Attributes { get; set; } = new List<Attribute>();
 
         public TypeDeclaration(TypeTypeLiteral type, IdToken name, IEnumerable<Ust> typeMembers,
              TextSpan textSpan) : base(name, textSpan)
@@ -44,6 +47,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
         {
             var result = new List<Ust>();
             result.AddRange(base.GetChildren());
+            result.AddRange(Attributes);
             result.Add(Type);
             result.AddRange(BaseTypes);
             result.AddRange(TypeMembers);
@@ -55,7 +59,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
             string baseTypesString = BaseTypes.Count > 0
                 ? " : " + string.Join(", ", BaseTypes) + " "
                 : " ";
-            return $"{Name}{baseTypesString}{{{string.Join(" ", TypeMembers)}}}";
+            return $"{string.Join(" ", Attributes)} {Name}{baseTypesString}{{{string.Join(" ", TypeMembers)}}}";
         }
     }
 }

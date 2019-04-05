@@ -52,12 +52,32 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitDecorator(PythonParser.DecoratorContext context)
         {
-            return VisitChildren(context);
+            var target = Visit(context.dotted_name()).ToExpressionIfRequired();
+            var textSpan = context.GetTextSpan();
+            if (context.arglist() != null)
+            {
+                return new Attribute(
+                    new InvocationExpression
+                    {
+                        Target = target,
+                        Arguments = (ArgsUst)Visit(context.arglist()),
+                        TextSpan = textSpan
+                    },
+                    textSpan);
+            }
+            return new Attribute(target, textSpan);
         }
 
         public Ust VisitDecorated(PythonParser.DecoratedContext context)
         {
-            return VisitChildren(context);
+            var result = Visit(context.GetChild(context.ChildCount - 1));
+            if (context.ChildCount > 1 && result is IAttributable attributable)
+            {
+                attributable.Attributes = context.children
+                    .Take(context.ChildCount - 1)
+                    .Select(Visit).Cast<Attribute>().ToList();
+            }
+            return result;
         }
 
         public Ust VisitFuncdef(PythonParser.FuncdefContext context)
@@ -868,7 +888,7 @@ namespace PT.PM.PythonParseTreeUst
                 else
                 {
                     var typeMembers = typeBodyContext.stmt().Select(Visit);
-                    typeMembers = typeMembers.Select(ConvertToTypeMember);
+                    typeMembers = typeMembers.Select(ConvertToTypeMember).Where(x => x != null);
                     result.TypeMembers.AddRange(typeMembers);
                 }
             }
@@ -877,12 +897,18 @@ namespace PT.PM.PythonParseTreeUst
 
         private EntityDeclaration ConvertToTypeMember(Ust node)
         {
+            if (node == null)
+            {
+                return null;
+            }
             if(node is ExpressionStatement exprStmt 
                 && exprStmt.Expression is VariableDeclarationExpression variableDeclaration)
             {
                 return new FieldDeclaration(variableDeclaration.Type, variableDeclaration.Variables, variableDeclaration.TextSpan);
             }
-            return (EntityDeclaration)node;
+            return node is EntityDeclaration entityDeclaration
+                ? entityDeclaration
+                : new StatementDeclaration(node.ToStatementIfRequired(), node.TextSpan);
         }
 
         public Ust VisitArglist(PythonParser.ArglistContext context)

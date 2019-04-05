@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace PT.PM.Common.Nodes.TypeMembers
 {
     [MessagePackObject]
-    public class MethodDeclaration : EntityDeclaration
+    public class MethodDeclaration : EntityDeclaration, IAttributable
     {
         [Key(EntityFieldOffset)]
         public TypeToken ReturnType { get; set; }
@@ -18,6 +18,9 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         [Key(EntityFieldOffset + 2)]
         public BlockStatement Body { get; set; }
+
+        [Key(EntityFieldOffset + 3)]
+        public List<Attribute> Attributes { get; set; } = new List<Attribute>();
 
         [IgnoreMember, JsonIgnore]
         public string Signature => UstUtils.GenerateSignature(Name.TextValue, Parameters);
@@ -38,6 +41,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         public override Ust[] GetChildren()
         {
             var result = new List<Ust>(base.GetChildren());
+            result.AddRange(Attributes);
             result.Add(ReturnType);
             result.AddRange(Parameters);
             result.Add(Body);
@@ -46,7 +50,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
 
         public override string ToString()
         {
-            return $"{ReturnType.ToStringWithTrailSpace()}{Name}({(string.Join(", ", Parameters))})\n{{\n{Body.ToStringWithTrailNL()}}}";
+            return $"{string.Join(" ", Attributes)}{ReturnType.ToStringWithTrailSpace()}{Name}({(string.Join(", ", Parameters))})\n{{\n{Body.ToStringWithTrailNL()}}}";
         }
     }
 }
