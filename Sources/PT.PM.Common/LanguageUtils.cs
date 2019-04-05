@@ -122,7 +122,17 @@ namespace PT.PM.Common
 
         public static Language[] GetLanguagesByExtension(string extension)
         {
+            if (extension is null)
+            {
+                return ArrayUtils<Language>.EmptyArray;
+            }
+
             var result = new List<Language>();
+
+            if (!extension.StartsWith("."))
+            {
+                extension = "." + extension;
+            }
 
             foreach (var languageInfo in LanguageInfos)
             {

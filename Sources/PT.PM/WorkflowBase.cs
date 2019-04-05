@@ -344,11 +344,6 @@ namespace PT.PM
                     }
                 }
 
-                if (result == null)
-                {
-                    return null;
-                }
-
                 DumpUst(result);
                 UstConverted?.Invoke(this, result);
 
