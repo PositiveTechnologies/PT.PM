@@ -5,9 +5,11 @@ using PT.PM.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Statements;
 using PT.PM.Matching;
 
 namespace PT.PM.TestUtils
@@ -128,6 +130,12 @@ namespace PT.PM.TestUtils
             workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
+        }
+
+        public static string[] GetSerializedFileNames(this TestLogger logger)
+        {
+            return logger.ProgressEventArgses.Where(arg => arg.Message == Utils.FileSerializedMessage)
+                .Select(arg => arg.CurrentFile).ToArray();
         }
 
         /// <summary>
