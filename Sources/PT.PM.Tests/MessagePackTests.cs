@@ -78,11 +78,8 @@ namespace PT.PM.Tests
             byte errorValue = 123;
 
             var serializedFiles = new List<string>();
-            foreach (string file in files)
+            foreach (string serializedFile in logger.GetSerializedFileNames())
             {
-                string shortFileName = Path.GetFileName(file) + ".ust." + ext;
-                string serializedFile = Path.Combine(TestUtility.TestsOutputPath, shortFileName);
-
                 if (damaged || incorrectFilePath)
                 {
                     byte[] bytes = File.ReadAllBytes(serializedFile);

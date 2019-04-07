@@ -105,15 +105,12 @@ namespace PT.PM.Tests
             LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
 
             var jsonFiles = new List<string>();
-            foreach (string file in files)
+            foreach (string jsonFile in logger.GetSerializedFileNames())
             {
-                string shortFileName = Path.GetFileName(file) + ".ust.json";
-                string jsonFile = Path.Combine(TestUtility.TestsOutputPath, shortFileName);
-
-                if (file.Contains("preprocessed.php") || checkStrict)
+                if (jsonFile.Contains("preprocessed.php") || checkStrict)
                 {
                     string json = File.ReadAllText(jsonFile);
-                    if (file.Contains("preprocessed.php"))
+                    if (jsonFile.Contains("preprocessed.php"))
                     {
                         string preprocessedTextSpanString, originTextSpanString;
 
