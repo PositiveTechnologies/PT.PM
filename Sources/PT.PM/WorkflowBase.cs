@@ -56,6 +56,12 @@ namespace PT.PM
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
 
+        public int CurrentFileId
+        {
+            get => currentFileId;
+            set => currentFileId = value;
+        }
+
         public ILogger Logger
         {
             get => logger;
@@ -430,6 +436,8 @@ namespace PT.PM
                     byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, CompressedSerialization, logger);
                     FileExt.WriteAllBytes(dumpName, bytes);
                 }
+
+                Logger.LogInfo(new ProgressEventArgs(0.0, dumpName, Utils.FileSerializedMessage));
             }
         }
 
