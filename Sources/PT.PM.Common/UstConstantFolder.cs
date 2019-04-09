@@ -101,12 +101,11 @@ namespace PT.PM.Common
             var textSpans = new List<TextSpan>(tupleCreateExpression.Initializers.Count);
             foreach(var initializer in tupleCreateExpression.Initializers)
             {
-                if(!(initializer is StringLiteral stringLiteral))
+                if(initializer is StringLiteral stringLiteral)
                 {
-                    continue;
+                    sb.Append(stringLiteral.Text);
+                    textSpans.Add(stringLiteral.TextSpan);
                 }
-                sb.Append(stringLiteral.Text);
-                textSpans.Add(stringLiteral.TextSpan);
             }
             return sb.Length > 0
                 ? new FoldResult(sb.ToString(), textSpans)

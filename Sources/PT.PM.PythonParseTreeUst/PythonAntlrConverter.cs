@@ -1,5 +1,6 @@
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
@@ -22,7 +23,6 @@ namespace PT.PM.PythonParseTreeUst
         public override Language Language => Language.Python;
 
         public static PythonAntlrConverter Create() => new PythonAntlrConverter();
-
 
         public Ust VisitRoot(PythonParser.RootContext context)
         {
@@ -242,10 +242,12 @@ namespace PT.PM.PythonParseTreeUst
                     var visitedLeft = (Expression)Visit(leftContext.GetChild(i));
                     Expression visitedRight;
                     var rightContextChild = rightContext.GetChild(i);
-                    var rightContextChildText = rightContextChild.GetText();
-                    if (rightContextChildText == "True" || rightContextChildText == "False") // check cause False and True is not reserved words in Python2
+                    var rightContextChildType = ((rightContextChild as ParserRuleContext)?.Start as IToken)?.Type ?? 0;
+
+                    if (rightContextChildType == PythonLexer.TRUE 
+                        || rightContextChildType == PythonLexer.FALSE) // check cause False and True is not reserved words in Python2
                     {
-                        visitedRight = new BooleanLiteral(rightContextChildText == "True",
+                        visitedRight = new BooleanLiteral(rightContextChildType == PythonLexer.TRUE,
                             ((ParserRuleContext)rightContextChild).GetTextSpan());
                     }
                     else
@@ -276,7 +278,7 @@ namespace PT.PM.PythonParseTreeUst
                 {
                     TextSpan = rightContext.GetTextSpan(),
                     Initializers = rightContext.children
-                    .Where(x => x.GetText() != ",")
+                    .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA)
                     .Select(x => (Expression)Visit(x)).ToList()
                 };
             }
@@ -301,7 +303,8 @@ namespace PT.PM.PythonParseTreeUst
                 Type = new TypeToken(typeContext.GetText(), typeContext.GetTextSpan()),
                 TextSpan = context.GetTextSpan()
             };
-            var leftContexts = context.testlist_star_expr().children.Where(x => x.GetText() != ",");
+            var leftContexts = context.testlist_star_expr().children
+                .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA);
             var assignments = new List<AssignmentExpression>(leftContexts.Count());
             var textSpan = context.GetTextSpan();
             foreach (var leftContext in leftContexts)
@@ -326,7 +329,8 @@ namespace PT.PM.PythonParseTreeUst
             {
                 if (context.testlist() != null)
                 {
-                    var rightContexts = context.testlist().children.Where(x => x.GetText() != ",");
+                    var rightContexts = context.testlist().children
+                        .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA);
                     if (rightContexts.Count() == assignments.Count)
                     {
                         result.Variables.AddRange(assignments.Select((assign, index) =>
@@ -901,7 +905,7 @@ namespace PT.PM.PythonParseTreeUst
             {
                 return null;
             }
-            if(node is ExpressionStatement exprStmt 
+            if (node is ExpressionStatement exprStmt
                 && exprStmt.Expression is VariableDeclarationExpression variableDeclaration)
             {
                 return new FieldDeclaration(variableDeclaration.Type, variableDeclaration.Variables, variableDeclaration.TextSpan);
@@ -923,7 +927,7 @@ namespace PT.PM.PythonParseTreeUst
         public Ust VisitArgument(PythonParser.ArgumentContext context)
         {
             if (context.ChildCount == 3
-                && context.GetChild(1).GetText() == "=")
+                && (context.GetChild(1) as ITerminalNode)?.Symbol.Type == PythonLexer.ASSIGN)
             {
                 return new AssignmentExpression
                 {
