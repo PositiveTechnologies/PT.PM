@@ -26,7 +26,9 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitRoot(PythonParser.RootContext context)
         {
-            root.Node = VisitChildren(context);
+            root.Node = context.ChildCount == 2
+                ? Visit(context.GetChild(0))
+                : new BlockStatement(context.GetTextSpan());
             return root;
         }
 
