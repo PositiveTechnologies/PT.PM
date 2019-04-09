@@ -2,7 +2,7 @@
 
 namespace PT.PM.Matching.Patterns
 {
-    public interface IPatternAttributable
+    public interface IPatternHasAttributes
     {
         List<PatternUst> Attributes { get; set; }
     }

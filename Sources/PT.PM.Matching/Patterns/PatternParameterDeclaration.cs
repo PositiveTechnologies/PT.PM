@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching.Patterns
 {
-    public class PatternParameterDeclaration : PatternUst, IPatternAttributable
+    public class PatternParameterDeclaration : PatternUst, IPatternHasAttributes
     {
         public PatternUst Type { get; set; }
 
@@ -39,7 +39,7 @@ namespace PT.PM.Matching.Patterns
             MatchContext newContext;
             if (Attributes.Count > 0)
             {
-                if (!(ust.Parent is IAttributable attributable))
+                if (!(ust.Parent is IHasAttributes attributable))
                 {
                     return context.Fail();
                 }
