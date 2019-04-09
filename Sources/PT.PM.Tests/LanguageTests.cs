@@ -67,6 +67,7 @@ namespace PT.PM.Tests
         [TestCase(Language.MySql, "mysql_patterns.sql")]
         [TestCase(Language.Aspx, "Patterns.aspx")]
         [TestCase(Language.JavaScript, "Patterns.js")]
+        [TestCase(Language.Python, "python_patterns.py")]
         public void DetectLanguage_Source_CorrectLanguage(Language expectedLanguage, string fileName)
         {
             var source =
