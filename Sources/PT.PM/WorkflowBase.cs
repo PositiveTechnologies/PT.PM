@@ -362,6 +362,13 @@ namespace PT.PM
         public void LogSourceFile((IFile, TimeSpan) fileAndTime, TWorkflowResult workflowResult)
         {
             IFile file = fileAndTime.Item1;
+
+            // File already has been processed
+            if (workflowResult.SourceFiles.Contains(file))
+            {
+                return;
+            }
+
             TimeSpan elapsed = fileAndTime.Item2;
 
             Logger.LogInfo($"File {fileAndTime.Item1} read (Elapsed: {elapsed.Format()}).");
