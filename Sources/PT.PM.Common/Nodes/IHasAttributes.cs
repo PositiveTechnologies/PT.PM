@@ -2,7 +2,7 @@
 
 namespace PT.PM.Common.Nodes
 {
-    public interface IAttributable
+    public interface IHasAttributes
     {
         List<Attribute> Attributes { get; set; }
     }

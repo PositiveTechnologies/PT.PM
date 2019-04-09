@@ -8,7 +8,7 @@ using MessagePack;
 namespace PT.PM.Common.Nodes.GeneralScope
 {
     [MessagePackObject]
-    public class TypeDeclaration : EntityDeclaration, IAttributable
+    public class TypeDeclaration : EntityDeclaration, IHasAttributes
     {
         [Key(EntityFieldOffset)]
         public TypeTypeLiteral Type { get; set; }

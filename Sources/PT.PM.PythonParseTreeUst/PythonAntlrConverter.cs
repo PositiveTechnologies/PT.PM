@@ -71,7 +71,7 @@ namespace PT.PM.PythonParseTreeUst
         public Ust VisitDecorated(PythonParser.DecoratedContext context)
         {
             var result = Visit(context.GetChild(context.ChildCount - 1));
-            if (context.ChildCount > 1 && result is IAttributable attributable)
+            if (context.ChildCount > 1 && result is IHasAttributes attributable)
             {
                 attributable.Attributes = context.children
                     .Take(context.ChildCount - 1)

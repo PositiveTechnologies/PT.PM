@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace PT.PM.Common.Nodes.TypeMembers
 {
     [MessagePackObject]
-    public class MethodDeclaration : EntityDeclaration, IAttributable
+    public class MethodDeclaration : EntityDeclaration, IHasAttributes
     {
         [Key(EntityFieldOffset)]
         public TypeToken ReturnType { get; set; }
