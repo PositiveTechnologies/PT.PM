@@ -45,6 +45,6 @@
 
         //Python
         Is,               // IS
-        Invert,           // ~
+        MultiplyArray,    // @
     }
 }

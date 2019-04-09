@@ -53,7 +53,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
             //Python
             ["is"] = BinaryOperator.Is,
-            ["~"] = BinaryOperator.Invert,
+            ["@"] = BinaryOperator.MultiplyArray,
             ["//"] = BinaryOperator.Divide
         };
 
