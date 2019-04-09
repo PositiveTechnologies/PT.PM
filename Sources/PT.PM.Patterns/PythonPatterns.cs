@@ -35,21 +35,6 @@ namespace PT.PM.Patterns.PatternsRepository
                 new PatternRoot
                 {
                     Key = patternIdGenerator.NextId(),
-                    DebugInfo = "Hardcoded comparison",
-                    Node = new PatternBinaryOperatorExpression
-                    {
-                        Left = new PatternIdRegexToken(),
-                        Operator = new PatternBinaryOperatorLiteral
-                        {
-                            BinaryOperator = BinaryOperator.Equal
-                        },
-                        Right = new PatternStringRegexLiteral(".+")
-                    }
-                },
-
-                new PatternRoot
-                {
-                    Key = patternIdGenerator.NextId(),
                     DebugInfo = "Hardcoded initialization vector",
                     Languages = pythonLang,
                     Node = new PatternInvocationExpression
@@ -61,9 +46,16 @@ namespace PT.PM.Patterns.PatternsRepository
                         },
                         Arguments = new PatternArgs(new PatternAny(),
                         new PatternMultipleExpressions(),
+                        new PatternMemberReferenceExpression
+                        {
+                            Target = new PatternIdToken("AES"),
+                            Name = new PatternIdToken("MODE_CBC")
+                        },
+                        new PatternMultipleExpressions(),
                         new PatternAssignmentExpression(
                             new PatternIdRegexToken("(?i)iv"),
-                            new PatternStringRegexLiteral()))
+                            new PatternStringRegexLiteral()),
+                        new PatternMultipleExpressions())
                     }
                 },
 
