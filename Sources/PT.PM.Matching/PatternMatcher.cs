@@ -32,7 +32,8 @@ namespace PT.PM.Matching
             try
             {
                 IEnumerable<PatternRoot> patterns = Patterns
-                    .Where(pattern => pattern.Languages.Any(patternLang => ust.Sublanguages.Contains(patternLang)));
+                    .Where(pattern => pattern.Node != null &&
+                                      pattern.Languages.Any(patternLang => ust.Sublanguages.Contains(patternLang)));
                 if (!IsIgnoreFilenameWildcards)
                 {
                     patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceFile.FullName) ?? true);

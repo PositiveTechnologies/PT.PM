@@ -57,20 +57,34 @@ namespace PT.PM.Matching
                     PatternKey = patternDto.Key
                 };
 
-                IPatternSerializer serializer = Serializers
-                    .FirstOrDefault(s => s.Format.EqualsIgnoreCase(patternDto.DataFormat))
-                    ?? Serializers.First();
-                if (serializer == null)
-                {
-                    Logger.LogError(new ConversionException(
-                        patternFile,
-                        null, $"Serializer for {patternDto.DataFormat} not found"));
-                    continue;
-                }
-
                 try
                 {
-                    PatternRoot pattern = serializer.Deserialize(patternFile);
+                    PatternRoot pattern;
+
+                    // FIXME: workaround for handling description-only patterns that are not used in matching
+                    if (patternDto.Value == "_")
+                    {
+                        pattern = new PatternRoot();
+                        pattern.File = patternFile;
+                        pattern.Node = null;
+                    }
+                    else
+                    {
+                        IPatternSerializer serializer = Serializers
+                            .FirstOrDefault(s => s.Format.EqualsIgnoreCase(patternDto.DataFormat))
+                            ?? Serializers.First();
+                        if (serializer == null)
+                        {
+                            Logger.LogError(new ConversionException(
+                                patternFile,
+                                null, $"Serializer for {patternDto.DataFormat} not found"));
+                            continue;
+                        }
+
+                        pattern = serializer.Deserialize(patternFile);
+                        pattern.DataFormat = serializer.Format;
+                    }
+
                     HashSet<Language> languages = patternDto.Languages.ParseLanguages(patternLanguages: true);
 
                     if (languages.Count == 0)
@@ -78,7 +92,6 @@ namespace PT.PM.Matching
                         Logger.LogInfo($"PatternNode \"{patternDto.Key}\" doesn't have proper target languages.");
                     }
 
-                    pattern.DataFormat = serializer.Format;
                     pattern.Key = patternDto.Key;
                     pattern.Languages = languages;
                     pattern.DebugInfo = patternDto.Description;
