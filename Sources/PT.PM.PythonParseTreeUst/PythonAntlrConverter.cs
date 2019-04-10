@@ -246,7 +246,7 @@ namespace PT.PM.PythonParseTreeUst
                     var rightContextChild = rightContext.GetChild(i);
                     var rightContextChildType = ((rightContextChild as ParserRuleContext)?.Start as IToken)?.Type ?? 0;
 
-                    if (rightContextChildType == PythonLexer.TRUE 
+                    if (rightContextChildType == PythonLexer.TRUE
                         || rightContextChildType == PythonLexer.FALSE) // check cause False and True is not reserved words in Python2
                     {
                         visitedRight = new BooleanLiteral(rightContextChildType == PythonLexer.TRUE,
@@ -411,7 +411,7 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitYield_stmt(PythonParser.Yield_stmtContext context)
         {
-            return new YieldExpression(Visit(context.yield_expr()).ToExpressionIfRequired(), context.GetTextSpan());
+            return VisitChildren(context);
         }
 
         public Ust VisitRaise_stmt(PythonParser.Raise_stmtContext context)
@@ -984,12 +984,20 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitYield_expr(PythonParser.Yield_exprContext context)
         {
-            return VisitChildren(context);
+            var yielArg = context.yield_arg();
+            return yielArg == null
+                ? new YieldExpression(null, context.GetTextSpan())
+                : new YieldExpression(Visit(context.yield_arg()).ToExpressionIfRequired(), context.GetTextSpan());
+
         }
 
         public Ust VisitYield_arg(PythonParser.Yield_argContext context)
         {
-            return VisitChildren(context);
+            if (context.test() != null)
+            {
+                return Visit(context.test());
+            }
+            return Visit(context.testlist());
         }
     }
 }
