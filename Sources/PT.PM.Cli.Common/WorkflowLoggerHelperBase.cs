@@ -24,6 +24,11 @@ namespace PT.PM.Cli.Common
 
         public void LogStatistics()
         {
+            if (Logger.LogLevel != LogLevel.Off && Logger.LogLevel < LogLevel.Info)
+            {
+                Logger.LogLevel = LogLevel.Info;
+            }
+
             LogAdvancedInfo();
 
             if (WorkflowResult.TotalTerminatedFilesCount > 0)

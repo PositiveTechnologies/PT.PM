@@ -174,10 +174,7 @@ namespace PT.PM.Cli.Tests
 
                 string[] outputLogLines = File.ReadAllLines(Path.Combine(logPath, "output.log"));
 
-                foreach (var line in outputLogLines)
-                {
-                    StringAssert.StartsWith("ERROR", line, "All lines should be errors");
-                }
+                Assert.IsTrue(outputLogLines.Any(line => line.StartsWith("ERROR")), "ERROR lines should be existed");
 
                 ProcessWithLogLevel(fileName, logPath, LogLevel.Info);
                 outputLogLines = File.ReadAllLines(Path.Combine(logPath, "output.log"));

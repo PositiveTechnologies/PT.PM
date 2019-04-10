@@ -326,7 +326,11 @@ namespace PT.PM.Cli.Common
 
             if (parameters.LogLevel != null)
             {
-                Logger.LogLevel = parameters.LogLevel.ParseEnum(true, Logger.LogLevel);
+                LogLevel logLevel = parameters.LogLevel.ParseEnum(true, Logger.LogLevel);
+                if (logLevel == LogLevel.Off)
+                {
+                    Logger.LogLevel = LogLevel.Off;
+                }
             }
 
             if (parameters.NoLogToFile.HasValue && Logger is NLogLogger nLogLogger)
