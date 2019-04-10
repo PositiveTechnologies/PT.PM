@@ -38,6 +38,8 @@ namespace PT.PM.Patterns.PatternsRepository
             patterns.AddRange(htmpPatterns);
             var clangsPatterns = CreateCLangsPatterns();
             patterns.AddRange(clangsPatterns);
+            var pythonPatterns = CreatePythonPatterns();
+            patterns.AddRange(pythonPatterns);
 
             var patternsConverter = new PatternConverter();
 

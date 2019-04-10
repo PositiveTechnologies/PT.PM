@@ -12,7 +12,7 @@ namespace PT.PM.Common.Nodes.Expressions
         public TypeToken Type { get; set; }
 
         [Key(UstFieldOffset + 1)]
-        public List<AssignmentExpression> Variables { get; set; }
+        public List<AssignmentExpression> Variables { get; set; } = new List<AssignmentExpression>();
 
         public VariableDeclarationExpression(TypeToken type, IEnumerable<AssignmentExpression> variables,
             TextSpan textSpan = default)

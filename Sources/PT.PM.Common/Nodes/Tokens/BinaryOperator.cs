@@ -41,6 +41,10 @@
 
         // JavaScript
         In,               // in
-        InstanceOf        // instanceof
+        InstanceOf,       // instanceof
+
+        //Python
+        Is,               // IS
+        MultiplyArray,    // @
     }
 }

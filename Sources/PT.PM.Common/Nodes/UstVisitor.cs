@@ -233,6 +233,11 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(asExpression);
         }
 
+        public T Visit(Attribute attribute)
+        {
+            return VisitChildren(attribute);
+        }
+
         public virtual T Visit(CheckedExpression checkedExpression)
         {
             return VisitChildren(checkedExpression);

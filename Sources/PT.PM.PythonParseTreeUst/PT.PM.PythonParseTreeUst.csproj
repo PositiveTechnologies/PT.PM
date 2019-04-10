@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <LangVersion>7.3</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
+      <Antlr4 Include="..\antlr-grammars-v4\python\PythonParser.g4" Link="PythonParser.g4">
+          <Listener>false</Listener>
+          <CustomToolNamespace>PythonParseTree</CustomToolNamespace>
+      </Antlr4>
+      <Antlr4 Include="..\antlr-grammars-v4\python\PythonLexer.g4" Link="PythonLexer.g4">
+          <Listener>false</Listener>
+          <CustomToolNamespace>PythonParseTree</CustomToolNamespace>
+      </Antlr4>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\antlr-grammars-v4\python\CSharp\PythonLexer.cs" Link="PythonLexer.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Antlr4" Version="4.6.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PT.PM.AntlrUtils\PT.PM.AntlrUtils.csproj" />
+    </ItemGroup>
+
+</Project>

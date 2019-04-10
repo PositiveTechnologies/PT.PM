@@ -49,7 +49,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
             // JavaScript
             ["in"] = BinaryOperator.In,
-            ["instanceof"] = BinaryOperator.InstanceOf
+            ["instanceof"] = BinaryOperator.InstanceOf,
+
+            //Python
+            ["is"] = BinaryOperator.Is,
+            ["@"] = BinaryOperator.MultiplyArray,
+            ["//"] = BinaryOperator.Divide
         };
 
         [Key(UstFieldOffset)]

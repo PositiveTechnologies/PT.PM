@@ -175,7 +175,7 @@ namespace PT.PM.AntlrUtils
             if ((nodeText.StartsWith("'") && nodeText.EndsWith("'")) ||
                 (nodeText.StartsWith("\"") && nodeText.EndsWith("\"")))
             {
-                result = new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan);
+                return new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan);
             }
             else if (nodeText.Contains("."))
             {
@@ -263,9 +263,9 @@ namespace PT.PM.AntlrUtils
             return CreateBinaryOperatorExpression(left, operatorTerminal.GetText(), operatorTerminal.GetTextSpan(),  right);
         }
 
-        private Expression CreateBinaryOperatorExpression(ParserRuleContext left, string operatorText, TextSpan operatorTextSpan, ParserRuleContext right)
+        protected Expression CreateBinaryOperatorExpression(ParserRuleContext left, string operatorText, TextSpan operatorTextSpan, ParserRuleContext right)
         {
-            BinaryOperator binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[operatorText];
+            BinaryOperator binaryOperator = BinaryOperatorLiteral.TextBinaryOperator[operatorText.ToLowerInvariant()];
 
             var expression0 = (Expression)Visit(left);
             var expression1 = (Expression)Visit(right);
@@ -275,6 +275,20 @@ namespace PT.PM.AntlrUtils
                 expression1,
                 left.GetTextSpan().Union(right.GetTextSpan()));
 
+            return result;
+        }
+
+        protected Expression CreateUnaryOperatorExpression(ParserRuleContext operand, IToken operatorTerminal, bool prefix = true)
+        {
+            UnaryOperator op = prefix
+                ? UnaryOperatorLiteral.PrefixTextUnaryOperator[operatorTerminal.Text]
+                : UnaryOperatorLiteral.PostfixTextUnaryOperator[operatorTerminal.Text];
+            var result = new UnaryOperatorExpression
+            {
+                Operator = new UnaryOperatorLiteral(op, operatorTerminal.GetTextSpan()),
+                Expression = Visit(operand).ToExpressionIfRequired()
+            };
+            result.TextSpan = result.Expression.TextSpan.Union(result.Operator.TextSpan);
             return result;
         }
 
@@ -295,7 +309,8 @@ namespace PT.PM.AntlrUtils
                 {
                     result = new IdToken(text.Substring(1), textSpan);
                 }
-                else if (text.StartsWith("\"") || text.StartsWith("["))
+                else if ((text.StartsWith("\"") || text.StartsWith("["))
+                    && text.Length > 1)
                 {
                     result = new IdToken(text.Substring(1, text.Length - 2), textSpan);
                 }

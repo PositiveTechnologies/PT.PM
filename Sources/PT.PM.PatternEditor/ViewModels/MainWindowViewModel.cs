@@ -267,7 +267,7 @@ namespace PT.PM.PatternEditor
                     }
 
                     var textSpan = TextSpan.FromBounds(start, end);
-                    var lineColumnTextSpan = source.GetLineColumnTextSpan(textSpan);
+                    var lineColumnTextSpan = source?.GetLineColumnTextSpan(textSpan);
                     SourceTextBoxPosition = $"Range: {textSpan}; LineColumn: {lineColumnTextSpan}";
                 }
             }
@@ -669,17 +669,22 @@ namespace PT.PM.PatternEditor
             if (SelectedLanguage != Language.Json)
             {
                 var dumpStages = new HashSet<Stage>();
-                if (Stage >= Stage.ParseTree)
-                {
-                    if (SelectedLanguage != Language.CSharp)
-                    {
-                        // TODO: ignore C# parse tree dump due to the huge size
-                        dumpStages.Add(Stage.ParseTree);
-                    }
 
-                    if (Stage >= Stage.Ust)
+                if (Stage >= Stage.Tokens)
+                {
+                    dumpStages.Add(Stage.Tokens);
+                    if (Stage >= Stage.ParseTree)
                     {
-                        dumpStages.Add(Stage.Ust);
+                        if (SelectedLanguage != Language.CSharp)
+                        {
+                            // TODO: ignore C# parse tree dump due to the huge size
+                            dumpStages.Add(Stage.ParseTree);
+                        }
+
+                        if (Stage >= Stage.Ust)
+                        {
+                            dumpStages.Add(Stage.Ust);
+                        }
                     }
                 }
 
@@ -692,8 +697,8 @@ namespace PT.PM.PatternEditor
 
             ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
 
-            string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, ParseTreeDumper.TokensSuffix);
-            string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, dumper.ParseTreeSuffix);
+            string tokensFileName = Path.Combine(ServiceLocator.TempDirectory, origFileName + "." + ParseTreeDumper.TokensSuffix);
+            string parseTreeFileName = Path.Combine(ServiceLocator.TempDirectory, origFileName + "." + dumper.ParseTreeSuffix);
             Tokens = FileExt.Exists(tokensFileName) ? FileExt.ReadAllText(tokensFileName) : "";
             ParseTree = FileExt.Exists(parseTreeFileName) ? FileExt.ReadAllText(parseTreeFileName) : "";
 

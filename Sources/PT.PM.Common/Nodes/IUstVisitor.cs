@@ -84,6 +84,7 @@ namespace PT.PM.Common.Nodes
         #region Specific
 
         T Visit(AsExpression asExpression);
+        T Visit(Attribute attribute);
         T Visit(CheckedExpression checkedExpression);
         T Visit(FixedStatement fixedStatement);
         T Visit(LockStatement lockStatement);

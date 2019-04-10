@@ -6,6 +6,7 @@ namespace PT.PM.Common
         CSharp,
         Java,
         Php,
+        Python,
         PlSql,
         TSql,
         MySql,

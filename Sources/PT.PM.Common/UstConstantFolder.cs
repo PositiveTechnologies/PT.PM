@@ -16,7 +16,8 @@ namespace PT.PM.Common
         {
             typeof(ArrayCreationExpression),
             typeof(BinaryOperatorExpression),
-            typeof(UnaryOperatorExpression)
+            typeof(UnaryOperatorExpression),
+            typeof(TupleCreateExpression)
         };
 
         private readonly Dictionary<TextSpan, FoldResult> foldedResults = new Dictionary<TextSpan, FoldResult>();
@@ -61,6 +62,8 @@ namespace PT.PM.Common
                     return TryFoldBinaryOperatorExpression(binaryOperatorExpression);
                 case UnaryOperatorExpression unaryOperatorExpression:
                     return TryFoldUnaryOperatorExpression(unaryOperatorExpression);
+                case TupleCreateExpression tupleCreateExpression:
+                    return TryFoldTupleCreateExpression(tupleCreateExpression);
                 case Token token:
                     return TryFoldToken(token);
                 // TODO: parenthesis
@@ -90,6 +93,23 @@ namespace PT.PM.Common
             }
 
             return null;
+        }
+
+        private FoldResult TryFoldTupleCreateExpression(TupleCreateExpression tupleCreateExpression)
+        {
+            var sb = new StringBuilder();
+            var textSpans = new List<TextSpan>(tupleCreateExpression.Initializers.Count);
+            foreach(var initializer in tupleCreateExpression.Initializers)
+            {
+                if(initializer is StringLiteral stringLiteral)
+                {
+                    sb.Append(stringLiteral.Text);
+                    textSpans.Add(stringLiteral.TextSpan);
+                }
+            }
+            return sb.Length > 0
+                ? new FoldResult(sb.ToString(), textSpans)
+                : null;
         }
 
         private FoldResult TryFoldBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression)
