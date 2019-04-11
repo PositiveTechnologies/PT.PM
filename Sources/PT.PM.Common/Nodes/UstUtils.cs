@@ -35,7 +35,7 @@ namespace PT.PM.Common.Nodes
                 return null;
             }
 
-            return ust as Expression 
+            return ust as Expression
                    ?? new WrapperExpression(ust);
         }
 
@@ -46,7 +46,7 @@ namespace PT.PM.Common.Nodes
 
         internal static string GenerateSignature(string id, List<ParameterDeclaration> parameters)
         {
-            string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Any"));
+            string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Unknown"));
             return $"{id}({paramsString})";
         }
 
