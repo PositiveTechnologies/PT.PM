@@ -16,9 +16,11 @@ namespace PT.PM.Common.Nodes.Expressions
         public Ust Body { get; set; }
 
         [IgnoreMember, JsonIgnore]
-        public string Id => Parent is AssignmentExpression assignment
-            ? assignment.Left.ToString()
-            : LineColumnTextSpan.ToString();
+        public string Signature => UstUtils.GenerateSignature(
+            Parent is AssignmentExpression assignment
+                ? $"{assignment.Left}{LineColumnTextSpan}"
+                : LineColumnTextSpan.ToString(),
+                 Parameters);
 
         public override Expression[] GetArgs() => new Expression[0];
 
