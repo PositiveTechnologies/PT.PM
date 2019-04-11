@@ -61,7 +61,7 @@ namespace PT.PM.Common.Nodes.Expressions
         {
             string argsString = Arguments.ToString();
             return argsString.StartsWith("(") && argsString.EndsWith(")")
-              ? Target.ToString() + argsString
+              ? Target + argsString
               : $"{Target}({argsString})";
         }
     }
