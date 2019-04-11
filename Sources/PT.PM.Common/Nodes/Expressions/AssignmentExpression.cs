@@ -11,10 +11,10 @@ namespace PT.PM.Common.Nodes.Expressions
         public Expression Left { get; set; }
 
         [Key(UstFieldOffset + 1)]
-        public Expression Right { get; set; }
+        public BinaryOperatorLiteral Operator { get; set; }
 
         [Key(UstFieldOffset + 2)]
-        public BinaryOperatorLiteral Operator { get; set; }
+        public Expression Right { get; set; }
 
         public AssignmentExpression(Expression left, Expression right, TextSpan textSpan)
             : base(textSpan)
