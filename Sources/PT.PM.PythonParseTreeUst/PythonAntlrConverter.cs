@@ -44,6 +44,14 @@ namespace PT.PM.PythonParseTreeUst
             {
                 block.Statements.Add(Visit(child).ToStatementIfRequired());
             }
+
+            if (root.CurrentSourceFile?.Name.Length > 0)
+            {
+                var dotIndex = root.CurrentSourceFile.Name.LastIndexOf('.');
+                return new NamespaceDeclaration(new StringLiteral(root.CurrentSourceFile?.Name
+                    .Remove(dotIndex < 0 ? 0 : dotIndex)),
+                    block, context.GetTextSpan());
+            }
             return block;
         }
 
