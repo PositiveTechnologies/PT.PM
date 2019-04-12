@@ -23,7 +23,7 @@ namespace PT.PM.Common
         private readonly Dictionary<TextSpan, FoldResult> foldedResults = new Dictionary<TextSpan, FoldResult>();
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
-
+        public static HashSet<Type> FoldingTypes => foldingTypes;
         public bool TryGetOrFold(Ust ust, out FoldResult result)
         {
             if (ust == null || !foldingTypes.Contains(ust.GetType()))
@@ -99,9 +99,9 @@ namespace PT.PM.Common
         {
             var sb = new StringBuilder();
             var textSpans = new List<TextSpan>(tupleCreateExpression.Initializers.Count);
-            foreach(var initializer in tupleCreateExpression.Initializers)
+            foreach (var initializer in tupleCreateExpression.Initializers)
             {
-                if(initializer is StringLiteral stringLiteral)
+                if (initializer is StringLiteral stringLiteral)
                 {
                     sb.Append(stringLiteral.Text);
                     textSpans.Add(stringLiteral.TextSpan);
