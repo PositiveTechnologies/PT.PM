@@ -48,9 +48,10 @@ namespace PT.PM.PythonParseTreeUst
             if (root.CurrentSourceFile?.Name.Length > 0)
             {
                 var dotIndex = root.CurrentSourceFile.Name.LastIndexOf('.');
-                return new NamespaceDeclaration(new StringLiteral(root.CurrentSourceFile?.Name
-                    .Remove(dotIndex < 0 ? 0 : dotIndex)),
-                    block, context.GetTextSpan());
+                return new NamespaceDeclaration(
+                    new StringLiteral(root.CurrentSourceFile?.Name.Remove(dotIndex < 0 ? 0 : dotIndex)),
+                    block,
+                    context.GetTextSpan());
             }
             return block;
         }
@@ -992,10 +993,10 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitYield_expr(PythonParser.Yield_exprContext context)
         {
-            var yielArg = context.yield_arg();
-            return yielArg == null
+            var yieldArg = context.yield_arg();
+            return yieldArg == null
                 ? new YieldExpression(null, context.GetTextSpan())
-                : new YieldExpression(Visit(context.yield_arg()).ToExpressionIfRequired(), context.GetTextSpan());
+                : new YieldExpression(Visit(yieldArg).ToExpressionIfRequired(), context.GetTextSpan());
 
         }
 
