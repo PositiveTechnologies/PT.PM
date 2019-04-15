@@ -12,7 +12,7 @@ namespace PT.PM.Common
 {
     public class UstConstantFolder : ILoggable
     {
-        private static readonly HashSet<Type> foldingTypes = new HashSet<Type>
+        public static readonly HashSet<Type> FoldingTypes = new HashSet<Type>
         {
             typeof(ArrayCreationExpression),
             typeof(BinaryOperatorExpression),
@@ -26,7 +26,7 @@ namespace PT.PM.Common
 
         public bool TryGetOrFold(Ust ust, out FoldResult result)
         {
-            if (ust == null || !foldingTypes.Contains(ust.GetType()))
+            if (ust == null || !FoldingTypes.Contains(ust.GetType()))
             {
                 result = null;
                 return false;
@@ -99,9 +99,9 @@ namespace PT.PM.Common
         {
             var sb = new StringBuilder();
             var textSpans = new List<TextSpan>(tupleCreateExpression.Initializers.Count);
-            foreach(var initializer in tupleCreateExpression.Initializers)
+            foreach (var initializer in tupleCreateExpression.Initializers)
             {
-                if(initializer is StringLiteral stringLiteral)
+                if (initializer is StringLiteral stringLiteral)
                 {
                     sb.Append(stringLiteral.Text);
                     textSpans.Add(stringLiteral.TextSpan);
