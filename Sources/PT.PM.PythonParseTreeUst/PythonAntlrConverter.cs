@@ -15,6 +15,7 @@ using PT.PM.Common.Nodes.TypeMembers;
 using PythonParseTree;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Exceptions;
 
 namespace PT.PM.PythonParseTreeUst
 {
@@ -79,18 +80,6 @@ namespace PT.PM.PythonParseTreeUst
             return new Attribute(target, textSpan);
         }
 
-        public Ust VisitDecorated(PythonParser.DecoratedContext context)
-        {
-            var result = Visit(context.GetChild(context.ChildCount - 1));
-            if (context.ChildCount > 1 && result is IHasAttributes attributable)
-            {
-                attributable.Attributes = context.children
-                    .Take(context.ChildCount - 1)
-                    .Select(Visit).Cast<Attribute>().ToList();
-            }
-            return result;
-        }
-
         public Ust VisitFuncdef(PythonParser.FuncdefContext context)
         {
             var returnType = context.test() != null
@@ -113,16 +102,14 @@ namespace PT.PM.PythonParseTreeUst
             }
 
             result.Body = (BlockStatement)Visit(context.suite());
-            result.Parameters = ((Collection)Visit(context.parameters()))
-                .Collection.Cast<ParameterDeclaration>().ToList();
-            return result;
-        }
 
-        public Ust VisitParameters(PythonParser.ParametersContext context)
-        {
-            return context.ChildCount == 3
-                ? Visit(context.GetChild(1))
-                : new Collection();
+            if (context.typedargslist() != null)
+            {
+                result.Parameters = ((Collection) Visit(context.typedargslist()))
+                    .Collection.Cast<ParameterDeclaration>().ToList();
+            }
+
+            return result;
         }
 
         public Ust VisitDef_parameter([NotNull] PythonParser.Def_parameterContext context)
@@ -143,11 +130,13 @@ namespace PT.PM.PythonParseTreeUst
                 Name = new IdToken(context.name().GetText(), context.name().GetTextSpan()),
                 TextSpan = context.GetTextSpan()
             };
-            var anotationContext = context.test();
-            if (anotationContext != null)
+
+            var annotationContext = context.test();
+            if (annotationContext != null)
             {
-                result.Type = new TypeToken(anotationContext.GetText(), anotationContext.GetTextSpan());
+                result.Type = new TypeToken(annotationContext.GetText(), annotationContext.GetTextSpan());
             }
+
             return result;
         }
 
@@ -231,39 +220,59 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitSmall_stmt(PythonParser.Small_stmtContext context)
         {
-            return VisitChildren(context);
+            return Visit(context);
         }
 
         public Ust VisitExpr_stmt(PythonParser.Expr_stmtContext context)
         {
-            return VisitChildren(context);
+            if (context.assign_part() == null)
+            {
+                return Visit(context.testlist_star_expr());
+            }
+
+            PythonParser.Assign_partContext assign_part = context.assign_part();
+
+            if (assign_part.COLON() != null)
+            {
+                return ProcessAnnassign(context, assign_part);
+            }
+
+            if (assign_part.op != null)
+            {
+                return ProcessAugmented_assign(context, assign_part);
+            }
+
+            return ProcessAssign(context, assign_part);
         }
 
-        public Ust VisitAssign([NotNull] PythonParser.AssignContext context)
+        private Expression ProcessAssign(PythonParser.Expr_stmtContext parent,
+            PythonParser.Assign_partContext context)
         {
-            var leftContext = (ParserRuleContext)context.GetChild(0);
-            var rightContext = (ParserRuleContext)context.GetChild(2);
-            var textSpan = context.GetTextSpan();
+            var leftContext = (ParserRuleContext) parent.testlist_star_expr();
+            var rightContext = (ParserRuleContext) context.GetChild(1);
+            var textSpan = parent.GetTextSpan();
             Expression left, right;
             if (leftContext.ChildCount == rightContext.ChildCount)
             {
                 var assignments = new List<AssignmentExpression>(leftContext.ChildCount);
                 for (int i = 0; i < leftContext.ChildCount; i++)
                 {
-                    var visitedLeft = (Expression)Visit(leftContext.GetChild(i));
+                    var visitedLeft = (Expression) Visit(leftContext.GetChild(i));
                     Expression visitedRight;
                     var rightContextChild = rightContext.GetChild(i);
-                    var rightContextChildType = ((rightContextChild as ParserRuleContext)?.Start as IToken)?.Type ?? 0;
+                    var rightContextChildType =
+                        (rightContextChild as ParserRuleContext)?.Start?.Type ?? 0;
 
                     if (rightContextChildType == PythonLexer.TRUE
-                        || rightContextChildType == PythonLexer.FALSE) // check cause False and True is not reserved words in Python2
+                        || rightContextChildType == PythonLexer.FALSE
+                    ) // check cause False and True is not reserved words in Python2
                     {
                         visitedRight = new BooleanLiteral(rightContextChildType == PythonLexer.TRUE,
-                            ((ParserRuleContext)rightContextChild).GetTextSpan());
+                            ((ParserRuleContext) rightContextChild).GetTextSpan());
                     }
                     else
                     {
-                        visitedRight = (Expression)Visit(rightContextChild);
+                        visitedRight = (Expression) Visit(rightContextChild);
                     }
 
                     if (visitedLeft == null && visitedRight == null)
@@ -279,42 +288,39 @@ namespace PT.PM.PythonParseTreeUst
                     assignment.TextSpan = assignment.Left.TextSpan.Union(assignment.Right.TextSpan);
                     assignments.Add(assignment);
                 }
+
                 return new VariableDeclarationExpression(null, assignments, textSpan);
             }
 
             if (leftContext.ChildCount < rightContext.ChildCount)
             {
-                left = (Expression)Visit(leftContext);
+                left = (Expression) Visit(leftContext);
                 right = new TupleCreateExpression
                 {
                     TextSpan = rightContext.GetTextSpan(),
                     Initializers = rightContext.children
-                    .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA)
-                    .Select(x => (Expression)Visit(x)).ToList()
+                        .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA)
+                        .Select(x => (Expression) Visit(x)).ToList()
                 };
             }
             else
             {
-                left = (Expression)Visit(leftContext);
-                right = (Expression)Visit(rightContext);
+                left = (Expression) Visit(leftContext);
+                right = (Expression) Visit(rightContext);
             }
 
             return new AssignmentExpression(left, right, textSpan);
         }
 
-        public Ust VisitAnnassign(PythonParser.AnnassignContext context)
+        private VariableDeclarationExpression ProcessAnnassign(PythonParser.Expr_stmtContext parent, PythonParser.Assign_partContext context)
         {
-            if (context.ChildCount == 1)
-            {
-                return Visit(context.GetChild(0));
-            }
             var typeContext = context.test();
             var result = new VariableDeclarationExpression
             {
                 Type = new TypeToken(typeContext.GetText(), typeContext.GetTextSpan()),
-                TextSpan = context.GetTextSpan()
+                TextSpan = parent.GetTextSpan()
             };
-            var leftContexts = context.testlist_star_expr().children
+            var leftContexts = parent.testlist_star_expr().children
                 .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA);
             var assignments = new List<AssignmentExpression>(leftContexts.Count());
             var textSpan = context.GetTextSpan();
@@ -327,9 +333,10 @@ namespace PT.PM.PythonParseTreeUst
                         TextSpan = textSpan
                     });
             }
-            if (context.yield_expr() != null)
+
+            if (context.yield_expr().Length == 1)
             {
-                var right = Visit(context.yield_expr()).ToExpressionIfRequired();
+                var right = Visit(context.yield_expr(0)).ToExpressionIfRequired();
                 result.Variables.AddRange(assignments.Select(x =>
                    {
                        x.Right = right;
@@ -338,21 +345,33 @@ namespace PT.PM.PythonParseTreeUst
             }
             else
             {
-                if (context.testlist() != null)
+                var rightContexts = context.testlist().children
+                    .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA);
+                if (rightContexts.Count() == assignments.Count)
                 {
-                    var rightContexts = context.testlist().children
-                        .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA);
-                    if (rightContexts.Count() == assignments.Count)
+                    result.Variables.AddRange(assignments.Select((assign, index) =>
                     {
-                        result.Variables.AddRange(assignments.Select((assign, index) =>
-                        {
-                            assign.Right = Visit(rightContexts.ElementAt(index)).ToExpressionIfRequired();
-                            return assign;
-                        }));
-                    }
+                        assign.Right = Visit(rightContexts.ElementAt(index)).ToExpressionIfRequired();
+                        return assign;
+                    }));
                 }
             }
+
             return result;
+        }
+
+        private Expression ProcessAugmented_assign(PythonParser.Expr_stmtContext parent, PythonParser.Assign_partContext context)
+        {
+            ParserRuleContext rightContext;
+            if (context.yield_expr().Length == 1)
+            {
+                rightContext = context.yield_expr(0);
+            }
+            else
+            {
+                rightContext = context.testlist();
+            }
+            return CreateBinaryOperatorExpression(parent.testlist_star_expr(), context.op.Text.Remove(context.op.Text.Length - 1), context.op.GetTextSpan(), rightContext);
         }
 
         public Ust VisitTestlist_star_expr(PythonParser.Testlist_star_exprContext context)
@@ -360,22 +379,9 @@ namespace PT.PM.PythonParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitAugassign(PythonParser.AugassignContext context)
+        public Ust VisitAssign_part(PythonParser.Assign_partContext context)
         {
-            if (context.ChildCount == 1)
-            {
-                return Visit(context.GetChild(0));
-            }
-            ParserRuleContext rightContext = null;
-            if (context.yield_expr() != null)
-            {
-                rightContext = context.yield_expr();
-            }
-            else
-            {
-                rightContext = context.testlist();
-            }
-            return CreateBinaryOperatorExpression(context.testlist_star_expr(), context.op.Text.Substring(0, 1), context.op.GetTextSpan(), rightContext);
+            throw new ShouldNotBeVisitedException(nameof(context));
         }
 
         public Ust VisitPrint_stmt(PythonParser.Print_stmtContext context)
@@ -398,11 +404,6 @@ namespace PT.PM.PythonParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitFlow_stmt(PythonParser.Flow_stmtContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitBreak_stmt(PythonParser.Break_stmtContext context)
         {
             return new BreakStatement(context.GetTextSpan());
@@ -418,43 +419,28 @@ namespace PT.PM.PythonParseTreeUst
             return new ReturnStatement(Visit(context.testlist()).ToExpressionIfRequired(), context.GetTextSpan());
         }
 
-        public Ust VisitYield_stmt(PythonParser.Yield_stmtContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitRaise_stmt(PythonParser.Raise_stmtContext context)
         {
             return new ThrowStatement(Visit(context.test().FirstOrDefault()).ToExpressionIfRequired(), context.GetTextSpan());
         }
 
+        public Ust VisitYield_stmt(PythonParser.Yield_stmtContext context)
+        {
+            return new ExpressionStatement((Expression)Visit(context.yield_expr()), context.GetTextSpan());
+        }
+
         public Ust VisitImport_stmt(PythonParser.Import_stmtContext context)
         {
-            var importFrom = context.import_from();
-            var importName = context.import_name();
-            string name = string.Empty;
-            TextSpan textSpan = default;
-            if (importFrom != null)
-            {
-                name = importFrom.children.LastOrDefault()?.GetText();
-                textSpan = importFrom.GetTextSpan();
-            }
-            else if (importName != null)
-            {
-                name = importName.children.LastOrDefault()?.GetText();
-                textSpan = importName.GetTextSpan();
-            }
+            string name = context.dotted_as_names().GetText();
+            TextSpan textSpan = context.dotted_as_names().GetTextSpan();
             return new UsingDeclaration(new StringLiteral(name, textSpan), context.GetTextSpan());
         }
 
-        public Ust VisitImport_name(PythonParser.Import_nameContext context)
+        public Ust VisitFrom_stmt(PythonParser.From_stmtContext context)
         {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitImport_from(PythonParser.Import_fromContext context)
-        {
-            return VisitChildren(context);
+            string name = context.children.LastOrDefault()?.GetText() ?? "";
+            TextSpan textSpan = context.GetTextSpan();
+            return new UsingDeclaration(new StringLiteral(name, textSpan), context.GetTextSpan());
         }
 
         public Ust VisitImport_as_name(PythonParser.Import_as_nameContext context)
@@ -502,30 +488,14 @@ namespace PT.PM.PythonParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitNonlocal_stmt(PythonParser.Nonlocal_stmtContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitAssert_stmt(PythonParser.Assert_stmtContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitCompound_stmt(PythonParser.Compound_stmtContext context)
         {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitAsync_stmt(PythonParser.Async_stmtContext context)
-        {
-            return VisitChildren(context);
+            return Visit(context);
         }
 
         public Ust VisitIf_stmt(PythonParser.If_stmtContext context)
         {
             var condition = (Expression)Visit(context.test());
-            List<IfElseStatement> ifElseStatements;
             Statement elseStatement = null;
             var result = new IfElseStatement
             {
@@ -536,7 +506,7 @@ namespace PT.PM.PythonParseTreeUst
             if (context.suite() != null)
             {
                 result.TrueStatement = (Statement)Visit(context.suite());
-                ifElseStatements = context.elif_clause()
+                List<IfElseStatement> ifElseStatements = context.elif_clause()
                     .Select(statement => (IfElseStatement)Visit(statement))
                     .Where(statement => statement != null).ToList();
                 if (context.else_clause() != null)
@@ -575,6 +545,25 @@ namespace PT.PM.PythonParseTreeUst
         }
 
         //TODO: Add specific for statement with few VarNames and InExpressions and else statement
+        public Ust VisitClass_or_func_def_stmt(PythonParser.Class_or_func_def_stmtContext context)
+        {
+            var result = Visit((IParseTree) context.classdef() ?? context.funcdef());
+
+            if (context.decorator().Length > 0 && result is IHasAttributes attributable)
+            {
+                var attributes = new List<Attribute>();
+
+                foreach (PythonParser.DecoratorContext dec in context.decorator())
+                {
+                    attributes.Add((Attribute)Visit(dec));
+                }
+
+                attributable.Attributes = attributes;
+            }
+
+            return result;
+        }
+
         public Ust VisitFor_stmt(PythonParser.For_stmtContext context)
         {
             return new ForeachStatement
@@ -584,6 +573,16 @@ namespace PT.PM.PythonParseTreeUst
                 EmbeddedStatement = Visit(context.suite()).ToStatementIfRequired(),
                 TextSpan = context.GetTextSpan()
             };
+        }
+
+        public Ust VisitAssert_stmt(PythonParser.Assert_stmtContext context)
+        {
+            return VisitChildren(context);
+        }
+
+        public Ust VisitNonlocal_stmt(PythonParser.Nonlocal_stmtContext context)
+        {
+            return VisitChildren(context);
         }
 
         public Ust VisitTry_stmt(PythonParser.Try_stmtContext context)
@@ -671,11 +670,6 @@ namespace PT.PM.PythonParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitOld_lambdef(PythonParser.Old_lambdefContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitTest(PythonParser.TestContext context)
         {
             if (context.IF() != null)
@@ -694,17 +688,17 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitTest_nocond(PythonParser.Test_nocondContext context)
         {
+            if (context.LAMBDA() != null)
+            {
+                return CreateLambdaMethod(context.test_nocond(), context.varargslist(), context.GetTextSpan());
+            }
+
             return VisitChildren(context);
         }
 
         public Ust VisitLambdef(PythonParser.LambdefContext context)
         {
             return CreateLambdaMethod(context.test(), context.varargslist(), context.GetTextSpan());
-        }
-
-        public Ust VisitLambdef_nocond(PythonParser.Lambdef_nocondContext context)
-        {
-            return CreateLambdaMethod(context.test_nocond(), context.varargslist(), context.GetTextSpan());
         }
 
         public Ust VisitLogical_test([NotNull] PythonParser.Logical_testContext context)
@@ -726,19 +720,23 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitComparison(PythonParser.ComparisonContext context)
         {
-            if (context.op != null)
+            if (context.expr() == null)
             {
-                return CreateBinaryOperatorExpression(context.comparison()[0], context.op, context.comparison()[1]);
-            }
-            if (context.NOT() != null)
-            {
+                if (context.optional == null)
+                {
+                    return CreateBinaryOperatorExpression(context.comparison(0), context.GetChild<ITerminalNode>(0),
+                        context.comparison(1));
+                }
+
                 return new UnaryOperatorExpression
                 {
                     Operator = new UnaryOperatorLiteral(UnaryOperator.Not, context.NOT().GetTextSpan()),
-                    Expression = CreateBinaryOperatorExpression(context.comparison()[0], context.IN() ?? context.IS(), context.comparison()[1])
+                    Expression = CreateBinaryOperatorExpression(context.comparison(0),
+                        context.IN() ?? context.IS(), context.comparison(1))
                 };
             }
-            return VisitChildren(context);
+
+            return Visit(context.expr());
         }
 
         public Ust VisitStar_expr(PythonParser.Star_exprContext context)
@@ -955,16 +953,6 @@ namespace PT.PM.PythonParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitList_for(PythonParser.List_forContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitList_if(PythonParser.List_ifContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitComp_iter(PythonParser.Comp_iterContext context)
         {
             return VisitChildren(context);
@@ -981,23 +969,12 @@ namespace PT.PM.PythonParseTreeUst
             };
         }
 
-        public Ust VisitComp_if(PythonParser.Comp_ifContext context)
-        {
-            return VisitChildren(context);
-        }
-
-        public Ust VisitEncoding_decl(PythonParser.Encoding_declContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitYield_expr(PythonParser.Yield_exprContext context)
         {
             var yieldArg = context.yield_arg();
             return yieldArg == null
                 ? new YieldExpression(null, context.GetTextSpan())
                 : new YieldExpression(Visit(yieldArg).ToExpressionIfRequired(), context.GetTextSpan());
-
         }
 
         public Ust VisitYield_arg(PythonParser.Yield_argContext context)

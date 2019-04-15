@@ -1706,11 +1706,9 @@ namespace PT.PM.PhpParseTreeUst
             {
                 return fieldName;
             }
-            else
-            {
-                var arguments = (ArgsUst)Visit(context.actualArguments());
-                return new InvocationExpression(fieldName, arguments, context.GetTextSpan());
-            }
+
+            var arguments = (ArgsUst)Visit(context.actualArguments());
+            return new InvocationExpression(fieldName, arguments, context.GetTextSpan());
         }
 
         public Ust VisitFunctionCall(PhpParser.FunctionCallContext context)
