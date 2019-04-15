@@ -12,7 +12,7 @@ namespace PT.PM.Common
 {
     public class UstConstantFolder : ILoggable
     {
-        private static readonly HashSet<Type> foldingTypes = new HashSet<Type>
+        public static readonly HashSet<Type> FoldingTypes = new HashSet<Type>
         {
             typeof(ArrayCreationExpression),
             typeof(BinaryOperatorExpression),
@@ -23,10 +23,10 @@ namespace PT.PM.Common
         private readonly Dictionary<TextSpan, FoldResult> foldedResults = new Dictionary<TextSpan, FoldResult>();
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
-        public static HashSet<Type> FoldingTypes => foldingTypes;
+
         public bool TryGetOrFold(Ust ust, out FoldResult result)
         {
-            if (ust == null || !foldingTypes.Contains(ust.GetType()))
+            if (ust == null || !FoldingTypes.Contains(ust.GetType()))
             {
                 result = null;
                 return false;
