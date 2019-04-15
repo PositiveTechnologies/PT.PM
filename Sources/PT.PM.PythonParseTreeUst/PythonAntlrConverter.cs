@@ -665,13 +665,13 @@ namespace PT.PM.PythonParseTreeUst
             return VisitChildren(context);
         }
 
-        public Ust VisitOld_test(PythonParser.Old_testContext context)
-        {
-            return VisitChildren(context);
-        }
-
         public Ust VisitTest(PythonParser.TestContext context)
         {
+            if (context.LAMBDA() != null)
+            {
+                return CreateLambdaMethod(context.test(), context.varargslist(), context.GetTextSpan());
+            }
+
             if (context.IF() != null)
             {
                 var expressions = context.logical_test();
@@ -683,22 +683,8 @@ namespace PT.PM.PythonParseTreeUst
                     TextSpan = context.GetTextSpan()
                 };
             }
-            return VisitChildren(context);
-        }
 
-        public Ust VisitTest_nocond(PythonParser.Test_nocondContext context)
-        {
-            if (context.LAMBDA() != null)
-            {
-                return CreateLambdaMethod(context.test_nocond(), context.varargslist(), context.GetTextSpan());
-            }
-
-            return VisitChildren(context);
-        }
-
-        public Ust VisitLambdef(PythonParser.LambdefContext context)
-        {
-            return CreateLambdaMethod(context.test(), context.varargslist(), context.GetTextSpan());
+            return Visit(context.logical_test(0));
         }
 
         public Ust VisitLogical_test([NotNull] PythonParser.Logical_testContext context)
@@ -713,8 +699,9 @@ namespace PT.PM.PythonParseTreeUst
             }
             if (context.op != null)
             {
-                return CreateBinaryOperatorExpression(context.logical_test()[0], context.op, context.logical_test()[1]);
+                return CreateBinaryOperatorExpression(context.logical_test(0), context.op, context.logical_test(1));
             }
+
             return VisitChildren(context);
         }
 
