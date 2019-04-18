@@ -1,8 +1,8 @@
-﻿using CommandLine;
+﻿using PT.PM.Cli.Common;
 
 namespace PT.PM.Cli.Tests
 {
-    class CliTestsParameters
+    public class CliTestsParameters
     {
         [Option('s', "string")]
         public string File { get; set; }
@@ -57,5 +57,8 @@ namespace PT.PM.Cli.Tests
 
         [Option]
         public Stage Enum { get; set; }
+
+        [Option]
+        public string[] Array { get; set; }
     }
 }
