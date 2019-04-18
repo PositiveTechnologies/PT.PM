@@ -57,7 +57,6 @@ namespace PT.PM.Cli.Common
             }
 
             AppendIfNotEmptyOrQuoted(result, lastArg, lastArgInQuotes);
-            lastArgInQuotes = false;
 
             return result.ToArray();
         }
