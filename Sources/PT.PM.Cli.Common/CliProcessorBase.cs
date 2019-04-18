@@ -25,8 +25,6 @@ namespace PT.PM.Cli.Common
 
         public virtual bool ContinueWithInvalidArgs => false;
 
-        public virtual bool StopIfDebuggerAttached => true;
-
         public virtual int DefaultMaxStackSize => Utils.DefaultMaxStackSize;
 
         public abstract string CoreName { get; }
@@ -54,14 +52,6 @@ namespace PT.PM.Cli.Common
             {
                 LogInfoAndErrors(args, parseResult.Errors, parseResult.ShowHelp, parseResult.ShowVersion);
             }
-
-#if DEBUG
-            if (StopIfDebuggerAttached && Debugger.IsAttached)
-            {
-                Console.WriteLine("Press Enter to exit");
-                Console.ReadLine();
-            }
-#endif
 
             return result;
         }
