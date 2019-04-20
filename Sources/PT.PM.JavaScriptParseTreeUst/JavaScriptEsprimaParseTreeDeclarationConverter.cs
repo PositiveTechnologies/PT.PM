@@ -14,7 +14,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public partial class JavaScriptEsprimaParseTreeConverter
     {
-        private Ust VisitDeclaration(Declaration declaration)
+        private Ust VisitDeclaration(IDeclaration declaration)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return properties;
         }
 
-        private Collections.List<PropertyDeclaration> VisitProperties(List<Property> properties)
+        private Collections.List<PropertyDeclaration> VisitProperties(NodeList<Property> properties)
         {
             var props = new Collections.List<PropertyDeclaration>(properties.Count);
 
@@ -181,11 +181,11 @@ namespace PT.PM.JavaScriptParseTreeUst
             return result;
         }
 
-        private Ust VisitUnknowDeclaration(Declaration declaration)
+        private Ust VisitUnknowDeclaration(IDeclaration declaration)
         {
             string message = declaration == null
                 ? $"{nameof(declaration)} can not be null"
-                : $"Unknow {nameof(Declaration)} type {declaration.GetType().Name}";
+                : $"Unknow {nameof(IDeclaration)} type {declaration.GetType().Name}";
             Logger.LogError(new ConversionException(SourceFile, message: message));
             return null;
         }
