@@ -1,7 +1,4 @@
-﻿using CommandLine;
-using System.Collections.Generic;
-
-namespace PT.PM.Cli.Common
+﻿namespace PT.PM.Cli.Common
 {
     public class CliParameters
     {
@@ -12,13 +9,13 @@ namespace PT.PM.Cli.Common
         public string InputFileNameOrDirectory { get; set; }
 
         [Option('l', "languages", HelpText = "Languages to be processed", Separator = ',')]
-        public IEnumerable<string> Languages { get; set; }
+        public string[] Languages { get; set; }
 
         [Option("patterns", HelpText = "Patterns to be processed")]
         public string Patterns { get; set; }
 
         [Option("pattern-ids", HelpText = "Pattern identifiers to be processed", Separator = ',')]
-        public IEnumerable<string> PatternIds { get; set; }
+        public string[] PatternIds { get; set; }
 
         [Option('t', "threads", HelpText = "Number of processing threads")]
         public int? ThreadCount { get; set; }
@@ -66,7 +63,7 @@ namespace PT.PM.Cli.Common
         public bool? StrictJson { get; set; }
 
         [Option('d', "dump", HelpText = "Stages to be dumped (ParseTree, Ust)", Separator = ',')]
-        public IEnumerable<string> DumpStages { get; set; }
+        public string[] DumpStages { get; set; }
 
         [Option("dump-patterns", HelpText = "Dump patterns to Json")]
         public bool? DumpPatterns { get; set; }
@@ -75,7 +72,7 @@ namespace PT.PM.Cli.Common
         public bool? IsDumpJsonOutput { get; set; }
 
         [Option('r', "render", HelpText = "Stages to be rendered", Separator = ',')]
-        public IEnumerable<string> RenderStages { get; set; }
+        public string[] RenderStages { get; set; }
 
         [Option("render-format", HelpText = "Graph render format (Png, Svg, etc.)")]
         public string RenderFormat { get; set; }

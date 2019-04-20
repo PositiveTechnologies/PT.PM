@@ -1,7 +1,6 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Utils;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace PT.PM.Cli.Common
@@ -23,19 +22,6 @@ namespace PT.PM.Cli.Common
             double peakVirtualSet = (double)currentProcess.PeakVirtualMemorySize64 / TwoInPower20;
             double peakWorkingSet = (double)currentProcess.PeakWorkingSet64 / TwoInPower20;
             logger.LogInfo($"{"Peak virtual/working set:",Align} {peakVirtualSet} / {peakWorkingSet} MB, {processBitsString}");
-        }
-
-        public static void LogErrors(this ILogger logger, IEnumerable<Exception> errors)
-        {
-            if (errors == null)
-            {
-                return;
-            }
-
-            foreach (Exception error in errors)
-            {
-                logger.LogError(error);
-            }
         }
     }
 }

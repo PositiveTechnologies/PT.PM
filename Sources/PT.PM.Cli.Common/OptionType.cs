@@ -1,30 +1,27 @@
-﻿using CommandLine;
-using System;
+﻿using System;
 using System.Reflection;
 
 namespace PT.PM.Cli.Common
 {
-    public class OptionType
+    class OptionProperty
     {
         public OptionAttribute Option { get; }
 
-        public Type Type { get; }
+        public PropertyInfo PropertyInfo { get; }
 
-        public string ParamName {get;}
+        public string LongName => string.IsNullOrEmpty(Option.LongName)
+            ? PropertyInfo.Name.ToLowerInvariant()
+            : Option.LongName;
 
-        public OptionType(OptionAttribute option, PropertyInfo prop)
+        public OptionProperty(OptionAttribute option, PropertyInfo propertyInfo)
         {
             Option = option ?? throw new ArgumentNullException(nameof(option));
-            Type = prop?.PropertyType ?? throw new ArgumentNullException(nameof(prop));
-            if (string.IsNullOrEmpty(Option.ShortName) && string.IsNullOrEmpty(Option.LongName))
-            {
-                ParamName = prop.Name.ToLowerInvariant();
-            }
+            PropertyInfo = propertyInfo ?? throw new ArgumentNullException(nameof(propertyInfo));
         }
 
         public override string ToString()
         {
-            return $"{Option.ShortName}; {Option.LongName}; {Type}";
+            return $"{Option}; {PropertyInfo}";
         }
     }
 }

@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using PT.PM.Cli.Common;
 using PT.PM.Common;
-using PT.PM.Common.Files;
 using PT.PM.TestUtils;
 
 namespace PT.PM.Cli.Tests
@@ -24,91 +22,124 @@ namespace PT.PM.Cli.Tests
         }
 
         [Test]
-        public void CheckCli_ValidAndInvalidArgs_CorrectlyNormalized()
+        public void CheckCli_ValidAndInvalidArgs_CorrectlyParsed()
         {
-            var normalizer = new CliParametersNormalizer<CliTestsParameters>();
-            string[] outArgs;
+            var parser = new CliParametersParser<CliTestsParameters>();
 
-            Assert.IsFalse(normalizer.Normalize(new[] { "-upp", "val1", "val2", "-u", "-s", "str" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "-s", "str" }, outArgs);
+            var result = parser.Parse(new[] {"-upp", "val1", "val2", "-u", "-s", "str"});
+            Assert.AreEqual(4, result.Errors.Count);
+            Assert.AreEqual("str", result.Parameters.File);
 
-            Assert.IsFalse(normalizer.Normalize(new[] { "val", "--s", "-str", "-int1", "1", "--option", "opt" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "-s", "-str", "--int1", "1", "--option", "opt" }, outArgs);
+            result = parser.Parse(new[] {"val", "--s", "-str", "-int1", "1", "--option", "opt"});
+            Assert.AreEqual(1, result.Errors.Count);
+            Assert.AreEqual("-str", result.Parameters.File);
+            Assert.AreEqual(1, result.Parameters.Int1);
+            Assert.AreEqual("opt", result.Parameters.Option);
 
-            Assert.IsTrue(normalizer.Normalize(new[] { "-s", "str", "--int1", "1" }, out outArgs));
+            result = parser.Parse(new[] {"-s", "str", "--int1", "1"});
+            Assert.AreEqual(0, result.Errors.Count);
+            Assert.AreEqual("str", result.Parameters.File);
+            Assert.AreEqual(1, result.Parameters.Int1);
         }
 
         [Test]
-        public void CheckCli_ArgsWithTypes_CorrectlyNormalized()
+        public void CheckCli_ArgsWithTypes_CorrectlyParsed()
         {
-            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>();
-            string[] outArgs;
+            var parser = new CliParametersParser<CliTestsParameters>();
 
             string[] inputArgs = "--int x --uint x --byte x --sbyte x --short x --ushort x --long x --ulong x --float x --double x --decimal x --bool x --enum x".SplitArguments();
-            Assert.IsFalse(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(13, paramsNormalizer.Errors.Count);
-            CollectionAssert.AreEqual(new List<string>(), outArgs);
+            var result = parser.Parse(inputArgs);
+            var parameters = result.Parameters;
+            var errors = result.Errors;
 
-            paramsNormalizer.CheckTypes = false;
-            paramsNormalizer.Errors.Clear();
-            Assert.IsTrue(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(0, paramsNormalizer.Errors.Count);
-            Assert.AreEqual(inputArgs.Length - 1, outArgs.Length);
+            Assert.AreEqual(13, errors.Count);
+            Assert.AreEqual(default(int), parameters.Int);
+            Assert.AreEqual(default(uint), parameters.UInt);
+            Assert.AreEqual(default(byte), parameters.Byte);
+            Assert.AreEqual(default(sbyte), parameters.SByte);
+            Assert.AreEqual(default(short), parameters.Short);
+            Assert.AreEqual(default(ushort), parameters.UShort);
+            Assert.AreEqual(default(long), parameters.Long);
+            Assert.AreEqual(default(ulong), parameters.ULong);
+            Assert.AreEqual(default(float), parameters.Float);
+            Assert.AreEqual(default(double), parameters.Double);
+            Assert.AreEqual(default(decimal), parameters.Decimal);
+            Assert.AreEqual(default(bool), parameters.Bool);
+            Assert.AreEqual(default(Stage), parameters.Enum);
 
-            paramsNormalizer.CheckTypes = true;
-            paramsNormalizer.Errors.Clear();
-            inputArgs = "--int -1 --uint 2 --byte 3 --sbyte -4 --short -5 --ushort 6 --long -7 --ulong 8 --float 9.0 --double 10.0 --decimal 11.0 --bool true --enum file".SplitArguments();
-            Assert.IsTrue(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(0, paramsNormalizer.Errors.Count);
-            Assert.AreEqual(inputArgs.Length - 1, outArgs.Length);
+            inputArgs = "--int -1 --uint 2 --byte 3 --sbyte -4 --short -5 --ushort 6 --long -7 --ulong 8 --float 9.0 --double 10.0 --decimal 11.0 --bool true --enum file --array a,b,c".SplitArguments();
+            result = parser.Parse(inputArgs);
+            parameters = result.Parameters;
+            errors = result.Errors;
+
+            Assert.AreEqual(0, errors.Count);
+            Assert.AreEqual(-1, parameters.Int);
+            Assert.AreEqual(2, parameters.UInt);
+            Assert.AreEqual(3, parameters.Byte);
+            Assert.AreEqual(-4, parameters.SByte);
+            Assert.AreEqual(-5, parameters.Short);
+            Assert.AreEqual(6, parameters.UShort);
+            Assert.AreEqual(-7, parameters.Long);
+            Assert.AreEqual(8, parameters.ULong);
+            Assert.AreEqual(9.0, parameters.Float);
+            Assert.AreEqual(10.0, parameters.Double);
+            Assert.AreEqual(11.0, parameters.Decimal);
+            Assert.AreEqual(true, parameters.Bool);
+            Assert.AreEqual(Stage.File, parameters.Enum);
+            CollectionAssert.AreEqual(new [] { "a", "b", "c" }, parameters.Array);
         }
 
         [Test]
-        public void CheckCli_DuplicateParams_CorrectlyNormalized()
+        public void CheckCli_DuplicateParams_CorrectlyParsed()
         {
-            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>();
-            string[] outArgs;
+            var parser = new CliParametersParser<CliTestsParameters>();
 
             string[] inputArgs = "--int -1 --int 1".SplitArguments();
+            parser.CheckDuplicates = false;
+            var result = parser.Parse(inputArgs);
+            Assert.AreEqual(0, result.Errors.Count);
+            Assert.AreEqual(1, result.Parameters.Int);
 
-            paramsNormalizer.CheckDuplicates = false;
-            paramsNormalizer.Errors.Clear();
-            Assert.IsTrue(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(0, paramsNormalizer.Errors.Count);
-            Assert.AreEqual(4, outArgs.Length);
-
-            paramsNormalizer.CheckDuplicates = true;
-            paramsNormalizer.Errors.Clear();
-            Assert.IsFalse(paramsNormalizer.Normalize(inputArgs, out outArgs));
-            Assert.AreEqual(1, paramsNormalizer.Errors.Count);
-            Assert.AreEqual(2, outArgs.Length);
-            Assert.AreEqual("--int", outArgs[0]);
-            Assert.AreEqual("1", outArgs[1]);
+            parser.CheckDuplicates = true;
+            result = parser.Parse(inputArgs);
+            Assert.AreEqual(1, result.Errors.Count);
+            Assert.AreEqual(-1, result.Parameters.Int);
         }
 
         [Test]
-        public void CheckCli_BoolValues_CorrectlyNormalized()
+        public void CheckCli_BoolValues_CorrectlyParsed()
         {
-            var paramsNormalizer = new CliParametersNormalizer<CliTestsParameters>();
-            string[] outArgs;
+            var parser = new CliParametersParser<CliTestsParameters>();
 
-            Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool1", "--bool2" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "--bool1", "true", "--bool2", "true" }, outArgs);
+            var result = parser.Parse(new[] { "--bool1", "--bool2" });
+            Assert.IsTrue(result.Parameters.Bool1);
+            Assert.IsTrue(result.Parameters.Bool2);
 
-            Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool1", "true", "--bool2", "false" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "--bool1", "true", "--bool2", "false" }, outArgs);
+            result = parser.Parse(new[] { "--bool1", "true", "--bool2", "false" });
+            Assert.IsTrue(result.Parameters.Bool1);
+            Assert.IsFalse(result.Parameters.Bool2);
 
-            Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "--bool" }, outArgs);
+            result = parser.Parse(new[] { "--bool" });
+            Assert.IsTrue(result.Parameters.Bool);
 
-            Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool", "--bool1" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "--bool", "--bool1", "true" }, outArgs);
+            result = parser.Parse(new[] { "--bool", "--bool1" });
+            Assert.IsTrue(result.Parameters.Bool);
+            Assert.IsTrue(result.Parameters.Bool1);
 
-            Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool", "true" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { "--bool" }, outArgs);
+            result = parser.Parse(new[] { "--bool", "true" });
+            Assert.IsTrue(result.Parameters.Bool);
 
-            Assert.IsTrue(paramsNormalizer.Normalize(new[] { "--bool", "false" }, out outArgs));
-            CollectionAssert.AreEqual(new List<string> { }, outArgs);
+            result = parser.Parse(new[] { "--bool", "false" });
+            Assert.IsFalse(result.Parameters.Bool);
+        }
+
+        [Test]
+        public void CheckCli_ShouldParseVersionAndHelpTextParams()
+        {
+            var parser = new CliParametersParser<CliTestsParameters>();
+            var result = parser.Parse(new[] { "--version", "--help" });
+            Assert.IsTrue(result.ShowVersion);
+            Assert.IsTrue(result.ShowHelp);
         }
 
         [Test]

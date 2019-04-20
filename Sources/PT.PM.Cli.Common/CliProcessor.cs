@@ -6,7 +6,7 @@ namespace PT.PM.Cli.Common
     {
         public override string CoreName => "PT.PM";
 
-        protected override WorkflowBase<Stage, WorkflowResult, PatternRoot, Stage> CreateWorkflow(CliParameters parameters)
+        protected override WorkflowBase<Stage, WorkflowResult, PatternRoot, Stage> CreateWorkflow()
         {
             return new Workflow();
         }
