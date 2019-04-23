@@ -29,7 +29,9 @@ namespace PT.PM
         where TWorkflowResult : WorkflowResultBase<TStage, TPattern, TRenderStage>
         where TRenderStage : Enum
     {
+        private static readonly object lockObj = new object();
         private int currentFileId;
+        private int currentId;
 
         protected ILogger logger = DummyLogger.Instance;
 
@@ -305,8 +307,10 @@ namespace PT.PM
 
                     result.FileKey = Interlocked.Increment(ref currentFileId);
 
-                    int currentId = 0;
-                    result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
+                    lock (lockObj)
+                    {
+                        result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
+                    }
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
