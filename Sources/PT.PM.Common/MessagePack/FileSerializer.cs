@@ -126,7 +126,7 @@ namespace PT.PM.Common.MessagePack
                     {
                         try
                         {
-                            code = File.ReadAllText(fullName);
+                            code = FileExt.ReadAllText(fullName);
                         }
                         catch (Exception ex)
                         {
@@ -150,7 +150,7 @@ namespace PT.PM.Common.MessagePack
                     {
                         try
                         {
-                            data = File.ReadAllBytes(fullName);
+                            data = FileExt.ReadAllBytes(fullName);
                         }
                         catch (Exception ex)
                         {

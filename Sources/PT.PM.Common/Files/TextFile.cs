@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MessagePack;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Files
 {
@@ -23,7 +24,7 @@ namespace PT.PM.Common.Files
 
         public static TextFile Read(string fileName)
         {
-            return new TextFile(System.IO.File.ReadAllText(fileName), fileName);
+            return new TextFile(FileExt.ReadAllText(fileName), fileName);
         }
 
         public TextFile(string code)
