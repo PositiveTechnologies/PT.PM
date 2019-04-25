@@ -28,7 +28,7 @@ namespace PT.PM.Common.Files
         }
 
         public TextFile(string code)
-            : base(code)
+            : base(code, code.Length)
         {
             InitLineIndexes();
         }
@@ -53,7 +53,7 @@ namespace PT.PM.Common.Files
 
         public void GetLineColumnFromLinear(int position, out int line, out int column)
         {
-            if (position < 0 || position > Data.Length)
+            if (position < 0 || position > DataLength)
             {
                 // TODO: It will be uncommented when AI.Taint.CLangs supports UST identifiers instead of super huge text spans
                 //throw new IndexOutOfRangeException($"linear position {position} out of range for file {FullName}");
@@ -132,7 +132,7 @@ namespace PT.PM.Common.Files
             }
             else
             {
-                endInd = Data.Length;
+                endInd = DataLength;
             }
 
             return Data.Substring(lineIndexes[line], endInd - lineIndexes[line]);
@@ -173,5 +173,7 @@ namespace PT.PM.Common.Files
         {
             return String.Compare(data1, data2, StringComparison.Ordinal);
         }
+
+        protected override string ReadData() => FileExt.ReadAllText(FullName);
     }
 }

@@ -1,17 +1,22 @@
 using System;
 using MessagePack;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Files
 {
     [MessagePackObject]
-    [Union((int)FileType.TextFile, typeof(TextFile))]
-    [Union((int)FileType.BinaryFile, typeof(BinaryFile))]
+    [Union((int) FileType.TextFile, typeof(TextFile))]
+    [Union((int) FileType.BinaryFile, typeof(BinaryFile))]
     public abstract class File<T> : IFile, IEquatable<File<T>>, IComparable<File<T>>
         where T : class
     {
+        private T internalData; // Fill if file does not exist on disk
+
+        protected WeakReference<T> data;
+
         [IgnoreMember]
         public abstract FileType Type { get; }
-        
+
         [Key(0)]
         public string RootPath { get; set; } = "";
 
@@ -25,7 +30,24 @@ namespace PT.PM.Common.Files
         public string PatternKey { get; set; }
 
         [Key(4)]
-        public T Data { get; }
+        public T Data
+        {
+            get
+            {
+                if (data.TryGetTarget(out T target))
+                {
+                    return target;
+                }
+
+                if (FileExt.Exists(FullName))
+                {
+                    T d = ReadData();
+                    data.SetTarget(d);
+                }
+
+                return internalData;
+            }
+        }
 
         [IgnoreMember]
         public object Content => Data;
@@ -37,11 +59,15 @@ namespace PT.PM.Common.Files
         public string FullName => System.IO.Path.Combine(RootPath, RelativePath, Name);
 
         [IgnoreMember]
+        public int DataLength { get; }
+
+        [IgnoreMember]
         public abstract bool IsEmpty { get; }
 
-        public File(T data)
+        protected File(T data, int dataLength)
         {
-            Data = data ?? throw new ArgumentNullException(nameof(data));
+            this.data = new WeakReference<T>(data ?? throw new ArgumentNullException(nameof(data)));
+            DataLength = dataLength;
         }
 
         public override string ToString() => FullName;
@@ -113,5 +139,7 @@ namespace PT.PM.Common.Files
         }
 
         protected abstract int CompareData(T data1, T data2);
+
+        protected abstract T ReadData();
     }
 }

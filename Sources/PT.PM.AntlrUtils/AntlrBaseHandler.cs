@@ -34,7 +34,7 @@ namespace PT.PM.AntlrUtils
         protected void HandleMemoryConsumption()
         {
             long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
-            long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, SourceFile.Data.Length);
+            long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, SourceFile.DataLength);
 
             long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
             bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);

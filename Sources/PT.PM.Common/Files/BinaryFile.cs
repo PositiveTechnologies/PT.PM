@@ -1,4 +1,5 @@
 using MessagePack;
+using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Files
 {
@@ -14,7 +15,7 @@ namespace PT.PM.Common.Files
         public override bool IsEmpty => Data.Length == 0;
 
         public BinaryFile(byte[] data)
-            : base(data)
+            : base(data, data.Length)
         {
         }
 
@@ -45,5 +46,7 @@ namespace PT.PM.Common.Files
 
             return 0;
         }
+
+        protected override byte[] ReadData() => FileExt.ReadAllBytes(FullName);
     }
 }
