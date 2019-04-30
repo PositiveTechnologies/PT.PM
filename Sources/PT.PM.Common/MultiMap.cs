@@ -53,6 +53,16 @@ namespace PT.PM.Common
             storageValue.Add(value);
         }
 
+        public void Add(TKey key, IEnumerable<TValue> values)
+        {
+            if (!storage.TryGetValue(key, out List<TValue> storageValue))
+            {
+                storageValue = new List<TValue>();
+                storage.Add(key, storageValue);
+            }
+            storageValue.AddRange(values);
+        }
+
         public void Clear() => storage.Clear();
 
         public bool ContainsKey(TKey key) => storage.ContainsKey(key);
