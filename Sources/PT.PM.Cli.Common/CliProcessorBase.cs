@@ -127,7 +127,8 @@ namespace PT.PM.Cli.Common
             }
             if (parameters.LogLevel != null)
             {
-                Logger.LogLevel = parameters.LogLevel.ParseEnum(ContinueWithInvalidArgs, LogLevel.Info, Logger);
+                Logger.LogLevel = parameters.LogLevel.ParseEnum(ContinueWithInvalidArgs,
+                    CommonUtils.IsDebug ? LogLevel.Info : LogLevel.Error, Logger);
             }
             if (parameters.NoLogToFile.HasValue && nLogLogger != null)
             {
@@ -298,6 +299,10 @@ namespace PT.PM.Cli.Common
                 {
                     Logger.LogLevel = LogLevel.Off;
                 }
+            }
+            else
+            {
+                Logger.LogLevel = CommonUtils.IsDebug ? LogLevel.Info : LogLevel.Error;
             }
 
             if (Parameters.NoLogToFile.HasValue && Logger is NLogLogger nLogLogger)
