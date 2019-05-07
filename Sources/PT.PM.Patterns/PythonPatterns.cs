@@ -1,5 +1,4 @@
 ﻿using PT.PM.Common;
-using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using System.Collections.Generic;

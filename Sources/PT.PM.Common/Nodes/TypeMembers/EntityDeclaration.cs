@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using MessagePack;
-using PT.PM.Common.Nodes.GeneralScope;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 

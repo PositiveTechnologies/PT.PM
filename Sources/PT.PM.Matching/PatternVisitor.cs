@@ -5,7 +5,6 @@ using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading;
 
 namespace PT.PM.Matching

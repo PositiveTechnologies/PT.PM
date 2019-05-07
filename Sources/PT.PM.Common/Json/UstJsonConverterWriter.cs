@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json.Serialization;
 using PT.PM.Common.Utils;
 
 namespace PT.PM.Common.Json

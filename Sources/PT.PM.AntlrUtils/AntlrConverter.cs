@@ -11,9 +11,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
-using PT.PM.Common.Utils;
 
 namespace PT.PM.AntlrUtils
 {
