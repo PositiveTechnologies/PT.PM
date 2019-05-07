@@ -16,6 +16,11 @@ namespace PT.PM.Common.Utils
 
         private static string NormalizePath(this string path, bool isDirectory = true, bool force = false)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                return "";
+            }
+
             path = Path.GetFullPath(path);
 
             if ((path.Length > (isDirectory ? MaxDirLength : MaxPathLength) || force) &&
