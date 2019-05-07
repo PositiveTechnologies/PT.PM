@@ -121,7 +121,7 @@ namespace PT.PM
 
         public string TempDir { get; set; } = "";
 
-        public SerializationFormat SerializationFormat { get; set; } = SerializationFormat.Json;
+        public SerializationFormat SerializationFormat { get; set; } = SerializationFormat.MsgPack;
 
         public event EventHandler<RootUst> UstConverted;
 

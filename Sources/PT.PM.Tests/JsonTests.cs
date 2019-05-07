@@ -92,7 +92,8 @@ namespace PT.PM.Tests
                 DumpWithTextSpans = includeTextSpans,
                 LineColumnTextSpans = !linearTextSpans,
                 Stage = Stage.Ust,
-                IsDumpPatterns = checkPatternSerialization
+                IsDumpPatterns = checkPatternSerialization,
+                SerializationFormat = SerializationFormat.Json
             };
             WorkflowResult result = workflow.Process();
 
