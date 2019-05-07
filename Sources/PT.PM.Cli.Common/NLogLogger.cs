@@ -5,6 +5,7 @@ using PT.PM.Common.Exceptions;
 using PT.PM.Common.Utils;
 using PT.PM.Matching;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -20,6 +21,16 @@ namespace PT.PM.Cli.Common
 
         public int ErrorCount => errorCount;
 
+        public NLogLogger()
+            : this(false)
+        {
+        }
+
+        protected NLogLogger(bool redirectConsoleToDebug)
+        {
+            ConsoleLogger = LogManager.GetLogger( redirectConsoleToDebug ? "debug" : "console");
+        }
+
         public LogLevel LogLevel { get; set; } = LogLevel.Info;
 
         public Logger FileLogger { get; } = LogManager.GetLogger("file");
@@ -28,7 +39,7 @@ namespace PT.PM.Cli.Common
 
         public Logger MatchLogger { get; } = LogManager.GetLogger("match");
 
-        protected Logger ConsoleLogger { get; } = LogManager.GetLogger("console");
+        protected Logger ConsoleLogger { get; }
 
         protected PrettyPrinter ErrorPrinter { get; } = new PrettyPrinter
         {
@@ -38,7 +49,7 @@ namespace PT.PM.Cli.Common
 
         protected PrettyPrinter MessagePrinter { get; } = new PrettyPrinter
         {
-            MaxMessageLength = 300,
+            MaxMessageLength = 300
         };
 
         protected PrettyPrinter CodePrinter { get; } = new PrettyPrinter
