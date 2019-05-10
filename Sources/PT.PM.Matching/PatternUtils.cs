@@ -11,24 +11,46 @@ namespace PT.PM.Matching
         private static readonly Regex SupressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        public static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int escapeCharsLength = 0, bool isFolded = false)
+        public static List<TextSpan> MatchRegex(this Regex patternRegex, TextFile textFile, TextSpan textSpan, int escapeCharsLength = 0)
+        {
+            return MatchRegex(patternRegex, textFile.Data, textSpan.Start, textSpan.Length, escapeCharsLength);
+        }
+
+        public static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int start = 0, int length = -1, int escapeCharsLength = 0)
         {
             if (patternRegex.ToString() == ".*")
             {
-                var matchLength = isFolded 
-                    ? text.Length 
-                    : text.Length + escapeCharsLength;
-                return new List<TextSpan> { new TextSpan(escapeCharsLength, matchLength) };
+                return new List<TextSpan> { new TextSpan(start + escapeCharsLength, length == -1 ? text.Length : length) };
             }
-            
-            MatchCollection matches = patternRegex.Matches(text);
-            var result = new List<TextSpan>(matches.Count);
 
-            foreach (Match match in matches)
+            int end;
+            if (length == -1)
             {
-                TextSpan textSpan = match.GetTextSpan(escapeCharsLength);
-                if (match.Success)
-                    result.Add(textSpan);
+                end = text.Length;
+            }
+            else
+            {
+                end = start + length;
+                if (end > text.Length)
+                {
+                    end = text.Length;
+                }
+            }
+
+            var result = new List<TextSpan>();
+
+            Match match = patternRegex.Match(text, start, end - start);
+            while (match.Success)
+            {
+                result.Add(match.GetTextSpan(escapeCharsLength));
+
+                if (match.Length == 0)
+                {
+                    break;
+                }
+
+                start = match.Index + match.Length;
+                match = patternRegex.Match(text, start, end - start);
             }
 
             return result;

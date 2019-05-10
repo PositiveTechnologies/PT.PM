@@ -45,11 +45,9 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            IEnumerable<TextSpan> matches = Regex
-                .MatchRegex(commentLiteral.Comment)
-                .Select(location => location.AddOffset(commentLiteral.TextSpan.Start));
+            List<TextSpan> matches = Regex.MatchRegex(commentLiteral.CurrentSourceFile, commentLiteral.TextSpan);
 
-            return matches.Count() > 0
+            return matches.Count > 0
                 ? context.AddMatches(matches)
                 : context.Fail();
         }

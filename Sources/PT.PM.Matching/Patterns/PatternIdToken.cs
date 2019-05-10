@@ -41,27 +41,22 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
-            if (!(token is CommentLiteral))
+
+            string tokenText = token.TextValue;
+            if (token.Root.Language.IsCaseInsensitive())
             {
-                string tokenText = token.TextValue;
-                if (token.Root.Language.IsCaseInsensitive())
-                {
-                    TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan();
-                    if (!textSpan.IsZero)
-                    {
-                        return context.AddMatch(token);
-                    }
-
-                    return context.Fail();
-                }
-
-                if (id.Equals(tokenText))
+                TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan();
+                if (!textSpan.IsZero)
                 {
                     return context.AddMatch(token);
                 }
-                
+
                 return context.Fail();
+            }
+
+            if (id.Equals(tokenText))
+            {
+                return context.AddMatch(token);
             }
 
             return context.Fail();
