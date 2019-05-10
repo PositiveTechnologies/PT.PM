@@ -64,7 +64,11 @@ namespace PT.PM
 
                     ParserLanguageDetector.MaxStackSize = MaxStackSize;
                     result = ParserLanguageDetector.Detect(sourceFile, previousLanguage, languages);
-                    previousLanguage = result.Language;
+
+                    if (result != null)
+                    {
+                        previousLanguage = result.Language;
+                    }
 
                     stopwatch.Stop();
                     detectionTimeSpan = stopwatch.Elapsed;
