@@ -62,7 +62,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 }
                 result.SourceFile = langParseTree.SourceFile;
                 result.Comments = roslynParseTree.Comments.Select(c =>
-                    new CommentLiteral(c.GetTextSpan())
+                    new Comment(c.GetTextSpan())
                     {
                         Root = result
                     })

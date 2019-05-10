@@ -158,9 +158,9 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(booleanLiteral);
         }
 
-        public virtual T Visit(CommentLiteral commentLiteral)
+        public virtual T Visit(Comment comment)
         {
-            return VisitChildren(commentLiteral);
+            return VisitChildren(comment);
         }
 
         public virtual T Visit(FloatLiteral floatLiteral)

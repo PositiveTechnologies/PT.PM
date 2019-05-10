@@ -3,14 +3,14 @@
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     [MessagePackObject]
-    public class CommentLiteral : Ust
+    public class Comment : Ust
     {
-        public CommentLiteral(TextSpan textSpan)
+        public Comment(TextSpan textSpan)
             : base(textSpan)
         {
         }
 
-        public CommentLiteral()
+        public Comment()
         {
         }
 

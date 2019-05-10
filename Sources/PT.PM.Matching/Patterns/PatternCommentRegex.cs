@@ -39,7 +39,7 @@ namespace PT.PM.Matching.Patterns
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
-            var commentLiteral = ust as CommentLiteral;
+            var commentLiteral = ust as Comment;
             if (commentLiteral == null)
             {
                 return context.Fail();

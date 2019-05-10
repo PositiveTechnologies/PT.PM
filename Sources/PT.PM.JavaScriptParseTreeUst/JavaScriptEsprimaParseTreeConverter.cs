@@ -14,6 +14,7 @@ using Esprima;
 using System.Threading;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using Comment = PT.PM.Common.Nodes.Tokens.Literals.Comment;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -49,11 +50,11 @@ namespace PT.PM.JavaScriptParseTreeUst
                     Nodes = new Ust[] { program }
                 };
 
-                var comments = new Collections.List<CommentLiteral>(esprimaParseTree.Comments.Count);
-                foreach (Comment comment in esprimaParseTree.Comments)
+                var comments = new Collections.List<Comment>(esprimaParseTree.Comments.Count);
+                foreach (Esprima.Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new CommentLiteral(textSpan)
+                    comments.Add(new Comment(textSpan)
                     {
                         Root = rootUst,
                     });
@@ -185,7 +186,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return TextSpan.FromBounds(node.Range.Start + Offset, node.Range.End + Offset);
         }
 
-        private TextSpan GetTextSpan(Comment token)
+        private TextSpan GetTextSpan(Esprima.Comment token)
         {
             return TextSpan.FromBounds(token.Start + Offset, token.End + Offset);
         }

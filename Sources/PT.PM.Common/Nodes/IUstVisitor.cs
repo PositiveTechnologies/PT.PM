@@ -64,7 +64,7 @@ namespace PT.PM.Common.Nodes
 
         T Visit(BinaryOperatorLiteral binaryOperatorLiteral);
         T Visit(BooleanLiteral booleanLiteral);
-        T Visit(CommentLiteral commentLiteral);
+        T Visit(Comment comment);
         T Visit(FloatLiteral floatLiteral);
         T Visit(IdToken idToken);
         T Visit(IntLiteral intLiteral);

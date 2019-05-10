@@ -75,7 +75,7 @@ namespace PT.PM.AntlrUtils
                 return null;
             }
 
-            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.GetTextSpan())
+            result.Comments = antlrParseTree.Comments.Select(c => new Comment(c.GetTextSpan())
             {
                 Root = result
             })

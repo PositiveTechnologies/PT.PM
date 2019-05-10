@@ -88,7 +88,7 @@ namespace PT.PM.Matching
                 if (Node is PatternCommentRegex ||
                     Node is PatternOr patternOr && patternOr.Patterns.Any(v => v is PatternCommentRegex))
                 {
-                    foreach (CommentLiteral commentLiteral in rootUst.Comments)
+                    foreach (Comment commentLiteral in rootUst.Comments)
                     {
                         MatchAndAddResult(Node, commentLiteral, context, results);
                     }

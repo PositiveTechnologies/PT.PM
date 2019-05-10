@@ -76,7 +76,6 @@ namespace PT.PM.Common.Nodes
         // Literals
         BinaryOperatorLiteral,
         BooleanLiteral,
-        CommentLiteral,
         FloatLiteral,
         InOutModifierLiteral,
         IntLiteral,
@@ -101,5 +100,8 @@ namespace PT.PM.Common.Nodes
         ParameterDeclaration,
         PropertyDeclaration,
         StatementDeclaration,
+
+        // Comment
+        Comment,
     }
 }
