@@ -26,7 +26,7 @@ namespace PT.PM.Common.Json
             try
             {
                 string textSpanString;
-                bool includeFileName = !(textSpan.File is null) && textSpan.File != CurrentSourceFile;
+                bool includeFileName = textSpan.File != CurrentSourceFile;
 
                 if (!IsLineColumn)
                 {
@@ -75,6 +75,11 @@ namespace PT.PM.Common.Json
                 {
                     result = TextUtils.ParseAnyTextSpan(textSpanString, out bool isLineColumn, CurrentSourceFile, SourceFiles);
                     IsLineColumn = isLineColumn;
+                }
+
+                if (result.File == CurrentSourceFile)
+                {
+                    result = new TextSpan(result.Start, result.Length);
                 }
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))

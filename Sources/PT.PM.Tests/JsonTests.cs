@@ -102,7 +102,7 @@ namespace PT.PM.Tests
             var preprocessedFile = (TextFile)result.SourceFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
             var originFile = (TextFile)result.SourceFiles.FirstOrDefault(f => f.Name == "origin.php");
 
-            LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3, preprocessedFile);
+            LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3);
             LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
 
             var jsonFiles = new List<string>();
@@ -187,7 +187,7 @@ namespace PT.PM.Tests
                         var enumerator = result.SourceFiles.GetEnumerator();
                         enumerator.MoveNext();
                         var firstFile = (TextFile)enumerator.Current;
-                        Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25, firstFile), firstFile.GetLineColumnTextSpan(match.TextSpan));
+                        Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), firstFile.GetLineColumnTextSpan(match.TextSpan));
                     }
                 }
             }
