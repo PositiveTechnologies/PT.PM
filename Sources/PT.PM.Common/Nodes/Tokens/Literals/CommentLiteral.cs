@@ -3,22 +3,17 @@
 namespace PT.PM.Common.Nodes.Tokens.Literals
 {
     [MessagePackObject]
-    public class CommentLiteral : Literal
+    public class CommentLiteral : Ust
     {
-        [Key(UstFieldOffset)]
-        public virtual string Comment { get; set; }
-
-        [IgnoreMember]
-        public override string TextValue => Comment;
-
-        public CommentLiteral(string comment, TextSpan textSpan)
+        public CommentLiteral(TextSpan textSpan)
             : base(textSpan)
         {
-            Comment = comment;
         }
 
         public CommentLiteral()
         {
         }
+
+        public override Ust[] GetChildren() => ArrayUtils<Ust>.EmptyArray;
     }
 }

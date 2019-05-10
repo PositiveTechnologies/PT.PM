@@ -46,14 +46,14 @@ namespace PT.PM.JavaScriptParseTreeUst
 
                 var rootUst = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree))
                 {
-                    Nodes = new Ust[] { program },
+                    Nodes = new Ust[] { program }
                 };
 
                 var comments = new Collections.List<CommentLiteral>(esprimaParseTree.Comments.Count);
                 foreach (Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new CommentLiteral(SourceFile.GetSubstring(textSpan), textSpan)
+                    comments.Add(new CommentLiteral(textSpan)
                     {
                         Root = rootUst,
                     });
