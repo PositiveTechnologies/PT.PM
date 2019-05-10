@@ -12,15 +12,11 @@ namespace PT.PM.Dsl
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public DslAntlrParser()
-        {
-        }
-
         public DslParser.PatternContext Parse(string patternKey, string data)
         {
-            DslParser.PatternContext pattern = null;
+            DslParser.PatternContext pattern;
             var sourceFile = new TextFile(data) { PatternKey = patternKey ?? data };
-            var errorListener = new AntlrMemoryErrorListener()
+            var errorListener = new AntlrMemoryErrorListener
             {
                 IsPattern = true,
                 SourceFile = sourceFile,
@@ -28,9 +24,10 @@ namespace PT.PM.Dsl
             };
             try
             {
-                var inputStream = new AntlrInputStream(data);
+                var inputStream = new LightInputStream(DslLexer.DefaultVocabulary, sourceFile, data);
                 DslLexer lexer = new DslLexer(inputStream);
 
+                lexer.TokenFactory = new LightTokenFactory();
                 lexer.RemoveErrorListeners();
                 lexer.AddErrorListener(errorListener);
 

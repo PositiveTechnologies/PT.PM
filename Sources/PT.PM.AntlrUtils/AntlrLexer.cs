@@ -36,17 +36,7 @@ namespace PT.PM.AntlrUtils
 
             ErrorListener.SourceFile = sourceFile;
             var preprocessedText = PreprocessText(sourceFile);
-            AntlrInputStream inputStream;
-
-            if (Language.IsCaseInsensitive())
-            {
-                inputStream = new AntlrCaseInsensitiveInputStream(preprocessedText, CaseInsensitiveType);
-            }
-            else
-            {
-                inputStream = new AntlrInputStream(preprocessedText);
-            }
-            inputStream.name = sourceFile.RelativeName;
+            var inputStream = new LightInputStream(Vocabulary, sourceFile, preprocessedText, CaseInsensitiveType);
 
             IList<IToken> tokens;
             try
@@ -56,7 +46,10 @@ namespace PT.PM.AntlrUtils
                 lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(LexerSerializedATN));
                 lexer.RemoveErrorListeners();
                 lexer.AddErrorListener(ErrorListener);
+                lexer.TokenFactory = new LightTokenFactory();
+
                 tokens = lexer.GetAllTokens();
+
                 stopwatch.Stop();
                 lexerTimeSpan = stopwatch.Elapsed;
             }
@@ -73,42 +66,6 @@ namespace PT.PM.AntlrUtils
             return tokens;
         }
 
-        /// <summary>
-        /// Converts \r to \r\n.
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        protected virtual string PreprocessText(TextFile file)
-        {
-            var text = file.Data;
-            var result = new StringBuilder(text.Length);
-            int i = 0;
-            while (i < text.Length)
-            {
-                if (text[i] == '\r')
-                {
-                    if (i + 1 >= text.Length)
-                    {
-                        result.Append('\n');
-                    }
-                    else if (text[i + 1] != '\n')
-                    {
-                        result.Append('\n');
-                    }
-                    else
-                    {
-                        result.Append(text[i]);
-                    }
-                }
-                else
-                {
-                    result.Append(text[i]);
-                }
-
-                i++;
-            }
-
-            return result.ToString();
-        }
+        protected virtual string PreprocessText(TextFile file) => file.Data;
     }
 }

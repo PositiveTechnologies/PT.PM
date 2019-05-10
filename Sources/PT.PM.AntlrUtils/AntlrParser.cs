@@ -58,7 +58,10 @@ namespace PT.PM.AntlrUtils
                 }
 
                 var stopwatch = Stopwatch.StartNew();
-                var codeTokenSource = new ListTokenSource(tokens);
+                var codeTokenSource = new ListTokenSource(tokens)
+                {
+                    TokenFactory = new LightTokenFactory()
+                };
                 var codeTokenStream = new CommonTokenStream(codeTokenSource);
                 ParserRuleContext syntaxTree = ParseTokens(ErrorListener, codeTokenStream);
                 stopwatch.Stop();
@@ -83,11 +86,12 @@ namespace PT.PM.AntlrUtils
         }
 
         private ParserRuleContext ParseTokens(
-            AntlrMemoryErrorListener errorListener, BufferedTokenStream codeTokenStream,
+            AntlrMemoryErrorListener errorListener, CommonTokenStream codeTokenStream,
             Func<ITokenStream, Parser> initParserFunc = null, Func<Parser, ParserRuleContext> parseFunc = null)
         {
             Parser parser = initParserFunc != null ? initParserFunc(codeTokenStream) : InitParser(codeTokenStream);
             parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(ParserSerializedATN));
+
             parser.RemoveErrorListeners();
             ParserRuleContext syntaxTree;
 
@@ -103,8 +107,8 @@ namespace PT.PM.AntlrUtils
                 }
                 catch (ParseCanceledException)
                 {
-                    parser.AddErrorListener(errorListener);
                     codeTokenStream.Reset();
+                    parser.AddErrorListener(errorListener);
                     parser.Reset();
                     parser.Interpreter.PredictionMode = PredictionMode.Ll;
                     parser.ErrorHandler = new DefaultErrorStrategy();

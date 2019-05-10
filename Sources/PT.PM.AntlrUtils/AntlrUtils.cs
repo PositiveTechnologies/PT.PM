@@ -60,7 +60,7 @@ namespace PT.PM.AntlrUtils
             TextSpan result;
             if (stop != null && stop.StopIndex >= start.StartIndex)
             {
-                result = new TextSpan(start.StartIndex, stop.StopIndex - start.StartIndex + 1);
+                result = new TextSpan(start.StartIndex, stop.StopIndex - start.StartIndex);
             }
             else
             {
@@ -77,7 +77,7 @@ namespace PT.PM.AntlrUtils
 
         public static TextSpan GetTextSpan(this IToken token)
         {
-            var result = new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex + 1);
+            var result = new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex);
             return result;
         }
 
