@@ -17,10 +17,10 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrConverter : IParseTreeToUstConverter, IParseTreeVisitor<Ust>
     {
-        protected static readonly Regex RegexHexLiteral = new Regex(@"^0[xX]([a-fA-F0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        protected static readonly Regex RegexOctalLiteral = new Regex(@"^0([0-7]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        protected static readonly Regex RegexBinaryLiteral = new Regex(@"^0[bB]([01]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        protected static readonly Regex RegexDecimalLiteral = new Regex(@"^([0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
+        private static readonly Regex RegexHexLiteral = new Regex(@"^0[xX]([a-fA-F0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
+        private static readonly Regex RegexOctalLiteral = new Regex(@"^0([0-7]+)([uUlL]{0,2})$", RegexOptions.Compiled);
+        private static readonly Regex RegexBinaryLiteral = new Regex(@"^0[bB]([01]+)([uUlL]{0,2})$", RegexOptions.Compiled);
+        private static readonly Regex RegexDecimalLiteral = new Regex(@"^([0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
 
         protected RootUst root;
 
@@ -30,7 +30,7 @@ namespace PT.PM.AntlrUtils
 
         public IList<IToken> Tokens { get; set; }
 
-        public Parser Parser { get; set; }
+        public string[] RuleNames { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -90,12 +90,7 @@ namespace PT.PM.AntlrUtils
         {
             try
             {
-                if (tree == null)
-                {
-                    return null;
-                }
-
-                return tree.Accept(this);
+                return tree?.Accept(this);
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
@@ -225,24 +220,17 @@ namespace PT.PM.AntlrUtils
 
         protected Ust VisitShouldNotBeVisited(IParseTree tree)
         {
-            var parserRuleContext = tree as ParserRuleContext;
             string ruleName = "";
-            if (parserRuleContext != null)
+            if (tree is ParserRuleContext parserRuleContext)
             {
-                ruleName = Parser?.RuleNames.ElementAtOrDefault(parserRuleContext.RuleIndex)
+                ruleName = RuleNames?.ElementAtOrDefault(parserRuleContext.RuleIndex)
                            ?? parserRuleContext.RuleIndex.ToString();
             }
 
             throw new ShouldNotBeVisitedException(ruleName);
         }
 
-        protected Ust DefaultResult
-        {
-            get
-            {
-                return null;
-            }
-        }
+        protected Ust DefaultResult => null;
 
         protected AssignmentExpression CreateAssignExpr(Expression left, Expression right, ParserRuleContext context, ParserRuleContext assignOperator)
         {
