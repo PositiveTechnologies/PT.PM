@@ -56,6 +56,9 @@ namespace PT.PM.Common.Nodes
         public int KindId => GetType().Name.GetHashCode();
 
         [IgnoreMember, JsonIgnore]
+        public string Substring => CurrentSourceFile.Data.Substring(TextSpan);
+
+        [IgnoreMember, JsonIgnore]
         public LineColumnTextSpan LineColumnTextSpan => CurrentSourceFile?.GetLineColumnTextSpan(TextSpan) ?? LineColumnTextSpan.Zero;
 
         [IgnoreMember, JsonIgnore]
@@ -116,7 +119,7 @@ namespace PT.PM.Common.Nodes
         {
             if (Children == null || Children.Length == 0)
             {
-                return "";
+                return Substring;
             }
 
             var result = new StringBuilder();
