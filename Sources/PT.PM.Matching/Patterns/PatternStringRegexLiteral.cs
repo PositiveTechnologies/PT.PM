@@ -59,7 +59,7 @@ namespace PT.PM.Matching.Patterns
         private MatchContext MatchContext(MatchContext context, string text, int escapeCharsLength,
             List<TextSpan> foldedTextSpans, int startOffset)
         {
-            List<TextSpan> matches = Regex.MatchRegex(text, escapeCharsLength);
+            List<TextSpan> matches = Regex.MatchRegex(text, escapeCharsLength, isFolded: foldedTextSpans?.Count > 0);
 
             matches = UstUtils.GetAlignedTextSpan(escapeCharsLength, foldedTextSpans, matches, startOffset);
 
