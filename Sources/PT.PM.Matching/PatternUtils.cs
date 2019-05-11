@@ -15,7 +15,7 @@ namespace PT.PM.Matching
         {
             if (patternRegex.ToString() == ".*")
             {
-                return new List<TextSpan> { new TextSpan(escapeCharsLength, text.Length) };
+                return new List<TextSpan> { new TextSpan(escapeCharsLength, text.Length + escapeCharsLength) };
             }
             
             MatchCollection matches = patternRegex.Matches(text);
