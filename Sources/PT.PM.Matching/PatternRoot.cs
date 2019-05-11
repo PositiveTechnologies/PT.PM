@@ -78,9 +78,9 @@ namespace PT.PM.Matching
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
 
-        public List<MatchResult> Match(Ust ust, UstConstantFolder ustConstantFolder, List<Ust> parentStack)
+        public List<MatchResult> Match(Ust ust, UstConstantFolder ustConstantFolder)
         {
-            var context = new MatchContext(this, ustConstantFolder, parentStack) { Logger = Logger };
+            var context = new MatchContext(this, ustConstantFolder) { Logger = Logger };
             var results = new List<MatchResult>();
 
             if (ust is RootUst rootUst)
