@@ -1,7 +1,11 @@
+using System;
 using Antlr4.Runtime;
+using PT.PM.Common;
+using PT.PM.Common.Files;
 
 namespace PT.PM.AntlrUtils
 {
+    // TODO: should store TextSpan instead of StartIndex and StopIndex
     public readonly struct LightToken : IToken
     {
         private readonly LightInputStream inputStream;
@@ -27,6 +31,12 @@ namespace PT.PM.AntlrUtils
         public string Text => Type == -1
             ? "EOF"
             : inputStream.TextFile.Data.Substring(StartIndex, StopIndex - StartIndex);
+
+        public ReadOnlySpan<char> Span => inputStream.TextFile.Data.AsSpan(StartIndex, StopIndex - StartIndex);
+
+        public TextFile TextFile => inputStream.TextFile;
+
+        public TextSpan TextSpan => new TextSpan(StartIndex, StopIndex - StartIndex);
 
         public string TypeName => inputStream.Vocabulary.GetDisplayName(Type);
 
