@@ -11,11 +11,14 @@ namespace PT.PM.Matching
         private static readonly Regex SupressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        public static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int escapeCharsLength = 0)
+        public static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int escapeCharsLength = 0, bool isFolded = false)
         {
             if (patternRegex.ToString() == ".*")
             {
-                return new List<TextSpan> { new TextSpan(escapeCharsLength, text.Length + escapeCharsLength) };
+                var matchLength = isFolded 
+                    ? text.Length 
+                    : text.Length + escapeCharsLength;
+                return new List<TextSpan> { new TextSpan(escapeCharsLength, matchLength) };
             }
             
             MatchCollection matches = patternRegex.Matches(text);
