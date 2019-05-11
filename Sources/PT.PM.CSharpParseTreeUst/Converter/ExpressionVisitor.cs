@@ -356,7 +356,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             {
                 case "string":
                 case "char":
-                    return new StringLiteral("", span);
+                    return new StringLiteral(span, root, 0);
                 case "int":
                 case "uint":
                 case "sbyte":
@@ -574,15 +574,14 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 return new NullLiteral(span);
             }
 
-            var str = token.Value as string;
-            if (str != null)
+            if (token.Value is string)
             {
-                return new StringLiteral(str, span);
+                return TextUtils.GetStringLiteralWithoutQuotes(span, root);
             }
 
             if (token.Value is char)
             {
-                return new StringLiteral(token.ValueText, span);
+                return TextUtils.GetStringLiteralWithoutQuotes(span, root);
             }
 
             var typeName = token.Value.GetType().Name;
@@ -671,7 +670,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             IdToken id = ConvertId(node.Keyword);
             Expression expr = (Expression)base.Visit(node.Expression);
-            ArgsUst args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
+            ArgsUst args = new ArgsUst(new [] { expr }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
             return result;
@@ -682,7 +681,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             IdToken id = ConvertId(node.Keyword);
             TypeToken type = (TypeToken)base.Visit(node.Type);
             Expression expr = (Expression)base.Visit(node.Expression);
-            ArgsUst args = new ArgsUst(new Expression[] { expr, type }, expr.TextSpan);
+            ArgsUst args = new ArgsUst(new [] { expr, type }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
             return result;
@@ -723,8 +722,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitInterpolatedStringText(InterpolatedStringTextSyntax node)
         {
-            var result = new StringLiteral(node.ToString(), node.GetTextSpan());
-            return result;
+            return new StringLiteral(node.GetTextSpan(), root, 0);
         }
 
         public override Ust VisitInterpolationAlignmentClause(InterpolationAlignmentClauseSyntax node)

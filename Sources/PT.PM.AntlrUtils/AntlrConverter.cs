@@ -162,15 +162,15 @@ namespace PT.PM.AntlrUtils
 
         public virtual Ust VisitTerminal(ITerminalNode node)
         {
-            Token result;
             string nodeText = node.GetText();
             TextSpan textSpan = node.GetTextSpan();
-            if ((nodeText.StartsWith("'") && nodeText.EndsWith("'")) ||
-                (nodeText.StartsWith("\"") && nodeText.EndsWith("\"")))
+            if (nodeText.StartsWith("'") && nodeText.EndsWith("'") ||
+                nodeText.StartsWith("\"") && nodeText.EndsWith("\""))
             {
-                return new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan);
+                return TextUtils.GetStringLiteralWithoutQuotes(textSpan, root);
             }
-            else if (nodeText.Contains("."))
+
+            if (nodeText.Contains("."))
             {
                 double.TryParse(nodeText, out double value);
                 return new FloatLiteral(value, textSpan);
@@ -181,11 +181,8 @@ namespace PT.PM.AntlrUtils
             {
                 return integerToken;
             }
-            else
-            {
-                result = new IdToken(nodeText, textSpan);
-            }
-            return result;
+
+            return new IdToken(nodeText, textSpan);
         }
 
         public Ust VisitErrorNode(IErrorNode node)
@@ -302,12 +299,12 @@ namespace PT.PM.AntlrUtils
                 }
                 else if (text.EndsWith("'"))
                 {
+                    int startIndex = textSpan.Start + 1;
                     if (text.StartsWith("N"))
                     {
-                        text = text.Substring(1);
+                        startIndex++;
                     }
-                    text = text.Substring(1, text.Length - 2);
-                    result = new StringLiteral(text, textSpan);
+                    result = new StringLiteral(TextSpan.FromBounds(startIndex, textSpan.End - 1, textSpan.File), root);
                 }
                 else if (text.All(char.IsDigit))
                 {
@@ -327,7 +324,7 @@ namespace PT.PM.AntlrUtils
                 Logger.LogDebug($"Literal cannot be extracted from {nameof(token)} with symbol {text}");
             }
 
-            if (result == null && (text.Any(c => char.IsLetterOrDigit(c) || c == '_')))
+            if (result == null && text.Any(c => char.IsLetterOrDigit(c) || c == '_'))
             {
                 result = new IdToken(text, textSpan);
             }

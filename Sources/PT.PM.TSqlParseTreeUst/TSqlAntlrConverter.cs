@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using PT.PM.Common.Files;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -2071,10 +2072,8 @@ namespace PT.PM.SqlParseTreeUst
             {
                 return Visit(context.func_proc_name());
             }
-            else
-            {
-                return new IdToken(context.GetText(), context.GetTextSpan());
-            }
+
+            return new IdToken(context.GetText(), context.GetTextSpan());
         }
 
         /// <returns><see cref="TypeToken"/></returns>
@@ -2107,11 +2106,13 @@ namespace PT.PM.SqlParseTreeUst
             Token result;
             if (context.STRING() != null)
             {
+                int start = textSpan.Start + 1;
                 if (text.StartsWith("N"))
                 {
-                    text = text.Substring(1);
+                    start++;
                 }
-                result = new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
+
+                result = new StringLiteral(TextSpan.FromBounds(start, textSpan.End - 1, textSpan.File), root);
             }
             else if (context.BINARY() != null)
             {
@@ -2119,7 +2120,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             else if (context.dollar != null)
             {
-                result = new StringLiteral(text, textSpan);
+                result = new StringLiteral(textSpan, root, 0);
             }
             else if (context.DECIMAL() != null)
             {

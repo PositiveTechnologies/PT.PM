@@ -254,7 +254,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     // TODO
                     break;
                 case TokenType.StringLiteral:
-                    return new UstLiterals.StringLiteral(literal.StringValue, textSpan);
+                    return TextUtils.GetStringLiteralWithoutQuotes(textSpan, root);
                 case TokenType.RegularExpression:
                     // TODO: maybe add new literal node RegularExpressionLiteral
                     return new UstLiterals.StringLiteral(literal.Regex.Pattern, textSpan);
@@ -399,7 +399,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstLiterals.StringLiteral VisitTemplateElement(TemplateElement templateElement)
         {
-            return new UstLiterals.StringLiteral(templateElement.Value.Cooked, GetTextSpan(templateElement));
+            return new UstLiterals.StringLiteral(templateElement.Value.Cooked, GetTextSpan(templateElement), 0);
         }
 
         private UstExprs.Expression VisitClassExpression(ClassExpression classExpression)

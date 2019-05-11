@@ -35,7 +35,7 @@ namespace PT.PM.Common.Nodes
                 return null;
             }
 
-            return ust as Expression 
+            return ust as Expression
                    ?? new WrapperExpression(ust);
         }
 

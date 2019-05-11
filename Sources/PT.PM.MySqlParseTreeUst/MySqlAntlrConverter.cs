@@ -2246,7 +2246,7 @@ namespace PT.PM.SqlParseTreeUst
             return new AssignmentExpression(context.GetTextSpan())
             {
                 Left = new IdToken(context.NAMES().GetText(), context.NAMES().GetTextSpan()),
-                Right = new StringLiteral(context.charsetName().GetText(), context.charsetName().GetTextSpan())
+                Right = new StringLiteral(context.charsetName().GetTextSpan(), root, 0)
             };
         }
 

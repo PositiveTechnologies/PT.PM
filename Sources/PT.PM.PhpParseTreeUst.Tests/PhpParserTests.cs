@@ -34,7 +34,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 {
                     Name = "newLine.php",
                 };
-                var tokens = Language.Php.CreateAntlrLexer().GetTokens(sourceFile, out TimeSpan _);
+                var tokens = new PhpAntlrLexer().GetTokens(sourceFile, out TimeSpan _);
                 phpParser.SourceFile = sourceFile;
                 var parseTree = (PhpAntlrParseTree)phpParser.Parse(tokens, out TimeSpan _);
                 var converter = new PhpAntlrParseTreeConverter();
@@ -50,7 +50,7 @@ namespace PT.PM.PhpParseTreeUst.Tests
 
                 Ust heredocNode = ust.WhereDescendantsOrSelf(
                     node => node is StringLiteral stringLiteral &&
-                    stringLiteral.Text.StartsWith("Heredoc text")).First();
+                    stringLiteral.TextValue.StartsWith("Heredoc text")).First();
 
                 LineColumnTextSpan heredocNodeSpan = heredocNode.LineColumnTextSpan;
                 Assert.AreEqual(3, heredocNodeSpan.BeginLine);
@@ -58,11 +58,11 @@ namespace PT.PM.PhpParseTreeUst.Tests
 
                 Ust serverAddressNode = ust.WhereDescendantsOrSelf(
                     node => node is StringLiteral stringLiteral &&
-                    stringLiteral.Text.Contains("http://127.0.0.1")).First();
+                    stringLiteral.TextValue.Contains("http://127.0.0.1")).First();
 
                 LineColumnTextSpan serverAddressNodeSpan = serverAddressNode.LineColumnTextSpan;
                 Assert.AreEqual(8, serverAddressNodeSpan.BeginLine);
-                Assert.AreEqual(15, serverAddressNodeSpan.BeginColumn);
+                Assert.AreEqual(16, serverAddressNodeSpan.BeginColumn);
             }
         }
     }

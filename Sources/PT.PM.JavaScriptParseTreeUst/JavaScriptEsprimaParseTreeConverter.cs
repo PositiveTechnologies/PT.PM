@@ -20,6 +20,8 @@ namespace PT.PM.JavaScriptParseTreeUst
 {
     public partial class JavaScriptEsprimaParseTreeConverter : IParseTreeToUstConverter
     {
+        private RootUst root;
+
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public Language Language => Language.JavaScript;
@@ -43,12 +45,12 @@ namespace PT.PM.JavaScriptParseTreeUst
                 {
                     SourceFile = esprimaParseTree.SourceFile;
                 }
+
+                root = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree));
+
                 var program = VisitProgram(esprimaParseTree.SyntaxTree);
 
-                var rootUst = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree))
-                {
-                    Nodes = new Ust[] { program }
-                };
+                root.Nodes = new Ust[] {program};
 
                 var comments = new Collections.List<Comment>(esprimaParseTree.Comments.Count);
                 foreach (Esprima.Comment comment in esprimaParseTree.Comments)
@@ -56,15 +58,15 @@ namespace PT.PM.JavaScriptParseTreeUst
                     TextSpan textSpan = GetTextSpan(comment);
                     comments.Add(new Comment(textSpan)
                     {
-                        Root = rootUst,
+                        Root = root,
                     });
                 }
 
-                rootUst.Comments = comments.ToArray();
-                rootUst.Root = ParentRoot;
-                rootUst.FillAscendants();
+                root.Comments = comments.ToArray();
+                root.Root = ParentRoot;
+                root.FillAscendants();
 
-                return rootUst;
+                return root;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {

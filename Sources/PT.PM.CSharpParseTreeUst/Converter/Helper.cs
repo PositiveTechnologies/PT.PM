@@ -23,19 +23,16 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         protected ModifierLiteral ConvertModifier(SyntaxToken token)
         {
-            Modifier modifier;
-            Enum.TryParse(token.ValueText, true, out modifier);
+            Enum.TryParse(token.ValueText, true, out Modifier modifier);
             return new ModifierLiteral(modifier, token.GetTextSpan());
         }
 
         protected TypeToken ConvertType(Ust node)
         {
-            var typeToken = node as TypeToken;
-            if (typeToken != null)
+            if (node is TypeToken typeToken)
                 return typeToken;
 
-            var idToken = node as IdToken;
-            if (idToken != null)
+            if (node is IdToken idToken)
                 return new TypeToken(idToken.Id, idToken.TextSpan);
 
             return null;
@@ -89,12 +86,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     Name = ConvertId(typeElement.Identifier)
                 };
 
-                var right = variable?.Right as TupleCreateExpression;
-                if (right == null)
-                {
-                    continue;
-                }
-                right.Initializers.Add(new AssignmentExpression
+                var right = variable.Right as TupleCreateExpression;
+                right?.Initializers.Add(new AssignmentExpression
                 {
                     Left = tupleTypeElementMemRef,
                     Right = initValues[i],

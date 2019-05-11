@@ -83,10 +83,11 @@ namespace PT.PM.Common
 
                 textSpans.Add(arrayCreationExpression.Type.TextSpan);
 
-                foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
+                foreach (var expression in arrayCreationExpression.Initializers)
                 {
-                    value.Append(stringLiteral.Text);
-                    textSpans.Add(stringLiteral.TextSpan);
+                    var stringLiteral = (StringLiteral) expression;
+                    AppendText(value, stringLiteral);
+                    AppendTextSpan(textSpans, stringLiteral);
                 }
 
                 return new FoldResult(value.ToString(), textSpans);
@@ -103,8 +104,8 @@ namespace PT.PM.Common
             {
                 if (initializer is StringLiteral stringLiteral)
                 {
-                    sb.Append(stringLiteral.Text);
-                    textSpans.Add(stringLiteral.TextSpan);
+                    AppendText(sb, stringLiteral);
+                    AppendTextSpan(textSpans, stringLiteral);
                 }
             }
             return sb.Length > 0
@@ -287,7 +288,10 @@ namespace PT.PM.Common
         {
             if (token is StringLiteral stringLiteral)
             {
-                return new FoldResult(stringLiteral.Text, stringLiteral.TextSpan);
+                TextSpan textSpan = stringLiteral.TextSpan;
+                int escapeLength = 1; // TODO: stringLiteral.EscapeCharsLength;
+                return new FoldResult(stringLiteral.TextValue,
+                    new TextSpan(textSpan.Start - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
             }
 
             if (token is IntLiteral intLiteral)
@@ -349,6 +353,29 @@ namespace PT.PM.Common
 
             result?.TextSpans.Sort();
             foldedResults[ust.TextSpan] = result;
+        }
+
+        private void AppendText(StringBuilder builder, StringLiteral literal)
+        {
+            if (literal.Text is null)
+            {
+                string data = literal.CurrentSourceFile.Data;
+                for (int i = literal.TextSpan.Start; i < literal.TextSpan.End; i++)
+                {
+                    builder.Append(data[i]);
+                }
+            }
+            else
+            {
+                builder.Append(literal.Text);
+            }
+        }
+
+        private static void AppendTextSpan(List<TextSpan> textSpans, StringLiteral stringLiteral)
+        {
+            TextSpan textSpan = stringLiteral.TextSpan;
+            int escapeLength = stringLiteral.EscapeCharsLength;
+            textSpans.Add(new TextSpan(textSpan.Start - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
         }
     }
 }

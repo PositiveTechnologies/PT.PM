@@ -16,7 +16,7 @@ namespace PT.PM.Common.Nodes.GeneralScope
 
         public NamespaceDeclaration(StringLiteral name, Ust member,
             TextSpan textSpan)
-            : this(name, new Ust[] { member }, textSpan)
+            : this(name, new [] { member }, textSpan)
         {
         }
 

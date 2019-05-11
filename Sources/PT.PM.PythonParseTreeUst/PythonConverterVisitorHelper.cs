@@ -19,12 +19,12 @@ namespace PT.PM.PythonParseTreeUst
             var text = node.GetText();
             if (text.StartsWith("\"") || text.StartsWith("'"))
             {
-                return new StringLiteral(text.Substring(1, text.Length - 2), node.GetTextSpan());
+                return TextUtils.GetStringLiteralWithoutQuotes(node.GetTextSpan(), root);
             }
             if (text == "False" || text == "True")
             {
                 return new BooleanLiteral(text == "True", node.GetTextSpan());
-            }            
+            }
             if (text == "None")
             {
                 return new NullLiteral(node.GetTextSpan());

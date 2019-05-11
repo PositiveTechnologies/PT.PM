@@ -62,7 +62,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 .Select(varDec => (AssignmentExpression)Visit(varDec))
                 .Where(initializer => initializer != null).ToArray();
 
-            if (initializers.Count() == 1 && initializers.First().Right is MultichildExpression multichildExpression)
+            if (initializers.Length == 1 && initializers.First().Right is MultichildExpression multichildExpression)
             {
                 var expressions = multichildExpression.Expressions;
                 // is array?
@@ -358,7 +358,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitCatchType(JavaParser.CatchTypeContext context)
         {
-            string[] names = context.qualifiedName().Select(name => ((StringLiteral)Visit(name))?.Text)
+            string[] names = context.qualifiedName().Select(name => ((StringLiteral)Visit(name))?.TextValue)
                 .Where(n => n != null).ToArray();
 
             var result = new TypeToken(string.Join("|", names), context.GetTextSpan());

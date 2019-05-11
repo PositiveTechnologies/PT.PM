@@ -86,10 +86,10 @@ namespace PT.PM.AntlrUtils
         {
             StackTrace stackTrace = new StackTrace(ex, true);
             int frameNumber = 0;
-            string fileName = null;
-            string methodName = null;
-            int line = 0;
-            int column = 0;
+            string fileName;
+            string methodName;
+            int line;
+            int column;
             do
             {
                 StackFrame frame = stackTrace.GetFrame(frameNumber);

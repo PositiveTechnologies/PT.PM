@@ -26,14 +26,14 @@ namespace PT.PM.PhpParseTreeUst
 {
     public partial class PhpAntlrParseTreeConverter : AntlrConverter, IPhpParserVisitor<Ust>
     {
-        protected const string namespacePrefix = CommonUtils.Prefix + "ns";
-        protected const string elementNamespacePrefix = CommonUtils.Prefix + "elemNs";
-        protected const string contentNamespacePrefix = CommonUtils.Prefix + "contentNs";
-        protected const string attrNamespacePrefix = CommonUtils.Prefix + "attrNs";
-        protected const string inlineHtmlNamespacePrefix = CommonUtils.Prefix + "inlineHtml";
+        private const string namespacePrefix = CommonUtils.Prefix + "ns";
+        private const string elementNamespacePrefix = CommonUtils.Prefix + "elemNs";
+        private const string contentNamespacePrefix = CommonUtils.Prefix + "contentNs";
+        private const string attrNamespacePrefix = CommonUtils.Prefix + "attrNs";
+        private const string inlineHtmlNamespacePrefix = CommonUtils.Prefix + "inlineHtml";
 
-        protected int jsStartCodeInd = 0;
-        protected int namespaceDepth;
+        private int jsStartCodeInd = 0;
+        private int namespaceDepth;
 
         public override Language Language => Language.Php;
 
@@ -100,10 +100,7 @@ namespace PT.PM.PhpParseTreeUst
             var result = AnalyzedLanguages.Contains(Language.Html)
                 ? new RootUst(root.SourceFile, Language.Html)
                 {
-                    Node = new StringLiteral(text.ToString(), context.GetTextSpan())
-                    {
-                        EscapeCharsLength = 0
-                    }
+                    Node = new StringLiteral(text.ToString(), context.GetTextSpan(), 0)
                 }
                 : null;
 
@@ -189,13 +186,13 @@ namespace PT.PM.PhpParseTreeUst
             // Process JavaScript at close script tag </script>
             return AnalyzedLanguages.Contains(Language.JavaScript)
                 ? null
-                : new StringLiteral(javaScriptCode, context.GetTextSpan());
+                : new StringLiteral(javaScriptCode, context.GetTextSpan(), 0);
         }
 
         public Ust VisitPhpBlock(PhpParser.PhpBlockContext context)
         {
             TextSpan textSpan = context.GetTextSpan();
-            var namespaceName = new StringLiteral("", textSpan);
+            var namespaceName = new StringLiteral(namespacePrefix, textSpan, 0);
             UsingDeclaration[] usingDeclarations = context.importStatement()
                 .Select(importStatement => (UsingDeclaration)Visit(importStatement))
                 .Where(stmt => stmt != null)
@@ -241,7 +238,7 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitUseDeclaration(PhpParser.UseDeclarationContext context)
         {
             var result = new UsingDeclaration(
-                new StringLiteral(context.useDeclarationContentList().GetText(), context.useDeclarationContentList().GetTextSpan()),
+                new StringLiteral(context.useDeclarationContentList().GetTextSpan(), root, 0),
                 context.GetTextSpan());
             return result;
         }
@@ -268,7 +265,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                name = new StringLiteral(CommonUtils.Prefix + "unnamed", default(TextSpan));
+                name = new StringLiteral(CommonUtils.Prefix + "unnamed", default, 0);
             }
 
             Ust[] members = context.namespaceStatement()
@@ -1337,7 +1334,7 @@ namespace PT.PM.PhpParseTreeUst
                 {
                     genericStr = ((TypeToken)Visit(context.genericDynamicArgs())).TypeText;
                 }
-                return new TypeToken(typeStr.Text + genericStr, textSpan);
+                return new TypeToken(typeStr.TextValue + genericStr, textSpan);
             }
 
             var result = new TypeToken(context.Static().GetText(), textSpan);
@@ -1358,12 +1355,12 @@ namespace PT.PM.PhpParseTreeUst
             if (context.qualifiedNamespaceName() != null)
             {
                 var str = (StringLiteral)Visit(context.qualifiedNamespaceName());
-                result = new TypeToken(str.Text + genericStr, textSpan);
+                result = new TypeToken(str.TextValue + genericStr, textSpan);
             }
             else if (context.indirectTypeRef() != null)
             {
                 var indirectTypeRef = (Expression)Visit(context.indirectTypeRef());
-                result = new TypeToken(indirectTypeRef.ToString() + genericStr, textSpan);
+                result = new TypeToken(indirectTypeRef + genericStr, textSpan);
             }
             else if (context.primitiveType() != null)
             {
@@ -1414,14 +1411,12 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitQualifiedNamespaceName(PhpParser.QualifiedNamespaceNameContext context)
         {
-            var result = (StringLiteral)Visit(context.namespaceNameList());
-            return result;
+            return (StringLiteral)Visit(context.namespaceNameList());
         }
 
         public Ust VisitNamespaceNameList(PhpParser.NamespaceNameListContext context)
         {
-            var result = new StringLiteral(context.GetText(), context.GetTextSpan());
-            return result;
+            return new StringLiteral(context.GetTextSpan(), root, 0);
         }
 
         public Ust VisitQualifiedNamespaceNameList(PhpParser.QualifiedNamespaceNameListContext context)
@@ -1589,18 +1584,17 @@ namespace PT.PM.PhpParseTreeUst
             {
                 IEnumerable<string> hereDocText = context.HereDocText().Select(c => c.GetText());
                 var str = string.Join("", hereDocText).Trim();
-                result = new StringLiteral(str, context.GetTextSpan());
+                result = new StringLiteral(str, context.GetTextSpan(), 0);
             }
             else if (context.SingleQuoteString() != null)
             {
-                var text = context.GetText();
-                result = new StringLiteral(text.Substring(1, text.Length - 2), context.GetTextSpan());
+                result = TextUtils.GetStringLiteralWithoutQuotes(context.GetTextSpan(), root);
             }
             else
             {
                 if (context.interpolatedStringPart().Length == 0)
                 {
-                    result = new StringLiteral("", context.GetTextSpan());
+                    result = new StringLiteral("", context.GetTextSpan(), 0);
                 }
                 else
                 {
@@ -1622,10 +1616,7 @@ namespace PT.PM.PhpParseTreeUst
             Expression result;
             if (context.StringPart() != null)
             {
-                // TextSpan should include quotes
-                var oldTextSpan = context.GetTextSpan();
-                var textSpan = new TextSpan(oldTextSpan.Start - 1, oldTextSpan.Length + 2);
-                result = new StringLiteral(context.StringPart().GetText(), textSpan);
+                result = new StringLiteral(context.GetTextSpan(), root, 0); // TODO: escape length should be 1
             }
             else
             {
@@ -1725,7 +1716,7 @@ namespace PT.PM.PhpParseTreeUst
             if (context.qualifiedNamespaceName() != null) // TODO: Fix QualifiedNamespaceName Type.
             {
                 var strLit = (StringLiteral)Visit(context.qualifiedNamespaceName());
-                result = new IdToken(strLit.Text, strLit.TextSpan);
+                result = new IdToken(strLit.TextValue, strLit.TextSpan);
             }
             else
             {
@@ -1900,9 +1891,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public override Ust VisitTerminal(ITerminalNode node)
         {
-            var nodeText = node.GetText();
-            var result = new StringLiteral(nodeText, node.GetTextSpan());
-            return result;
+            return new StringLiteral(node.GetTextSpan(), root, 0);
         }
     }
 }

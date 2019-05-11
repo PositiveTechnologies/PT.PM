@@ -1,4 +1,4 @@
-﻿using PT.PM.Common.Files;
+using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Utils;
 using System;
@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Common
 {
@@ -395,6 +396,12 @@ namespace PT.PM.Common
             {
                 return new IntLiteral(0, textSpan);
             }
+        }
+
+        public static StringLiteral GetStringLiteralWithoutQuotes(TextSpan textSpan, RootUst root, int escapeCharsLength = 1)
+        {
+            return new StringLiteral(new TextSpan(textSpan.Start + escapeCharsLength, textSpan.Length - 2 * escapeCharsLength, textSpan.File), root,
+                escapeCharsLength);
         }
 
         private static Literal CreateNumericLiteral(string value, TextSpan textSpan, int fromBase = 10)

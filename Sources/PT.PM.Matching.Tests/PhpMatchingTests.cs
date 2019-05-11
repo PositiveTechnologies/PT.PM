@@ -19,9 +19,10 @@ namespace PT.PM.Matching.Tests
             var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, Global.PatternsRepository) {Logger = logger};
             workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = logger.Matches
+            List<MatchResultDto> matchResults = logger.Matches
                 .ToDto()
-                .OrderBy(r => r.PatternKey);
+                .OrderBy(r => r.PatternKey)
+                .ToList();
             IEnumerable<PatternDto> patternDtos = Global.PatternsRepository.GetAll()
                 .Where(patternDto => patternDto.Languages.Contains("Php"));
             foreach (PatternDto dto in patternDtos)
@@ -32,7 +33,7 @@ namespace PT.PM.Matching.Tests
                 r.MatchedCode.Contains("Configure") &&
                 r.MatchedCode.Contains("write") &&
                 r.MatchedCode.Contains("3")));
-            Assert.AreEqual(0, matchResults.Count(r => 
+            Assert.AreEqual(0, matchResults.Count(r =>
                 r.MatchedCode.Contains("Configure") &&
                 r.MatchedCode.Contains("write") &&
                 r.MatchedCode.Contains("50")));

@@ -380,8 +380,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             string complexName = string.Join("", context.children.Select(c => c.ToString()).ToArray());
             TextSpan textSpan = context.GetTextSpan();
 
-            var result = new StringLiteral(complexName, textSpan);
-            return result;
+            return new StringLiteral(complexName, textSpan, 0);
         }
 
         public Ust VisitQualifiedNameList(JavaParser.QualifiedNameListContext context)
@@ -400,11 +399,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             var textSpan = context.GetTextSpan();
 
-            ITerminalNode stringLiteral = context.STRING_LITERAL();
-            if (stringLiteral != null)
+            if (context.STRING_LITERAL() != null)
             {
-                string text = stringLiteral.GetText();
-                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
+                return TextUtils.GetStringLiteralWithoutQuotes(textSpan, root);
             }
 
             if (context.integerLiteral() != null)
@@ -423,11 +420,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 return new BooleanLiteral(bool.Parse(boolLiteral.GetText()), textSpan);
             }
 
-            ITerminalNode charLiteral = context.CHAR_LITERAL();
-            if (charLiteral != null)
+            if (context.CHAR_LITERAL() != null)
             {
-                string text = charLiteral.GetText();
-                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
+                return TextUtils.GetStringLiteralWithoutQuotes(textSpan, root);
             }
 
             if (context.Start.Type == JavaParser.NULL_LITERAL)

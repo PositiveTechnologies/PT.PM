@@ -50,7 +50,10 @@ namespace PT.PM.PythonParseTreeUst
             {
                 var dotIndex = root.CurrentSourceFile.Name.LastIndexOf('.');
                 return new NamespaceDeclaration(
-                    new StringLiteral(root.CurrentSourceFile?.Name.Remove(dotIndex < 0 ? 0 : dotIndex)),
+                    new StringLiteral(root.CurrentSourceFile?.Name.Remove(dotIndex < 0 ? 0 : dotIndex))
+                    {
+                        EscapeCharsLength = 0
+                    },
                     block,
                     context.GetTextSpan());
             }
@@ -433,14 +436,14 @@ namespace PT.PM.PythonParseTreeUst
         {
             string name = context.dotted_as_names().GetText();
             TextSpan textSpan = context.dotted_as_names().GetTextSpan();
-            return new UsingDeclaration(new StringLiteral(name, textSpan), context.GetTextSpan());
+            return new UsingDeclaration(new StringLiteral(name, textSpan, 0), context.GetTextSpan());
         }
 
         public Ust VisitFrom_stmt(PythonParser.From_stmtContext context)
         {
             string name = context.children.LastOrDefault()?.GetText() ?? "";
             TextSpan textSpan = context.GetTextSpan();
-            return new UsingDeclaration(new StringLiteral(name, textSpan), context.GetTextSpan());
+            return new UsingDeclaration(new StringLiteral(name, textSpan, 0), context.GetTextSpan());
         }
 
         public Ust VisitImport_as_name(PythonParser.Import_as_nameContext context)

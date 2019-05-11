@@ -40,7 +40,12 @@ namespace PT.PM.Matching.Patterns
         {
             if (ust is StringLiteral stringLiteral)
             {
-                return MatchContext(context, stringLiteral.Text, stringLiteral.EscapeCharsLength, null, stringLiteral.TextSpan.Start);
+                List<TextSpan> matches = stringLiteral.Text is null
+                    ? Regex.MatchRegex(stringLiteral.CurrentSourceFile, stringLiteral.TextSpan,
+                            stringLiteral.EscapeCharsLength)
+                    : Regex.MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength);
+
+                return matches.Count > 0 ? context.AddMatches(matches) : context.Fail();
             }
 
             if (context.UstConstantFolder != null &&
@@ -49,23 +54,17 @@ namespace PT.PM.Matching.Patterns
                 context.MatchedWithFolded = true;
                 if (foldResult.Value is string stringValue)
                 {
-                    return MatchContext(context, stringValue, 1, foldResult.TextSpans, ust.TextSpan.Start);
+                    List<TextSpan> matches = Regex.MatchRegex(stringValue, escapeCharsLength: 1);
+
+                    matches = UstUtils.GetAlignedTextSpan(1, foldResult.TextSpans, matches, ust.TextSpan.Start);
+
+                    return matches.Count > 0
+                        ? context.AddMatches(matches)
+                        : context.Fail();
                 }
             }
 
             return context.Fail();
-        }
-
-        private MatchContext MatchContext(MatchContext context, string text, int escapeCharsLength,
-            List<TextSpan> foldedTextSpans, int startOffset)
-        {
-            List<TextSpan> matches = Regex.MatchRegex(text, escapeCharsLength: escapeCharsLength);
-
-            matches = UstUtils.GetAlignedTextSpan(escapeCharsLength, foldedTextSpans, matches, startOffset);
-
-            return matches.Count > 0
-                ? context.AddMatches(matches)
-                : context.Fail();
         }
     }
 }

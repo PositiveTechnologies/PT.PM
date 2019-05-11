@@ -16,20 +16,19 @@ namespace PT.PM.SqlParseTreeUst
             string text = node.GetText();
             TextSpan textSpan = node.GetTextSpan();
             Token result;
-            double doubleResult;
             if (text.StartsWith("'"))
             {
-                result = new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
+                result = TextUtils.GetStringLiteralWithoutQuotes(node.GetTextSpan(), root);
             }
             else if (text.ToLowerInvariant().StartsWith("n'"))
             {
-                result = new StringLiteral(text.Substring(2, text.Length - 3), textSpan);
+                result = new StringLiteral(new TextSpan(textSpan.Start + 2, textSpan.Length - 3, textSpan.File), root);
             }
             else if (text.All(char.IsDigit))
             {
                 result = TextUtils.TryCreateNumericLiteral(text, textSpan);
             }
-            else if (double.TryParse(text, out doubleResult))
+            else if (double.TryParse(text, out var doubleResult))
             {
                 result = new FloatLiteral(doubleResult, textSpan);
             }

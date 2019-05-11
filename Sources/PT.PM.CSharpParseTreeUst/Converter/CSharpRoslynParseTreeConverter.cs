@@ -47,9 +47,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
 
             RootUst result;
-            string filePath = syntaxTree.FilePath;
             try
             {
+                root = new RootUst(langParseTree.SourceFile, Language.CSharp);
                 Ust visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
                 if (visited is RootUst rootUst)
                 {
@@ -92,9 +92,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (root == null)
             {
-                root = new RootUst(null, Language.CSharp, node.GetTextSpan());
+                root = new RootUst(null, Language.CSharp);
             }
             root.Nodes = children.ToArray();
+            root.TextSpan = node.GetTextSpan();
             return root;
         }
 
@@ -111,7 +112,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitUsingDirective(UsingDirectiveSyntax node)
         {
             var nameSpan = node.Name.GetTextSpan();
-            var name = new StringLiteral(node.Name.ToFullString(), nameSpan);
+            var name = new StringLiteral(node.Name.ToFullString(), nameSpan, 0);
             return new UsingDeclaration(name, node.GetTextSpan());
         }
 
