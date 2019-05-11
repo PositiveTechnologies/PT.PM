@@ -55,14 +55,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitInterfaceMethodDeclaration(JavaParser.InterfaceMethodDeclarationContext context)
         {
-            JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
-            ITerminalNode child0Terminal = context.GetChild<ITerminalNode>(0);
             ITerminalNode identifier = context.IDENTIFIER();
             JavaParser.FormalParametersContext formalParameters = context.formalParameters();
-            JavaParser.BlockContext methodBody = context.methodBody().block();
-
-            MethodDeclaration result = ConvertMethodDeclaration(type, child0Terminal, identifier, formalParameters, null,
-                context.GetTextSpan());
+            MethodDeclaration result = ConvertMethodDeclaration(identifier, formalParameters, null, context.GetTextSpan());
             return result;
         }
 
@@ -73,13 +68,10 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitMethodDeclaration(JavaParser.MethodDeclarationContext context)
         {
-            JavaParser.TypeTypeOrVoidContext type = context.typeTypeOrVoid();
-            ITerminalNode child0Terminal = context.GetChild<ITerminalNode>(0);
             ITerminalNode identifier = context.IDENTIFIER();
             JavaParser.FormalParametersContext formalParameters = context.formalParameters();
             JavaParser.BlockContext methodBody = context.methodBody().block();
-
-            MethodDeclaration result = ConvertMethodDeclaration(type, child0Terminal, identifier, formalParameters, methodBody,
+            MethodDeclaration result = ConvertMethodDeclaration(identifier, formalParameters, methodBody,
                 context.GetTextSpan());
             return result;
         }

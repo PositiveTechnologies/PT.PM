@@ -1,3 +1,4 @@
+using System;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -16,6 +17,7 @@ using PythonParseTree;
 using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Exceptions;
+using Attribute = PT.PM.Common.Nodes.Attribute;
 
 namespace PT.PM.PythonParseTreeUst
 {
@@ -809,12 +811,35 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitNumber(PythonParser.NumberContext context)
         {
+            if (context.integer() != null)
+            {
+                return VisitInteger(context.integer());
+            }
+
+            if (context.FLOAT_NUMBER() != null)
+            {
+                IToken symbol = context.FLOAT_NUMBER().Symbol;
+                TryParseDoubleInvariant(symbol.Text, out double value);
+                return new FloatLiteral(value, symbol.GetTextSpan());
+            }
+
             return Visit(context.GetChild(0));
         }
 
         public Ust VisitInteger(PythonParser.IntegerContext context)
         {
-            return TryParseInteger(context.GetText(), context.GetTextSpan());
+            int fromBase = context.DECIMAL_INTEGER() != null
+                ? 10
+                : context.HEX_INTEGER() != null
+                    ? 16
+                    : context.BIN_INTEGER() != null
+                        ? 8
+                        : 2;
+
+            ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
+            TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
+
+            return numeric;
         }
 
         public Ust VisitTestlist_comp(PythonParser.Testlist_compContext context)

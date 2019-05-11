@@ -16,11 +16,6 @@ namespace PT.PM.SqlParseTreeUst
 {
     public partial class TSqlAntlrConverter
     {
-        public override Ust VisitTerminal(ITerminalNode node)
-        {
-            return ExtractLiteral(node.Symbol);
-        }
-
         private InvocationExpression CreateSpecialInvocation(ITerminalNode name,
                 ParserRuleContext context, Expression expression)
         {

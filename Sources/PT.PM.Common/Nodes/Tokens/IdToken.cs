@@ -8,7 +8,7 @@ namespace PT.PM.Common.Nodes.Tokens
     public class IdToken : Token
     {
         [Key(UstFieldOffset)]
-        public virtual string Id { get; set; }
+        public string Id { get; set; }
 
         [IgnoreMember, JsonIgnore]
         public override string TextValue => Id;

@@ -8,20 +8,15 @@ using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 
 namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrConverter : IParseTreeToUstConverter, IParseTreeVisitor<Ust>
     {
-        private static readonly Regex RegexHexLiteral = new Regex(@"^0[xX]([a-fA-F0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        private static readonly Regex RegexOctalLiteral = new Regex(@"^0([0-7]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        private static readonly Regex RegexBinaryLiteral = new Regex(@"^0[bB]([01]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        private static readonly Regex RegexDecimalLiteral = new Regex(@"^([0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-
         protected RootUst root;
 
         public abstract Language Language { get; }
@@ -137,83 +132,8 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-        public Ust VisitList(IList<IParseTree> nodes)
-        {
-            var exprs = new List<Expression>();
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                var child = Visit(nodes[i]);
-                if (child != null)
-                {
-                    // Ignore null.
-                    if (child is Expression childExpression)
-                    {
-                        exprs.Add(childExpression);
-                    }
-                    else
-                    {
-                        exprs.Add(new WrapperExpression(child));
-                    }
-                }
-            }
-            var result = new MultichildExpression(exprs);
-            return result;
-        }
-
-        public virtual Ust VisitTerminal(ITerminalNode node)
-        {
-            string nodeText = node.GetText();
-            TextSpan textSpan = node.GetTextSpan();
-            if (nodeText.StartsWith("'") && nodeText.EndsWith("'") ||
-                nodeText.StartsWith("\"") && nodeText.EndsWith("\""))
-            {
-                return TextUtils.GetStringLiteralWithoutQuotes(textSpan, root);
-            }
-
-            if (nodeText.Contains("."))
-            {
-                double.TryParse(nodeText, out double value);
-                return new FloatLiteral(value, textSpan);
-            }
-
-            var integerToken = TryParseInteger(nodeText, textSpan);
-            if (integerToken != null)
-            {
-                return integerToken;
-            }
-
-            return new IdToken(nodeText, textSpan);
-        }
-
-        public Ust VisitErrorNode(IErrorNode node)
-        {
-            return DefaultResult;
-        }
-
-        protected Token TryParseInteger(string text, TextSpan textSpan)
-        {
-            Match match = RegexHexLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 16);
-            }
-            match = RegexOctalLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 8);
-            }
-            match = RegexBinaryLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 2);
-            }
-            match = RegexDecimalLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan);
-            }
-            return null;
-        }
+        public virtual Ust VisitTerminal(ITerminalNode node) => ExtractLiteral(node.Symbol);
+        public Ust VisitErrorNode(IErrorNode node) => DefaultResult;
 
         protected Ust VisitShouldNotBeVisited(IParseTree tree)
         {
@@ -275,61 +195,226 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-
         protected Token ExtractLiteral(IToken token)
         {
-            string text = token.Text;
-            TextSpan textSpan = token.GetTextSpan();
-            Token result = null;
+            ReadOnlySpan<char> span = ExtractSpan(token, out TextSpan textSpan);
 
-            try
+            int spanLength = span.Length;
+            char firstChar = span[0];
+
+            if (spanLength == 1 && firstChar == '*')
             {
-                if (text == "*")
+                if (firstChar == '*')
                 {
-                    result = new IdToken(text, textSpan);
+                    return new IdToken(span.ToString(), textSpan);
                 }
-                else if (text.StartsWith("@"))
+
+                if (char.IsDigit(firstChar) && TryParseNumeric(span, textSpan, 10, out Literal numeric))
                 {
-                    result = new IdToken(text.Substring(1), textSpan);
+                    return numeric;
                 }
-                else if ((text.StartsWith("\"") || text.StartsWith("["))
-                    && text.Length > 1)
+            }
+
+            if (spanLength > 1)
+            {
+                if (firstChar == '@')
                 {
-                    result = new IdToken(text.Substring(1, text.Length - 2), textSpan);
+                    return new IdToken(span.Slice(1).ToString(), textSpan);
                 }
-                else if (text.EndsWith("'"))
+
+                if (firstChar == '[')
                 {
-                    int startIndex = textSpan.Start + 1;
-                    if (text.StartsWith("N"))
+                    return new IdToken(span.Slice(1, span.Length - 2).ToString(), textSpan);
+                }
+
+                if (span[span.Length - 1] == '\'' || span[span.Length - 1] == '"')
+                {
+                    int startIndex = 0;
+
+                    char firstCharLowered = char.ToLowerInvariant(firstChar);
+                    if (Language.IsSql() && firstCharLowered == 'n' ||
+                        Language == Language.Python && firstChar == 'b')
                     {
                         startIndex++;
                     }
-                    result = new StringLiteral(TextSpan.FromBounds(startIndex, textSpan.End - 1, textSpan.File), root);
+
+                    if (span[startIndex] == '\'' || span[startIndex] == '"')
+                    {
+                        startIndex++;
+                        return new StringLiteral(TextSpan.FromBounds(textSpan.Start + startIndex, textSpan.End - 1, textSpan.File),
+                            root);
+                    }
                 }
-                else if (text.All(char.IsDigit))
+
+                if (char.IsDigit(firstChar))
                 {
-                    result = TextUtils.TryCreateNumericLiteral(text, textSpan);
+                    char secondChar = char.ToLowerInvariant(span[1]);
+
+                    int fromBase = char.IsDigit(secondChar)
+                        ? 10
+                        : secondChar == 'x'
+                            ? 16
+                            : secondChar == 'o'
+                                ? 8
+                                : secondChar == 'b'
+                                    ? 2
+                                    : -1;
+
+                    if (fromBase != -1 && TryParseNumeric(span, textSpan, fromBase, out Literal numeric))
+                    {
+                        return numeric;
+                    }
                 }
-                else if (text.StartsWith("0X", StringComparison.OrdinalIgnoreCase))
-                {
-                    result = TextUtils.TryCreateNumericLiteral(text, textSpan, 16);
-                }
-                else if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out double floatValue))
-                {
-                    result = new FloatLiteral(floatValue, textSpan);
-                }
-            }
-            catch
-            {
-                Logger.LogDebug($"Literal cannot be extracted from {nameof(token)} with symbol {text}");
             }
 
-            if (result == null && text.Any(c => char.IsLetterOrDigit(c) || c == '_'))
+            bool id = true;
+            for (int i = 0; i < spanLength; i++)
             {
-                result = new IdToken(text, textSpan);
+                char c = span[i];
+                if ((i == 0 ? !char.IsLetter(c) : !char.IsLetterOrDigit(c)) && c != '_')
+                {
+                    id = false;
+                    break;
+                }
             }
 
-            return result;
+            if (id)
+            {
+                return new IdToken(span.ToString(), textSpan);
+            }
+
+            if (TryParseDoubleInvariant(span.ToString(), out double floatValue))
+            {
+                return new FloatLiteral(floatValue, textSpan);
+            }
+
+            // TODO: Maybe return undefined token
+            Logger.LogDebug($"Literal cannot be extracted from Token {textSpan} with value {span.ToString()}");
+            return null;
+        }
+
+        protected static ReadOnlySpan<char> ExtractSpan(IToken token, out TextSpan textSpan)
+        {
+            ReadOnlySpan<char> span;
+
+            if (token is LightToken lightToken)
+            {
+                textSpan = lightToken.TextSpan;
+                span = lightToken.Span;
+            }
+            else
+            {
+                textSpan = token.GetTextSpan();
+                span = token.Text.AsSpan();
+            }
+
+            return span;
+        }
+
+        // TODO: implement TryParse methods with Span when netstandard 2.1 comes out
+        protected static bool TryParseNumeric(ReadOnlySpan<char> value, TextSpan textSpan, int fromBase, out Literal numeric)
+        {
+            string valueString;
+
+            char lastChar = char.ToLowerInvariant(value[value.Length - 1]);
+            if (lastChar == 'u' || lastChar == 'l')
+            {
+                value = value.Slice(value.Length - 1);
+            }
+
+            lastChar = char.ToLowerInvariant(value[value.Length - 1]);
+            if (lastChar == 'u' || lastChar == 'l')
+            {
+                value = value.Slice(value.Length - 1);
+            }
+
+            if (fromBase == 10)
+            {
+                valueString = value.ToString();
+                if (int.TryParse(valueString, out int intValue))
+                {
+                    numeric = new IntLiteral(intValue, textSpan);
+                    return true;
+                }
+
+                if (long.TryParse(valueString, out long longValue))
+                {
+                    numeric = new LongLiteral(longValue, textSpan);
+                    return true;
+                }
+
+                if (BigInteger.TryParse(valueString, out BigInteger bigValue))
+                {
+                    numeric = new BigIntLiteral(bigValue, textSpan);
+                    return true;
+                }
+
+                numeric = null;
+                return false;
+            }
+
+            if (fromBase == 16 || fromBase == 8 || fromBase == 2)
+            {
+                char secondChar = fromBase == 16 ? 'x' : fromBase == 8 ? 'o' : 'b';
+
+                value = value.Length > 2 && value[0] == '0' && char.ToLowerInvariant(value[1]) == secondChar
+                    ? value.Slice(2)
+                    : value;
+                valueString = value.ToString();
+
+                try
+                {
+                    numeric = new IntLiteral(System.Convert.ToInt32(valueString, fromBase), textSpan);
+                    return true;
+                }
+                catch
+                {
+                    try
+                    {
+                        numeric = new LongLiteral(System.Convert.ToInt64(valueString, fromBase), textSpan);
+                        return true;
+                    }
+                    catch
+                    {
+                        if (fromBase == 16)
+                        {
+                            if (BigInteger.TryParse(valueString,
+                                NumberStyles.HexNumber, CultureInfo.InvariantCulture, out BigInteger bigValue))
+                            {
+                                numeric = new BigIntLiteral(bigValue, textSpan);
+                                return true;
+                            }
+
+                            numeric = null;
+                            return false;
+                        }
+
+                        var result = new BigInteger();
+
+                        foreach (char c in value)
+                        {
+                            int nextDigit = c - '0';
+                            if (nextDigit < 0 || nextDigit >= fromBase)
+                            {
+                                numeric = null;
+                                return false;
+                            }
+
+                            result = result * fromBase + nextDigit;
+                        }
+
+                        numeric = new BigIntLiteral(result);
+                        return true;
+                    }
+                }
+            }
+
+            throw new NotSupportedException($"{fromBase} base сonversion is not supported");
+        }
+
+        protected bool TryParseDoubleInvariant(string s, out double value)
+        {
+            return double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
         }
     }
 }

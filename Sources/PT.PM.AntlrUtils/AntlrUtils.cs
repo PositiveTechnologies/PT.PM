@@ -77,8 +77,9 @@ namespace PT.PM.AntlrUtils
 
         public static TextSpan GetTextSpan(this IToken token)
         {
-            var result = new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex);
-            return result;
+            return token is LightToken lightToken
+                ? lightToken.TextSpan
+                : new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex);
         }
 
         public static void LogConversionError(this ILogger logger, Exception ex,

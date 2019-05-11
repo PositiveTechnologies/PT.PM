@@ -258,9 +258,9 @@ namespace PT.PM.Dsl
         public PatternUst VisitMemberReferenceOrLiteralExpression(DslParser.MemberReferenceOrLiteralExpressionContext context)
         {
             var textSpan = context.GetTextSpan();
-            var values = new PatternUst[]
+            var values = new []
             {
-                new PatternMemberReferenceExpression((PatternUst)VisitExpression(context.expression()),
+                new PatternMemberReferenceExpression(VisitExpression(context.expression()),
                     VisitLiteralOrPatternId(context.literalOrPatternId()), textSpan),
                     VisitLiteralOrPatternId(context.literalOrPatternId())
             };

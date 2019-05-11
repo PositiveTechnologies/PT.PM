@@ -33,7 +33,6 @@ namespace PT.PM.PhpParseTreeUst
         private const string inlineHtmlNamespacePrefix = CommonUtils.Prefix + "inlineHtml";
 
         private int jsStartCodeInd = 0;
-        private int namespaceDepth;
 
         public override Language Language => Language.Php;
 
@@ -42,9 +41,7 @@ namespace PT.PM.PhpParseTreeUst
         public static PhpAntlrParseTreeConverter Create() => new PhpAntlrParseTreeConverter();
 
         public PhpAntlrParseTreeConverter()
-            : base()
         {
-            namespaceDepth = 0;
         }
 
         public Ust VisitHtmlDocument(PhpParser.HtmlDocumentContext context)
@@ -1542,39 +1539,23 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitNumericConstant([NotNull] PhpParser.NumericConstantContext context)
         {
-            string text = context.GetText();
-            var textSpan = context.GetTextSpan();
-            Token result = null;
-            try
-            {
-                if (context.Octal() != null)
-                {
-                    result = new LongLiteral(System.Convert.ToInt64(text, 8));
-                }
-                else if (context.Decimal() != null)
-                {
-                    result = TextUtils.TryCreateNumericLiteral(text, textSpan);
-                }
-                else if (context.Hex() != null)
-                {
-                    result = TextUtils.TryCreateNumericLiteral(text, textSpan, 16);
-                }
-                else if (context.Binary() != null)
-                {
-                    result = TextUtils.TryCreateNumericLiteral(text.Substring(2), textSpan, 2);
-                }
-            }
-            catch
-            {
-                result = new FloatLiteral(double.PositiveInfinity, textSpan);
-            }
-            return result;
+            ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
+
+            int fromBase = context.Decimal() != null
+                ? 10
+                : context.Hex() != null
+                    ? 16
+                    : context.Octal() != null
+                        ? 8
+                        : 2;
+
+            TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
+            return numeric;
         }
 
         public Ust VisitStringConstant(PhpParser.StringConstantContext context)
         {
-            var result = new IdToken(context.GetText(), context.GetTextSpan());
-            return result;
+            return new IdToken(context.GetText(), context.GetTextSpan());
         }
 
         public Ust VisitString(PhpParser.StringContext context)
