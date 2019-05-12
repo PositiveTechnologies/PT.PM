@@ -85,7 +85,7 @@ namespace PT.PM
 
         public int ThreadCount { get; set; }
 
-        public int MemoryConsumptionMb { get; set; } = 3000;
+        public int MemoryConsumptionMb { get; set; } = 2000;
 
         public TimeSpan FileTimeout { get; set; }
 
@@ -255,8 +255,6 @@ namespace PT.PM
 
                 if (parser is AntlrParser antlrParser)
                 {
-                    AntlrBaseHandler.MemoryConsumptionBytes = (long) MemoryConsumptionMb * 1024 * 1024;
-
                     var antlrLexer = (AntlrLexer) antlrParser.Language.CreateLexer();
                     antlrLexer.Logger = Logger;
                     var tokens = antlrLexer.GetTokens(sourceTextFile, out lexerTimeSpan);

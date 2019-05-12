@@ -77,10 +77,6 @@ namespace PT.PM.AntlrUtils
             {
                 Logger.LogError(new ParsingException(SourceFile, ex));
             }
-            finally
-            {
-                HandleMemoryConsumption();
-            }
 
             return result;
         }

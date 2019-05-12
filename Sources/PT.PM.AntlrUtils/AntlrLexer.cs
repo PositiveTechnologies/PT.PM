@@ -58,10 +58,6 @@ namespace PT.PM.AntlrUtils
                 Logger.LogError(new LexingException(SourceFile, ex));
                 tokens = new List<IToken>();
             }
-            finally
-            {
-                HandleMemoryConsumption();
-            }
 
             return tokens;
         }

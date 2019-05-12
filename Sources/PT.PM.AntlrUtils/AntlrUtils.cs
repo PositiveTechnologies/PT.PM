@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using Antlr4.Runtime.Misc;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Expressions;
@@ -16,19 +17,52 @@ namespace PT.PM.AntlrUtils
 {
     public static class AntlrUtils
     {
-        public static string GetText(this ParserRuleContext ruleContext, IList<IToken> tokens)
+        private static long processedFilesCount;
+        private static long processedBytesCount;
+        private static long checkNumber;
+        private static volatile bool excessMemory;
+
+        public static long MemoryConsumptionBytes { get; set; } = 2 * 1024 * 1024 * 1024L;
+
+        public static long ClearCacheFilesBytes { get; set; } = 5 * 1024 * 1024L;
+
+        public static int ClearCacheFilesCount { get; set; } = 50;
+
+        public static void HandleMemoryConsumption(TextFile antlrTextFile, ILogger logger)
         {
-            if (tokens == null)
-                return ruleContext.GetText();
+            long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
+            long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, antlrTextFile.Data.Length);
 
-            var result = new StringBuilder();
-            Interval interval = ruleContext.SourceInterval;
-            for (int i = interval.a; i <= interval.b; i++)
+            if (Process.GetCurrentProcess().PrivateMemorySize64 > MemoryConsumptionBytes)
             {
-                result.Append(tokens[i].Text);
-            }
+                long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
+                bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
+                Thread.VolatileWrite(ref checkNumber, divideResult);
 
-            return result.ToString();
+                bool prevExcessMemory = excessMemory;
+                excessMemory = true;
+
+                if (!prevExcessMemory ||
+                    exceededProcessedBytes ||
+                    localProcessedFilesCount % ClearCacheFilesCount == 0)
+                {
+                    lock (AntlrLexer.Atns)
+                    {
+                        AntlrLexer.Atns.Clear();
+                    }
+                    lock (AntlrParser.Atns)
+                    {
+                        AntlrParser.Atns.Clear();
+                    }
+
+                    logger?.LogInfo(
+                        $"ANTLR cache cleared due to big memory consumption after parsing of {antlrTextFile.RelativeName}.");
+                }
+            }
+            else
+            {
+                excessMemory = false;
+            }
         }
 
         public static AntlrLexer CreateAntlrLexer(this Language language)
