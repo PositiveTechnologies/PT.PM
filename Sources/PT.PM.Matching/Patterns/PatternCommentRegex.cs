@@ -45,7 +45,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            List<TextSpan> matches = Regex.MatchRegex(commentLiteral.CurrentSourceFile, commentLiteral.TextSpan);
+            List<TextSpan> matches = Regex.MatchRegex(commentLiteral.CurrentSourceFile, commentLiteral.TextSpan, 0);
 
             return matches.Count > 0
                 ? context.AddMatches(matches)

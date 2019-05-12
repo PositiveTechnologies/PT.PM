@@ -1584,7 +1584,7 @@ namespace PT.PM.PhpParseTreeUst
                     {
                         var right = (Expression)Visit(context.interpolatedStringPart(i));
                         result = new BinaryOperatorExpression(result,
-                            new BinaryOperatorLiteral(BinaryOperator.Plus, default(TextSpan)),
+                            new BinaryOperatorLiteral(BinaryOperator.Plus, default),
                             right, result.TextSpan.Union(right.TextSpan));
                     }
                 }
@@ -1597,7 +1597,7 @@ namespace PT.PM.PhpParseTreeUst
             Expression result;
             if (context.StringPart() != null)
             {
-                result = new StringLiteral(context.GetTextSpan(), root, 0); // TODO: escape length should be 1
+                result = TextUtils.GetStringLiteralWithoutQuotes(context.StringPart().GetTextSpan(), root, 0);
             }
             else
             {

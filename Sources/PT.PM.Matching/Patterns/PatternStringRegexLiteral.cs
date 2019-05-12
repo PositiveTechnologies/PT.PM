@@ -43,7 +43,7 @@ namespace PT.PM.Matching.Patterns
                 List<TextSpan> matches = stringLiteral.Text is null
                     ? Regex.MatchRegex(stringLiteral.CurrentSourceFile, stringLiteral.TextSpan,
                             stringLiteral.EscapeCharsLength)
-                    : Regex.MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength);
+                    : Regex.MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength, 0);
 
                 return matches.Count > 0 ? context.AddMatches(matches) : context.Fail();
             }
@@ -54,9 +54,8 @@ namespace PT.PM.Matching.Patterns
                 context.MatchedWithFolded = true;
                 if (foldResult.Value is string stringValue)
                 {
-                    List<TextSpan> matches = Regex.MatchRegex(stringValue, escapeCharsLength: 1);
-
-                    matches = UstUtils.GetAlignedTextSpan(1, foldResult.TextSpans, matches, ust.TextSpan.Start);
+                    List<TextSpan> matches = Regex.MatchRegex(stringValue, 0, 0);
+                    matches = PatternUtils.AlignTextSpans(foldResult.TextSpans, matches, 1);
 
                     return matches.Count > 0
                         ? context.AddMatches(matches)

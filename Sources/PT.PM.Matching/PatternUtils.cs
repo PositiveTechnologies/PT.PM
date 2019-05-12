@@ -8,33 +8,92 @@ namespace PT.PM.Matching
 {
     public static class PatternUtils
     {
-        private static readonly Regex SupressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
+        private static readonly Regex suppressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        public static List<TextSpan> MatchRegex(this Regex patternRegex, TextFile textFile, TextSpan textSpan, int escapeCharsLength = 0)
+        internal static List<TextSpan> AlignTextSpans(List<TextSpan> foldedTextSpans, List<TextSpan> matchesLocations, int escapeLength)
         {
-            return MatchRegex(patternRegex, textFile.Data, textSpan.Start, textSpan.Length, escapeCharsLength);
+            List<TextSpan> result = new List<TextSpan>(matchesLocations.Count);
+
+            int startOffset = foldedTextSpans[0].Start;
+
+            foreach (TextSpan location in matchesLocations)
+            {
+                int offset = 0;
+                int leftBound = 0;
+                int rightBound =
+                    foldedTextSpans[0].Length;
+                TextSpan textSpan = TextSpan.Zero;
+
+                // Check first initial TextSpan separately
+                if (location.Start < rightBound && location.End > rightBound)
+                {
+                    textSpan = location;
+                }
+
+                for (int i = 1; i < foldedTextSpans.Count; i++)
+                {
+                    var initTextSpan = foldedTextSpans[i];
+                    var prevTextSpan = foldedTextSpans[i - 1];
+                    leftBound += prevTextSpan.Length;
+                    rightBound += initTextSpan.Length;
+                    offset += initTextSpan.Start - prevTextSpan.End;
+
+                    if (location.Start < leftBound && location.End < leftBound)
+                    {
+                        break;
+                    }
+
+                    if (location.Start >= leftBound && location.Start < rightBound)
+                    {
+                        textSpan = location.AddOffset(offset);
+                        if (location.End <= rightBound)
+                        {
+                            result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
+                            break;
+                        }
+                    }
+
+                    if (!textSpan.IsZero && location.End <= rightBound)
+                    {
+                        result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength, location.Length + offset + 2 * escapeLength, textSpan.File));
+                        break;
+                    }
+                }
+
+                if (textSpan.IsZero)
+                {
+                    result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
+                }
+            }
+
+            return result;
         }
 
-        public static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int start = 0, int length = -1, int escapeCharsLength = 0)
+        public static List<TextSpan> MatchRegex(this Regex patternRegex, TextFile textFile, TextSpan textSpan, int escapeCharsLength)
+        {
+            return MatchRegex(patternRegex, textFile.Data, escapeCharsLength, textSpan.Start, textSpan.Length, 0);
+        }
+
+        public static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int escapeCharsLength, int offset)
+        {
+            return MatchRegex(patternRegex, text, escapeCharsLength, 0, text.Length, offset);
+        }
+
+        private static List<TextSpan> MatchRegex(this Regex patternRegex, string text, int escapeCharsLength, int start, int length, int offset)
         {
             if (patternRegex.ToString() == ".*")
             {
-                return new List<TextSpan> { new TextSpan(start + escapeCharsLength, length == -1 ? text.Length : length) };
+                return new List<TextSpan>
+                {
+                    new TextSpan(start - escapeCharsLength, length + 2 * escapeCharsLength)
+                };
             }
 
-            int end;
-            if (length == -1)
+            int end = start + length;
+            if (end > text.Length)
             {
                 end = text.Length;
-            }
-            else
-            {
-                end = start + length;
-                if (end > text.Length)
-                {
-                    end = text.Length;
-                }
             }
 
             var result = new List<TextSpan>();
@@ -42,7 +101,7 @@ namespace PT.PM.Matching
             Match match = patternRegex.Match(text, start, end - start);
             while (match.Success)
             {
-                result.Add(match.GetTextSpan(escapeCharsLength));
+                result.Add(match.GetTextSpan(escapeCharsLength, offset));
 
                 if (match.Length == 0)
                 {
@@ -56,15 +115,15 @@ namespace PT.PM.Matching
             return result;
         }
 
-        public static TextSpan GetTextSpan(this Match match, int escapeCharsLength = 0)
+        public static TextSpan GetTextSpan(this Match match, int escapeCharsLength, int offset)
         {
             if (!match.Success)
             {
                 return TextSpan.Zero;
             }
 
-            int startIndex = match.Index + escapeCharsLength;
-            return new TextSpan(startIndex, match.Length);
+            int startIndex = offset + match.Index - escapeCharsLength;
+            return new TextSpan(startIndex, match.Length + 2 * escapeCharsLength);
         }
 
         public static IEnumerable<MatchResultDto> ToDto(this IEnumerable<IMatchResultBase> matchResults)
@@ -79,7 +138,7 @@ namespace PT.PM.Matching
             string prevLine = lineColumnTextSpan.BeginLine - 1 > 0
                             ? sourceFile.GetStringAtLine(lineColumnTextSpan.BeginLine - 1)
                             : "";
-            return SupressMarkerRegex.IsMatch(prevLine);
+            return suppressMarkerRegex.IsMatch(prevLine);
         }
     }
 }

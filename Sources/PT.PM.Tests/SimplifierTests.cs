@@ -20,7 +20,7 @@ namespace PT.PM.Tests
             TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "simplify-sample.php"));
 
             var matches = PatternMatchingUtils.GetMatches(source, "<[\"Hello World!\"]>", Language.Php);
-            Assert.AreEqual(new LineColumnTextSpan(2, 7, 2, 29), matches[0].LineColumnTextSpan); // TODO: should be (2, 8, 2, 30)
+            Assert.AreEqual(new LineColumnTextSpan(2, 6, 2, 30), matches[0].LineColumnTextSpan);
 
             matches = PatternMatchingUtils.GetMatches(source, "<[86400]>", Language.Php);
             Assert.AreEqual(new LineColumnTextSpan(3, 6, 3, 18), matches[0].LineColumnTextSpan);
@@ -41,7 +41,7 @@ namespace PT.PM.Tests
             TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "FoldArrayOfChars.java"));
 
             var matches = PatternMatchingUtils.GetMatches(source, "<[\"none\"]>", Language.Java);
-            Assert.AreEqual(new LineColumnTextSpan(3, 21, 3, 44), matches[0].LineColumnTextSpan); // TODO: should be (3, 20, 3, 42)
+            Assert.AreEqual(new LineColumnTextSpan(3, 22, 3, 40), matches[0].LineColumnTextSpan);
         }
 
         [Test]

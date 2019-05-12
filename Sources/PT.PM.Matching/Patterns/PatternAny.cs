@@ -45,19 +45,9 @@ namespace PT.PM.Matching.Patterns
             }
 
             int escapeCharsLength = (ust as StringLiteral)?.EscapeCharsLength ?? 0;
-            List<TextSpan> matches;
-            if (UseUstString)
-            {
-                matches = Regex.MatchRegex(ust.ToString(), escapeCharsLength);
-                for (int i = 0; i < matches.Count; i++)
-                {
-                    matches[i] = matches[i].AddOffset(ust.TextSpan.Start);
-                }
-            }
-            else
-            {
-                matches = Regex.MatchRegex(ust.CurrentSourceFile, ust.TextSpan, escapeCharsLength);
-            }
+            var matches = UseUstString
+                ? Regex.MatchRegex(ust.ToString(), escapeCharsLength, ust.TextSpan.Start)
+                : Regex.MatchRegex(ust.CurrentSourceFile, ust.TextSpan, escapeCharsLength);
 
             return matches.Count > 0
                 ? context.AddMatches(matches)

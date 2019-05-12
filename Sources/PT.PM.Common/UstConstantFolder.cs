@@ -79,15 +79,13 @@ namespace PT.PM.Common
                 (bool)arrayCreationExpression.Initializers?.All(i => i is StringLiteral))
             {
                 var value = new StringBuilder();
-                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1);
-
-                textSpans.Add(arrayCreationExpression.Type.TextSpan);
+                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count);
 
                 foreach (var expression in arrayCreationExpression.Initializers)
                 {
                     var stringLiteral = (StringLiteral) expression;
                     AppendText(value, stringLiteral);
-                    AppendTextSpan(textSpans, stringLiteral);
+                    textSpans.Add(stringLiteral.TextSpan);
                 }
 
                 return new FoldResult(value.ToString(), textSpans);
@@ -105,7 +103,7 @@ namespace PT.PM.Common
                 if (initializer is StringLiteral stringLiteral)
                 {
                     AppendText(sb, stringLiteral);
-                    AppendTextSpan(textSpans, stringLiteral);
+                    textSpans.Add(stringLiteral.TextSpan);
                 }
             }
             return sb.Length > 0
@@ -288,10 +286,7 @@ namespace PT.PM.Common
         {
             if (token is StringLiteral stringLiteral)
             {
-                TextSpan textSpan = stringLiteral.TextSpan;
-                int escapeLength = 1; // TODO: stringLiteral.EscapeCharsLength;
-                return new FoldResult(stringLiteral.TextValue,
-                    new TextSpan(textSpan.Start - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
+                return new FoldResult(stringLiteral.TextValue, stringLiteral.TextSpan);
             }
 
             if (token is IntLiteral intLiteral)
@@ -369,13 +364,6 @@ namespace PT.PM.Common
             {
                 builder.Append(literal.Text);
             }
-        }
-
-        private static void AppendTextSpan(List<TextSpan> textSpans, StringLiteral stringLiteral)
-        {
-            TextSpan textSpan = stringLiteral.TextSpan;
-            int escapeLength = stringLiteral.EscapeCharsLength;
-            textSpans.Add(new TextSpan(textSpan.Start - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
         }
     }
 }
