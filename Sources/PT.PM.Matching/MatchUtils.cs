@@ -89,7 +89,7 @@ namespace PT.PM.Matching
             {
                 return new List<TextSpan>
                 {
-                    SafeCreateTextSpan(start - escapeCharsLength + offset, length + 2 * escapeCharsLength, text)
+                    SafeCreateTextSpan(start - escapeCharsLength + offset, length + 2 * escapeCharsLength)
                 };
             }
 
@@ -104,7 +104,7 @@ namespace PT.PM.Matching
             Match match = patternRegex.Match(text, start, end - start);
             while (match.Success)
             {
-                result.Add(match.GetTextSpan(escapeCharsLength, offset, text));
+                result.Add(match.GetTextSpan(escapeCharsLength, offset));
 
                 if (match.Length == 0)
                 {
@@ -118,7 +118,7 @@ namespace PT.PM.Matching
             return result;
         }
 
-        public static TextSpan GetTextSpan(this Match match, int escapeCharsLength, int offset, string data)
+        public static TextSpan GetTextSpan(this Match match, int escapeCharsLength, int offset)
         {
             if (!match.Success)
             {
@@ -126,7 +126,7 @@ namespace PT.PM.Matching
             }
 
             int startIndex = offset + match.Index - escapeCharsLength;
-            return SafeCreateTextSpan(startIndex, match.Length + 2 * escapeCharsLength, data);
+            return SafeCreateTextSpan(startIndex, match.Length + 2 * escapeCharsLength);
         }
 
         public static IEnumerable<MatchResultDto> ToDto(this IEnumerable<IMatchResultBase> matchResults)
@@ -149,16 +149,16 @@ namespace PT.PM.Matching
             return false;
         }
 
-        public static TextSpan SafeCreateTextSpan(int start, int length, string data)
+        public static TextSpan SafeCreateTextSpan(int start, int length)
         {
             if (start < 0)
             {
                 start = 0;
             }
 
-            if (start + length > data.Length)
+            if (start + length < start)
             {
-                length = data.Length - start;
+                length = 0;
             }
 
             return new TextSpan(start, length);

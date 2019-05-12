@@ -43,7 +43,7 @@ namespace PT.PM.Matching.Patterns
                 List<TextSpan> matches = stringLiteral.Text is null
                     ? Regex.MatchRegex(stringLiteral.CurrentSourceFile, stringLiteral.TextSpan,
                             stringLiteral.EscapeCharsLength)
-                    : Regex.MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength, 0);
+                    : Regex.MatchRegex(stringLiteral.Text, stringLiteral.EscapeCharsLength, stringLiteral.TextSpan.Start);
 
                 return matches.Count > 0 ? context.AddMatches(matches) : context.Fail();
             }
