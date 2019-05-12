@@ -1072,7 +1072,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 ReadOnlySpan<char> span = ExtractSpan(context.DECIMAL().Symbol, out TextSpan textSpan);
-                TryParseNumeric(span, textSpan, 10, out Literal numeric);
+                convertHelper.TryParseNumeric(span, textSpan, 10, out Literal numeric);
                 right = numeric;
             }
 

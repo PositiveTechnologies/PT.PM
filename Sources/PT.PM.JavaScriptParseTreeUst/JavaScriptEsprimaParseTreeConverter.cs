@@ -21,6 +21,7 @@ namespace PT.PM.JavaScriptParseTreeUst
     public partial class JavaScriptEsprimaParseTreeConverter : IParseTreeToUstConverter
     {
         private RootUst root;
+        private ConvertHelper convertHelper;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -47,6 +48,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 }
 
                 root = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree));
+                convertHelper = new ConvertHelper(root) {Logger = Logger};
 
                 var program = VisitProgram(esprimaParseTree.SyntaxTree);
 

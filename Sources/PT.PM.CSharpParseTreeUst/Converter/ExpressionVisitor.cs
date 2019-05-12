@@ -576,12 +576,12 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (token.Value is string)
             {
-                return TextUtils.GetStringLiteralWithoutQuotes(span, root);
+                return convertHelper.ParseStringLiteral(span);
             }
 
             if (token.Value is char)
             {
-                return TextUtils.GetStringLiteralWithoutQuotes(span, root);
+                return convertHelper.ParseStringLiteral(span);
             }
 
             var typeName = token.Value.GetType().Name;
@@ -722,7 +722,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitInterpolatedStringText(InterpolatedStringTextSyntax node)
         {
-            return new StringLiteral(node.GetTextSpan(), root, 0);
+            return convertHelper.ParseStringLiteral(node.GetTextSpan());
         }
 
         public override Ust VisitInterpolationAlignmentClause(InterpolationAlignmentClauseSyntax node)

@@ -819,7 +819,7 @@ namespace PT.PM.PythonParseTreeUst
             if (context.FLOAT_NUMBER() != null)
             {
                 IToken symbol = context.FLOAT_NUMBER().Symbol;
-                TryParseDoubleInvariant(symbol.Text, out double value);
+                ConvertHelper.TryParseDoubleInvariant(symbol.Text, out double value);
                 return new FloatLiteral(value, symbol.GetTextSpan());
             }
 
@@ -837,7 +837,7 @@ namespace PT.PM.PythonParseTreeUst
                         : 2;
 
             ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
-            TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
+            convertHelper.TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
 
             return numeric;
         }

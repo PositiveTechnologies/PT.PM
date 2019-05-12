@@ -1549,7 +1549,7 @@ namespace PT.PM.PhpParseTreeUst
                         ? 8
                         : 2;
 
-            TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
+            convertHelper.TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
             return numeric;
         }
 
@@ -1569,7 +1569,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else if (context.SingleQuoteString() != null)
             {
-                result = TextUtils.GetStringLiteralWithoutQuotes(context.GetTextSpan(), root);
+                result = convertHelper.ParseStringLiteral(context.GetTextSpan());
             }
             else
             {
@@ -1597,7 +1597,7 @@ namespace PT.PM.PhpParseTreeUst
             Expression result;
             if (context.StringPart() != null)
             {
-                result = TextUtils.GetStringLiteralWithoutQuotes(context.StringPart().GetTextSpan(), root, 0);
+                result = convertHelper.ParseStringLiteral(context.StringPart().GetTextSpan());
             }
             else
             {
@@ -1868,11 +1868,6 @@ namespace PT.PM.PhpParseTreeUst
         {
             var result = new TypeToken(context.GetText(), context.GetTextSpan());
             return result;
-        }
-
-        public override Ust VisitTerminal(ITerminalNode node)
-        {
-            return new StringLiteral(node.GetTextSpan(), root, 0);
         }
     }
 }

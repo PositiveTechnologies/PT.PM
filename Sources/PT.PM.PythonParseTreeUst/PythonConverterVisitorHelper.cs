@@ -18,11 +18,6 @@ namespace PT.PM.PythonParseTreeUst
         {
             var text = node.GetText();
 
-            if (text.StartsWith("\"") || text.StartsWith("'"))
-            {
-                return TextUtils.GetStringLiteralWithoutQuotes(node.GetTextSpan(), root);
-            }
-
             if (text == "False" || text == "True")
             {
                 return new BooleanLiteral(text == "True", node.GetTextSpan());

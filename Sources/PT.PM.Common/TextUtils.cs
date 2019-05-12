@@ -384,11 +384,5 @@ namespace PT.PM.Common
                 throw new FormatException($"Invalid or too big column value {value} while {nameof(LineColumnTextSpan)} parsing.");
             }
         }
-
-        public static StringLiteral GetStringLiteralWithoutQuotes(TextSpan textSpan, RootUst root, int escapeCharsLength = 1)
-        {
-            return new StringLiteral(new TextSpan(textSpan.Start + escapeCharsLength, textSpan.Length - 2 * escapeCharsLength, textSpan.File), root,
-                escapeCharsLength);
-        }
     }
 }

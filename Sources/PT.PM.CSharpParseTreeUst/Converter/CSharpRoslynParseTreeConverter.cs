@@ -19,7 +19,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
     public partial class CSharpRoslynParseTreeConverter : CSharpSyntaxVisitor<Ust>, IParseTreeToUstConverter
     {
-        private RootUst root { get; set; }
+        private RootUst root;
+        private ConvertHelper convertHelper;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -50,6 +51,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             try
             {
                 root = new RootUst(langParseTree.SourceFile, Language.CSharp);
+                convertHelper = new ConvertHelper(root) {Logger = Logger};
                 Ust visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
                 if (visited is RootUst rootUst)
                 {

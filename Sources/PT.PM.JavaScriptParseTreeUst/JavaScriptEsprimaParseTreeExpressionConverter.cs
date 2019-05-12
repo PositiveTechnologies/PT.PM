@@ -233,7 +233,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstTokens.Token VisitLiteral(Literal literal)
         {
-            Common.TextSpan textSpan = GetTextSpan(literal);
+            TextSpan textSpan = GetTextSpan(literal);
 
             switch (literal.TokenType)
             {
@@ -254,7 +254,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     // TODO
                     break;
                 case TokenType.StringLiteral:
-                    return TextUtils.GetStringLiteralWithoutQuotes(textSpan, root);
+                    return convertHelper.ParseStringLiteral(textSpan);
                 case TokenType.RegularExpression:
                     // TODO: maybe add new literal node RegularExpressionLiteral
                     return new UstLiterals.StringLiteral(literal.Regex.Pattern, textSpan);
