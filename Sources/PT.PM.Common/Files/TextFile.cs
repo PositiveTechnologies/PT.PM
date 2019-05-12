@@ -112,13 +112,15 @@ namespace PT.PM.Common.Files
             return lineIndexes.Length;
         }
 
-        public string GetStringAtLine(int line)
+        public string GetStringAtLine(int line) => GetSubstring(GetTextSpanAtLine(line));
+
+        public TextSpan GetTextSpanAtLine(int line)
         {
             line = line - StartLine;
 
             if (line < 0 || line >= lineIndexes.Length)
             {
-               return string.Empty;
+                return TextSpan.Zero;
             }
 
             int endInd;
@@ -135,7 +137,8 @@ namespace PT.PM.Common.Files
                 endInd = Data.Length;
             }
 
-            return Data.Substring(lineIndexes[line], endInd - lineIndexes[line]);
+            int startInd = lineIndexes[line];
+            return new TextSpan(startInd, endInd - startInd);
         }
 
         public string GetSubstring(TextSpan textSpan)

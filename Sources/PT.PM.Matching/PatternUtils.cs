@@ -135,10 +135,15 @@ namespace PT.PM.Matching
 
         public static bool IsSuppressed(TextFile sourceFile, LineColumnTextSpan lineColumnTextSpan)
         {
-            string prevLine = lineColumnTextSpan.BeginLine - 1 > 0
-                            ? sourceFile.GetStringAtLine(lineColumnTextSpan.BeginLine - 1)
-                            : "";
-            return suppressMarkerRegex.IsMatch(prevLine);
+            int lineInd = lineColumnTextSpan.BeginLine - 1;
+
+            if (lineInd > 0)
+            {
+                TextSpan textSpan = sourceFile.GetTextSpanAtLine(lineInd);
+                return suppressMarkerRegex.Match(sourceFile.Data, textSpan.Start, textSpan.Length).Success;
+            }
+
+            return false;
         }
     }
 }
