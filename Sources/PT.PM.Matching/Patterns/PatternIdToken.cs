@@ -1,6 +1,5 @@
 ﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes;
 
@@ -45,7 +44,7 @@ namespace PT.PM.Matching.Patterns
             string tokenText = token.TextValue;
             if (token.Root.Language.IsCaseInsensitive())
             {
-                TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan(0, 0);
+                TextSpan textSpan = caseInsensitiveRegex.Match(tokenText).GetTextSpan(0, 0, token.CurrentSourceFile.Data);
                 if (!textSpan.IsZero)
                 {
                     return context.AddMatch(token);

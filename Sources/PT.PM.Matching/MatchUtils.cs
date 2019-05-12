@@ -49,21 +49,24 @@ namespace PT.PM.Matching
                         textSpan = location.AddOffset(offset);
                         if (location.End <= rightBound)
                         {
-                            result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
+                            result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength,
+                                textSpan.Length + 2 * escapeLength, textSpan.File));
                             break;
                         }
                     }
 
                     if (!textSpan.IsZero && location.End <= rightBound)
                     {
-                        result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength, location.Length + offset + 2 * escapeLength, textSpan.File));
+                        result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength,
+                            location.Length + offset + 2 * escapeLength, textSpan.File));
                         break;
                     }
                 }
 
                 if (textSpan.IsZero)
                 {
-                    result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength, textSpan.Length + 2 * escapeLength, textSpan.File));
+                    result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength,
+                        textSpan.Length + 2 * escapeLength, textSpan.File));
                 }
             }
 
@@ -86,7 +89,7 @@ namespace PT.PM.Matching
             {
                 return new List<TextSpan>
                 {
-                    new TextSpan(start - escapeCharsLength + offset, length + 2 * escapeCharsLength)
+                    SafeCreateTextSpan(start - escapeCharsLength + offset, length + 2 * escapeCharsLength, text)
                 };
             }
 
@@ -101,7 +104,7 @@ namespace PT.PM.Matching
             Match match = patternRegex.Match(text, start, end - start);
             while (match.Success)
             {
-                result.Add(match.GetTextSpan(escapeCharsLength, offset));
+                result.Add(match.GetTextSpan(escapeCharsLength, offset, text));
 
                 if (match.Length == 0)
                 {
@@ -115,7 +118,7 @@ namespace PT.PM.Matching
             return result;
         }
 
-        public static TextSpan GetTextSpan(this Match match, int escapeCharsLength, int offset)
+        public static TextSpan GetTextSpan(this Match match, int escapeCharsLength, int offset, string data)
         {
             if (!match.Success)
             {
@@ -123,7 +126,7 @@ namespace PT.PM.Matching
             }
 
             int startIndex = offset + match.Index - escapeCharsLength;
-            return new TextSpan(startIndex, match.Length + 2 * escapeCharsLength);
+            return SafeCreateTextSpan(startIndex, match.Length + 2 * escapeCharsLength, data);
         }
 
         public static IEnumerable<MatchResultDto> ToDto(this IEnumerable<IMatchResultBase> matchResults)
@@ -144,6 +147,21 @@ namespace PT.PM.Matching
             }
 
             return false;
+        }
+
+        public static TextSpan SafeCreateTextSpan(int start, int length, string data)
+        {
+            if (start < 0)
+            {
+                start = 0;
+            }
+
+            if (start + length > data.Length)
+            {
+                length = data.Length - start;
+            }
+
+            return new TextSpan(start, length);
         }
     }
 }
