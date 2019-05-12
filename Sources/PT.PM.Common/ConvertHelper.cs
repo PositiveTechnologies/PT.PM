@@ -226,6 +226,11 @@ namespace PT.PM.Common
             string data = root.CurrentSourceFile.Data;
             int escapeCharsLength = 0;
 
+            if (textSpan.Length == 1)
+            {
+                return new StringLiteral(textSpan, root, 0);
+            }
+
             if (startInd < data.Length)
             {
                 char firstChar = char.ToLowerInvariant(data[startInd]);
