@@ -47,7 +47,7 @@ namespace PT.PM.Matching.Patterns
                     if (String.Equals(stringValue))
                     {
                         var matches = new List<TextSpan> {new TextSpan(0, String.Length)};
-                        matches = PatternUtils.AlignTextSpans(foldResult.TextSpans, matches, 1);
+                        matches = MatchUtils.AlignTextSpans(foldResult.TextSpans, matches, 1);
                         context.AddMatches(matches);
                     }
                 }

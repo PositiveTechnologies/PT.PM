@@ -6,7 +6,7 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
-    public static class PatternUtils
+    public static class MatchUtils
     {
         private static readonly Regex suppressMarkerRegex = new Regex("ptai\\s*:\\s*suppress",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -86,7 +86,7 @@ namespace PT.PM.Matching
             {
                 return new List<TextSpan>
                 {
-                    new TextSpan(start - escapeCharsLength, length + 2 * escapeCharsLength)
+                    new TextSpan(start - escapeCharsLength + offset, length + 2 * escapeCharsLength)
                 };
             }
 

@@ -55,7 +55,7 @@ namespace PT.PM.Matching.Patterns
                 if (foldResult.Value is string stringValue)
                 {
                     List<TextSpan> matches = Regex.MatchRegex(stringValue, 0, 0);
-                    matches = PatternUtils.AlignTextSpans(foldResult.TextSpans, matches, 1);
+                    matches = MatchUtils.AlignTextSpans(foldResult.TextSpans, matches, 1);
 
                     return matches.Count > 0
                         ? context.AddMatches(matches)
