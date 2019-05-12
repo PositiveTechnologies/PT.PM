@@ -71,6 +71,16 @@ namespace PT.PM.Matching
             return this;
         }
 
+        public MatchContext AddMatch(TextSpan textSpan)
+        {
+            Success = true;
+            if (!IgnoreLocations && !textSpan.IsZero)
+            {
+                Locations.Add(textSpan);
+            }
+            return this;
+        }
+
         public MatchContext AddMatches(IEnumerable<TextSpan> textSpans)
         {
             Success = true;

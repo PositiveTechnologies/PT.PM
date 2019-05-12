@@ -29,12 +29,12 @@ namespace PT.PM.Matching.Patterns
                 {
                     return string.CompareOrdinal(String, 0, ust.CurrentSourceFile.Data, stringLiteral.TextSpan.Start,
                                String.Length) == 0
-                        ? context.AddMatch(stringLiteral)
+                        ? context.AddMatch(stringLiteral.ViewTextSpan)
                         : context.Fail();
                 }
 
                 return String.Equals(stringLiteral.Text)
-                    ? context.AddMatch(stringLiteral)
+                    ? context.AddMatch(stringLiteral.ViewTextSpan)
                     : context.Fail();
             }
 
