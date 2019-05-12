@@ -254,7 +254,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                     // TODO
                     break;
                 case TokenType.StringLiteral:
-                    return convertHelper.ParseStringLiteral(textSpan);
+                    return convertHelper.ConvertString(textSpan);
                 case TokenType.RegularExpression:
                     // TODO: maybe add new literal node RegularExpressionLiteral
                     return new UstLiterals.StringLiteral(literal.Regex.Pattern, textSpan);

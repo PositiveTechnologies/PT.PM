@@ -1549,7 +1549,7 @@ namespace PT.PM.PhpParseTreeUst
                         ? 8
                         : 2;
 
-            convertHelper.TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
+            convertHelper.TryConvertNumeric(span, textSpan, fromBase, out Literal numeric);
             return numeric;
         }
 
@@ -1569,7 +1569,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else if (context.SingleQuoteString() != null)
             {
-                result = convertHelper.ParseStringLiteral(context.GetTextSpan());
+                result = convertHelper.ConvertString(context.GetTextSpan());
             }
             else
             {
@@ -1597,7 +1597,7 @@ namespace PT.PM.PhpParseTreeUst
             Expression result;
             if (context.StringPart() != null)
             {
-                result = convertHelper.ParseStringLiteral(context.StringPart().GetTextSpan());
+                result = convertHelper.ConvertString(context.StringPart().GetTextSpan());
             }
             else
             {

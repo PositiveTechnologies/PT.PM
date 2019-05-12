@@ -837,7 +837,7 @@ namespace PT.PM.PythonParseTreeUst
                         : 2;
 
             ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
-            convertHelper.TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
+            convertHelper.TryConvertNumeric(span, textSpan, fromBase, out Literal numeric);
 
             return numeric;
         }

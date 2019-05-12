@@ -21,7 +21,7 @@ namespace PT.PM.Common
             Language = root.Language;
         }
 
-        public Token ExtractLiteral(ReadOnlySpan<char> span, TextSpan textSpan)
+        public Token ConvertToken(ReadOnlySpan<char> span, TextSpan textSpan)
         {
             int spanLength = span.Length;
             char firstChar = span[0];
@@ -33,7 +33,7 @@ namespace PT.PM.Common
                     return new IdToken(span.ToString(), textSpan);
                 }
 
-                if (char.IsDigit(firstChar) && TryParseNumeric(span, textSpan, 10, out Literal numeric))
+                if (char.IsDigit(firstChar) && TryConvertNumeric(span, textSpan, 10, out Literal numeric))
                 {
                     return numeric;
                 }
@@ -53,7 +53,7 @@ namespace PT.PM.Common
 
                 if (span[span.Length - 1] == '\'' || span[span.Length - 1] == '"')
                 {
-                    return ParseStringLiteral(textSpan);
+                    return ConvertString(textSpan);
                 }
 
                 if (char.IsDigit(firstChar))
@@ -70,7 +70,7 @@ namespace PT.PM.Common
                                     ? 2
                                     : -1;
 
-                    if (fromBase != -1 && TryParseNumeric(span, textSpan, fromBase, out Literal numeric))
+                    if (fromBase != -1 && TryConvertNumeric(span, textSpan, fromBase, out Literal numeric))
                     {
                         return numeric;
                     }
@@ -104,7 +104,7 @@ namespace PT.PM.Common
         }
 
         // TODO: implement TryParse methods with Span when netstandard 2.1 comes out
-        public bool TryParseNumeric(ReadOnlySpan<char> value, TextSpan textSpan, int fromBase, out Literal numeric)
+        public bool TryConvertNumeric(ReadOnlySpan<char> value, TextSpan textSpan, int fromBase, out Literal numeric)
         {
             string valueString;
 
@@ -219,7 +219,7 @@ namespace PT.PM.Common
             throw new NotSupportedException($"{fromBase} base сonversion is not supported");
         }
 
-        public StringLiteral ParseStringLiteral(TextSpan textSpan)
+        public StringLiteral ConvertString(TextSpan textSpan)
         {
             int startInd = textSpan.Start;
             int endInd = textSpan.Start + textSpan.Length - 1;

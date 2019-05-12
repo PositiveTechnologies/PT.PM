@@ -401,7 +401,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             if (context.STRING_LITERAL() != null)
             {
-                return convertHelper.ParseStringLiteral(textSpan);
+                return convertHelper.ConvertString(textSpan);
             }
 
             if (context.integerLiteral() != null)
@@ -422,7 +422,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             if (context.CHAR_LITERAL() != null)
             {
-                return convertHelper.ParseStringLiteral(textSpan);
+                return convertHelper.ConvertString(textSpan);
             }
 
             if (context.Start.Type == JavaParser.NULL_LITERAL)
@@ -450,7 +450,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 span = context.GetText().Replace("_", "").AsSpan();
             }
 
-            convertHelper.TryParseNumeric(span, textSpan, fromBase, out Literal numeric);
+            convertHelper.TryConvertNumeric(span, textSpan, fromBase, out Literal numeric);
 
             return numeric;
         }

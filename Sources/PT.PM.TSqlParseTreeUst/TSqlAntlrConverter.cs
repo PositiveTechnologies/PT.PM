@@ -662,14 +662,14 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitOpenquery([NotNull] TSqlParser.OpenqueryContext context)
         {
             return CreateSpecialInvocation(context.OPENQUERY(), context,
-                new List<Expression> { (IdToken)Visit(context.id()), ExtractLiteral(context.query) });
+                new List<Expression> { (IdToken)Visit(context.id()), ConvertToken(context.query) });
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
         public Ust VisitOpendatasource([NotNull] TSqlParser.OpendatasourceContext context)
         {
             return CreateSpecialInvocation(context.OPENDATASOURCE(), context, new List<Expression> {
-                ExtractLiteral(context.provider), ExtractLiteral(context.init),
+                ConvertToken(context.provider), ConvertToken(context.init),
                 (IdToken)Visit(context.database), (IdToken)Visit(context.scheme),
                 (IdToken)Visit(context.scheme) });
         }
@@ -800,7 +800,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.parameter != null)
             {
-                Token left = ExtractLiteral(context.parameter);
+                Token left = ConvertToken(context.parameter);
                 result = new AssignmentExpression(left, result, context.GetTextSpan());
             }
             return result;
@@ -1072,7 +1072,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 ReadOnlySpan<char> span = ExtractSpan(context.DECIMAL().Symbol, out TextSpan textSpan);
-                convertHelper.TryParseNumeric(span, textSpan, 10, out Literal numeric);
+                convertHelper.TryConvertNumeric(span, textSpan, 10, out Literal numeric);
                 right = numeric;
             }
 
@@ -1733,7 +1733,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitBulk_option([NotNull] TSqlParser.Bulk_optionContext context)
         {
             var left = (IdToken)Visit(context.id());
-            var right = ExtractLiteral(context.bulk_option_value);
+            var right = ConvertToken(context.bulk_option_value);
             var result = new AssignmentExpression(left, right, context.GetTextSpan());
             return result;
         }
@@ -2100,7 +2100,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitConstant([NotNull] TSqlParser.ConstantContext context)
         {
             ITerminalNode terminalNode = (ITerminalNode)context.GetChild(context.ChildCount - 1);
-            Token literal = ExtractLiteral(terminalNode.Symbol);
+            Token literal = ConvertToken(terminalNode.Symbol);
 
             bool minus = context.sign?.Text == "-";
 
