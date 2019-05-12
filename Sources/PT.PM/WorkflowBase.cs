@@ -83,11 +83,11 @@ namespace PT.PM
             }
         }
 
-        public int ThreadCount { get; set; } = 0;
+        public int ThreadCount { get; set; }
 
         public int MemoryConsumptionMb { get; set; } = 3000;
 
-        public TimeSpan FileTimeout { get; set; } = default;
+        public TimeSpan FileTimeout { get; set; }
 
         public int MaxStackSize { get; set; } = Utils.DefaultMaxStackSize;
 
@@ -97,21 +97,21 @@ namespace PT.PM
 
         public HashSet<TStage> DumpStages { get; set; } = new HashSet<TStage>();
 
-        public bool IsDumpPatterns { get; set; } = false;
+        public bool IsDumpPatterns { get; set; }
 
         public GraphvizOutputFormat RenderFormat { get; set; } = GraphvizOutputFormat.Png;
 
         public GraphvizDirection RenderDirection { get; set; } = GraphvizDirection.TopBottom;
 
-        public bool IndentedDump { get; set; } = false;
+        public bool IndentedDump { get; set; }
 
         public bool DumpWithTextSpans { get; set; } = true;
 
-        public bool IncludeCodeInDump { get; set; } = false;
+        public bool IncludeCodeInDump { get; set; }
 
-        public bool LineColumnTextSpans { get; set; } = false;
+        public bool LineColumnTextSpans { get; set; }
 
-        public bool StrictJson { get; set; } = false;
+        public bool StrictJson { get; set; }
 
         public bool CompressedSerialization { get; set; }
 
@@ -122,6 +122,8 @@ namespace PT.PM
         public string TempDir { get; set; } = "";
 
         public SerializationFormat SerializationFormat { get; set; } = SerializationFormat.MsgPack;
+
+        public event EventHandler<IFile> FileRead;
 
         public event EventHandler<RootUst> UstConverted;
 
@@ -189,7 +191,7 @@ namespace PT.PM
             IFile sourceFile = SourceRepository.ReadFile(fileName);
             stopwatch.Stop();
 
-            LogSourceFile((sourceFile, stopwatch.Elapsed), workflowResult);
+            LogSourceFile((sourceFile, stopwatch.Elapsed), workflowResult, false);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -365,7 +367,7 @@ namespace PT.PM
                 else
                 {
                     void ReadSourceFileAction((IFile, TimeSpan) fileAndTime) =>
-                        LogSourceFile(fileAndTime, workflowResult);
+                        LogSourceFile(fileAndTime, workflowResult, false);
 
                     if (language == Language.Json)
                     {
@@ -414,7 +416,7 @@ namespace PT.PM
             return result;
         }
 
-        public void LogSourceFile((IFile, TimeSpan) fileAndTime, TWorkflowResult workflowResult)
+        public void LogSourceFile((IFile, TimeSpan) fileAndTime, TWorkflowResult workflowResult, bool saveFile)
         {
             IFile file = fileAndTime.Item1;
 
@@ -436,7 +438,12 @@ namespace PT.PM
             }
 
             workflowResult.AddReadTime(elapsed);
-            workflowResult.AddResultEntity(file);
+            if (saveFile)
+            {
+                workflowResult.AddResultEntity(file);
+            }
+
+            FileRead?.Invoke(this, file);
         }
 
         private void DumpTokens(IList<IToken> tokens, Language language, TextFile sourceFile)
@@ -581,7 +588,7 @@ namespace PT.PM
             return new ParallelOptions
             {
                 MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
-                CancellationToken = cancellationToken
+                CancellationToken = cancellationToken,
             };
         }
     }

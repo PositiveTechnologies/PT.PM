@@ -95,12 +95,14 @@ namespace PT.PM.Tests
                 IsDumpPatterns = checkPatternSerialization,
                 SerializationFormat = SerializationFormat.Json
             };
-            WorkflowResult result = workflow.Process();
+            var sourceFiles = new HashSet<IFile>();
+            workflow.FileRead += (sender, file) => sourceFiles.Add(file);
+            workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
-            var preprocessedFile = (TextFile)result.SourceFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
-            var originFile = (TextFile)result.SourceFiles.FirstOrDefault(f => f.Name == "origin.php");
+            var preprocessedFile = (TextFile)sourceFiles.FirstOrDefault(f => f.Name == "preprocessed.php");
+            var originFile = (TextFile)sourceFiles.FirstOrDefault(f => f.Name == "origin.php");
 
             LineColumnTextSpan lcPreprocessedTextSpan = new LineColumnTextSpan(4, 1, 4, 3);
             LineColumnTextSpan lcOriginTextSpan = new LineColumnTextSpan(3, 1, 3, 3, originFile);
@@ -184,7 +186,7 @@ namespace PT.PM.Tests
                     else
                     {
                         var match = (MatchResult)newLogger.Matches[0];
-                        var enumerator = result.SourceFiles.GetEnumerator();
+                        var enumerator = sourceFiles.GetEnumerator();
                         enumerator.MoveNext();
                         var firstFile = (TextFile)enumerator.Current;
                         Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), firstFile.GetLineColumnTextSpan(match.TextSpan));

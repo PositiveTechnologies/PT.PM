@@ -70,7 +70,10 @@ namespace PT.PM.Tests
                 Stage = Stage.Ust,
                 Logger = logger
             };
-            WorkflowResult result = workflow.Process();
+
+            IFile sourceFile = null;
+            workflow.FileRead += (sender, file) => sourceFile = file;
+            workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
@@ -94,6 +97,7 @@ namespace PT.PM.Tests
                     {
                         errorOffset += 2;
                     }
+
                     bytes[errorOffset] = errorValue;
                     File.WriteAllBytes(serializedFile, bytes);
                 }
@@ -119,7 +123,7 @@ namespace PT.PM.Tests
                 return;
             }
 
-            var binaryFile = (BinaryFile)newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
+            var binaryFile = (BinaryFile) newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
             RootUstMessagePackSerializer.Deserialize(binaryFile, new HashSet<IFile>(), null, logger, out int readSize);
             if (!compressed)
             {
@@ -144,12 +148,9 @@ namespace PT.PM.Tests
             Assert.AreEqual(0, newLogger.ErrorCount, newLogger.ErrorsString);
 
             var match = (MatchResult) newLogger.Matches[0];
-            using (var sourceFilesEnumerator = result.SourceFiles.GetEnumerator())
-            {
-                sourceFilesEnumerator.MoveNext();
-                var firstFile = (TextFile) sourceFilesEnumerator.Current;
-                Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), firstFile.GetLineColumnTextSpan(match.TextSpan));
-            }
+
+            Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25),
+                ((TextFile) sourceFile).GetLineColumnTextSpan(match.TextSpan));
         }
     }
 }
