@@ -191,10 +191,6 @@ namespace PT.PM.Cli.Common
                 workflow.SerializationFormat =
                     parameters.SerializationFormat.ParseEnum(ContinueWithInvalidArgs, workflow.SerializationFormat, Logger);
             }
-            if (parameters.CompressedSerialization.HasValue)
-            {
-                workflow.CompressedSerialization = parameters.CompressedSerialization.Value;
-            }
 
             return workflow;
         }

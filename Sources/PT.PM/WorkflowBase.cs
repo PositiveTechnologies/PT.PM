@@ -113,8 +113,6 @@ namespace PT.PM
 
         public bool StrictJson { get; set; }
 
-        public bool CompressedSerialization { get; set; }
-
         public string LogsDir { get; set; } = "";
 
         public string DumpDir { get; set; } = "";
@@ -493,7 +491,7 @@ namespace PT.PM
                 }
                 else
                 {
-                    byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, CompressedSerialization, logger);
+                    byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, logger);
                     FileExt.WriteAllBytes(dumpName, bytes);
                 }
             }
