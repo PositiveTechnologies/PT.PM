@@ -124,9 +124,10 @@ namespace PT.PM.Matching
             {
                 return TextSpan.Zero;
             }
-
-            int startIndex = offset + match.Index - escapeCharsLength;
-            return SafeCreateTextSpan(startIndex, match.Length + 2 * escapeCharsLength);
+            int matchStartIndex = match.Index == 0 
+                ? match.Index 
+                : match.Index - escapeCharsLength;
+            return SafeCreateTextSpan(matchStartIndex + offset, match.Length + 2 * escapeCharsLength);
         }
 
         public static IEnumerable<MatchResultDto> ToDto(this IEnumerable<IMatchResultBase> matchResults)
