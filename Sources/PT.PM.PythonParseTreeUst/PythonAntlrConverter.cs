@@ -795,7 +795,8 @@ namespace PT.PM.PythonParseTreeUst
                     {
                         Initializers = visited is MultichildExpression multichild
                             ? UstUtils.ExtractMultiChild(multichild)
-                            : new List<Expression> { visited.ToExpressionIfRequired() }
+                            : new List<Expression> { visited.ToExpressionIfRequired() },
+                        TextSpan = context.GetTextSpan()
                     };
                 }
 
