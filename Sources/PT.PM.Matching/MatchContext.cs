@@ -54,9 +54,9 @@ namespace PT.PM.Matching
 
         public MatchContext AddUstIfSuccess(Ust ust)
         {
-            if (Success && !IgnoreLocations && ust.TextSpans != null)
+            if (Success && !IgnoreLocations && !ust.TextSpan.IsZero)
             {
-                Locations.AddRange(ust.TextSpans);
+                Locations.Add(ust.TextSpan);
             }
             return this;
         }
@@ -64,9 +64,9 @@ namespace PT.PM.Matching
         public MatchContext AddMatch(Ust ust)
         {
             Success = true;
-            if (!IgnoreLocations && ust != null && ust.TextSpans != null)
+            if (!IgnoreLocations && ust != null && !ust.TextSpan.IsZero)
             {
-                Locations.AddRange(ust.TextSpans);
+                Locations.Add(ust.TextSpan);
             }
             return this;
         }

@@ -106,12 +106,10 @@ namespace PT.PM.Common.MessagePack
             var localSourceFiles = new List<TextFile> {CurrentRoot.SourceFile};
             rootUst.ApplyActionToDescendantsAndSelf(ust =>
             {
-                foreach (TextSpan textSpan in ust.TextSpans)
+                TextSpan textSpan = ust.TextSpan;
+                if (textSpan.File != null && !localSourceFiles.Contains(textSpan.File))
                 {
-                    if (textSpan.File != null && !localSourceFiles.Contains(textSpan.File))
-                    {
-                        localSourceFiles.Add(textSpan.File);
-                    }
+                    localSourceFiles.Add(textSpan.File);
                 }
             });
 
@@ -174,7 +172,21 @@ namespace PT.PM.Common.MessagePack
 
             foreach (PropertyInfo property in serializableProperties)
             {
-                newOffset += SerializeObject(ref bytes, newOffset, property.PropertyType, property.GetValue(value));
+                object serializeObject = property.GetValue(value);
+                Type propertyType;
+
+                // TODO: backward compatibility with old serialization format (wait for CLangs fix)
+                if (property.Name == nameof(Ust.TextSpan))
+                {
+                    serializeObject = new[] {(TextSpan) serializeObject};
+                    propertyType = typeof(TextSpan[]);
+                }
+                else
+                {
+                    propertyType = property.PropertyType;
+                }
+
+                newOffset += SerializeObject(ref bytes, newOffset, propertyType, serializeObject);
             }
 
             return newOffset - offset;
@@ -347,7 +359,18 @@ namespace PT.PM.Common.MessagePack
                     }
                     else
                     {
-                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size, logger);
+                        // TODO: backward compatibility with old serialization format (wait for CLangs fix)
+                        bool isTextSpan = property.Name == nameof(Ust.TextSpan);
+                        Type propertyType = isTextSpan ? typeof(TextSpan[]) : property.PropertyType;
+
+                        object obj = DeserializeObject(bytes, newOffset, propertyType, out size, logger);
+
+                        if (isTextSpan)
+                        {
+                            TextSpan[] textSpans = (TextSpan[]) obj;
+                            obj = textSpans.Length > 0 ? textSpans[0] : TextSpan.Zero;
+                        }
+
                         try
                         {
                             property.SetValue(ust, obj);

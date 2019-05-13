@@ -47,7 +47,7 @@ namespace PT.PM.Common.Nodes
         {
             SourceFile = sourceFile ?? TextFile.Empty;
             Language = language;
-            TextSpans = new[] {textSpan.IsZero ? new TextSpan(0, SourceFile.Data.Length) : textSpan};
+            TextSpan = textSpan.IsZero ? new TextSpan(0, SourceFile.Data.Length) : textSpan;
         }
 
         public RootUst()
