@@ -89,7 +89,7 @@ namespace PT.PM.Matching
             {
                 return new List<TextSpan>
                 {
-                    SafeCreateTextSpan(start - escapeCharsLength + offset, length + 2 * escapeCharsLength)
+                    SafeCreateTextSpan(start - escapeCharsLength, length + 2 * escapeCharsLength, offset)
                 };
             }
 
@@ -124,10 +124,7 @@ namespace PT.PM.Matching
             {
                 return TextSpan.Zero;
             }
-            int matchStartIndex = match.Index == 0 
-                ? match.Index 
-                : match.Index - escapeCharsLength;
-            return SafeCreateTextSpan(matchStartIndex + offset, match.Length + 2 * escapeCharsLength);
+            return SafeCreateTextSpan(match.Index - escapeCharsLength, match.Length + 2 * escapeCharsLength, offset);
         }
 
         public static IEnumerable<MatchResultDto> ToDto(this IEnumerable<IMatchResultBase> matchResults)
@@ -150,11 +147,16 @@ namespace PT.PM.Matching
             return false;
         }
 
-        public static TextSpan SafeCreateTextSpan(int start, int length)
+        public static TextSpan SafeCreateTextSpan(int start, int length, int offset = 0)
         {
             if (start < 0)
             {
                 start = 0;
+            }
+
+            if(offset < 0)
+            {
+                offset = 0;
             }
 
             if (start + length < start)
@@ -162,7 +164,7 @@ namespace PT.PM.Matching
                 length = 0;
             }
 
-            return new TextSpan(start, length);
+            return new TextSpan(start + offset, length);
         }
     }
 }
