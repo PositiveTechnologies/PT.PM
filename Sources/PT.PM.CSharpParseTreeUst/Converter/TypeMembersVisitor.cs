@@ -85,7 +85,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
             var init = (Expression)base.Visit(node.EqualsValue != null ? node.EqualsValue.Value : null);
-            AssignmentExpression[] vars = new[] { new AssignmentExpression(
+            AssignmentExpression[] vars = { new AssignmentExpression(
                 ConvertId(node.Identifier),
                 init,
                 node.GetTextSpan())

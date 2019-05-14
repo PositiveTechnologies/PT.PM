@@ -79,13 +79,12 @@ namespace PT.PM.Common
                 (bool)arrayCreationExpression.Initializers?.All(i => i is StringLiteral))
             {
                 var value = new StringBuilder();
-                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count + 1);
+                var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count);
 
-                textSpans.Add(arrayCreationExpression.Type.TextSpan);
-
-                foreach (StringLiteral stringLiteral in arrayCreationExpression.Initializers)
+                foreach (var expression in arrayCreationExpression.Initializers)
                 {
-                    value.Append(stringLiteral.Text);
+                    var stringLiteral = (StringLiteral) expression;
+                    AppendText(value, stringLiteral);
                     textSpans.Add(stringLiteral.TextSpan);
                 }
 
@@ -103,7 +102,7 @@ namespace PT.PM.Common
             {
                 if (initializer is StringLiteral stringLiteral)
                 {
-                    sb.Append(stringLiteral.Text);
+                    AppendText(sb, stringLiteral);
                     textSpans.Add(stringLiteral.TextSpan);
                 }
             }
@@ -287,7 +286,7 @@ namespace PT.PM.Common
         {
             if (token is StringLiteral stringLiteral)
             {
-                return new FoldResult(stringLiteral.Text, stringLiteral.TextSpan);
+                return new FoldResult(stringLiteral.TextValue, stringLiteral.TextSpan);
             }
 
             if (token is IntLiteral intLiteral)
@@ -349,6 +348,22 @@ namespace PT.PM.Common
 
             result?.TextSpans.Sort();
             foldedResults[ust.TextSpan] = result;
+        }
+
+        private void AppendText(StringBuilder builder, StringLiteral literal)
+        {
+            if (literal.Text is null)
+            {
+                string data = literal.CurrentSourceFile.Data;
+                for (int i = literal.TextSpan.Start; i < literal.TextSpan.End; i++)
+                {
+                    builder.Append(data[i]);
+                }
+            }
+            else
+            {
+                builder.Append(literal.Text);
+            }
         }
     }
 }

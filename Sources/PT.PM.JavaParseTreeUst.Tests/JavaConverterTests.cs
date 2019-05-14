@@ -87,7 +87,7 @@ namespace PT.PM.JavaParseTreeUst.Tests
                     Sizes = data.Item2
                 };
                 bool exist = ust.AnyDescendantOrSelf(node => node.Equals(arrayCreationExpression));
-                Assert.IsTrue(exist, "Test failed on " + i + " iteration.");
+                Assert.IsTrue(exist, $"Test failed on {i} iteration.");
             }
         }
 
@@ -110,8 +110,8 @@ namespace PT.PM.JavaParseTreeUst.Tests
             workflow.UstConverted += (sender, rootUst) => ust = rootUst;
             workflow.Process();
 
-            Assert.IsTrue(ust.AnyDescendantOrSelf(ustNode =>
-                ustNode is StringLiteral stringLiteral && stringLiteral.Text == "a"));
+            Assert.IsTrue(ust.AnyDescendantOrSelf(descendant =>
+                descendant is StringLiteral stringLiteral && stringLiteral.TextValue == "a"));
         }
 
         [Test]

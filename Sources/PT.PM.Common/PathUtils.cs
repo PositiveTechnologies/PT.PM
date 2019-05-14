@@ -136,6 +136,26 @@ namespace PT.PM.Common.Utils
             }
         }
 
+        public static IEnumerable<string> EnumerateDirectories(string path, string searchPattern)
+        {
+            IEnumerable<string> directories = Directory.EnumerateDirectories(path.NormalizeDirPath(true), searchPattern);
+
+            if (!path.StartsWith(PathUtils.LongPrefix))
+            {
+                foreach (string directory in directories)
+                {
+                    yield return directory.DenormalizePath();
+                }
+            }
+            else
+            {
+                foreach (string directory in directories)
+                {
+                    yield return directory;
+                }
+            }
+        }
+
         public static string[] GetDirectories(string path)
         {
             string[] dirs = Directory.GetDirectories(path.NormalizeDirPath(true));

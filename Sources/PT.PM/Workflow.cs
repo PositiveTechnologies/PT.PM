@@ -52,6 +52,8 @@ namespace PT.PM
             result.RenderStages = RenderStages;
             result.IsFoldConstants = IsFoldConstants;
 
+            AntlrUtils.AntlrUtils.CheckCacheMemoryBytes = (long) MemoryConsumptionMb * 1024 * 1024;
+
             IEnumerable<string> fileNames = SourceRepository.GetFileNames();
             if (fileNames is IList<string> fileNamesList)
             {
@@ -139,6 +141,11 @@ namespace PT.PM
                 rootUst = ReadParseAndConvert(fileName, workflowResult);
                 if (rootUst != null && Stage >= Stage.Match)
                 {
+                    if (rootUst.Language.IsAntlr())
+                    {
+                        AntlrUtils.AntlrUtils.HandleMemoryConsumption(rootUst.SourceFile, Logger);
+                    }
+
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
                     var matchResults = patternMatcher.Match(rootUst);

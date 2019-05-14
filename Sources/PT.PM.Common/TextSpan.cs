@@ -5,7 +5,7 @@ using PT.PM.Common.Files;
 namespace PT.PM.Common
 {
     [MessagePackObject]
-    public struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
+    public readonly struct TextSpan: IEquatable<TextSpan>, IComparable<TextSpan>, IComparable
     {
         public static readonly TextSpan Zero = default;
 
@@ -49,7 +49,7 @@ namespace PT.PM.Common
         public int Length { get; }
 
         [Key(2)]
-        public TextFile File { get; set; }
+        public TextFile File { get; }
 
         [IgnoreMember]
         public int End => Start + Length;

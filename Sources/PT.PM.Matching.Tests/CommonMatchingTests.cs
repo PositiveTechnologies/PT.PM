@@ -209,9 +209,9 @@ namespace PT.PM.Matching.Tests
 
             LineColumnTextSpan textSpan = matchResults[1].LineColumnTextSpan;
             Assert.AreEqual(15, textSpan.BeginLine);
-            Assert.AreEqual(12, textSpan.BeginColumn);
+            Assert.AreEqual(11, textSpan.BeginColumn);
             Assert.AreEqual(17, textSpan.EndLine);
-            Assert.AreEqual(7, textSpan.EndColumn);
+            Assert.AreEqual(8, textSpan.EndColumn);
         }
 
         [Test]

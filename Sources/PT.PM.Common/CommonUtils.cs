@@ -70,11 +70,6 @@ namespace PT.PM.Common.Utils
             }
         }
 
-        public static bool TryCheckIdTokenValue(Expression expr, string value)
-        {
-            return expr is IdToken idToken && idToken.TextValue == value;
-        }
-
         public static List<T> ParseEnums<T>(this IEnumerable<string> values, bool ignoreIncorrectValues, ILogger logger = null)
             where T :  Enum
         {

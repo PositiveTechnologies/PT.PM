@@ -380,8 +380,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             string complexName = string.Join("", context.children.Select(c => c.ToString()).ToArray());
             TextSpan textSpan = context.GetTextSpan();
 
-            var result = new StringLiteral(complexName, textSpan);
-            return result;
+            return new StringLiteral(complexName, textSpan, 0);
         }
 
         public Ust VisitQualifiedNameList(JavaParser.QualifiedNameListContext context)
@@ -400,11 +399,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             var textSpan = context.GetTextSpan();
 
-            ITerminalNode stringLiteral = context.STRING_LITERAL();
-            if (stringLiteral != null)
+            if (context.STRING_LITERAL() != null)
             {
-                string text = stringLiteral.GetText();
-                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
+                return convertHelper.ConvertString(textSpan);
             }
 
             if (context.integerLiteral() != null)
@@ -423,11 +420,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 return new BooleanLiteral(bool.Parse(boolLiteral.GetText()), textSpan);
             }
 
-            ITerminalNode charLiteral = context.CHAR_LITERAL();
-            if (charLiteral != null)
+            if (context.CHAR_LITERAL() != null)
             {
-                string text = charLiteral.GetText();
-                return new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
+                return convertHelper.ConvertString(textSpan);
             }
 
             if (context.Start.Type == JavaParser.NULL_LITERAL)
@@ -440,9 +435,24 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitIntegerLiteral(JavaParser.IntegerLiteralContext context)
         {
-            TextSpan textSpan = context.GetTextSpan();
-            string text = context.GetText().Replace("_", "");
-            return TryParseInteger(text, textSpan) ?? new IntLiteral(0, textSpan);
+            int fromBase = context.DECIMAL_LITERAL() != null
+                ? 10
+                : context.HEX_LITERAL() != null
+                    ? 16
+                    : context.OCT_LITERAL() != null
+                        ? 8
+                        : 2;
+
+            ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
+
+            if (span.Contains("_".AsSpan(), StringComparison.Ordinal))
+            {
+                span = context.GetText().Replace("_", "").AsSpan();
+            }
+
+            convertHelper.TryConvertNumeric(span, textSpan, fromBase, out Literal numeric);
+
+            return numeric;
         }
 
         public Ust VisitFloatLiteral(JavaParser.FloatLiteralContext context)

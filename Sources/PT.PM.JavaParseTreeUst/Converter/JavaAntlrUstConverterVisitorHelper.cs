@@ -1,5 +1,4 @@
-﻿using PT.PM.AntlrUtils;
-using PT.PM.Common;
+﻿using PT.PM.Common;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.TypeMembers;
@@ -11,21 +10,9 @@ namespace PT.PM.JavaParseTreeUst.Converter
 {
     public partial class JavaAntlrParseTreeConverter
     {
-        private MethodDeclaration ConvertMethodDeclaration(JavaParser.TypeTypeOrVoidContext type, ITerminalNode child0Terminal,
-            ITerminalNode identifier, JavaParser.FormalParametersContext formalParameters,
-            JavaParser.BlockContext methodBody, TextSpan textSpan)
+        private MethodDeclaration ConvertMethodDeclaration(ITerminalNode identifier,
+            JavaParser.FormalParametersContext formalParameters, JavaParser.BlockContext methodBody, TextSpan textSpan)
         {
-            TypeToken typeToken;
-            if (type != null)
-            {
-                typeToken = (TypeToken)Visit(type);
-            }
-            else
-            {
-                var voidTerminal = child0Terminal;
-                typeToken = new TypeToken(voidTerminal.GetText(), voidTerminal.GetTextSpan());
-            }
-
             var id = (IdToken)Visit(identifier);
 
             // TODO: Fix with ParamsNode

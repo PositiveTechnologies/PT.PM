@@ -20,10 +20,7 @@ namespace PT.PM.Common.Nodes.Expressions
         public MultichildExpression(IEnumerable<Expression> children)
         {
             Expressions = children as List<Expression> ?? children.ToList();
-            TextSpans = new[]
-            {
-                Expressions.Count > 0 ? Expressions.First().TextSpan.Union(Expressions.Last().TextSpan) : TextSpan.Zero
-            };
+            TextSpan = Expressions.Count > 0 ? Expressions.First().TextSpan.Union(Expressions.Last().TextSpan) : TextSpan.Zero;
         }
 
         public MultichildExpression()

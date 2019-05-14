@@ -25,35 +25,20 @@ namespace PT.PM.Common.Nodes
         [IgnoreMember, JsonIgnore]
         public Ust Parent { get; set; }
 
-        [Key(0), JsonProperty("TextSpan"), JsonIgnore] // Workaround for correct deserialization of external jsons
-        public TextSpan[] TextSpans { get; set; } // TODO: make it `protected set`
+        [Key(0), JsonIgnore]
+        public TextSpan TextSpan { get; set; }
 
         [Key(1)]
         public int Key { get; set; }
-
-        [IgnoreMember, JsonIgnore]
-        public TextSpan TextSpan
-        {
-            get => TextSpans?.Length > 0 ? TextSpans[0] : TextSpan.Zero;
-            set
-            {
-                // TODO: try to remove setter (use TextSpans instead)
-                if (TextSpans?.Length == 1) // Prevent excess allocation
-                {
-                    TextSpans[0] = value;
-                }
-                else
-                {
-                    TextSpans = new[] {value};
-                }
-            }
-        }
 
         [IgnoreMember, JsonIgnore]
         public string Kind => GetType().Name;
 
         [IgnoreMember, JsonIgnore]
         public int KindId => GetType().Name.GetHashCode();
+
+        [IgnoreMember, JsonIgnore]
+        public string Substring => CurrentSourceFile.Data.Substring(TextSpan);
 
         [IgnoreMember, JsonIgnore]
         public LineColumnTextSpan LineColumnTextSpan => CurrentSourceFile?.GetLineColumnTextSpan(TextSpan) ?? LineColumnTextSpan.Zero;
@@ -81,12 +66,11 @@ namespace PT.PM.Common.Nodes
 
         protected Ust()
         {
-            TextSpans = new TextSpan[0];
         }
 
         protected Ust(TextSpan textSpan)
         {
-            TextSpans = new [] { textSpan };
+            TextSpan = textSpan;
         }
 
         public abstract Ust[] GetChildren();
@@ -116,7 +100,7 @@ namespace PT.PM.Common.Nodes
         {
             if (Children == null || Children.Length == 0)
             {
-                return "";
+                return Substring;
             }
 
             var result = new StringBuilder();

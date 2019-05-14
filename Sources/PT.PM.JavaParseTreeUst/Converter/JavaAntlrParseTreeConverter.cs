@@ -59,9 +59,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         {
             StringLiteral name = (StringLiteral)Visit(context.qualifiedName());
             TextSpan textSpan = context.GetTextSpan();
-            var result = new UsingDeclaration(name, textSpan);
-
-            return result;
+            return new UsingDeclaration(name, textSpan);
         }
 
         public Ust VisitTypeDeclaration(JavaParser.TypeDeclarationContext context)

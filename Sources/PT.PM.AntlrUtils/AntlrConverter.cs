@@ -8,21 +8,17 @@ using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 
 namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrConverter : IParseTreeToUstConverter, IParseTreeVisitor<Ust>
     {
-        protected static readonly Regex RegexHexLiteral = new Regex(@"^0[xX]([a-fA-F0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        protected static readonly Regex RegexOctalLiteral = new Regex(@"^0([0-7]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        protected static readonly Regex RegexBinaryLiteral = new Regex(@"^0[bB]([01]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-        protected static readonly Regex RegexDecimalLiteral = new Regex(@"^([0-9]+)([uUlL]{0,2})$", RegexOptions.Compiled);
-
         protected RootUst root;
+        protected ConvertHelper convertHelper;
 
         public abstract Language Language { get; }
 
@@ -30,7 +26,7 @@ namespace PT.PM.AntlrUtils
 
         public IList<IToken> Tokens { get; set; }
 
-        public Parser Parser { get; set; }
+        public string[] RuleNames { get; set; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -58,6 +54,7 @@ namespace PT.PM.AntlrUtils
             {
                 Tokens = Language.GetSublanguages().Length > 0 ? antlrParseTree.Tokens : new List<IToken>();
                 root = new RootUst(langParseTree.SourceFile, Language);
+                convertHelper = new ConvertHelper(root) {Logger = Logger};
                 Ust visited = Visit(tree);
                 if (visited is RootUst rootUst)
                 {
@@ -75,7 +72,7 @@ namespace PT.PM.AntlrUtils
                 return null;
             }
 
-            result.Comments = antlrParseTree.Comments.Select(c => new CommentLiteral(c.Text, c.GetTextSpan())
+            result.Comments = antlrParseTree.Comments.Select(c => new Comment(c.GetTextSpan())
             {
                 Root = result
             })
@@ -90,12 +87,7 @@ namespace PT.PM.AntlrUtils
         {
             try
             {
-                if (tree == null)
-                {
-                    return null;
-                }
-
-                return tree.Accept(this);
+                return tree?.Accept(this);
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
@@ -142,106 +134,32 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-        public Ust VisitList(IList<IParseTree> nodes)
-        {
-            var exprs = new List<Expression>();
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                var child = Visit(nodes[i]);
-                if (child != null)
-                {
-                    // Ignore null.
-                    if (child is Expression childExpression)
-                    {
-                        exprs.Add(childExpression);
-                    }
-                    else
-                    {
-                        exprs.Add(new WrapperExpression(child));
-                    }
-                }
-            }
-            var result = new MultichildExpression(exprs);
-            return result;
-        }
-
         public virtual Ust VisitTerminal(ITerminalNode node)
         {
-            Token result;
-            string nodeText = node.GetText();
-            TextSpan textSpan = node.GetTextSpan();
-            if ((nodeText.StartsWith("'") && nodeText.EndsWith("'")) ||
-                (nodeText.StartsWith("\"") && nodeText.EndsWith("\"")))
-            {
-                return new StringLiteral(nodeText.Substring(1, nodeText.Length - 2), textSpan);
-            }
-            else if (nodeText.Contains("."))
-            {
-                double.TryParse(nodeText, out double value);
-                return new FloatLiteral(value, textSpan);
-            }
-
-            var integerToken = TryParseInteger(nodeText, textSpan);
-            if (integerToken != null)
-            {
-                return integerToken;
-            }
-            else
-            {
-                result = new IdToken(nodeText, textSpan);
-            }
-            return result;
+            ReadOnlySpan<char> span = ExtractSpan(node.Symbol, out TextSpan textSpan);
+            return convertHelper.ConvertToken(span, textSpan);
         }
 
-        public Ust VisitErrorNode(IErrorNode node)
-        {
-            return DefaultResult;
-        }
-
-        protected Token TryParseInteger(string text, TextSpan textSpan)
-        {
-            Match match = RegexHexLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 16);
-            }
-            match = RegexOctalLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 8);
-            }
-            match = RegexBinaryLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan, 2);
-            }
-            match = RegexDecimalLiteral.Match(text);
-            if (match.Success)
-            {
-                return TextUtils.TryCreateNumericLiteral(match.Groups[1].Value, textSpan);
-            }
-            return null;
-        }
+        public Ust VisitErrorNode(IErrorNode node) => DefaultResult;
 
         protected Ust VisitShouldNotBeVisited(IParseTree tree)
         {
-            var parserRuleContext = tree as ParserRuleContext;
             string ruleName = "";
-            if (parserRuleContext != null)
+            if (tree is ParserRuleContext parserRuleContext)
             {
-                ruleName = Parser?.RuleNames.ElementAtOrDefault(parserRuleContext.RuleIndex)
+                ruleName = RuleNames?.ElementAtOrDefault(parserRuleContext.RuleIndex)
                            ?? parserRuleContext.RuleIndex.ToString();
             }
 
             throw new ShouldNotBeVisitedException(ruleName);
         }
 
-        protected Ust DefaultResult
+        protected Ust DefaultResult => null;
+
+        protected Token ConvertToken(IToken token)
         {
-            get
-            {
-                return null;
-            }
+            ReadOnlySpan<char> span = ExtractSpan(token, out TextSpan textSpan);
+            return convertHelper.ConvertToken(span, textSpan);
         }
 
         protected AssignmentExpression CreateAssignExpr(Expression left, Expression right, ParserRuleContext context, ParserRuleContext assignOperator)
@@ -290,61 +208,22 @@ namespace PT.PM.AntlrUtils
             return result;
         }
 
-
-        protected Token ExtractLiteral(IToken token)
+        protected static ReadOnlySpan<char> ExtractSpan(IToken token, out TextSpan textSpan)
         {
-            string text = token.Text;
-            TextSpan textSpan = token.GetTextSpan();
-            Token result = null;
+            ReadOnlySpan<char> span;
 
-            try
+            if (token is LightToken lightToken)
             {
-                if (text == "*")
-                {
-                    result = new IdToken(text, textSpan);
-                }
-                else if (text.StartsWith("@"))
-                {
-                    result = new IdToken(text.Substring(1), textSpan);
-                }
-                else if ((text.StartsWith("\"") || text.StartsWith("["))
-                    && text.Length > 1)
-                {
-                    result = new IdToken(text.Substring(1, text.Length - 2), textSpan);
-                }
-                else if (text.EndsWith("'"))
-                {
-                    if (text.StartsWith("N"))
-                    {
-                        text = text.Substring(1);
-                    }
-                    text = text.Substring(1, text.Length - 2);
-                    result = new StringLiteral(text, textSpan);
-                }
-                else if (text.All(char.IsDigit))
-                {
-                    result = TextUtils.TryCreateNumericLiteral(text, textSpan);
-                }
-                else if (text.StartsWith("0X", StringComparison.OrdinalIgnoreCase))
-                {
-                    result = TextUtils.TryCreateNumericLiteral(text, textSpan, 16);
-                }
-                else if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out double floatValue))
-                {
-                    result = new FloatLiteral(floatValue, textSpan);
-                }
+                textSpan = lightToken.TextSpan;
+                span = lightToken.Span;
             }
-            catch
+            else
             {
-                Logger.LogDebug($"Literal cannot be extracted from {nameof(token)} with symbol {text}");
+                textSpan = token.GetTextSpan();
+                span = token.Text.AsSpan();
             }
 
-            if (result == null && (text.Any(c => char.IsLetterOrDigit(c) || c == '_')))
-            {
-                result = new IdToken(text, textSpan);
-            }
-
-            return result;
+            return span;
         }
     }
 }

@@ -8,8 +8,6 @@ namespace PT.PM.Matching
 {
     public class MatchContext : ILoggable
     {
-        private readonly List<Ust> parentStack;
-
         public PatternRoot PatternUst { get; }
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
@@ -35,18 +33,17 @@ namespace PT.PM.Matching
 
         public static MatchContext CreateWithInputParams(MatchContext context, Dictionary<string, IdToken> vars = null)
         {
-            return new MatchContext(context.PatternUst, context.UstConstantFolder, context.parentStack, vars)
+            return new MatchContext(context.PatternUst, context.UstConstantFolder, vars)
             {
                 Logger = context.Logger,
                 FindAllAlternatives = context.FindAllAlternatives
             };
         }
 
-        public MatchContext(PatternRoot patternUst, UstConstantFolder ustConstantFolder, List<Ust> parentStack, Dictionary<string, IdToken> vars = null)
+        public MatchContext(PatternRoot patternUst, UstConstantFolder ustConstantFolder, Dictionary<string, IdToken> vars = null)
         {
             PatternUst = patternUst;
             UstConstantFolder = ustConstantFolder;
-            this.parentStack = parentStack;
             if (vars != null)
             {
                 Vars = vars;
@@ -57,9 +54,9 @@ namespace PT.PM.Matching
 
         public MatchContext AddUstIfSuccess(Ust ust)
         {
-            if (Success && !IgnoreLocations && ust.TextSpans != null)
+            if (Success && !IgnoreLocations && !ust.TextSpan.IsZero)
             {
-                Locations.AddRange(ust.TextSpans);
+                Locations.Add(ust.TextSpan);
             }
             return this;
         }
@@ -67,9 +64,19 @@ namespace PT.PM.Matching
         public MatchContext AddMatch(Ust ust)
         {
             Success = true;
-            if (!IgnoreLocations && ust != null && ust.TextSpans != null)
+            if (!IgnoreLocations && ust != null && !ust.TextSpan.IsZero)
             {
-                Locations.AddRange(ust.TextSpans);
+                Locations.Add(ust.TextSpan);
+            }
+            return this;
+        }
+
+        public MatchContext AddMatch(TextSpan textSpan)
+        {
+            Success = true;
+            if (!IgnoreLocations && !textSpan.IsZero)
+            {
+                Locations.Add(textSpan);
             }
             return this;
         }
@@ -101,12 +108,6 @@ namespace PT.PM.Matching
             Success = success;
             return this;
         }
-
-        public void PushParent(Ust parent)
-        {
-            parentStack?.Add(parent);
-        }
-
         public override string ToString()
         {
             string vars = string.Join(", ", Vars.Select(v => $"{v.Key}: {v.Value}"));

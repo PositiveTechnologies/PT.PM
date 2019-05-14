@@ -17,19 +17,18 @@ namespace PT.PM.PythonParseTreeUst
         public override Ust VisitTerminal(ITerminalNode node)
         {
             var text = node.GetText();
-            if (text.StartsWith("\"") || text.StartsWith("'"))
-            {
-                return new StringLiteral(text.Substring(1, text.Length - 2), node.GetTextSpan());
-            }
+
             if (text == "False" || text == "True")
             {
                 return new BooleanLiteral(text == "True", node.GetTextSpan());
-            }            
+            }
+
             if (text == "None")
             {
                 return new NullLiteral(node.GetTextSpan());
             }
-            return ExtractLiteral(node.Symbol);
+
+            return base.VisitTerminal(node);
         }
 
         private Expression CreateInvocationExpression(Expression target, ArgsUst args, TextSpan textSpan)

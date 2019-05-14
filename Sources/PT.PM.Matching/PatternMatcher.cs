@@ -15,7 +15,7 @@ namespace PT.PM.Matching
         public List<PatternRoot> Patterns { get; set; }
 
         public bool IsIgnoreFilenameWildcards { get; set; }
-        
+
         public UstConstantFolder UstConstantFolder { get; set; }
 
         public PatternMatcher()
@@ -39,13 +39,11 @@ namespace PT.PM.Matching
                     patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceFile.FullName) ?? true);
                 }
 
-                var parentStack = new List<Ust>();
-                
                 var result = new List<MatchResult>();
                 foreach (PatternRoot pattern in patterns)
                 {
                     pattern.Logger = Logger;
-                    var results = pattern.Match(ust, UstConstantFolder, parentStack);
+                    var results = pattern.Match(ust, UstConstantFolder);
                     result.AddRange(results);
                 }
 

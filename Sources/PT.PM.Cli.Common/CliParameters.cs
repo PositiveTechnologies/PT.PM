@@ -82,8 +82,5 @@
 
         [Option("serialize-format", HelpText = "Serialize format (json, msgpack)")]
         public string SerializationFormat { get; set; }
-
-        [Option("serialize-compress", HelpText = "Compress serialized models")]
-        public bool? CompressedSerialization { get; set; }
     }
 }

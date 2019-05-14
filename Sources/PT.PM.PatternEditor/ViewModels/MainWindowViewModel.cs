@@ -31,7 +31,6 @@ namespace PT.PM.PatternEditor
         private readonly ListBox matchResultListBox;
         private Language oldSelectedLanguage;
         private string sourceFileName;
-        private bool fileOpened;
         private string oldSource = "";
         private Stage oldEndStage;
         private JavaScriptType oldJavaScriptType;
@@ -104,7 +103,6 @@ namespace PT.PM.PatternEditor
                 if (fileNames?.Any() == true)
                 {
                     OpenedFileName = fileNames[0];
-                    fileOpened = true;
                     sourceTextBox.Text = FileExt.ReadAllText(sourceFileName);
                 }
             });
@@ -145,13 +143,11 @@ namespace PT.PM.PatternEditor
 
             if (string.IsNullOrEmpty(Settings.SourceFile) || !FileExt.Exists(Settings.SourceFile))
             {
-                fileOpened = false;
                 sourceFileName = "";
                 sourceTextBox.Text = Settings.Source;
             }
             else
             {
-                fileOpened = true;
                 sourceFileName = Settings.SourceFile;
                 sourceTextBox.Text = FileExt.ReadAllText(Settings.SourceFile);
             }
@@ -691,8 +687,8 @@ namespace PT.PM.PatternEditor
                 workflow.DumpStages = dumpStages;
             }
 
+            workflow.FileRead += (obj, file) => source = (TextFile)file;
             WorkflowResult workflowResult = workflow.Process();
-            source = (TextFile)workflowResult.SourceFiles.FirstOrDefault();
             UpdateSourceSelection(true);
 
             ParseTreeDumper dumper = Utils.CreateParseTreeDumper(SelectedLanguage);
@@ -729,21 +725,6 @@ namespace PT.PM.PatternEditor
                 SourceErrorsIsVisible = true;
                 SourceErrorsText = $"ERRORS ({SourceLogger.ErrorCount})";
             }
-        }
-
-        private void DetectLanguageIfRequired()
-        {
-            if (!fileOpened && (!string.IsNullOrEmpty(sourceTextBox.Text) && string.IsNullOrEmpty(oldSource)))
-            {
-                Task.Factory.StartNew(() =>
-                {
-                    Language detectedLanguage = languageDetector.DetectIfRequired(new TextFile(sourceTextBox.Text), out TimeSpan _).Language;
-                    Dispatcher.UIThread.InvokeAsync(() => SelectedLanguage = detectedLanguage);
-                });
-                Dispatcher.UIThread.InvokeAsync(() => OpenedFileName = "");
-            }
-
-            fileOpened = false;
         }
     }
 }

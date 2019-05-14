@@ -1,4 +1,5 @@
-﻿using PT.PM.Common;
+﻿using System.Collections.Generic;
+using PT.PM.Common;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
@@ -24,16 +25,31 @@ namespace PT.PM.Matching.Patterns
         {
             if (ust is StringLiteral stringLiteral)
             {
-                return String.Equals(stringLiteral.Text) ? context.AddMatch(stringLiteral) : context.Fail();
+                if (stringLiteral.Text is null)
+                {
+                    return string.CompareOrdinal(String, 0, ust.CurrentSourceFile.Data, stringLiteral.TextSpan.Start,
+                               String.Length) == 0
+                        ? context.AddMatch(stringLiteral.ViewTextSpan)
+                        : context.Fail();
+                }
+
+                return String.Equals(stringLiteral.Text)
+                    ? context.AddMatch(stringLiteral.ViewTextSpan)
+                    : context.Fail();
             }
 
             if (context.UstConstantFolder != null &&
-                context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldingResult))
+                context.UstConstantFolder.TryGetOrFold(ust, out FoldResult foldResult))
             {
                 context.MatchedWithFolded = true;
-                if (foldingResult.Value is string stringValue)
+                if (foldResult.Value is string stringValue)
                 {
-                    return String.Equals(stringValue) ? context.AddMatches(foldingResult.TextSpans) : context.Fail();
+                    if (String.Equals(stringValue))
+                    {
+                        var matches = new List<TextSpan> {new TextSpan(0, String.Length)};
+                        matches = MatchUtils.AlignTextSpans(foldResult.TextSpans, matches, 1);
+                        context.AddMatches(matches);
+                    }
                 }
             }
 

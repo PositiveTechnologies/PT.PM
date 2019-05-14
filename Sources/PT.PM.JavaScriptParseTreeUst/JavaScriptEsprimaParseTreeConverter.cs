@@ -14,11 +14,15 @@ using Esprima;
 using System.Threading;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Tokens.Literals;
+using Comment = PT.PM.Common.Nodes.Tokens.Literals.Comment;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
     public partial class JavaScriptEsprimaParseTreeConverter : IParseTreeToUstConverter
     {
+        private RootUst root;
+        private ConvertHelper convertHelper;
+
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
         public Language Language => Language.JavaScript;
@@ -42,28 +46,29 @@ namespace PT.PM.JavaScriptParseTreeUst
                 {
                     SourceFile = esprimaParseTree.SourceFile;
                 }
+
+                root = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree));
+                convertHelper = new ConvertHelper(root) {Logger = Logger};
+
                 var program = VisitProgram(esprimaParseTree.SyntaxTree);
 
-                var rootUst = new RootUst(SourceFile, Language.JavaScript, GetTextSpan(esprimaParseTree.SyntaxTree))
-                {
-                    Nodes = new Ust[] { program },
-                };
+                root.Nodes = new Ust[] {program};
 
-                var comments = new Collections.List<CommentLiteral>(esprimaParseTree.Comments.Count);
-                foreach (Comment comment in esprimaParseTree.Comments)
+                var comments = new Collections.List<Comment>(esprimaParseTree.Comments.Count);
+                foreach (Esprima.Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new CommentLiteral(SourceFile.GetSubstring(textSpan), textSpan)
+                    comments.Add(new Comment(textSpan)
                     {
-                        Root = rootUst,
+                        Root = root,
                     });
                 }
 
-                rootUst.Comments = comments.ToArray();
-                rootUst.Root = ParentRoot;
-                rootUst.FillAscendants();
+                root.Comments = comments.ToArray();
+                root.Root = ParentRoot;
+                root.FillAscendants();
 
-                return rootUst;
+                return root;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
@@ -185,7 +190,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return TextSpan.FromBounds(node.Range.Start + Offset, node.Range.End + Offset);
         }
 
-        private TextSpan GetTextSpan(Comment token)
+        private TextSpan GetTextSpan(Esprima.Comment token)
         {
             return TextSpan.FromBounds(token.Start + Offset, token.End + Offset);
         }

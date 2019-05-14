@@ -39,17 +39,15 @@ namespace PT.PM.Matching.Patterns
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
-            var commentLiteral = ust as CommentLiteral;
+            var commentLiteral = ust as Comment;
             if (commentLiteral == null)
             {
                 return context.Fail();
             }
 
-            IEnumerable<TextSpan> matches = Regex
-                .MatchRegex(commentLiteral.Comment)
-                .Select(location => location.AddOffset(commentLiteral.TextSpan.Start));
+            List<TextSpan> matches = Regex.MatchRegex(commentLiteral.CurrentSourceFile, commentLiteral.TextSpan, 0);
 
-            return matches.Count() > 0
+            return matches.Count > 0
                 ? context.AddMatches(matches)
                 : context.Fail();
         }

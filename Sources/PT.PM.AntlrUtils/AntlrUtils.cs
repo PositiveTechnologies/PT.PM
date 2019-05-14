@@ -3,10 +3,8 @@ using PT.PM.Common.Exceptions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using Antlr4.Runtime.Misc;
+using System.Threading;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
@@ -16,19 +14,52 @@ namespace PT.PM.AntlrUtils
 {
     public static class AntlrUtils
     {
-        public static string GetText(this ParserRuleContext ruleContext, IList<IToken> tokens)
+        private static long processedFilesCount;
+        private static long processedBytesCount;
+        private static long checkNumber;
+        private static volatile bool excessMemory;
+
+        public static long CheckCacheMemoryBytes { get; set; } = 2 * 1024 * 1024 * 1024L;
+
+        public static long ClearCacheFilesBytesCount { get; set; } = 5 * 1024 * 1024L;
+
+        public static int ClearCacheFilesCount { get; set; } = 50;
+
+        public static void HandleMemoryConsumption(TextFile antlrTextFile, ILogger logger)
         {
-            if (tokens == null)
-                return ruleContext.GetText();
+            long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
+            long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, antlrTextFile.Data.Length);
 
-            var result = new StringBuilder();
-            Interval interval = ruleContext.SourceInterval;
-            for (int i = interval.a; i <= interval.b; i++)
+            if (Process.GetCurrentProcess().PrivateMemorySize64 > CheckCacheMemoryBytes)
             {
-                result.Append(tokens[i].Text);
-            }
+                long divideResult = localProcessedBytesCount / ClearCacheFilesBytesCount;
+                bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
+                Thread.VolatileWrite(ref checkNumber, divideResult);
 
-            return result.ToString();
+                bool prevExcessMemory = excessMemory;
+                excessMemory = true;
+
+                if (!prevExcessMemory ||
+                    exceededProcessedBytes ||
+                    localProcessedFilesCount % ClearCacheFilesCount == 0)
+                {
+                    lock (AntlrLexer.Atns)
+                    {
+                        AntlrLexer.Atns.Clear();
+                    }
+                    lock (AntlrParser.Atns)
+                    {
+                        AntlrParser.Atns.Clear();
+                    }
+
+                    logger?.LogInfo(
+                        $"ANTLR cache cleared due to big memory consumption after parsing of {antlrTextFile.RelativeName}.");
+                }
+            }
+            else
+            {
+                excessMemory = false;
+            }
         }
 
         public static AntlrLexer CreateAntlrLexer(this Language language)
@@ -60,7 +91,7 @@ namespace PT.PM.AntlrUtils
             TextSpan result;
             if (stop != null && stop.StopIndex >= start.StartIndex)
             {
-                result = new TextSpan(start.StartIndex, stop.StopIndex - start.StartIndex + 1);
+                result = new TextSpan(start.StartIndex, stop.StopIndex - start.StartIndex);
             }
             else
             {
@@ -77,8 +108,9 @@ namespace PT.PM.AntlrUtils
 
         public static TextSpan GetTextSpan(this IToken token)
         {
-            var result = new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex + 1);
-            return result;
+            return token is LightToken lightToken
+                ? lightToken.TextSpan
+                : new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex);
         }
 
         public static void LogConversionError(this ILogger logger, Exception ex,
@@ -86,10 +118,10 @@ namespace PT.PM.AntlrUtils
         {
             StackTrace stackTrace = new StackTrace(ex, true);
             int frameNumber = 0;
-            string fileName = null;
-            string methodName = null;
-            int line = 0;
-            int column = 0;
+            string fileName;
+            string methodName;
+            int line;
+            int column;
             do
             {
                 StackFrame frame = stackTrace.GetFrame(frameNumber);

@@ -53,7 +53,7 @@ namespace PT.PM.Common.Json
 
             if (type == typeof(RootUst))
             {
-                TextFile sourceFile = jObject["SourceCodeFile"]?.ToObject<TextFile>(serializer); // Back compatibility with external serializers
+                TextFile sourceFile = jObject["SourceCodeFile"]?.ToObject<TextFile>(serializer); // TODO: back compatibility with external serializers
                 string languageString = (string)jObject[nameof(RootUst.Language)] ?? "";
                 Enum.TryParse(languageString, out Language language);
                 rootUst = new RootUst(sourceFile, language);
@@ -110,7 +110,7 @@ namespace PT.PM.Common.Json
                 textSpans = new TextSpan[0];
             }
 
-            ust.TextSpans = textSpans;
+            ust.TextSpan = textSpans.Length > 0 ? textSpans[0] : TextSpan.Zero;
 
             if (!IgnoreExtraProcess)
             {

@@ -24,7 +24,7 @@ namespace PT.PM.Dsl
                 throw new ParsingException(data, message: "Pattern value can not be empty.");
             }
 
-            var parser = new DslAntlrParser() { Logger = Logger };
+            var parser = new DslAntlrParser { Logger = Logger };
             var converter = new DslUstConverter
             {
                 Logger = Logger,
@@ -36,7 +36,7 @@ namespace PT.PM.Dsl
             PatternRoot patternNode = converter.Convert(patternContext);
             patternNode.File = data;
 
-            var preprocessor = new PatternNormalizer() { Logger = Logger };
+            var preprocessor = new PatternNormalizer { Logger = Logger };
             patternNode = preprocessor.Normalize(patternNode);
 
             return patternNode;

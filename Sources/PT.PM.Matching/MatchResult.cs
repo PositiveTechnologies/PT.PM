@@ -23,7 +23,7 @@ namespace PT.PM.Matching
             TextSpan lastTextSpan = textSpans.LastOrDefault();
             if (lastTextSpan != default)
             {
-                Suppressed = PatternUtils.IsSuppressed(SourceFile, lastTextSpan.GetLineColumnTextSpan(SourceFile));
+                Suppressed = MatchUtils.IsSuppressed(SourceFile, lastTextSpan.GetLineColumnTextSpan(SourceFile));
             }
         }
 

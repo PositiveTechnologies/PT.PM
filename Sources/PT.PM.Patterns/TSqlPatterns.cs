@@ -16,7 +16,7 @@ namespace PT.PM.Patterns.PatternsRepository
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Dangerous Function",
                 Languages = new HashSet<Language> { Language.TSql },
-                Node = new PatternInvocationExpression()
+                Node = new PatternInvocationExpression
                 {
                     Target = new PatternIdRegexToken("xp_cmdshell"),
                     Arguments = new PatternArgs(new PatternMultipleExpressions())

@@ -44,13 +44,10 @@ namespace PT.PM.Matching.Patterns
                 return ust == null ? context.MakeSuccess() : context.AddMatch(ust);
             }
 
-            string treeString = UseUstString
-                ? ust.ToString()
-                : ust.CurrentSourceFile?.GetSubstring(ust.TextSpan) ?? "";
-
             int escapeCharsLength = (ust as StringLiteral)?.EscapeCharsLength ?? 0;
-            List<TextSpan> matches = Regex.MatchRegex(treeString, escapeCharsLength);
-            matches = UstUtils.GetAlignedTextSpan(escapeCharsLength, null, matches, ust.TextSpan.Start);
+            var matches = UseUstString
+                ? Regex.MatchRegex(ust.ToString(), escapeCharsLength, ust.TextSpan.Start)
+                : Regex.MatchRegex(ust.CurrentSourceFile, ust.TextSpan, escapeCharsLength);
 
             return matches.Count > 0
                 ? context.AddMatches(matches)

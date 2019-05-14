@@ -3,7 +3,7 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.Common
 {
-    public struct LineColumnTextSpan : IEquatable<LineColumnTextSpan>
+    public readonly struct LineColumnTextSpan : IEquatable<LineColumnTextSpan>
     {
         public static LineColumnTextSpan Zero => new LineColumnTextSpan(0, 0, 0, 0);
 

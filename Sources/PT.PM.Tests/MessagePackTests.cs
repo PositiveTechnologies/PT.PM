@@ -41,14 +41,8 @@ namespace PT.PM.Tests
             CheckMsgPackSerialization("empty-try-catch.php", incorrectFilePath: true);
         }
 
-        [Test]
-        public void Serialize_MsgPack_Compressed()
-        {
-            CheckMsgPackSerialization("empty-try-catch.php", compressed: true);
-        }
-
         private static void CheckMsgPackSerialization(string inputFileName, bool linearTextSpans = false,
-            bool damaged = false, bool incorrectFilePath = false, bool compressed = false)
+            bool damaged = false, bool incorrectFilePath = false)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
             string ext = SerializationFormat.MsgPack.GetExtension();
@@ -66,11 +60,13 @@ namespace PT.PM.Tests
                 DumpDir = TestUtility.TestsOutputPath,
                 SerializationFormat = SerializationFormat.MsgPack,
                 LineColumnTextSpans = !linearTextSpans,
-                CompressedSerialization = compressed,
                 Stage = Stage.Ust,
                 Logger = logger
             };
-            WorkflowResult result = workflow.Process();
+
+            IFile sourceFile = null;
+            workflow.FileRead += (sender, file) => sourceFile = file;
+            workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
@@ -94,6 +90,7 @@ namespace PT.PM.Tests
                     {
                         errorOffset += 2;
                     }
+
                     bytes[errorOffset] = errorValue;
                     File.WriteAllBytes(serializedFile, bytes);
                 }
@@ -119,17 +116,9 @@ namespace PT.PM.Tests
                 return;
             }
 
-            var binaryFile = (BinaryFile)newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
+            var binaryFile = (BinaryFile) newCodeRepository.ReadFile(newCodeRepository.GetFileNames().ElementAt(0));
             RootUstMessagePackSerializer.Deserialize(binaryFile, new HashSet<IFile>(), null, logger, out int readSize);
-            if (!compressed)
-            {
-                Assert.AreEqual(binaryFile.Data.Length, readSize);
-            }
-            else
-            {
-                double compressionRatio = (double) readSize / binaryFile.Data.Length;
-                Console.WriteLine($"Compression ratio: {compressionRatio}");
-            }
+            Assert.AreEqual(binaryFile.Data.Length, readSize);
 
             Assert.GreaterOrEqual(newLogger.Matches.Count, 1);
 
@@ -144,12 +133,9 @@ namespace PT.PM.Tests
             Assert.AreEqual(0, newLogger.ErrorCount, newLogger.ErrorsString);
 
             var match = (MatchResult) newLogger.Matches[0];
-            using (var sourceFilesEnumerator = result.SourceFiles.GetEnumerator())
-            {
-                sourceFilesEnumerator.MoveNext();
-                var firstFile = (TextFile) sourceFilesEnumerator.Current;
-                Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25), firstFile.GetLineColumnTextSpan(match.TextSpan));
-            }
+
+            Assert.AreEqual(new LineColumnTextSpan(2, 1, 3, 25),
+                ((TextFile) sourceFile).GetLineColumnTextSpan(match.TextSpan));
         }
     }
 }

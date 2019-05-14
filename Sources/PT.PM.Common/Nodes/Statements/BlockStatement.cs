@@ -13,7 +13,7 @@ namespace PT.PM.Common.Nodes.Statements
         public BlockStatement(IEnumerable<Statement> statements)
         {
             Statements = statements as List<Statement> ?? statements.ToList();
-            TextSpans = new[] {Statements.GetTextSpan()};
+            TextSpan = Statements.GetTextSpan();
         }
 
         public BlockStatement(IEnumerable<Statement> statements, TextSpan textSpan)

@@ -11,9 +11,9 @@ namespace PT.PM.Common.Json
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public string EmptyTextSpanFormat { get; set; } = null;
+        public string EmptyTextSpanFormat { get; set; }
 
-        public bool IsLineColumn { get; set; } = false;
+        public bool IsLineColumn { get; set; }
 
         public TextFile CurrentSourceFile { get; set; }
 
@@ -79,7 +79,7 @@ namespace PT.PM.Common.Json
 
                 if (result.File == CurrentSourceFile)
                 {
-                    result.File = null;
+                    result = new TextSpan(result.Start, result.Length);
                 }
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))

@@ -104,16 +104,7 @@ namespace PT.PM.Common.Json
                     }
                     else if (propVal != null)
                     {
-                        if (propVal is TextSpan[] textSpans)
-                        {
-                            jToken = textSpans.Length == 1
-                                ? JToken.FromObject(textSpans[0], serializer)
-                                : JArray.FromObject(textSpans, serializer);
-                        }
-                        else
-                        {
-                            jToken = JToken.FromObject(propVal, serializer);
-                        }
+                        jToken = JToken.FromObject(propVal, serializer);
                     }
 
                     if (jToken != null)

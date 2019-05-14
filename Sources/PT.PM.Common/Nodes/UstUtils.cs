@@ -35,7 +35,7 @@ namespace PT.PM.Common.Nodes
                 return null;
             }
 
-            return ust as Expression 
+            return ust as Expression
                    ?? new WrapperExpression(ust);
         }
 
@@ -48,69 +48,6 @@ namespace PT.PM.Common.Nodes
         {
             string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Any"));
             return $"{id}({paramsString})";
-        }
-
-        public static List<TextSpan> GetAlignedTextSpan(int escapeLength, List<TextSpan> foldedTextSpans, List<TextSpan> matchesLocations, int startOffset)
-        {
-            List<TextSpan> result = new List<TextSpan>(matchesLocations.Count);
-
-            foreach (TextSpan location in matchesLocations)
-            {
-                if (foldedTextSpans == null || foldedTextSpans.Count == 0)
-                {
-                    result.Add(location.AddOffset(startOffset));
-                    continue;
-                }
-
-                int offset = 0;
-                int leftBound = 1;
-                int rightBound =
-                    foldedTextSpans[0].Length - 2 * escapeLength + 1; // - quotes length and then + 1
-                TextSpan textSpan = TextSpan.Zero;
-
-                // Check first initial textspan separately
-                if (location.Start < rightBound && location.End > rightBound)
-                {
-                    textSpan = location;
-                }
-
-                for (int i = 1; i < foldedTextSpans.Count; i++)
-                {
-                    var initTextSpan = foldedTextSpans[i];
-                    var prevTextSpan = foldedTextSpans[i - 1];
-                    leftBound += prevTextSpan.Length - 2 * escapeLength;
-                    rightBound += initTextSpan.Length - 2 * escapeLength;
-                    offset += initTextSpan.Start - prevTextSpan.End + 2 * escapeLength;
-
-                    if (location.Start < leftBound && location.End < leftBound)
-                    {
-                        break;
-                    }
-
-                    if (location.Start >= leftBound && location.Start < rightBound)
-                    {
-                        textSpan = location.AddOffset(offset);
-                        if (location.End <= rightBound)
-                        {
-                            result.Add(textSpan.AddOffset(startOffset));
-                            break;
-                        }
-                    }
-
-                    if (!textSpan.IsZero && location.End <= rightBound)
-                    {
-                        result.Add(new TextSpan(textSpan.Start + startOffset, location.Length + offset, textSpan.File));
-                        break;
-                    }
-                }
-
-                if (textSpan.IsZero)
-                {
-                    result.Add(location.AddOffset(startOffset));
-                }
-            }
-
-            return result;
         }
 
         public static AssignmentExpression CreateAssignExpr(Expression left, Expression right, TextSpan textSpan, string assignExprOpText, TextSpan assignOpTextSpan)

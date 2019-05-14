@@ -1,3 +1,4 @@
+using System;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -16,6 +17,7 @@ using PythonParseTree;
 using System.Collections.Generic;
 using System.Linq;
 using PT.PM.Common.Exceptions;
+using Attribute = PT.PM.Common.Nodes.Attribute;
 
 namespace PT.PM.PythonParseTreeUst
 {
@@ -50,7 +52,10 @@ namespace PT.PM.PythonParseTreeUst
             {
                 var dotIndex = root.CurrentSourceFile.Name.LastIndexOf('.');
                 return new NamespaceDeclaration(
-                    new StringLiteral(root.CurrentSourceFile?.Name.Remove(dotIndex < 0 ? 0 : dotIndex)),
+                    new StringLiteral(root.CurrentSourceFile?.Name.Remove(dotIndex < 0 ? 0 : dotIndex))
+                    {
+                        EscapeCharsLength = 0
+                    },
                     block,
                     context.GetTextSpan());
             }
@@ -433,14 +438,14 @@ namespace PT.PM.PythonParseTreeUst
         {
             string name = context.dotted_as_names().GetText();
             TextSpan textSpan = context.dotted_as_names().GetTextSpan();
-            return new UsingDeclaration(new StringLiteral(name, textSpan), context.GetTextSpan());
+            return new UsingDeclaration(new StringLiteral(name, textSpan, 0), context.GetTextSpan());
         }
 
         public Ust VisitFrom_stmt(PythonParser.From_stmtContext context)
         {
             string name = context.children.LastOrDefault()?.GetText() ?? "";
             TextSpan textSpan = context.GetTextSpan();
-            return new UsingDeclaration(new StringLiteral(name, textSpan), context.GetTextSpan());
+            return new UsingDeclaration(new StringLiteral(name, textSpan, 0), context.GetTextSpan());
         }
 
         public Ust VisitImport_as_name(PythonParser.Import_as_nameContext context)
@@ -790,7 +795,8 @@ namespace PT.PM.PythonParseTreeUst
                     {
                         Initializers = visited is MultichildExpression multichild
                             ? UstUtils.ExtractMultiChild(multichild)
-                            : new List<Expression> { visited.ToExpressionIfRequired() }
+                            : new List<Expression> { visited.ToExpressionIfRequired() },
+                        TextSpan = context.GetTextSpan()
                     };
                 }
 
@@ -806,12 +812,35 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitNumber(PythonParser.NumberContext context)
         {
+            if (context.integer() != null)
+            {
+                return VisitInteger(context.integer());
+            }
+
+            if (context.FLOAT_NUMBER() != null)
+            {
+                IToken symbol = context.FLOAT_NUMBER().Symbol;
+                ConvertHelper.TryParseDoubleInvariant(symbol.Text, out double value);
+                return new FloatLiteral(value, symbol.GetTextSpan());
+            }
+
             return Visit(context.GetChild(0));
         }
 
         public Ust VisitInteger(PythonParser.IntegerContext context)
         {
-            return TryParseInteger(context.GetText(), context.GetTextSpan());
+            int fromBase = context.DECIMAL_INTEGER() != null
+                ? 10
+                : context.HEX_INTEGER() != null
+                    ? 16
+                    : context.BIN_INTEGER() != null
+                        ? 8
+                        : 2;
+
+            ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
+            convertHelper.TryConvertNumeric(span, textSpan, fromBase, out Literal numeric);
+
+            return numeric;
         }
 
         public Ust VisitTestlist_comp(PythonParser.Testlist_compContext context)

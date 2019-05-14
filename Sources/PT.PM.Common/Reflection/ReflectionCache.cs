@@ -83,8 +83,8 @@ namespace PT.PM.Common.Reflection
                         foreach (PropertyInfo property in properties)
                         {
                             if (property.CanRead && property.CanWrite &&
-                               (property.GetCustomAttribute<JsonIgnoreAttribute>() == null ||
-                                property.Name == nameof(Ust.TextSpans)))
+                                (property.GetCustomAttribute<JsonIgnoreAttribute>() == null ||
+                                 property.Name == nameof(Ust.TextSpan)))
                             {
                                 KeyAttribute keyAttribute = property.GetCustomAttribute<KeyAttribute>();
                                 if (keyAttribute == null)
@@ -144,7 +144,8 @@ namespace PT.PM.Common.Reflection
 
                         foreach (PropertyInfo property in properties)
                         {
-                            if (property.GetCustomAttribute<JsonIgnoreAttribute>() == null)
+                            if (property.GetCustomAttribute<JsonIgnoreAttribute>() == null ||
+                                property.Name == nameof(Ust.TextSpan))
                             {
                                 serializableProperties.Add(property);
                             }

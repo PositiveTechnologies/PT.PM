@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime;
+﻿using System;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
@@ -15,9 +16,7 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using PT.PM.TSqlParseTreeUst;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Numerics;
 
 namespace PT.PM.SqlParseTreeUst
 {
@@ -663,14 +662,14 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitOpenquery([NotNull] TSqlParser.OpenqueryContext context)
         {
             return CreateSpecialInvocation(context.OPENQUERY(), context,
-                new List<Expression> { (IdToken)Visit(context.id()), ExtractLiteral(context.query) });
+                new List<Expression> { (IdToken)Visit(context.id()), ConvertToken(context.query) });
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
         public Ust VisitOpendatasource([NotNull] TSqlParser.OpendatasourceContext context)
         {
             return CreateSpecialInvocation(context.OPENDATASOURCE(), context, new List<Expression> {
-                ExtractLiteral(context.provider), ExtractLiteral(context.init),
+                ConvertToken(context.provider), ConvertToken(context.init),
                 (IdToken)Visit(context.database), (IdToken)Visit(context.scheme),
                 (IdToken)Visit(context.scheme) });
         }
@@ -801,7 +800,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.parameter != null)
             {
-                Token left = ExtractLiteral(context.parameter);
+                Token left = ConvertToken(context.parameter);
                 result = new AssignmentExpression(left, result, context.GetTextSpan());
             }
             return result;
@@ -1072,9 +1071,9 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                string rightText = context.DECIMAL().GetText();
-                var rightTextSpan = context.DECIMAL().Symbol.GetTextSpan();
-                right = TextUtils.TryCreateNumericLiteral(rightText, rightTextSpan);
+                ReadOnlySpan<char> span = ExtractSpan(context.DECIMAL().Symbol, out TextSpan textSpan);
+                convertHelper.TryConvertNumeric(span, textSpan, 10, out Literal numeric);
+                right = numeric;
             }
 
             var result = new AssignmentExpression(left, right, context.GetTextSpan());
@@ -1734,7 +1733,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitBulk_option([NotNull] TSqlParser.Bulk_optionContext context)
         {
             var left = (IdToken)Visit(context.id());
-            var right = ExtractLiteral(context.bulk_option_value);
+            var right = ConvertToken(context.bulk_option_value);
             var result = new AssignmentExpression(left, right, context.GetTextSpan());
             return result;
         }
@@ -2071,10 +2070,8 @@ namespace PT.PM.SqlParseTreeUst
             {
                 return Visit(context.func_proc_name());
             }
-            else
-            {
-                return new IdToken(context.GetText(), context.GetTextSpan());
-            }
+
+            return new IdToken(context.GetText(), context.GetTextSpan());
         }
 
         /// <returns><see cref="TypeToken"/></returns>
@@ -2102,50 +2099,28 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Token"/></returns>
         public Ust VisitConstant([NotNull] TSqlParser.ConstantContext context)
         {
-            var text = context.GetText();
-            var textSpan = context.GetTextSpan();
-            Token result;
-            if (context.STRING() != null)
-            {
-                if (text.StartsWith("N"))
-                {
-                    text = text.Substring(1);
-                }
-                result = new StringLiteral(text.Substring(1, text.Length - 2), textSpan);
-            }
-            else if (context.BINARY() != null)
-            {
-                result = new LongLiteral(System.Convert.ToInt64(text.Substring(2), 16), textSpan);
-            }
-            else if (context.dollar != null)
-            {
-                result = new StringLiteral(text, textSpan);
-            }
-            else if (context.DECIMAL() != null)
-            {
-                if (int.TryParse(text, out int intValue))
-                {
-                    result = new IntLiteral(intValue, textSpan);
-                }
-                else if (long.TryParse(text, out long longValue))
-                {
-                    result = new LongLiteral(longValue, textSpan);
-                }
-                else
-                {
-                    result = new BigIntLiteral(BigInteger.Parse(text), textSpan);
-                }
-            }
-            else
-            {
-                result = new FloatLiteral(double.Parse(text, CultureInfo.InvariantCulture), textSpan);
-            }
-            return result;
-        }
+            ITerminalNode terminalNode = (ITerminalNode)context.GetChild(context.ChildCount - 1);
+            Token literal = ConvertToken(terminalNode.Symbol);
 
-        public Ust VisitSign([NotNull] TSqlParser.SignContext context)
-        {
-            return VisitShouldNotBeVisited(context);
+            bool minus = context.sign?.Text == "-";
+
+            if (minus)
+            {
+                if (literal is IntLiteral intLiteral)
+                {
+                    intLiteral.Value = -intLiteral.Value;
+                }
+                else if (literal is LongLiteral longLiteral)
+                {
+                    longLiteral.Value = -longLiteral.Value;
+                }
+                else if (literal is BigIntLiteral bigIntLiteral)
+                {
+                    bigIntLiteral.Value = -bigIntLiteral.Value;
+                }
+            }
+
+            return literal;
         }
 
         /// <returns><see cref="IdToken"/></returns>

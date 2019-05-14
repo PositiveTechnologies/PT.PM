@@ -19,7 +19,7 @@ namespace PT.PM.Common.Nodes
         public Ust[] Nodes { get; set; } = ArrayUtils<Ust>.EmptyArray;
 
         [Key(UstFieldOffset + 2)]
-        public CommentLiteral[] Comments { get; set; } = ArrayUtils<CommentLiteral>.EmptyArray;
+        public Comment[] Comments { get; set; } = ArrayUtils<Comment>.EmptyArray;
 
         [Key(UstFieldOffset + 3)]
         public int LineOffset { get; set; }
@@ -47,7 +47,7 @@ namespace PT.PM.Common.Nodes
         {
             SourceFile = sourceFile ?? TextFile.Empty;
             Language = language;
-            TextSpans = new[] {textSpan.IsZero ? new TextSpan(0, SourceFile.Data.Length) : textSpan};
+            TextSpan = textSpan.IsZero ? new TextSpan(0, SourceFile.Data.Length) : textSpan;
         }
 
         public RootUst()

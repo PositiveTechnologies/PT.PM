@@ -19,7 +19,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
     public partial class CSharpRoslynParseTreeConverter : CSharpSyntaxVisitor<Ust>, IParseTreeToUstConverter
     {
-        private RootUst root { get; set; }
+        private RootUst root;
+        private ConvertHelper convertHelper;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
@@ -47,9 +48,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
 
             RootUst result;
-            string filePath = syntaxTree.FilePath;
             try
             {
+                root = new RootUst(langParseTree.SourceFile, Language.CSharp);
+                convertHelper = new ConvertHelper(root) {Logger = Logger};
                 Ust visited = Visit(roslynParseTree.SyntaxTree.GetRoot());
                 if (visited is RootUst rootUst)
                 {
@@ -62,7 +64,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 }
                 result.SourceFile = langParseTree.SourceFile;
                 result.Comments = roslynParseTree.Comments.Select(c =>
-                    new CommentLiteral(c.ToString(), c.GetTextSpan())
+                    new Comment(c.GetTextSpan())
                     {
                         Root = result
                     })
@@ -92,9 +94,10 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
             if (root == null)
             {
-                root = new RootUst(null, Language.CSharp, node.GetTextSpan());
+                root = new RootUst(null, Language.CSharp);
             }
             root.Nodes = children.ToArray();
+            root.TextSpan = node.GetTextSpan();
             return root;
         }
 
@@ -111,7 +114,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitUsingDirective(UsingDirectiveSyntax node)
         {
             var nameSpan = node.Name.GetTextSpan();
-            var name = new StringLiteral(node.Name.ToFullString(), nameSpan);
+            var name = new StringLiteral(node.Name.ToFullString(), nameSpan, 0);
             return new UsingDeclaration(name, node.GetTextSpan());
         }
 

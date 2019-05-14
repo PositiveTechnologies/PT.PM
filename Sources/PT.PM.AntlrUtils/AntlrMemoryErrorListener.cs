@@ -19,7 +19,7 @@ namespace PT.PM.AntlrUtils
         {
             if (recognizer is Lexer lexer)
             {
-                ProcessError(lexer.CharIndex, lexer.CharIndex, msg);
+                ProcessError(lexer.CharIndex, lexer.CharIndex + 1, msg);
             }
         }
 
@@ -32,10 +32,10 @@ namespace PT.PM.AntlrUtils
         {
             int lineLinearIndex = SourceFile.GetLineLinearIndex(LineOffset);
             startIndex = startIndex + lineLinearIndex;
-            stopIndex = stopIndex + 1 + lineLinearIndex;
-            if (stopIndex <= startIndex)
+            stopIndex = stopIndex + lineLinearIndex;
+            if (stopIndex < startIndex)
             {
-                startIndex = stopIndex - 1;
+                startIndex = stopIndex;
             }
             TextSpan textSpan = TextSpan.FromBounds(startIndex, stopIndex);
 

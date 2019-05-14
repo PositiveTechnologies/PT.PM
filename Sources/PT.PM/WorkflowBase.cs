@@ -83,11 +83,11 @@ namespace PT.PM
             }
         }
 
-        public int ThreadCount { get; set; } = 0;
+        public int ThreadCount { get; set; }
 
-        public int MemoryConsumptionMb { get; set; } = 3000;
+        public int MemoryConsumptionMb { get; set; } = 2000;
 
-        public TimeSpan FileTimeout { get; set; } = default;
+        public TimeSpan FileTimeout { get; set; }
 
         public int MaxStackSize { get; set; } = Utils.DefaultMaxStackSize;
 
@@ -97,23 +97,21 @@ namespace PT.PM
 
         public HashSet<TStage> DumpStages { get; set; } = new HashSet<TStage>();
 
-        public bool IsDumpPatterns { get; set; } = false;
+        public bool IsDumpPatterns { get; set; }
 
         public GraphvizOutputFormat RenderFormat { get; set; } = GraphvizOutputFormat.Png;
 
         public GraphvizDirection RenderDirection { get; set; } = GraphvizDirection.TopBottom;
 
-        public bool IndentedDump { get; set; } = false;
+        public bool IndentedDump { get; set; }
 
         public bool DumpWithTextSpans { get; set; } = true;
 
-        public bool IncludeCodeInDump { get; set; } = false;
+        public bool IncludeCodeInDump { get; set; }
 
-        public bool LineColumnTextSpans { get; set; } = false;
+        public bool LineColumnTextSpans { get; set; }
 
-        public bool StrictJson { get; set; } = false;
-
-        public bool CompressedSerialization { get; set; }
+        public bool StrictJson { get; set; }
 
         public string LogsDir { get; set; } = "";
 
@@ -122,6 +120,8 @@ namespace PT.PM
         public string TempDir { get; set; } = "";
 
         public SerializationFormat SerializationFormat { get; set; } = SerializationFormat.MsgPack;
+
+        public event EventHandler<IFile> FileRead;
 
         public event EventHandler<RootUst> UstConverted;
 
@@ -135,7 +135,46 @@ namespace PT.PM
         public RootUst ReadParseAndConvert(string fileName, TWorkflowResult workflowResult,
             CancellationToken cancellationToken = default)
         {
+            IFile sourceFile = Read(fileName, workflowResult, cancellationToken, out Language language);
+
+            if (sourceFile == null)
+            {
+                return null;
+            }
+
+            bool isSerializing = language.IsSerializing();
+
+            ParseTree parseTree = null;
+            DetectionResult detectionResult = null;
+
+            if (!isSerializing)
+            {
+                detectionResult = Detect(workflowResult, sourceFile);
+
+                if (detectionResult == null)
+                {
+                    return null;
+                }
+
+                parseTree = Parse(workflowResult, sourceFile, detectionResult, cancellationToken);
+
+                if (parseTree == null)
+                {
+                    return null;
+                }
+            }
+
+            RootUst rootUst = Convert(fileName, workflowResult, sourceFile, isSerializing, detectionResult,
+                language, parseTree, cancellationToken);
+
+            return rootUst;
+        }
+
+        private IFile Read(string fileName, TWorkflowResult workflowResult, CancellationToken cancellationToken,
+            out Language language)
+        {
             Language[] languages = SourceRepository.GetLanguages(fileName, true);
+            language = Language.Uncertain;
 
             if (languages.Length == 0)
             {
@@ -144,16 +183,13 @@ namespace PT.PM
             }
 
             // TODO: implement more fast language detection if there are several languages (SQL dialects at first), see https://github.com/PositiveTechnologies/PT.PM/issues/158
-            Language language = languages[0];
+            language = languages[0];
 
-            bool isSerialization = language.IsSerializing();
-
-            RootUst result = null;
             var stopwatch = Stopwatch.StartNew();
-            var sourceFile = SourceRepository.ReadFile(fileName);
+            IFile sourceFile = SourceRepository.ReadFile(fileName);
             stopwatch.Stop();
 
-            LogSourceFile((sourceFile, stopwatch.Elapsed), workflowResult);
+            LogSourceFile((sourceFile, stopwatch.Elapsed), workflowResult, false);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -162,88 +198,78 @@ namespace PT.PM
                 return null;
             }
 
-            ParseTree parseTree = null;
-            DetectionResult detectionResult = null;
+            return sourceFile;
+        }
 
-            if (!isSerialization)
+        private DetectionResult Detect(TWorkflowResult workflowResult, IFile sourceFile)
+        {
+            TextFile sourceTextFile = (TextFile) sourceFile;
+
+            LanguageDetector.MaxStackSize = MaxStackSize;
+            DetectionResult detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, out TimeSpan detectionTimeSpan);
+
+            if (detectionResult == null)
             {
-                TextFile sourceTextFile = (TextFile) sourceFile;
+                Logger.LogInfo(
+                    $"File {sourceFile}: unable to detect a language.");
+                return null;
+            }
 
-                LanguageDetector.MaxStackSize = MaxStackSize;
-                detectionResult = LanguageDetector.DetectIfRequired(sourceTextFile, out TimeSpan detectionTimeSpan);
+            if (detectionTimeSpan > TimeSpan.Zero)
+            {
+                workflowResult.AddDetectTime(detectionTimeSpan);
+                Logger.LogInfo(
+                    $"File {sourceFile} detected as {detectionResult.Language} (Elapsed: {detectionTimeSpan.Format()}).");
+            }
 
-                if (detectionResult == null)
+            if (!workflowResult.BaseLanguages.Contains(detectionResult.Language))
+            {
+                Logger.LogInfo($"File {sourceFile} ignored.");
+                return null;
+            }
+
+            if (Stage.Is(PM.Stage.Language))
+            {
+                return null;
+            }
+
+            return detectionResult;
+        }
+
+        private ParseTree Parse(TWorkflowResult workflowResult,
+            IFile sourceFile, DetectionResult detectionResult, CancellationToken cancellationToken)
+        {
+            ParseTree result;
+
+            TextFile sourceTextFile = (TextFile) sourceFile;
+
+            if (detectionResult.ParseTree == null)
+            {
+                var parser = detectionResult.Language.CreateParser();
+                parser.Logger = Logger;
+
+                TimeSpan lexerTimeSpan = TimeSpan.Zero;
+                TimeSpan parserTimeSpan = TimeSpan.Zero;
+
+                if (parser is AntlrParser antlrParser)
                 {
-                    Logger.LogInfo(
-                        $"File {sourceFile}: unable to detect a language.");
-                    return null;
-                }
+                    var antlrLexer = (AntlrLexer) antlrParser.Language.CreateLexer();
+                    antlrLexer.Logger = Logger;
+                    var tokens = antlrLexer.GetTokens(sourceTextFile, out lexerTimeSpan);
 
-                if (detectionTimeSpan > TimeSpan.Zero)
-                {
-                    workflowResult.AddDetectTime(detectionTimeSpan);
-                    Logger.LogInfo($"File {sourceFile} detected as {detectionResult.Language} (Elapsed: {detectionTimeSpan.Format()}).");
-                }
+                    Logger.LogInfo($"File {sourceFile} tokenized {lexerTimeSpan.GetElapsedString()}.");
+                    workflowResult.AddLexerTime(lexerTimeSpan);
 
-                if (!workflowResult.BaseLanguages.Contains(detectionResult.Language))
-                {
-                    Logger.LogInfo($"File {sourceFile} ignored.");
-                    return null;
-                }
+                    DumpTokens(tokens, detectionResult.Language, sourceTextFile);
 
-                if (Stage.Is(PM.Stage.Language))
-                {
-                    return null;
-                }
-
-                if (detectionResult.ParseTree == null)
-                {
-                    var parser = detectionResult.Language.CreateParser();
-                    parser.Logger = Logger;
-
-                    TimeSpan lexerTimeSpan = TimeSpan.Zero;
-                    TimeSpan parserTimeSpan = TimeSpan.Zero;
-
-                    if (parser is AntlrParser antlrParser)
+                    if (Stage.Is(PM.Stage.Tokens))
                     {
-                        AntlrBaseHandler.MemoryConsumptionBytes = (long)MemoryConsumptionMb * 1024 * 1024;
-
-                        var antlrLexer = (AntlrLexer)antlrParser.Language.CreateLexer();
-                        antlrLexer.Logger = Logger;
-                        var tokens = antlrLexer.GetTokens(sourceTextFile, out lexerTimeSpan);
-
-                        Logger.LogInfo($"File {sourceFile} tokenized {lexerTimeSpan.GetElapsedString()}.");
-                        workflowResult.AddLexerTime(lexerTimeSpan);
-
-                        DumpTokens(tokens, detectionResult.Language, sourceTextFile);
-
-                        if (Stage.Is(PM.Stage.Tokens))
-                        {
-                            return null;
-                        }
-
-                        antlrParser.SourceFile = sourceTextFile;
-                        antlrParser.ErrorListener = antlrLexer.ErrorListener;
-                        parseTree = antlrParser.Parse(tokens, out parserTimeSpan);
-                    }
-                    else
-                    {
-                        if (Stage.Is(PM.Stage.Tokens))
-                        {
-                            return null;
-                        }
-
-                        if (parser is JavaScriptEsprimaParser javaScriptParser)
-                        {
-                            javaScriptParser.JavaScriptType = JavaScriptType;
-                        }
-
-                        parseTree = ((ILanguageParser<TextFile>)parser).Parse(sourceTextFile, out parserTimeSpan);
+                        return null;
                     }
 
-                    Logger.LogInfo($"File {sourceFile} parsed {parserTimeSpan.GetElapsedString()}.");
-
-                    workflowResult.AddParserTime(parserTimeSpan);
+                    antlrParser.SourceFile = sourceTextFile;
+                    antlrParser.ErrorListener = antlrLexer.ErrorListener;
+                    result = antlrParser.Parse(tokens, out parserTimeSpan);
                 }
                 else
                 {
@@ -252,41 +278,68 @@ namespace PT.PM
                         return null;
                     }
 
-                    foreach (string debug in detectionResult.Debugs)
+                    if (parser is JavaScriptEsprimaParser javaScriptParser)
                     {
-                        Logger.LogDebug(debug);
+                        javaScriptParser.JavaScriptType = JavaScriptType;
                     }
 
-                    foreach (object info in detectionResult.Infos)
-                    {
-                        Logger.LogInfo(info);
-                    }
-
-                    foreach (Exception error in detectionResult.Errors)
-                    {
-                        Logger.LogError(error);
-                    }
-
-                    parseTree = detectionResult.ParseTree;
-
-                    Logger.LogInfo($"File {sourceFile} parsed");
+                    result = ((ILanguageParser<TextFile>) parser).Parse(sourceTextFile, out parserTimeSpan);
                 }
 
-                if (parseTree == null)
+                Logger.LogInfo($"File {sourceFile} parsed {parserTimeSpan.GetElapsedString()}.");
+
+                workflowResult.AddParserTime(parserTimeSpan);
+            }
+            else
+            {
+                if (Stage.Is(PM.Stage.Tokens))
                 {
                     return null;
                 }
 
-                DumpParseTree(parseTree);
+                foreach (string debug in detectionResult.Debugs)
+                {
+                    Logger.LogDebug(debug);
+                }
 
-                cancellationToken.ThrowIfCancellationRequested();
+                foreach (object info in detectionResult.Infos)
+                {
+                    Logger.LogInfo(info);
+                }
+
+                foreach (Exception error in detectionResult.Errors)
+                {
+                    Logger.LogError(error);
+                }
+
+                result = detectionResult.ParseTree;
+
+                Logger.LogInfo($"File {sourceFile} parsed");
             }
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            DumpParseTree(result);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return result;
+        }
+
+        private RootUst Convert(string fileName, TWorkflowResult workflowResult, IFile sourceFile,
+            bool isSerializing, DetectionResult detectionResult, Language language, ParseTree parseTree,
+            CancellationToken cancellationToken)
+        {
+            RootUst result = null;
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             if (Stage.IsGreaterOrEqual(PM.Stage.Ust))
             {
-                stopwatch.Restart();
-
-                if (!isSerialization)
+                if (!isSerializing)
                 {
                     IParseTreeToUstConverter converter = detectionResult.Language.CreateConverter();
                     if (converter is PhpAntlrParseTreeConverter phpConverter)
@@ -310,7 +363,7 @@ namespace PT.PM
                 else
                 {
                     void ReadSourceFileAction((IFile, TimeSpan) fileAndTime) =>
-                        LogSourceFile(fileAndTime, workflowResult);
+                        LogSourceFile(fileAndTime, workflowResult, false);
 
                     if (language == Language.Json)
                     {
@@ -359,7 +412,7 @@ namespace PT.PM
             return result;
         }
 
-        public void LogSourceFile((IFile, TimeSpan) fileAndTime, TWorkflowResult workflowResult)
+        public void LogSourceFile((IFile, TimeSpan) fileAndTime, TWorkflowResult workflowResult, bool saveFile)
         {
             IFile file = fileAndTime.Item1;
 
@@ -381,7 +434,12 @@ namespace PT.PM
             }
 
             workflowResult.AddReadTime(elapsed);
-            workflowResult.AddResultEntity(file);
+            if (saveFile)
+            {
+                workflowResult.AddResultEntity(file);
+            }
+
+            FileRead?.Invoke(this, file);
         }
 
         private void DumpTokens(IList<IToken> tokens, Language language, TextFile sourceFile)
@@ -433,7 +491,7 @@ namespace PT.PM
                 }
                 else
                 {
-                    byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, CompressedSerialization, logger);
+                    byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, logger);
                     FileExt.WriteAllBytes(dumpName, bytes);
                 }
             }
@@ -526,7 +584,7 @@ namespace PT.PM
             return new ParallelOptions
             {
                 MaxDegreeOfParallelism = ThreadCount == 0 ? -1 : ThreadCount,
-                CancellationToken = cancellationToken
+                CancellationToken = cancellationToken,
             };
         }
     }

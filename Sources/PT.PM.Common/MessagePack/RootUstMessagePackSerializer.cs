@@ -29,20 +29,13 @@ namespace PT.PM.Common.MessagePack
 
         public RootUst CurrentRoot { get; internal set; }
 
-        public static byte[] Serialize(RootUst rootUst, bool isLineColumn, bool compress, ILogger logger)
+        public static byte[] Serialize(RootUst rootUst, bool isLineColumn, ILogger logger)
         {
-            byte[] result = Serialize(rootUst, isLineColumn, compress, logger, out int writeSize);
-
-            if (compress)
-            {
-                return result;
-            }
-
+            byte[] result = Serialize(rootUst, isLineColumn, logger, out int writeSize);
             return MessagePackBinary.FastCloneWithResize(result, writeSize);
         }
 
-        public static byte[] Serialize(RootUst rootUst, bool isLineColumn, bool compress, ILogger logger,
-            out int writeSize)
+        public static byte[] Serialize(RootUst rootUst, bool isLineColumn, ILogger logger, out int writeSize)
         {
             var textSpanSerializer = TextSpanSerializer.CreateWriter();
             textSpanSerializer.IsLineColumn = isLineColumn;
@@ -63,19 +56,12 @@ namespace PT.PM.Common.MessagePack
             }
 
             writeSize = rootUstSerializer.SerializeRootUst(ref buffer, 0, rootUst);
-
-            if (compress)
-            {
-                var result = LZ4MessagePackSerializer.ToLZ4Binary(new ArraySegment<byte>(buffer, 0, writeSize));
-                return result;
-            }
-
             return buffer;
         }
 
         public static RootUst Deserialize(BinaryFile serializedFile,
             HashSet<IFile> sourceFiles, Action<(IFile, TimeSpan)> readSourceFileAction,
-            ILogger logger, out int readSize, byte[] data = null)
+            ILogger logger, out int readSize)
         {
             var textSpanSerializer = TextSpanSerializer.CreateReader(serializedFile);
             textSpanSerializer.Logger = logger;
@@ -90,9 +76,7 @@ namespace PT.PM.Common.MessagePack
                 fileSerializer = sourceFileSerializer
             };
 
-            byte[] data2 = data ?? MessagePackUtils.UnpackDataIfRequired(serializedFile.Data);
-
-            RootUst result = rootUstSerializer.DeserializeRootUst(data2, sourceFiles, 0, out readSize, logger);
+            RootUst result = rootUstSerializer.DeserializeRootUst(serializedFile.Data, sourceFiles, 0, out readSize, logger);
 
             return result;
         }
@@ -106,12 +90,10 @@ namespace PT.PM.Common.MessagePack
             var localSourceFiles = new List<TextFile> {CurrentRoot.SourceFile};
             rootUst.ApplyActionToDescendantsAndSelf(ust =>
             {
-                foreach (TextSpan textSpan in ust.TextSpans)
+                TextSpan textSpan = ust.TextSpan;
+                if (textSpan.File != null && !localSourceFiles.Contains(textSpan.File))
                 {
-                    if (textSpan.File != null && !localSourceFiles.Contains(textSpan.File))
-                    {
-                        localSourceFiles.Add(textSpan.File);
-                    }
+                    localSourceFiles.Add(textSpan.File);
                 }
             });
 
@@ -174,7 +156,21 @@ namespace PT.PM.Common.MessagePack
 
             foreach (PropertyInfo property in serializableProperties)
             {
-                newOffset += SerializeObject(ref bytes, newOffset, property.PropertyType, property.GetValue(value));
+                object serializeObject = property.GetValue(value);
+                Type propertyType;
+
+                // TODO: backward compatibility with old serialization format (wait for CLangs fix)
+                if (property.Name == nameof(Ust.TextSpan))
+                {
+                    serializeObject = new[] {(TextSpan) serializeObject};
+                    propertyType = typeof(TextSpan[]);
+                }
+                else
+                {
+                    propertyType = property.PropertyType;
+                }
+
+                newOffset += SerializeObject(ref bytes, newOffset, propertyType, serializeObject);
             }
 
             return newOffset - offset;
@@ -347,7 +343,18 @@ namespace PT.PM.Common.MessagePack
                     }
                     else
                     {
-                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size, logger);
+                        // TODO: backward compatibility with old serialization format (wait for CLangs fix)
+                        bool isTextSpan = property.Name == nameof(Ust.TextSpan);
+                        Type propertyType = isTextSpan ? typeof(TextSpan[]) : property.PropertyType;
+
+                        object obj = DeserializeObject(bytes, newOffset, propertyType, out size, logger);
+
+                        if (isTextSpan)
+                        {
+                            TextSpan[] textSpans = (TextSpan[]) obj;
+                            obj = textSpans.Length > 0 ? textSpans[0] : TextSpan.Zero;
+                        }
+
                         try
                         {
                             property.SetValue(ust, obj);
