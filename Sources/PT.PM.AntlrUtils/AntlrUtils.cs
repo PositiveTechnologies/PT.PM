@@ -3,11 +3,8 @@ using PT.PM.Common.Exceptions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
-using Antlr4.Runtime.Misc;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes.Expressions;
 using PT.PM.Common.Nodes.Tokens.Literals;
@@ -22,9 +19,9 @@ namespace PT.PM.AntlrUtils
         private static long checkNumber;
         private static volatile bool excessMemory;
 
-        public static long MemoryConsumptionBytes { get; set; } = 2 * 1024 * 1024 * 1024L;
+        public static long CheckCacheMemoryBytes { get; set; } = 2 * 1024 * 1024 * 1024L;
 
-        public static long ClearCacheFilesBytes { get; set; } = 5 * 1024 * 1024L;
+        public static long ClearCacheFilesBytesCount { get; set; } = 5 * 1024 * 1024L;
 
         public static int ClearCacheFilesCount { get; set; } = 50;
 
@@ -33,9 +30,9 @@ namespace PT.PM.AntlrUtils
             long localProcessedFilesCount = Interlocked.Increment(ref processedFilesCount);
             long localProcessedBytesCount = Interlocked.Add(ref processedBytesCount, antlrTextFile.Data.Length);
 
-            if (Process.GetCurrentProcess().PrivateMemorySize64 > MemoryConsumptionBytes)
+            if (Process.GetCurrentProcess().PrivateMemorySize64 > CheckCacheMemoryBytes)
             {
-                long divideResult = localProcessedBytesCount / ClearCacheFilesBytes;
+                long divideResult = localProcessedBytesCount / ClearCacheFilesBytesCount;
                 bool exceededProcessedBytes = divideResult > Thread.VolatileRead(ref checkNumber);
                 Thread.VolatileWrite(ref checkNumber, divideResult);
 

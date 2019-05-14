@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using PT.PM.Common.Files;
@@ -37,26 +36,22 @@ namespace PT.PM.AntlrUtils
             CaseInsensitiveType = caseInsensitiveType;
 
             data = new char[input.Length];
-            int i = 0;
-            while (i < input.Length)
+
+            for (int i = 0; i < input.Length; i++)
             {
-                if (input[i] == '\r')
+                if (input[i] == '\r' &&
+                    (i + 1 >= input.Length || input[i + 1] != '\n'))
                 {
-                    if (i + 1 >= input.Length || input[i + 1] != '\n')
-                    {
-                        data[i] = '\n';
-                    }
-                    else
-                    {
-                        data[i] = ConvertCase(input[i]);
-                    }
+                    data[i] = '\n';
                 }
                 else
                 {
-                    data[i] = ConvertCase(input[i]);
+                    data[i] = CaseInsensitiveType == CaseInsensitiveType.None
+                              ? input[i]
+                              : CaseInsensitiveType == CaseInsensitiveType.UPPER
+                                  ? char.ToUpperInvariant(input[i])
+                                  : char.ToLowerInvariant(input[i]);
                 }
-
-                i++;
             }
 
             Size = input.Length;
@@ -126,9 +121,7 @@ namespace PT.PM.AntlrUtils
         public string GetText(Interval interval)
         {
             int start = interval.a;
-            int end = interval.b;
-            if (end >= Size)
-                end = Size - 1;
+            int end = Math.Min(interval.b, Size - 1);
             int length = end - start + 1;
             if (start >= Size)
                 return string.Empty;
@@ -136,15 +129,5 @@ namespace PT.PM.AntlrUtils
         }
 
         public override string ToString() => TextFile.Data;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private char ConvertCase(char result)
-        {
-            return CaseInsensitiveType == CaseInsensitiveType.None
-                ? result
-                : CaseInsensitiveType == CaseInsensitiveType.UPPER
-                    ? char.ToUpperInvariant(result)
-                    : char.ToLowerInvariant(result);
-        }
     }
 }

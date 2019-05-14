@@ -52,7 +52,7 @@ namespace PT.PM
             result.RenderStages = RenderStages;
             result.IsFoldConstants = IsFoldConstants;
 
-            AntlrUtils.AntlrUtils.MemoryConsumptionBytes = (long) MemoryConsumptionMb * 1024 * 1024;
+            AntlrUtils.AntlrUtils.CheckCacheMemoryBytes = (long) MemoryConsumptionMb * 1024 * 1024;
 
             IEnumerable<string> fileNames = SourceRepository.GetFileNames();
             if (fileNames is IList<string> fileNamesList)
