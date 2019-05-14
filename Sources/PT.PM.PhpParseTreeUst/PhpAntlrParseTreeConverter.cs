@@ -403,7 +403,7 @@ namespace PT.PM.PhpParseTreeUst
                 .ToList();
 
             var result = new BlockStatement(innerStatementUsts,
-                context.innerStatement().Length > 0 ? context.GetTextSpan() : default(TextSpan));
+                context.innerStatement().Length > 0 ? context.GetTextSpan() : default);
             return result;
         }
 
@@ -952,7 +952,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitVariableInitializer(PhpParser.VariableInitializerContext context)
         {
-            IdToken name = (IdToken)ConvertVar(context.VarName());
+            IdToken name = ConvertVar(context.VarName());
             Expression initializer = null;
             if (context.constantInititalizer() != null)
             {
@@ -1153,7 +1153,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitPrintExpression(PhpParser.PrintExpressionContext context)
         {
-            return (Expression)CreateSpecialInvocation(context.Print(), context.expression(), context.GetTextSpan());
+            return CreateSpecialInvocation(context.Print(), context.expression(), context.GetTextSpan());
         }
 
         public Ust VisitChainExpression(PhpParser.ChainExpressionContext context)
@@ -1225,7 +1225,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else if (context.Empty() != null)
             {
-                var args = new ArgsUst(new[] { (Expression)Visit(context.chain()) });
+                var args = new ArgsUst((Expression)Visit(context.chain()));
                 result = new InvocationExpression(
                     new IdToken(context.Empty().GetText(), context.Empty().GetTextSpan()),
                     args, textSpan);
@@ -1245,7 +1245,7 @@ namespace PT.PM.PhpParseTreeUst
                 expression = (Expression)Visit(context.expression());
                 result = new InvocationExpression(
                     new IdToken(context.GetChild(0).GetText()),
-                    new ArgsUst(new Expression[] { expression }), textSpan);
+                    new ArgsUst(expression), textSpan);
             }
             return result;
         }
@@ -1708,11 +1708,6 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitActualArguments(PhpParser.ActualArgumentsContext context)
         {
-            TypeToken genericArgs;
-            if (context.genericDynamicArgs() != null)
-            {
-                genericArgs = (TypeToken)Visit(context.genericDynamicArgs());
-            }
             var arguments = (ArgsUst)Visit(context.arguments());
             var exprs = ConvertSquareCurlyExpressions(context.squareCurlyExpression());
             exprs.InsertRange(0, arguments.Collection);

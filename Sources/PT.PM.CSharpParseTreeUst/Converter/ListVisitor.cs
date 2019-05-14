@@ -33,11 +33,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return null;
         }
 
-        public override Ust VisitBaseList(BaseListSyntax node)
-        {
-            return base.VisitBaseList(node);
-        }
-
         public override Ust VisitBracketedArgumentList(BracketedArgumentListSyntax node)
         {
             Expression[] args = node.Arguments.Select(arg => (Expression)VisitAndReturnNullIfError(arg))

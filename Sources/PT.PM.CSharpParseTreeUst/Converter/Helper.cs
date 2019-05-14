@@ -16,18 +16,18 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 {
     public partial class CSharpRoslynParseTreeConverter
     {
-        protected IdToken ConvertId(SyntaxToken node)
+        private IdToken ConvertId(SyntaxToken node)
         {
             return new IdToken(node.ValueText, node.GetTextSpan());
         }
 
-        protected ModifierLiteral ConvertModifier(SyntaxToken token)
+        private ModifierLiteral ConvertModifier(SyntaxToken token)
         {
             Enum.TryParse(token.ValueText, true, out Modifier modifier);
             return new ModifierLiteral(modifier, token.GetTextSpan());
         }
 
-        protected TypeToken ConvertType(Ust node)
+        private TypeToken ConvertType(Ust node)
         {
             if (node is TypeToken typeToken)
                 return typeToken;
@@ -67,15 +67,14 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                     return (Expression)base.Visit(tuple.Arguments.ElementAtOrDefault(i));
                 }).ToList();
 
-                variables = CreateVirtualMemberRefs(variables, typeElement, i, initValues, typeNode.Elements[i].GetTextSpan());
+                variables = CreateVirtualMemberRefs(variables, typeElement, initValues, typeNode.Elements[i].GetTextSpan());
             }
             var declaration = new VariableDeclarationExpression(null, variables, textSpan);
             return new ExpressionStatement(declaration);
         }
 
         private List<AssignmentExpression> CreateVirtualMemberRefs(List<AssignmentExpression> variables,
-            TupleElementSyntax typeElement, int initializerNumber,
-            List<Expression> initValues, TextSpan textSpan)
+            TupleElementSyntax typeElement, List<Expression> initValues, TextSpan textSpan)
         {
             for (int i = 0; i < variables.Count; i++)
             {
@@ -119,27 +118,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return new AssignmentExpression(new IdToken(idText, idTextSpan), tuple, node.GetTextSpan());
         }
 
-        private MemberReferenceExpression CopyMemberReference(MemberReferenceExpression memRef)
-        {
-            Expression target = null;
-            if (memRef.Target is MemberReferenceExpression memRefTarget)
-            {
-                target = CopyMemberReference(memRefTarget);
-            }
-            else
-            {
-                target = new IdToken(((IdToken)memRef.Target).Id, memRef.Target.TextSpan);
-            }
-
-            return new MemberReferenceExpression
-            {
-                Target = target,
-                Name = new IdToken(((IdToken)memRef.Name).Id, memRef.Name.TextSpan),
-                TextSpan = memRef.TextSpan
-            };
-        }
-
-        protected Ust VisitAndReturnNullIfError(SyntaxNode node)
+        private Ust VisitAndReturnNullIfError(SyntaxNode node)
         {
             try
             {

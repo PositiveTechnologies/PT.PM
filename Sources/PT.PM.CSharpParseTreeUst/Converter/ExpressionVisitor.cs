@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
@@ -105,11 +104,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             }
 
             return result;
-        }
-
-        public override Ust VisitAnonymousObjectMemberDeclarator(AnonymousObjectMemberDeclaratorSyntax node)
-        {
-            return base.VisitAnonymousObjectMemberDeclarator(node);
         }
 
         #endregion
@@ -340,9 +334,9 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             {
                 whenNotNullExpression = (Expression)base.Visit(node.WhenNotNull);
             }
-            var nullExpr = new NullLiteral(default(TextSpan));
-            var binayOpLiteral = new BinaryOperatorLiteral(BinaryOperator.Equal, default(TextSpan));
-            var condition = new BinaryOperatorExpression(expression, binayOpLiteral, nullExpr, default(TextSpan));
+            var nullExpr = new NullLiteral(default);
+            var binaryOpLiteral = new BinaryOperatorLiteral(BinaryOperator.Equal, default);
+            var condition = new BinaryOperatorExpression(expression, binaryOpLiteral, nullExpr, default);
 
             var result = new ConditionalExpression(condition, nullExpr, whenNotNullExpression, node.GetTextSpan());
             return result;
@@ -370,7 +364,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                 case "double":
                 case "decimal":
                     return new FloatLiteral(0.0, span);
-                case "bool":
                 default:
                     return new NullLiteral(span);
             }
@@ -430,7 +423,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitImplicitElementAccess(ImplicitElementAccessSyntax node)
         {
             var args = (ArgsUst)VisitBracketedArgumentList(node.ArgumentList);
-            var target = new IdToken(CommonUtils.Prefix + "index_initializer", default(TextSpan));
+            var target = new IdToken(CommonUtils.Prefix + "index_initializer", default);
             var result = new IndexerExpression(target, args, node.GetTextSpan());
             return result;
         }
@@ -540,7 +533,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         public override Ust VisitInitializerExpression(InitializerExpressionSyntax node)
         {
-            Ust result = null;
+            Ust result;
             var children = node.Expressions.Select(e => (Expression)VisitAndReturnNullIfError(e))
                 .ToArray();
             var textSpan = node.GetTextSpan();
@@ -659,8 +652,8 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitMakeRefExpression(MakeRefExpressionSyntax node)
         {
             IdToken id = ConvertId(node.Keyword);
-            Expression expr = (Expression)base.Visit(node.Expression);
-            ArgsUst args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
+            var expr = (Expression)base.Visit(node.Expression);
+            ArgsUst args = new ArgsUst(new [] { expr }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
             return result;
@@ -669,7 +662,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitRefTypeExpression(RefTypeExpressionSyntax node)
         {
             IdToken id = ConvertId(node.Keyword);
-            Expression expr = (Expression)base.Visit(node.Expression);
+            var expr = (Expression)base.Visit(node.Expression);
             ArgsUst args = new ArgsUst(new [] { expr }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
@@ -680,7 +673,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         {
             IdToken id = ConvertId(node.Keyword);
             TypeToken type = (TypeToken)base.Visit(node.Type);
-            Expression expr = (Expression)base.Visit(node.Expression);
+            var expr = (Expression)base.Visit(node.Expression);
             ArgsUst args = new ArgsUst(new [] { expr, type }, expr.TextSpan);
 
             var result = new InvocationExpression(id, args, node.GetTextSpan());
@@ -737,7 +730,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
 
         #endregion
 
-        protected Ust CreateBinaryOperatorExpression(BinaryExpressionSyntax node)
+        private Ust CreateBinaryOperatorExpression(BinaryExpressionSyntax node)
         {
             var left = (Expression)base.Visit(node.Left);
             var op = new BinaryOperatorLiteral(node.OperatorToken.ValueText, node.OperatorToken.GetTextSpan());
@@ -747,7 +740,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        protected UnaryOperatorExpression CreateUnaryOperatorExpression(bool prefix, ExpressionSyntax node)
+        private UnaryOperatorExpression CreateUnaryOperatorExpression(bool prefix, ExpressionSyntax node)
         {
             ExpressionSyntax operandSyntax;
             SyntaxToken operatorToken;

@@ -19,7 +19,7 @@ using static PT.PM.Common.Nodes.UstUtils;
 
 namespace PT.PM.SqlParseTreeUst
 {
-    public partial class PlSqlAntlrConverter : AntlrConverter, IPlSqlParserVisitor<Ust>
+    public class PlSqlAntlrConverter : AntlrConverter, IPlSqlParserVisitor<Ust>
     {
         public override Language Language => Language.PlSql;
 
