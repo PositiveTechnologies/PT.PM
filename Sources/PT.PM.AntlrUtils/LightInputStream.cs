@@ -10,17 +10,24 @@ namespace PT.PM.AntlrUtils
     {
         private readonly char[] data;
 
-        /// <summary>How many characters are actually in the buffer</summary>
-        private readonly int size;
-
-        /// <summary>0..n-1 index into string of next char</summary>
-        private int position;
-
         public IVocabulary Vocabulary { get; }
 
         public CaseInsensitiveType CaseInsensitiveType { get; }
 
         public TextFile TextFile { get; }
+
+        /// <summary>
+        /// Return the current input symbol index 0..n where n indicates the
+        /// last symbol has been read.
+        /// </summary>
+        /// <remarks>
+        /// Return the current input symbol index 0..n where n indicates the
+        /// last symbol has been read.  The index is the index of char to
+        /// be returned from LA(1).
+        /// </remarks>
+        public int Index { get; private set; }
+
+        public int Size { get; }
 
         public LightInputStream(IVocabulary vocabulary, TextFile textFile, string input, CaseInsensitiveType caseInsensitiveType = CaseInsensitiveType.None)
         {
@@ -52,16 +59,14 @@ namespace PT.PM.AntlrUtils
                 i++;
             }
 
-            size = input.Length;
+            Size = input.Length;
         }
 
         public void Consume()
         {
-            if (position >= size)
+            if (Index >= Size)
                 throw new InvalidOperationException("cannot consume EOF");
-            if (position >= size)
-                return;
-            ++position;
+            ++Index;
         }
 
         public int La(int i)
@@ -73,32 +78,19 @@ namespace PT.PM.AntlrUtils
             if (i < 0)
             {
                 i++; // e.g., translate LA(-1) to use offset i=0; then data[p+0-1]
-                if (position + i - 1 < 0)
+                if (Index + i - 1 < 0)
                 {
                     return IntStreamConstants.Eof; // invalid; no char before first char
                 }
             }
 
-            if (position + i - 1 >= size)
+            if (Index + i - 1 >= Size)
             {
                 return IntStreamConstants.Eof;
             }
 
-            return data[position + i - 1];
+            return data[Index + i - 1];
         }
-
-        /// <summary>
-        /// Return the current input symbol index 0..n where n indicates the
-        /// last symbol has been read.
-        /// </summary>
-        /// <remarks>
-        /// Return the current input symbol index 0..n where n indicates the
-        /// last symbol has been read.  The index is the index of char to
-        /// be returned from LA(1).
-        /// </remarks>
-        public int Index => position;
-
-        public int Size => size;
 
         /// <summary>mark/release do nothing; we have entire buffer</summary>
         public int Mark() => -1;
@@ -119,28 +111,28 @@ namespace PT.PM.AntlrUtils
         /// </remarks>
         public void Seek(int index)
         {
-            if (index <= position)
+            if (index <= Index)
             {
-                position = index;
+                Index = index;
             }
             else
             {
-                index = Math.Min(index, size);
-                while (position < index)
+                index = Math.Min(index, Size);
+                while (Index < index)
                     Consume();
             }
         }
 
         public string GetText(Interval interval)
         {
-            int a = interval.a;
-            int num = interval.b;
-            if (num >= size)
-                num = size - 1;
-            int length = num - a + 1;
-            if (a >= size)
+            int start = interval.a;
+            int end = interval.b;
+            if (end >= Size)
+                end = Size - 1;
+            int length = end - start + 1;
+            if (start >= Size)
                 return string.Empty;
-            return TextFile.Data.Substring(a, length);
+            return TextFile.Data.Substring(start, length);
         }
 
         public override string ToString() => TextFile.Data;
