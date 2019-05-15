@@ -833,7 +833,7 @@ namespace PT.PM.PythonParseTreeUst
                 ? 10
                 : context.HEX_INTEGER() != null
                     ? 16
-                    : context.BIN_INTEGER() != null
+                    : context.OCT_INTEGER() != null
                         ? 8
                         : 2;
 

@@ -94,6 +94,7 @@ namespace PT.PM.Tests
                 Stage = Stage.Ust,
                 IsDumpPatterns = checkPatternSerialization,
                 SerializationFormat = SerializationFormat.Json,
+                Logger = logger,
                 ThreadCount = 1
             };
             var sourceFiles = new HashSet<IFile>();
