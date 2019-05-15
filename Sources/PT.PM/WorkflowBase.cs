@@ -358,11 +358,13 @@ namespace PT.PM
                     converter.AnalyzedLanguages = AnalyzedLanguages;
                     result = converter.Convert(parseTree);
 
-                    result.FileKey = Interlocked.Increment(ref currentFileId);
-
-                    lock (lockObj)
+                    if (result != null)
                     {
-                        result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
+                        result.FileKey = Interlocked.Increment(ref currentFileId);
+                        lock (lockObj)
+                        {
+                            result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
+                        }
                     }
 
                     stopwatch.Stop();
@@ -407,8 +409,11 @@ namespace PT.PM
                     }
                 }
 
-                DumpUst(result);
-                UstConverted?.Invoke(this, result);
+                if (result != null)
+                {
+                    DumpUst(result);
+                    UstConverted?.Invoke(this, result);
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
             }
