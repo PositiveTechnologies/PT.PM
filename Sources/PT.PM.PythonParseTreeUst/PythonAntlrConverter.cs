@@ -37,7 +37,11 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitSingle_input(PythonParser.Single_inputContext context)
         {
-            return VisitChildren(context);
+            return new BlockStatement
+            {
+                TextSpan = context.GetTextSpan(),
+                Statements = context.children.Select(x => Visit(x).ToStatementIfRequired()).ToList()
+            };
         }
 
         public Ust VisitFile_input(PythonParser.File_inputContext context)
@@ -64,7 +68,11 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitEval_input(PythonParser.Eval_inputContext context)
         {
-            return VisitChildren(context);
+            return new BlockStatement
+            {
+                TextSpan = context.GetTextSpan(),
+                Statements = context.testlist().children.Select(x => Visit(x).ToStatementIfRequired()).ToList()
+            };
         }
 
         public Ust VisitDecorator(PythonParser.DecoratorContext context)
@@ -119,6 +127,13 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitDef_parameter([NotNull] PythonParser.Def_parameterContext context)
         {
+            if (context.STAR() != null)
+            {
+                return new ParameterDeclaration()
+                {
+                    Name = new IdToken("*", context.GetTextSpan())
+                };
+            }
             var parameter = (ParameterDeclaration)Visit(context.named_parameter());
             var defaultContext = context.test();
             if (defaultContext != null)
@@ -350,9 +365,9 @@ namespace PT.PM.PythonParseTreeUst
             }
             else
             {
-                var rightContexts = context.testlist().children
+                var rightContexts = context.testlist()?.children
                     .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA);
-                if (rightContexts.Count() == assignments.Count)
+                if (rightContexts?.Count() == assignments.Count)
                 {
                     result.Variables.AddRange(assignments.Select((assign, index) =>
                     {
@@ -789,21 +804,21 @@ namespace PT.PM.PythonParseTreeUst
             if (context.ChildCount == 3)
             {
                 var visited = Visit(context.GetChild(1));
-                switch (context.GetChild(0).GetText())
+
+                return new ArrayCreationExpression
                 {
-                    case "(":
-                    case "[":
-                    case "{":
-                        return new ArrayCreationExpression
-                        {
-                            Initializers = visited is MultichildExpression multichild
-                                ? UstUtils.ExtractMultiChild(multichild)
-                                : new List<Expression> { visited.ToExpressionIfRequired() },
-                            TextSpan = context.GetTextSpan()
-                        };
-                    default:
-                        return visited;
-                }
+                    Initializers = visited is MultichildExpression multichild
+                        ? UstUtils.ExtractMultiChild(multichild)
+                        : new List<Expression> { visited.ToExpressionIfRequired() },
+                    TextSpan = context.GetTextSpan()
+                };
+            }
+            else if (context.ChildCount == 2)
+            {
+                return new ArrayCreationExpression
+                {
+                    TextSpan = context.GetTextSpan()
+                };
             }
             return VisitChildren(context);
         }
