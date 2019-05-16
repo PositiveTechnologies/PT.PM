@@ -1,9 +1,9 @@
-using System;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
+using PT.PM.Common.Exceptions;
 using PT.PM.Common.Nodes;
 using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Expressions;
@@ -14,9 +14,9 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using PythonParseTree;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PT.PM.Common.Exceptions;
 using Attribute = PT.PM.Common.Nodes.Attribute;
 
 namespace PT.PM.PythonParseTreeUst
@@ -110,7 +110,7 @@ namespace PT.PM.PythonParseTreeUst
 
             if (context.typedargslist() != null)
             {
-                result.Parameters = ((Collection) Visit(context.typedargslist()))
+                result.Parameters = ((Collection)Visit(context.typedargslist()))
                     .Collection.Cast<ParameterDeclaration>().ToList();
             }
 
@@ -253,8 +253,8 @@ namespace PT.PM.PythonParseTreeUst
         private Expression ProcessAssign(PythonParser.Expr_stmtContext parent,
             PythonParser.Assign_partContext context)
         {
-            var leftContext = (ParserRuleContext) parent.testlist_star_expr();
-            var rightContext = (ParserRuleContext) context.GetChild(1);
+            var leftContext = (ParserRuleContext)parent.testlist_star_expr();
+            var rightContext = (ParserRuleContext)context.GetChild(1);
             var textSpan = parent.GetTextSpan();
             Expression left, right;
             if (leftContext.ChildCount == rightContext.ChildCount)
@@ -262,7 +262,7 @@ namespace PT.PM.PythonParseTreeUst
                 var assignments = new List<AssignmentExpression>(leftContext.ChildCount);
                 for (int i = 0; i < leftContext.ChildCount; i++)
                 {
-                    var visitedLeft = (Expression) Visit(leftContext.GetChild(i));
+                    var visitedLeft = (Expression)Visit(leftContext.GetChild(i));
                     Expression visitedRight;
                     var rightContextChild = rightContext.GetChild(i);
                     var rightContextChildType =
@@ -273,11 +273,11 @@ namespace PT.PM.PythonParseTreeUst
                     ) // check cause False and True is not reserved words in Python2
                     {
                         visitedRight = new BooleanLiteral(rightContextChildType == PythonLexer.TRUE,
-                            ((ParserRuleContext) rightContextChild).GetTextSpan());
+                            ((ParserRuleContext)rightContextChild).GetTextSpan());
                     }
                     else
                     {
-                        visitedRight = (Expression) Visit(rightContextChild);
+                        visitedRight = (Expression)Visit(rightContextChild);
                     }
 
                     if (visitedLeft == null && visitedRight == null)
@@ -299,19 +299,19 @@ namespace PT.PM.PythonParseTreeUst
 
             if (leftContext.ChildCount < rightContext.ChildCount)
             {
-                left = (Expression) Visit(leftContext);
+                left = (Expression)Visit(leftContext);
                 right = new TupleCreateExpression
                 {
                     TextSpan = rightContext.GetTextSpan(),
                     Initializers = rightContext.children
                         .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA)
-                        .Select(x => (Expression) Visit(x)).ToList()
+                        .Select(x => (Expression)Visit(x)).ToList()
                 };
             }
             else
             {
-                left = (Expression) Visit(leftContext);
-                right = (Expression) Visit(rightContext);
+                left = (Expression)Visit(leftContext);
+                right = (Expression)Visit(rightContext);
             }
 
             return new AssignmentExpression(left, right, textSpan);
@@ -552,7 +552,7 @@ namespace PT.PM.PythonParseTreeUst
         //TODO: Add specific for statement with few VarNames and InExpressions and else statement
         public Ust VisitClass_or_func_def_stmt(PythonParser.Class_or_func_def_stmtContext context)
         {
-            var result = Visit((IParseTree) context.classdef() ?? context.funcdef());
+            var result = Visit((IParseTree)context.classdef() ?? context.funcdef());
 
             if (context.decorator().Length > 0 && result is IHasAttributes attributable)
             {
@@ -788,19 +788,22 @@ namespace PT.PM.PythonParseTreeUst
         {
             if (context.ChildCount == 3)
             {
-                if (context.GetChild(0).GetText() == "(")
+                var visited = Visit(context.GetChild(1));
+                switch (context.GetChild(0).GetText())
                 {
-                    var visited = Visit(context.GetChild(1));
-                    return new ArrayCreationExpression
-                    {
-                        Initializers = visited is MultichildExpression multichild
-                            ? UstUtils.ExtractMultiChild(multichild)
-                            : new List<Expression> { visited.ToExpressionIfRequired() },
-                        TextSpan = context.GetTextSpan()
-                    };
+                    case "(":
+                    case "[":
+                    case "{":
+                        return new ArrayCreationExpression
+                        {
+                            Initializers = visited is MultichildExpression multichild
+                                ? UstUtils.ExtractMultiChild(multichild)
+                                : new List<Expression> { visited.ToExpressionIfRequired() },
+                            TextSpan = context.GetTextSpan()
+                        };
+                    default:
+                        return visited;
                 }
-
-                return Visit(context.GetChild(1));
             }
             return VisitChildren(context);
         }
