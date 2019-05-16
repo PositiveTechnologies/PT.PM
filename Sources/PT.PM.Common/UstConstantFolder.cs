@@ -74,16 +74,16 @@ namespace PT.PM.Common
 
         private FoldResult TryFoldArrayCreationExpression(ArrayCreationExpression arrayCreationExpression)
         {
-            if (arrayCreationExpression.Type?.TypeText == "char" &&
-                arrayCreationExpression.Initializers.Count > 0 &&
-                (bool)arrayCreationExpression.Initializers?.All(i => i is StringLiteral))
+            if ((bool)arrayCreationExpression.Initializers?.All(i => i is StringLiteral) ||
+                (arrayCreationExpression.Type?.TypeText == "char" &&
+                arrayCreationExpression.Initializers.Count > 0))
             {
                 var value = new StringBuilder();
                 var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count);
 
                 foreach (var expression in arrayCreationExpression.Initializers)
                 {
-                    var stringLiteral = (StringLiteral) expression;
+                    var stringLiteral = (StringLiteral)expression;
                     AppendText(value, stringLiteral);
                     textSpans.Add(stringLiteral.TextSpan);
                 }
