@@ -134,10 +134,26 @@ namespace PT.PM.Matching
                     context.Locations.Add(ust.TextSpan);
                 }
 
-                var match = new MatchResult(ust.CurrentSourceFile, context.PatternUst, context.Locations);
+                //TODO: handle Few matches not only in Comments, also in strings
+                if(context.Locations.Count > 1 
+                    && patternUst is PatternCommentRegex)
+                {
+                    foreach(var location in context.Locations)
+                    {
+                        var match = new MatchResult(ust.CurrentSourceFile,
+                            context.PatternUst,
+                            new List<TextSpan>(1) { location });
+                        results.Add(match);
+                        context.Logger.LogInfo(match);
+                    }
+                }
+                else
+                {
+                    var match = new MatchResult(ust.CurrentSourceFile, context.PatternUst, context.Locations);
 
-                results.Add(match);
-                context.Logger.LogInfo(match);
+                    results.Add(match);
+                    context.Logger.LogInfo(match);
+                }
             }
 
             context.Locations.Clear();
