@@ -116,7 +116,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             var initList = new Collections.List<UstStmts.Statement>(1);
             if (forStatement.Init != null)
             {
-                initList.Add(Visit(forStatement.Init).ToStatementIfRequired());
+                initList.Add(Visit(forStatement.Init).AsStatement());
             }
 
             UstExprs.Expression condition = forStatement.Test != null
@@ -298,7 +298,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
             foreach (StatementListItem listItem in listItems)
             {
-                statements.Add(VisitStatementListItem(listItem).ToStatementIfRequired());
+                statements.Add(VisitStatementListItem(listItem).AsStatement());
             }
 
             return statements;

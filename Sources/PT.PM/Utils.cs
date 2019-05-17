@@ -22,6 +22,7 @@ namespace PT.PM
     {
         public const int DefaultMaxStackSize = 4 * 1024 * 1024;
         public const string TimeSpanFormat = "mm\\:ss\\.fff";
+        public const string FileSerializedMessage = "File serialized.";
 
         public static void RegisterAllLexersParsersAndConverters()
         {

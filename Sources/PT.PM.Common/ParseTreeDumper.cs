@@ -20,7 +20,7 @@ namespace PT.PM.Common
 
         public bool IsLineColumn { get; set; }
 
-        public int MaxTokenValueLength { get; set; } = 16;
+        public int MaxTokenValueLength { get; set; } = 80;
 
         public TokenValueDisplayMode TokenValueDisplayMode { get; set; } = TokenValueDisplayMode.Show;
 

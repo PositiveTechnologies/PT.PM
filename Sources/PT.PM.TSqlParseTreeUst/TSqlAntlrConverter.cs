@@ -74,7 +74,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public Ust VisitAnother_statement([NotNull] TSqlParser.Another_statementContext context)
         {
-            return Visit(context.children[0]).ToStatementIfRequired();
+            return Visit(context.children[0]).AsStatement();
         }
 
         #region CFL statements
@@ -352,12 +352,12 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.for_clause() != null)
             {
-                queryStatement.QueryElements.Add(Visit(context.for_clause()).ToExpressionIfRequired());
+                queryStatement.QueryElements.Add(Visit(context.for_clause()).AsExpression());
             }
 
             if (context.option_clause() != null)
             {
-                queryStatement.QueryElements.Add(Visit(context.option_clause()).ToExpressionIfRequired());
+                queryStatement.QueryElements.Add(Visit(context.option_clause()).AsExpression());
             }
 
             return new ExpressionStatement(queryStatement);
@@ -762,7 +762,7 @@ namespace PT.PM.SqlParseTreeUst
                 if (funcProcName != null)
                 {
                     target = (Expression)Visit((ParserRuleContext)funcProcName);
-                    exprs = executeBody.execute_statement_arg().Select(arg => Visit(arg).ToExpressionIfRequired());
+                    exprs = executeBody.execute_statement_arg().Select(arg => Visit(arg).AsExpression());
                 }
                 else
                 {
@@ -774,7 +774,7 @@ namespace PT.PM.SqlParseTreeUst
             else
             {
                 target = new IdToken(context.EXECUTE().GetText(), context.EXECUTE().GetTextSpan());
-                exprs = executeBody.execute_var_string().Select(var => Visit(var).ToExpressionIfRequired());
+                exprs = executeBody.execute_var_string().Select(var => Visit(var).AsExpression());
             }
 
             return new InvocationExpression(target, new ArgsUst(exprs), context.GetTextSpan());

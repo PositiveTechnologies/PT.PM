@@ -31,7 +31,7 @@ namespace PT.PM.SqlParseTreeUst
             foreach (var statement in statements)
             {
                 var visited = Visit(statement);
-                resultNodes.Add(visited.ToStatementIfRequired());
+                resultNodes.Add(visited.AsStatement());
             }
             root.Nodes = new Ust[] { new BlockStatement(resultNodes, context.GetTextSpan()) };
             return root;
@@ -445,7 +445,7 @@ namespace PT.PM.SqlParseTreeUst
                     continue;
                 }
                 var visited = Visit(child);
-                statements.Add(visited.ToStatementIfRequired());
+                statements.Add(visited.AsStatement());
             }
 
             return new BlockStatement(context.GetTextSpan())
@@ -998,7 +998,7 @@ namespace PT.PM.SqlParseTreeUst
             return new IfElseStatement(context.GetTextSpan())
             {
                 Condition = (Expression)Visit(context.expression()),
-                TrueStatement = new BlockStatement(context.procedureSqlStatement().Select(x => Visit(x).ToStatementIfRequired()))
+                TrueStatement = new BlockStatement(context.procedureSqlStatement().Select(x => Visit(x).AsStatement()))
             };
         }
 
@@ -1211,7 +1211,7 @@ namespace PT.PM.SqlParseTreeUst
 
             foreach(var children in context.children.Skip(1))
             {
-                args.Add(Visit(children).ToExpressionIfRequired());
+                args.Add(Visit(children).AsExpression());
             }
 
             return new InvocationExpression(context.GetTextSpan())
@@ -1326,11 +1326,11 @@ namespace PT.PM.SqlParseTreeUst
             var ifStatement = new IfElseStatement(context.GetTextSpan())
             {
                 Condition = (Expression)Visit(context.expression()),
-                TrueStatement = new BlockStatement(context._thenStatements.Select(x => Visit(x).ToStatementIfRequired()))
+                TrueStatement = new BlockStatement(context._thenStatements.Select(x => Visit(x).AsStatement()))
             };
 
-            var falseStatement = new BlockStatement(context.elifAlternative().Select(x => Visit(x).ToStatementIfRequired()));
-            falseStatement.Statements.Add(new BlockStatement(context._elseStatements.Select(x => Visit(x).ToStatementIfRequired())));
+            var falseStatement = new BlockStatement(context.elifAlternative().Select(x => Visit(x).AsStatement()));
+            falseStatement.Statements.Add(new BlockStatement(context._elseStatements.Select(x => Visit(x).AsStatement())));
             ifStatement.FalseStatement = falseStatement;
 
             return ifStatement;

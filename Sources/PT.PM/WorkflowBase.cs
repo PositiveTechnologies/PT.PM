@@ -30,6 +30,7 @@ namespace PT.PM
         where TRenderStage : Enum
     {
         private static readonly object lockObj = new object();
+        private int currentFileId;
         private int currentId;
 
         protected ILogger logger = DummyLogger.Instance;
@@ -56,6 +57,12 @@ namespace PT.PM
         public bool IsIgnoreFilenameWildcards { get; set; }
 
         public JavaScriptType JavaScriptType { get; set; } = JavaScriptType.Undefined;
+
+        public int CurrentFileId
+        {
+            get => currentFileId;
+            set => currentFileId = value;
+        }
 
         public ILogger Logger
         {
@@ -351,9 +358,13 @@ namespace PT.PM
                     converter.AnalyzedLanguages = AnalyzedLanguages;
                     result = converter.Convert(parseTree);
 
-                    lock (lockObj)
+                    if (result != null)
                     {
-                        result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
+                        result.FileKey = Interlocked.Increment(ref currentFileId);
+                        lock (lockObj)
+                        {
+                            result.ApplyActionToDescendantsAndSelf(ust => ust.Key = ++currentId);
+                        }
                     }
 
                     stopwatch.Stop();
@@ -398,13 +409,11 @@ namespace PT.PM
                     }
                 }
 
-                if (result == null)
+                if (result != null)
                 {
-                    return null;
+                    DumpUst(result);
+                    UstConverted?.Invoke(this, result);
                 }
-
-                DumpUst(result);
-                UstConverted?.Invoke(this, result);
 
                 cancellationToken.ThrowIfCancellationRequested();
             }
@@ -494,6 +503,8 @@ namespace PT.PM
                     byte[] bytes = RootUstMessagePackSerializer.Serialize(result, LineColumnTextSpans, logger);
                     FileExt.WriteAllBytes(dumpName, bytes);
                 }
+
+                Logger.LogInfo(new ProgressEventArgs(0.0, dumpName, Utils.FileSerializedMessage));
             }
         }
 

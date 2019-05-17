@@ -100,7 +100,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
             if (context.statementExpression != null)
             {
-                result = Visit(context.statementExpression).ToStatementIfRequired();
+                result = Visit(context.statementExpression).AsStatement();
                 return result;
             }
 

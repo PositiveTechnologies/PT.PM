@@ -6,7 +6,7 @@ namespace PT.PM.Common
 {
     public class PrettyPrinter
     {
-        private static readonly string[] newLines = new string[] { "\r\n", "\n" };
+        private static readonly string[] newLines = { "\r\n", "\n" };
         private static readonly Regex wsRegex = new Regex(@"\s+", RegexOptions.Compiled);
 
         public int MaxMessageLength { get; set; } = 200;
@@ -27,6 +27,11 @@ namespace PT.PM.Common
 
         public string Print(string message)
         {
+            if (message is null)
+            {
+                return "";
+            }
+
             if (Trim)
             {
                 message = message.Trim();
@@ -43,7 +48,7 @@ namespace PT.PM.Common
                 int firstNotWsIndex = 0;
                 while (firstNotWsIndex < lastLine.Length && (lastLine[firstNotWsIndex] == ' ' || lastLine[firstNotWsIndex] == '\t'))
                     firstNotWsIndex++;
-                
+
                 if (firstNotWsIndex != 0)
                 {
                     message = Regex.Replace(message, $@"(\r?\n)([ \t]{{{firstNotWsIndex}}})", "$1");

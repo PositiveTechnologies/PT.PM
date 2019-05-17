@@ -61,7 +61,11 @@ namespace PT.PM.AntlrUtils
             }
             else
             {
-                builder.Append('\'' + parseTree.GetText().Replace(@"\", @"\\").Replace(@"'", @"\'") + '\''); // TODO: replace with RenderToken.
+                string text = parseTree.GetText().Replace(@"\", @"\\").Replace(@"'", @"\'")
+                    .Replace("\n", "\\n").Replace("\r", "\\r");
+                builder.Append('\'');
+                builder.Append(text);
+                builder.Append('\'');
             }
         }
 
@@ -84,12 +88,18 @@ namespace PT.PM.AntlrUtils
                 channelValue = "c: " + token.Channel; // TODO: channel name instead of identifier.
             }
 
-            string result = symbolicName;
+            string textSpan = token is LightToken lightToken
+                ? lightToken.LineColumnTextSpan.ToString()
+                : token.GetTextSpan().ToString();
+            string result =  $"{token.TokenIndex}; {textSpan}; {symbolicName}";
             if (!string.IsNullOrEmpty(tokenValue) || !string.IsNullOrEmpty(channelValue))
             {
                 var strings = new List<string>();
                 if (!string.IsNullOrEmpty(tokenValue))
-                    strings.Add(tokenValue);
+                {
+                    strings.Add(tokenValue.Replace("\r", "\\r").Replace("\n", "\\n"));
+                }
+
                 if (!string.IsNullOrEmpty(channelValue))
                     strings.Add(channelValue);
                 result = $"{result} ({string.Join(", ", strings)})";

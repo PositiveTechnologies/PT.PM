@@ -42,9 +42,7 @@ namespace PT.PM.Matching.Patterns
 
         public override string ToString()
         {
-            var result = "";
-
-            result = UnaryOperatorLiteral.PrefixTextUnaryOperator.FirstOrDefault(pair => pair.Value == UnaryOperator).Key;
+            var result = UnaryOperatorLiteral.PrefixTextUnaryOperator.FirstOrDefault(pair => pair.Value == UnaryOperator).Key;
 
             if (string.IsNullOrEmpty(result))
             {
@@ -61,7 +59,7 @@ namespace PT.PM.Matching.Patterns
             {
                 return context.Fail();
             }
-            
+
             return UnaryOperator.Equals(unaryOperatorLiteral.UnaryOperator)
                 ? context.AddMatch(unaryOperatorLiteral)
                 : context.Fail();

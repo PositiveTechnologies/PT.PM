@@ -15,14 +15,14 @@ namespace PT.PM.Matching
         {
             List<TextSpan> result = new List<TextSpan>(matchesLocations.Count);
 
-            int startOffset = foldedTextSpans[0].Start;
+            int startOffset = foldedTextSpans.FirstOrDefault().Start;
 
             foreach (TextSpan location in matchesLocations)
             {
                 int offset = 0;
                 int leftBound = 0;
                 int rightBound =
-                    foldedTextSpans[0].Length;
+                    foldedTextSpans.FirstOrDefault().Length;
                 TextSpan textSpan = TextSpan.Zero;
 
                 // Check first initial TextSpan separately
@@ -65,8 +65,8 @@ namespace PT.PM.Matching
 
                 if (textSpan.IsZero)
                 {
-                    result.Add(new TextSpan(textSpan.Start + startOffset - escapeLength,
-                        textSpan.Length + 2 * escapeLength, textSpan.File));
+                    result.Add(SafeCreateTextSpan(textSpan.Start + startOffset - escapeLength,
+                        textSpan.Length + 2 * escapeLength, offset: 0, textSpan.File));
                 }
             }
 
@@ -147,7 +147,7 @@ namespace PT.PM.Matching
             return false;
         }
 
-        public static TextSpan SafeCreateTextSpan(int start, int length, int offset = 0)
+        public static TextSpan SafeCreateTextSpan(int start, int length, int offset = 0, TextFile file = null)
         {
             if (start < 0)
             {
@@ -164,7 +164,7 @@ namespace PT.PM.Matching
                 length = 0;
             }
 
-            return new TextSpan(start + offset, length);
+            return new TextSpan(start + offset, length, file);
         }
     }
 }

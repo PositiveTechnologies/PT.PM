@@ -9,7 +9,7 @@ namespace PT.PM.Common.Nodes
 {
     public static class UstUtils
     {
-        public static Statement ToStatementIfRequired(this Ust ust)
+        public static Statement AsStatement(this Ust ust)
         {
             Statement result = ust as Statement;
 
@@ -28,7 +28,7 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static Expression ToExpressionIfRequired(this Ust ust)
+        public static Expression AsExpression(this Ust ust)
         {
             if (ust == null)
             {
@@ -46,7 +46,7 @@ namespace PT.PM.Common.Nodes
 
         internal static string GenerateSignature(string id, List<ParameterDeclaration> parameters)
         {
-            string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Any"));
+            string paramsString = string.Join(",", parameters.Select(p => p.Type?.TypeText ?? "Unknown"));
             return $"{id}({paramsString})";
         }
 

@@ -80,15 +80,15 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstExprs.AssignmentExpression VisitAssignmentExpression(AssignmentExpression assignmentExpression)
         {
-            var left = Visit(assignmentExpression.Left).ToExpressionIfRequired();
+            var left = Visit(assignmentExpression.Left).AsExpression();
             var right = VisitExpression(assignmentExpression.Right);
             return new UstExprs.AssignmentExpression(left, right, GetTextSpan(assignmentExpression));
         }
 
         private UstExprs.AssignmentExpression VisitAssignmentPattern(AssignmentPattern assignmentPattern)
         {
-            var left = Visit(assignmentPattern.Left).ToExpressionIfRequired();
-            var right = Visit(assignmentPattern.Right).ToExpressionIfRequired();
+            var left = Visit(assignmentPattern.Left).AsExpression();
+            var right = Visit(assignmentPattern.Right).AsExpression();
             return new UstExprs.AssignmentExpression(left, right, GetTextSpan(assignmentPattern));
         }
 
@@ -424,7 +424,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 BaseTypes = baseTypes
             };
 
-            return typeDeclaration.ToExpressionIfRequired();
+            return typeDeclaration.AsExpression();
         }
 
         private UstExprs.YieldExpression VisitYieldExpression(YieldExpression yieldExpression)

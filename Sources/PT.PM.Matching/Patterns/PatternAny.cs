@@ -45,7 +45,7 @@ namespace PT.PM.Matching.Patterns
             }
 
             int escapeCharsLength = (ust as StringLiteral)?.EscapeCharsLength ?? 0;
-            var matches = UseUstString
+            var matches = UseUstString || ust.TextSpan.Start > ust.CurrentSourceFile.Data.Length
                 ? Regex.MatchRegex(ust.ToString(), escapeCharsLength, ust.TextSpan.Start)
                 : Regex.MatchRegex(ust.CurrentSourceFile, ust.TextSpan, escapeCharsLength);
 

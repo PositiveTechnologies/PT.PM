@@ -86,7 +86,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
                         if (context.explicitGenericInvocation() != null)
                         {
-                            return VisitChildren(context.explicitGenericInvocation()).ToExpressionIfRequired();
+                            return VisitChildren(context.explicitGenericInvocation()).AsExpression();
                         }
 
                         break;
@@ -487,7 +487,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitLambdaExpression(JavaParser.LambdaExpressionContext context)
         {
-            return VisitChildren(context).ToExpressionIfRequired();
+            return VisitChildren(context).AsExpression();
         }
 
         public Ust VisitLambdaParameters(JavaParser.LambdaParametersContext context)

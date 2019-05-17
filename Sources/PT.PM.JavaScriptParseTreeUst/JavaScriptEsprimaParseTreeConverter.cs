@@ -162,7 +162,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstStmts.BlockStatement ConvertToBlockStatementIfRequired(INode functionBody)
         {
-            var body = Visit(functionBody).ToStatementIfRequired();
+            var body = Visit(functionBody).AsStatement();
             var blockStatement = body is UstStmts.BlockStatement localBlockStatement
                 ? localBlockStatement
                 : new UstStmts.BlockStatement(new[] {body});

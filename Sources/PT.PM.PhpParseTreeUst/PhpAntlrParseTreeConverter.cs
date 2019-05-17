@@ -1,5 +1,4 @@
 ﻿using System;
-using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using PT.PM.AntlrUtils;
@@ -27,12 +26,8 @@ namespace PT.PM.PhpParseTreeUst
     public partial class PhpAntlrParseTreeConverter : AntlrConverter, IPhpParserVisitor<Ust>
     {
         private const string namespacePrefix = CommonUtils.Prefix + "ns";
-        private const string elementNamespacePrefix = CommonUtils.Prefix + "elemNs";
-        private const string contentNamespacePrefix = CommonUtils.Prefix + "contentNs";
-        private const string attrNamespacePrefix = CommonUtils.Prefix + "attrNs";
-        private const string inlineHtmlNamespacePrefix = CommonUtils.Prefix + "inlineHtml";
 
-        private int jsStartCodeInd = 0;
+        private int scriptStartInd = -1;
 
         public override Language Language => Language.Php;
 
@@ -40,136 +35,19 @@ namespace PT.PM.PhpParseTreeUst
 
         public static PhpAntlrParseTreeConverter Create() => new PhpAntlrParseTreeConverter();
 
-        public PhpAntlrParseTreeConverter()
-        {
-        }
-
         public Ust VisitHtmlDocument(PhpParser.HtmlDocumentContext context)
         {
-            IEnumerable<Ust> phpBlocks = context.htmlElementOrPhpBlock()
-                .Select(block => Visit(block))
-                .Where(phpBlock => phpBlock != null);
-            root.Nodes = phpBlocks.SelectMany(block => block.SelectAnalyzedNodes(Language.Php, AnalyzedLanguages)).ToArray();
+            var nodes = new List<Ust>();
+            nodes.AddRange(ProcessInlineHtmls(context.inlineHtml()));
 
+            foreach (var phpBlockContext in context.phpBlock())
+            {
+                Ust phpResult = Visit(phpBlockContext);
+                nodes.AddRange(phpResult.SelectAnalyzedNodes(Language.Php, AnalyzedLanguages));
+            }
+
+            root.Nodes = nodes.ToArray();
             return root;
-        }
-
-        public Ust VisitHtmlElementOrPhpBlock(PhpParser.HtmlElementOrPhpBlockContext context)
-        {
-            Ust result = null;
-            if (context.htmlElements() != null)
-            {
-                result = Visit(context.htmlElements());
-            }
-            else if (context.phpBlock() != null)
-            {
-                result = (NamespaceDeclaration)Visit(context.phpBlock());
-            }
-            else
-            {
-                result = Visit(context.scriptTextPart());
-            }
-            return result;
-        }
-
-        public Ust VisitHtmlElements(PhpParser.HtmlElementsContext context)
-        {
-            var text = new StringBuilder();
-            for (int i = context.Start.TokenIndex; i < context.Stop.TokenIndex; i++)
-            {
-                IToken token = Tokens[i];
-
-                if (AnalyzedLanguages.Contains(Language.JavaScript))
-                {
-                    if (token.Type == PhpLexer.HtmlScriptOpen)
-                    {
-                        jsStartCodeInd = i;
-                    }
-                    else if (token.Type == PhpLexer.ScriptClose)
-                    {
-                        return ConvertJavaScript(context);
-                    }
-                }
-
-                text.Append(token.Text);
-            }
-
-            var result = AnalyzedLanguages.Contains(Language.Html)
-                ? new RootUst(root.SourceFile, Language.Html)
-                {
-                    Node = new StringLiteral(text.ToString(), context.GetTextSpan(), 0)
-                }
-                : null;
-
-            return result;
-        }
-
-        private RootUst ConvertJavaScript(PhpParser.HtmlElementsContext context)
-        {
-            int jsStopCodeInd = context.start.TokenIndex;
-            var jsCode = new StringBuilder();
-            for (int j = jsStartCodeInd; j < jsStopCodeInd; j++)
-            {
-                if (Tokens[j].Type == PhpLexer.ScriptText)
-                {
-                    jsCode.Append(Tokens[j].Text);
-                }
-                else
-                {
-                    if (GetLastNotWhitespace(jsCode) == '=')
-                    {
-                        jsCode.Append('_');
-                        jsCode.Append(' ', Tokens[j].Text.Length - 1);
-                    }
-                    else
-                    {
-                        jsCode.Append(' ', Tokens[j].Text.Length);
-                    }
-                }
-            }
-
-            int offset = Tokens[jsStartCodeInd].StartIndex;
-
-            var sourceFile = new TextFile(jsCode.ToString())
-            {
-                Name = root.SourceFile.Name,
-                RelativePath = root.SourceFile.RelativePath,
-            };
-
-            var javaScriptParser = new JavaScriptEsprimaParser
-            {
-                Logger = Logger,
-                JavaScriptType = JavaScriptType,
-                Offset = offset,
-                OriginFile = root.SourceFile
-            };
-
-            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceFile, out TimeSpan _);
-            if (parseTree == null)
-            {
-                return null;
-            }
-
-            var javaScriptConverter = new JavaScriptEsprimaParseTreeConverter
-            {
-                Logger = Logger,
-                SourceFile = root.SourceFile,
-                ParentRoot = root,
-                Offset = offset
-            };
-
-            RootUst result = javaScriptConverter.Convert(parseTree);
-
-            return result;
-        }
-
-        private char GetLastNotWhitespace(StringBuilder builder)
-        {
-            int ind = builder.Length - 1;
-            while (ind > 0 && char.IsWhiteSpace(builder[ind]))
-                ind--;
-
-            return ind > 0 ? builder[ind] : '\0';
         }
 
         public Ust VisitHtmlElement(PhpParser.HtmlElementContext context)
@@ -177,13 +55,9 @@ namespace PT.PM.PhpParseTreeUst
             return VisitShouldNotBeVisited(context);
         }
 
-        public Ust VisitScriptTextPart(PhpParser.ScriptTextPartContext context)
+        public Ust VisitScriptText(PhpParser.ScriptTextContext context)
         {
-            string javaScriptCode = string.Join("", context.ScriptText().Select(text => text.GetText()));
-            // Process JavaScript at close script tag </script>
-            return AnalyzedLanguages.Contains(Language.JavaScript)
-                ? null
-                : new StringLiteral(javaScriptCode, context.GetTextSpan(), 0);
+            return VisitShouldNotBeVisited(context);
         }
 
         public Ust VisitPhpBlock(PhpParser.PhpBlockContext context)
@@ -226,7 +100,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                result = Visit(context.GetChild(0)).ToStatementIfRequired();
+                result = Visit(context.GetChild(0)).AsStatement();
             }
 
             return result;
@@ -442,29 +316,9 @@ namespace PT.PM.PhpParseTreeUst
                 return result;
             }
 
-            result = Visit(context.GetChild(0)).ToStatementIfRequired();
+            result = Visit(context.GetChild(0)).AsStatement();
 
             return result;
-        }
-
-        private int GetFirstHiddenTokenOrDefaultToLeft(int index)
-        {
-            int i = index;
-            while (i > 0 && Tokens[i].Channel != Lexer.DefaultTokenChannel)
-            {
-                i--;
-            }
-            return i + 1;
-        }
-
-        private int GetLastHiddenTokenOrDefaultToRight(int index)
-        {
-            int i = index;
-            while (i < Tokens.Count && Tokens[i].Channel != Lexer.DefaultTokenChannel)
-            {
-                i++;
-            }
-            return i - 1;
         }
 
         public Ust VisitEmptyStatement(PhpParser.EmptyStatementContext context)
@@ -734,7 +588,7 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitCatchClause(PhpParser.CatchClauseContext context)
         {
             var type = (TypeToken)Visit(context.qualifiedStaticTypeRef());
-            var varName = (IdToken)ConvertVar(context.VarName());
+            var varName = ConvertVar(context.VarName());
             var body = (BlockStatement)Visit(context.blockStatement());
 
             var result = new CatchClause(type, varName, body, context.GetTextSpan());
@@ -788,7 +642,18 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitInlineHtmlStatement([NotNull] PhpParser.InlineHtmlStatementContext context)
         {
-            return VisitChildren(context);
+            List<RootUst> result = ProcessInlineHtmls(context.inlineHtml());
+            if (result.Count == 0)
+            {
+                return null;
+            }
+
+            if (result.Count == 1)
+            {
+                return result[0];
+            }
+
+            return new BlockStatement(result.Select(ust => new WrapperStatement(ust)));
         }
 
         public Ust VisitInlineHtml(PhpParser.InlineHtmlContext context)
@@ -836,7 +701,7 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitGlobalVar(PhpParser.GlobalVarContext context)
         {
             if (context.VarName() != null)
-                return (IdToken)ConvertVar(context.VarName());
+                return ConvertVar(context.VarName());
 
             if (context.chain() != null)
                 return (Expression)Visit(context.chain());
@@ -858,7 +723,8 @@ namespace PT.PM.PhpParseTreeUst
         {
             AssignmentExpression[] variables = context.variableInitializer()
                 .Select(varInit => (AssignmentExpression)Visit(varInit))
-                .Where(v => v != null).ToArray();
+                .Where(v => v != null)
+                .ToArray();
             var type = new TypeToken(context.Static().GetText(), context.Static().GetTextSpan());
 
             var result = new VariableDeclarationExpression(type, variables, context.GetTextSpan());
@@ -888,7 +754,7 @@ namespace PT.PM.PhpParseTreeUst
             else if (context.Function() != null)
             {
                 var id = (IdToken)VisitIdentifier(context.identifier());
-                var parameters = (ParameterDeclaration[])ConvertParameters(context.formalParameterList());
+                var parameters = ConvertParameters(context.formalParameterList());
                 var block = (BlockStatement)Visit(context.methodBody());
 
                 result = new MethodDeclaration(id, parameters, block, context.GetTextSpan());
@@ -1108,17 +974,14 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitUnaryOperatorExpression(PhpParser.UnaryOperatorExpressionContext context)
         {
-            UnaryOperator unaryOperator;
             ITerminalNode operatorTerminal = context.GetChild<ITerminalNode>(0);
             string unaryOperatorText = operatorTerminal.GetText();
             if (unaryOperatorText == "@")
             {
                 return (Expression)Visit(context.expression());
             }
-            else
-            {
-                unaryOperator = UnaryOperatorLiteral.PrefixTextUnaryOperator[unaryOperatorText];
-            }
+
+            var unaryOperator = UnaryOperatorLiteral.PrefixTextUnaryOperator[unaryOperatorText];
             var expression0 = (Expression)Visit(context.expression());
             var result = new UnaryOperatorExpression(
                 new UnaryOperatorLiteral(unaryOperator, operatorTerminal.GetTextSpan()),
@@ -1443,10 +1306,8 @@ namespace PT.PM.PhpParseTreeUst
             {
                 return (Expression)Visit(context.expression());
             }
-            else
-            {
-                return (Expression)Visit(context.chain());
-            }
+
+            return (Expression)Visit(context.chain());
         }
 
         public Ust VisitConstantInititalizer(PhpParser.ConstantInititalizerContext context)
@@ -1490,14 +1351,12 @@ namespace PT.PM.PhpParseTreeUst
             {
                 return (Expression)Visit(context.constantInititalizer(0));
             }
-            else
-            {
-                var result = new AssignmentExpression(
-                    (Expression)Visit(context.constantInititalizer(0)),
-                    (Expression)Visit(context.constantInititalizer(1)),
-                    context.GetTextSpan());
-                return result;
-            }
+
+            var result = new AssignmentExpression(
+                (Expression)Visit(context.constantInititalizer(0)),
+                (Expression)Visit(context.constantInititalizer(1)),
+                context.GetTextSpan());
+            return result;
         }
 
         public Ust VisitConstant(PhpParser.ConstantContext context)
@@ -1517,8 +1376,7 @@ namespace PT.PM.PhpParseTreeUst
 
             if (context.Real() != null)
             {
-                double value;
-                if (!double.TryParse(contextText, out value))
+                if (!double.TryParse(contextText, out var value))
                 {
                     value = double.PositiveInfinity;
                 }
@@ -1815,15 +1673,13 @@ namespace PT.PM.PhpParseTreeUst
         {
             if (context.chain() != null)
             {
-                return (Expression)Visit(context.chain());
+                return (Expression) Visit(context.chain());
             }
-            else
-            {
-                var target = new IdToken(context.List().GetText(), context.List().GetTextSpan());
-                var args = (ArgsUst)Visit(context.assignmentList());
-                var result = new InvocationExpression(target, args, context.GetTextSpan());
-                return result;
-            }
+
+            var target = new IdToken(context.List().GetText(), context.List().GetTextSpan());
+            var args = (ArgsUst) Visit(context.assignmentList());
+            var result = new InvocationExpression(target, args, context.GetTextSpan());
+            return result;
         }
 
         public Ust VisitModifier(PhpParser.ModifierContext context)
@@ -1862,6 +1718,130 @@ namespace PT.PM.PhpParseTreeUst
         public Ust VisitCastOperation(PhpParser.CastOperationContext context)
         {
             var result = new TypeToken(context.GetText(), context.GetTextSpan());
+            return result;
+        }
+
+        private List<RootUst> ProcessInlineHtmls(PhpParser.InlineHtmlContext[] inlineHtmls)
+        {
+            var nodes = new List<RootUst>();
+
+            for (int i = 0; i < inlineHtmls.Length; i++)
+            {
+                var child = inlineHtmls[i];
+
+                if (child.htmlElement().Length > 0)
+                {
+                    foreach (var htmlElement in child.htmlElement())
+                    {
+                        if (htmlElement.HtmlScriptClose() != null && scriptStartInd != -1)
+                        {
+                            var jsResult = ConvertJavaScript(scriptStartInd, htmlElement.Stop.TokenIndex);
+                            if (jsResult != null)
+                            {
+                                nodes.Add(jsResult);
+                            }
+
+                            scriptStartInd = -1;
+                            break;
+                        }
+                    }
+
+                    TextSpan textSpan = child.htmlElement(0).GetTextSpan()
+                        .Union(child.htmlElement(child.ChildCount - 1).GetTextSpan());
+                    nodes.Add(new RootUst(root.SourceFile, Language.Html, textSpan)
+                    {
+                        Root = root,
+                        Parent = root,
+                        Node = new StringLiteral(textSpan, root, 0)
+                    });
+                }
+                else if (child.scriptText() != null)
+                {
+                    if (scriptStartInd == -1)
+                    {
+                        scriptStartInd = child.Start.TokenIndex;
+                    }
+                }
+            }
+
+            return nodes;
+        }
+
+        private RootUst ConvertJavaScript(int jsStartCodeInd, int jsStopCodeInd)
+        {
+            if (!AnalyzedLanguages.Contains(Language.JavaScript))
+            {
+                return null;
+            }
+
+            var jsCode = new StringBuilder();
+
+            char lastNotWhitespace = '\0';
+            for (int j = jsStartCodeInd; j < jsStopCodeInd; j++)
+            {
+                string tokenText = Tokens[j].Text;
+                if (Tokens[j].Type == PhpLexer.ScriptText)
+                {
+                    jsCode.Append(tokenText);
+
+                    int ind = tokenText.Length - 1;
+                    while (ind > 0 && char.IsWhiteSpace(tokenText[ind]))
+                    {
+                        ind--;
+                    }
+
+                    if (ind > 0)
+                    {
+                        lastNotWhitespace = tokenText[ind];
+                    }
+                }
+                else
+                {
+                    if (lastNotWhitespace == '=')
+                    {
+                        jsCode.Append('_');
+                        lastNotWhitespace = '_';
+                        jsCode.Append(' ', tokenText.Length - 1);
+                    }
+                    else
+                    {
+                        jsCode.Append(' ', tokenText.Length);
+                    }
+                }
+            }
+
+            int offset = Tokens[jsStartCodeInd].StartIndex;
+
+            var sourceFile = new TextFile(jsCode.ToString())
+            {
+                Name = root.SourceFile.Name,
+                RelativePath = root.SourceFile.RelativePath,
+            };
+
+            var javaScriptParser = new JavaScriptEsprimaParser
+            {
+                Logger = Logger,
+                JavaScriptType = JavaScriptType,
+                Offset = offset,
+                OriginFile = root.SourceFile
+            };
+
+            var parseTree = (JavaScriptEsprimaParseTree)javaScriptParser.Parse(sourceFile, out TimeSpan _);
+            if (parseTree == null)
+            {
+                return null;
+            }
+
+            var javaScriptConverter = new JavaScriptEsprimaParseTreeConverter
+            {
+                Logger = Logger,
+                SourceFile = root.SourceFile,
+                ParentRoot = root,
+                Offset = offset
+            };
+
+            RootUst result = javaScriptConverter.Convert(parseTree);
+
             return result;
         }
     }

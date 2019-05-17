@@ -12,6 +12,9 @@ namespace PT.PM.Common.Nodes
     {
         private Language[] sublanguages;
 
+        [JsonIgnore, IgnoreMember]
+        public int FileKey { get; set; }
+
         [Key(UstFieldOffset)]
         public Language Language { get; set; }
 

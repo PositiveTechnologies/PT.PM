@@ -202,7 +202,7 @@ namespace PT.PM.AntlrUtils
             var result = new UnaryOperatorExpression
             {
                 Operator = new UnaryOperatorLiteral(op, operatorTerminal.GetTextSpan()),
-                Expression = Visit(operand).ToExpressionIfRequired()
+                Expression = Visit(operand).AsExpression()
             };
             result.TextSpan = result.Expression.TextSpan.Union(result.Operator.TextSpan);
             return result;
