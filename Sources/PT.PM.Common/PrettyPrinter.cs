@@ -6,7 +6,7 @@ namespace PT.PM.Common
 {
     public class PrettyPrinter
     {
-        private static readonly string[] newLines = new string[] { "\r\n", "\n" };
+        private static readonly string[] newLines = { "\r\n", "\n" };
         private static readonly Regex wsRegex = new Regex(@"\s+", RegexOptions.Compiled);
 
         public int MaxMessageLength { get; set; } = 200;
