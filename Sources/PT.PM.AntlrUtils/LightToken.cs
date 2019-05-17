@@ -38,6 +38,8 @@ namespace PT.PM.AntlrUtils
 
         public TextSpan TextSpan => new TextSpan(StartIndex, StopIndex - StartIndex);
 
+        public LineColumnTextSpan LineColumnTextSpan => inputStream.TextFile.GetLineColumnTextSpan(TextSpan);
+
         public string TypeName => inputStream.Vocabulary.GetDisplayName(Type);
 
         public int Type => type;
