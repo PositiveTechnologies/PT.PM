@@ -16,9 +16,6 @@ namespace PT.PM.TestUtils
 {
     public static class TestUtility
     {
-        public const string GithubUrlPrefix = "https://github.com/";
-        public const string TooLongTestDurationMessage = "Too long test duration.";
-
         public static string RepositoryDirectory;
         public static string PtPmExePath = $@"bin/{(IsDebug ? "Debug" : "Release")}/netcoreapp2.1/PT.PM.Cli.dll";
         public static string GrammarsDirectory = "Sources/antlr-grammars-v4";
