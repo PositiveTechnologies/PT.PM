@@ -40,7 +40,7 @@ namespace PT.PM.PythonParseTreeUst
             return new BlockStatement
             {
                 TextSpan = context.GetTextSpan(),
-                Statements = context.children.Select(x => Visit(x).ToStatementIfRequired()).ToList()
+                Statements = context.children.Select(x => Visit(x).AsStatement()).ToList()
             };
         }
 
@@ -49,7 +49,7 @@ namespace PT.PM.PythonParseTreeUst
             var block = new BlockStatement(context.GetTextSpan());
             foreach (var child in context.stmt())
             {
-                block.Statements.Add(Visit(child).ToStatementIfRequired());
+                block.Statements.Add(Visit(child).AsStatement());
             }
 
             if (root.CurrentSourceFile?.Name.Length > 0)
@@ -71,13 +71,13 @@ namespace PT.PM.PythonParseTreeUst
             return new BlockStatement
             {
                 TextSpan = context.GetTextSpan(),
-                Statements = context.testlist().children.Select(x => Visit(x).ToStatementIfRequired()).ToList()
+                Statements = context.testlist().children.Select(x => Visit(x).AsStatement()).ToList()
             };
         }
 
         public Ust VisitDecorator(PythonParser.DecoratorContext context)
         {
-            var target = Visit(context.dotted_name()).ToExpressionIfRequired();
+            var target = Visit(context.dotted_name()).AsExpression();
             var textSpan = context.GetTextSpan();
             if (context.arglist() != null)
             {
@@ -235,7 +235,7 @@ namespace PT.PM.PythonParseTreeUst
         public Ust VisitSimple_stmt(PythonParser.Simple_stmtContext context)
         {
             var statement = context.children.FirstOrDefault(x => !x.GetText().Contains("\n"));
-            return Visit(statement).ToStatementIfRequired();
+            return Visit(statement).AsStatement();
         }
 
         public Ust VisitSmall_stmt(PythonParser.Small_stmtContext context)
@@ -349,14 +349,14 @@ namespace PT.PM.PythonParseTreeUst
                 assignments.Add(
                     new AssignmentExpression
                     {
-                        Left = Visit(leftContext).ToExpressionIfRequired(),
+                        Left = Visit(leftContext).AsExpression(),
                         TextSpan = textSpan
                     });
             }
 
             if (context.yield_expr().Length == 1)
             {
-                var right = Visit(context.yield_expr(0)).ToExpressionIfRequired();
+                var right = Visit(context.yield_expr(0)).AsExpression();
                 result.Variables.AddRange(assignments.Select(x =>
                    {
                        x.Right = right;
@@ -371,7 +371,7 @@ namespace PT.PM.PythonParseTreeUst
                 {
                     result.Variables.AddRange(assignments.Select((assign, index) =>
                     {
-                        assign.Right = Visit(rightContexts.ElementAt(index)).ToExpressionIfRequired();
+                        assign.Right = Visit(rightContexts.ElementAt(index)).AsExpression();
                         return assign;
                     }));
                 }
@@ -414,7 +414,7 @@ namespace PT.PM.PythonParseTreeUst
             return new UnaryOperatorExpression
             {
                 Operator = new UnaryOperatorLiteral(UnaryOperator.Delete),
-                Expression = Visit(context.exprlist()).ToExpressionIfRequired(),
+                Expression = Visit(context.exprlist()).AsExpression(),
                 TextSpan = context.GetTextSpan()
             };
         }
@@ -436,12 +436,12 @@ namespace PT.PM.PythonParseTreeUst
 
         public Ust VisitReturn_stmt(PythonParser.Return_stmtContext context)
         {
-            return new ReturnStatement(Visit(context.testlist()).ToExpressionIfRequired(), context.GetTextSpan());
+            return new ReturnStatement(Visit(context.testlist()).AsExpression(), context.GetTextSpan());
         }
 
         public Ust VisitRaise_stmt(PythonParser.Raise_stmtContext context)
         {
-            return new ThrowStatement(Visit(context.test().FirstOrDefault()).ToExpressionIfRequired(), context.GetTextSpan());
+            return new ThrowStatement(Visit(context.test().FirstOrDefault()).AsExpression(), context.GetTextSpan());
         }
 
         public Ust VisitYield_stmt(PythonParser.Yield_stmtContext context)
@@ -558,8 +558,8 @@ namespace PT.PM.PythonParseTreeUst
         {
             return new WhileStatement
             {
-                Condition = Visit(context.test()).ToExpressionIfRequired(),
-                Embedded = Visit(context.suite()).ToStatementIfRequired(),
+                Condition = Visit(context.test()).AsExpression(),
+                Embedded = Visit(context.suite()).AsStatement(),
                 TextSpan = context.GetTextSpan()
             };
         }
@@ -589,8 +589,8 @@ namespace PT.PM.PythonParseTreeUst
             return new ForeachStatement
             {
                 VarName = new IdToken(context.exprlist().GetText(), context.exprlist().GetTextSpan()),
-                InExpression = Visit(context.testlist()).ToExpressionIfRequired(),
-                EmbeddedStatement = Visit(context.suite()).ToStatementIfRequired(),
+                InExpression = Visit(context.testlist()).AsExpression(),
+                EmbeddedStatement = Visit(context.suite()).AsStatement(),
                 TextSpan = context.GetTextSpan()
             };
         }
@@ -671,11 +671,11 @@ namespace PT.PM.PythonParseTreeUst
             };
             if (context.simple_stmt() != null)
             {
-                result.Statements.Add(Visit(context.simple_stmt()).ToStatementIfRequired());
+                result.Statements.Add(Visit(context.simple_stmt()).AsStatement());
             }
             else if (context.stmt().Length > 0)
             {
-                result.Statements.AddRange(context.stmt().Select(x => Visit(x).ToStatementIfRequired()));
+                result.Statements.AddRange(context.stmt().Select(x => Visit(x).AsStatement()));
             }
             return result;
         }
@@ -698,8 +698,8 @@ namespace PT.PM.PythonParseTreeUst
                 return new ConditionalExpression
                 {
                     Condition = (Expression)Visit(expressions[1]),
-                    TrueExpression = Visit(expressions[0]).ToExpressionIfRequired(),
-                    FalseExpression = Visit(context.test()).ToExpressionIfRequired(),
+                    TrueExpression = Visit(expressions[0]).AsExpression(),
+                    FalseExpression = Visit(context.test()).AsExpression(),
                     TextSpan = context.GetTextSpan()
                 };
             }
@@ -809,7 +809,7 @@ namespace PT.PM.PythonParseTreeUst
                 {
                     Initializers = visited is MultichildExpression multichild
                         ? UstUtils.ExtractMultiChild(multichild)
-                        : new List<Expression> { visited.ToExpressionIfRequired() },
+                        : new List<Expression> { visited.AsExpression() },
                     TextSpan = context.GetTextSpan()
                 };
             }
@@ -930,7 +930,7 @@ namespace PT.PM.PythonParseTreeUst
                 {
                     result.TypeMembers.Add(
                         Visit(typeBodyContext.simple_stmt())
-                        .ToStatementIfRequired());
+                        .AsStatement());
                 }
                 else
                 {
@@ -955,14 +955,14 @@ namespace PT.PM.PythonParseTreeUst
             }
             return node is EntityDeclaration entityDeclaration
                 ? entityDeclaration
-                : new StatementDeclaration(node.ToStatementIfRequired(), node.TextSpan);
+                : new StatementDeclaration(node.AsStatement(), node.TextSpan);
         }
 
         public Ust VisitArglist(PythonParser.ArglistContext context)
         {
             return new ArgsUst
             {
-                Collection = context.argument().Select(x => Visit(x).ToExpressionIfRequired()).ToList(),
+                Collection = context.argument().Select(x => Visit(x).AsExpression()).ToList(),
                 TextSpan = context.GetTextSpan()
             };
         }
@@ -974,8 +974,8 @@ namespace PT.PM.PythonParseTreeUst
             {
                 return new AssignmentExpression
                 {
-                    Left = Visit(context.GetChild(0)).ToExpressionIfRequired(),
-                    Right = Visit(context.GetChild(2)).ToExpressionIfRequired(),
+                    Left = Visit(context.GetChild(0)).AsExpression(),
+                    Right = Visit(context.GetChild(2)).AsExpression(),
                     TextSpan = context.GetTextSpan()
                 };
             }
@@ -997,8 +997,8 @@ namespace PT.PM.PythonParseTreeUst
             return new ForeachStatement
             {
                 VarName = new IdToken(context.exprlist().GetText(), context.exprlist().GetTextSpan()),
-                InExpression = Visit(context.logical_test()).ToExpressionIfRequired(),
-                EmbeddedStatement = Visit(context.comp_iter()).ToStatementIfRequired(),
+                InExpression = Visit(context.logical_test()).AsExpression(),
+                EmbeddedStatement = Visit(context.comp_iter()).AsStatement(),
                 TextSpan = context.GetTextSpan()
             };
         }
@@ -1008,7 +1008,7 @@ namespace PT.PM.PythonParseTreeUst
             var yieldArg = context.yield_arg();
             return yieldArg == null
                 ? new YieldExpression(null, context.GetTextSpan())
-                : new YieldExpression(Visit(yieldArg).ToExpressionIfRequired(), context.GetTextSpan());
+                : new YieldExpression(Visit(yieldArg).AsExpression(), context.GetTextSpan());
         }
 
         public Ust VisitYield_arg(PythonParser.Yield_argContext context)

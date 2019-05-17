@@ -100,7 +100,7 @@ namespace PT.PM.PhpParseTreeUst
             }
             else
             {
-                result = Visit(context.GetChild(0)).ToStatementIfRequired();
+                result = Visit(context.GetChild(0)).AsStatement();
             }
 
             return result;
@@ -316,7 +316,7 @@ namespace PT.PM.PhpParseTreeUst
                 return result;
             }
 
-            result = Visit(context.GetChild(0)).ToStatementIfRequired();
+            result = Visit(context.GetChild(0)).AsStatement();
 
             return result;
         }

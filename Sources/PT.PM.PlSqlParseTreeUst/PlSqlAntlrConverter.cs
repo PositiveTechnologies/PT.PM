@@ -45,7 +45,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitUnit_statement([NotNull] PlSqlParser.Unit_statementContext context)
         {
             var child = Visit(context.GetChild(0));
-            Statement result = child.ToStatementIfRequired();
+            Statement result = child.AsStatement();
             return result;
         }
 
@@ -358,7 +358,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitStatement([NotNull] PlSqlParser.StatementContext context)
         {
             Ust result = Visit(context.GetChild(0));
-            return result.ToStatementIfRequired();
+            return result.AsStatement();
         }
 
         public Ust VisitAssignment_statement([NotNull] PlSqlParser.Assignment_statementContext context)
@@ -539,7 +539,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="BlockStatement"/></returns>
         public Ust VisitBlock([NotNull] PlSqlParser.BlockContext context)
         {
-            var declare = new BlockStatement(context.declare_spec().Select(s => Visit(s).ToStatementIfRequired()).ToArray(),
+            var declare = new BlockStatement(context.declare_spec().Select(s => Visit(s).AsStatement()).ToArray(),
                 context.GetTextSpan());
             var body = (BlockStatement)Visit(context.body());
 
@@ -1882,7 +1882,7 @@ namespace PT.PM.SqlParseTreeUst
             var args = new List<Expression>();
             foreach(var children in context.children.Skip(1))
             {
-                args.Add(Visit(children).ToExpressionIfRequired());
+                args.Add(Visit(children).AsExpression());
             }
             var result = new ExpressionStatement(new InvocationExpression(funcId, new ArgsUst(args), context.GetTextSpan()));
             return result;

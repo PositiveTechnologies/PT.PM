@@ -75,7 +75,7 @@ namespace PT.PM.Common
         private FoldResult TryFoldArrayCreationExpression(ArrayCreationExpression arrayCreationExpression)
         {
             if (arrayCreationExpression.Initializers?.Count > 0 &&
-                !arrayCreationExpression.Initializers.Any(i => !(i is StringLiteral)))
+                arrayCreationExpression.Initializers.All(i => i is StringLiteral))
             {
                 var value = new StringBuilder();
                 var textSpans = new List<TextSpan>(arrayCreationExpression.Initializers.Count);

@@ -9,7 +9,7 @@ namespace PT.PM.Common.Nodes
 {
     public static class UstUtils
     {
-        public static Statement ToStatementIfRequired(this Ust ust)
+        public static Statement AsStatement(this Ust ust)
         {
             Statement result = ust as Statement;
 
@@ -28,7 +28,7 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static Expression ToExpressionIfRequired(this Ust ust)
+        public static Expression AsExpression(this Ust ust)
         {
             if (ust == null)
             {
