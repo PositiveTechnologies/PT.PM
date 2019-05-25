@@ -9,7 +9,7 @@ namespace PT.PM.AntlrUtils
     /// Generates UST node at each `ExitEveryRule` method
     /// If needed, use concrete Listener with overriden methods for certain contexts
     /// </summary>
-    public class ListenerConverter : IParseTreeListener
+    public class AntlrListenerConverter : IParseTreeListener
     {
         // We should store children count for every ascendant node and process such number in ProcessChildren
         // After processing, such nodes should be removed from `resultNodes`
