@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime;
+using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Files;
 using PT.PM.LanguageDetectors;
@@ -28,8 +29,18 @@ namespace PT.PM
 
                 if (token.Type == SqlDialectsLexer.CMD)
                 {
-                    string tokensText = token.Text;
-                    if (!tokensText.Contains("/") && !tokensText.Contains("\\") && !tokensText.Contains("."))
+                    ReadOnlySpan<char> tokensSpan = ((LightToken)token).Span;
+
+                    bool contains = false;
+                    foreach (char c in tokensSpan)
+                    {
+                        if (c == '/' || c == '\\' || c == '.')
+                        {
+                            contains = true;
+                        }
+                    }
+
+                    if (!contains)
                     {
                         channel = SqlDialectsLexer.T_SQL;
                     }

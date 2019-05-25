@@ -74,8 +74,6 @@ namespace PT.PM.AntlrUtils
         public static TextSpan GetTextSpan(this ParserRuleContext ruleContext)
         {
             var start = ruleContext.Start;
-            if (start.Text == "<EOF>")
-                return default;
 
             IToken stop = ruleContext.Stop;
             RuleContext parent = ruleContext.Parent;
