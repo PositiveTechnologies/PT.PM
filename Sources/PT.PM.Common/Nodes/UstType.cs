@@ -101,5 +101,11 @@ namespace PT.PM.Common.Nodes
         ParameterDeclaration,
         PropertyDeclaration,
         StatementDeclaration,
+
+        // Terminals
+        Keyword,
+        Operator,
+        Punctuator,
+        RawToken
     }
 }
