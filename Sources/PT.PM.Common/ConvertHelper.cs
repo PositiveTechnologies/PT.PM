@@ -226,7 +226,7 @@ namespace PT.PM.Common
             string data = root.CurrentSourceFile.Data;
             int escapeCharsLength = 0;
 
-            if (textSpan.Length == 1)
+            if (textSpan.Length < 3)
             {
                 return new StringLiteral(textSpan, root, 0);
             }
