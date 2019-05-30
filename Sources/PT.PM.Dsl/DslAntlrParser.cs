@@ -16,10 +16,9 @@ namespace PT.PM.Dsl
         {
             DslParser.PatternContext pattern;
             var sourceFile = new TextFile(data) { PatternKey = patternKey ?? data };
-            var errorListener = new AntlrMemoryErrorListener
+            var errorListener = new AntlrMemoryErrorListener(sourceFile)
             {
                 IsPattern = true,
-                SourceFile = sourceFile,
                 Logger = Logger
             };
             try
