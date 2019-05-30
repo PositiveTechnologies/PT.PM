@@ -36,6 +36,7 @@ namespace PT.PM
             LanguageUtils.RegisterLexerParserConverter(Language.Python, PythonAntlrLexer.Create, PythonAntlrParser.Create, PythonAntlrConverter.Create);
 
             LanguageUtils.RegisterLexerParserConverter(Language.PlSql, PlSqlAntlrLexer.Create, PlSqlAntlrParser.Create, PlSqlAntlrConverter.Create);
+            LanguageUtils.RegisterLexerParserConverter(Language.PlSql, PlSqlAntlrLexer.Create, PlSqlAntlrParserConverter.Create);
             LanguageUtils.RegisterLexerParserConverter(Language.TSql, TSqlAntlrLexer.Create, TSqlAntlrParser.Create, TSqlAntlrConverter.Create);
             LanguageUtils.RegisterLexerParserConverter(Language.MySql, MySqlAntlrLexer.Create, MySqlAntlrParser.Create, MySqlAntlrConverter.Create);
         }
