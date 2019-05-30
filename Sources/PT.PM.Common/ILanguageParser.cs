@@ -2,8 +2,8 @@
 
 namespace PT.PM.Common
 {
-    public interface ILanguageParser<T> : ILanguageParserBase
+    public interface ILanguageParser<in T> : ILanguageParserBase
     {
-        ParseTree Parse(T parseUnit, out TimeSpan parserTimeSpan);
+        ParseTree Parse(T parseUnit, out TimeSpan timeSpan);
     }
 }
