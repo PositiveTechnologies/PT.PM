@@ -4,7 +4,7 @@ using MessagePack;
 namespace PT.PM.Common.Nodes.Tokens
 {
     [MessagePackObject]
-    public class Operator : Ust, ITerminal
+    public class Operator : Ust, ITerminal, IOperatorOrPunctuator
     {
         public Operator(TextSpan textSpan, RootUst rootUst)
             : base(textSpan)
