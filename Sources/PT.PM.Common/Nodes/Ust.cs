@@ -64,13 +64,19 @@ namespace PT.PM.Common.Nodes
 
         public string ToStringWithoutLineBreaks() => debuggerPrinter?.Print(ToString()) ?? "";
 
-        protected Ust()
+        protected Ust(TextSpan textSpan, RootUst rootUst)
+            : this(textSpan)
         {
+            Root = rootUst;
         }
 
         protected Ust(TextSpan textSpan)
         {
             TextSpan = textSpan;
+        }
+
+        protected Ust()
+        {
         }
 
         public abstract Ust[] GetChildren();
@@ -96,7 +102,9 @@ namespace PT.PM.Common.Nodes
             return Children.CompareTo(other.Children);
         }
 
-        public override string ToString()
+        public override string ToString() => ToString(true);
+
+        public string ToString(bool space)
         {
             if (Children == null || Children.Length == 0)
             {
@@ -107,7 +115,10 @@ namespace PT.PM.Common.Nodes
             foreach (Ust child in Children)
             {
                 result.Append(child);
-                result.Append(" ");
+                if (space)
+                {
+                    result.Append(' ');
+                }
             }
             return result.ToString();
         }

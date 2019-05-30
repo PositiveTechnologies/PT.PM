@@ -423,6 +423,26 @@ namespace PT.PM.Common.Nodes
             return VisitChildren(collection);
         }
 
+        public T Visit(Keyword keyword)
+        {
+            return VisitChildren(keyword);
+        }
+
+        public T Visit(Operator op)
+        {
+            return VisitChildren(op);
+        }
+
+        public T Visit(Punctuator punctuator)
+        {
+            return VisitChildren(punctuator);
+        }
+
+        public T Visit(RawToken rawToken)
+        {
+            return VisitChildren(rawToken);
+        }
+
         public T Visit(TupleCreateExpression tupleCreateExpression)
         {
             return VisitChildren(tupleCreateExpression);
@@ -449,4 +469,4 @@ namespace PT.PM.Common.Nodes
             return default;
         }
     }
-} 
+}
