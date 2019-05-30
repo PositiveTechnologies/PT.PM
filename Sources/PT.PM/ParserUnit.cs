@@ -63,9 +63,6 @@ namespace PT.PM
                 var lexer = (AntlrLexer)Language.CreateLexer();
                 lexer.Logger = logger;
                 var tokens = lexer.GetTokens(sourceFile, out TimeSpan _);
-
-                antlrParser.SourceFile = sourceFile;
-
                 ParseTree = antlrParser.Parse(tokens, out TimeSpan _);
             }
             else

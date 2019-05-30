@@ -7,7 +7,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class BinaryOperatorLiteral : Literal
     {
-        public static Dictionary<string, BinaryOperator> TextBinaryOperator = new Dictionary<string, BinaryOperator>
+        public static readonly Dictionary<string, BinaryOperator> TextBinaryOperator = new Dictionary<string, BinaryOperator>
         {
             ["+"] = BinaryOperator.Plus,
             ["-"] = BinaryOperator.Minus,
@@ -59,7 +59,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
         [Key(UstFieldOffset)]
         public BinaryOperator BinaryOperator { get; set; }
-        
+
         [IgnoreMember]
         public override string TextValue => BinaryOperator.ToString();
 
@@ -110,10 +110,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             {
                 return TextBinaryOperator.FirstOrDefault(pair => pair.Value == BinaryOperator).Key;
             }
-            else
-            {
-                return BinaryOperator.ToString();
-            }
+
+            return BinaryOperator.ToString();
         }
     }
 }

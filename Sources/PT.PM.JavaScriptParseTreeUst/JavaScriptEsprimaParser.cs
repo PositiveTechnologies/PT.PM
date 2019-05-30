@@ -24,7 +24,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         public static JavaScriptEsprimaParser Create() => new JavaScriptEsprimaParser();
 
-        public ParseTree Parse(TextFile sourceFile, out TimeSpan parserTimeSpan)
+        public ParseTree Parse(TextFile sourceFile, out TimeSpan timeSpan)
         {
             if (sourceFile.Data == null)
             {
@@ -51,7 +51,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 var stopwatch = Stopwatch.StartNew();
                 Program ast = parser.ParseProgram(JavaScriptType == JavaScriptType.Strict);
                 stopwatch.Stop();
-                parserTimeSpan = stopwatch.Elapsed;
+                timeSpan = stopwatch.Elapsed;
 
                 var scanner = new Scanner(sourceFile.Data, parserOptions);
                 errorHandler.Scanner = scanner;

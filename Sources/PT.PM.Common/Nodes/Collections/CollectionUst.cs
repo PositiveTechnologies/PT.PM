@@ -21,6 +21,7 @@ namespace PT.PM.Common.Nodes.Collections
             : base()
         {
             Collection = collection as List<TUst> ?? collection.ToList();
+            Collection.TrimExcess();
         }
 
         protected CollectionNode()

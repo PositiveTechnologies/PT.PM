@@ -58,7 +58,7 @@ namespace PT.PM.JavaScriptParseTreeUst
                 foreach (Esprima.Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new Comment(textSpan)
+                    comments.Add(new Comment(textSpan, root)
                     {
                         Root = root,
                     });
