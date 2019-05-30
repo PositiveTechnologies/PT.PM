@@ -12,6 +12,7 @@ namespace PT.PM.Common
         private static readonly Dictionary<Language, Func<ILanguageLexer>> lexerConstructors = new Dictionary<Language, Func<ILanguageLexer>>();
         private static readonly Dictionary<Language, Func<ILanguageParserBase>> parserConstructors = new Dictionary<Language, Func<ILanguageParserBase>>();
         private static readonly Dictionary<Language, Func<IParseTreeToUstConverter>> converterConstructors = new Dictionary<Language, Func<IParseTreeToUstConverter>>();
+        private static readonly Dictionary<Language, Func<IParserConverter>> parserConverterConstructors = new Dictionary<Language, Func<IParserConverter>>();
 
         public static readonly Dictionary<Language, LanguageInfo> LanguageInfos = new Dictionary<Language, LanguageInfo>
         {
@@ -26,10 +27,10 @@ namespace PT.PM.Common
             [Aspx] = new LanguageInfo(Aspx, new[] { ".asax", ".aspx", ".ascx", ".master" }, false, "Aspx", new[] { CSharp }, false, false),
             [Html] = new LanguageInfo(Html, ".html", true, "HTML", new[] { JavaScript }),
             [C] = new LanguageInfo(C, new[] { ".c", ".h" }, false, "C", hasAntlrParser: false),
-            [CPlusPlus] = new LanguageInfo(CPlusPlus, new[] { ".cpp", ".hpp", ".cc", ".cxx" }, false, "C++", new[] { C }, hasAntlrParser: false),
-            [ObjectiveC] = new LanguageInfo(ObjectiveC, new[] { ".m", ".mm" }, false, "Objective-C", new[] { C }, hasAntlrParser: false),
+            [CPlusPlus] = new LanguageInfo(CPlusPlus, new[] { ".cpp", ".hpp", ".cc", ".cxx" }, false, "C++", new[] { C }, false),
+            [ObjectiveC] = new LanguageInfo(ObjectiveC, new[] { ".m", ".mm" }, false, "Objective-C", new[] { C }, false),
             [Swift] = new LanguageInfo(Swift, new[] { ".swift" }, false, "Swift", hasAntlrParser: false),
-            [Python] = new LanguageInfo(Python, new[] { ".py", ".py3", ".pyw"}, false, "Python", hasAntlrParser: true),
+            [Python] = new LanguageInfo(Python, new[] { ".py", ".py3", ".pyw"}, false, "Python"),
             [Uncertain] = new LanguageInfo(Uncertain, ".*", false, "Uncertain", hasAntlrParser: false),
             [Language.Json] = new LanguageInfo(Language.Json, ".json", false, "Json UST | CPG", hasAntlrParser: false),
             [Language.MessagePack] = new LanguageInfo(Language.MessagePack, ".msgpack", false, "MessagePack UST | CPG", hasAntlrParser: false),
@@ -114,6 +115,9 @@ namespace PT.PM.Common
 
         public static bool IsAntlr(this Language language) => LanguageInfos[language].HasAntlrParser;
 
+        public static bool IsParserConverter(this Language language) =>
+            parserConverterConstructors.ContainsKey(language);
+
         public static string GetTitle(this Language language) => LanguageInfos[language].Title;
 
         public static string[] GetExtensions(this Language language) => LanguageInfos[language].Extensions;
@@ -148,6 +152,13 @@ namespace PT.PM.Common
         public static bool HasAntlrParser(this Language language) => LanguageInfos[language].HasAntlrParser;
 
         public static bool IsParserExistsOrSerializing(this Language language) => LanguagesWithParser.Contains(language) || language.IsSerializing();
+
+        public static void RegisterLexerParserConverter(Language language, Func<ILanguageLexer> lexerConstructor,
+            Func<IParserConverter> parserConverterConstructor)
+        {
+            RegisterLexer(language, lexerConstructor);
+            parserConverterConstructors[language] = parserConverterConstructor;
+        }
 
         public static void RegisterLexerParserConverter(Language language, Func<ILanguageLexer> lexerConstructor,
             Func<ILanguageParserBase> parserConstructor, Func<IParseTreeToUstConverter> converterConstructor)
@@ -187,7 +198,17 @@ namespace PT.PM.Common
                 return parserConstructor();
             }
 
-            throw new NotImplementedException($"Language {language} parser is not supported");
+            throw new NotImplementedException($"Language {language} parser is not implemented");
+        }
+
+        public static IParserConverter CreateParserConverter(this Language language)
+        {
+            if (parserConverterConstructors.TryGetValue(language, out Func<IParserConverter> parserConverterConstructor))
+            {
+                return parserConverterConstructor();
+            }
+
+            throw new NotImplementedException($"Language {language} parser is not implemented");
         }
 
         public static IParseTreeToUstConverter CreateConverter(this Language language)
@@ -197,7 +218,7 @@ namespace PT.PM.Common
                 return converterConstructor();
             }
 
-            throw new NotImplementedException($"Language {language} converter is not supported");
+            throw new NotImplementedException($"Language {language} converter is not implemented");
         }
 
         public static ILanguageLexer CreateLexer(this Language language)
