@@ -111,6 +111,24 @@ namespace PT.PM.AntlrUtils
                 : new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex);
         }
 
+        public static ReadOnlySpan<char> ExtractSpan(this IToken token, out TextSpan textSpan)
+        {
+            ReadOnlySpan<char> span;
+
+            if (token is LightToken lightToken)
+            {
+                textSpan = lightToken.TextSpan;
+                span = lightToken.Span;
+            }
+            else
+            {
+                textSpan = token.GetTextSpan();
+                span = token.Text.AsSpan();
+            }
+
+            return span;
+        }
+
         public static void LogConversionError(this ILogger logger, Exception ex,
             ParserRuleContext context, TextFile currentFileData)
         {

@@ -443,7 +443,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                         ? 8
                         : 2;
 
-            ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
+            ReadOnlySpan<char> span = context.GetChild<ITerminalNode>(0).Symbol.ExtractSpan(out TextSpan textSpan);
 
             if (span.Contains("_".AsSpan(), StringComparison.Ordinal))
             {
