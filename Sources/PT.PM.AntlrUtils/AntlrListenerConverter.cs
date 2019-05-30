@@ -38,7 +38,7 @@ namespace PT.PM.AntlrUtils
         /// </summary>
         public RootUst Complete()
         {
-            ProcessChildren();
+            ConvertChildren();
             root.Node = Peek()[0];
             Pop();
             Clear();
@@ -62,7 +62,7 @@ namespace PT.PM.AntlrUtils
 
         public virtual void ExitEveryRule(ParserRuleContext ctx)
         {
-            RemoveAndAdd(ProcessChildren());
+            RemoveAndAdd(ConvertChildren());
         }
 
         public void VisitTerminal(ITerminalNode node)
@@ -131,7 +131,7 @@ namespace PT.PM.AntlrUtils
             return nodes[nodes.Count - 1 - index];
         }
 
-        protected Ust ProcessChildren()
+        protected Ust ConvertChildren()
         {
             Ust result;
 
