@@ -41,6 +41,13 @@ namespace PT.PM.AntlrUtils
             Dump(result.ToString(), parseTree.SourceFile, false);
         }
 
+        public void DumpTree(IParseTree parseTree, string[] ruleNames, TextFile sourceFile)
+        {
+            var result = new StringBuilder();
+            DumpTree(parseTree, ruleNames, result, 0);
+            Dump(result.ToString(), sourceFile, false);
+        }
+
         private void DumpTree(IParseTree parseTree, string[] ruleNames, StringBuilder builder, int level)
         {
             int currentLevelStringLength = level * IndentSize;

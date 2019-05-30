@@ -5,7 +5,6 @@ using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -76,7 +75,7 @@ namespace PT.PM.AntlrUtils
                 return null;
             }
 
-            var sourceFile = ((LightToken) tokens[0]).TextFile;
+            var sourceFile = ((LightToken) tokens.First(token => token is LightToken)).TextFile;
 
             var errorListener = new AntlrMemoryErrorListener(sourceFile)
             {

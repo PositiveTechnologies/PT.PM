@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr4.Runtime;
 using PT.PM.Common;
 
@@ -23,7 +24,7 @@ namespace PT.PM.AntlrUtils
             AntlrParseTree parseTree = Create(syntaxTree);
             parseTree.Tokens = tokens;
             parseTree.Comments = commentTokens;
-            parseTree.SourceFile = ((LightToken)tokens[0]).TextFile;
+            parseTree.SourceFile = ((LightToken)tokens.First(token => token is LightToken)).TextFile;
 
             return parseTree;
         }
