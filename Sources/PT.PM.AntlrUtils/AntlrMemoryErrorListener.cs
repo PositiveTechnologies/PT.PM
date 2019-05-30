@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime;
+﻿using System;
+using Antlr4.Runtime;
 using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
@@ -9,11 +10,16 @@ namespace PT.PM.AntlrUtils
     {
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public TextFile SourceFile { get; set; }
+        public TextFile SourceFile { get; }
 
         public bool IsPattern { get; set; }
 
         public int LineOffset { get; set; }
+
+        public AntlrMemoryErrorListener(TextFile sourceFile)
+        {
+            SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
+        }
 
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
@@ -43,7 +49,7 @@ namespace PT.PM.AntlrUtils
 
             Logger.LogError(new ParsingException(SourceFile, message: errorMessage)
             {
-                TextSpan = textSpan,
+                TextSpan = textSpan
             });
         }
     }
