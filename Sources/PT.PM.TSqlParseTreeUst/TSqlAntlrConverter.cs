@@ -47,12 +47,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Statement"/></returns>
         public Ust VisitSql_clause([NotNull] TSqlParser.Sql_clauseContext context)
         {
-            var result = Visit(context.GetChild(0));
-            if (!(result is Statement))
-            {
-                result = new WrapperStatement(result);
-            }
-            return result;
+            return Visit(context.GetChild(0)).AsStatement();
         }
 
         public Ust VisitDml_clause([NotNull] TSqlParser.Dml_clauseContext context)
@@ -481,7 +476,8 @@ namespace PT.PM.SqlParseTreeUst
 
             var id = (IdToken)Visit(context.func_proc_name());
             var body = new BlockStatement(
-                context.sql_clauses().sql_clause().Select(clause => (Statement)Visit(clause)).ToArray());
+                context.sql_clauses().sql_clause().Select(clause => (Statement)Visit(clause))
+                    .Where(statement => statement != null).ToArray());
             ParameterDeclaration[] parameters = context.procedure_param()
                 .Select(param => (ParameterDeclaration)Visit(param)).ToArray();
 
@@ -662,14 +658,14 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitOpenquery([NotNull] TSqlParser.OpenqueryContext context)
         {
             return CreateSpecialInvocation(context.OPENQUERY(), context,
-                new List<Expression> { (IdToken)Visit(context.id()), ConvertToken(context.query) });
+                new List<Expression> { (IdToken)Visit(context.id()), ConvertToken(context.query).AsExpression() });
         }
 
         /// <returns><see cref="InvocationExpression"/></returns>
         public Ust VisitOpendatasource([NotNull] TSqlParser.OpendatasourceContext context)
         {
             return CreateSpecialInvocation(context.OPENDATASOURCE(), context, new List<Expression> {
-                ConvertToken(context.provider), ConvertToken(context.init),
+                ConvertToken(context.provider).AsExpression(), ConvertToken(context.init).AsExpression(),
                 (IdToken)Visit(context.database), (IdToken)Visit(context.scheme),
                 (IdToken)Visit(context.scheme) });
         }
@@ -800,7 +796,7 @@ namespace PT.PM.SqlParseTreeUst
 
             if (context.parameter != null)
             {
-                Token left = ConvertToken(context.parameter);
+                Expression left = ConvertToken(context.parameter).AsExpression();
                 result = new AssignmentExpression(left, result, context.GetTextSpan());
             }
             return result;
@@ -826,9 +822,9 @@ namespace PT.PM.SqlParseTreeUst
                 var funcName = new IdToken(str, context.GRANT(0).GetTextSpan());
                 var args = new List<Expression>(context.children.Count - 1);
 
-                foreach(var children in context.children.Skip(1))
+                foreach (var children in context.children.Skip(1))
                 {
-                    args.Add((Expression)Visit(children));
+                    args.Add(Visit(children).AsExpression());
                 }
 
                 expr = new InvocationExpression(funcName, new ArgsUst(args), context.GetTextSpan());
@@ -1071,7 +1067,7 @@ namespace PT.PM.SqlParseTreeUst
             }
             else
             {
-                ReadOnlySpan<char> span = ExtractSpan(context.DECIMAL().Symbol, out TextSpan textSpan);
+                ReadOnlySpan<char> span = context.DECIMAL().Symbol.ExtractSpan(out TextSpan textSpan);
                 convertHelper.TryConvertNumeric(span, textSpan, 10, out Literal numeric);
                 right = numeric;
             }
@@ -1312,7 +1308,9 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="MultichildExpression"/></returns>
         public Ust VisitUpdate_elem([NotNull] TSqlParser.Update_elemContext context)
         {
-            Expression[] children = context.children.Select(child => (Expression)Visit(child)).ToArray();
+            Expression[] children = context.children.Select(child => Visit(child) as Expression)
+                .Where(expr => expr != null)
+                .ToArray();
             var result = new MultichildExpression(children);
             return result;
         }
@@ -1484,21 +1482,19 @@ namespace PT.PM.SqlParseTreeUst
         {
             if (context.ChildCount > 1)
             {
-                List<Expression> exprs = new List<Expression>();
+                var exprs = new List<Expression>();
                 for (int i = 0; i < context.ChildCount; i++)
                 {
                     var visited = Visit(context.GetChild(i));
-                    if(visited != null)
+                    if (visited is Expression expr)
                     {
-                        exprs.Add(new WrapperExpression(visited));
+                        exprs.Add(expr);
                     }
                 }
-                return new SqlQuery(((SqlQuery)((WrapperExpression)exprs.FirstOrDefault())?.Node).QueryCommand,exprs, context.GetTextSpan());
+                return new SqlQuery(((SqlQuery)exprs.FirstOrDefault()).QueryCommand, exprs, context.GetTextSpan());
             }
-            else
-            {
-                return VisitChildren(context);
-            }
+
+            return VisitChildren(context);
         }
 
         /// <returns><see cref="SqlQuery"/></returns>
@@ -1509,7 +1505,7 @@ namespace PT.PM.SqlParseTreeUst
                 return null;
             }
 
-            SqlQuery query = null;
+            SqlQuery query;
 
             List<Expression> queryElements = new List<Expression>();
             for (int i = 0; i < context.ChildCount; i++)
@@ -1556,7 +1552,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="IdToken"/></returns>
         public Ust VisitXml_common_directives([NotNull] TSqlParser.Xml_common_directivesContext context)
         {
-            return (IdToken)Visit(context.GetChild(1));
+            return Visit(context.GetChild(1)).AsIdToken();
         }
 
         /// <returns><see cref="Expression"/></returns>
@@ -1733,7 +1729,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitBulk_option([NotNull] TSqlParser.Bulk_optionContext context)
         {
             var left = (IdToken)Visit(context.id());
-            var right = ConvertToken(context.bulk_option_value);
+            var right = ConvertToken(context.bulk_option_value).AsExpression();
             var result = new AssignmentExpression(left, right, context.GetTextSpan());
             return result;
         }
@@ -2100,7 +2096,7 @@ namespace PT.PM.SqlParseTreeUst
         public Ust VisitConstant([NotNull] TSqlParser.ConstantContext context)
         {
             ITerminalNode terminalNode = (ITerminalNode)context.GetChild(context.ChildCount - 1);
-            Token literal = ConvertToken(terminalNode.Symbol);
+            Expression literal = ConvertToken(terminalNode.Symbol).AsExpression();
 
             bool minus = context.sign?.Text == "-";
 
@@ -3937,15 +3933,15 @@ namespace PT.PM.SqlParseTreeUst
 
         private QueryArgs GetQueryArgs(ParserRuleContext context)
         {
-            QueryArgs QueryArgs = null;
-            List<Expression> elements = new List<Expression>();
+            var elements = new List<Expression>();
             for (int i = 0; i < context.ChildCount; i++)
             {
-                var element = (Expression)Visit(context.GetChild(i));
-                elements.Add(element);
+                if (Visit(context.GetChild(i)) is Expression element)
+                {
+                    elements.Add(element);
+                }
             }
-            QueryArgs = new QueryArgs(elements, context.GetTextSpan());
-            return QueryArgs;
+            return new QueryArgs(elements, context.GetTextSpan());
         }
     }
 }

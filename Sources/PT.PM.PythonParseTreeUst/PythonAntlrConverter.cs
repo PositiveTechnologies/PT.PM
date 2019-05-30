@@ -277,7 +277,13 @@ namespace PT.PM.PythonParseTreeUst
                 var assignments = new List<AssignmentExpression>(leftContext.ChildCount);
                 for (int i = 0; i < leftContext.ChildCount; i++)
                 {
-                    var visitedLeft = (Expression)Visit(leftContext.GetChild(i));
+                    var visitedLeft = Visit(leftContext.GetChild(i)) as Expression;
+
+                    if (visitedLeft is null)
+                    {
+                        continue;
+                    }
+
                     Expression visitedRight;
                     var rightContextChild = rightContext.GetChild(i);
                     var rightContextChildType =
@@ -317,15 +323,12 @@ namespace PT.PM.PythonParseTreeUst
                 left = (Expression)Visit(leftContext);
                 right = new TupleCreateExpression
                 {
-                    TextSpan = rightContext.GetTextSpan(),
-                    Initializers = rightContext.children
-                        .Where(x => (x as ITerminalNode)?.Symbol.Type == PythonLexer.COMMA)
-                        .Select(x => (Expression)Visit(x)).ToList()
+                    TextSpan = rightContext.GetTextSpan()
                 };
             }
             else
             {
-                left = (Expression)Visit(leftContext);
+                left = Visit(leftContext).AsExpression();
                 right = (Expression)Visit(rightContext);
             }
 
@@ -855,7 +858,7 @@ namespace PT.PM.PythonParseTreeUst
                         ? 8
                         : 2;
 
-            ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
+            ReadOnlySpan<char> span = context.GetChild<ITerminalNode>(0).Symbol.ExtractSpan(out TextSpan textSpan);
             convertHelper.TryConvertNumeric(span, textSpan, fromBase, out Literal numeric);
 
             return numeric;
@@ -877,7 +880,9 @@ namespace PT.PM.PythonParseTreeUst
         {
             return new ArgsUst
             {
-                Collection = context.subscript().Select(x => (Expression)Visit(x)).ToList(),
+                Collection = context.subscript().Select(x => Visit(x) is Expression expression ? expression : null)
+                    .Where(expression => expression != null)
+                    .ToList(),
                 TextSpan = context.GetTextSpan()
             };
         }

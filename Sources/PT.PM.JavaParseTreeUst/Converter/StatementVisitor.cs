@@ -73,7 +73,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     int dimensions = multichildExpression.GetDepth(1);
                     var sizes = Enumerable.Range(0, dimensions).Select(
                         _ => new IntLiteral(0, type.TextSpan)).ToList<Expression>();
-                    var arrayInitializers = expressions.Where(el => !(el is IdToken));
+                    var arrayInitializers = expressions.Where(el => !(el is WrapperExpression));
                     initializers.First().Right = new ArrayCreationExpression(
                         new TypeToken(type.TypeText, type.TextSpan), sizes,
                         arrayInitializers, arrayInitializer.GetTextSpan());

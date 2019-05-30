@@ -260,15 +260,14 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 var result = (ArgsUst)Visit(expressionList);
                 return result;
             }
-            else
-            {
-                return new ArgsUst();
-            }
+
+            return new ArgsUst();
         }
 
         public Ust VisitExpressionList(JavaParser.ExpressionListContext context)
         {
-            Expression[] exprs = context.expression().Select(expr => (Expression)Visit(expr)).ToArray();
+            Expression[] exprs = context.expression().Select(expr => Visit(expr) as Expression)
+                .Where(expr => expr != null).ToArray();
             var result = new ArgsUst(exprs, context.GetTextSpan());
             return result;
         }
@@ -287,7 +286,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     int dimensions = (arrayCreatorRest.ChildCount - 1) / 2; // number of square bracket pairs
                     var sizes = Enumerable.Range(0, dimensions).Select(
                         _ => new IntLiteral(0, createdName.GetTextSpan())).ToList<Expression>();
-                    var initializers = initializer.Expressions.Where(el => !(el is IdToken));
+                    var initializers = initializer.Expressions.Where(el => !(el is WrapperExpression));
                     result = new ArrayCreationExpression(
                         new TypeToken(createdName.GetText(), createdName.GetTextSpan()), sizes,
                         initializers, context.GetTextSpan());
