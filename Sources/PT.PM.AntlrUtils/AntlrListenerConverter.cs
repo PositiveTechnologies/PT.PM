@@ -97,6 +97,40 @@ namespace PT.PM.AntlrUtils
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool CheckChild<T>(int[] tokenTypes, int index)
+            where T : class
+        {
+            List<Ust> children = GetChildren();
+
+            if (index < 0 || index >= children.Count)
+            {
+                return false;
+            }
+
+            if (!(children[index] is T ust))
+            {
+                return false;
+            }
+
+            string substring = ust.ToString();
+
+            foreach (int tokenType in tokenTypes)
+            {
+                string tokenValue = antlrParserConverter.LexerVocabulary.GetDisplayName(tokenType).Trim(trimChar);
+                bool result = convertHelper.Language.IsCaseInsensitive()
+                    ? substring.EqualsIgnoreCase(tokenValue)
+                    : substring.Equals(tokenValue);
+
+                if (result)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool CheckChild<T>(int tokenType, int index)
             where T : class
         {
