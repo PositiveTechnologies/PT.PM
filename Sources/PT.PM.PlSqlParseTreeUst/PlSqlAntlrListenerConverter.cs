@@ -15,9 +15,8 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
-using PT.PM.PlSqlParseTreeUst;
 
-namespace PT.PM.SqlParseTreeUst
+namespace PT.PM.PlSqlParseTreeUst
 {
     public class PlSqlAntlrListenerConverter : AntlrListenerConverter
     {
@@ -240,7 +239,7 @@ namespace PT.PM.SqlParseTreeUst
              return new ExpressionStatement(new InvocationExpression(name, new ArgsUst(args), context.GetTextSpan()));
         }
 
-        private Ust ConvertStatement(PlSqlParser.StatementContext context)
+        private Statement ConvertStatement(PlSqlParser.StatementContext context)
         {
             return GetChild(0).AsStatement();
         }
@@ -335,7 +334,7 @@ namespace PT.PM.SqlParseTreeUst
             return result;
         }
 
-        private Ust ConvertGeneralElementPart(PlSqlParser.General_element_partContext context)
+        private Expression ConvertGeneralElementPart(PlSqlParser.General_element_partContext context)
         {
             List<Ust> children = GetChildren();
 
@@ -385,16 +384,26 @@ namespace PT.PM.SqlParseTreeUst
                 return children[0].AsExpression();
             }
 
-            var op = (BinaryOperatorLiteral)children[0];
-            var right = children[1].AsExpression();
-            Pop();
-            var left = GetChild(0).AsExpression();
-            Peek().Clear();
-            PushNew(context);
+            BinaryOperatorLiteral op;
+            Expression left, right;
 
-            var result = new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
+            if (!ParseTreeIsExisted)
+            {
+                op = (BinaryOperatorLiteral) children[0];
+                right = children[1].AsExpression();
+                Pop();
+                left = GetChild(0).AsExpression();
+                Peek().Clear();
+                PushNew(context);
+            }
+            else
+            {
+                left = children[0].AsExpression();
+                op = (BinaryOperatorLiteral)children[1];
+                right = children[2].AsExpression();
+            }
 
-            return result;
+            return  new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
         }
 
         private BinaryOperatorLiteral ConvertRelationalOperator(PlSqlParser.Relational_operatorContext context)

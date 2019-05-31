@@ -25,6 +25,8 @@ namespace PT.PM.AntlrUtils
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
+        public bool ParseTreeIsExisted { get; set; } = false;
+
         protected AntlrListenerConverter(TextFile sourceFile, AntlrParserConverter antlrParser)
         {
             root = new RootUst(sourceFile, antlrParser.Language);
