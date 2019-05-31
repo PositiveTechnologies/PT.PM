@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
@@ -11,9 +10,9 @@ namespace PT.PM.AntlrUtils
 {
     public class AntlrConvertHelper : ConvertHelper
     {
-        private AntlrParserBase AntlrParser { get; }
+        private AntlrParser AntlrParser { get; }
 
-        public AntlrConvertHelper(RootUst root, AntlrParserBase antlrParser)
+        public AntlrConvertHelper(RootUst root, AntlrParser antlrParser)
             : base(root)
         {
             AntlrParser = antlrParser ?? throw new ArgumentNullException(nameof(antlrParser));

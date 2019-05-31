@@ -77,8 +77,8 @@ namespace PT.PM.Common
 
         public static readonly HashSet<Language> PatternLanguages = new HashSet<Language>();
         public static readonly Dictionary<Language, HashSet<Language>> SuperLanguages = new Dictionary<Language, HashSet<Language>>();
-        public static readonly HashSet<Language> LanguagesWithParser = new HashSet<Language>();
         public static readonly HashSet<Language> LanguagesWithLexer = new HashSet<Language>();
+        public static readonly HashSet<Language> LanguagesWithParser = new HashSet<Language>();
 
         static LanguageUtils()
         {
@@ -158,6 +158,7 @@ namespace PT.PM.Common
         {
             RegisterLexer(language, lexerConstructor);
             parserConverterConstructors[language] = parserConverterConstructor;
+            LanguagesWithParser.Add(language);
         }
 
         public static void RegisterLexerParserConverter(Language language, Func<ILanguageLexer> lexerConstructor,
@@ -193,6 +194,11 @@ namespace PT.PM.Common
 
         public static ILanguageParserBase CreateParser(this Language language)
         {
+            if (parserConverterConstructors.TryGetValue(language, out Func<IParserConverter> parserConverterConstructor))
+            {
+                return (ILanguageParserBase)parserConverterConstructor();
+            }
+
             if (parserConstructors.TryGetValue(language, out Func<ILanguageParserBase> parserConstructor))
             {
                 return parserConstructor();
