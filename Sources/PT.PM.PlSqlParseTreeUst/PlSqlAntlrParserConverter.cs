@@ -6,11 +6,14 @@ using PT.PM.Common.Files;
 using PT.PM.PlSqlParseTreeUst;
 using static PT.PM.PlSqlParseTreeUst.PlSqlLexer;
 
-namespace PT.PM.SqlParseTreeUst
+namespace PT.PM.PlSqlParseTreeUst
 {
     public class PlSqlAntlrParserConverter : AntlrParserConverter
     {
         public static PlSqlAntlrParserConverter Create() => new PlSqlAntlrParserConverter();
+
+        protected override AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree) =>
+            new PlSqlAntlrParseTree((PlSqlParser.Sql_scriptContext) syntaxTree);
 
         public override Language Language => Language.PlSql;
 

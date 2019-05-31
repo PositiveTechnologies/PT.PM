@@ -47,7 +47,7 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override ParserRuleContext Parse(Parser parser) => ((TSqlParser) parser).tsql_file();
 
-        protected override AntlrParseTree Create(ParserRuleContext syntaxTree) =>
+        protected override AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree) =>
             new TSqlAntlrParseTree((TSqlParser.Tsql_fileContext)syntaxTree);
 
         protected override string ParserSerializedATN => TSqlParser._serializedATN;

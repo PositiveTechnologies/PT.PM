@@ -48,7 +48,7 @@ namespace PT.PM.PythonParseTreeUst
         protected override Parser InitParser(ITokenStream inputStream)
             => new PythonParser(inputStream);
 
-        protected override AntlrParseTree Create(ParserRuleContext syntaxTree)
+        protected override AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree)
             => new PythonAntlrParseTree((PythonParser.RootContext) syntaxTree);
 
         protected override ParserRuleContext Parse(Parser parser)
