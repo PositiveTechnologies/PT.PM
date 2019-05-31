@@ -319,7 +319,8 @@ END;
 -- Storing passwords or password details in plaintext anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.
 
 -- Default username for database connection is "scott"
--- Default password for database connection is "tiger"
+-- Default password is "tiger"
+-- Default pwd =      "tiger"
 
 -----------------------------------------------------------------------
 -- Privacy Violation
