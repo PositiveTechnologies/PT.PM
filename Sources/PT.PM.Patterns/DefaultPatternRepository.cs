@@ -164,16 +164,24 @@ namespace PT.PM.Patterns.PatternsRepository
                 )
             });
 
+            // TODO: lead only one alternative (fix sql converters)
             patterns.Add(new PatternRoot
             {
                 Key = patternIdGenerator.NextId(),
                 DebugInfo = "Privilege Management: Overly Broad Grant",
                 Languages = new HashSet<Language>(LanguageUtils.SqlLanguages),
-                Node = new PatternInvocationExpression
-                {
-                    Target = new PatternIdRegexToken("grant"),
-                    Arguments = new PatternArgs(new PatternIdRegexToken("all"), new PatternMultipleExpressions())
-                }
+                Node = new PatternOr(
+                    new PatternInvocationExpression
+                    {
+                        Target = new PatternIdRegexToken("grant"),
+                        Arguments = new PatternArgs(new PatternIdRegexToken("all"), new PatternMultipleExpressions())
+                    },
+                    new PatternInvocationExpression
+                    {
+                        Target = new PatternIdRegexToken("grant_all"),
+                        Arguments = new PatternArgs(new PatternMultipleExpressions())
+                    }
+                )
             });
 
             return patterns;
