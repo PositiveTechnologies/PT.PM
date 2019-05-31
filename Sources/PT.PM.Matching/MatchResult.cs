@@ -15,7 +15,7 @@ namespace PT.PM.Matching
 
         public override TextFile SourceFile { get; }
 
-        public TextSpan TextSpan => TextSpans.FirstOrDefault();
+        public TextSpan TextSpan => TextSpans.LastOrDefault();
 
         public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
