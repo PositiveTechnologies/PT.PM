@@ -454,10 +454,22 @@ namespace PT.PM.PlSqlParseTreeUst
 
             var right = children[children.Count - 1].AsExpression();
 
-            var op = CheckChild<IOperatorOrPunctuator>(BAR, operatorIndex)
-                ? new BinaryOperatorLiteral(BinaryOperator.LogicalOr,
-                    children[operatorIndex].TextSpan.Union(children[operatorIndex + 1].TextSpan))
-                : (BinaryOperatorLiteral) children[operatorIndex];
+            Ust opUst = children[operatorIndex];
+            BinaryOperatorLiteral op;
+
+            if (CheckChild<IOperatorOrPunctuator>(BAR, operatorIndex))
+            {
+                op = new BinaryOperatorLiteral(BinaryOperator.LogicalOr,
+                    opUst.TextSpan.Union(children[operatorIndex + 1].TextSpan));
+            }
+            else if (opUst is BinaryOperatorLiteral binaryOperatorLiteral)
+            {
+                op = binaryOperatorLiteral;
+            }
+            else
+            {
+                op = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[opUst.Substring], opUst.TextSpan);
+            }
 
             var left = GetLeftChildFromLeftRecursiveRule(context).AsExpression();
 
