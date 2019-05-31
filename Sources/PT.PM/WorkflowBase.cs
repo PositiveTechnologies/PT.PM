@@ -163,9 +163,13 @@ namespace PT.PM
                     return null;
                 }
 
-                if (!detectionResult.Language.IsParserConverter())
+                if (detectionResult.ParseTree != null)
                 {
-                    parseTree = Parse(workflowResult, sourceFile, detectionResult, cancellationToken);
+                    parseTree = LogParseTree(sourceFile, detectionResult);
+                }
+                else if (!detectionResult.Language.IsParserConverter())
+                {
+                    parseTree = Parse(workflowResult, sourceFile, detectionResult.Language, cancellationToken);
 
                     if (parseTree == null)
                     {
@@ -247,48 +251,25 @@ namespace PT.PM
         }
 
         private ParseTree Parse(TWorkflowResult workflowResult,
-            IFile sourceFile, DetectionResult detectionResult, CancellationToken cancellationToken)
+            IFile sourceFile, Language language, CancellationToken cancellationToken)
         {
             ParseTree result;
-
             TextFile sourceTextFile = (TextFile) sourceFile;
+            ILanguageParserBase parser = language.CreateParser();
+            parser.Logger = Logger;
 
-            if (detectionResult.ParseTree == null)
+            TimeSpan parserTimeSpan;
+
+            if (parser is AntlrParser antlrParser)
             {
-                ILanguageParserBase parser = detectionResult.Language.CreateParser();
-                parser.Logger = Logger;
+                IList<IToken> tokens = Tokenize(workflowResult, language, sourceTextFile);
 
-                TimeSpan parserTimeSpan;
-
-                if (parser is AntlrParser antlrParser)
+                if (Stage.Is(PM.Stage.Tokens))
                 {
-                    IList<IToken> tokens = Tokenize(workflowResult, detectionResult, sourceTextFile);
-
-                    if (Stage.Is(PM.Stage.Tokens))
-                    {
-                        return null;
-                    }
-
-                    result = antlrParser.Parse(tokens, out parserTimeSpan);
-                }
-                else
-                {
-                    if (Stage.Is(PM.Stage.Tokens))
-                    {
-                        return null;
-                    }
-
-                    if (parser is JavaScriptEsprimaParser javaScriptParser)
-                    {
-                        javaScriptParser.JavaScriptType = JavaScriptType;
-                    }
-
-                    result = ((ILanguageParser<TextFile>) parser).Parse(sourceTextFile, out parserTimeSpan);
+                    return null;
                 }
 
-                Logger.LogInfo($"File {sourceFile} parsed {parserTimeSpan.GetElapsedString()}.");
-
-                workflowResult.AddParserTime(parserTimeSpan);
+                result = antlrParser.Parse(tokens, out parserTimeSpan);
             }
             else
             {
@@ -297,37 +278,55 @@ namespace PT.PM
                     return null;
                 }
 
-                foreach (string debug in detectionResult.Debugs)
+                if (parser is JavaScriptEsprimaParser javaScriptParser)
                 {
-                    Logger.LogDebug(debug);
+                    javaScriptParser.JavaScriptType = JavaScriptType;
                 }
 
-                foreach (object info in detectionResult.Infos)
-                {
-                    Logger.LogInfo(info);
-                }
-
-                foreach (Exception error in detectionResult.Errors)
-                {
-                    Logger.LogError(error);
-                }
-
-                result = detectionResult.ParseTree;
-
-                Logger.LogInfo($"File {sourceFile} parsed");
+                result = ((ILanguageParser<TextFile>) parser).Parse(sourceTextFile, out parserTimeSpan);
             }
+
+            Logger.LogInfo($"File {sourceFile} parsed {parserTimeSpan.GetElapsedString()}.");
+
+            workflowResult.AddParserTime(parserTimeSpan);
 
             if (result == null)
             {
                 return null;
             }
 
-            var dumper = GetParseTreeDumper(detectionResult.Language);
+            var dumper = GetParseTreeDumper(language);
             dumper?.DumpTree(result);
 
             cancellationToken.ThrowIfCancellationRequested();
 
             return result;
+        }
+
+        private ParseTree LogParseTree(IFile sourceFile, DetectionResult detectionResult)
+        {
+            if (Stage.Is(PM.Stage.Tokens))
+            {
+                return null;
+            }
+
+            foreach (string debug in detectionResult.Debugs)
+            {
+                Logger.LogDebug(debug);
+            }
+
+            foreach (object info in detectionResult.Infos)
+            {
+                Logger.LogInfo(info);
+            }
+
+            foreach (Exception error in detectionResult.Errors)
+            {
+                Logger.LogError(error);
+            }
+
+            Logger.LogInfo($"File {sourceFile} parse tree processed");
+            return detectionResult.ParseTree;
         }
 
         private RootUst Convert(string fileName, TWorkflowResult workflowResult, IFile sourceFile,
@@ -347,19 +346,30 @@ namespace PT.PM
                 Language detectedLanguage = detectionResult.Language;
                 if (detectedLanguage.IsParserConverter())
                 {
-                    IList<IToken> tokens = Tokenize(workflowResult, detectionResult, (TextFile) sourceFile);
-
-                    // Always ANTLR
                     var parserConverter = (AntlrParserConverter) detectedLanguage.CreateParserConverter();
                     parserConverter.Logger = Logger;
-                    parserConverter.ParseTreeDumper = (AntlrDumper)GetParseTreeDumper(detectedLanguage);
+                    parserConverter.ParseTreeDumper = (AntlrDumper) GetParseTreeDumper(detectedLanguage);
 
-                    result = parserConverter.ParseConvert(tokens, out TimeSpan parserTimeSpan, out TimeSpan converterTimeSpan);
+                    if (detectionResult.ParseTree == null)
+                    {
+                        IList<IToken> tokens = Tokenize(workflowResult, detectedLanguage, (TextFile) sourceFile);
 
-                    stopwatch.Stop();
-                    Logger.LogInfo($"File {sourceFile} parsed and converted {stopwatch.GetElapsedString()}.");
-                    workflowResult.AddParserTime(parserTimeSpan);
-                    workflowResult.AddConvertTime(converterTimeSpan);
+                        result = parserConverter.ParseConvert(tokens, out TimeSpan parserTimeSpan,
+                            out TimeSpan converterTimeSpan);
+
+                        stopwatch.Stop();
+                        Logger.LogInfo($"File {sourceFile} parsed and converted {stopwatch.GetElapsedString()}.");
+                        workflowResult.AddParserTime(parserTimeSpan);
+                        workflowResult.AddConvertTime(converterTimeSpan);
+                    }
+                    else
+                    {
+                        result = parserConverter.Convert((AntlrParseTree) detectionResult.ParseTree);
+
+                        stopwatch.Stop();
+                        Logger.LogInfo($"File {sourceFile} converted {stopwatch.GetElapsedString()}.");
+                        workflowResult.AddConvertTime(stopwatch.Elapsed);
+                    }
                 }
                 else
                 {
@@ -466,16 +476,16 @@ namespace PT.PM
             FileRead?.Invoke(this, file);
         }
 
-        private IList<IToken> Tokenize(TWorkflowResult workflowResult, DetectionResult detectionResult, TextFile sourceTextFile)
+        private IList<IToken> Tokenize(TWorkflowResult workflowResult, Language language, TextFile sourceTextFile)
         {
-            var antlrLexer = (AntlrLexer) detectionResult.Language.CreateLexer();
+            var antlrLexer = (AntlrLexer) language.CreateLexer();
             antlrLexer.Logger = Logger;
             IList<IToken> tokens = antlrLexer.GetTokens(sourceTextFile, out TimeSpan lexerTimeSpan);
 
             Logger.LogInfo($"File {sourceTextFile} tokenized {lexerTimeSpan.GetElapsedString()}.");
             workflowResult.AddLexerTime(lexerTimeSpan);
 
-            DumpTokens(tokens, detectionResult.Language, sourceTextFile);
+            DumpTokens(tokens, language, sourceTextFile);
 
             return tokens;
         }
