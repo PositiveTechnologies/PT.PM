@@ -404,25 +404,9 @@ namespace PT.PM.PlSqlParseTreeUst
                 return children[0].AsExpression();
             }
 
-            Expression left;
-            int operatorIndex;
-            Expression right = children[children.Count - 1].AsExpression();
-
-            if (!ParseTreeIsExisted)
-            {
-                operatorIndex = 0;
-                Pop();
-                left = GetChild(0).AsExpression();
-                Peek().Clear();
-                PushNew(context);
-            }
-            else
-            {
-                operatorIndex = 1;
-                left = children[0].AsExpression();
-            }
-
-            BinaryOperatorLiteral op = (BinaryOperatorLiteral) children[operatorIndex];
+            var right = children[children.Count - 1].AsExpression();
+            var op = (BinaryOperatorLiteral) children[children.Count - 2];
+            var left = GetLeftChildFromLeftRecursiveRule(context).AsExpression();
 
             return new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
         }
@@ -468,26 +452,14 @@ namespace PT.PM.PlSqlParseTreeUst
                 return ConvertChildren().AsExpression();
             }
 
-            Expression right = children[children.Count - 1].AsExpression();
+            var right = children[children.Count - 1].AsExpression();
 
-            BinaryOperatorLiteral op = CheckChild<IOperatorOrPunctuator>(BAR, operatorIndex)
+            var op = CheckChild<IOperatorOrPunctuator>(BAR, operatorIndex)
                 ? new BinaryOperatorLiteral(BinaryOperator.LogicalOr,
                     children[operatorIndex].TextSpan.Union(children[operatorIndex + 1].TextSpan))
                 : (BinaryOperatorLiteral) children[operatorIndex];
 
-            Expression left;
-
-            if (!ParseTreeIsExisted)
-            {
-                Pop();
-                left = GetChild(0).AsExpression();
-                Peek().Clear();
-                PushNew(context);
-            }
-            else
-            {
-                left = children[0].AsExpression();
-            }
+            var left = GetLeftChildFromLeftRecursiveRule(context).AsExpression();
 
             return new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
         }

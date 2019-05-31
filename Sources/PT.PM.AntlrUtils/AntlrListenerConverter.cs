@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using PT.PM.Common;
@@ -77,7 +76,6 @@ namespace PT.PM.AntlrUtils
             Add(convertHelper.Convert(node));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected int TryGetChildOfType<T>(out T child)
             where T : Ust
         {
@@ -96,7 +94,6 @@ namespace PT.PM.AntlrUtils
             return -1;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool CheckChild<T>(int[] tokenTypes, int index)
             where T : class
         {
@@ -130,7 +127,6 @@ namespace PT.PM.AntlrUtils
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool CheckChild<T>(int tokenType, int index)
             where T : class
         {
@@ -154,13 +150,10 @@ namespace PT.PM.AntlrUtils
                 : substring.Equals(tokenValue);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected List<Ust> GetChildren() => Peek();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected Ust GetChild(int index) => Peek()[index];
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected Ust GetChildFromEnd(int index)
         {
             List<Ust> nodes = Peek();
@@ -197,6 +190,25 @@ namespace PT.PM.AntlrUtils
             }
 
             return result;
+        }
+
+        protected Ust GetLeftChildFromLeftRecursiveRule(ParserRuleContext context)
+        {
+            Ust leftChild;
+
+            if (!ParseTreeIsExisted)
+            {
+                Pop();
+                leftChild = GetChild(0);
+                Peek().Clear();
+                PushNew(context);
+            }
+            else
+            {
+                leftChild = GetChild(0);
+            }
+
+            return leftChild;
         }
 
         protected void RemoveAndAdd(Ust result)
