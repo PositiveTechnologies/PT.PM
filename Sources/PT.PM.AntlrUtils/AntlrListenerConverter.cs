@@ -24,7 +24,7 @@ namespace PT.PM.AntlrUtils
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public bool ParseTreeIsExisted { get; set; } = false;
+        public bool IsParseTreeExisting { get; set; }
 
         protected AntlrListenerConverter(TextFile sourceFile, AntlrParserConverter antlrParser)
         {
@@ -40,8 +40,8 @@ namespace PT.PM.AntlrUtils
         public RootUst Complete()
         {
             ConvertChildren();
-            root.Node = Peek()[0];
-            Pop();
+            root.Node = GetChildren()[0];
+            PopChildren();
             Clear();
             root.FillAscendants(); // TODO: should be filled during conversion
             return root;
@@ -68,18 +68,18 @@ namespace PT.PM.AntlrUtils
 
         public void VisitTerminal(ITerminalNode node)
         {
-            Add(convertHelper.Convert(node));
+            AddChild(convertHelper.Convert(node));
         }
 
         public void VisitErrorNode(IErrorNode node)
         {
-            Add(convertHelper.Convert(node));
+            AddChild(convertHelper.Convert(node));
         }
 
         protected int TryGetChildOfType<T>(out T child)
             where T : Ust
         {
-            List<Ust> children = Peek();
+            List<Ust> children = GetChildren();
 
             for (int i = 0; i < children.Count; i++)
             {
@@ -150,35 +150,31 @@ namespace PT.PM.AntlrUtils
                 : substring.Equals(tokenValue);
         }
 
-        protected List<Ust> GetChildren() => Peek();
-
-        protected Ust GetChild(int index) => Peek()[index];
-
         protected Ust GetChildFromEnd(int index)
         {
-            List<Ust> nodes = Peek();
-            return nodes[nodes.Count - 1 - index];
+            List<Ust> children = GetChildren();
+            return children[children.Count - 1 - index];
         }
 
         protected Ust ConvertChildren()
         {
             Ust result;
 
-            List<Ust> nodes = Peek();
-            if (nodes.Count == 0)
+            List<Ust> children = GetChildren();
+            if (children.Count == 0)
             {
                 result = null;
             }
-            else if (nodes.Count == 1)
+            else if (children.Count == 1)
             {
-                result = nodes[0];
+                result = children[0];
             }
             else
             {
-                var resultCollection = new List<Ust>(nodes.Count);
+                var resultCollection = new List<Ust>(children.Count);
 
                 // Extract and process previous nodes in common, left-to-right order
-                foreach (Ust resultNode in nodes)
+                foreach (Ust resultNode in children)
                 {
                     if (resultNode != null)
                     {
@@ -196,11 +192,11 @@ namespace PT.PM.AntlrUtils
         {
             Ust leftChild;
 
-            if (!ParseTreeIsExisted)
+            if (!IsParseTreeExisting)
             {
-                Pop();
+                PopChildren();
                 leftChild = GetChild(0);
-                Peek().Clear();
+                GetChildren().Clear();
                 PushNew(context);
             }
             else
@@ -213,19 +209,31 @@ namespace PT.PM.AntlrUtils
 
         protected void RemoveAndAdd(Ust result)
         {
-            List<Ust> nodes = Peek();
+            List<Ust> children = GetChildren();
 
-            foreach (Ust node in nodes)
+            foreach (Ust child in children)
             {
-                if (node != null)
+                if (child != null)
                 {
-                    node.Parent = result;
-                    node.Root = root;
+                    child.Parent = result;
+                    child.Root = root;
                 }
             }
 
-            Pop();
-            Add(result);
+            PopChildren();
+            AddChild(result);
+        }
+
+        protected Ust GetChild(int index) => childNodes[childNodesIndex][index];
+
+        protected List<Ust> GetChildren() => childNodes[childNodesIndex];
+
+        protected  void AddChild(Ust result) => childNodes[childNodesIndex].Add(result);
+
+        protected void PopChildren()
+        {
+            childNodes[childNodesIndex].Clear();
+            childNodesIndex = childNodesIndex - 1;
         }
 
         protected void PushNew(ParserRuleContext parserRuleContext)
@@ -240,16 +248,6 @@ namespace PT.PM.AntlrUtils
             {
                 childNodes[childNodesIndex] = newList;
             }
-        }
-
-        protected List<Ust> Peek() => childNodes[childNodesIndex];
-
-        protected  void Add(Ust result) => childNodes[childNodesIndex].Add(result);
-
-        protected void Pop()
-        {
-            childNodes[childNodesIndex].Clear();
-            childNodesIndex = childNodesIndex - 1;
         }
     }
 }

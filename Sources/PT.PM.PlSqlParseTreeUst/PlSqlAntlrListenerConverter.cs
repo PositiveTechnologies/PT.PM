@@ -21,7 +21,7 @@ namespace PT.PM.PlSqlParseTreeUst
 {
     public class PlSqlAntlrListenerConverter : AntlrListenerConverter
     {
-        private static readonly int[] BinaryOperatorPlSqlTypes = {ASTERISK, SOLIDUS, PLUS_SIGN, MINUS_SIGN, BAR};
+        private static readonly int[] binaryOperatorPlSqlTypes = {ASTERISK, SOLIDUS, PLUS_SIGN, MINUS_SIGN, BAR};
 
         public PlSqlAntlrListenerConverter(TextFile sourceFile, AntlrParserConverter antlrParser)
             : base(sourceFile, antlrParser)
@@ -445,9 +445,9 @@ namespace PT.PM.PlSqlParseTreeUst
         {
             List<Ust> children = GetChildren();
 
-            var operatorIndex = ParseTreeIsExisted ? 1 : 0;
+            var operatorIndex = IsParseTreeExisting ? 1 : 0;
 
-            if (!CheckChild<IOperatorOrPunctuator>(BinaryOperatorPlSqlTypes, operatorIndex))
+            if (!CheckChild<IOperatorOrPunctuator>(binaryOperatorPlSqlTypes, operatorIndex))
             {
                 return ConvertChildren().AsExpression();
             }
