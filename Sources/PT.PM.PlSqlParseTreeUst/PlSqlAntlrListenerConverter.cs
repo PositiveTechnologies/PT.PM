@@ -15,11 +15,14 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
+using static PT.PM.PlSqlParseTreeUst.PlSqlLexer;
 
 namespace PT.PM.PlSqlParseTreeUst
 {
     public class PlSqlAntlrListenerConverter : AntlrListenerConverter
     {
+        private static readonly int[] BinaryOperatorPlSqlTypes = {ASTERISK, SOLIDUS, PLUS_SIGN, MINUS_SIGN, BAR};
+
         public PlSqlAntlrListenerConverter(TextFile sourceFile, AntlrParserConverter antlrParser)
             : base(sourceFile, antlrParser)
         {
@@ -41,6 +44,9 @@ namespace PT.PM.PlSqlParseTreeUst
                         break;
                     case PlSqlParser.BodyContext context:
                         result = ConvertBody(context);
+                        break;
+                    case PlSqlParser.Variable_declarationContext context:
+                        result = ConvertVariableDeclaration(context);
                         break;
                     case PlSqlParser.Exception_handlerContext context:
                         result = ConvertExceptionHandler(context);
@@ -101,6 +107,9 @@ namespace PT.PM.PlSqlParseTreeUst
                     case PlSqlParser.Relational_operatorContext context:
                         result = ConvertRelationalOperator(context);
                         break;
+                    case PlSqlParser.ConcatenationContext context:
+                        result = ConvertConcatenationExpression(context);
+                        break;
                     default:
                         result = ConvertChildren();
                         break;
@@ -152,7 +161,7 @@ namespace PT.PM.PlSqlParseTreeUst
             List<Ust> children = GetChildren();
             BlockStatement block = (BlockStatement) children[1];
 
-            if (CheckChild<Keyword>(PlSqlLexer.EXCEPTION, exceptionKeywordIndex))
+            if (CheckChild<Keyword>(EXCEPTION, exceptionKeywordIndex))
             {
                 var tryCatchStatement = new TryCatchStatement(block, context.GetTextSpan());
 
@@ -170,6 +179,17 @@ namespace PT.PM.PlSqlParseTreeUst
             }
 
             return block;
+        }
+
+        private VariableDeclarationExpression ConvertVariableDeclaration(PlSqlParser.Variable_declarationContext context)
+        {
+            List<Ust> children = GetChildren();
+            var left = children[0].AsIdToken();
+            int rightInd = children[children.Count - 1] is Punctuator ? children.Count - 2 : children.Count - 1;
+            var right = children[rightInd].AsExpression();
+
+            return new VariableDeclarationExpression(
+                null, new List<AssignmentExpression> {new AssignmentExpression(left, right, context.GetTextSpan())});
         }
 
         private CatchClause ConvertExceptionHandler(PlSqlParser.Exception_handlerContext context)
@@ -219,7 +239,7 @@ namespace PT.PM.PlSqlParseTreeUst
              IdToken name;
              int argInd;
 
-             if (CheckChild<Keyword>(PlSqlLexer.ALL, 1))
+             if (CheckChild<Keyword>(ALL, 1))
              {
                  name = new IdToken("grant_all", children[0].TextSpan.Union(children[1].TextSpan));
                  argInd = 2;
@@ -273,7 +293,7 @@ namespace PT.PM.PlSqlParseTreeUst
 
             var invocation = new InvocationExpression(context.GetTextSpan())
             {
-                Target = children[0].AsExpression(),
+                Target = children[0].AsIdToken(),
                 Arguments = new ArgsUst(children[1].AsExpression())
             };
 
@@ -303,7 +323,7 @@ namespace PT.PM.PlSqlParseTreeUst
             List<Ust> children = GetChildren();
             var invocation = new InvocationExpression(context.GetTextSpan())
             {
-                Target = children[0].AsExpression(),
+                Target = children[0].AsIdToken(),
                 Arguments = new ArgsUst(children[2].AsExpression())
             };
 
@@ -313,7 +333,7 @@ namespace PT.PM.PlSqlParseTreeUst
         private InvocationExpression ConvertFunctionOrProcedureCall(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
-            int targetIndex = CheckChild<Keyword>(PlSqlLexer.CALL, 0) ? 1 : 0;
+            int targetIndex = CheckChild<Keyword>(CALL, 0) ? 1 : 0;
             ArgsUst args = children[children.Count - 1] is ArgsUst argsUst ? argsUst : new ArgsUst();
             return new InvocationExpression(children[targetIndex].AsExpression(), args, context.GetTextSpan());
         }
@@ -324,7 +344,7 @@ namespace PT.PM.PlSqlParseTreeUst
             Expression result = children[0].AsIdToken();
 
             int index = 1;
-            while (CheckChild<IOperatorOrPunctuator>(PlSqlLexer.PERIOD, index))
+            while (CheckChild<IOperatorOrPunctuator>(PERIOD, index))
             {
                 Expression name = children[index + 1].AsIdToken();
                 result = new MemberReferenceExpression(result, name, result.TextSpan.Union(name.TextSpan));
@@ -338,12 +358,12 @@ namespace PT.PM.PlSqlParseTreeUst
         {
             List<Ust> children = GetChildren();
 
-            int index = CheckChild<Keyword>(PlSqlLexer.INTRODUCER, 0) ? 2 : 0;
+            int index = CheckChild<Keyword>(INTRODUCER, 0) ? 2 : 0;
 
             Expression result = children[index].AsExpression();
             index++;
 
-            while (CheckChild<IOperatorOrPunctuator>(PlSqlLexer.PERIOD, index))
+            while (CheckChild<IOperatorOrPunctuator>(PERIOD, index))
             {
                 Expression name = children[index + 1].AsIdToken();
                 result = new MemberReferenceExpression(result, name, result.TextSpan.Union(name.TextSpan));
@@ -384,13 +404,13 @@ namespace PT.PM.PlSqlParseTreeUst
                 return children[0].AsExpression();
             }
 
-            BinaryOperatorLiteral op;
-            Expression left, right;
+            Expression left;
+            int operatorIndex;
+            Expression right = children[children.Count - 1].AsExpression();
 
             if (!ParseTreeIsExisted)
             {
-                op = (BinaryOperatorLiteral) children[0];
-                right = children[1].AsExpression();
+                operatorIndex = 0;
                 Pop();
                 left = GetChild(0).AsExpression();
                 Peek().Clear();
@@ -398,12 +418,13 @@ namespace PT.PM.PlSqlParseTreeUst
             }
             else
             {
+                operatorIndex = 1;
                 left = children[0].AsExpression();
-                op = (BinaryOperatorLiteral)children[1];
-                right = children[2].AsExpression();
             }
 
-            return  new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
+            BinaryOperatorLiteral op = (BinaryOperatorLiteral) children[operatorIndex];
+
+            return new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
         }
 
         private BinaryOperatorLiteral ConvertRelationalOperator(PlSqlParser.Relational_operatorContext context)
@@ -434,6 +455,41 @@ namespace PT.PM.PlSqlParseTreeUst
             }
 
             return new BinaryOperatorLiteral(op, context.GetTextSpan());
+        }
+
+        private Expression ConvertConcatenationExpression(PlSqlParser.ConcatenationContext context)
+        {
+            List<Ust> children = GetChildren();
+
+            var operatorIndex = ParseTreeIsExisted ? 1 : 0;
+
+            if (!CheckChild<IOperatorOrPunctuator>(BinaryOperatorPlSqlTypes, operatorIndex))
+            {
+                return ConvertChildren().AsExpression();
+            }
+
+            Expression right = children[children.Count - 1].AsExpression();
+
+            BinaryOperatorLiteral op = CheckChild<IOperatorOrPunctuator>(BAR, operatorIndex)
+                ? new BinaryOperatorLiteral(BinaryOperator.LogicalOr,
+                    children[operatorIndex].TextSpan.Union(children[operatorIndex + 1].TextSpan))
+                : (BinaryOperatorLiteral) children[operatorIndex];
+
+            Expression left;
+
+            if (!ParseTreeIsExisted)
+            {
+                Pop();
+                left = GetChild(0).AsExpression();
+                Peek().Clear();
+                PushNew(context);
+            }
+            else
+            {
+                left = children[0].AsExpression();
+            }
+
+            return new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
         }
     }
 }
