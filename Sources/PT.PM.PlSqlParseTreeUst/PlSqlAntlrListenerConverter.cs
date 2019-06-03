@@ -15,7 +15,7 @@ using PT.PM.Common.Nodes.Statements.TryCatchFinally;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
-using static PT.PM.PlSqlParseTreeUst.PlSqlLexer;
+using static PT.PM.PlSqlParseTreeUst.PlSqlParser;
 
 namespace PT.PM.PlSqlParseTreeUst
 {
@@ -28,86 +28,86 @@ namespace PT.PM.PlSqlParseTreeUst
         {
         }
 
-        public override void ExitEveryRule([NotNull] ParserRuleContext ctx)
+        public override void ExitEveryRule([NotNull] ParserRuleContext context)
         {
             Ust result = null;
 
             try
             {
-                switch (ctx)
+                switch (context.RuleIndex)
                 {
-                    case PlSqlParser.Create_procedure_bodyContext context:
+                    case RULE_create_procedure_body:
                         result = ConvertCreateProcedureBody(context);
                         break;
-                    case PlSqlParser.ParameterContext context:
+                    case RULE_parameter:
                         result = ConvertParameter(context);
                         break;
-                    case PlSqlParser.BodyContext context:
+                    case RULE_body:
                         result = ConvertBody(context);
                         break;
-                    case PlSqlParser.Variable_declarationContext context:
+                    case RULE_variable_declaration:
                         result = ConvertVariableDeclaration(context);
                         break;
-                    case PlSqlParser.Exception_handlerContext context:
+                    case RULE_exception_handler:
                         result = ConvertExceptionHandler(context);
                         break;
-                    case PlSqlParser.Seq_of_statementsContext context:
+                    case RULE_seq_of_statements:
                         result = ConvertSeqOfStatements(context);
                         break;
-                    case PlSqlParser.Seq_of_declare_specsContext context:
+                    case RULE_seq_of_declare_specs:
                         result = ConvertSeqOfDeclareSpecs(context);
                         break;
-                    case PlSqlParser.Grant_statementContext context:
+                    case RULE_grant_statement:
                         result = ConvertGrantStatement(context);
                         break;
-                    case PlSqlParser.StatementContext context:
+                    case RULE_statement:
                         result = ConvertStatement(context);
                         break;
-                    case PlSqlParser.Assignment_statementContext context:
+                    case RULE_assignment_statement:
                         result = ConvertAssignmentStatement(context);
                         break;
-                    case PlSqlParser.Continue_statementContext context:
+                    case RULE_continue_statement:
                         result = ConvertContinueStatement(context);
                         break;
-                    case PlSqlParser.Exit_statementContext context:
+                    case RULE_exit_statement:
                         result = ConvertExitStatement(context);
                         break;
-                    case PlSqlParser.Return_statementContext context:
+                    case RULE_return_statement:
                         result = ConvertReturnStatement(context);
                         break;
-                    case PlSqlParser.Open_statementContext _:
-                    case PlSqlParser.Open_for_statementContext _:
-                    case PlSqlParser.Fetch_statementContext _:
-                    case PlSqlParser.Close_statementContext _:
-                        result = ConvertCursorStatement(ctx);
+                    case RULE_open_statement:
+                    case RULE_open_for_statement:
+                    case RULE_fetch_statement:
+                    case RULE_close_statement:
+                        result = ConvertCursorStatement(context);
                         break;
-                    case PlSqlParser.Cursor_nameContext _:
-                    case PlSqlParser.Variable_nameContext _:
-                        result = ConvertCursorOrVariableName(ctx);
+                    case RULE_cursor_name:
+                    case RULE_variable_name:
+                        result = ConvertCursorOrVariableName(context);
                         break;
-                    case PlSqlParser.Function_callContext _:
-                    case PlSqlParser.Procedure_callContext _:
-                        result = ConvertFunctionOrProcedureCall(ctx);
+                    case RULE_function_call:
+                    case RULE_procedure_call:
+                        result = ConvertFunctionOrProcedureCall(context);
                         break;
-                    case PlSqlParser.Routine_nameContext context:
+                    case RULE_routine_name:
                         result = ConvertRoutineName(context);
                         break;
-                    case PlSqlParser.General_element_partContext context:
+                    case RULE_general_element_part:
                         result = ConvertGeneralElementPart(context);
                         break;
-                    case PlSqlParser.Function_argumentContext context:
+                    case RULE_function_argument:
                         result = ConvertFunctionArgument(context);
                         break;
-                    case PlSqlParser.Execute_immediateContext context:
+                    case RULE_execute_immediate:
                         result = ConvertExecuteImmediate(context);
                         break;
-                    case PlSqlParser.Relational_expressionContext context:
+                    case RULE_relational_expression:
                         result = ConvertRelationalExpression(context);
                         break;
-                    case PlSqlParser.Relational_operatorContext context:
+                    case RULE_relational_operator:
                         result = ConvertRelationalOperator(context);
                         break;
-                    case PlSqlParser.ConcatenationContext context:
+                    case RULE_concatenation:
                         result = ConvertConcatenationExpression(context);
                         break;
                     default:
@@ -126,7 +126,7 @@ namespace PT.PM.PlSqlParseTreeUst
             }
         }
 
-        private MethodDeclaration ConvertCreateProcedureBody(PlSqlParser.Create_procedure_bodyContext context)
+        private MethodDeclaration ConvertCreateProcedureBody(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
             int nameIndex = TryGetChildOfType(out IdToken name);
@@ -150,12 +150,12 @@ namespace PT.PM.PlSqlParseTreeUst
             return new MethodDeclaration(name, parameters, new BlockStatement(statements), context.GetTextSpan());
         }
 
-        private ParameterDeclaration ConvertParameter(PlSqlParser.ParameterContext context)
+        private ParameterDeclaration ConvertParameter(ParserRuleContext context)
         {
             return new ParameterDeclaration(null, null, GetChild(0).AsIdToken(), context.GetTextSpan());
         }
 
-        private Statement ConvertBody(PlSqlParser.BodyContext context)
+        private Statement ConvertBody(ParserRuleContext context)
         {
             const int exceptionKeywordIndex = 2;
             List<Ust> children = GetChildren();
@@ -181,7 +181,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return block;
         }
 
-        private VariableDeclarationExpression ConvertVariableDeclaration(PlSqlParser.Variable_declarationContext context)
+        private VariableDeclarationExpression ConvertVariableDeclaration(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
             var left = children[0].AsIdToken();
@@ -192,7 +192,7 @@ namespace PT.PM.PlSqlParseTreeUst
                 null, new List<AssignmentExpression> {new AssignmentExpression(left, right, context.GetTextSpan())});
         }
 
-        private CatchClause ConvertExceptionHandler(PlSqlParser.Exception_handlerContext context)
+        private CatchClause ConvertExceptionHandler(ParserRuleContext context)
         {
             var body = (BlockStatement)GetChildFromEnd(0);
             if (body.Statements.Count == 1 &&
@@ -204,7 +204,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new CatchClause(null, null, body, context.GetTextSpan());
         }
 
-        private BlockStatement ConvertSeqOfStatements(PlSqlParser.Seq_of_statementsContext context)
+        private BlockStatement ConvertSeqOfStatements(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
             var statements = new List<Statement>(children.Count);
@@ -220,7 +220,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new BlockStatement(statements, context.GetTextSpan());
         }
 
-        private BlockStatement ConvertSeqOfDeclareSpecs(PlSqlParser.Seq_of_declare_specsContext context)
+        private BlockStatement ConvertSeqOfDeclareSpecs(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
             var statements = new List<Statement>(children.Count);
@@ -233,7 +233,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new BlockStatement(statements, context.GetTextSpan());
         }
 
-        private ExpressionStatement ConvertGrantStatement(PlSqlParser.Grant_statementContext context)
+        private ExpressionStatement ConvertGrantStatement(ParserRuleContext context)
         {
              List<Ust> children = GetChildren();
              IdToken name;
@@ -259,12 +259,12 @@ namespace PT.PM.PlSqlParseTreeUst
              return new ExpressionStatement(new InvocationExpression(name, new ArgsUst(args), context.GetTextSpan()));
         }
 
-        private Statement ConvertStatement(PlSqlParser.StatementContext context)
+        private Statement ConvertStatement(ParserRuleContext context)
         {
             return GetChild(0).AsStatement();
         }
 
-        private AssignmentExpression ConvertAssignmentStatement(PlSqlParser.Assignment_statementContext context)
+        private AssignmentExpression ConvertAssignmentStatement(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
             var left = children[0].AsExpression();
@@ -272,17 +272,17 @@ namespace PT.PM.PlSqlParseTreeUst
             return new AssignmentExpression(left, right, context.GetTextSpan());
         }
 
-        private ContinueStatement ConvertContinueStatement(PlSqlParser.Continue_statementContext context)
+        private ContinueStatement ConvertContinueStatement(ParserRuleContext context)
         {
             return new ContinueStatement(context.GetTextSpan());
         }
 
-        private BreakStatement ConvertExitStatement(PlSqlParser.Exit_statementContext context)
+        private BreakStatement ConvertExitStatement(ParserRuleContext context)
         {
             return new BreakStatement(context.GetTextSpan());
         }
 
-        private ReturnStatement ConvertReturnStatement(PlSqlParser.Return_statementContext context)
+        private ReturnStatement ConvertReturnStatement(ParserRuleContext context)
         {
             return new ReturnStatement(GetChild(0).AsExpression(), context.GetTextSpan());
         }
@@ -318,7 +318,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new ArgumentExpression(argModifier, arg, contextTextSpan);
         }
 
-        private InvocationExpression ConvertExecuteImmediate(PlSqlParser.Execute_immediateContext context)
+        private InvocationExpression ConvertExecuteImmediate(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
             var invocation = new InvocationExpression(context.GetTextSpan())
@@ -338,7 +338,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new InvocationExpression(children[targetIndex].AsExpression(), args, context.GetTextSpan());
         }
 
-        private Expression ConvertRoutineName(PlSqlParser.Routine_nameContext context)
+        private Expression ConvertRoutineName(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
             Expression result = children[0].AsIdToken();
@@ -354,7 +354,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return result;
         }
 
-        private Expression ConvertGeneralElementPart(PlSqlParser.General_element_partContext context)
+        private Expression ConvertGeneralElementPart(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
 
@@ -378,7 +378,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new InvocationExpression(result, args, context.GetTextSpan());
         }
 
-        private ArgsUst ConvertFunctionArgument(PlSqlParser.Function_argumentContext context)
+        private ArgsUst ConvertFunctionArgument(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
 
@@ -395,7 +395,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new ArgsUst(args, context.GetTextSpan());
         }
 
-        private Expression ConvertRelationalExpression(PlSqlParser.Relational_expressionContext context)
+        private Expression ConvertRelationalExpression(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
 
@@ -411,7 +411,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
         }
 
-        private BinaryOperatorLiteral ConvertRelationalOperator(PlSqlParser.Relational_operatorContext context)
+        private BinaryOperatorLiteral ConvertRelationalOperator(ParserRuleContext context)
         {
             string opText = GetChild(0).ToString(false);
 
@@ -441,7 +441,7 @@ namespace PT.PM.PlSqlParseTreeUst
             return new BinaryOperatorLiteral(op, context.GetTextSpan());
         }
 
-        private Expression ConvertConcatenationExpression(PlSqlParser.ConcatenationContext context)
+        private Expression ConvertConcatenationExpression(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
 
