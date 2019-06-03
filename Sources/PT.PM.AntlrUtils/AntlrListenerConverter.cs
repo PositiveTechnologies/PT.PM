@@ -49,10 +49,11 @@ namespace PT.PM.AntlrUtils
 
         public void Clear()
         {
-            for (int i = 0; i < childNodesIndex; i++)
+            for (int i = 0; i <= childNodesIndex; i++)
             {
                 childNodes[i].Clear();
             }
+            childNodesIndex = -1;
             PushNew(null);
         }
 
