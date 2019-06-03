@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -110,6 +111,9 @@ namespace PT.PM.PlSqlParseTreeUst
                     case RULE_concatenation:
                         result = ConvertConcatenationExpression(context);
                         break;
+                    case RULE_query_block:
+                        result = ConvertQueryBlock(context);
+                        break;
                     default:
                         result = ConvertChildren();
                         break;
@@ -126,6 +130,66 @@ namespace PT.PM.PlSqlParseTreeUst
             }
         }
 
+        private Ust ConvertQueryBlock(ParserRuleContext context)
+        {
+            var children = GetChildren();
+            var query = new InvocationExpression(context.GetTextSpan())
+            {
+                Target = children[0].AsIdToken()
+            };
+            var queryElements = new List<Expression>();
+            for (var i = 1; i < children.Count; i++)
+            {
+                var child = children[i];
+                if (child is Collection collection)
+                {
+                    queryElements.AddRange(ExtractCollection(collection));
+                }
+                else if (child is WrapperExpression wrapperExpression &&
+                         wrapperExpression.Node is Collection collection2)
+                {
+                    queryElements.AddRange(ExtractCollection(collection2));
+                }
+                else
+                {
+                    queryElements.Add(child.AsExpression());
+                }
+            }
+
+            query.Arguments = new ArgsUst(queryElements);
+            return query;
+        }
+
+        private IEnumerable<Expression> ExtractCollection(Collection collection)
+        {
+            var result = new List<Expression>();
+            foreach (var node in collection.Collection)
+            {
+                switch (node)
+                {
+                    case Keyword keyword:
+                        result.Add(keyword.AsIdToken());
+                        break;
+                    case Collection nestedCollection:
+                        result.AddRange(ExtractCollection(nestedCollection));
+                        break;
+                    case WrapperExpression wrapper:
+                        if (wrapper.Node is Collection collection2)
+                        {
+                            result.AddRange(ExtractCollection(collection2));
+                            break;
+                        }
+                        result.Add(wrapper);
+                        break;
+                    default:
+                        result.Add(node.AsExpression());
+                        break;
+                }
+            }
+
+            return result;
+        }
+
         private MethodDeclaration ConvertCreateProcedureBody(ParserRuleContext context)
         {
             List<Ust> children = GetChildren();
@@ -140,6 +204,10 @@ namespace PT.PM.PlSqlParseTreeUst
                 if (child is ParameterDeclaration param)
                 {
                     parameters.Add(param);
+                }
+                else if (child is BlockStatement block)
+                {
+                    statements.AddRange(block.Statements);
                 }
                 else if (child is Statement statement)
                 {
@@ -186,21 +254,28 @@ namespace PT.PM.PlSqlParseTreeUst
             List<Ust> children = GetChildren();
             var left = children[0].AsIdToken();
             int rightInd = children[children.Count - 1] is Punctuator ? children.Count - 2 : children.Count - 1;
-            var right = children[rightInd].AsExpression();
+            var right = children[rightInd];
+            if (right is Collection collection)
+            {
+                right = collection.Collection.FindLast(x => !(x is Punctuator));
+            }
 
             return new VariableDeclarationExpression(
-                null, new List<AssignmentExpression> {new AssignmentExpression(left, right, context.GetTextSpan())});
+                null,
+                new List<AssignmentExpression>
+                    {new AssignmentExpression(left, right.AsExpression(), context.GetTextSpan())});
         }
 
         private CatchClause ConvertExceptionHandler(ParserRuleContext context)
         {
-            var body = (BlockStatement)GetChildFromEnd(0);
+            var body = (BlockStatement) GetChildFromEnd(0);
             if (body.Statements.Count == 1 &&
                 body.Statements[0] is ExpressionStatement expressionStatement &&
                 expressionStatement.Expression is NullLiteral)
             {
                 body = new BlockStatement(new Statement[0], body.Statements[0].TextSpan);
             }
+
             return new CatchClause(null, null, body, context.GetTextSpan());
         }
 
@@ -235,28 +310,28 @@ namespace PT.PM.PlSqlParseTreeUst
 
         private ExpressionStatement ConvertGrantStatement(ParserRuleContext context)
         {
-             List<Ust> children = GetChildren();
-             IdToken name;
-             int argInd;
+            List<Ust> children = GetChildren();
+            IdToken name;
+            int argInd;
 
-             if (CheckChild<Keyword>(ALL, 1))
-             {
-                 name = new IdToken("grant_all", children[0].TextSpan.Union(children[1].TextSpan));
-                 argInd = 2;
-             }
-             else
-             {
-                 name = children[0].AsIdToken();
-                 argInd = 1;
-             }
+            if (CheckChild<Keyword>(ALL, 1))
+            {
+                name = new IdToken("grant_all", children[0].TextSpan.Union(children[1].TextSpan));
+                argInd = 2;
+            }
+            else
+            {
+                name = children[0].AsIdToken();
+                argInd = 1;
+            }
 
-             var args = new List<Expression>(children.Count - argInd);
-             for (int i = argInd; i < children.Count; i++)
-             {
-                 args.Add(children[i].AsExpression());
-             }
+            var args = new List<Expression>(children.Count - argInd);
+            for (int i = argInd; i < children.Count; i++)
+            {
+                args.Add(children[i].AsExpression());
+            }
 
-             return new ExpressionStatement(new InvocationExpression(name, new ArgsUst(args), context.GetTextSpan()));
+            return new ExpressionStatement(new InvocationExpression(name, new ArgsUst(args), context.GetTextSpan()));
         }
 
         private Statement ConvertStatement(ParserRuleContext context)
@@ -468,7 +543,8 @@ namespace PT.PM.PlSqlParseTreeUst
             }
             else
             {
-                op = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[opUst.Substring], opUst.TextSpan);
+                op = new BinaryOperatorLiteral(BinaryOperatorLiteral.TextBinaryOperator[opUst.Substring],
+                    opUst.TextSpan);
             }
 
             var left = GetLeftChildFromLeftRecursiveRule(context).AsExpression();
