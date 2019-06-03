@@ -196,8 +196,17 @@ namespace PT.PM.AntlrUtils
             if (!IsParseTreeExisting)
             {
                 PopChildren();
-                leftChild = GetChild(0);
-                GetChildren().Clear();
+                var children = GetChildren();
+                if (children.Count == 1)
+                {
+                    leftChild = GetChild(0);
+                    children.Clear();
+                }
+                else
+                {
+                    leftChild = GetChild(children.Count - 1);
+                    children.RemoveAt(children.Count - 1);
+                }
                 PushNew(context);
             }
             else
