@@ -17,7 +17,7 @@ namespace PT.PM.Matching
 
         public TextSpan TextSpan => TextSpans.FirstOrDefault();
 
-        private MatchResult(PatternRoot pattern, IEnumerable<TextSpan> textSpans)
+        private void CommonInit(PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
             Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
             TextSpans = textSpans?.ToArray() ?? throw new ArgumentNullException(nameof(textSpans));
@@ -29,16 +29,18 @@ namespace PT.PM.Matching
             }
         }
 
-        public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans) : this (pattern, textSpans)
+        public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
             Ust = null;
             SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
+            CommonInit(pattern, textSpans);
         }
 
-        public MatchResult(Ust node, PatternRoot pattern, IEnumerable<TextSpan> textSpans) : this (pattern, textSpans)
+        public MatchResult(Ust node, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
             Ust = node ?? throw new ArgumentNullException(nameof(node));
             SourceFile = Ust.CurrentSourceFile;
+            CommonInit(pattern, textSpans);
         }
 
         public override string ToString()
