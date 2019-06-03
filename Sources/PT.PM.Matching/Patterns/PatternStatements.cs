@@ -7,6 +7,7 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes.Collections;
 
 namespace PT.PM.Matching.Patterns
 {
@@ -41,7 +42,7 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            if (!(parent is MethodDeclaration || parent is NamespaceDeclaration || parent is RootUst))
+            if (!(parent is MethodDeclaration || parent is NamespaceDeclaration || parent is RootUst || parent is Collection))
             {
                 return context.Fail();
             }
