@@ -135,12 +135,12 @@ namespace PT.PM.Matching
                 }
 
                 //TODO: handle Few matches not only in Comments, also in strings
-                if(context.Locations.Count > 1 
+                if(context.Locations.Count > 1
                     && patternUst is PatternCommentRegex)
                 {
                     foreach(var location in context.Locations)
                     {
-                        var match = new MatchResult(ust.CurrentSourceFile,
+                        var match = new MatchResult(ust,
                             context.PatternUst,
                             new List<TextSpan>(1) { location });
                         results.Add(match);
@@ -149,7 +149,7 @@ namespace PT.PM.Matching
                 }
                 else
                 {
-                    var match = new MatchResult(ust.CurrentSourceFile, context.PatternUst, context.Locations);
+                    var match = new MatchResult(ust, context.PatternUst, context.Locations);
 
                     results.Add(match);
                     context.Logger.LogInfo(match);

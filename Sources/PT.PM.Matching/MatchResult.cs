@@ -3,6 +3,7 @@ using PT.PM.Common;
 using System.Collections.Generic;
 using System;
 using PT.PM.Common.Files;
+using PT.PM.Common.Nodes;
 
 namespace PT.PM.Matching
 {
@@ -10,13 +11,14 @@ namespace PT.PM.Matching
     {
         public override string PatternKey => Pattern.Key;
 
+        public Ust Ust { get; }
+
         public override TextFile SourceFile { get; }
 
         public TextSpan TextSpan => TextSpans.FirstOrDefault();
 
-        public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
+        private MatchResult(PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
-            SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
             Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
             TextSpans = textSpans?.ToArray() ?? throw new ArgumentNullException(nameof(textSpans));
 
@@ -25,6 +27,18 @@ namespace PT.PM.Matching
             {
                 Suppressed = MatchUtils.IsSuppressed(SourceFile, lastTextSpan.GetLineColumnTextSpan(SourceFile));
             }
+        }
+
+        public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans) : this (pattern, textSpans)
+        {
+            Ust = null;
+            SourceFile = sourceFile ?? throw new ArgumentNullException(nameof(sourceFile));
+        }
+
+        public MatchResult(Ust node, PatternRoot pattern, IEnumerable<TextSpan> textSpans) : this (pattern, textSpans)
+        {
+            Ust = node ?? throw new ArgumentNullException(nameof(node));
+            SourceFile = Ust.CurrentSourceFile;
         }
 
         public override string ToString()
