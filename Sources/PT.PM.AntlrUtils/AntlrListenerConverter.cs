@@ -197,16 +197,8 @@ namespace PT.PM.AntlrUtils
             {
                 PopChildren();
                 var children = GetChildren();
-                if (children.Count == 1)
-                {
-                    leftChild = GetChild(0);
-                    children.Clear();
-                }
-                else
-                {
-                    leftChild = GetChild(children.Count - 1);
-                    children.RemoveAt(children.Count - 1);
-                }
+                leftChild = GetChild(children.Count - 1);
+                children.RemoveAt(children.Count - 1);
                 PushNew(context);
             }
             else
