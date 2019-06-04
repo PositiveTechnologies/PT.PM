@@ -230,15 +230,15 @@ namespace PT.PM.AntlrUtils
 
         protected List<Ust> GetChildren() => childNodes[childNodesIndex];
 
-        protected  void AddChild(Ust result) => childNodes[childNodesIndex].Add(result);
+        private void AddChild(Ust result) => childNodes[childNodesIndex].Add(result);
 
-        protected void PopChildren()
+        private void PopChildren()
         {
             childNodes[childNodesIndex].Clear();
             childNodesIndex = childNodesIndex - 1;
         }
 
-        protected void PushNew(ParserRuleContext parserRuleContext)
+        private void PushNew(ParserRuleContext parserRuleContext)
         {
             childNodesIndex = childNodesIndex + 1;
             var newList = new Usts(parserRuleContext);

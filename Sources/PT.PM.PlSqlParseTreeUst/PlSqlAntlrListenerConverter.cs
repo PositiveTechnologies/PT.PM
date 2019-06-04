@@ -31,6 +31,7 @@ namespace PT.PM.PlSqlParseTreeUst
         public override void ExitEveryRule([NotNull] ParserRuleContext context)
         {
             Ust result = null;
+            bool defaultConversion = false;
 
             try
             {
@@ -120,12 +121,17 @@ namespace PT.PM.PlSqlParseTreeUst
                         result = ConvertQueryBlock(context);
                         break;
                     default:
+                        defaultConversion = true;
                         result = ConvertChildren();
                         break;
                 }
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
+                if (!defaultConversion)
+                {
+                    result = ConvertChildren();
+                }
                 Logger.LogError(new ConversionException(root.SourceFile, ex));
                 Console.WriteLine(ex);
             }
