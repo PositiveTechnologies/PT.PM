@@ -108,6 +108,15 @@ namespace PT.PM.PlSqlParseTreeUst
                     case RULE_relational_operator:
                         result = ConvertRelationalOperator(context);
                         break;
+                    case RULE_logical_expression:
+                        result = ConvertLogicalExpression(context);
+                        break;
+                    case RULE_binary_logical_operator:
+                        result = ConvertBinaryLogicalOperator(context);
+                        break;
+                    case RULE_unary_logical_expression:
+                        result = ConvertUnaryLogicalExpression(context);
+                        break;
                     case RULE_concatenation:
                         result = ConvertConcatenationExpression(context);
                         break;
@@ -179,6 +188,7 @@ namespace PT.PM.PlSqlParseTreeUst
                             result.AddRange(ExtractCollection(collection2));
                             break;
                         }
+
                         result.Add(wrapper);
                         break;
                     default:
@@ -485,35 +495,98 @@ namespace PT.PM.PlSqlParseTreeUst
 
             return new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
         }
-
+        
         private BinaryOperatorLiteral ConvertRelationalOperator(ParserRuleContext context)
         {
-            string opText = GetChild(0).ToString(false);
+            var opText = GetChild(0).ToString(false);
 
-            BinaryOperator op;
-            switch (opText)
+            if (!BinaryOperatorLiteral.TextBinaryOperator.TryGetValue(opText, out var op))
             {
-                case "=":
-                    op = BinaryOperator.Equal;
-                    break;
-                case ">":
-                    op = BinaryOperator.Greater;
-                    break;
-                case "<":
-                    op = BinaryOperator.Less;
-                    break;
-                case ">=":
-                    op = BinaryOperator.GreaterOrEqual;
-                    break;
-                case "<=":
-                    op = BinaryOperator.LessOrEqual;
-                    break;
-                default:
-                    op = BinaryOperator.NotEqual;
-                    break;
+                op = BinaryOperator.NotEqual;
             }
 
             return new BinaryOperatorLiteral(op, context.GetTextSpan());
+        }
+        
+        private Ust ConvertLogicalExpression(ParserRuleContext context)
+        {
+            List<Ust> children = GetChildren();
+
+            if (children.Count == 1)
+            {
+                return children[0].AsExpression();
+            }
+
+            var right = children[children.Count - 1].AsExpression();
+            var op = (BinaryOperatorLiteral) children[children.Count - 2];
+            var left = GetLeftChildFromLeftRecursiveRule(context).AsExpression();
+
+            return new BinaryOperatorExpression(left, op, right, context.GetTextSpan());
+        }
+
+        private BinaryOperatorLiteral ConvertBinaryLogicalOperator(ParserRuleContext context)
+        {
+            var opText = GetChild(0).ToString(false).ToLowerInvariant();
+            if (!BinaryOperatorLiteral.TextBinaryOperator.TryGetValue(opText, out var op))
+            {
+                op = BinaryOperator.LogicalOr;
+            }
+
+            return new BinaryOperatorLiteral(op, context.GetTextSpan());
+        }
+
+        private Ust ConvertUnaryLogicalExpression(ParserRuleContext context)
+        {
+            var children = GetChildren();
+            if (children.Count > 1)
+            {
+                UnaryOperator op;
+                int nextNodeIndex = 0;
+                if (children[nextNodeIndex] is Keyword)
+                {
+                    op = UnaryOperator.Not;
+                    nextNodeIndex++;
+                }
+                else
+                {
+                    op = UnaryOperator.None;
+                }
+                
+                var opUst = new UnaryOperatorLiteral(op);
+                var result = new UnaryOperatorExpression(opUst, children[nextNodeIndex].AsExpression(), children[1].TextSpan);
+                nextNodeIndex++;
+                if (children.Count > 2)
+                {
+                    var operatorChild = children[nextNodeIndex];
+                    Keyword isKeyword = operatorChild is Keyword keyword2?
+                        keyword2
+                        : operatorChild is Collection collection && collection.Collection[0] is Keyword keyword3
+                            ? keyword3
+                            : null;
+                    
+                    if (isKeyword != null)
+                    {
+                        var right = children[++nextNodeIndex].AsExpression();
+                        var expression = new BinaryOperatorExpression(
+                            result.Expression,
+                            new BinaryOperatorLiteral(BinaryOperator.Is, isKeyword.TextSpan),
+                            right,
+                            result.Expression.TextSpan.Union(right.TextSpan));
+                        result.Expression = expression;
+                        if (operatorChild is Collection)
+                        {
+                            result.Expression = new UnaryOperatorExpression
+                            {
+                                Operator = new UnaryOperatorLiteral(UnaryOperator.Not),
+                                Expression = expression,
+                                TextSpan = expression.TextSpan
+                            };
+                        }
+                    }
+                }
+                return result;
+            }
+            return children[0].AsExpression();
         }
 
         private Expression ConvertConcatenationExpression(ParserRuleContext context)

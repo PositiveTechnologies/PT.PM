@@ -54,7 +54,10 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             //Python
             ["is"] = BinaryOperator.Is,
             ["@"] = BinaryOperator.MultiplyArray,
-            ["//"] = BinaryOperator.Divide
+            ["//"] = BinaryOperator.Divide,
+            
+            //PL\SQL
+            ["="] = BinaryOperator.Equal,
         };
 
         [Key(UstFieldOffset)]
