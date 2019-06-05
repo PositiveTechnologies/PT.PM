@@ -36,6 +36,14 @@ namespace PT.PM.Tests
         }
 
         [Test]
+        public void Unescape_PlSqlUnistr()
+        {
+            var source = new TextFile("test ( template => 'line1' || unistr('\\000a') || 'line2' );", "PlSqlUnistr.sql");
+            var matches = PatternMatchingUtils.GetMatches(source, "<[\"line1\nline2\"]>", Language.PlSql);
+            Assert.AreEqual(1, matches.Length); // TODO: should be correct matching location
+        }
+
+        [Test]
         public void Simplify_JavaCodeWithConstantCharArray_ArrayFolded()
         {
             TextFile source = TextFile.Read(Path.Combine(TestUtility.TestsDataPath, "FoldArrayOfChars.java"));

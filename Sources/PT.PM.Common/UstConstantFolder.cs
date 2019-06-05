@@ -4,20 +4,25 @@ using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PT.PM.Common
 {
     public class UstConstantFolder : ILoggable
     {
+        private static readonly Regex plSqlUnicodeRegex = new Regex(@"\\([0-9A-Fa-f]{4})", RegexOptions.Compiled);
+
         public static readonly HashSet<Type> FoldingTypes = new HashSet<Type>
         {
             typeof(ArrayCreationExpression),
             typeof(BinaryOperatorExpression),
             typeof(UnaryOperatorExpression),
-            typeof(TupleCreateExpression)
+            typeof(TupleCreateExpression),
+            typeof(InvocationExpression)
         };
 
         private readonly Dictionary<TextSpan, FoldResult> foldedResults = new Dictionary<TextSpan, FoldResult>();
@@ -64,6 +69,8 @@ namespace PT.PM.Common
                     return TryFoldUnaryOperatorExpression(unaryOperatorExpression);
                 case TupleCreateExpression tupleCreateExpression:
                     return TryFoldTupleCreateExpression(tupleCreateExpression);
+                case InvocationExpression invocationExpression:
+                    return TryFoldInvocationExpression(invocationExpression);
                 case Token token:
                     return TryFoldToken(token);
                 // TODO: parenthesis
@@ -276,6 +283,28 @@ namespace PT.PM.Common
                 {
                     return ProcessUnaryExpression(unaryOperatorExpression, foldResult, negativeValue);
                 }
+            }
+
+            return null;
+        }
+
+        private FoldResult TryFoldInvocationExpression(InvocationExpression invocationExpression)
+        {
+            if (invocationExpression.RootOrThis.Language == Language.PlSql &&
+                invocationExpression.Target is IdToken idTarget &&
+                idTarget.TextValue.EqualsIgnoreCase("UNISTR") &&
+                invocationExpression.Arguments.Collection.Count == 1 &&
+                invocationExpression.Arguments.Collection[0] is StringLiteral str)
+            {
+                string unescaped = plSqlUnicodeRegex.Replace(str.TextValue,
+                    m => char.ToString((char) ushort.Parse(m.Groups[1].Value, NumberStyles.AllowHexSpecifier)));
+
+                if (Logger.LogLevel >= LogLevel.Debug)
+                {
+                    Logger.LogDebug($"{invocationExpression.Substring} unescaped to {unescaped}");
+                }
+
+                return new FoldResult(unescaped, invocationExpression.TextSpan);
             }
 
             return null;
