@@ -3,15 +3,6 @@ using PT.PM.Common.Files;
 
 namespace PT.PM.Matching
 {
-    public interface IMatchResultBase
-    {
-        string PatternKey { get; }
-
-        bool Suppressed { get; }
-
-        TextFile SourceFile { get; }
-    }
-
     public abstract class MatchResultBase<TPattern> : IMatchResultBase
     {
         public abstract string PatternKey { get; }
