@@ -12,8 +12,10 @@ namespace PT.PM.Common.Exceptions
 
         public TextSpan TextSpan { get; set; }
 
+        public LineColumnTextSpan LineColumnTextSpan =>
+            (File as TextFile)?.GetLineColumnTextSpan(TextSpan) ?? LineColumnTextSpan.Zero;
+
         public PMException()
-            : base()
         {
         }
 
