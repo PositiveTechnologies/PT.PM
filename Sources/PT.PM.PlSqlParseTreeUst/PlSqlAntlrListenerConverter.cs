@@ -605,7 +605,7 @@ namespace PT.PM.PlSqlParseTreeUst
 
             if (CheckChild<IOperatorOrPunctuator>(BAR, operatorIndex))
             {
-                op = new BinaryOperatorLiteral(BinaryOperator.LogicalOr,
+                op = new BinaryOperatorLiteral(BinaryOperator.Plus,
                     opUst.TextSpan.Union(children[operatorIndex + 1].TextSpan));
             }
             else if (opUst is BinaryOperatorLiteral binaryOperatorLiteral)
