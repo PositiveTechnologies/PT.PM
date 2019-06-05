@@ -17,18 +17,6 @@ namespace PT.PM.Matching
 
         public TextSpan TextSpan => TextSpans.FirstOrDefault();
 
-        private void CommonInit(PatternRoot pattern, IEnumerable<TextSpan> textSpans)
-        {
-            Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
-            TextSpans = textSpans?.ToArray() ?? throw new ArgumentNullException(nameof(textSpans));
-
-            TextSpan lastTextSpan = textSpans.LastOrDefault();
-            if (lastTextSpan != default)
-            {
-                Suppressed = MatchUtils.IsSuppressed(SourceFile, lastTextSpan.GetLineColumnTextSpan(SourceFile));
-            }
-        }
-
         public MatchResult(TextFile sourceFile, PatternRoot pattern, IEnumerable<TextSpan> textSpans)
         {
             Ust = null;
@@ -41,6 +29,18 @@ namespace PT.PM.Matching
             Ust = node ?? throw new ArgumentNullException(nameof(node));
             SourceFile = Ust.CurrentSourceFile;
             CommonInit(pattern, textSpans);
+        }
+
+        private void CommonInit(PatternRoot pattern, IEnumerable<TextSpan> textSpans)
+        {
+            Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
+            TextSpans = textSpans?.ToArray() ?? throw new ArgumentNullException(nameof(textSpans));
+
+            TextSpan lastTextSpan = textSpans.LastOrDefault();
+            if (lastTextSpan != default)
+            {
+                Suppressed = MatchUtils.IsSuppressed(SourceFile, lastTextSpan.GetLineColumnTextSpan(SourceFile));
+            }
         }
 
         public override string ToString()
