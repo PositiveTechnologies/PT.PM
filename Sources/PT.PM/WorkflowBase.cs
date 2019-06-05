@@ -176,6 +176,8 @@ namespace PT.PM
                         return null;
                     }
                 }
+
+                GetParseTreeDumper(language)?.DumpTree(parseTree);
             }
 
             RootUst rootUst = Convert(fileName, workflowResult, sourceFile, isSerializing, detectionResult,
@@ -289,16 +291,6 @@ namespace PT.PM
             Logger.LogInfo($"File {sourceFile} parsed {parserTimeSpan.GetElapsedString()}.");
 
             workflowResult.AddParserTime(parserTimeSpan);
-
-            if (result == null)
-            {
-                return null;
-            }
-
-            var dumper = GetParseTreeDumper(language);
-            dumper?.DumpTree(result);
-
-            cancellationToken.ThrowIfCancellationRequested();
 
             return result;
         }

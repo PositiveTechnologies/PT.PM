@@ -151,15 +151,12 @@ namespace PT.PM.AntlrUtils
         {
             Parser parser = InitParser(codeTokenStream);
             parser.Interpreter = new ParserATNSimulator(parser, GetOrCreateAtn(ParserSerializedATN));
+            parser.TrimParseTree = true;
 
             if (antlrListenerConverter != null)
             {
                 parser.BuildParseTree = ParseTreeDumper != null;
                 parser.AddParseListener(antlrListenerConverter);
-            }
-            else
-            {
-                parser.TrimParseTree = true;
             }
 
             parser.RemoveErrorListeners();
