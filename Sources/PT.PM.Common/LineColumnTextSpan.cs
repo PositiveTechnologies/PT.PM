@@ -7,6 +7,8 @@ namespace PT.PM.Common
     {
         public static LineColumnTextSpan Zero => new LineColumnTextSpan(0, 0, 0, 0);
 
+        public bool IsZero => BeginLine == 0 && BeginColumn == 0 && EndLine == 0 && EndColumn == 0 && File.IsEmpty;
+
         public int BeginLine { get; }
 
         public int BeginColumn { get; }
