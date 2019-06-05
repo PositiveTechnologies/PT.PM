@@ -192,7 +192,7 @@ namespace PT.PM.AntlrUtils
             if (ParseTreeDumper != null)
             {
                 TextFile sourceFile = ((LightToken) parseTree.Start).TextFile;
-                ParseTreeDumper?.DumpTree(parseTree, RuleNames, sourceFile);
+                ParseTreeDumper.DumpTree(parseTree, RuleNames, sourceFile);
             }
 
             rootUst = antlrListenerConverter?.Complete();
