@@ -10,6 +10,6 @@ namespace PT.PM.Matching
 
         List<TPattern> Patterns { get; set; }
 
-        List<TMatchResult> Match(TInputGraph ust);
+        void Match(TInputGraph ust);
     }
 }

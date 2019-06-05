@@ -52,6 +52,8 @@ namespace PT.PM
             result.RenderStages = RenderStages;
             result.IsFoldConstants = IsFoldConstants;
 
+            Logger.ProcessMatchResultAction = result.ProcessMatchResult;
+
             AntlrUtils.AntlrUtils.CheckCacheMemoryBytes = (long) MemoryConsumptionMb * 1024 * 1024;
 
             IEnumerable<string> fileNames = SourceRepository.GetFileNames();
@@ -148,16 +150,11 @@ namespace PT.PM
 
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
-                    var matchResults = patternMatcher.Match(rootUst);
+                    patternMatcher.Match(rootUst);
 
                     stopwatch.Stop();
                     Logger.LogInfo($"File {rootUst.SourceFile.Name} matched with patterns {stopwatch.GetElapsedString()}.");
                     workflowResult.AddMatchTime(stopwatch.Elapsed);
-
-                    foreach (MatchResult matchResult in matchResults)
-                    {
-                        workflowResult.ProcessMatchResult(matchResult);
-                    }
 
                     cancellationToken.ThrowIfCancellationRequested();
 

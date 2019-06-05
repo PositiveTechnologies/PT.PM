@@ -177,7 +177,10 @@ namespace PT.PM
                     }
                 }
 
-                GetParseTreeDumper(language)?.DumpTree(parseTree);
+                if (parseTree != null)
+                {
+                    GetParseTreeDumper(language)?.DumpTree(parseTree);
+                }
             }
 
             RootUst rootUst = Convert(fileName, workflowResult, sourceFile, isSerializing, detectionResult,
@@ -340,10 +343,10 @@ namespace PT.PM
                 {
                     var parserConverter = (AntlrParserConverter) detectedLanguage.CreateParserConverter();
                     parserConverter.Logger = Logger;
-                    parserConverter.ParseTreeDumper = (AntlrDumper) GetParseTreeDumper(detectedLanguage);
 
                     if (detectionResult.ParseTree == null)
                     {
+                        parserConverter.ParseTreeDumper = (AntlrDumper) GetParseTreeDumper(detectedLanguage);
                         IList<IToken> tokens = Tokenize(workflowResult, detectedLanguage, (TextFile) sourceFile);
 
                         result = parserConverter.ParseConvert(tokens, out TimeSpan parserTimeSpan,

@@ -3,7 +3,6 @@ using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
 using PT.PM.Common;
 using PT.PM.Common.Files;
-using PT.PM.PlSqlParseTreeUst;
 using static PT.PM.PlSqlParseTreeUst.PlSqlLexer;
 
 namespace PT.PM.PlSqlParseTreeUst

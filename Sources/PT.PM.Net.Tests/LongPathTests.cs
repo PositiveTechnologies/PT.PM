@@ -113,7 +113,6 @@ namespace PT.PM.Net.Tests
 
             string normLongFilePath = longFilePath.NormalizeFilePath();
             string normLongPatternPath = longPatternPath.NormalizeFilePath();
-            string normLongLogDirsPath = longLogDirsPath.NormalizeDirPath();
             string normLongDirPath = longDirPath.NormalizeDirPath(true);
 
             WorkflowResult result1, result2, result3;

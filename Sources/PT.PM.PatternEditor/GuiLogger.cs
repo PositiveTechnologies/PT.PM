@@ -24,6 +24,8 @@ namespace PT.PM.PatternEditor
 
         public string LogsDir { get; set; } = "";
 
+        public Action<IMatchResultBase> ProcessMatchResultAction { get; set; }
+
         public static GuiLogger CreateSourceLogger(ObservableCollection<ErrorViewModel> errorsCollection,
             ObservableCollection<MatchResultViewModel> matchResultCollection)
         {
@@ -88,6 +90,7 @@ namespace PT.PM.PatternEditor
             {
                 var matchResultViewModel = new MatchResultViewModel(new MatchResultDto(matchResult));
                 Dispatcher.UIThread.InvokeAsync(() => MatchResultsCollection.Add(matchResultViewModel));
+                ProcessMatchResultAction?.Invoke(matchResult);
             }
 
             LogEvent?.Invoke(this, infoObj.ToString());
