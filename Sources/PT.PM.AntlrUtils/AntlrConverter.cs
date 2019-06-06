@@ -72,7 +72,7 @@ namespace PT.PM.AntlrUtils
                 return null;
             }
 
-            result.Comments = antlrParseTree.Comments.Select(c => new Comment(c.GetTextSpan())
+            result.Comments = antlrParseTree.Comments.Select(c => new Comment(c.GetTextSpan(), result)
             {
                 Root = result
             })
@@ -136,7 +136,7 @@ namespace PT.PM.AntlrUtils
 
         public virtual Ust VisitTerminal(ITerminalNode node)
         {
-            ReadOnlySpan<char> span = ExtractSpan(node.Symbol, out TextSpan textSpan);
+            ReadOnlySpan<char> span = node.Symbol.ExtractSpan(out TextSpan textSpan);
             return convertHelper.ConvertToken(span, textSpan);
         }
 
@@ -156,9 +156,9 @@ namespace PT.PM.AntlrUtils
 
         protected Ust DefaultResult => null;
 
-        protected Token ConvertToken(IToken token)
+        protected Ust ConvertToken(IToken token)
         {
-            ReadOnlySpan<char> span = ExtractSpan(token, out TextSpan textSpan);
+            ReadOnlySpan<char> span = token.ExtractSpan(out TextSpan textSpan);
             return convertHelper.ConvertToken(span, textSpan);
         }
 
@@ -206,24 +206,6 @@ namespace PT.PM.AntlrUtils
             };
             result.TextSpan = result.Expression.TextSpan.Union(result.Operator.TextSpan);
             return result;
-        }
-
-        protected static ReadOnlySpan<char> ExtractSpan(IToken token, out TextSpan textSpan)
-        {
-            ReadOnlySpan<char> span;
-
-            if (token is LightToken lightToken)
-            {
-                textSpan = lightToken.TextSpan;
-                span = lightToken.Span;
-            }
-            else
-            {
-                textSpan = token.GetTextSpan();
-                span = token.Text.AsSpan();
-            }
-
-            return span;
         }
     }
 }

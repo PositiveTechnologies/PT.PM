@@ -22,6 +22,8 @@ namespace PT.PM
 
         public string LogsDir { get; set; } = "";
 
+        public Action<IMatchResultBase> ProcessMatchResultAction { get; set; }
+
         public void LogDebug(string message)
         {
             lock (Debugs)

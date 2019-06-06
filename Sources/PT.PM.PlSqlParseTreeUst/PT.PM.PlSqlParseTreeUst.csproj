@@ -14,16 +14,21 @@
     <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\antlr-grammars-v4\plsql\CSharp\PlSqlBaseLexer.cs" Link="PlSqlBaseLexer.cs" />
     <Compile Include="..\antlr-grammars-v4\plsql\CSharp\PlSqlBaseParser.cs" Link="PlSqlBaseParser.cs" />
     <Compile Include="..\AssemblyInfoCommon.cs" Link="AssemblyInfoCommon.cs" />
 
     <Antlr4 Include="..\antlr-grammars-v4\plsql\PlSqlLexer.g4" Link="PlSqlLexer.g4">
-      <Listener>false</Listener>
       <CustomToolNamespace>PT.PM.PlSqlParseTreeUst</CustomToolNamespace>
     </Antlr4>
     <Antlr4 Include="..\antlr-grammars-v4\plsql\PlSqlParser.g4" Link="PlSqlParser.g4">
+      <Visitor>false</Visitor>
       <Listener>false</Listener>
       <CustomToolNamespace>PT.PM.PlSqlParseTreeUst</CustomToolNamespace>
     </Antlr4>

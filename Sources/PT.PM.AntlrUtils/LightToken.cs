@@ -28,11 +28,13 @@ namespace PT.PM.AntlrUtils
             TokenIndex = index;
         }
 
-        public string Text => Type == -1
+        public string Text => Type == Lexer.Eof
             ? "EOF"
             : inputStream.TextFile.Data.Substring(StartIndex, StopIndex - StartIndex);
 
-        public ReadOnlySpan<char> Span => inputStream.TextFile.Data.AsSpan(StartIndex, StopIndex - StartIndex);
+        public ReadOnlySpan<char> Span => Type == Lexer.Eof
+            ? ReadOnlySpan<char>.Empty
+            : inputStream.TextFile.Data.AsSpan(StartIndex, StopIndex - StartIndex);
 
         public TextFile TextFile => inputStream.TextFile;
 

@@ -16,7 +16,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public static AspxParser Create() => new AspxParser();
 
-        public ParseTree Parse(TextFile sourceFile, out TimeSpan parserTimeSpan)
+        public ParseTree Parse(TextFile sourceFile, out TimeSpan timeSpan)
         {
             if (sourceFile.Data == null)
             {
@@ -40,7 +40,7 @@ namespace PT.PM.CSharpParseTreeUst
                 result.SourceFile = sourceFile;
                 stopwatch.Stop();
 
-                parserTimeSpan = stopwatch.Elapsed;
+                timeSpan = stopwatch.Elapsed;
 
                 return result;
             }

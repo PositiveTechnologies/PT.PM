@@ -54,6 +54,8 @@ namespace PT.PM.Matching.Tests
         [Test]
         public void Match_Issue156_ObjectCreationByFullyQualifiedName()
         {
+            var logger = new TestLogger();
+
             var workflow = new Workflow(
                 new MemorySourceRepository(@"
                     public class ProcessBuilderExample
@@ -65,11 +67,14 @@ namespace PT.PM.Matching.Tests
                         }
                     }",
                     "test.java"),
-                new DslPatternRepository("new Java.Lang.ProcessBuilder(...)", "java"));
+                new DslPatternRepository("new Java.Lang.ProcessBuilder(...)", "java"))
+            {
+                Logger = logger
+            };
 
-            WorkflowResult result = workflow.Process();
+            workflow.Process();
 
-            Assert.AreEqual(1, result.TotalMatchesCount);
+            Assert.AreEqual(1, logger.Matches.Count);
         }
     }
 }

@@ -17,5 +17,7 @@ namespace PT.PM.Common
         void LogInfo(object infoObj);
 
         void LogDebug(string message);
+
+        Action<IMatchResultBase> ProcessMatchResultAction { get; set; }
     }
 }

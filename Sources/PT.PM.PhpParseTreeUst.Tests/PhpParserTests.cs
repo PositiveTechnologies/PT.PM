@@ -32,10 +32,9 @@ namespace PT.PM.PhpParseTreeUst.Tests
                 string code = fileText.Replace("\r\n", lineEnd);
                 var sourceFile = new TextFile(code)
                 {
-                    Name = "newLine.php",
+                    Name = "newLine.php"
                 };
                 var tokens = new PhpAntlrLexer().GetTokens(sourceFile, out TimeSpan _);
-                phpParser.SourceFile = sourceFile;
                 var parseTree = (PhpAntlrParseTree)phpParser.Parse(tokens, out TimeSpan _);
                 var converter = new PhpAntlrParseTreeConverter();
                 RootUst ust = converter.Convert(parseTree);

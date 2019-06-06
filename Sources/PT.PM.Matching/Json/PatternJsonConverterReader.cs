@@ -56,7 +56,7 @@ namespace PT.PM.Matching.Json
                 };
 
                 target = root;
-                root.Node = jObject[nameof(PatternRoot.Node)].ToObject<PatternUst>(serializer);
+                root.Node = jObject[nameof(PatternRoot.Node)]?.ToObject<PatternUst>(serializer);
             }
             else if (objectType == typeof(PatternUst) || objectType.IsSubclassOf(typeof(PatternUst)))
             {

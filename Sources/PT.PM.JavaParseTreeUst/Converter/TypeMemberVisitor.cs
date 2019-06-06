@@ -144,8 +144,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
 
         public Ust VisitVariableInitializer(JavaParser.VariableInitializerContext context)
         {
-            var result = (Expression)Visit(context.GetChild(0));
-            return result;
+            return Visit(context.GetChild(0)).AsExpression();
         }
 
         public Ust VisitFormalParameters(JavaParser.FormalParametersContext context)

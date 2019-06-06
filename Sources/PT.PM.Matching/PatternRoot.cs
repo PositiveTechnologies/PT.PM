@@ -78,10 +78,9 @@ namespace PT.PM.Matching
             return (!string.IsNullOrEmpty(DebugInfo) ? DebugInfo : Key) ?? "";
         }
 
-        public List<MatchResult> Match(Ust ust, UstConstantFolder ustConstantFolder)
+        public void Match(Ust ust, UstConstantFolder ustConstantFolder)
         {
             var context = new MatchContext(this, ustConstantFolder) { Logger = Logger };
-            var results = new List<MatchResult>();
 
             if (ust is RootUst rootUst)
             {
@@ -90,42 +89,38 @@ namespace PT.PM.Matching
                 {
                     foreach (Comment commentLiteral in rootUst.Comments)
                     {
-                        MatchAndAddResult(Node, commentLiteral, context, results);
+                        MatchAndAddResult(Node, commentLiteral, context);
                     }
                 }
                 else
                 {
-                    TraverseChildren(Node, rootUst, context, results);
+                    TraverseChildren(Node, rootUst, context);
                 }
             }
-
-            return results;
         }
 
         protected override MatchContext Match(Ust ust, MatchContext context)
         {
-            var results = new List<MatchResult>();
-            MatchAndAddResult(this, ust, context, results);
+            MatchAndAddResult(this, ust, context);
             return context;
         }
 
-        private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
+        private static void TraverseChildren(PatternUst patternUst, Ust ust, MatchContext context)
         {
-            MatchAndAddResult(patternUst, ust, context, results);
+            MatchAndAddResult(patternUst, ust, context);
 
             if (ust != null && !(patternUst is PatternAny) && !context.MatchedWithFolded)
             {
                 foreach (Ust child in ust.Children)
                 {
-                    TraverseChildren(patternUst, child, context, results);
+                    TraverseChildren(patternUst, child, context);
                 }
             }
 
             context.MatchedWithFolded = false;
         }
 
-        private static void MatchAndAddResult(
-            PatternUst patternUst, Ust ust, MatchContext context, List<MatchResult> results)
+        private static void MatchAndAddResult(PatternUst patternUst, Ust ust, MatchContext context)
         {
             if (patternUst.MatchUst(ust, context).Success)
             {
@@ -143,15 +138,12 @@ namespace PT.PM.Matching
                         var match = new MatchResult(ust,
                             context.PatternUst,
                             new List<TextSpan>(1) { location });
-                        results.Add(match);
                         context.Logger.LogInfo(match);
                     }
                 }
                 else
                 {
                     var match = new MatchResult(ust, context.PatternUst, context.Locations);
-
-                    results.Add(match);
                     context.Logger.LogInfo(match);
                 }
             }

@@ -2,6 +2,8 @@ using System;
 using System.Globalization;
 using System.Numerics;
 using PT.PM.Common.Nodes;
+using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Statements;
 using PT.PM.Common.Nodes.Tokens;
 using PT.PM.Common.Nodes.Tokens.Literals;
 
@@ -21,12 +23,18 @@ namespace PT.PM.Common
             Language = root.Language;
         }
 
-        public Token ConvertToken(ReadOnlySpan<char> span, TextSpan textSpan)
+        public Ust ConvertToken(ReadOnlySpan<char> span, TextSpan textSpan, bool returnIdentifiers = true)
         {
             int spanLength = span.Length;
+
+            if (spanLength == 0)
+            {
+                return null;
+            }
+
             char firstChar = span[0];
 
-            if (spanLength == 1 && firstChar == '*')
+            if (spanLength == 1)
             {
                 if (firstChar == '*')
                 {
@@ -77,20 +85,58 @@ namespace PT.PM.Common
                 }
             }
 
-            bool id = true;
+            bool isIdentifier = true;
+            bool isKeyword = true;
+            bool isOperatorOrPunctuator = true;
+
             for (int i = 0; i < spanLength; i++)
             {
                 char c = span[i];
-                if ((i == 0 ? !char.IsLetter(c) : !char.IsLetterOrDigit(c)) && c != '_')
+
+                if (char.IsLetter(c) || c == '_')
                 {
-                    id = false;
-                    break;
+                    isOperatorOrPunctuator = false;
+                }
+                else if (char.IsDigit(c))
+                {
+                    if (i == 0)
+                    {
+                        isIdentifier = false;
+                        isKeyword = false;
+                    }
+                    isOperatorOrPunctuator = false;
+                    if (!Language.IsSql())
+                    {
+                        isKeyword = false;
+                    }
+                }
+                else
+                {
+                    isIdentifier = false;
                 }
             }
 
-            if (id)
+            if (isIdentifier && returnIdentifiers)
             {
                 return new IdToken(span.ToString(), textSpan);
+            }
+
+            if (isOperatorOrPunctuator)
+            {
+                string spanText = span.ToString();
+                if (BinaryOperatorLiteral.TextBinaryOperator.TryGetValue(spanText, out _) ||
+                    UnaryOperatorLiteral.PostfixTextUnaryOperator.TryGetValue(spanText, out _) ||
+                    UnaryOperatorLiteral.PrefixTextUnaryOperator.TryGetValue(spanText, out _))
+                {
+                    return new Operator(textSpan, root);
+                }
+
+                return new Punctuator(textSpan, root);
+            }
+
+            if (isKeyword)
+            {
+                return new Keyword(textSpan, root);
             }
 
             if (TryParseDoubleInvariant(span.ToString(), out double floatValue))

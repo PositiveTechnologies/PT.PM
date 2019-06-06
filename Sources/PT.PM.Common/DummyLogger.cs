@@ -4,7 +4,7 @@ namespace PT.PM.Common
 {
     public class DummyLogger : ILogger
     {
-        public static DummyLogger Instance = new DummyLogger();
+        public static readonly DummyLogger Instance = new DummyLogger();
 
         public int ErrorCount => 0;
 
@@ -15,6 +15,8 @@ namespace PT.PM.Common
         }
 
         public string LogsDir { get; set; } = "";
+
+        public Action<IMatchResultBase> ProcessMatchResultAction { get; set; }
 
         public void LogDebug(string message)
         {

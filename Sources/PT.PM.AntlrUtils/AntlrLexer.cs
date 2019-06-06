@@ -26,15 +26,12 @@ namespace PT.PM.AntlrUtils
 
         public IList<IToken> GetTokens(TextFile sourceFile, out TimeSpan lexerTimeSpan)
         {
-            SourceFile = sourceFile;
-            if (ErrorListener == null)
+            var errorListener = new AntlrMemoryErrorListener(sourceFile)
             {
-                ErrorListener = new AntlrMemoryErrorListener();
-                ErrorListener.Logger = Logger;
-                ErrorListener.LineOffset = LineOffset;
-            }
+                Logger = Logger,
+                LineOffset = LineOffset
+            };
 
-            ErrorListener.SourceFile = sourceFile;
             var preprocessedText = PreprocessText(sourceFile);
             var inputStream = new LightInputStream(Vocabulary, sourceFile, preprocessedText, CaseInsensitiveType);
 
@@ -45,7 +42,7 @@ namespace PT.PM.AntlrUtils
                 Lexer lexer = InitLexer(inputStream);
                 lexer.Interpreter = new LexerATNSimulator(lexer, GetOrCreateAtn(LexerSerializedATN));
                 lexer.RemoveErrorListeners();
-                lexer.AddErrorListener(ErrorListener);
+                lexer.AddErrorListener(errorListener);
                 lexer.TokenFactory = new LightTokenFactory();
 
                 tokens = lexer.GetAllTokens();
@@ -55,7 +52,7 @@ namespace PT.PM.AntlrUtils
             }
             catch (Exception ex)
             {
-                Logger.LogError(new LexingException(SourceFile, ex));
+                Logger.LogError(new LexingException(sourceFile, ex));
                 tokens = new List<IToken>();
             }
 

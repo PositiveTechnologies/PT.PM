@@ -2,7 +2,7 @@
 using PT.PM.Common;
 using PT.PM.PlSqlParseTreeUst;
 
-namespace PT.PM.SqlParseTreeUst
+namespace PT.PM.PlSqlParseTreeUst
 {
     public class PlSqlAntlrParseTree : AntlrParseTree
     {

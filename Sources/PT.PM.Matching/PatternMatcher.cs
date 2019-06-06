@@ -27,7 +27,7 @@ namespace PT.PM.Matching
             Patterns = patterns;
         }
 
-        public List<MatchResult> Match(RootUst ust)
+        public void Match(RootUst ust)
         {
             try
             {
@@ -39,20 +39,15 @@ namespace PT.PM.Matching
                     patterns = patterns.Where(pattern => pattern.FilenameWildcardRegex?.IsMatch(ust.SourceFile.FullName) ?? true);
                 }
 
-                var result = new List<MatchResult>();
                 foreach (PatternRoot pattern in patterns)
                 {
                     pattern.Logger = Logger;
-                    var results = pattern.Match(ust, UstConstantFolder);
-                    result.AddRange(results);
+                    pattern.Match(ust, UstConstantFolder);
                 }
-
-                return result;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))
             {
                 Logger.LogError(new MatchingException(ust.SourceFile, ex));
-                return new List<MatchResult>();
             }
         }
     }

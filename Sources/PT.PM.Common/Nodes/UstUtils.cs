@@ -4,6 +4,8 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
+using PT.PM.Common.Nodes.Collections;
+using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common.Nodes
 {
@@ -37,6 +39,16 @@ namespace PT.PM.Common.Nodes
 
             return ust as Expression
                    ?? new WrapperExpression(ust);
+        }
+
+        public static IdToken AsIdToken(this Ust ust)
+        {
+            if (ust is IdToken idToken)
+            {
+                return idToken;
+            }
+
+            return new IdToken(ust.ToString(false), ust.TextSpan);
         }
 
         public static Expression GetArgWithoutModifier(Expression arg)

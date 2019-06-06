@@ -6,17 +6,11 @@ namespace PT.PM.AntlrUtils
 {
     public abstract class AntlrBaseHandler
     {
-        public AntlrMemoryErrorListener ErrorListener { get; set; }
-
         public static ILogger StaticLogger { get; set; } = DummyLogger.Instance;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public TextFile SourceFile { get; set; }
-
         public abstract Language Language { get; }
-
-        public bool UseFastParseStrategyAtFirst { get; set; } = true;
 
         protected ATN GetOrCreateAtn(string atnText)
         {

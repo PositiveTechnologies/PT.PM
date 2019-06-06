@@ -5,7 +5,7 @@ using PT.PM.Common.Nodes.Expressions;
 namespace PT.PM.Common.Nodes.Tokens
 {
     [MessagePackObject]
-    public abstract class Token : Expression
+    public abstract class Token : Expression, ITerminal
     {
         [IgnoreMember, JsonIgnore]
         public abstract string TextValue { get; }

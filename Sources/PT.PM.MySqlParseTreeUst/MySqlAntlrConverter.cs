@@ -400,8 +400,8 @@ namespace PT.PM.SqlParseTreeUst
         {
             var comparison = new BinaryOperatorExpression(context.GetTextSpan())
             {
-                Left = (Expression)Visit(context.left),
-                Right = (Expression)Visit(context.right)
+                Left = Visit(context.left).AsExpression(),
+                Right = Visit(context.right).AsExpression()
             };
             var opText = context.comparisonOperator().GetText();
             BinaryOperator op;

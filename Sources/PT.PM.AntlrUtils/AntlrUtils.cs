@@ -1,14 +1,14 @@
-﻿using PT.PM.Common;
-using PT.PM.Common.Exceptions;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using PT.PM.Common;
+using PT.PM.Common.Exceptions;
+using PT.PM.Common.Files;
+using PT.PM.Common.Nodes.Expressions;
+using PT.PM.Common.Nodes.Tokens;
+using PT.PM.Common.Nodes.Tokens.Literals;
 using System;
 using System.Diagnostics;
 using System.Threading;
-using PT.PM.Common.Files;
-using PT.PM.Common.Nodes.Expressions;
-using PT.PM.Common.Nodes.Tokens.Literals;
-using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.AntlrUtils
 {
@@ -74,8 +74,6 @@ namespace PT.PM.AntlrUtils
         public static TextSpan GetTextSpan(this ParserRuleContext ruleContext)
         {
             var start = ruleContext.Start;
-            if (start.Text == "<EOF>")
-                return default;
 
             IToken stop = ruleContext.Stop;
             RuleContext parent = ruleContext.Parent;
@@ -89,7 +87,12 @@ namespace PT.PM.AntlrUtils
             }
 
             TextSpan result;
-            if (stop != null && stop.StopIndex >= start.StartIndex)
+
+            if (stop == null)
+            {
+                result = new TextSpan(start.StartIndex, start.StopIndex - start.StartIndex);
+            }
+            else if (stop.StopIndex >= start.StartIndex)
             {
                 result = new TextSpan(start.StartIndex, stop.StopIndex - start.StartIndex);
             }
@@ -111,6 +114,24 @@ namespace PT.PM.AntlrUtils
             return token is LightToken lightToken
                 ? lightToken.TextSpan
                 : new TextSpan(token.StartIndex, token.StopIndex - token.StartIndex);
+        }
+
+        public static ReadOnlySpan<char> ExtractSpan(this IToken token, out TextSpan textSpan)
+        {
+            ReadOnlySpan<char> span;
+
+            if (token is LightToken lightToken)
+            {
+                textSpan = lightToken.TextSpan;
+                span = lightToken.Span;
+            }
+            else
+            {
+                textSpan = token.GetTextSpan();
+                span = token.Text.AsSpan();
+            }
+
+            return span;
         }
 
         public static void LogConversionError(this ILogger logger, Exception ex,

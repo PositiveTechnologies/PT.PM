@@ -20,7 +20,7 @@ namespace PT.PM.CSharpParseTreeUst
 
         public static CSharpRoslynParser Create() => new CSharpRoslynParser();
 
-        public ParseTree Parse(TextFile sourceFile, out TimeSpan parserTimeSpan)
+        public ParseTree Parse(TextFile sourceFile, out TimeSpan timeSpan)
         {
             if (sourceFile.Data == null)
             {
@@ -59,7 +59,7 @@ namespace PT.PM.CSharpParseTreeUst
                     }
                 }
                 stopwatch.Stop();
-                parserTimeSpan = stopwatch.Elapsed;
+                timeSpan = stopwatch.Elapsed;
 
                 result.SourceFile = sourceFile;
                 return result;

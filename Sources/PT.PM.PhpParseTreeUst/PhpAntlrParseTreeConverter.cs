@@ -998,7 +998,7 @@ namespace PT.PM.PhpParseTreeUst
             Expression result;
             if (context.ChildCount == 3)
             {
-                var right = (Expression)Visit(context.expression());
+                var right = Visit(context.expression()).AsExpression();
                 return CreateAssignExpr(left, right, context, context.assignmentOperator());
             }
             else
@@ -1397,7 +1397,7 @@ namespace PT.PM.PhpParseTreeUst
 
         public Ust VisitNumericConstant([NotNull] PhpParser.NumericConstantContext context)
         {
-            ReadOnlySpan<char> span = ExtractSpan(context.GetChild<ITerminalNode>(0).Symbol, out TextSpan textSpan);
+            ReadOnlySpan<char> span = context.GetChild<ITerminalNode>(0).Symbol.ExtractSpan(out TextSpan textSpan);
 
             int fromBase = context.Decimal() != null
                 ? 10

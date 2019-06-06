@@ -138,6 +138,10 @@ namespace PT.PM.Common.Nodes
 
         T Visit(RootUst rootUst);
         T Visit(Collection collection);
+        T Visit(Keyword keyword);
+        T Visit(Operator op);
+        T Visit(Punctuator punctuator);
+        T Visit(RawToken rawToken);
 
         #endregion
     }

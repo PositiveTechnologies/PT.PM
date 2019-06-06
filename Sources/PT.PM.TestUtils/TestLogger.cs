@@ -32,6 +32,8 @@ namespace PT.PM.TestUtils
 
         public string LogsDir { get => throw new InvalidOperationException(); set => throw new InvalidOperationException(); }
 
+        public Action<IMatchResultBase> ProcessMatchResultAction { get; set; }
+
         public IReadOnlyList<IMatchResultBase> Matches => matches;
 
         public IReadOnlyList<ProgressEventArgs> ProgressEventArgses => progressEventArgses;
@@ -70,6 +72,8 @@ namespace PT.PM.TestUtils
                     {
                         matches.Add(matchResult);
                     }
+
+                    ProcessMatchResultAction?.Invoke(matchResult);
                 }
 
                 message = infoObj.ToString();

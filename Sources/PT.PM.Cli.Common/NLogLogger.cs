@@ -21,6 +21,8 @@ namespace PT.PM.Cli.Common
 
         public int ErrorCount => errorCount;
 
+        public Action<IMatchResultBase> ProcessMatchResultAction { get; set; }
+
         public NLogLogger()
             : this(false)
         {
@@ -116,6 +118,8 @@ namespace PT.PM.Cli.Common
                     case MatchResult matchResult:
                         ProcessMatchResult(matchResult.TextSpan, matchResult.SourceFile,
                             matchResult.Pattern.Key, matchResult.Suppressed);
+
+                        ProcessMatchResultAction?.Invoke(matchResult);
                         break;
 
                     default:
