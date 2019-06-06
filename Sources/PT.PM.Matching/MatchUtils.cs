@@ -65,8 +65,8 @@ namespace PT.PM.Matching
 
                 if (textSpan.IsZero)
                 {
-                    result.Add(SafeCreateTextSpan(textSpan.Start + startOffset - escapeLength,
-                        textSpan.Length + 2 * escapeLength, offset: 0, textSpan.File));
+                    result.Add(SafeCreateTextSpan(location.Start + startOffset - escapeLength,
+                        location.Length + 2 * escapeLength, offset: 0, location.File));
                 }
             }
 
