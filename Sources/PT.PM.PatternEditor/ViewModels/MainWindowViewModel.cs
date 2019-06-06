@@ -75,7 +75,7 @@ namespace PT.PM.PatternEditor
 
             if (Settings.Left != -1 && Settings.Top != -1)
             {
-                window.Position = new Point(Settings.Left, Settings.Top);
+                window.Position = new PixelPoint(Settings.Left, Settings.Top);
             }
 
             patternsPanelColumn = window.Find<Grid>("MainGrid").ColumnDefinitions[0];
@@ -137,7 +137,7 @@ namespace PT.PM.PatternEditor
                 }
                 catch (Exception ex)
                 {
-                    new MessageBox($"Unable to open {ServiceLocator.TempDirectory} due to {ex}").ShowDialog();
+                    new MessageBox($"Unable to open {ServiceLocator.TempDirectory} due to {ex}").ShowDialog(window);
                 }
             });
 
@@ -216,7 +216,7 @@ namespace PT.PM.PatternEditor
                     Settings.Save();
                 });
 
-            Observable.FromEventPattern<PointEventArgs>(
+            Observable.FromEventPattern<PixelPointEventArgs>(
                     ev => window.PositionChanged += ev, ev => window.PositionChanged -= ev)
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .ObserveOn(RxApp.MainThreadScheduler)

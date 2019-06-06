@@ -7,15 +7,15 @@ namespace PT.PM.PatternEditor
 {
     public class MessageBox : Window
     {
-        public static async Task<bool> ShowDialog(string message, string title = "", MessageBoxType messageBoxType = MessageBoxType.Ok)
+        public static async Task<bool> ShowDialog(Window owner, string message, string title = "", MessageBoxType messageBoxType = MessageBoxType.Ok)
         {
             var messageBox = new MessageBox(message, title, messageBoxType);
-            return await messageBox.ShowDialog<bool>();
+            return await messageBox.ShowDialog<bool>(owner);
         }
 
         public MessageBox(string message, string title = "", MessageBoxType messageBoxType = MessageBoxType.Ok)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             this.AttachDevTools();
 
             DataContext = new MessageBoxViewModel(this, message, title, messageBoxType);

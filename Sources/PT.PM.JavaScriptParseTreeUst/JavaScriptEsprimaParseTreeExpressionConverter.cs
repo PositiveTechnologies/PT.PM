@@ -442,7 +442,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new UstExprs.MemberReferenceExpression(meta, property, GetTextSpan(metaProperty));
         }
 
-        private ArgsUst VisitArguments(Esprima.Ast.List<ArgumentListElement> arguments)
+        private ArgsUst VisitArguments(NodeList<ArgumentListElement> arguments)
         {
             var args = new Collections.List<UstExprs.Expression>(arguments.Count);
 
@@ -468,7 +468,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new ArgsUst(args);
         }
 
-        private Collections.List<ParameterDeclaration> VisitParameters(Esprima.Ast.List<INode> parameters)
+        private Collections.List<ParameterDeclaration> VisitParameters(NodeList<INode> parameters)
         {
             var result = new Collections.List<ParameterDeclaration>(parameters.Count);
 

@@ -23,16 +23,16 @@ namespace PT.PM.PatternEditor.Pattern
 {
     public class PatternsViewModel : ReactiveObject
     {
-        private static JsonConverter[] jsonConverters = new JsonConverter[] { new StringEnumConverter() };
+        private static readonly JsonConverter[] jsonConverters = { new StringEnumConverter() };
 
         private bool oldIsIncludeTextSpans;
         private bool oldIsLinearTextSpans;
         private bool oldIsIncludeCode;
 
-        private ListBox patternsListBox;
-        private TextEditor patternTextBox;
-        private ListBox patternErrorsListBox;
-        private TextBox logger;
+        private readonly ListBox patternsListBox;
+        private readonly TextEditor patternTextBox;
+        private readonly ListBox patternErrorsListBox;
+        private readonly TextBox logger;
 
         private PatternViewModel selectedPattern;
         private HashSet<string> oldLanguages = new HashSet<string>();
@@ -62,7 +62,7 @@ namespace PT.PM.PatternEditor.Pattern
                     }
                     catch (Exception ex)
                     {
-                        await MessageBox.ShowDialog(ex.Message);
+                        await MessageBox.ShowDialog(ServiceLocator.MainWindow, ex.Message);
                         error = true;
                     }
                 }
@@ -124,7 +124,7 @@ namespace PT.PM.PatternEditor.Pattern
                     }
                     catch (Exception ex)
                     {
-                        await MessageBox.ShowDialog(ex.Message);
+                        await MessageBox.ShowDialog(ServiceLocator.MainWindow,ex.Message);
                         Settings.PatternsFileName = Settings.DefaultPatternsFileName;
                         Settings.Save();
                         SelectedPattern = Patterns.FirstOrDefault();
@@ -144,7 +144,7 @@ namespace PT.PM.PatternEditor.Pattern
 
             RemovePattern = ReactiveCommand.Create(async () =>
             {
-                if (SelectedPattern != null && await MessageBox.ShowDialog($"Do you want to remove {SelectedPattern}?", messageBoxType: MessageBoxType.YesNo))
+                if (SelectedPattern != null && await MessageBox.ShowDialog(ServiceLocator.MainWindow, $"Do you want to remove {SelectedPattern}?", messageBoxType: MessageBoxType.YesNo))
                 {
                     Patterns.Remove(SelectedPattern);
                     SelectedPattern = Patterns.LastOrDefault();

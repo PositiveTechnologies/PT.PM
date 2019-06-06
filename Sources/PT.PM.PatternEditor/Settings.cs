@@ -22,9 +22,9 @@ namespace PT.PM.PatternEditor
 
         public WindowState WindowState { get; set; } = WindowState.Normal;
 
-        public double Left { get; set; } = -1;
+        public int Left { get; set; } = -1;
 
-        public double Top { get; set; } = -1;
+        public int Top { get; set; } = -1;
 
         public double Width { get; set; } = -1;
 
@@ -71,7 +71,7 @@ namespace PT.PM.PatternEditor
         public bool IsLeftRightDir { get; set; } = false;
 
         public static Settings Load()
-        { 
+        {
             if (FileExt.Exists(settingsFileName))
             {
                 try

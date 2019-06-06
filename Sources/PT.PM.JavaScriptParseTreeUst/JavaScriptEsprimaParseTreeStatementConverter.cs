@@ -292,11 +292,11 @@ namespace PT.PM.JavaScriptParseTreeUst
             return new UstStmts.BlockStatement(statements, GetTextSpan(program));
         }
 
-        private Collections.List<UstStmts.Statement> VisitStatements(Esprima.Ast.List<StatementListItem> listItems)
+        private Collections.List<UstStmts.Statement> VisitStatements(NodeList<IStatementListItem> listItems)
         {
             var statements = new Collections.List<UstStmts.Statement>(listItems.Count);
 
-            foreach (StatementListItem listItem in listItems)
+            foreach (IStatementListItem listItem in listItems)
             {
                 statements.Add(VisitStatementListItem(listItem).AsStatement());
             }
@@ -304,18 +304,19 @@ namespace PT.PM.JavaScriptParseTreeUst
             return statements;
         }
 
-        private Ust VisitStatementListItem(StatementListItem listItem)
+        private Ust VisitStatementListItem(IStatementListItem listItem)
         {
             if (listItem is Statement statement)
             {
                 return VisitStatement(statement);
             }
-            else if (listItem is Declaration declaration)
+
+            if (listItem is IDeclaration declaration)
             {
                 return VisitDeclaration(declaration);
             }
 
-            Logger.LogDebug($"Unknown {nameof(StatementListItem)} type {listItem?.GetType().Name}"); // TODO
+            Logger.LogDebug($"Unknown {nameof(IStatementListItem)} type {listItem?.GetType().Name}"); // TODO
             return null;
         }
 
