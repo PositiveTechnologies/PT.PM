@@ -26,10 +26,6 @@ namespace PT.PM.Common
         {
         }
 
-        public void LogError(string message)
-        {
-        }
-
         public void LogInfo(object infoObj)
         {
         }
