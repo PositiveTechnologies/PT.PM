@@ -10,6 +10,8 @@ namespace PT.PM.Common.Nodes.GeneralScope
     [MessagePackObject]
     public class TypeDeclaration : EntityDeclaration, IHasAttributes
     {
+        [Key(0)] public override UstType UstType => UstType.TypeDeclaration;
+
         [Key(EntityFieldOffset)]
         public TypeTypeLiteral Type { get; set; }
 

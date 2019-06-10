@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
     [MessagePackObject]
     public class ParameterDeclaration : Ust
     {
+        [Key(0)] public override UstType UstType => UstType.ParameterDeclaration;
+
         [Key(UstFieldOffset)]
         public InOutModifierLiteral Modifier { get; set; }
 

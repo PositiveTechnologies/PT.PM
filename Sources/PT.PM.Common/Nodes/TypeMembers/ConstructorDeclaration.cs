@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
     [MessagePackObject]
     public class ConstructorDeclaration : MethodDeclaration
     {
+        [Key(0)] public override UstType UstType => UstType.ConstructorDeclaration;
+
         public ConstructorDeclaration(IdToken typeName, IEnumerable<ParameterDeclaration> parameters, BlockStatement body,
             TextSpan textSpan)
             : base(typeName, parameters, body, textSpan)

@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class IntLiteral : Literal, INumericLiteral<int>
     {
+        [Key(0)] public override UstType UstType => UstType.IntLiteral;
+
         [Key(UstFieldOffset)]
         public int Value { get; set; }
 
@@ -29,8 +31,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
         public override int CompareTo(Ust other)
         {
             var baseCompareResult = base.CompareTo(other);
-            return baseCompareResult != 0 
-                ? baseCompareResult 
+            return baseCompareResult != 0
+                ? baseCompareResult
                 : Value.CompareTo(((IntLiteral)other).Value);
         }
     }

@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class FloatLiteral : Literal
     {
+        [Key(0)] public override UstType UstType => UstType.FloatLiteral;
+
         [Key(UstFieldOffset)]
         public double Value { get; set; }
 

@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class WrapperStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.WrapperStatement;
+
         [Key(UstFieldOffset)]
         public Ust Node { get; set; }
 

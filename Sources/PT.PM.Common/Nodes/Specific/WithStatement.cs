@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class WithStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.WithStatement;
+
         [Key(UstFieldOffset)]
         public Ust Expression { get; set; }
 

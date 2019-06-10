@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class ThrowStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.ThrowStatement;
+
         [Key(UstFieldOffset)]
         public Expression ThrowExpression { get; set; }
 

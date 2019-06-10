@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class ModifierLiteral : Literal
     {
+        [Key(0)] public override UstType UstType => UstType.ModifierLiteral;
+
         [Key(UstFieldOffset)]
         public Modifier Modifier { get; set; }
 

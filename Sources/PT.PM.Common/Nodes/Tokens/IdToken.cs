@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Tokens
     [MessagePackObject]
     public class IdToken : Token
     {
+        [Key(0)] public override UstType UstType => UstType.IdToken;
+
         [Key(UstFieldOffset)]
         public string Id { get; set; }
 

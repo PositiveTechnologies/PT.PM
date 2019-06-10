@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class TypeTypeLiteral : Token
     {
+        [Key(0)] public override UstType UstType => UstType.TypeTypeLiteral;
+
         [Key(UstFieldOffset)]
         public TypeType TypeType { get; set; }
 

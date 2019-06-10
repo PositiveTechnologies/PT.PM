@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class ForStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.ForStatement;
+
         [Key(UstFieldOffset)]
         public List<Statement> Initializers { get; set; } = new List<Statement>();
 

@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Sql
     [MessagePackObject]
     public class SqlBlockStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.SqlBlockStatement;
+
         [Key(UstFieldOffset)]
         public IdToken BlockName { get; set; }
 

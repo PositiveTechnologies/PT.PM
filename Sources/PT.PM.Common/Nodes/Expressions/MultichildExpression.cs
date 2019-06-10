@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class MultichildExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.MultichildExpression;
+
         [Key(UstFieldOffset)]
         public List<Expression> Expressions { get; set; }
 

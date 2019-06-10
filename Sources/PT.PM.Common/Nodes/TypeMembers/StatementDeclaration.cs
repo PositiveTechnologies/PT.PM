@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
     [MessagePackObject]
     public class StatementDeclaration : EntityDeclaration
     {
+        [Key(0)] public override UstType UstType => UstType.StatementDeclaration;
+
         [Key(EntityFieldOffset)]
         public Statement Statement { get; set; }
 

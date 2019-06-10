@@ -10,6 +10,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
     [MessagePackObject]
     public class MethodDeclaration : EntityDeclaration, IHasAttributes
     {
+        [IgnoreMember] public override UstType UstType => UstType.MethodDeclaration;
+
         [Key(EntityFieldOffset)]
         public TypeToken ReturnType { get; set; }
 

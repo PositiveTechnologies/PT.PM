@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class CastExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.CastExpression;
+
         [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 

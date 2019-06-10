@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
     [MessagePackObject]
     public class CatchClause : Ust
     {
+        [Key(0)] public override UstType UstType => UstType.CatchClause;
+
         [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 

@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class IndexerExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.IndexerExpression;
+
         [Key(UstFieldOffset)]
         public Expression Target { get; set; }
 

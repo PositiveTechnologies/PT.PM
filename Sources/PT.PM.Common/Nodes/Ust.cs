@@ -11,7 +11,7 @@ namespace PT.PM.Common.Nodes
     [MessagePackObject]
     public abstract class Ust : IComparable<Ust>, IEquatable<Ust>
     {
-        internal const int UstFieldOffset = 2;
+        internal const int UstFieldOffset = 3;
 
         private static readonly PrettyPrinter debuggerPrinter = new PrettyPrinter
         {
@@ -19,16 +19,19 @@ namespace PT.PM.Common.Nodes
             ReduceWhitespaces = true
         };
 
+        [IgnoreMember]
+        public abstract UstType UstType { get; }
+
         [IgnoreMember, JsonIgnore]
         public RootUst Root { get; set; }
 
         [IgnoreMember, JsonIgnore]
         public Ust Parent { get; set; }
 
-        [Key(0), JsonIgnore]
+        [Key(1), JsonIgnore]
         public TextSpan TextSpan { get; set; }
 
-        [Key(1)]
+        [Key(2)]
         public int Key { get; set; }
 
         [IgnoreMember, JsonIgnore]

@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class ObjectCreateExpression : Expression
     {
+        [IgnoreMember] public override UstType UstType => UstType.ObjectCreateExpression;
+
         [Key(UstFieldOffset)]
         public Expression Type { get; set; }
 

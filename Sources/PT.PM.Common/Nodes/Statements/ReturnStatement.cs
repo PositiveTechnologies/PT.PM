@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class ReturnStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.ReturnStatement;
+
         [Key(UstFieldOffset)]
         public Expression Return { get; set; }
 

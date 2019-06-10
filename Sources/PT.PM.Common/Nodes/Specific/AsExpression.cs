@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class AsExpression : SpecificExpression
     {
+        [Key(0)] public override UstType UstType => UstType.AsExpression;
+
         [Key(UstFieldOffset)]
         public Expression Expression { get; set; }
 

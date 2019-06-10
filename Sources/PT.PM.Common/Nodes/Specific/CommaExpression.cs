@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class CommaExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.CommaExpression;
+
         [Key(UstFieldOffset)]
         public List<Expression> Expressions { get; set; } = new List<Expression>();
 
@@ -19,7 +21,7 @@ namespace PT.PM.Common.Nodes.Specific
 
         public CommaExpression()
         {
-        } 
+        }
 
         public override Expression[] GetArgs() => Expressions.ToArray();
 

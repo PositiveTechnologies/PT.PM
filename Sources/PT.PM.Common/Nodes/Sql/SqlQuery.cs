@@ -10,6 +10,8 @@ namespace PT.PM.Common.Nodes.Sql
     [MessagePackObject]
     public class SqlQuery : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.SqlQuery;
+
         [Key(UstFieldOffset)]
         public Expression QueryCommand { get; set; }
 

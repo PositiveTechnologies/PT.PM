@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class LockStatement : SpecificStatement
     {
+        [Key(0)] public override UstType UstType => UstType.LockStatement;
+
         [Key(UstFieldOffset)]
         public Expression Lock { get; set; }
 

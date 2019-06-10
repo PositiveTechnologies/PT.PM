@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class BreakStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.BreakStatement;
+
         [Key(UstFieldOffset)]
         public Expression Expression  { get; set; }
 

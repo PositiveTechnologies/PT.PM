@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class TupleCreateExpression : ObjectCreateExpression
     {
+        [Key(0)] public override UstType UstType => UstType.TupleCreateExpression;
+
         public override Ust[] GetChildren()
         {
             if (Initializers != null)
@@ -26,7 +28,7 @@ namespace PT.PM.Common.Nodes.Expressions
             sb.Append("(");
             foreach(var initializer in Initializers)
             {
-                sb.Append(initializer.ToString());
+                sb.Append(initializer);
                 sb.Append(", ");
             }
             sb.Append(")");

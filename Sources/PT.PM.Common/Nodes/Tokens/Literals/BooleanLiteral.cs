@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class BooleanLiteral : Literal
     {
+        [Key(0)] public override UstType UstType => UstType.BooleanLiteral;
+
         [Key(UstFieldOffset)]
         public bool Value { get; set; }
 
@@ -21,7 +23,7 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
 
         [IgnoreMember]
         public override string TextValue => Value.ToString();
-        
+
         public BooleanLiteral()
         {
         }

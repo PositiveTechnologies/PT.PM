@@ -6,10 +6,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class BigIntLiteral : Literal, INumericLiteral<BigInteger>
     {
-        [Key(UstFieldOffset)] 
+        [Key(0)] public override UstType UstType => UstType.BigIntLiteral;
+
+        [Key(UstFieldOffset)]
         public BigInteger Value { get; set; }
 
-        [IgnoreMember] 
+        [IgnoreMember]
         public override string TextValue => Value.ToString();
 
         public BigIntLiteral(BigInteger value)

@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class BlockStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.BlockStatement;
+
         [Key(UstFieldOffset)]
         public List<Statement> Statements { get; set; } = new List<Statement>();
 

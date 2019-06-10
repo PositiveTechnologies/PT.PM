@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.TypeMembers
     [MessagePackObject]
     public class PropertyDeclaration : EntityDeclaration
     {
+        [Key(0)] public override UstType UstType => UstType.PropertyDeclaration;
+
         [Key(EntityFieldOffset)]
         public TypeToken Type { get; set; }
 

@@ -5,10 +5,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
     [MessagePackObject]
     public class LongLiteral : Literal, INumericLiteral<long>
     {
-        [Key(UstFieldOffset)] 
+        [Key(0)] public override UstType UstType => UstType.LongLiteral;
+
+        [Key(UstFieldOffset)]
         public long Value { get; set; }
 
-        [IgnoreMember] 
+        [IgnoreMember]
         public override string TextValue => Value.ToString();
 
         public LongLiteral(long value)

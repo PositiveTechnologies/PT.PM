@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class ConditionalExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.ConditionalExpression;
+
         [Key(UstFieldOffset)]
         public Expression Condition { get; set; }
 

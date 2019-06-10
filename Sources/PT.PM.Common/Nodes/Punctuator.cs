@@ -1,11 +1,13 @@
 using System;
 using MessagePack;
 
-namespace PT.PM.Common.Nodes.Tokens
+namespace PT.PM.Common.Nodes
 {
     [MessagePackObject]
     public class Punctuator : Ust, ITerminal, IOperatorOrPunctuator
     {
+        [Key(0)] public override UstType UstType => UstType.Punctuator;
+
         public Punctuator(TextSpan textSpan, RootUst rootUst)
             : base(textSpan)
         {

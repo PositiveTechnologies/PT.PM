@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class BinaryOperatorExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.BinaryOperatorExpression;
+
         [Key(UstFieldOffset)]
         public Expression Left { get; set; }
 

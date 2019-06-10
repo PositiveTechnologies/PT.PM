@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Tokens
     [MessagePackObject]
     public class TypeToken : Token
     {
+        [Key(0)] public override UstType UstType => UstType.TypeToken;
+
         [Key(UstFieldOffset)]
         public string TypeText { get; set; }
 

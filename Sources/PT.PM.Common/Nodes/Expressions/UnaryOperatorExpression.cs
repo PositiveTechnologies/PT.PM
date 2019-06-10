@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class UnaryOperatorExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.UnaryOperatorExpression;
+
         [Key(UstFieldOffset)]
         public UnaryOperatorLiteral Operator { get; set; }
 

@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class TypeDeclarationStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.TypeDeclarationStatement;
+
         [Key(UstFieldOffset)]
         public TypeDeclaration TypeDeclaration { get;set; }
 

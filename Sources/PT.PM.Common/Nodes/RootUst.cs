@@ -12,6 +12,8 @@ namespace PT.PM.Common.Nodes
     {
         private Language[] sublanguages;
 
+        [Key(0)] public override UstType UstType => UstType.RootUst;
+
         [JsonIgnore, IgnoreMember]
         public int FileKey { get; set; }
 

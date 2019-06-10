@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class InvocationExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.InvocationExpression;
+
         [Key(UstFieldOffset)]
         public Expression Target { get; set; }
 

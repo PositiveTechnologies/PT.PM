@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes
     [MessagePackObject]
     public class Attribute : Ust
     {
+        [Key(0)] public override UstType UstType => UstType.Attribute;
+
         [Key(UstFieldOffset)]
         public Expression Expression { get; set; }
 

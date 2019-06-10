@@ -10,6 +10,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class FixedStatement : SpecificStatement
     {
+        [Key(0)] public override UstType UstType => UstType.FixedStatement;
+
         [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 

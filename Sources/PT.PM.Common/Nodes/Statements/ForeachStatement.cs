@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class ForeachStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.ForeachStatement;
+
         [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 

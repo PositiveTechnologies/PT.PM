@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class WrapperExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.WrapperExpression;
+
         [Key(UstFieldOffset)]
         public Ust Node { get; set; }
 

@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Statements.Switch
     [MessagePackObject]
     public class SwitchSection : Ust
     {
+        [Key(0)] public override UstType UstType => UstType.SwitchSection;
+
         [Key(UstFieldOffset)]
         public List<Expression> CaseLabels { get; set; } = new List<Expression>();
 

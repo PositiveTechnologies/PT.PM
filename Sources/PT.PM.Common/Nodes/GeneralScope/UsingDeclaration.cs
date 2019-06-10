@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.GeneralScope
     [MessagePackObject]
     public class UsingDeclaration : Ust
     {
+        [Key(0)] public override UstType UstType => UstType.UsingDeclaration;
+
         [Key(UstFieldOffset)]
         public StringLiteral Name { get; set; }
 

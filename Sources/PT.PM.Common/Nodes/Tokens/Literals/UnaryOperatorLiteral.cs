@@ -29,9 +29,11 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ["--"] = UnaryOperator.PostDecrement,
         };
 
+        [Key(0)] public override UstType UstType => UstType.UnaryOperatorLiteral;
+
         [Key(UstFieldOffset)]
         public UnaryOperator UnaryOperator { get; set; }
-        
+
         [IgnoreMember]
         public override string TextValue => UnaryOperator.ToString();
 

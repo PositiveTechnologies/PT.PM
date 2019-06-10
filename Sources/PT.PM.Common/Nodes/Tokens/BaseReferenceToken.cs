@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Tokens
     [MessagePackObject]
     public class BaseReferenceToken : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.BaseReferenceToken;
+
         public BaseReferenceToken(TextSpan textSpan)
             : base(textSpan)
         {

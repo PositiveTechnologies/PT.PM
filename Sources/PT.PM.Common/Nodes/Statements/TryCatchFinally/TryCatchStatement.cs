@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Statements.TryCatchFinally
     [MessagePackObject]
     public class TryCatchStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.TryCatchStatement;
+
         [Key(UstFieldOffset)]
         public BlockStatement TryBlock { get; set; }
 

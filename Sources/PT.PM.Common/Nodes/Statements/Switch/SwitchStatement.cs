@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Statements.Switch
     [MessagePackObject]
     public class SwitchStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.SwitchStatement;
+
         [Key(UstFieldOffset)]
         public Expression Expression { get; set; }
 

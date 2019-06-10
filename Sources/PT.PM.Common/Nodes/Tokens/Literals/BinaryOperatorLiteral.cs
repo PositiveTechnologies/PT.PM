@@ -55,10 +55,12 @@ namespace PT.PM.Common.Nodes.Tokens.Literals
             ["is"] = BinaryOperator.Is,
             ["@"] = BinaryOperator.MultiplyArray,
             ["//"] = BinaryOperator.Divide,
-            
+
             //PL\SQL
             ["="] = BinaryOperator.Equal,
         };
+
+        [Key(0)] public override UstType UstType => UstType.BinaryOperatorLiteral;
 
         [Key(UstFieldOffset)]
         public BinaryOperator BinaryOperator { get; set; }

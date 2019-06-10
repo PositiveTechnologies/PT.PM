@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class WhileStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.WhileStatement;
+
         [Key(UstFieldOffset)]
         public Expression Condition { get; set; }
 

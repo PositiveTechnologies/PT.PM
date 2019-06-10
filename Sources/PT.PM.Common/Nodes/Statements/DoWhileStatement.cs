@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class DoWhileStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.DoWhileStatement;
+
         [Key(UstFieldOffset)]
         public Statement EmbeddedStatement { get; set; }
 

@@ -9,6 +9,8 @@ namespace PT.PM.Common.Nodes.Sql
     [MessagePackObject]
     public class QueryArgs : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.QueryArgs;
+
         [Key(UstFieldOffset)]
         public Collection Parameters { get; set; }
 

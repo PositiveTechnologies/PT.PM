@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class VariableDeclarationExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.VariableDeclarationExpression;
+
         [Key(UstFieldOffset)]
         public TypeToken Type { get; set; }
 

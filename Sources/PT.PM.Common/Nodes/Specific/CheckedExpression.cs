@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class CheckedExpression : SpecificExpression
     {
+        [Key(0)] public override UstType UstType => UstType.CheckedExpression;
+
         [Key(UstFieldOffset)]
         public Expression Expression { get; set; }
 

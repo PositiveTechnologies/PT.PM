@@ -9,6 +9,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class ArrayPatternExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.ArrayPatternExpression;
+
         [Key(UstFieldOffset)]
         public List<ParameterDeclaration> Elements { get; set; } = new List<ParameterDeclaration>();
 

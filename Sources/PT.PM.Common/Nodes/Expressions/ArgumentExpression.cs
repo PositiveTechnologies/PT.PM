@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class ArgumentExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.ArgumentExpression;
+
         [Key(UstFieldOffset)]
         public InOutModifierLiteral Modifier { get; set; }
 

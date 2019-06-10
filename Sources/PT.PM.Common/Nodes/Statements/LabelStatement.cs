@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class LabelStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.LabelStatement;
+
         [Key(UstFieldOffset)]
         public IdToken Label { get; set; }
 

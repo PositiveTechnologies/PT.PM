@@ -6,7 +6,9 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class AssignmentExpression : Expression
     {
-        [Key(UstFieldOffset)]
+        [Key(0)] public override UstType UstType => UstType.AssignmentExpression;
+
+        [Key(UstFieldOffset )]
         public Expression Left { get; set; }
 
         [Key(UstFieldOffset + 1)]

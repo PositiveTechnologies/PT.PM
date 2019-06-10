@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Statements
     [MessagePackObject]
     public class GotoStatement : Statement
     {
+        [Key(0)] public override UstType UstType => UstType.GotoStatement;
+
         [Key(UstFieldOffset)]
         public Expression Id { get; set; }
 

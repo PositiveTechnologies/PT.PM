@@ -6,6 +6,8 @@ namespace PT.PM.Common.Nodes.Specific
     [MessagePackObject]
     public class UnsafeStatement : SpecificStatement
     {
+        [Key(0)] public override UstType UstType => UstType.UnsafeStatement;
+
         [Key(UstFieldOffset)]
         public BlockStatement Body { get; set; }
 

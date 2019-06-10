@@ -1,11 +1,13 @@
 using System;
 using MessagePack;
 
-namespace PT.PM.Common.Nodes.Tokens
+namespace PT.PM.Common.Nodes
 {
     [MessagePackObject]
     public class RawToken : Ust, ITerminal
     {
+        [Key(0)] public override UstType UstType => UstType.RawToken;
+
         public RawToken(TextSpan textSpan, RootUst rootUst)
             : base(textSpan)
         {

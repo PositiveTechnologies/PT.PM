@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.GeneralScope
     [MessagePackObject]
     public class NamespaceDeclaration : Ust
     {
+        [Key(0)] public override UstType UstType => UstType.NamespaceDeclaration;
+
         [Key(UstFieldOffset)]
         public StringLiteral Name { get; set; }
 

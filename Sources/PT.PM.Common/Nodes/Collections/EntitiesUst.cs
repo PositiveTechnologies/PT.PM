@@ -7,6 +7,8 @@ namespace PT.PM.Common.Nodes.Collections
     [MessagePackObject]
     public class EntitiesUst : CollectionNode<EntityDeclaration>
     {
+        [Key(0)] public override UstType UstType => UstType.EntitiesUst;
+
         public EntitiesUst(List<EntityDeclaration> entities, TextSpan textSpan)
             : base(entities, textSpan)
         {

@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class AnonymousObjectExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.AnonymousObjectExpression;
+
         [Key(UstFieldOffset)]
         public List<PropertyDeclaration> Properties { get; set; } = new List<PropertyDeclaration>();
 

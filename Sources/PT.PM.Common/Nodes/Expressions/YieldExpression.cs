@@ -5,6 +5,8 @@ namespace PT.PM.Common.Nodes.Expressions
     [MessagePackObject]
     public class YieldExpression : Expression
     {
+        [Key(0)] public override UstType UstType => UstType.YieldExpression;
+
         // if null: yield return Argument
         // if not null: yield break
         [Key(UstFieldOffset)]

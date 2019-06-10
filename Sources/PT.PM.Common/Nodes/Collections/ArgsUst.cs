@@ -8,6 +8,8 @@ namespace PT.PM.Common.Nodes.Collections
     [MessagePackObject]
     public class ArgsUst : CollectionNode<Expression>
     {
+        [Key(0)] public override UstType UstType => UstType.ArgsUst;
+
         public ArgsUst(IEnumerable<Expression> args, TextSpan textSpan)
             : base(args, textSpan)
         {
