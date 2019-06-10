@@ -13,14 +13,14 @@ namespace PT.PM.Common.Reflection
     {
         private static readonly HashSet<Type> registeredTypes;
         private static readonly Dictionary<string, Type> kindClassType;
-        private static readonly Dictionary<Type, (byte Type, PropertyInfo[] Properties)> typeSerializableProperties;
+        private static readonly Dictionary<Type, PropertyInfo[]> typeSerializableProperties;
         private static readonly Type[] ustTypes;
 
         static ReflectionCache()
         {
             registeredTypes = new HashSet<Type>();
             kindClassType = new Dictionary<string, Type>();
-            typeSerializableProperties = new Dictionary<Type, (byte NodeType, PropertyInfo[] Properties)>();
+            typeSerializableProperties = new Dictionary<Type, PropertyInfo[]>();
 
             Assembly ustAssembly = typeof(Ust).Assembly;
             var types = (UstType[]) Enum.GetValues(typeof(UstType));
@@ -77,6 +77,7 @@ namespace PT.PM.Common.Reflection
                     // TODO: cover with MessagePack attributes PatternUst types?
                     if (messagePack)
                     {
+                        const int startIndex = 1;
                         var serializableProperties = new PropertyInfo[properties.Length];
                         int actualLength = 0;
 
@@ -98,10 +99,10 @@ namespace PT.PM.Common.Reflection
                             }
                         }
 
-                        for (int i = 0; i < serializableProperties.Length; i++)
+                        for (int i = startIndex; i < serializableProperties.Length; i++)
                         {
                             var keyAttribute = serializableProperties[i]?.GetCustomAttribute<KeyAttribute>();
-                            if (i < actualLength)
+                            if (i - startIndex < actualLength)
                             {
                                 if (keyAttribute == null)
                                 {
@@ -122,20 +123,13 @@ namespace PT.PM.Common.Reflection
                         if (actualLength < serializableProperties.Length)
                         {
                             var newArray = new PropertyInfo[actualLength];
-                            Array.Copy(serializableProperties, newArray, actualLength);
+                            Array.Copy(serializableProperties, startIndex, newArray, 0, actualLength);
                             serializableProperties = newArray;
                         }
 
                         lock (typeSerializableProperties)
                         {
-                            if (Enum.TryParse(type.Name, out UstType ustType))
-                            {
-                                typeSerializableProperties.Add(type, ((byte)ustType, serializableProperties));
-                            }
-                            else
-                            {
-                                throw new InvalidDataContractException($"Type {type.Name} does not have corresponding {nameof(UstType)}");
-                            }
+                            typeSerializableProperties.Add(type, serializableProperties);
                         }
                     }
                     else
@@ -153,7 +147,7 @@ namespace PT.PM.Common.Reflection
 
                         lock (typeSerializableProperties)
                         {
-                            typeSerializableProperties.Add(type, (0, serializableProperties.ToArray()));
+                            typeSerializableProperties.Add(type, serializableProperties.ToArray());
                         }
                     }
                 }
@@ -163,12 +157,8 @@ namespace PT.PM.Common.Reflection
         public static bool TryGetClassType(string kind, out Type type) =>
             kindClassType.TryGetValue(kind.ToLowerInvariant(), out type);
 
-        internal static PropertyInfo[] GetSerializableProperties(this Type ustType, out byte type)
-        {
-            var typeProperties = typeSerializableProperties[ustType];
-            type = typeProperties.Type;
-            return typeProperties.Properties;
-        }
+        internal static PropertyInfo[] GetSerializableProperties(this Type ustType)
+            => typeSerializableProperties[ustType];
 
         internal static Ust CreateUst(byte nodeType) => (Ust)Activator.CreateInstance(ustTypes[nodeType]);
     }

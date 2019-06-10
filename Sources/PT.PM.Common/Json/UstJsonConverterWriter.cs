@@ -43,7 +43,7 @@ namespace PT.PM.Common.Json
             var jObject = new JObject();
             Type type = value.GetType();
             jObject.Add(nameof(Ust.Kind), type.Name);
-            PropertyInfo[] properties = type.GetSerializableProperties(out _);
+            PropertyInfo[] properties = type.GetSerializableProperties();
 
             if (type == typeof(RootUst))
             {

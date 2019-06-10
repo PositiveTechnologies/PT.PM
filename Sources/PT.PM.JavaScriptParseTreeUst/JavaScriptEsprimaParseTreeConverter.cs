@@ -10,11 +10,9 @@ using UstSpecific = PT.PM.Common.Nodes.Specific;
 using UstStmts = PT.PM.Common.Nodes.Statements;
 using Collections = System.Collections.Generic;
 using PT.PM.Common.Nodes.TypeMembers;
-using Esprima;
 using System.Threading;
 using PT.PM.Common.Files;
-using PT.PM.Common.Nodes.Tokens.Literals;
-using Comment = PT.PM.Common.Nodes.Tokens.Literals.Comment;
+using Comment = PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.JavaScriptParseTreeUst
 {
@@ -54,13 +52,13 @@ namespace PT.PM.JavaScriptParseTreeUst
 
                 root.Nodes = new Ust[] {program};
 
-                var comments = new Collections.List<Comment>(esprimaParseTree.Comments.Count);
+                var comments = new List<Common.Nodes.Comment>(esprimaParseTree.Comments.Count);
                 foreach (Esprima.Comment comment in esprimaParseTree.Comments)
                 {
                     TextSpan textSpan = GetTextSpan(comment);
-                    comments.Add(new Comment(textSpan, root)
+                    comments.Add(new Common.Nodes.Comment(textSpan, root)
                     {
-                        Root = root,
+                        Root = root
                     });
                 }
 

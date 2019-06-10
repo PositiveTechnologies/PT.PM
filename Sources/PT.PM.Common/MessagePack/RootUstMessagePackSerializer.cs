@@ -149,10 +149,10 @@ namespace PT.PM.Common.MessagePack
                 return MessagePackBinary.WriteNil(ref bytes, offset);
             }
 
-            PropertyInfo[] serializableProperties = value.GetType().GetSerializableProperties(out byte type);
+            PropertyInfo[] serializableProperties = value.GetType().GetSerializableProperties();
 
             int newOffset = offset;
-            newOffset += MessagePackBinary.WriteByte(ref bytes, newOffset, type);
+            newOffset += MessagePackBinary.WriteByte(ref bytes, newOffset, (byte)value.UstType);
 
             foreach (PropertyInfo property in serializableProperties)
             {
@@ -333,7 +333,7 @@ namespace PT.PM.Common.MessagePack
                 }
                 ancestors.Push(ust);
 
-                PropertyInfo[] serializableProperties = ust.GetType().GetSerializableProperties(out _);
+                PropertyInfo[] serializableProperties = ust.GetType().GetSerializableProperties();
                 foreach (PropertyInfo property in serializableProperties)
                 {
                     if (MessagePackBinary.IsNil(bytes, newOffset))

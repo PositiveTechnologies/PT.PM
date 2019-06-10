@@ -21,7 +21,7 @@ namespace PT.PM.Common.Reflection
             }
 
             Type type = node.GetType();
-            PropertyInfo[] properties = type.GetSerializableProperties(out _);
+            PropertyInfo[] properties = type.GetSerializableProperties();
 
             TOutput result = Clone ? (TOutput)Activator.CreateInstance(type) : default;
             foreach (PropertyInfo prop in properties)
