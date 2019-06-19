@@ -58,7 +58,7 @@ namespace PT.PM.JavaScriptParseTreeUst
             {
                 var exception = CreateException(index, message);
                 Logger.LogError(exception);
-                result = new ParserException(exception.ToString());
+                result = new ParserException(exception.ToString(), exception);
             }
 
             LastErrorIndex = index;

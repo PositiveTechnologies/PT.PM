@@ -17,13 +17,13 @@ namespace PT.PM.Common
 
         public bool Trim { get; set; } = true;
 
-        public bool CutWords { get; set; } = false;
+        public bool CutWords { get; set; }
 
-        public bool ReduceWhitespaces { get; set; } = false;
+        public bool ReduceWhitespaces { get; set; }
 
-        public bool TrimIndent { get; set; } = false;
+        public bool TrimIndent { get; set; }
 
-        public bool Escape { get; set; } = false;
+        public bool Escape { get; set; }
 
         public string Print(string message)
         {

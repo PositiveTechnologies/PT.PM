@@ -70,7 +70,11 @@ namespace PT.PM.JavaScriptParseTreeUst
                     catch (Exception ex) when (!(ex is ThreadAbortException))
                     {
                         // TODO: handle the end of the stream without exception
-                        Logger.LogError(new ParsingException(sourceFile, ex));
+                        var parsingException = ex is ParserException parserException &&
+                                               parserException.InnerException is ParsingException innerException
+                                               ? innerException
+                                               : new ParsingException(sourceFile, ex);
+                        Logger.LogError(parsingException);
                         break;
                     }
                 }
