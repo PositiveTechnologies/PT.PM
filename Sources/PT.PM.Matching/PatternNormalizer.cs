@@ -11,7 +11,7 @@ namespace PT.PM.Matching
 {
     public class PatternNormalizer : PatternVisitor<PatternUst>
     {
-        private static PropertyCloner<PatternUst> propertyEnumerator = new PropertyCloner<PatternUst>
+        private static readonly PropertyCloner<PatternUst> propertyEnumerator = new PropertyCloner<PatternUst>
         {
             IgnoredProperties = new HashSet<string> { nameof(PatternUst.Parent), nameof(PatternUst.Root) }
         };
@@ -29,8 +29,8 @@ namespace PT.PM.Matching
                 DebugInfo = pattern.DebugInfo,
                 Node = Visit(pattern.Node),
             };
-            var ascendantsFiller = new PatternAscendantsFiller(newPattern);
-            ascendantsFiller.FillAscendants();
+            var ascendantsFiller = new PatternParentRootFiller(newPattern);
+            ascendantsFiller.FillParentAndRootForDescendantsAndSelf();
             return newPattern;
         }
 

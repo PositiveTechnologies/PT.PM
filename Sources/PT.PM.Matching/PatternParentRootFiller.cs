@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 namespace PT.PM.Matching
 {
-    public class PatternAscendantsFiller : PatternVisitor<PatternUst>
+    public class PatternParentRootFiller : PatternVisitor<PatternUst>
     {
         private PatternRoot patternRoot;
         private Stack<PatternUst> parents;
 
-        public PatternAscendantsFiller(PatternRoot patternRoot)
+        public PatternParentRootFiller(PatternRoot patternRoot)
         {
             this.patternRoot = patternRoot;
             parents = new Stack<PatternUst>();
         }
 
-        public void FillAscendants()
+        public void FillParentAndRootForDescendantsAndSelf()
         {
             Visit(patternRoot.Node);
         }

@@ -52,7 +52,7 @@ namespace PT.PM.CSharpParseTreeUst
                     result = new RootUst(sourceFile, Language);
                     result.Node = visited;
                 }
-                result.FillAscendants();
+                result.FillParentAndRootForDescendantsAndSelf();
 
                 return result;
             }

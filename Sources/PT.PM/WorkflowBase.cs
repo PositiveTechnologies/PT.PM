@@ -167,7 +167,7 @@ namespace PT.PM
                 {
                     parseTree = LogParseTree(sourceFile, detectionResult);
                 }
-                else if (!detectionResult.Language.IsParserConverter())
+                else if (!detectionResult.Language.HasParserConverter())
                 {
                     parseTree = Parse(workflowResult, sourceFile, detectionResult.Language, cancellationToken);
 
@@ -339,7 +339,7 @@ namespace PT.PM
             if (!isSerializing)
             {
                 Language detectedLanguage = detectionResult.Language;
-                if (detectedLanguage.IsParserConverter())
+                if (detectedLanguage.HasParserConverter())
                 {
                     var parserConverter = (AntlrParserConverter) detectedLanguage.CreateParserConverter();
                     parserConverter.Logger = Logger;

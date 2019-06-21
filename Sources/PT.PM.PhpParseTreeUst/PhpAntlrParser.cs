@@ -47,8 +47,8 @@ namespace PT.PM.PhpParseTreeUst
 
         protected override ParserRuleContext Parse(Parser parser) => ((PhpParser) parser).htmlDocument();
 
-        protected override AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree) =>
-            new PhpAntlrParseTree((PhpParser.HtmlDocumentContext) syntaxTree);
+        protected override AntlrParseTree CreateParseTree(ParserRuleContext parserRuleContext) =>
+            new PhpAntlrParseTree((PhpParser.HtmlDocumentContext) parserRuleContext);
 
         protected override string ParserSerializedATN => PhpParser._serializedATN;
     }

@@ -14,17 +14,17 @@ namespace PT.PM.AntlrUtils
     /// </summary>
     public abstract class AntlrListenerConverter : IParseTreeListener, ILoggable
     {
-        private static readonly char[] trimChar = {'\''};
+        private static readonly char[] trimChars = {'\''};
 
-        private int childNodesIndex = -1;
-        private readonly List<Usts> childNodes = new List<Usts>();
+        private int childrenNodesIndex = -1;
+        private readonly List<Usts> childrenNodes = new List<Usts>();
         private readonly AntlrParserConverter antlrParserConverter;
         private readonly AntlrConvertHelper convertHelper;
         protected readonly RootUst root;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 
-        public bool IsParseTreeExisting { get; set; }
+        public bool IsParseTreeExists { get; set; }
 
         protected AntlrListenerConverter(TextFile sourceFile, AntlrParserConverter antlrParser)
         {
@@ -35,7 +35,7 @@ namespace PT.PM.AntlrUtils
         }
 
         /// <summary>
-        /// Calls at the end of conversion process.
+        /// Gets called at the end of conversion process
         /// </summary>
         public RootUst Complete()
         {
@@ -43,17 +43,17 @@ namespace PT.PM.AntlrUtils
             root.Node = GetChildren()[0];
             PopChildren();
             Clear();
-            root.FillAscendants(); // TODO: should be filled during conversion
+            root.FillParentAndRootForDescendantsAndSelf(); // TODO: should be filled during conversion
             return root;
         }
 
         public void Clear()
         {
-            for (int i = 0; i <= childNodesIndex; i++)
+            for (int i = 0; i <= childrenNodesIndex; i++)
             {
-                childNodes[i].Clear();
+                childrenNodes[i].Clear();
             }
-            childNodesIndex = -1;
+            childrenNodesIndex = -1;
             PushNew(null);
         }
 
@@ -91,7 +91,7 @@ namespace PT.PM.AntlrUtils
                 }
             }
 
-            child = default;
+            child = null;
             return -1;
         }
 
@@ -114,7 +114,7 @@ namespace PT.PM.AntlrUtils
 
             foreach (int tokenType in tokenTypes)
             {
-                string tokenValue = antlrParserConverter.LexerVocabulary.GetDisplayName(tokenType).Trim(trimChar);
+                string tokenValue = antlrParserConverter.LexerVocabulary.GetDisplayName(tokenType).Trim(trimChars);
                 bool result = convertHelper.Language.IsCaseInsensitive()
                     ? substring.EqualsIgnoreCase(tokenValue)
                     : substring.Equals(tokenValue);
@@ -143,7 +143,7 @@ namespace PT.PM.AntlrUtils
                 return false;
             }
 
-            string tokenValue = antlrParserConverter.LexerVocabulary.GetDisplayName(tokenType).Trim(trimChar);
+            string tokenValue = antlrParserConverter.LexerVocabulary.GetDisplayName(tokenType).Trim(trimChars);
 
             string substring = ust.ToString();
             return convertHelper.Language.IsCaseInsensitive()
@@ -193,7 +193,7 @@ namespace PT.PM.AntlrUtils
         {
             Ust leftChild;
 
-            if (!IsParseTreeExisting)
+            if (!IsParseTreeExists)
             {
                 PopChildren();
                 var children = GetChildren();
@@ -226,29 +226,29 @@ namespace PT.PM.AntlrUtils
             AddChild(result);
         }
 
-        protected Ust GetChild(int index) => childNodes[childNodesIndex][index];
+        protected Ust GetChild(int index) => childrenNodes[childrenNodesIndex][index];
 
-        protected List<Ust> GetChildren() => childNodes[childNodesIndex];
+        protected List<Ust> GetChildren() => childrenNodes[childrenNodesIndex];
 
-        private void AddChild(Ust result) => childNodes[childNodesIndex].Add(result);
+        private void AddChild(Ust result) => childrenNodes[childrenNodesIndex].Add(result);
 
         private void PopChildren()
         {
-            childNodes[childNodesIndex].Clear();
-            childNodesIndex = childNodesIndex - 1;
+            childrenNodes[childrenNodesIndex].Clear();
+            childrenNodesIndex = childrenNodesIndex - 1;
         }
 
         private void PushNew(ParserRuleContext parserRuleContext)
         {
-            childNodesIndex = childNodesIndex + 1;
+            childrenNodesIndex = childrenNodesIndex + 1;
             var newList = new Usts(parserRuleContext);
-            if (childNodesIndex >= childNodes.Count)
+            if (childrenNodesIndex >= childrenNodes.Count)
             {
-                childNodes.Add(newList);
+                childrenNodes.Add(newList);
             }
             else
             {
-                childNodes[childNodesIndex] = newList;
+                childrenNodes[childrenNodesIndex] = newList;
             }
         }
     }

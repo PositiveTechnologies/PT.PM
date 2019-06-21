@@ -47,7 +47,7 @@ namespace PT.PM.AntlrUtils
                 loggable.Logger = Logger;
             }
 
-            listener.IsParseTreeExisting = true;
+            listener.IsParseTreeExists = true;
             var parseTreeWalker = new ParseTreeWalker();
             parseTreeWalker.Walk(listener, parseTree.SyntaxTree);
 

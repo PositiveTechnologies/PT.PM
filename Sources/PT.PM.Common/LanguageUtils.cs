@@ -115,7 +115,7 @@ namespace PT.PM.Common
 
         public static bool IsAntlr(this Language language) => LanguageInfos[language].HasAntlrParser;
 
-        public static bool IsParserConverter(this Language language) =>
+        public static bool HasParserConverter(this Language language) =>
             parserConverterConstructors.ContainsKey(language);
 
         public static string GetTitle(this Language language) => LanguageInfos[language].Title;

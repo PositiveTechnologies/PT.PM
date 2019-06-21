@@ -95,7 +95,7 @@ namespace PT.PM.Common.Nodes
             return result;
         }
 
-        public static void FillAscendants(this Ust ust)
+        public static void FillParentAndRootForDescendantsAndSelf(this Ust ust)
         {
             if (ust == null)
             {
@@ -114,7 +114,7 @@ namespace PT.PM.Common.Nodes
                         child.Parent = localUst;
                         if (child is RootUst rootUstChild)
                         {
-                            FillAscendants(rootUstChild);
+                            FillParentAndRootForDescendantsAndSelf(rootUstChild);
                         }
                         else
                         {

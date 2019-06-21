@@ -69,7 +69,7 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
                         Root = result
                     })
                     .ToArray();
-                result.FillAscendants();
+                result.FillParentAndRootForDescendantsAndSelf();
 
                 return result;
             }

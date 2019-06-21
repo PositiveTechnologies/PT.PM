@@ -11,8 +11,8 @@ namespace PT.PM.PlSqlParseTreeUst
     {
         public static PlSqlAntlrParserConverter Create() => new PlSqlAntlrParserConverter();
 
-        protected override AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree) =>
-            new PlSqlAntlrParseTree((PlSqlParser.Sql_scriptContext) syntaxTree);
+        protected override AntlrParseTree CreateParseTree(ParserRuleContext parserRuleContext) =>
+            new PlSqlAntlrParseTree((PlSqlParser.Sql_scriptContext) parserRuleContext);
 
         public override Language Language => Language.PlSql;
 

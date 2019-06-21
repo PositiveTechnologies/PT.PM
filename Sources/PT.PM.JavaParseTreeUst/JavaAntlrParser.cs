@@ -48,8 +48,8 @@ namespace PT.PM.JavaParseTreeUst
         protected override ParserRuleContext Parse(Parser parser) =>
             ((JavaParser) parser).compilationUnit();
 
-        protected override AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree) =>
-            new JavaAntlrParseTree((JavaParser.CompilationUnitContext) syntaxTree);
+        protected override AntlrParseTree CreateParseTree(ParserRuleContext parserRuleContext) =>
+            new JavaAntlrParseTree((JavaParser.CompilationUnitContext) parserRuleContext);
 
         protected override string ParserSerializedATN => JavaParser._serializedATN;
     }

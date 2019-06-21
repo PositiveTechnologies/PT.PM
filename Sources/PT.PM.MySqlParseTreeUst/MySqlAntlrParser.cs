@@ -58,8 +58,8 @@ namespace PT.PM.SqlParseTreeUst
 
         protected override string ParserSerializedATN => MySqlParser._serializedATN;
 
-        protected override AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree) =>
-            new MySqlAntlrParseTree((MySqlParser.RootContext) syntaxTree);
+        protected override AntlrParseTree CreateParseTree(ParserRuleContext parserRuleContext) =>
+            new MySqlAntlrParseTree((MySqlParser.RootContext) parserRuleContext);
 
         protected override Parser InitParser(ITokenStream inputStream) =>
             new MySqlParser(inputStream);

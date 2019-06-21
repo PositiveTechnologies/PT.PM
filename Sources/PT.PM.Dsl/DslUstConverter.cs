@@ -35,8 +35,8 @@ namespace PT.PM.Dsl
                     Node = VisitPattern(pattern),
                     Languages = new HashSet<Language>(LanguageUtils.PatternLanguages)
                 };
-                var ascendantsFiller = new PatternAscendantsFiller(result);
-                ascendantsFiller.FillAscendants();
+                var ascendantsFiller = new PatternParentRootFiller(result);
+                ascendantsFiller.FillParentAndRootForDescendantsAndSelf();
                 return result;
             }
             catch (Exception ex) when (!(ex is ThreadAbortException))

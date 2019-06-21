@@ -64,7 +64,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
                 root.Comments = comments.ToArray();
                 root.Root = ParentRoot;
-                root.FillAscendants();
+                root.FillParentAndRootForDescendantsAndSelf();
 
                 return root;
             }

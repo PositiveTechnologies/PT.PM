@@ -591,7 +591,7 @@ namespace PT.PM.PlSqlParseTreeUst
         {
             List<Ust> children = GetChildren();
 
-            var operatorIndex = IsParseTreeExisting ? 1 : 0;
+            var operatorIndex = IsParseTreeExists ? 1 : 0;
 
             if (!CheckChild<IOperatorOrPunctuator>(binaryOperatorPlSqlTypes, operatorIndex))
             {

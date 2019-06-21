@@ -78,7 +78,7 @@ namespace PT.PM.AntlrUtils
             })
             .ToArray();
 
-            result.FillAscendants();
+            result.FillParentAndRootForDescendantsAndSelf();
 
             return result;
         }

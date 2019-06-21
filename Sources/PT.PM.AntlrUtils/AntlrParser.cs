@@ -56,7 +56,7 @@ namespace PT.PM.AntlrUtils
 
         protected abstract ParserRuleContext Parse(Parser parser);
 
-        protected abstract AntlrParseTree CreateParseTree(ParserRuleContext syntaxTree);
+        protected abstract AntlrParseTree CreateParseTree(ParserRuleContext parserRuleContext);
 
         public bool UseFastParseStrategyAtFirst { get; set; } = true;
 
