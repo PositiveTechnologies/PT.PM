@@ -14,10 +14,10 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using PT.PM.Common.Files;
 
 namespace PT.PM.PatternEditor
@@ -83,7 +83,7 @@ namespace PT.PM.PatternEditor
             sourceErrorsListBox = window.Find<ListBox>("SourceErrors");
             matchResultListBox = window.Find<ListBox>("MatchingResult");
 
-            patternsPanelColumn.Width = GridLength.Parse(Settings.PatternsPanelWidth.ToString());
+            patternsPanelColumn.Width = GridLength.Parse(Settings.PatternsPanelWidth.ToString(CultureInfo.InvariantCulture));
             sourceErrorsListBox.DoubleTapped += (sender, e) =>
             {
                 GuiUtils.ProcessErrorOnDoubleClick(sourceErrorsListBox, sourceTextBox);

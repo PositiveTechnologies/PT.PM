@@ -30,7 +30,7 @@ namespace PT.PM.Common.Reflection
             {
                 if (type1 != type2)
                 {
-                    return type1.Name.CompareTo(type2.Name);
+                    return String.Compare(type1.Name, type2.Name, StringComparison.Ordinal);
                 }
             }
 
@@ -50,7 +50,7 @@ namespace PT.PM.Common.Reflection
             {
                 var comparable1 = (Regex)node;
                 var comparable2 = (Regex)other;
-                result = comparable1.ToString().CompareTo(comparable2.ToString());
+                result = String.Compare(comparable1.ToString(), comparable2.ToString(), StringComparison.Ordinal);
                 if (result != 0)
                 {
                     return result;

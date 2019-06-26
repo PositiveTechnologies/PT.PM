@@ -8,13 +8,13 @@ namespace PT.PM
     {
         public string ToolName { get; }
 
-        public string Arguments { get; set; } = "";
+        public string Arguments { get; set; }
 
         public string WorkingDirectory { get; set; }
 
         public bool WaitForExit { get; set; } = true;
 
-        public int Timeout { get; set; } = 0;
+        public int Timeout { get; set; }
 
         public Encoding Encoding { get; set; }
 

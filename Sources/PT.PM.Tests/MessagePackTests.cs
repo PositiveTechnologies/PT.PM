@@ -6,7 +6,6 @@ using PT.PM.Common;
 using PT.PM.Common.SourceRepository;
 using PT.PM.Common.Files;
 using PT.PM.Common.MessagePack;
-using PT.PM.Common.Utils;
 using PT.PM.Matching;
 using PT.PM.Patterns.PatternsRepository;
 using PT.PM.TestUtils;
@@ -44,7 +43,6 @@ namespace PT.PM.Tests
             bool damaged = false, bool incorrectFilePath = false)
         {
             string path = Path.Combine(TestUtility.TestsDataPath, inputFileName);
-            string ext = SerializationFormat.MsgPack.GetExtension();
 
             // Serialization
             string[] files = File.Exists(path)

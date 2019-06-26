@@ -31,7 +31,7 @@ namespace PT.PM.Matching.Patterns
                 if (!((Value is PatternAny patternAny && patternAny.Any)
                     ||(Value is PatternIdRegexToken regexPattern&& regexPattern.Any)))
                 {
-                    valueString = ": " + Value.ToString();
+                    valueString = ": " + Value;
                 }
             }
 

@@ -62,12 +62,12 @@ namespace PT.PM.Matching.Patterns
                 return context.Fail();
             }
 
-            Regex regex = ust.Root.Language.IsCaseInsensitive()
+            Regex localRegex = ust.Root.Language.IsCaseInsensitive()
                 ? caseInsensitiveRegex
-                : this.regex;
+                : regex;
             string tokenText = ((Token)ust).TextValue;
 
-            return regex.Match(tokenText).Success
+            return localRegex.Match(tokenText).Success
                 ? context.AddMatch(ust)
                 : context.Fail();
         }

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Antlr4.Runtime;
 using PT.PM.AntlrUtils;
@@ -34,7 +35,7 @@ namespace PT.PM.PhpParseTreeUst
             }
 
             // TODO: Fix Hardcode!
-            int lastPhpInd = result.LastIndexOf("?>");
+            int lastPhpInd = result.LastIndexOf("?>", StringComparison.Ordinal);
             if (lastPhpInd != -1)
             {
                 if (lastPhpInd + "?>".Length + 12 <= result.Length &&

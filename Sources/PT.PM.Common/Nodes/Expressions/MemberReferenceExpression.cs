@@ -26,7 +26,7 @@ namespace PT.PM.Common.Nodes.Expressions
 
         public override Ust[] GetChildren() => new Ust[] { Target, Name };
 
-        public override Expression[] GetArgs() => new Expression[] { Target, Name };
+        public override Expression[] GetArgs() => new[] { Target, Name };
 
         public override string ToString()
         {

@@ -31,10 +31,7 @@ namespace PT.PM.Common.Nodes.Expressions
             return new Ust[] { Operator, Expression };
         }
 
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Operator, Expression };
-        }
+        public override Expression[] GetArgs() => new[] { Operator, Expression };
 
         public override string ToString()
         {

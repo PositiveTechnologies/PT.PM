@@ -303,7 +303,7 @@ namespace PT.PM.Common
                             langs.Add(language);
                         }
                     }
-                };
+                }
             }
 
             if (containsNegation)

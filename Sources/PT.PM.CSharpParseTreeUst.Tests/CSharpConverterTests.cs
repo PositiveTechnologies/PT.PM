@@ -35,7 +35,7 @@ namespace PT.PM.CSharpParseTreeUst.Tests
         public void Check_Array_Initializations()
         {
             string fileName = Path.Combine(TestUtility.TestsDataPath, "ArrayExamples.cs");
-            TestUtility.CheckFile(fileName, Stage.Ust, out RootUst ust);
+            TestUtility.CheckFile(fileName, Stage.Ust, out RootUst _);
         }
     }
 }

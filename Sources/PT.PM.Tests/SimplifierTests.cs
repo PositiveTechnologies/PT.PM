@@ -4,7 +4,6 @@ using System.Linq;
 using NUnit.Framework;
 using PT.PM.Common;
 using PT.PM.Common.Files;
-using PT.PM.Dsl;
 using PT.PM.Matching;
 using PT.PM.Matching.Patterns;
 using PT.PM.TestUtils;
@@ -123,8 +122,7 @@ namespace PT.PM.Tests
             );
 
             var logger = new TestLogger();
-            var processor = new DslProcessor();
-            var normalizer = new PatternNormalizer() { Logger = logger };
+            var normalizer = new PatternNormalizer { Logger = logger };
 
             var actualPattern = (PatternOr)normalizer.Visit(unsorted);
             List<PatternUst> actualAlternatives = actualPattern.Patterns;

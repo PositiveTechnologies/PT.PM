@@ -1,6 +1,5 @@
 ﻿using PT.PM.AntlrUtils;
 using PT.PM.Common;
-using PT.PM.PlSqlParseTreeUst;
 
 namespace PT.PM.PlSqlParseTreeUst
 {

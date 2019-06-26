@@ -68,8 +68,8 @@ namespace PT.PM
                 }
                 graphString.AppendLine($"rankdir={rankdir};");
             }
-            graphString.Append(vertexesString.ToString());
-            graphString.Append(edgesString.ToString());
+            graphString.Append(vertexesString);
+            graphString.Append(edgesString);
             graphString.AppendLine("}");
 
             return graphString.ToString();

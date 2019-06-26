@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PT.PM.Common;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Matching.Patterns;
 using System;
 using System.Collections.Generic;

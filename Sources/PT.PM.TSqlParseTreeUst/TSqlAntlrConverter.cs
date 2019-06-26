@@ -1376,7 +1376,7 @@ namespace PT.PM.SqlParseTreeUst
         /// <returns><see cref="Expression"/></returns>
         public Ust VisitPredicate([NotNull] TSqlParser.PredicateContext context)
         {
-            Expression result = null;
+            Expression result;
             var textSpan = context.GetTextSpan();
             if (context.EXISTS() != null)
             {

@@ -32,6 +32,7 @@ namespace PT.PM.Common.Nodes.TypeMembers
         }
 
         public ParameterDeclaration(TextSpan textSpan)
+            : base(textSpan)
         {
         }
 

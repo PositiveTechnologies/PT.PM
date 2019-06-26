@@ -9,8 +9,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Statements;
-using PT.PM.Matching;
 
 namespace PT.PM.TestUtils
 {

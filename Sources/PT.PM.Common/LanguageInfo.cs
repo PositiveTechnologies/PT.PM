@@ -18,7 +18,7 @@
 
         public LanguageInfo(Language key, string extension, bool caseInsensitive, string title = null,
             Language[] sublanguages = null, bool hasAntlrParser = true, bool isPattern = true)
-            :this(key, new string[] { extension }, caseInsensitive, title, sublanguages, hasAntlrParser, isPattern)
+            :this(key, new[] { extension }, caseInsensitive, title, sublanguages, hasAntlrParser, isPattern)
         {
         }
 

@@ -154,7 +154,7 @@ namespace PT.PM.Tests
                 PatternsRepository = patternsRepository,
                 Logger = logger
             };
-            var result = workflow.Process();
+            workflow.Process();
 
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
             Assert.AreEqual(1, logger.Matches.Count);

@@ -10,7 +10,7 @@ namespace PT.PM
     {
         private const string ToolName = "7z";
 
-        private static bool? is7zInstalled = null;
+        private static bool? is7zInstalled;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 

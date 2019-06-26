@@ -9,7 +9,7 @@ namespace PT.PM
     {
         private const string ToolName = "dot";
 
-        private static bool? isDotInstalled = null;
+        private static bool? isDotInstalled;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
 

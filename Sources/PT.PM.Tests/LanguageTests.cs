@@ -34,7 +34,7 @@ namespace PT.PM.Tests
         [Test]
         public void Parse_String_CorrectLanguages()
         {
-            var sqlLanguages = new Language[] { Language.TSql, Language.PlSql, Language.MySql };
+            var sqlLanguages = new[] { Language.TSql, Language.PlSql, Language.MySql };
             CollectionAssert.AreEquivalent(sqlLanguages, "TSQL plsql MySql".ParseLanguages());
 
             CollectionAssert.AreEquivalent(sqlLanguages, "Sql".ParseLanguages());

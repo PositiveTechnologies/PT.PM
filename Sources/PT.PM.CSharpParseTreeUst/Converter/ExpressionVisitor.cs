@@ -615,16 +615,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override Ust VisitQueryBody(QueryBodySyntax node)
-        {
-            return VisitQueryBody(node);
-        }
-
-        public override Ust VisitQueryContinuation(QueryContinuationSyntax node)
-        {
-            return base.VisitQueryContinuation(node);
-        }
-
         #endregion
 
         public override Ust VisitSizeOfExpression(SizeOfExpressionSyntax node)
@@ -716,16 +706,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
         public override Ust VisitInterpolatedStringText(InterpolatedStringTextSyntax node)
         {
             return convertHelper.ConvertString(node.GetTextSpan());
-        }
-
-        public override Ust VisitInterpolationAlignmentClause(InterpolationAlignmentClauseSyntax node)
-        {
-            return base.VisitInterpolationAlignmentClause(node);
-        }
-
-        public override Ust VisitInterpolationFormatClause(InterpolationFormatClauseSyntax node)
-        {
-            return base.VisitInterpolationFormatClause(node);
         }
 
         #endregion

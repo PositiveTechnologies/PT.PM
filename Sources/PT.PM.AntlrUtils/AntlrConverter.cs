@@ -7,10 +7,8 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using PT.PM.Common.Nodes.Tokens.Literals;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
 
 namespace PT.PM.AntlrUtils

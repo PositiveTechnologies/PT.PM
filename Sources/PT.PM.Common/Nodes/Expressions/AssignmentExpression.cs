@@ -43,7 +43,7 @@ namespace PT.PM.Common.Nodes.Expressions
         }
 
 
-        public override Expression[] GetArgs() => new Expression[] { Left, Right };
+        public override Expression[] GetArgs() => new[] { Left, Right };
 
         public override string ToString()
         {

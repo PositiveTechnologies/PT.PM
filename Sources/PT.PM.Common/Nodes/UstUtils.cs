@@ -4,7 +4,6 @@ using PT.PM.Common.Nodes.Tokens.Literals;
 using PT.PM.Common.Nodes.TypeMembers;
 using System.Collections.Generic;
 using System.Linq;
-using PT.PM.Common.Nodes.Collections;
 using PT.PM.Common.Nodes.Tokens;
 
 namespace PT.PM.Common.Nodes
@@ -83,7 +82,7 @@ namespace PT.PM.Common.Nodes
             Ust[] result;
             if (analyzedLanguages.Contains(language))
             {
-                result = new Ust[] { ust };
+                result = new[] { ust };
             }
             else
             {

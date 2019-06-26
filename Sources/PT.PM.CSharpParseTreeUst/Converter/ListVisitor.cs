@@ -42,31 +42,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override Ust VisitBracketedParameterList(BracketedParameterListSyntax node)
-        {
-            return base.VisitBracketedParameterList(node);
-        }
-
-        public override Ust VisitCrefBracketedParameterList(CrefBracketedParameterListSyntax node)
-        {
-            return base.VisitCrefBracketedParameterList(node);
-        }
-
-        public override Ust VisitCrefParameterList(CrefParameterListSyntax node)
-        {
-            return base.VisitCrefParameterList(node);
-        }
-
-        public override Ust VisitTypeArgumentList(TypeArgumentListSyntax node)
-        {
-            return base.VisitTypeArgumentList(node);
-        }
-
-        public override Ust VisitTypeParameterList(TypeParameterListSyntax node)
-        {
-            return base.VisitTypeParameterList(node);
-        }
-
         public override Ust VisitParameterList(ParameterListSyntax node)
         {
             throw new InvalidOperationException();

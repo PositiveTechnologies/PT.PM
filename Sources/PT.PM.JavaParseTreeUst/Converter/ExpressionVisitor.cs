@@ -94,7 +94,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                     case JavaParser.LBRACK: // '['
                         target = (Expression)Visit(context.expression(0));
                         Expression expr = (Expression)Visit(context.expression(1));
-                        args = new ArgsUst(new Expression[] { expr }, expr.TextSpan);
+                        args = new ArgsUst(new [] { expr }, expr.TextSpan);
 
                         result = new IndexerExpression(target, args, textSpan);
                         return result;
@@ -206,7 +206,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
             JavaParser.NonWildcardTypeArgumentsContext args = context.nonWildcardTypeArguments();
             if (args != null)
             {
-                var typeToken = (TypeToken)Visit(args);
+                Visit(args);
 
                 throw new NotImplementedException();
             }

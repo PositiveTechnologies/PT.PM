@@ -44,7 +44,7 @@ namespace PT.PM.Matching.Tests
             var logger = new TestLogger();
             var workflow = new Workflow(sourceRep, patternsRepository) {Logger = logger};
             workflow.Process();
-            IEnumerable<MatchResultDto> matchResults = logger.Matches.ToDto();
+            List<MatchResultDto> matchResults = logger.Matches.ToDto().ToList();
             patternsRepository.Clear();
 
             Assert.AreEqual(matchMethodNumbers.Contains(0) ? 1 : 0, matchResults.Count(r => r.MatchedCode.StartsWith("test_call_0")));
@@ -58,9 +58,9 @@ namespace PT.PM.Matching.Tests
         public void Match_RefOutArg()
         {
             var codeRepository = new MemorySourceRepository("class P { void Main() { Func(ref a); } }", "test.cs");
-            var patternsRepository = new DslPatternRepository("Func(a)", "CSharp");
+            var localPatternsRepository = new DslPatternRepository("Func(a)", "CSharp");
             var logger = new TestLogger();
-            var workflow = new Workflow(codeRepository, patternsRepository) {Logger = logger};
+            var workflow = new Workflow(codeRepository, localPatternsRepository) {Logger = logger};
             workflow.Process();
 
             Assert.AreEqual(1, logger.Matches.Count);

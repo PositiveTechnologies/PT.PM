@@ -285,11 +285,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             return result;
         }
 
-        public override Ust VisitCatchDeclaration(CatchDeclarationSyntax node)
-        {
-            return base.VisitCatchDeclaration(node);
-        }
-
         public override Ust VisitCatchFilterClause(CatchFilterClauseSyntax node)
         {
             throw new NotSupportedException();

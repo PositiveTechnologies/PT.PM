@@ -26,15 +26,9 @@ namespace PT.PM.Common.Nodes.Specific
         {
         }
 
-        public override Ust[] GetChildren()
-        {
-            return new Ust[] { Expression, Type };
-        }
+        public override Ust[] GetChildren() => new [] { Expression, Type };
 
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Expression, Type };
-        }
+        public override Expression[] GetArgs() => new [] { Expression, Type };
 
         public override string ToString()
         {

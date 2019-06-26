@@ -7,7 +7,6 @@ namespace PT.PM.Common.Exceptions
     public class ParsingException : PMException
     {
         public ParsingException()
-            : base()
         {
         }
 

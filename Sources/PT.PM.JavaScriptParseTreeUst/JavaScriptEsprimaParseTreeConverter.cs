@@ -105,7 +105,7 @@ namespace PT.PM.JavaScriptParseTreeUst
 
         private UstSpecific.ArrayPatternExpression VisitArrayPattern(ArrayPattern arrayPattern)
         {
-            var elements = new Collections.List<ParameterDeclaration>(arrayPattern.Elements.Count);
+            var elements = new List<ParameterDeclaration>(arrayPattern.Elements.Count);
 
             foreach (IArrayPatternElement elem in arrayPattern.Elements)
             {

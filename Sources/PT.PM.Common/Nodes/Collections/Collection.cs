@@ -9,7 +9,6 @@ namespace PT.PM.Common.Nodes.Collections
         [Key(0)] public override UstType UstType => UstType.Collection;
 
         public Collection()
-            : base()
         {
         }
 

@@ -10,7 +10,7 @@ namespace PT.PM.Common.Exceptions
         {
             if (ex is PMException pmException)
             {
-                return pmException.ToString(fileNameType);
+                return pmException.ToString(fileNameType, false);
             }
 
             return ex.FormatExceptionMessage();
@@ -43,13 +43,13 @@ namespace PT.PM.Common.Exceptions
                     return null;
                 }
 
-                var index1 = stackTrace.IndexOf(":\\");
+                var index1 = stackTrace.IndexOf(":\\", StringComparison.Ordinal);
                 if (index1 < 0)
                 {
                     return null;
                 }
 
-                var index2 = stackTrace.IndexOf(":", index1 + 1);
+                var index2 = stackTrace.IndexOf(":", index1 + 1, StringComparison.Ordinal);
                 if (index2 < 0)
                 {
                     return null;

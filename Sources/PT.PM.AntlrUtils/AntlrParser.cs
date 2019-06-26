@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading;
 using PT.PM.Common.Files;
 using PT.PM.Common.Nodes;
-using PT.PM.Common.Nodes.Tokens.Literals;
 
 namespace PT.PM.AntlrUtils
 {

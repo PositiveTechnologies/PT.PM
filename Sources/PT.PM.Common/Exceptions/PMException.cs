@@ -34,7 +34,7 @@ namespace PT.PM.Common.Exceptions
             return ToString(FileNameType.Relative, false);
         }
 
-        public string ToString(FileNameType fileNameType = FileNameType.Relative, bool printStackTrace = false)
+        public string ToString(FileNameType fileNameType, bool printStackTrace)
         {
             string fileName = fileNameType == FileNameType.None
                 ? ""

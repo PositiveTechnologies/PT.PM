@@ -21,7 +21,6 @@ namespace PT.PM.Common.Nodes.Collections
         }
 
         public EntitiesUst()
-            : base()
         {
         }
     }

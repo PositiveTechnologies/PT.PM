@@ -26,7 +26,6 @@ namespace PT.PM.Common.Nodes.Collections
         }
 
         public ArgsUst()
-            : base()
         {
         }
 

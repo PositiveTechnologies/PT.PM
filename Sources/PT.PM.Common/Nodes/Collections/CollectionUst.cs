@@ -18,14 +18,12 @@ namespace PT.PM.Common.Nodes.Collections
         }
 
         protected CollectionNode(IEnumerable<TUst> collection)
-            : base()
         {
             Collection = collection as List<TUst> ?? collection.ToList();
             Collection.TrimExcess();
         }
 
         protected CollectionNode()
-            : base()
         {
             Collection = new List<TUst>();
         }

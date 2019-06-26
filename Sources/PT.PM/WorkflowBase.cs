@@ -86,7 +86,7 @@ namespace PT.PM
                 {
                     LanguageDetector.Logger = logger;
                 }
-                AntlrParser.StaticLogger = logger;
+                AntlrBaseHandler.StaticLogger = logger;
             }
         }
 

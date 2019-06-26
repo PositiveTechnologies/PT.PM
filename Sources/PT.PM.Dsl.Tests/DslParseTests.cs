@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using PT.PM.Common;
 using PT.PM.Common.Exceptions;
 using PT.PM.Common.Files;
 using PT.PM.Matching;
@@ -50,10 +49,6 @@ namespace PT.PM.Dsl.Tests
             var logger = new TestLogger();
             var processor = new DslProcessor { Logger = logger, PatternExpressionInsideStatement = false };
             PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = fileName });
-            if (fileName == "DebugInfo.pattern")
-            {
-                new HashSet<Language> { Language.Php };
-            }
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
 
             string patternName = Path.GetFileNameWithoutExtension(fileName);
@@ -75,7 +70,7 @@ namespace PT.PM.Dsl.Tests
             string data = File.ReadAllText(Path.Combine(TestUtility.TestsDataPath, fileName));
             var logger = new TestLogger();
             var processor = new DslProcessor { Logger = logger };
-            PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = fileName });
+            processor.Deserialize(new TextFile(data) { PatternKey = fileName });
             Assert.AreEqual(0, logger.ErrorCount, logger.ErrorsString);
         }
 
@@ -84,8 +79,8 @@ namespace PT.PM.Dsl.Tests
         {
             var logger = new TestLogger();
             var data = "(?i)password(?-i)]> = <[\"\\w*\" || null]>";
-            var processor = new DslProcessor() { Logger = logger };
-            PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = "ErrorneousPattern" });
+            var processor = new DslProcessor { Logger = logger };
+            processor.Deserialize(new TextFile(data) { PatternKey = "ErrorneousPattern" });
             Assert.AreEqual(5, logger.ErrorCount);
         }
 
@@ -96,7 +91,7 @@ namespace PT.PM.Dsl.Tests
             Assert.Throws(typeof(ConversionException), () =>
             {
                 var processor = new DslProcessor();
-                PatternRoot result = processor.Deserialize(new TextFile(data) { PatternKey = "Unnamed" });
+                processor.Deserialize(new TextFile(data) { PatternKey = "Unnamed" });
             });
         }
     }

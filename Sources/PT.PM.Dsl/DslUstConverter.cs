@@ -16,7 +16,6 @@ namespace PT.PM.Dsl
 {
     public class DslUstConverter : IDslParserVisitor<PatternUst>
     {
-        private const string DslHelperPrefix = "pt.pm_";
         private Dictionary<string, PatternVar> patternVars;
 
         public ILogger Logger { get; set; } = DummyLogger.Instance;
@@ -379,7 +378,7 @@ namespace PT.PM.Dsl
         public PatternUst VisitArgs([NotNull] DslParser.ArgsContext context)
         {
             IEnumerable<PatternUst> expressions =
-                context.arg().Select(arg => (PatternUst)VisitArg(arg));
+                context.arg().Select(arg => VisitArg(arg));
 
             var textSpan = context.GetTextSpan();
             PatternArgs result;

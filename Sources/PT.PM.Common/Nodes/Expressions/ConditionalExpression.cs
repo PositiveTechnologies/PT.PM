@@ -34,10 +34,7 @@ namespace PT.PM.Common.Nodes.Expressions
             return new Ust[] { Condition, TrueExpression, FalseExpression };
         }
 
-        public override Expression[] GetArgs()
-        {
-            return new Expression[] { Condition };
-        }
+        public override Expression[] GetArgs() => new[] { Condition };
 
         public override string ToString()
         {

@@ -387,9 +387,6 @@ namespace PT.PM.CSharpParseTreeUst.RoslynUstVisitor
             switch (typeType)
             {
                 default:
-                case TypeType.Class:
-                case TypeType.Enum:
-                case TypeType.Struct:
                     return TypeType.Class;
                 case TypeType.Interface:
                     return TypeType.Interface;

@@ -5,7 +5,6 @@ using PT.PM.TestUtils;
 using System.IO;
 using PT.PM.Common;
 using PT.PM.Common.Files;
-using static PT.PM.Common.UstLinq;
 
 namespace PT.PM.Tests
 {

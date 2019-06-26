@@ -83,7 +83,7 @@ namespace PT.PM.Cli.Common
                     Type underlyingType = Nullable.GetUnderlyingType(foundOption.PropertyInfo.PropertyType);
                     var notNullableType = underlyingType != null ? underlyingType : foundOption.PropertyInfo.PropertyType;
 
-                    if (notNullableType == typeof(bool) && (argInd == args.Length || outValue.StartsWith("-")))
+                    if (notNullableType == typeof(bool) && (argInd == args.Length || outValue?.StartsWith("-") == true))
                     {
                         CheckAndSetIfParsed(result, foundOption, arg, true.ToString().ToLowerInvariant(), notNullableType, errors);
                     }

@@ -160,7 +160,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 }
             }
 
-            var result = new TypeToken(id.Id + typeNodes.ToString(), context.GetTextSpan());
+            var result = new TypeToken(id.Id + typeNodes, context.GetTextSpan());
             return result;
         }
 
@@ -175,7 +175,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
                 string.Join(",", typeArgs.Select(arg => arg.TypeText)) +
                 ((ITerminalNode)context.GetChild(context.ChildCount - 1)).Symbol.Text;
 
-            var result = new TypeToken(resultString.ToString(), context.GetTextSpan());
+            var result = new TypeToken(resultString, context.GetTextSpan());
             return result;
         }
 
@@ -375,7 +375,7 @@ namespace PT.PM.JavaParseTreeUst.Converter
         private Ust ProcessTypeDeclaration(ParserRuleContext context,
             JavaParser.ClassOrInterfaceModifierContext[] modifiers)
         {
-            if (context.GetChild(0) is ITerminalNode child0Terminal) // ignore ';'
+            if (context.GetChild(0) is ITerminalNode) // ignore ';'
                 return null;
 
             var result = Visit(context.GetChild(context.ChildCount - 1));

@@ -35,7 +35,7 @@ namespace PT.PM.Common.Nodes.Statements.Switch
             return result.ToArray();
         }
 
-        public override string ToString() => ToString(false, "");
+        public override string ToString() => ToString(false);
 
         public string ToString(bool newline, string prevIndent = "")
         {

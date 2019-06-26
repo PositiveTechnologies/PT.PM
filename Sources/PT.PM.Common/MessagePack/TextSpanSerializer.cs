@@ -153,7 +153,7 @@ namespace PT.PM.Common.MessagePack
 
                 readSize = newOffset - offset;
 
-                return new TextSpan(start, length, sourceFile == LocalSourceFiles[0] ? null : sourceFile);;
+                return new TextSpan(start, length, sourceFile == LocalSourceFiles[0] ? null : sourceFile);
             }
             catch (InvalidOperationException ex) // Catch incorrect format exceptions
             {
