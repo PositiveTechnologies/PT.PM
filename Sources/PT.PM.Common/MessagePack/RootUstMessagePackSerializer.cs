@@ -157,9 +157,8 @@ namespace PT.PM.Common.MessagePack
             foreach (PropertyInfo property in serializableProperties)
             {
                 object serializeObject = property.GetValue(value);
-                Type propertyType = property.PropertyType;
 
-                newOffset += SerializeObject(ref bytes, newOffset, propertyType, serializeObject);
+                newOffset += SerializeObject(ref bytes, newOffset, property.PropertyType, serializeObject);
             }
 
             return newOffset - offset;
@@ -332,8 +331,7 @@ namespace PT.PM.Common.MessagePack
                     }
                     else
                     {
-                        Type propertyType = property.PropertyType;
-                        object obj = DeserializeObject(bytes, newOffset, propertyType, out size, logger);
+                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size, logger);
 
                         try
                         {
@@ -370,13 +368,6 @@ namespace PT.PM.Common.MessagePack
                 if (MessagePackBinary.IsNil(bytes, offset))
                 {
                     MessagePackBinary.ReadNil(bytes, offset, out readSize);
-                    if (type is TextSpan)
-                    {
-                        var test = type.GetDefaultValue();
-                        var ts = (TextSpan)test;
-                        var isZero = ts == TextSpan.Zero;
-                        var a = 1;
-                    }
                     return type.GetDefaultValue();
                 }
 
