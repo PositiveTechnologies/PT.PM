@@ -157,20 +157,8 @@ namespace PT.PM.Common.MessagePack
             foreach (PropertyInfo property in serializableProperties)
             {
                 object serializeObject = property.GetValue(value);
-                Type propertyType;
 
-                // TODO: backward compatibility with old serialization format (wait for CLangs fix)
-                if (property.Name == nameof(Ust.TextSpan))
-                {
-                    serializeObject = new[] {(TextSpan) serializeObject};
-                    propertyType = typeof(TextSpan[]);
-                }
-                else
-                {
-                    propertyType = property.PropertyType;
-                }
-
-                newOffset += SerializeObject(ref bytes, newOffset, propertyType, serializeObject);
+                newOffset += SerializeObject(ref bytes, newOffset, property.PropertyType, serializeObject);
             }
 
             return newOffset - offset;
@@ -343,17 +331,7 @@ namespace PT.PM.Common.MessagePack
                     }
                     else
                     {
-                        // TODO: backward compatibility with old serialization format (wait for CLangs fix)
-                        bool isTextSpan = property.Name == nameof(Ust.TextSpan);
-                        Type propertyType = isTextSpan ? typeof(TextSpan[]) : property.PropertyType;
-
-                        object obj = DeserializeObject(bytes, newOffset, propertyType, out size, logger);
-
-                        if (isTextSpan)
-                        {
-                            TextSpan[] textSpans = (TextSpan[]) obj;
-                            obj = textSpans.Length > 0 ? textSpans[0] : TextSpan.Zero;
-                        }
+                        object obj = DeserializeObject(bytes, newOffset, property.PropertyType, out size, logger);
 
                         try
                         {
