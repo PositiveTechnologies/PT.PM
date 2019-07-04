@@ -157,18 +157,7 @@ namespace PT.PM.Common.MessagePack
             foreach (PropertyInfo property in serializableProperties)
             {
                 object serializeObject = property.GetValue(value);
-                Type propertyType;
-
-                // TODO: backward compatibility with old serialization format (wait for CLangs fix)
-                if (property.Name == nameof(Ust.TextSpan))
-                {
-                    serializeObject = new[] {(TextSpan) serializeObject};
-                    propertyType = typeof(TextSpan[]);
-                }
-                else
-                {
-                    propertyType = property.PropertyType;
-                }
+                Type propertyType = property.PropertyType;
 
                 newOffset += SerializeObject(ref bytes, newOffset, propertyType, serializeObject);
             }
@@ -343,17 +332,8 @@ namespace PT.PM.Common.MessagePack
                     }
                     else
                     {
-                        // TODO: backward compatibility with old serialization format (wait for CLangs fix)
-                        bool isTextSpan = property.Name == nameof(Ust.TextSpan);
-                        Type propertyType = isTextSpan ? typeof(TextSpan[]) : property.PropertyType;
-
+                        Type propertyType = property.PropertyType;
                         object obj = DeserializeObject(bytes, newOffset, propertyType, out size, logger);
-
-                        if (isTextSpan)
-                        {
-                            TextSpan[] textSpans = (TextSpan[]) obj;
-                            obj = textSpans.Length > 0 ? textSpans[0] : TextSpan.Zero;
-                        }
 
                         try
                         {
@@ -390,6 +370,13 @@ namespace PT.PM.Common.MessagePack
                 if (MessagePackBinary.IsNil(bytes, offset))
                 {
                     MessagePackBinary.ReadNil(bytes, offset, out readSize);
+                    if (type is TextSpan)
+                    {
+                        var test = type.GetDefaultValue();
+                        var ts = (TextSpan)test;
+                        var isZero = ts == TextSpan.Zero;
+                        var a = 1;
+                    }
                     return type.GetDefaultValue();
                 }
 
