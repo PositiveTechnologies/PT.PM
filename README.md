@@ -1,5 +1,11 @@
 # PT.PM (PT Pattern Matching Engine)
 
+## Notice
+
+*The project is discontinued in open-source format.*
+
+## Info
+
 **PT Pattern Matching Engine**, or **PT.PM,** is an engine for searching patterns
 in the source code. PT.PM is based on Unified Abstract Syntax Tree (UST).
 At present time C\#, Java, PHP, PL/SQL, T-SQL, and JavaScript are supported.
